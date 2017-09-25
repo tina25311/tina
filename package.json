@@ -14,7 +14,6 @@
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha",
     "test-watch": "nodemon --exec 'nyc --reporter=lcov --reporter=text mocha || true'",
-    "lint": "standard '{lib*,test}/**/*.js' 'packages/*/{lib,test}/**/*.js' | snazzy",
     "format": "prettier-standard gulpfile.js '{lib*,tasks,test}/**/*.js' 'packages/*/{lib,test}/**/*.js'"
   },
   "devDependencies": {
@@ -23,8 +22,14 @@
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^0.7.1",
     "dirty-chai": "^2.0.1",
+    "eslint": "^4.7.2",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "gulp": "^3.9.1",
-    "gulp-standard": "emgeee/gulp-standard#0f44da222cea1ddc82dab3b776cc729b744a9c7c",
+    "gulp-eslint": "^4.0.0",
     "gulp-spawn-mocha": "^3.3.1",
     "istanbul": "^0.4.5",
     "map-stream": "^0.0.7",

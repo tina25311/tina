@@ -9,7 +9,7 @@ gulp.task('lint', () =>
   lint([
     'gulpfile.js',
     '{lib*,tasks,test}/**/*.js',
-    'packages/*/{lib,test}/**/*.js'
+    'packages/*/{lib,test}/**/*.js',
   ])
 )
 

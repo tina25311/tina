@@ -7,8 +7,6 @@ module.exports = (glob) =>
   vfs.src(glob, { read: false }).pipe(
     mocha({
       R: 'spec',
-      istanbul: {
-        report: ['lcov', 'html']
-      }
+      istanbul: { report: ['lcov', 'html'] },
     })
   )

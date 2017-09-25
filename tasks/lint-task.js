@@ -1,14 +1,11 @@
 'use strict'
 
 const vfs = require('vinyl-fs')
-const standard = require('gulp-standard')
+const eslint = require('gulp-eslint')
 
 module.exports = (glob) =>
   vfs
     .src(glob)
-    .pipe(standard())
-    .pipe(
-      standard.reporter('default', {
-        breakOnError: true
-      })
-    )
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
