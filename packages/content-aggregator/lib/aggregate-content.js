@@ -234,7 +234,7 @@ async function selectReferences (repo, remote, refPatterns) {
       }
 
       // NOTE if branch is present in accum, we already know it matches the pattern
-      if (name in accum) {
+      if (accum.indexOf(name) >= 0) {
         if (isBare === !!refData.remote) accum[name] = refData
       } else if (branchPatterns && matcher([name], branchPatterns).length) {
         accum[name] = refData
