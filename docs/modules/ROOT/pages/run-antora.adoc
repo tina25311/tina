@@ -119,13 +119,9 @@ You should see the following list of files:
 
 ....
 _
-404.html
 component-a
 component-b
 index.html
-sitemap-component-a.xml
-sitemap-component-b.xml
-sitemap.xml
 ....
 
 This list includes the entry point of your documentation site, [.path]_index.html_.
