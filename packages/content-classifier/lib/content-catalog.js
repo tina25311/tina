@@ -97,7 +97,7 @@ class ContentCatalog {
     if (file.out) {
       publishable = true
     } else if (
-      (actingFamily === 'page' || actingFamily === 'image' || actingFamily === 'attachment') &&
+      (actingFamily === 'page' || actingFamily === 'image' || actingFamily === 'video' || actingFamily === 'attachment') &&
       !~('/' + file.src.relative).indexOf('/_')
     ) {
       publishable = true
@@ -244,6 +244,8 @@ function computeOut (src, family, htmlUrlExtensionStyle) {
   let familyPathSegment = ''
   if (family === 'image') {
     familyPathSegment = '_images'
+  } else if (family === 'video') {
+    familyPathSegment = '_videos'
   } else if (family === 'attachment') {
     familyPathSegment = '_attachments'
   }

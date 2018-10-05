@@ -67,6 +67,11 @@ function allocateSrc (file, component, version, nav) {
           // relative to modules/<module>/assets/images
           file.src.relative = pathSegments.slice(4).join('/')
           break
+        } else if (pathSegments[3] === 'videos') {
+          file.src.family = 'video'
+          // relative to modules/<module>/assets/videos
+          file.src.relative = pathSegments.slice(4).join('/')
+          break
         } else if (pathSegments[3] === 'attachments') {
           file.src.family = 'attachment'
           // relative to modules/<module>/assets/attachments
