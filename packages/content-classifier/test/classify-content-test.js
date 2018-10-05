@@ -392,6 +392,31 @@ describe('classifyContent()', () => {
       })
     })
 
+    it('should classify a video', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/assets/videos/foo.mp4'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('modules/ROOT/assets/videos/foo.mp4')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'video',
+        relative: 'foo.mp4',
+        basename: 'foo.mp4',
+        moduleRootPath: '../..',
+      })
+      expect(file.out).to.include({
+        path: 'the-component/v1.2.3/_videos/foo.mp4',
+        dirname: 'the-component/v1.2.3/_videos',
+        basename: 'foo.mp4',
+      })
+      expect(file.pub).to.include({
+        url: '/the-component/v1.2.3/_videos/foo.mp4',
+      })
+    })
+
     it('should classify an attachment', () => {
       aggregate[0].files.push(createFile('modules/ROOT/assets/attachments/example.zip'))
       const files = classifyContent(playbook, aggregate).getFiles()
@@ -776,6 +801,20 @@ describe('classifyContent()', () => {
         dirname: 'the-component/v1.2.3/the-module/_images',
         basename: 'foo.png',
         path: 'the-component/v1.2.3/the-module/_images/foo.png',
+        moduleRootPath: '..',
+        rootPath: '../../../..',
+      })
+    })
+
+    it('video', () => {
+      aggregate[0].files.push(createFile('modules/the-module/assets/videos/foo.mp4'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.out).to.include({
+        dirname: 'the-component/v1.2.3/the-module/_videos',
+        basename: 'foo.mp4',
+        path: 'the-component/v1.2.3/the-module/_videos/foo.mp4',
         moduleRootPath: '..',
         rootPath: '../../../..',
       })
