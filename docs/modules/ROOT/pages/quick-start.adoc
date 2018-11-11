@@ -1,0 +1,126 @@
+= Quick Start With Antora
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+Assumptions:
+
+* [x] You know what Antora was designed for and how it works
+
+This guide walks you through the steps required to install Antora and generate the first site in a quick and straightforward manner.
+
+On this page, you’ll learn:
+
+* [x] How to install the tools you need in order to install and run Antora.
+* [x] How to install the Antora CLI and the default Antora site generator.
+* [x] How to create your first playbook (a configuration file for Antora).
+* [x] How to run Antora and generate a site using the playbook.
+
+== Install the tools
+
+This includes base build tools for your Linux distribution and Node.
+
+First, open a terminal and type:
+
+  $ apt install build-essential libcurl3-gnutls libssl-dev
+
+Next, make sure you have Node version no less than 8.0.0:
+
+  $ node --version
+
+If yes, proceed to the next step. If no or if this command returned an error, you need to install Node. The best way to do it is to use <<install-nvm,nvm>>.
+
+Use the install script for nvm installation:
+
+  $ wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+
+Install the latest Node 9.x version (that is supported at this moment) and set it as default:
+
+  $ nvm install 9.11.2
+  $ nvm use 9.11.2
+  $ nvm alias default 9.11.2
+
+Once you've installed the base build tools and Node, it's time to install Antora.
+
+NOTE: The detailed information about supported platforms and installation requirements is available xref:supported-platforms.adoc[here].
+
+== Install Antora
+
+To generate documentation sites with Antora, you need the Antora command line interface (CLI) and an Antora site generator pipeline.
+
+First, install the Antora CLI:
+
+  $ npm i -g @antora/cli
+
+Verify the `antora` command is available on your PATH by running:
+
+ $ antora -v
+
+If the installation was successful, the command should report the version of Antora.  
+
+Before installing the default site generator, make a new directory for your site named [.path]_antora_ and switch to it.
+
+  $ mkdir antora
+  $ cd antora
+
+Install the default site generator in the directory:
+
+  $ npm install @antora/site-generator-default
+
+Once you've installed the Antora CLI and the default site generator, you are ready to create your first playbook.
+
+NOTE: The detailed information about installation procedure is available xref:install/install-antora.adoc[here].
+
+== Create a Playbook
+
+To produce a documentation site, Antora needs a playbook. Using your preferred text editor or IDE, create a new playbook file named `site.yml` and populate it with the following demo contents:
+
+.site.yml
+[source,yaml]
+----
+site:
+  title: Antora Docs
+  start_page: component-b::index.adoc
+content:
+  sources:
+  - url: https://gitlab.com/antora/demo/demo-component-a.git
+    branches: master
+  - url: https://gitlab.com/antora/demo/demo-component-b.git
+    branches: [v2.0, v1.0]
+    start_path: docs
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+----
+
+Save the playbook as `site.yml` in the `antora` directory you made in the previous step.
+
+NOTE: The detailed information about playbook configuration schema is available xref:playbook:playbook-schema.adoc[here].
+
+== Run Antora
+
+To generate the site, simply point the `antora` command at your playbook file.
+
+In your terminal, type:
+
+  $ antora site.yml
+
+Antora will clone the content repository. The cloning progress of each repository is displayed in the terminal.
+
+.Repository cloning progress
+....
+[clone] https://gitlab.com/antora/demo/demo-component-a.git [################]
+[clone] https://gitlab.com/antora/demo/demo-component-b.git [################]
+....
+
+Navigate to the [.path]_build/site_ destination directory and open _index.html_ file in your browser.
+
+Congratulations! You've successfully built your first site with Antora.
+
+NOTE: The detailed information about running Antora is available xref:run-antora.adoc[here].
+
+== What's next?
+
+* Check how xref:component-structure.adoc[files are organized] in Antora.
+* What xref:page:index.adoc[pages] are available in Antora.
