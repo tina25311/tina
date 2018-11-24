@@ -20,15 +20,19 @@ On this page, you’ll learn:
 
 This includes base build tools for your Linux distribution and Node.
 
-First, open a terminal and type:
+First, install base build tools. Open a terminal and type the command associated with your Linux distribution:
 
-  $ apt install build-essential libcurl3-gnutls libssl-dev
+* Fedora: `dnf install @development-tools`
+* Debian/Ubuntu: `apt-get install build-essential libcurl3-gnutls libssl-dev`
+* Arch Linux: `pacman -S base-devel`
+* Alpine Linux: `apk add g++ libressl-dev make python curl-dev`
+* RHEL: `yum install gcc-c++ make openssl-devel libcurl-devel hostname`
 
-Next, make sure you have Node version no less than 8.0.0:
+Next, make sure you have Node installed - no less than version 8.0.0. To check this, run the following command:
 
   $ node --version
 
-If yes, proceed to the next step. If no or if this command returned an error, you need to install Node. The best way to do it is to use <<install-nvm,nvm>>.
+If yes, proceed to the next step. If no, or if this command returned an error, you need to install Node. The best way to do it is to use <<install-nvm,nvm>>.
 
 Use the install script for nvm installation:
 
@@ -46,26 +50,24 @@ NOTE: The detailed information about supported platforms and installation requir
 
 == Install Antora
 
-To generate documentation sites with Antora, you need the Antora command line interface (CLI) and an Antora site generator pipeline.
-
-First, install the Antora CLI:
-
-  $ npm i -g @antora/cli
-
-Verify the `antora` command is available on your PATH by running:
-
- $ antora -v
-
-If the installation was successful, the command should report the version of Antora.  
-
-Before installing the default site generator, make a new directory for your site named [.path]_antora_ and switch to it.
+Before installing Antora, make a new directory for your site named [.path]_antora_ and switch to it.
 
   $ mkdir antora
   $ cd antora
 
-Install the default site generator in the directory:
+To generate documentation sites with Antora, you need the Antora command line interface (CLI) and an Antora site generator pipeline. We will install both packages together:
 
-  $ npm install @antora/site-generator-default
+  $ npm i --save-dev @antora/cli @antora/site-generator-default
+
+After that you can run Antora command by typing `./node_modules/.bin/antora` which is not very convenient. To launch `antora` command directly, add `./node_modules/.bin` to PATH.
+
+  export PATH=./node_modules/.bin:$PATH
+  
+Verify the `antora` command is now available on your PATH by running:
+
+  $ antora -v
+
+If the installation was successful, the command should report the version of Antora.  
 
 Once you've installed the Antora CLI and the default site generator, you are ready to create your first playbook.
 
@@ -80,19 +82,22 @@ To produce a documentation site, Antora needs a playbook. Using your preferred t
 ----
 site:
   title: Antora Docs
-  start_page: component-b::index.adoc
+  start_page: component-b::index.adoc # <1>
 content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-a.git
+  sources: # <2>
+  - url: https://gitlab.com/antora/demo/demo-component-a.git 
     branches: master
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: [v2.0, v1.0]
     start_path: docs
-ui:
+ui: # <3>
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
 ----
+<1> A page from a documentation component to be used as the index page for your site. 
+<2> The sources key contains the list of git repository locations, branch name patterns, and other repository properties that Antora uses when aggregating the site content.
+<3> The `ui` category contains keys that specify the location of the UI bundle and how it should be processed.
 
 Save the playbook as `site.yml` in the `antora` directory you made in the previous step.
 
@@ -100,19 +105,24 @@ NOTE: The detailed information about playbook configuration schema is available 
 
 == Run Antora
 
-To generate the site, simply point the `antora` command at your playbook file.
-
-In your terminal, type:
+To generate the site, run `antora` command specifying the path to your playbook file:
 
   $ antora site.yml
 
-Antora will clone the content repository. The cloning progress of each repository is displayed in the terminal.
+Antora will clone the content repository.
+
+[TIP]
+====
+If you want to see the cloning progress of each repository in the terminal, run `antora` with the `--pull` xref:cli:index.adoc#_commands_and_options[option]:
+
+  $ antora site.yml --pull
 
 .Repository cloning progress
 ....
 [clone] https://gitlab.com/antora/demo/demo-component-a.git [################]
 [clone] https://gitlab.com/antora/demo/demo-component-b.git [################]
 ....
+====
 
 Navigate to the [.path]_build/site_ destination directory and open _index.html_ file in your browser.
 
