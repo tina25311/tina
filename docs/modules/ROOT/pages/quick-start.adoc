@@ -2,6 +2,9 @@
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
+:page-partial:
+:version-node-major: 10
+:version-node: {version-node-major}.15.0
 
 Assumptions:
 
@@ -11,42 +14,43 @@ This guide walks you through the steps required to install Antora and generate t
 
 On this page, you’ll learn:
 
-* [x] How to install the tools you need in order to install and run Antora.
+* [x] How to install Node.js in order to set up and run Antora.
 * [x] How to install the Antora CLI and the default Antora site generator.
 * [x] How to create your first playbook (a configuration file for Antora).
 * [x] How to run Antora and generate a site using the playbook.
 
-== Install the tools
+== Install Node.js
 
-This includes base build tools for your Linux distribution and Node.
+To install Antora, all you need on your machine is a long term support (LTS) release of Node.
+To check whether you have Node installed, and which version, open a terminal and type:
 
-First, install base build tools. Open a terminal and type the command associated with your Linux distribution:
+ $ node --version
 
-* Fedora: `dnf install @development-tools`
-* Debian/Ubuntu: `apt-get install build-essential libcurl3-gnutls libssl-dev`
-* Arch Linux: `pacman -S base-devel`
-* Alpine Linux: `apk add g++ libressl-dev make python curl-dev`
-* RHEL: `yum install gcc-c++ make openssl-devel libcurl-devel hostname`
+This command should return a version that is an active LTS version. For example:
 
-Next, make sure you have Node installed - no less than version 8.0.0. To check this, run the following command:
+[subs=attributes+]
+....
+v{version-node}
+....
 
-  $ node --version
-
-If yes, proceed to the next step. If no, or if this command returned an error, you need to install Node. The best way to do it is to use <<install-nvm,nvm>>.
+If your version is the same, proceed to the next step. If *the command returns a version that isn't an active LTS version*, upgrade to the latest Node LTS version <<upgrade-node,using nvm>> (or your package manager). If *the command fails with an error*, you need to install Node. The best way to do it is to use <<install-nvm,nvm>>.
 
 Use the install script for nvm installation:
 
   $ wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 
-Install the latest Node 9.x version (that is supported at this moment) and set it as default:
+Install the latest Node LTS version (that is supported at this moment) and set it as default:
 
-  $ nvm install 9.11.2
-  $ nvm use 9.11.2
-  $ nvm alias default 9.11.2
+[subs=attributes+]
+....
+$ nvm install {version-node}
+$ nvm use {version-node}
+$ nvm alias default {version-node}
+....
 
-Once you've installed the base build tools and Node, it's time to install Antora.
+Once you've installed Node.js, it's time to install Antora.
 
-NOTE: The detailed information about supported platforms and installation requirements is available xref:supported-platforms.adoc[here].
+NOTE: The detailed information about supported platforms and installation requirements is available xref:install:supported-platforms.adoc[here].
 
 == Install Antora
 
@@ -55,13 +59,9 @@ Before installing Antora, make a new directory for your site named [.path]_antor
   $ mkdir antora
   $ cd antora
 
-To generate documentation sites with Antora, you need the Antora command line interface (CLI) and an Antora site generator pipeline. We will install both packages together:
+To generate documentation sites with Antora, you need the Antora command line interface (CLI) and an Antora site generator pipeline. We will install both packages globally to make them available on your PATH:
 
-  $ npm i --save-dev @antora/cli @antora/site-generator-default
-
-After that you can run Antora command by typing `./node_modules/.bin/antora` which is not very convenient. To launch `antora` command directly, add `./node_modules/.bin` to PATH.
-
-  export PATH=./node_modules/.bin:$PATH
+  $ npm i -g @antora/cli @antora/site-generator-default
   
 Verify the `antora` command is now available on your PATH by running:
 
@@ -71,13 +71,13 @@ If the installation was successful, the command should report the version of Ant
 
 Once you've installed the Antora CLI and the default site generator, you are ready to create your first playbook.
 
-NOTE: The detailed information about installation procedure is available xref:install/install-antora.adoc[here].
+NOTE: The detailed information about installation procedure is available xref:install:install-antora.adoc[here].
 
 == Create a Playbook
 
-To produce a documentation site, Antora needs a playbook. Using your preferred text editor or IDE, create a new playbook file named `site.yml` and populate it with the following demo contents:
+To produce a documentation site, Antora needs a playbook. Using your preferred text editor or IDE, create a new playbook file named `antora-playbook.yml` and populate it with the following demo contents:
 
-.site.yml
+.antora-playbook.yml
 [source,yaml]
 ----
 site:
@@ -99,7 +99,7 @@ ui: # <3>
 <2> The sources key contains the list of git repository locations, branch name patterns, and other repository properties that Antora uses when aggregating the site content.
 <3> The `ui` category contains keys that specify the location of the UI bundle and how it should be processed.
 
-Save the playbook as `site.yml` in the `antora` directory you made in the previous step.
+Save the playbook as `antora-playbook.yml` in the `antora` directory you made in the previous step.
 
 NOTE: The detailed information about playbook configuration schema is available xref:playbook:playbook-schema.adoc[here].
 
@@ -107,20 +107,20 @@ NOTE: The detailed information about playbook configuration schema is available 
 
 To generate the site, run `antora` command specifying the path to your playbook file:
 
-  $ antora site.yml
+  $ antora antora-playbook.yml
 
 Antora will clone the content repository.
 
 [TIP]
 ====
-If you want to see the cloning progress of each repository in the terminal, run `antora` with the `--pull` xref:cli:index.adoc#_commands_and_options[option]:
+If you want to see the cloning progress of each repository in the terminal, run `antora` with the `--fetch` xref:cli:index.adoc#_commands_and_options[option]:
 
-  $ antora site.yml --pull
+  $ antora antora-playbook.yml --fetch
 
 .Repository cloning progress
 ....
-[clone] https://gitlab.com/antora/demo/demo-component-a.git [################]
-[clone] https://gitlab.com/antora/demo/demo-component-b.git [################]
+[fetch] https://gitlab.com/antora/demo/demo-component-a.git [################]
+[fetch] https://gitlab.com/antora/demo/demo-component-b.git [################]
 ....
 ====
 
