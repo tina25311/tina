@@ -768,6 +768,7 @@ To build the image use
 Now to run a bash console in the container use
 
  $ docker run -it antora-my-dev bash
+ node@bcb6b82c8224:~/antora$
 
 You now have a development environment! You may use e.g. `gulp build` as described previously.
 
