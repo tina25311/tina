@@ -94,6 +94,23 @@ When you want to display content in a navigation list, but you don't want it to 
 ** xref:a-page.adoc[Linked Content]
 ----
 
+== Including navigation content
+
+It is possible to include navigation content from another page using the `include::` macro.
+Keep in mind that the include target needs to be indexed by Antora.
+The default `modules/XYZ/nav.adoc` location of navigation files is not indexed, therefore the best way is to place partial navigation files into `modules/XYZ/partials/my-partial-nav.adoc`.
+
+[source,asciidoc]
+----
+* xref:index.adoc[In-module page]
++
+--
+include::XYZ:partial$my-partial-nav.adoc[]
+--
+----
+
+The included navigation file should contain the desired text and list formatting.
+
 == Formatted text
 
 Whether linked or unlinked, the text you want displayed in your component version page menu can be formatted using inline AsciiDoc markup.
