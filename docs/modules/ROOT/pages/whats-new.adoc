@@ -21,13 +21,13 @@ Issue {url-issues}/466[466^]:: Emit "`Failed to download UI bundle: <reason>`" e
 Issue {url-issues}/480[480^]:: Resolve correct value for `page-component-display-version` attribute.
 Issue {url-issues}/485[485^]:: Remove empty embedded auth (i.e., credentials) from content source URL.
 Issue {url-issues}/489[489^]:: Decode characters in credentials parsed from URL for private content source.
-Issue {url-issues}/491[491^]:: Encode spaces as `%20` in the `editUrlPattern` and `editUrl` properties on `file.src`; encode spaces in the `file.pub.url` property.
+Issue {url-issues}/491[491^]:: Encode spaces as `%20` in `file.src.editUrl` and `file.pub.url`.
 This ensures that the HTML page that uses such URLs will validate.
 Issue {url-issues}/492[492^]:: Enclose paths in an nginx rewrite rule in quotes to escape spaces.
 
 == Documentation changes
 
-The documentation pages explaining the roles of documentation components, modules, and families and their relationship to Antora's standardized directory structure have been extensively updated.
+The documentation pages explaining the roles of documentation components, modules, and families, and their relationship to Antora's standardized directory structure have been extensively updated.
 
 * xref:component-structure.adoc[Documentation Components and Repositories]
 * xref:modules.adoc[Modules, Families, and Subdirectories]
