@@ -49,6 +49,8 @@ Learn more:
 * xref:asciidoc:include-partial.adoc[Insert a partial into a standard page]
 * xref:ROOT:component-structure.adoc[Documentation component overview]
 
+See also <<#implicit>>
+
 == Component index page
 
 If a file named [.path]_index.adoc_ exists in the ROOT module of a component, Antora will automatically set this page as the start page of that component.
@@ -66,3 +68,61 @@ Learn more:
 // TIP: see the html strategies for dropping the html and index for URLs
 
 // Site index page
+
+[#implicit]
+== Implicit and explicit hidden and non-published pages
+
+* Any file with name starting with '.' will be ignored
+
+* Any file with name starting with '_' will not be generated but xref:asciidoc:include-page.adoc[will be available for inclusion]. 
+
+* Similarly, any file with the asciidoc attribute `:page-publishable: false` will not be generated but xref:asciidoc:include-page.adoc[will be available for inclusion].
+
+Note that the same effect as a partial page can be produced from a regular page by starting the file name with `_` or including the asciidoc attribute `:page-publishable: false`. 
+Unlike for an explicit partial, an inclusion of such a page will not need the `partial$` family indication.
+
+[#multiple]
+== Multiple appearances of a single page
+
+As noted earlier, Antora works by one AsciiDoc file in equals one HTML page out.
+
+my-page.adoc => my-page.html
+
+The navigation sidebar is generated from the page, not the page from the navigation.  Therefore it does not make sense to 
+reference the same page from more than one navigation location "nav.adoc".  To make the "same" page available from several
+navigation locations, use full content includes, one for each navigation location.  To make the situation completely symmetrical,
+you may want to disable publication of the "original" by prefixing the file name with `_` or including the asciidoc attribute `:page-publishable: false`.
+It is also possible to directly use the "original" in exactly one navigation location.
+
+For instance...
+
+`_popular.adoc`
+```
+= My Popular Page
+:page-publishable: false
+
+Popular content!
+```
+(This is redundant, using both the `_` prefix and the `:page-publishable: false` attribute)
+
+`use1.adoc`
+----
+\include::./_popular.adoc[]
+----
+
+`use2.adoc`
+----
+\include::./_popular.adoc[]
+----
+...
+
+`nav.adoc`
+```
+* Flow 1
+** xref:use1.adoc[Popular 1]
+* Flow 2
+** xref:use2.adoc[Popular 2]
+```
+
+In (the likely) case that the uses are in different components, either the xref or include (or both) will need appropriate syntax
+to identify the `_popular.adoc` page.
