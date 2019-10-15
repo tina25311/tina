@@ -116,4 +116,26 @@ describe('convertDocuments()', () => {
     `)
     expect(pages[1].contents.toString()).to.equal('<p>This one should <em>not</em> be converted.</p>')
   })
+
+  it('should drop from conversion pages with :page-publishable: false attribute', () => {
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'nopub.adoc',
+        contents: '= Hello, AsciiDoc!\n:page-publishable: false\n\nThis one should be dropped.',
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'pub.adoc',
+        contents: '= Hello, AsciiDoc!\n:page-publishable: true\n\nThis one should be converted.',
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    expect(pages.length).to.equal(1)
+    expect(pages[0].contents.toString()).to.equal(heredoc`
+    <div class="paragraph">
+    <p>This one should be converted.</p>
+    </div>
+    `)
+  })
 })

@@ -22,6 +22,7 @@ function convertDocuments (contentCatalog, asciidocConfig = {}) {
     .findBy({ family: 'page' })
     .filter((page) => page.out)
     .map((page) => (page.mediaType === 'text/asciidoc' ? convertDocument(page, contentCatalog, asciidocConfig) : page))
+    .filter((page) => page.out)
 }
 
 module.exports = convertDocuments
