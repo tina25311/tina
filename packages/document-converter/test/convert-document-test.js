@@ -202,7 +202,11 @@ describe('convertDocument()', () => {
 
       Page content.
     `)
-    const contentCatalog = { registerPageAlias: spy(() => {}), getComponent: () => {} }
+    const contentCatalog = {
+      registerPageAlias: spy(() => {}),
+      getComponent: () => {},
+      getComponentVersion: (component, version) => { return {} },
+    }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
     expectCalledWith(contentCatalog.registerPageAlias, ['the-alias.adoc', inputFile], 0)
@@ -218,7 +222,11 @@ describe('convertDocument()', () => {
 
       Page content.
     `)
-    const contentCatalog = { registerPageAlias: spy(() => {}), getComponent: () => {} }
+    const contentCatalog = {
+      registerPageAlias: spy(() => {}),
+      getComponent: () => {},
+      getComponentVersion: (component, version) => { return {} },
+    }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.not.have.been.called()
   })
@@ -230,7 +238,11 @@ describe('convertDocument()', () => {
         url: '/component-a/1.2.3/module-b/page-b.html',
       },
     }
-    const contentCatalog = { resolvePage: spy(() => targetFile), getComponent: () => {} }
+    const contentCatalog = {
+      resolvePage: spy(() => targetFile),
+      getComponent: () => {},
+      getComponentVersion: (component, version) => { return {} },
+    }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
     expectCalledWith(contentCatalog.resolvePage, ['module-b:page-b', inputFile.src])
     expectPageLink(inputFile.contents.toString(), '../module-b/page-b.html', 'Page B')
@@ -252,7 +264,11 @@ describe('convertDocument()', () => {
         relative: 'definitions.adoc',
       },
     }
-    const contentCatalog = { getById: spy(() => partialFile), getComponent: () => {} }
+    const contentCatalog = {
+      getById: spy(() => partialFile),
+      getComponent: () => {},
+      getComponentVersion: (component, version) => { return {} },
+    }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
     expectCalledWith(contentCatalog.getById, {
       component: 'component-a',
@@ -300,7 +316,11 @@ describe('convertDocument()', () => {
         rootPath: '../../..',
       },
     }
-    const contentCatalog = { getByPath: spy(() => includedFile), getComponent: () => {} }
+    const contentCatalog = {
+      getByPath: spy(() => includedFile),
+      getComponent: () => {},
+      getComponentVersion: (component, version) => { return {} },
+    }
     convertDocument(includedFile, undefined, asciidocConfig)
     convertDocument(inputFile, contentCatalog, asciidocConfig)
     expectCalledWith(contentCatalog.getByPath, {
@@ -384,7 +404,11 @@ describe('convertDocument()', () => {
           url: '/component-a/1.2.3/module-b/_images/image-filename.png',
         },
       }
-      const contentCatalog = { resolveResource: spy(() => imageFile), getComponent: () => {} }
+      const contentCatalog = {
+        resolveResource: spy(() => imageFile),
+        getComponent: () => { },
+        getComponentVersion: (component, version) => { return {} },
+      }
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../module-b/_images/image-filename.png" alt="image filename">')
@@ -408,7 +432,11 @@ describe('convertDocument()', () => {
           url: '/component-a/2.0.0/module-b/_images/image-filename.png',
         },
       }
-      const contentCatalog = { resolveResource: spy(() => imageFile), getComponent: () => {} }
+      const contentCatalog = {
+        resolveResource: spy(() => imageFile),
+        getComponent: () => { },
+        getComponentVersion: (component, version) => { return {} },
+      }
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../../2.0.0/module-b/_images/image-filename.png" alt="image filename">')
@@ -416,7 +444,11 @@ describe('convertDocument()', () => {
 
     it(`should use ${macroType} image target if target matches resource ID spec and image cannot be resolved`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}no-such-module:image-filename.png[]`)
-      const contentCatalog = { resolveResource: spy(() => undefined), getComponent: () => {} }
+      const contentCatalog = {
+        resolveResource: spy(() => undefined),
+        getComponent: () => {},
+        getComponentVersion: (component, version) => { return {} },
+      }
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="no-such-module:image-filename.png" alt="image filename">')
@@ -429,6 +461,7 @@ describe('convertDocument()', () => {
           throw new Error()
         }),
         getComponent: () => {},
+        getComponentVersion: (component, version) => { return {} },
       }
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()

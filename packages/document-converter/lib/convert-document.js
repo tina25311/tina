@@ -36,6 +36,12 @@ function convertDocument (file, contentCatalog = undefined, asciidocConfig = {})
     file.asciidoc = doc.hasHeader() ? { attributes, doctitle: doc.getDocumentTitle() } : { attributes }
     file.contents = Buffer.from(doc.convert())
     file.mediaType = 'text/html'
+    if (contentCatalog) {
+      const componentVersion = contentCatalog.getComponentVersion(file.src.component, file.src.version)
+      if (componentVersion.expose === undefined) {
+        componentVersion.expose = true
+      }
+    }
   }
   return file
 }

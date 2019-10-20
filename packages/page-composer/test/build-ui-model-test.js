@@ -39,6 +39,7 @@ describe('build UI model', () => {
             title: 'The Component',
             url: '/the-component/1.0/index.html',
             displayVersion: 'Io',
+            expose: true,
           },
         ],
       },
@@ -814,11 +815,13 @@ describe('build UI model', () => {
         version: '2.0',
         title: 'The Component',
         url: '/the-component/2.0/index.html',
+        expose: true,
       })
       component.versions.push({
         version: '1.0-beta',
         title: 'The Component',
         url: '/the-component/1.0-beta/index.html',
+        expose: true,
       })
       component.latest = component.versions[0]
       const files = {
@@ -886,9 +889,9 @@ describe('build UI model', () => {
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(3)
       expect(model.versions).to.eql([
-        { latest: true, version: '2.0', title: 'The Component', url: '/the-component/2.0/the-page.html' },
-        { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html' },
-        { version: '1.0-beta', title: 'The Component', url: '/the-component/1.0-beta/the-page.html' },
+        { latest: true, version: '2.0', title: 'The Component', url: '/the-component/2.0/the-page.html', expose: true },
+        { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html', expose: true },
+        { version: '1.0-beta', title: 'The Component', url: '/the-component/1.0-beta/the-page.html', expose: true },
       ])
       expect(model.latest).to.eql(model.versions[0])
     })
@@ -900,6 +903,7 @@ describe('build UI model', () => {
         displayVersion: '2.0 Beta',
         title: 'The Component',
         url: '/the-component/2.0/index.html',
+        expose: true,
       })
       component.latest = component.versions[1]
       const files = {
@@ -949,6 +953,7 @@ describe('build UI model', () => {
           prerelease: 'Beta',
           title: 'The Component',
           url: '/the-component/2.0/the-page.html',
+          expose: true,
         },
         {
           latest: true,
@@ -956,6 +961,7 @@ describe('build UI model', () => {
           displayVersion: 'Io',
           title: 'The Component',
           url: '/the-component/1.0/the-page.html',
+          expose: true,
         },
       ])
       expect(model.latest).to.eql(model.versions[1])
@@ -967,11 +973,13 @@ describe('build UI model', () => {
         version: '2.0',
         title: 'The Component',
         url: '/the-component/2.0/index.html',
+        expose: true,
       })
       component.versions.push({
         version: '1.0-beta',
         title: 'The Component',
         url: '/the-component/1.0-beta/index.html',
+        expose: true,
       })
       const files = {
         '1.0': file,
@@ -1027,9 +1035,9 @@ describe('build UI model', () => {
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(3)
       expect(model.versions).to.eql([
-        { version: '2.0', title: 'The Component', url: '/the-component/2.0/the-page.html' },
-        { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html' },
-        { version: '1.0-beta', title: 'The Component', url: '/the-component/1.0-beta/index.html', missing: true },
+        { version: '2.0', title: 'The Component', url: '/the-component/2.0/the-page.html', expose: true },
+        { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html', expose: true },
+        { version: '1.0-beta', title: 'The Component', url: '/the-component/1.0-beta/index.html', missing: true, expose: true },
       ])
     })
 

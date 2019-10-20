@@ -118,7 +118,7 @@ describe('createPageComposer()', () => {
         contents: Buffer.from(
           heredoc`
           {{#each site.components}}
-          {{#if (eq . @root.page.component)}}
+          {{#if (eq ./name @root.page.component.name)}}
           <p>The current component is {{./name}}.</p>
           {{/if}}
           {{/each}}
@@ -179,6 +179,7 @@ describe('createPageComposer()', () => {
             version: '1.0',
             title: 'The Component',
             url: '/the-component/1.0/index.html',
+            expose: true,
           },
         ],
       }

@@ -120,7 +120,18 @@ function buildSiteUiModel (playbook, contentCatalog) {
   if (startPage) model.homeUrl = startPage.pub.url
 
   // QUESTION should components be pre-sorted? should we make this configurable?
-  model.components = contentCatalog.getComponentMapSortedBy('title')
+  // Only include exposed versions and components
+  // Is component.versions === undefined a test artifact or a versionless component?
+  model.components = Object.entries(contentCatalog.getComponentMapSortedBy('title'))
+    .reduce((accum, [key, component]) => {
+      component.versions = component.versions
+        ? component.versions.filter((componentVersion) => (componentVersion.expose)) : undefined
+      if (component.versions === undefined || component.versions.length > 0) {
+        component.latest = component.versions ? component.versions[0] : undefined
+        accum[key] = component
+      }
+      return accum
+    }, {})
 
   model.keys = Object.entries(playbook.site.keys || {}).reduce((accum, [key, value]) => {
     if (value) accum[key] = value
@@ -261,6 +272,7 @@ function getUrlWithoutHash (item) {
 
 // QUESTION should this function go in ContentCatalog?
 // QUESTION should this function accept component, module, relative instead of pageSrc?
+// Only returns this page version or exposed versions.
 function getPageVersions (pageSrc, component, contentCatalog) {
   const basePageId = {
     component: pageSrc.component,
@@ -268,15 +280,17 @@ function getPageVersions (pageSrc, component, contentCatalog) {
     family: 'page',
     relative: pageSrc.relative,
   }
-  return component.versions.map((componentVersion) => {
-    const page = contentCatalog.getById(Object.assign({ version: componentVersion.version }, basePageId))
-    // QUESTION should title be title of component or page?
-    return Object.assign(
-      componentVersion === component.latest ? { latest: true } : {},
-      componentVersion,
-      page ? { url: page.pub.url } : { missing: true }
-    )
-  })
+  return component.versions
+    .filter((componentVersion) => (componentVersion.version === pageSrc.version || componentVersion.expose))
+    .map((componentVersion) => {
+      const page = contentCatalog.getById(Object.assign({ version: componentVersion.version }, basePageId))
+      // QUESTION should title be title of component or page?
+      return Object.assign(
+        componentVersion === component.latest ? { latest: true } : {},
+        componentVersion,
+        page ? { url: page.pub.url } : { missing: true }
+      )
+    })
 }
 
 module.exports = createPageComposer
