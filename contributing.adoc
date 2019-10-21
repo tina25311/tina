@@ -3,8 +3,11 @@
 :toc-title: Contents
 :toclevels: 1
 :toc:
+// Universal gitlab
+:url-gitlab: https://gitlab.com
+:url-gitlab-signin: {url-gitlab}/users/sign_in
 // Project URIs
-:url-org: https://gitlab.com/antora
+:url-org: {url-gitlab}/antora
 :url-project: {url-org}/antora
 :url-repo: {url-project}.git
 :url-issue-tracker: {url-project}/issues
@@ -27,7 +30,8 @@
 :url-site-mapper-arch: {url-project}/blob/master/packages/site-mapper/devdocs/architecture-guidebook.adoc
 :url-site-publisher-arch: {url-project}/blob/master/packages/site-publisher/devdocs/architecture-guidebook.adoc
 :url-ui-loader-arch: {url-project}/blob/master/packages/ui-loader/devdocs/architecture-guidebook.adoc
-// External URIs (alphebetized)
+// External URLs (alphebetized)
+:url-asciidoc-recommended: https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line
 :url-async-func: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 :url-chai: http://chaijs.com/api/bdd/
 :url-chai-cheerio: https://www.chaijs.com/plugins/chai-cheerio/
@@ -89,7 +93,7 @@ The GitLab project provides the following resources for the project:
 == Permissions
 
 You do not need a GitLab.com account to browse the issues and merge requests, read the source code and documentation, or view the CI results.
-However, you do need a https://gitlab.com/users/sign_in[GitLab.com account] to file an issue and/or submit a merge request.
+However, you do need a {url-gitlab-signin}[GitLab.com account] to file an issue and/or submit a merge request.
 
 //Issue Tracker and Board
 //== Have an Idea? Found an Error?
@@ -227,7 +231,7 @@ Only original work is guaranteed to be preserved in the commit history.
 
 . Set up your <<set-up-workspace,development workspace>>.
 . Review any applicable <<arch-gb,architecture guidebooks>>.
-. Make sure you're not violating any <<adr,ADRs>>.
+. Make sure your work is consistent with any relevant <<adr,ADRs>>.
 . Make sure you've forked the project and <<project-rq,named your branch after the issue you're working on>>.
 . Add your code and tests.
 .. Make sure your code adheres to the <<lint-rq,JavaScript standard style and the custom project styles>>.
@@ -242,6 +246,15 @@ WARNING: Prettier's format task will modify your files, so be sure to commit you
 
 . Commit any formatting changes completed by prettier.
 . Push to your fork and open a merge request.
+
+=== Documentation requirements
+
+. Generally, imitate the style and formatting of what's already written.
+This list is by no means exhaustive.
+. Follow the {url-asciidoc-recommended}[one sentence per line] or "`ventilated prose`" formatting.
+. Paths should be formatted with [.path]\_antora.yml_
+. Reserved words should be formatted with [.term]\*versionless component*
+. Quotes should generally be \"`smart quotes`"
 
 [#adr]
 === Architecture Decisions Records
@@ -311,7 +324,7 @@ While not enforced by eslint yet, your code should also comply with the followin
 // * TODO enforce `fn () { }` (see https://eslint.org/docs/rules/func-style)
 * Functions should be defined at the top of the source file and exports at the bottom.
 
-When you <<run-tests,run the test suite>>, it will automatically lint (i.e., style check) your JavaScript code first.
+When you <<build-project,build Antora>>, it will automatically lint (i.e., style check) your JavaScript code.
 
 If you ever want to run the linter separately, you can use the following Gulp task:
 
@@ -388,7 +401,7 @@ Please adhere to the following style and performance rules which are not current
 * Use `~str.indexOf(c)` instead of `str.includes(c)`.
 * Use `str.charAt() === c` instead of `str.startsWith(c)`
 * Use `str.charAt(str.length - 1) === c` instead of `str.endsWith(c)`.
-* Use `str.substr` instead of `str.slice` for chopping off leading or trailing characters. 
+* Use `str.substr` instead of `str.slice` for chopping off leading or trailing characters.
 * Use `str.substr(0, str.length - 1)` instead of `str.substr(-1)`
 * Use `String()` to convert a primitive to a string (e.g., `String(1)`)
 * Use `.toString()` to convert a Buffer to a string (e.g., `buff.toString()`)
@@ -654,6 +667,9 @@ To do so, run the following commands in sequence:
 
 NOTE: If you run into problems while installing dependencies, return to <<Development Libraries>>.
 
+NOTE: It's a good idea to run `yarn` each time after you run `git pull` to make sure your dependencies are up to date.
+Running gulp does not install any updated dependencies.
+
 [#build-project]
 === Build the Project
 
@@ -759,6 +775,18 @@ You should run prettier *after* you commit all your code changes.
 The format task will modify your files in place.
 If you still have changes to make to the code, this formatting can make that tedious.
 By committing your code first, then running prettier and committing those changes as a separate commit, it'll be easier to rollback the changes if you need to.
+
+=== Run the development version
+
+After fixing your critical bugs or implementing your wonderful new feature, you'll probably want to try out your local antora version on your projects.
+The code in [.path]_packages_ is already set up to be run from [.path]_packages/cli/bin/antora_.
+When you ran `yarn` to install the dependencies, an alias was set up from [.path]_node_modules/.bin/antora_ to [.path]_packages/cli/bin/antora_.
+
+Therefore, the most convenient way to run your development code is:
+
+* In your antora working directory, run `./node_modules/.bin/antora path/to/the/antora-playbook.yml`
+
+TIP: It might be convenient to put `export ANTORA_DEV=~/path/to/dev/dir/node_modules/.bin/antora` in your .profile or similar file, allowing `$ANTORA_DEV antora-playbook.yml` to work anywhere.
 
 === Continuous Integration
 
