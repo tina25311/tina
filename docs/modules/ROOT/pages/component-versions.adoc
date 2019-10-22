@@ -3,16 +3,18 @@ TODO: explain how this relates to page versions
 ////
 = Component Versions and Branches
 
-Versions of a xref:component-structure.adoc[documentation component] are stored in branches in a version control repository such as git.
+Although there is no necessary relationship between version control repository branches and start_paths as specified in the playbook and component-versions, relating these results in a simple, convenient, flexible, and easy to understand organization.
+
+In this scheme, versions of a xref:component-structure.adoc[documentation component] are stored in branches in a version control repository such as git.
 The name of the branch itself doesn't matter.
 It's the version property in the component descriptor that determines the name of the version for the component.
 
 == Branches as versions
 
-Like with software, we use branches to store different versions of the documentation.
+As with software, in this scheme we use branches to store different versions of the documentation.
 Branches are ideally suited for managing multiple versions of the same content.
 
-If we didn't use branches to specify versions, but instead used folders with trailing version numbers, all stuffed in a single branch, then we'd have to explicitly duplicate all the files in a documentation component for each version.
+If we didn't use branches to specify versions, but instead used, for example, folders with trailing version numbers, all stuffed in a single branch, then we'd have to explicitly duplicate all the files in a documentation component for each version.
 And we'd have no easy way to compare, manage, and merge different instances of a document.
 
 Branches handle all this for us.
@@ -40,7 +42,7 @@ The next time you run Antora on the repository, you'll see a new version in the 
 
 You may need to add the xref:playbook:configure-content-sources.adoc#branches[branch to your playbook file].
 Keep in mind that content sources are filtered by branch name, not by the version they contain.
-That's because a single version can be spread out across multiple branches, or even multiple repositories.
+That's because xref::component-structure.adoc#distributed[a single version can be spread out across multiple branches, or even multiple repositories].
 
 [#version-sorting]
 == How Antora sorts versions
