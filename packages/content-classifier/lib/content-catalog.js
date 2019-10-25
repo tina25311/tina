@@ -191,6 +191,26 @@ class ContentCatalog {
     return file
   }
 
+  pruneForHasPageContent () {
+    this.getFiles().forEach((file) => {
+      if (file.out) {
+        this.getComponentVersion(file.src.component, file.src.version).hasPageContent = true
+      }
+    })
+    this[$components] = Object.entries(this[$components]).reduce((accum, [name, component]) => {
+      component.versions = component.versions.filter((version) => {
+        const hasPageContent = version.hasPageContent
+        delete version.hasPageContent
+        return hasPageContent
+      })
+      if (component.versions.length > 0) {
+        component.latest = component.versions.find((candidate) => !candidate.prerelease) || component.versions[0]
+        accum[name] = component
+      }
+      return accum
+    }, {})
+  }
+
   /**
    * Attempts to resolve a string contextual page ID spec to a file in the catalog.
    *

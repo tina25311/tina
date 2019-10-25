@@ -26,6 +26,7 @@ function classifyContent (playbook, aggregate) {
     },
     new ContentCatalog(playbook)
   )
+  contentCatalog.pruneForHasPageContent()
   registerSiteStartPage(playbook, contentCatalog)
   return contentCatalog
 }
