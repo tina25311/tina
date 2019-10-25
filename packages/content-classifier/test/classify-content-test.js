@@ -57,11 +57,12 @@ describe('classifyContent()', () => {
 
   describe('register components', () => {
     it('should register all components', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       aggregate.push({
         name: 'another-component',
         title: 'Another Component',
         version: 'v1.0.0',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       const contentCatalog = classifyContent(playbook, aggregate)
       const components = contentCatalog.getComponents()
@@ -72,17 +73,18 @@ describe('classifyContent()', () => {
     })
 
     it('should register all versions of a component in sorted order', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'v2.0.0',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'v1',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       expect(component).to.exist()
@@ -97,19 +99,19 @@ describe('classifyContent()', () => {
         name: 'the-component',
         title: 'The Component',
         version: 'rev3',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'rev1',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'rev2',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       expect(component).to.exist()
@@ -119,17 +121,18 @@ describe('classifyContent()', () => {
     })
 
     it('should sort non-semantic versions before semantic versions', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'dev',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'master',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       expect(component).to.exist()
@@ -139,6 +142,7 @@ describe('classifyContent()', () => {
     })
 
     it('should use name as title if title is falsy', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       aggregate[0].title = undefined
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       expect(component).to.exist()
@@ -146,23 +150,24 @@ describe('classifyContent()', () => {
     })
 
     it('should update title of component to match title of latest version', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       aggregate.push({
         name: 'the-component',
         title: 'The Component (Newest)',
         version: 'v2.0.0',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component (Patch)',
         version: 'v1.2.4',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component (Oldest)',
         version: 'v1.0.0',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       expect(component).to.exist()
@@ -172,17 +177,18 @@ describe('classifyContent()', () => {
     })
 
     it('should configure latest property to resolve to latest version', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'v2.0.0',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'v1.0.0',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-one.adoc')],
       })
       const catalog = classifyContent(playbook, aggregate)
       const component = catalog.getComponent('the-component')
@@ -194,11 +200,12 @@ describe('classifyContent()', () => {
     })
 
     it('should throw when adding a duplicate version of a component', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
         version: 'v1.2.3',
-        files: [],
+        files: [createFile('modules/ROOT/pages/page-two.adoc')],
       })
       expect(() => classifyContent(playbook, aggregate)).to.throw('version')
     })
@@ -335,6 +342,7 @@ describe('classifyContent()', () => {
     })
 
     it('should set url to synthetic index page in ROOT module if page not found', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
       const expectedUrl = '/the-component/v1.2.3/index.html'
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       expect(component).to.exist()
