@@ -40,6 +40,7 @@ class ContentCatalog {
       displayVersion: displayVersion || version,
       title: title || name,
       url: startPage.pub.url,
+      visibility: [],
     }
     if (prerelease) {
       componentVersion.prerelease = prerelease

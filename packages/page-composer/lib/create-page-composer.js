@@ -121,6 +121,12 @@ function buildSiteUiModel (playbook, contentCatalog) {
 
   // QUESTION should components be pre-sorted? should we make this configurable?
   model.components = contentCatalog.getComponentMapSortedBy('title')
+  // This would make more sense if pages were attached to their component version.
+  Object.values(model.components).forEach((component) =>
+    component.versions.forEach((version) => contentCatalog.findBy({ component: component.name, version: version.version, family: 'page' })
+      .find((page) => page.out) ? version.visibility.push('has-pages') : undefined
+    )
+  )
 
   model.keys = Object.entries(playbook.site.keys || {}).reduce((accum, [key, value]) => {
     if (value) accum[key] = value
