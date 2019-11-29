@@ -7,6 +7,14 @@
   resolved "https://registry.yarnpkg.com/@antora/expand-path-helper/-/expand-path-helper-1.0.0.tgz#3bfd6938ab86d4709af8d869cbf3bb17b8fe8912"
   integrity sha512-hg3y6M3OvRTb7jtLAnwwloYDxafbyKYttcf16kGCXvP7Wqosh7c+Ag+ltaZ7VSebpzpphO/umb/BXdpU7rxapw==
 
+"@asciidoctor/core@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@asciidoctor/core/-/core-2.0.3.tgz#95630424eb2e346acc51dede1e6599159fbd5d44"
+  integrity sha512-iN0zV/tsL36nTltJyk5IdcRqDW34HHiwb9PrgSoTGDCIEML6C3HYnJOQi+jKq7A//Gt1nL1SHohaCHkyw3swEg==
+  dependencies:
+    asciidoctor-opal-runtime "0.3.0"
+    unxhr "1.0.1"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.5.5":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.5.5.tgz#bc0782f6d69f7b7d49531219699b988f669a8f9d"
@@ -459,12 +467,13 @@ arrify@^2.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
-asciidoctor.js@1.5.9:
-  version "1.5.9"
-  resolved "https://registry.yarnpkg.com/asciidoctor.js/-/asciidoctor.js-1.5.9.tgz#28f8e8ee134b82627f0240e9b6a201b3d15d9524"
-  integrity sha512-k5JgwyV82TsiCpnYbDPReuHhzf/vRUt6NaZ+OGywkDDGeGG/CPfvN2Gd1MJ0iIZKDyuk4iJHOdY/2x1KBrWMzA==
+asciidoctor-opal-runtime@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/asciidoctor-opal-runtime/-/asciidoctor-opal-runtime-0.3.0.tgz#df327a870ddd3cd5eb0e162d64ed4dcdd3fe3fee"
+  integrity sha512-YapVwl2qbbs6sIe1dvAlMpBzQksFVTSa2HOduOKFNhZlE9bNmn+moDgGVvjWPbzMPo/g8gItyTHfWB2u7bQxag==
   dependencies:
-    opal-runtime "1.0.11"
+    glob "7.1.3"
+    unxhr "1.0.1"
 
 assertion-error@^1.1.0:
   version "1.1.0"
@@ -2278,17 +2287,6 @@ glob-watcher@^5.0.3:
     just-debounce "^1.0.0"
     object.defaults "^1.1.0"
 
-glob@6.0.4:
-  version "6.0.4"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-6.0.4.tgz#0f08860f6a155127b2fadd4f9ce24b1aab6e4d22"
-  integrity sha1-DwiGD2oVUSey+t1PnOJLGqtuTSI=
-  dependencies:
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "2 || 3"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
-
 glob@7.1.3:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.3.tgz#3960832d3f1574108342dafd3a67b332c0969df1"
@@ -3420,7 +3418,7 @@ minimatch-all@~1.1:
   dependencies:
     minimatch "^3.0.2"
 
-"minimatch@2 || 3", minimatch@3.0.4, minimatch@^3.0.2, minimatch@^3.0.4:
+minimatch@3.0.4, minimatch@^3.0.2, minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
   integrity sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==
@@ -3906,14 +3904,6 @@ onetime@^5.1.0:
   integrity sha512-5NcSkPHhwTVFIQN+TUqXoS5+dlElHXdpAWu9I0HP20YOtIi+aZ0Ct82jdlILDxjLEAWwvm+qj1m6aEtsDVmm6Q==
   dependencies:
     mimic-fn "^2.1.0"
-
-opal-runtime@1.0.11:
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/opal-runtime/-/opal-runtime-1.0.11.tgz#81fc2a2084ae5f25d5609eada375b756a3dab036"
-  integrity sha512-L+6pnRvXPlDtbamBRnJAnB9mEMXmsIQ/b+0r/2xJ5/n/nxheEkLo+Pm5QNQ08LEbEN9TI6/kedhIspqRRu6tXA==
-  dependencies:
-    glob "6.0.4"
-    xmlhttprequest "1.8.0"
 
 optimist@^0.6.1:
   version "0.6.1"
@@ -5371,6 +5361,11 @@ unset-value@^1.0.0:
     has-value "^0.3.1"
     isobject "^3.0.0"
 
+unxhr@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/unxhr/-/unxhr-1.0.1.tgz#92200322d66c728993de771f9e01eeb21f41bc7b"
+  integrity sha512-MAhukhVHyaLGDjyDYhy8gVjWJyhTECCdNsLwlMoGFoNJ3o79fpQhtQuzmAE4IxCMDwraF4cW8ZjpAV0m9CRQbg==
+
 upath@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.2.0.tgz#8f66dbcd55a883acdae4408af8b035a5044c1894"
@@ -5584,11 +5579,6 @@ xmldom@0.1.27:
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
   integrity sha1-1QH5ezvbQDr4757MIFcxh6rawOk=
-
-xmlhttprequest@1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz#67fe075c5c24fef39f9d65f5f7b7fe75171968fc"
-  integrity sha1-Z/4HXFwk/vOfnWX197f+dRcZaPw=
 
 xtend@~4.0.0, xtend@~4.0.1:
   version "4.0.2"

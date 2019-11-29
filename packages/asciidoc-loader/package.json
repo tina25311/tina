@@ -16,7 +16,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "asciidoctor.js": "1.5.9"
+    "@asciidoctor/core": "2.0.3"
   },
   "engines": {
     "node": ">=8.11.0"

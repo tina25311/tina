@@ -1,6 +1,6 @@
 'use strict'
 
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('@asciidoctor/core')()
 
 asciidoctor.Extensions.register(function () {
   this.postprocessor(function () {

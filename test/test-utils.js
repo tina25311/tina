@@ -3,7 +3,7 @@
 process.env.NODE_ENV = 'test'
 
 // IMPORTANT eagerly load Opal since we'll always be in this context; change String encoding from UTF-16LE to UTF-8
-const { Opal } = require('opal-runtime')
+const { Opal } = require('asciidoctor-opal-runtime')
 if ('encoding' in String.prototype && String(String.prototype.encoding) !== 'UTF-8') {
   String.prototype.encoding = Opal.const_get_local(Opal.const_get_qualified('::', 'Encoding'), 'UTF_8') // eslint-disable-line
 }
