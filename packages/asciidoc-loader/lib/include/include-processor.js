@@ -20,9 +20,14 @@ const IncludeProcessor = (() => {
   })
 
   Opal.defn(scope, '$process', function (doc, reader, target, attrs) {
-    if (reader.$include_depth() >= Opal.hash_get(reader.maxdepth, 'abs')) {
-      if (Opal.hash_get(reader.maxdepth, 'abs')) {
-        log('error', `maximum include depth of ${Opal.hash_get(reader.maxdepth, 'rel')} exceeded`, reader)
+    let relMaxDepth
+    if ((relMaxDepth = Opal.send(reader, 'exceeds_max_depth?')) !== false) {
+      // What is the point of this conditional?  Why would we not report the error?
+      if (reader.maxdepth === Opal.nil || Opal.hash_get(reader.maxdepth, 'abs')) {
+        // Asciidoctor now sets 'rel' to the new include depth from the 'depth=0' setting.
+        // What was reported as 1 is now reported as 0.
+        // It might be possible to reconstruct the previous behavior with arithmatic on 'curr'
+        log('error', `maximum include depth of ${relMaxDepth === Opal.nil ? 0 : relMaxDepth} exceeded`, reader)
       }
       return
     }

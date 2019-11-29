@@ -17,7 +17,7 @@ const Html5Converter = (() => {
     this[$pageRefCallback] = callbacks.onPageRef
     this[$imageRefCallback] = callbacks.onImageRef
   })
-  Opal.defn(scope, '$inline_anchor', function convertInlineAnchor (node) {
+  Opal.defn(scope, '$convert_inline_anchor', function convertInlineAnchor (node) {
     if (node.getType() === 'xref') {
       let callback
       if (node.getAttribute('path') && (callback = this[$pageRefCallback])) {
@@ -39,25 +39,25 @@ const Html5Converter = (() => {
         node = Opal.module(null, 'Asciidoctor').Inline.$new(node.getParent(), 'anchor', content, options)
       }
     }
-    return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_anchor', convertInlineAnchor), [node])
+    return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_anchor', convertInlineAnchor), [node])
   })
-  Opal.defn(scope, '$image', function convertImage (node) {
+  Opal.defn(scope, '$convert_image', function convertImage (node) {
     let callback
     if (matchesResourceSpec(node.getAttribute('target')) && (callback = this[$imageRefCallback])) {
       const attrs = node.getAttributes()
       if (attrs.alt === attrs['default-alt']) node.setAttribute('alt', attrs.alt.split(/[@:]/).pop())
       Opal.defs(node, '$image_uri', (imageSpec) => callback(imageSpec) || imageSpec)
     }
-    return Opal.send(this, Opal.find_super_dispatcher(this, 'image', convertImage), [node])
+    return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_image', convertImage), [node])
   })
-  Opal.defn(scope, '$inline_image', function convertInlineImage (node) {
+  Opal.defn(scope, '$convert_inline_image', function convertInlineImage (node) {
     let callback
     if (matchesResourceSpec(node.target) && (callback = this[$imageRefCallback])) {
       const attrs = node.getAttributes()
       if (attrs.alt === attrs['default-alt']) node.setAttribute('alt', attrs.alt.split(/[@:]/).pop())
       Opal.defs(node, '$image_uri', (imageSpec) => callback(imageSpec) || imageSpec)
     }
-    return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_image', convertInlineImage), [node])
+    return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_image', convertInlineImage), [node])
   })
   return scope
 })()
