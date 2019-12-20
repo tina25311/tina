@@ -130,6 +130,7 @@ describe('generateSite()', function () {
     expect($('nav.nav-menu .nav-link')).to.have.attr('href', 'index.html')
     expect($('article h1')).to.have.text('Index Page')
     expect($('article img')).to.have.attr('src', '_images/activity-diagram.svg')
+    expect($('article svg')).to.have.attr('preserveAspectRatio', 'none')
     expect(ospath.join(absDestDir, 'the-component/2.0/_images')).to.be.a.directory()
     expect(ospath.join(absDestDir, 'the-component/2.0/_images/activity-diagram.svg')).to.be.a.file()
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()

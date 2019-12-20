@@ -1,1 +1,3 @@
 image::activity-diagram.svg[,500]
+
+image::activity-diagram.svg[,500,opts=inline]

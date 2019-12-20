@@ -4,6 +4,7 @@ const Opal = global.Opal
 const { $Antora } = require('../constants')
 const $pageRefCallback = Symbol('pageRefCallback')
 const $imageRefCallback = Symbol('imageRefCallback')
+const $readImageCallback = Symbol('readImageCallback')
 
 const Html5Converter = (() => {
   const scope = Opal.klass(
@@ -16,6 +17,7 @@ const Html5Converter = (() => {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), [backend, opts])
     this[$pageRefCallback] = callbacks.onPageRef
     this[$imageRefCallback] = callbacks.onImageRef
+    this[$readImageCallback] = callbacks.onReadImage
   })
   Opal.defn(scope, '$inline_anchor', function convertInlineAnchor (node) {
     if (node.getType() === 'xref') {
@@ -42,30 +44,37 @@ const Html5Converter = (() => {
     return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_anchor', convertInlineAnchor), [node])
   })
   Opal.defn(scope, '$image', function convertImage (node) {
-    let callback
-    if (matchesResourceSpec(node.getAttribute('target')) && (callback = this[$imageRefCallback])) {
-      const attrs = node.getAttributes()
-      if (attrs.alt === attrs['default-alt']) node.setAttribute('alt', attrs.alt.split(/[@:]/).pop())
-      Opal.defs(node, '$image_uri', (imageSpec) => callback(imageSpec) || imageSpec)
-    }
+    adjustNode(this, node, node.getAttribute('target'))
     return Opal.send(this, Opal.find_super_dispatcher(this, 'image', convertImage), [node])
   })
   Opal.defn(scope, '$inline_image', function convertInlineImage (node) {
-    let callback
-    if (matchesResourceSpec(node.target) && (callback = this[$imageRefCallback])) {
-      const attrs = node.getAttributes()
-      if (attrs.alt === attrs['default-alt']) node.setAttribute('alt', attrs.alt.split(/[@:]/).pop())
-      Opal.defs(node, '$image_uri', (imageSpec) => callback(imageSpec) || imageSpec)
-    }
+    adjustNode(this, node, node.target)
     return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_image', convertInlineImage), [node])
   })
+
+  function adjustNode (scope, node, target) {
+    if (matchesResourceSpec(target)) {
+      const imageRefCallback = scope[$imageRefCallback]
+      if (imageRefCallback) {
+        const attrs = node.getAttributes()
+        if (attrs.alt === attrs['default-alt']) node.setAttribute('alt', attrs.alt.split(/[@:]/).pop())
+        Opal.defs(node, '$image_uri', (imageSpec) => imageRefCallback(imageSpec, node) || imageSpec)
+      }
+      const readImageCallback = scope[$readImageCallback]
+      if (readImageCallback) {
+        Opal.defs(node, '$read_contents', function readContents (target, opts) {
+          return readImageCallback(target) || Opal.send(node, Opal.find_super_dispatcher(node, 'read_contents', readContents), [target, opts])
+        })
+      }
+    }
+  }
+
   return scope
 })()
 
 function matchesResourceSpec (target) {
-  return ~target.indexOf(':')
-    ? !(~target.indexOf('://') || (target.startsWith('data:') && ~target.indexOf(',')))
-    : target.indexOf('@') > 0
+  return !~target.indexOf(':') ||
+   !(~target.indexOf('://') || (target.startsWith('data:') && ~target.indexOf(',')))
 }
 
 module.exports = Html5Converter

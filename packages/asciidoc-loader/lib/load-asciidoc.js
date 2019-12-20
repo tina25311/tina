@@ -10,6 +10,7 @@ const asciidoctor = require('asciidoctor.js')()
 const Extensions = asciidoctor.Extensions
 const convertImageRef = require('./image/convert-image-ref')
 const convertPageRef = require('./xref/convert-page-ref')
+const readImage = require('./image/read-image')
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
 const ospath = require('path')
@@ -59,8 +60,9 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   Object.assign(attributes, config.attributes, intrinsicAttrs, computePageAttrs(fileSrc, contentCatalog))
   const relativizePageRefs = config.relativizePageRefs !== false
   const converter = createConverter({
-    onImageRef: (resourceSpec) => convertImageRef(resourceSpec, file, contentCatalog),
+    onImageRef: (resourceSpec, node) => convertImageRef(resourceSpec, node, file, contentCatalog),
     onPageRef: (pageSpec, content) => convertPageRef(pageSpec, content, file, contentCatalog, relativizePageRefs),
+    onReadImage: (target, opts) => readImage(target, file, contentCatalog),
   })
   const extensionRegistry = createExtensionRegistry(asciidoctor, {
     onInclude: (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog),
@@ -131,7 +133,7 @@ function resolveConfig (playbook = {}) {
     'site-gen': 'antora',
     'site-gen-antora': '',
     'attribute-missing': 'warn',
-    'data-uri': null,
+    // 'data-uri': null,
     icons: 'font',
     sectanchors: '',
     'source-highlighter': 'highlight.js',
