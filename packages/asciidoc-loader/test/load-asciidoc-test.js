@@ -1858,915 +1858,935 @@ describe('loadAsciiDoc()', () => {
     })
   })
 
-  describe('page reference macro', () => {
-    it('should skip invalid page reference', () => {
-      const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('xref:component-b::#frag[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expect(contentCatalog.getById).to.not.have.been.called()
-      expectUnresolvedPageLink(html, '#component-b::#frag', 'The Page Title')
-    })
-
-    it('should delegate the built-in converter to process an in-page reference', () => {
-      const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('xref:section-a[]\n\n== Section A')
-      const config = {
-        attributes: { idprefix: '', idseparator: '-' },
-      }
-      const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
-      expect(contentCatalog.getById).to.not.have.been.called()
-      expectLink(html, '#section-a', 'Section A')
-    })
-
-    it('should delegate the built-in converter to process a normal link', () => {
-      const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('https://example.com[Example Domain]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expect(contentCatalog.getById).to.not.have.been.called()
-      expectLink(html, 'https://example.com', 'Example Domain')
-    })
-
-    it('should skip unresolved page reference', () => {
-      const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
+  ;[{},
+    resolveConfig({
+      dir: FIXTURES_DIR,
+      asciidoc: {
+        converters: [
+          './converter/delegating-converter.js',
+        ],
+      },
+    }),
+    resolveConfig({
+      dir: FIXTURES_DIR,
+      asciidoc: {
+        converters: [
+          './converter/delegating-converter.js',
+          './converter/delegating-converter.js',
+        ],
+      },
+    }),
+  ].forEach((config) =>
+    describe(`page reference macro using custom converters ${(config.converters || []).map((converter) => converter(null, null).name)}`, () => {
+      it('should skip invalid page reference', () => {
+        const contentCatalog = mockContentCatalog().spyOn('getById')
+        setInputFileContents('xref:component-b::#frag[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expect(contentCatalog.getById).to.not.have.been.called()
+        expectUnresolvedPageLink(html, '#component-b::#frag', 'The Page Title')
       })
-      expectUnresolvedPageLink(html, '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc', 'The Page Title')
-    })
 
-    it('should skip unresolved page reference with fragment', () => {
-      const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
+      it('should delegate the built-in converter to process an in-page reference', () => {
+        const contentCatalog = mockContentCatalog().spyOn('getById')
+        setInputFileContents('xref:section-a[]\n\n== Section A')
+        const config = {
+          attributes: { idprefix: '', idseparator: '-' },
+        }
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expect(contentCatalog.getById).to.not.have.been.called()
+        expectLink(html, '#section-a', 'Section A')
       })
-      expectUnresolvedPageLink(
-        html,
-        '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag',
-        'The Page Title'
-      )
-    })
 
-    it('should skip page reference to non-publishable file', () => {
-      const contentCatalog = mockContentCatalog({ relative: '_hidden.adoc' }).spyOn('getById')
-      delete contentCatalog.getPages()[0].pub
-      setInputFileContents('xref:_hidden.adoc[Hidden Page]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: '_hidden.adoc',
+      it('should delegate the built-in converter to process a normal link', () => {
+        const contentCatalog = mockContentCatalog().spyOn('getById')
+        setInputFileContents('https://example.com[Example Domain]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expect(contentCatalog.getById).to.not.have.been.called()
+        expectLink(html, 'https://example.com', 'Example Domain')
       })
-      expectUnresolvedPageLink(html, '#_hidden.adoc', 'Hidden Page')
-    })
 
-    it('should convert a page reference with version, component, module, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/module-b/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a fully-qualified page reference', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
-      })
-      expectPageLink(
-        html,
-        inputFile.pub.rootPath + '/component-b/4.5.6/module-b/topic-foo/topic-bar/the-page.html',
-        'The Page Title'
-      )
-    })
-
-    it('should convert a fully-qualified page reference with fragment', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/the-page.adoc#frag[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/the-page.adoc',
-      })
-      expectPageLink(
-        html,
-        inputFile.pub.rootPath + '/component-b/4.5.6/module-b/topic-foo/the-page.html#frag',
-        'The Page Title'
-      )
-    })
-
-    it('should convert a page reference with version, module, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@module-b:the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, '../4.5.6/module-b/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with version, module, topic, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@module-b:the-topic/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
-      expectPageLink(html, '../4.5.6/module-b/the-topic/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with version, component, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b::the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with version, component, topic, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b::the-topic/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
-      expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/the-topic/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with component and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: '1.1',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById', 'getComponent')
-      setInputFileContents('xref:component-b::the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '1.1',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, inputFile.pub.rootPath + '/component-b/1.1/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with component, topic, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: '1.0',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById', 'getComponent')
-      setInputFileContents('xref:component-b::the-topic/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '1.0',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
-      expectPageLink(html, inputFile.pub.rootPath + '/component-b/1.0/the-topic/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with component, module, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: '2.0',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById', 'getComponent')
-      setInputFileContents('xref:component-b:module-b:the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '2.0',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, inputFile.pub.rootPath + '/component-b/2.0/module-b/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with component, module, topic, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-b',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById', 'getComponent')
-      setInputFileContents('xref:component-b:module-b:the-topic/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
-      expectPageLink(html, inputFile.pub.rootPath + '/component-b/module-b/the-topic/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with version and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, '../4.5.6/module-a/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference having a path that starts with @', () => {
-      const contentCatalog = mockContentCatalog({ relative: '@the-page.adoc' }).spyOn('getById')
-      setInputFileContents('xref:module-a:@the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: '@the-page.adoc',
-      })
-      expectPageLink(html, '@the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference having a path that starts with @ and a version', () => {
-      const contentCatalog = mockContentCatalog({
-        version: '5.6.4',
-        relative: '@the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:5.6.4@@the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '5.6.4',
-        module: 'module-a',
-        family: 'page',
-        relative: '@the-page.adoc',
-      })
-      expectPageLink(html, '../5.6.4/module-a/@the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with version, topic, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@the-topic/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
-      expectPageLink(html, '../4.5.6/module-a/the-topic/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with module and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:module-b:the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, '../module-b/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with module, topic, and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:module-b:the-topic/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
-      expectPageLink(html, '../module-b/the-topic/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a basic page reference', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, 'the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference that contains spaces', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'i like spaces.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:i like spaces.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'i like spaces.adoc',
-      })
-      expectPageLink(html, 'i%20like%20spaces.html', 'The Page Title')
-    })
-
-    it('should convert a basic page reference from within topic', () => {
-      const contentCatalog = mockContentCatalog([
-        {
+      it('should skip unresolved page reference', () => {
+        const contentCatalog = mockContentCatalog().spyOn('getById')
+        setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
           family: 'page',
-          relative: 'the-topic/the-page.adoc',
-          contents: 'xref:the-page.adoc[The Page Title]',
-        },
-        {
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        })
+        expectUnresolvedPageLink(html, '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc', 'The Page Title')
+      })
+
+      it('should skip unresolved page reference with fragment', () => {
+        const contentCatalog = mockContentCatalog().spyOn('getById')
+        setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        })
+        expectUnresolvedPageLink(
+          html,
+          '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag',
+          'The Page Title'
+        )
+      })
+
+      it('should skip page reference to non-publishable file', () => {
+        const contentCatalog = mockContentCatalog({ relative: '_hidden.adoc' }).spyOn('getById')
+        delete contentCatalog.getPages()[0].pub
+        setInputFileContents('xref:_hidden.adoc[Hidden Page]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: '_hidden.adoc',
+        })
+        expectUnresolvedPageLink(html, '#_hidden.adoc', 'Hidden Page')
+      })
+
+      it('should convert a page reference with version, component, module, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
           family: 'page',
           relative: 'the-page.adoc',
-        },
-      ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expectPageLink(html, '../the-page.html', 'The Page Title')
-    })
-
-    it('should pass on attributes defined in xref macro', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:the-page.adoc[The Page Title,role=secret,opts=nofollow]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
-      expect(html).to.include('<a href="the-page.html" class="page secret" rel="nofollow">The Page Title</a>')
-    })
-
-    it('should convert a page reference with topic and page', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:the-topic/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
-      expectPageLink(html, 'the-topic/the-page.html', 'The Page Title')
-    })
-
-    it('should convert a page reference with sibling topic and page', () => {
-      const contentCatalog = mockContentCatalog([
-        {
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@component-b:module-b:the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
           family: 'page',
-          relative: 'topic-a/the-page.adoc',
-          contents: 'xref:topic-b/the-page.adoc[The Page Title]',
-        },
-        {
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/module-b/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a fully-qualified page reference', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        })
+        expectPageLink(
+          html,
+          inputFile.pub.rootPath + '/component-b/4.5.6/module-b/topic-foo/topic-bar/the-page.html',
+          'The Page Title'
+        )
+      })
+
+      it('should convert a fully-qualified page reference with fragment', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/the-page.adoc#frag[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/the-page.adoc',
+        })
+        expectPageLink(
+          html,
+          inputFile.pub.rootPath + '/component-b/4.5.6/module-b/topic-foo/the-page.html#frag',
+          'The Page Title'
+        )
+      })
+
+      it('should convert a page reference with version, module, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@module-b:the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, '../4.5.6/module-b/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with version, module, topic, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@module-b:the-topic/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        expectPageLink(html, '../4.5.6/module-b/the-topic/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with version, component, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@component-b::the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with version, component, topic, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@component-b::the-topic/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/the-topic/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with component and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: '1.1',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+        }).spyOn('getById', 'getComponent')
+        setInputFileContents('xref:component-b::the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '1.1',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, inputFile.pub.rootPath + '/component-b/1.1/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with component, topic, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: '1.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById', 'getComponent')
+        setInputFileContents('xref:component-b::the-topic/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '1.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        expectPageLink(html, inputFile.pub.rootPath + '/component-b/1.0/the-topic/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with component, module, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: '2.0',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        }).spyOn('getById', 'getComponent')
+        setInputFileContents('xref:component-b:module-b:the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: '2.0',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, inputFile.pub.rootPath + '/component-b/2.0/module-b/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with component, module, topic, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-b',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById', 'getComponent')
+        setInputFileContents('xref:component-b:module-b:the-topic/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-b',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        expectPageLink(html, inputFile.pub.rootPath + '/component-b/module-b/the-topic/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with version and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, '../4.5.6/module-a/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference having a path that starts with @', () => {
+        const contentCatalog = mockContentCatalog({ relative: '@the-page.adoc' }).spyOn('getById')
+        setInputFileContents('xref:module-a:@the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: '@the-page.adoc',
+        })
+        expectPageLink(html, '@the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference having a path that starts with @ and a version', () => {
+        const contentCatalog = mockContentCatalog({
+          version: '5.6.4',
+          relative: '@the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:5.6.4@@the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: '5.6.4',
+          module: 'module-a',
+          family: 'page',
+          relative: '@the-page.adoc',
+        })
+        expectPageLink(html, '../5.6.4/module-a/@the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with version, topic, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:4.5.6@the-topic/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        expectPageLink(html, '../4.5.6/module-a/the-topic/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with module and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:module-b:the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, '../module-b/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with module, topic, and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:module-b:the-topic/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        expectPageLink(html, '../module-b/the-topic/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a basic page reference', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, 'the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference that contains spaces', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'i like spaces.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:i like spaces.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'i like spaces.adoc',
+        })
+        expectPageLink(html, 'i%20like%20spaces.html', 'The Page Title')
+      })
+
+      it('should convert a basic page reference from within topic', () => {
+        const contentCatalog = mockContentCatalog([
+          {
+            family: 'page',
+            relative: 'the-topic/the-page.adoc',
+            contents: 'xref:the-page.adoc[The Page Title]',
+          },
+          {
+            family: 'page',
+            relative: 'the-page.adoc',
+          },
+        ]).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expectPageLink(html, '../the-page.html', 'The Page Title')
+      })
+
+      it('should pass on attributes defined in xref macro', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:the-page.adoc[The Page Title,role=secret,opts=nofollow]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        expect(html).to.include('<a href="the-page.html" class="page secret" rel="nofollow">The Page Title</a>')
+      })
+
+      it('should convert a page reference with topic and page', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:the-topic/the-page.adoc[The Page Title]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        expectPageLink(html, 'the-topic/the-page.html', 'The Page Title')
+      })
+
+      it('should convert a page reference with sibling topic and page', () => {
+        const contentCatalog = mockContentCatalog([
+          {
+            family: 'page',
+            relative: 'topic-a/the-page.adoc',
+            contents: 'xref:topic-b/the-page.adoc[The Page Title]',
+          },
+          {
+            family: 'page',
+            relative: 'topic-b/the-page.adoc',
+          },
+        ]).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
           family: 'page',
           relative: 'topic-b/the-page.adoc',
-        },
-      ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'topic-b/the-page.adoc',
+        })
+        expectPageLink(html, '../topic-b/the-page.html', 'The Page Title')
       })
-      expectPageLink(html, '../topic-b/the-page.html', 'The Page Title')
-    })
 
-    it('should convert a page reference to self', () => {
-      const contentCatalog = mockContentCatalog({
-        family: 'page',
-        relative: 'this-page.adoc',
-        contents: 'xref:module-a:this-page.adoc[Link to Self]',
-      }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
-      expectPageLink(html, 'this-page.html', 'Link to Self')
-    })
-
-    it('should convert a page reference to self with empty fragment', () => {
-      const contentCatalog = mockContentCatalog({
-        family: 'page',
-        relative: 'this-page.adoc',
-        contents: 'xref:module-a:this-page.adoc#[Link to Self]',
-      }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
-      expectPageLink(html, 'this-page.html', 'Link to Self')
-    })
-
-    it('should convert a deep page reference to self', () => {
-      const contentCatalog = mockContentCatalog({
-        family: 'page',
-        relative: 'this-page.adoc',
-        contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
-      }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
-      expectLink(html, '#the-fragment', 'Deep Link to Self')
-    })
-
-    it('should convert a deep page reference to self that matches docname', () => {
-      const contentCatalog = mockContentCatalog({
-        family: 'page',
-        relative: 'this-page.adoc',
-        contents: 'xref:this-page.adoc#the-fragment[Deep Link to Self]',
-      }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expect(contentCatalog.getById).to.not.have.been.called()
-      expectLink(html, '#the-fragment', 'Deep Link to Self')
-    })
-
-    it('should convert a page reference to a root relative path if relativizePageRefs is disabled', () => {
-      const contentCatalog = mockContentCatalog([
-        {
+      it('should convert a page reference to self', () => {
+        const contentCatalog = mockContentCatalog({
           family: 'page',
           relative: 'this-page.adoc',
-          contents: 'xref:that-page.adoc[The Page Title]',
-        },
-        {
+          contents: 'xref:module-a:this-page.adoc[Link to Self]',
+        }).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
+        expectPageLink(html, 'this-page.html', 'Link to Self')
+      })
+
+      it('should convert a page reference to self with empty fragment', () => {
+        const contentCatalog = mockContentCatalog({
+          family: 'page',
+          relative: 'this-page.adoc',
+          contents: 'xref:module-a:this-page.adoc#[Link to Self]',
+        }).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
+        expectPageLink(html, 'this-page.html', 'Link to Self')
+      })
+
+      it('should convert a deep page reference to self', () => {
+        const contentCatalog = mockContentCatalog({
+          family: 'page',
+          relative: 'this-page.adoc',
+          contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
+        }).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
+        expectLink(html, '#the-fragment', 'Deep Link to Self')
+      })
+
+      it('should convert a deep page reference to self that matches docname', () => {
+        const contentCatalog = mockContentCatalog({
+          family: 'page',
+          relative: 'this-page.adoc',
+          contents: 'xref:this-page.adoc#the-fragment[Deep Link to Self]',
+        }).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expect(contentCatalog.getById).to.not.have.been.called()
+        expectLink(html, '#the-fragment', 'Deep Link to Self')
+      })
+
+      it('should convert a page reference to a root relative path if relativizePageRefs is disabled', () => {
+        const contentCatalog = mockContentCatalog([
+          {
+            family: 'page',
+            relative: 'this-page.adoc',
+            contents: 'xref:that-page.adoc[The Page Title]',
+          },
+          {
+            family: 'page',
+            relative: 'that-page.adoc',
+          },
+        ]).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, { relativizePageRefs: false }).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
           family: 'page',
           relative: 'that-page.adoc',
-        },
-      ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog, { relativizePageRefs: false }).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'that-page.adoc',
+        })
+        expectPageLink(html, '/component-a/module-a/that-page.html', 'The Page Title')
       })
-      expectPageLink(html, '/component-a/module-a/that-page.html', 'The Page Title')
-    })
 
-    it('should convert a page reference with module and page using indexified URLs', () => {
-      const contentCatalog = mockContentCatalog([
-        {
-          family: 'page',
-          relative: 'this-page.adoc',
-          contents: 'xref:module-b:that-page.adoc[The Page Title]',
-          indexify: true,
-        },
-        {
+      it('should convert a page reference with module and page using indexified URLs', () => {
+        const contentCatalog = mockContentCatalog([
+          {
+            family: 'page',
+            relative: 'this-page.adoc',
+            contents: 'xref:module-b:that-page.adoc[The Page Title]',
+            indexify: true,
+          },
+          {
+            module: 'module-b',
+            family: 'page',
+            relative: 'that-page.adoc',
+            indexify: true,
+          },
+        ]).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
           module: 'module-b',
           family: 'page',
           relative: 'that-page.adoc',
-          indexify: true,
-        },
-      ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'that-page.adoc',
+        })
+        expectPageLink(html, '../../module-b/that-page/', 'The Page Title')
       })
-      expectPageLink(html, '../../module-b/that-page/', 'The Page Title')
-    })
 
-    it('should convert a page reference with topic and page using indexified URLs', () => {
-      const contentCatalog = mockContentCatalog([
-        {
-          family: 'page',
-          relative: 'this-page.adoc',
-          contents: 'xref:the-topic/that-page.adoc[The Page Title]',
-          indexify: true,
-        },
-        {
+      it('should convert a page reference with topic and page using indexified URLs', () => {
+        const contentCatalog = mockContentCatalog([
+          {
+            family: 'page',
+            relative: 'this-page.adoc',
+            contents: 'xref:the-topic/that-page.adoc[The Page Title]',
+            indexify: true,
+          },
+          {
+            family: 'page',
+            relative: 'the-topic/that-page.adoc',
+            indexify: true,
+          },
+        ]).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
           family: 'page',
           relative: 'the-topic/that-page.adoc',
-          indexify: true,
-        },
-      ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-topic/that-page.adoc',
+        })
+        expectPageLink(html, '../the-topic/that-page/', 'The Page Title')
       })
-      expectPageLink(html, '../the-topic/that-page/', 'The Page Title')
-    })
 
-    it('should convert a basic page reference from within a topic using indexified URLs', () => {
-      const contentCatalog = mockContentCatalog([
-        {
-          family: 'page',
-          relative: 'topic-a/this-page.adoc',
-          contents: 'xref:that-page.adoc[The Page Title]',
-          indexify: true,
-        },
-        {
+      it('should convert a basic page reference from within a topic using indexified URLs', () => {
+        const contentCatalog = mockContentCatalog([
+          {
+            family: 'page',
+            relative: 'topic-a/this-page.adoc',
+            contents: 'xref:that-page.adoc[The Page Title]',
+            indexify: true,
+          },
+          {
+            family: 'page',
+            relative: 'that-page.adoc',
+            indexify: true,
+          },
+        ]).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
           family: 'page',
           relative: 'that-page.adoc',
+        })
+        expectPageLink(html, '../../that-page/', 'The Page Title')
+      })
+
+      it('should convert a page reference to self using indexified URLs', () => {
+        const contentCatalog = mockContentCatalog({
+          family: 'page',
+          relative: 'this-page.adoc',
+          contents: 'xref:module-a:this-page.adoc[Link to Self]',
           indexify: true,
-        },
-      ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'that-page.adoc',
+        }).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
+        expectPageLink(html, './', 'Link to Self')
       })
-      expectPageLink(html, '../../that-page/', 'The Page Title')
-    })
 
-    it('should convert a page reference to self using indexified URLs', () => {
-      const contentCatalog = mockContentCatalog({
-        family: 'page',
-        relative: 'this-page.adoc',
-        contents: 'xref:module-a:this-page.adoc[Link to Self]',
-        indexify: true,
-      }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
+      it('should convert a page reference to self with empty fragment using indexified URLs', () => {
+        const contentCatalog = mockContentCatalog({
+          family: 'page',
+          relative: 'this-page.adoc',
+          contents: 'xref:module-a:this-page.adoc#[Link to Self]',
+          indexify: true,
+        }).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
+        expectPageLink(html, './', 'Link to Self')
       })
-      expectPageLink(html, './', 'Link to Self')
-    })
 
-    it('should convert a page reference to self with empty fragment using indexified URLs', () => {
-      const contentCatalog = mockContentCatalog({
-        family: 'page',
-        relative: 'this-page.adoc',
-        contents: 'xref:module-a:this-page.adoc#[Link to Self]',
-        indexify: true,
-      }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
+      it('should convert a deep page reference to self using indexified URLs', () => {
+        const contentCatalog = mockContentCatalog({
+          family: 'page',
+          relative: 'this-page.adoc',
+          contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
+          indexify: true,
+        }).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
+        expectLink(html, '#the-fragment', 'Deep Link to Self')
       })
-      expectPageLink(html, './', 'Link to Self')
-    })
 
-    it('should convert a deep page reference to self using indexified URLs', () => {
-      const contentCatalog = mockContentCatalog({
-        family: 'page',
-        relative: 'this-page.adoc',
-        contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
-        indexify: true,
-      }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
+      it('should convert a page reference to self that matches docname using indexified URLs', () => {
+        const contentCatalog = mockContentCatalog({
+          family: 'page',
+          relative: 'this-page.adoc',
+          contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
+          indexify: true,
+        }).spyOn('getById')
+        inputFile = contentCatalog.getAll()[0]
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
+        expectLink(html, '#the-fragment', 'Deep Link to Self')
       })
-      expectLink(html, '#the-fragment', 'Deep Link to Self')
-    })
 
-    it('should convert a page reference to self that matches docname using indexified URLs', () => {
-      const contentCatalog = mockContentCatalog({
-        family: 'page',
-        relative: 'this-page.adoc',
-        contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
-        indexify: true,
-      }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
+      it('should use default content for page reference if content not specified', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:module-b:the-topic/the-page.adoc[]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        // TODO eventually this will resolve to the title of the target page
+        expectPageLink(html, '../module-b/the-topic/the-page.html', 'module-b:the-topic/the-page.adoc')
       })
-      expectLink(html, '#the-fragment', 'Deep Link to Self')
-    })
 
-    it('should use default content for page reference if content not specified', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:module-b:the-topic/the-page.adoc[]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
+      it('should use default content for page reference with fragment if content not specified', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        }).spyOn('getById')
+        setInputFileContents('xref:module-b:the-topic/the-page.adoc#frag[]')
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectCalledWith(contentCatalog.getById, {
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+        // TODO eventually this will resolve to the title of the target page
+        expectPageLink(html, '../module-b/the-topic/the-page.html#frag', 'module-b:the-topic/the-page.adoc#frag')
       })
-      // TODO eventually this will resolve to the title of the target page
-      expectPageLink(html, '../module-b/the-topic/the-page.html', 'module-b:the-topic/the-page.adoc')
-    })
 
-    it('should use default content for page reference with fragment if content not specified', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      }).spyOn('getById')
-      setInputFileContents('xref:module-b:the-topic/the-page.adoc#frag[]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
+      it('should not fail to process page reference if fragment attribute is not set', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+        setInputFileContents('man:the-page[]')
+        const extension = function () {
+          this.process((parent, target, attrs) =>
+            this.createInline(parent, 'anchor', target, {
+              type: 'xref',
+              target,
+              attributes: global.Opal.hash({ refid: target, path: target }),
+            })
+          )
+        }
+        extension.register = (registry) => registry.inlineMacro('man', extension)
+        const config = { extensions: [extension] }
+        const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+        expectPageLink(html, 'the-page.html', 'the-page')
       })
-      // TODO eventually this will resolve to the title of the target page
-      expectPageLink(html, '../module-b/the-topic/the-page.html#frag', 'module-b:the-topic/the-page.adoc#frag')
-    })
 
-    it('should not fail to process page reference if fragment attribute is not set', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
+      it('should process xref inside of a footnote macro', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'relnotes',
+          version: '6.5',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'index.adoc',
+        })
+          ;[
+          'xref:6.5@relnotes::index.adoc[completely removed\\]',
+          '<<6.5@relnotes::index.adoc#,completely removed>>',
+        ].forEach((pageMacro) => {
+          const contents = `Text.footnote:[Support for pixie dust has been ${pageMacro}.]`
+          setInputFileContents(contents)
+          const doc = loadAsciiDoc(inputFile, contentCatalog, config)
+          const html = doc.convert()
+          expect(doc.getCatalog().footnotes).to.have.length(1)
+          expectPageLink(html, '../../relnotes/6.5/index.html', 'completely removed')
+          expect(html).to.include('>completely removed</a>.')
+        })
       })
-      setInputFileContents('man:the-page[]')
-      const extension = function () {
-        this.process((parent, target, attrs) =>
-          this.createInline(parent, 'anchor', target, {
-            type: 'xref',
-            target,
-            attributes: global.Opal.hash({ refid: target, path: target }),
-          })
-        )
-      }
-      extension.register = (registry) => registry.inlineMacro('man', extension)
-      const config = { extensions: [extension] }
-      const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
-      expectPageLink(html, 'the-page.html', 'the-page')
-    })
 
-    it('should process xref inside of a footnote macro', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'relnotes',
-        version: '6.5',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'index.adoc',
-      })
-      ;[
-        'xref:6.5@relnotes::index.adoc[completely removed\\]',
-        '<<6.5@relnotes::index.adoc#,completely removed>>',
-      ].forEach((pageMacro) => {
-        const contents = `Text.footnote:[Support for pixie dust has been ${pageMacro}.]`
-        setInputFileContents(contents)
-        const doc = loadAsciiDoc(inputFile, contentCatalog)
-        const html = doc.convert()
-        expect(doc.getCatalog().footnotes).to.have.length(1)
-        expectPageLink(html, '../../relnotes/6.5/index.html', 'completely removed')
-        expect(html).to.include('>completely removed</a>.')
-      })
-    })
-
-    it('should allow footnote text to be defined and inserted using attribute', () => {
-      const contentCatalog = mockContentCatalog({
-        component: 'relnotes',
-        version: '6.5',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'index.adoc',
-      })
-      ;[
-        'xref:6.5@relnotes::index.adoc[completely removed\\]',
-        '<<6.5@relnotes::index.adoc#,completely removed>>',
-      ].forEach((pageMacro) => {
-        const contents = heredoc`
+      it('should allow footnote text to be defined and inserted using attribute', () => {
+        const contentCatalog = mockContentCatalog({
+          component: 'relnotes',
+          version: '6.5',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'index.adoc',
+        })
+          ;[
+          'xref:6.5@relnotes::index.adoc[completely removed\\]',
+          '<<6.5@relnotes::index.adoc#,completely removed>>',
+        ].forEach((pageMacro) => {
+          const contents = heredoc`
           :fn-text: pass:n[Support for pixie dust has been ${pageMacro}.]
 
           Text.footnote:pixiedust[{fn-text}]
 
           More text.footnote:pixiedust[]
         `
-        setInputFileContents(contents)
-        const doc = loadAsciiDoc(inputFile, contentCatalog)
-        const html = doc.convert()
-        expect(doc.getCatalog().footnotes).to.have.length(1)
-        expectPageLink(html, '../../relnotes/6.5/index.html', 'completely removed')
-        expect(html).to.include('<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1"')
-        expect(html).to.include('<a class="footnote" href="#_footnotedef_1"')
-        expect(html).to.include('>completely removed</a>.')
+          setInputFileContents(contents)
+          const doc = loadAsciiDoc(inputFile, contentCatalog, config)
+          const html = doc.convert()
+          expect(doc.getCatalog().footnotes).to.have.length(1)
+          expectPageLink(html, '../../relnotes/6.5/index.html', 'completely removed')
+          expect(html).to.include('<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1"')
+          expect(html).to.include('<a class="footnote" href="#_footnotedef_1"')
+          expect(html).to.include('>completely removed</a>.')
+        })
       })
     })
-  })
+  )
 
   describe('resolveConfig()', () => {
     it('should return config with built-in attributes if site and asciidoc categories not set in playbook', () => {
@@ -2896,6 +2916,62 @@ describe('loadAsciiDoc()', () => {
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(1)
       Extensions.unregisterAll()
+    })
+
+    it('should not load converters if converters are not defined', () => {
+      const playbook = { asciidoc: {} }
+      const config = resolveConfig(playbook)
+      expect(config.converters).to.not.exist()
+    })
+
+    it('should not load converters if converters are empty', () => {
+      const playbook = { asciidoc: { converters: [] } }
+      const config = resolveConfig(playbook)
+      expect(config.converters).to.not.exist()
+    })
+
+    it('should load specified converters', () => {
+      const playbook = {
+        dir: FIXTURES_DIR,
+        asciidoc: {
+          converters: [
+            './converter/delegating-converter.js',
+            './converter/nondelegating-converter.js',
+          ],
+        },
+      }
+      const config = resolveConfig(playbook)
+      expect(config.converters).to.exist()
+      expect(config.converters).to.have.lengthOf(2)
+      expect(config.converters[0]).to.be.instanceOf(Function)
+      expect(config.converters[0]().name).to.equal('delegating-converter')
+      expect(config.converters[1]).to.be.instanceOf(Function)
+      expect(config.converters[1]().name).to.equal('nondelegating-converter')
+    })
+  })
+  const chai = require('chai')
+  describe('converter', () => {
+    it('should not convert a page reference with topic and page using nondelegating converter', () => {
+      const playbook = {
+        dir: FIXTURES_DIR,
+        asciidoc: {
+          converters: [
+            './converter/nondelegating-converter.js',
+          ],
+        },
+      }
+      const config = resolveConfig(playbook)
+      const contentCatalog = mockContentCatalog({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'page',
+        relative: 'the-topic/the-page.adoc',
+      }).spyOn('getById')
+      setInputFileContents('xref:the-topic/the-page.adoc[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+      chai.expect(contentCatalog.getById).to.have.been.called.exactly(0)
+      expect(html).to.include('<div class="paragraph">\n<p>undefined</p>\n</div>')
     })
   })
 })

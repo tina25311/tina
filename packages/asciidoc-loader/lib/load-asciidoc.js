@@ -8,8 +8,6 @@ if ('encoding' in String.prototype && String(String.prototype.encoding) !== 'UTF
 
 const asciidoctor = require('asciidoctor.js')()
 const Extensions = asciidoctor.Extensions
-const convertImageRef = require('./image/convert-image-ref')
-const convertPageRef = require('./xref/convert-page-ref')
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
 const ospath = require('path')
@@ -57,11 +55,7 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   }
   const attributes = fileSrc.family === 'page' ? { 'page-partial': '@' } : {}
   Object.assign(attributes, config.attributes, intrinsicAttrs, computePageAttrs(fileSrc, contentCatalog))
-  const relativizePageRefs = config.relativizePageRefs !== false
-  const converter = createConverter({
-    onImageRef: (resourceSpec) => convertImageRef(resourceSpec, file, contentCatalog),
-    onPageRef: (pageSpec, content) => convertPageRef(pageSpec, content, file, contentCatalog, relativizePageRefs),
-  })
+  const converter = createConverter({ file, contentCatalog, config })
   const extensionRegistry = createExtensionRegistry(asciidoctor, {
     onInclude: (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog),
   })
@@ -147,15 +141,7 @@ function resolveConfig (playbook = {}) {
   Object.assign(config, playbook.asciidoc, { attributes: Object.assign(attributes, playbook.asciidoc.attributes) })
   if (config.extensions && config.extensions.length) {
     const extensions = config.extensions.reduce((accum, extensionPath) => {
-      if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
-        // NOTE require resolves a dot-relative path relative to current file; resolve relative to playbook dir instead
-        extensionPath = ospath.resolve(playbook.dir, extensionPath)
-      } else if (!ospath.isAbsolute(extensionPath)) {
-        // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
-        const paths = [playbook.dir, ospath.dirname(__dirname)].map((start) => ospath.join(start, 'node_modules'))
-        extensionPath = require.resolve(extensionPath, { paths })
-      }
-      const extension = require(extensionPath)
+      const extension = loadModule(extensionPath, playbook.dir)
       if ('register' in extension) {
         accum.push(extension)
       } else if (!isExtensionRegistered(extension, Extensions)) {
@@ -172,7 +158,28 @@ function resolveConfig (playbook = {}) {
   } else {
     delete config.extensions
   }
+  if (config.converters && config.converters.length) {
+    const converters = config.converters.reduce((accum, converterPath) => {
+      accum.push(loadModule(converterPath, playbook.dir))
+      return accum
+    }, [])
+    config.converters = converters
+  } else {
+    delete config.converters
+  }
   return config
+}
+
+function loadModule (extensionPath, playbookDir) {
+  if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
+    // NOTE require resolves a dot-relative path relative to current file; resolve relative to playbook dir instead
+    extensionPath = ospath.resolve(playbookDir, extensionPath)
+  } else if (!ospath.isAbsolute(extensionPath)) {
+    // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
+    const paths = [playbookDir, ospath.dirname(__dirname)].map((start) => ospath.join(start, 'node_modules'))
+    extensionPath = require.resolve(extensionPath, { paths })
+  }
+  return require(extensionPath)
 }
 
 function isExtensionRegistered (ext, registry) {
