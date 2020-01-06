@@ -1977,6 +1977,26 @@ describe('loadAsciiDoc()', () => {
     })
   })
 
+  ;[{},
+    resolveConfig({
+      dir: FIXTURES_DIR,
+      asciidoc: {
+        converters: [
+          './converter/delegating-converter.js',
+        ],
+      },
+    }),
+    resolveConfig({
+      dir: FIXTURES_DIR,
+      asciidoc: {
+        converters: [
+          './converter/delegating-converter.js',
+          './converter/delegating-converter.js',
+        ],
+      },
+    }),
+  ].forEach((config) =>
+    describe(`page reference macro using custom converters ${(config.converters || []).map((converter) => converter(null, null).name)}`, () => {
   describe('page reference macro', () => {
     it('should skip invalid page reference with explicit content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
@@ -3129,6 +3149,7 @@ describe('loadAsciiDoc()', () => {
       })
     })
   })
+  }))
 
   describe('image macro', () => {
     it('should pass through unresolved target of block image that matches resource ID', () => {
@@ -3532,6 +3553,92 @@ describe('loadAsciiDoc()', () => {
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(1)
       Extensions.unregisterAll()
+    })
+
+    it('should not load converters if converters are not defined', () => {
+      const playbook = { asciidoc: {} }
+      const config = resolveConfig(playbook)
+      expect(config.converters).to.not.exist()
+    })
+
+    it('should not load converters if converters are empty', () => {
+      const playbook = { asciidoc: { converters: [] } }
+      const config = resolveConfig(playbook)
+      expect(config.converters).to.not.exist()
+    })
+
+    it('should load specified converters', () => {
+      const playbook = {
+        dir: FIXTURES_DIR,
+        asciidoc: {
+          converters: [
+            './converter/delegating-converter.js',
+            './converter/nondelegating-converter.js',
+          ],
+        },
+      }
+      const config = resolveConfig(playbook)
+      expect(config.converters).to.exist()
+      expect(config.converters).to.have.lengthOf(2)
+      expect(config.converters[0]).to.be.instanceOf(Function)
+      expect(config.converters[0]().name).to.equal('delegating-converter')
+      expect(config.converters[1]).to.be.instanceOf(Function)
+      expect(config.converters[1]().name).to.equal('nondelegating-converter')
+    })
+  })
+  const chai = require('chai')
+  describe('converter', () => {
+    it('should not convert a page reference with topic and page using nondelegating converter', () => {
+      const playbook = {
+        dir: FIXTURES_DIR,
+        asciidoc: {
+          converters: [
+            './converter/nondelegating-converter.js',
+          ],
+        },
+      }
+      const config = resolveConfig(playbook)
+      const contentCatalog = mockContentCatalog({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'page',
+        relative: 'the-topic/the-page.adoc',
+      }).spyOn('getById')
+      setInputFileContents('xref:the-topic/the-page.adoc[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+      chai.expect(contentCatalog.getById).to.have.been.called.exactly(0)
+      expect(html).to.include('<div class="paragraph">\n<p>undefined</p>\n</div>')
+    })
+    it('should provide access to the base converter', () => {
+      const playbook = {
+        dir: FIXTURES_DIR,
+        asciidoc: {
+          converters: [
+            './converter/delegating-converter.js',
+            './converter/base-access-converter.js',
+            './converter/delegating-converter.js',
+          ],
+        },
+      }
+      const config = resolveConfig(playbook)
+      const contentCatalog = mockContentCatalog({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'page',
+        relative: 'the-topic/the-page.adoc',
+      }).spyOn('getById')
+      setInputFileContents(`= The Title
+      
+== The Subtitle
+
+=== Level Three
+
+`)
+      const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+      chai.expect(contentCatalog.getById).to.have.been.called.exactly(0)
+      expect(html).to.include('<ul class="sectlevel1">')
     })
   })
 })

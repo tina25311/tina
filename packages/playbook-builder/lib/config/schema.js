@@ -111,6 +111,12 @@ module.exports = {
       format: Array,
       default: [],
     },
+    converters: {
+      doc: 'A list of require paths for registering converters or transforms per instance of the AsciiDoc processor.',
+      format: Array,
+      default: [],
+      //arg: 'converter',
+    },
   },
   git: {
     credentials: {
