@@ -118,7 +118,7 @@ function computePageAttrs (fileSrc, contentCatalog) {
  *
  * @returns {Object} A resolved configuration object to be used by the loadAsciiDoc function.
  */
-function resolveConfig (playbook = {}) {
+function resolveConfig (playbook = {}, extensions = [], converters = []) {
   const attributes = {
     env: 'site',
     'env-site': '',
@@ -139,9 +139,8 @@ function resolveConfig (playbook = {}) {
   if (!playbook.asciidoc) return config
   // TODO process !name attributes
   Object.assign(config, playbook.asciidoc, { attributes: Object.assign(attributes, playbook.asciidoc.attributes) })
-  if (config.extensions && config.extensions.length) {
-    const extensions = config.extensions.reduce((accum, extensionPath) => {
-      const extension = loadModule(extensionPath, playbook.dir)
+  if (extensions.length || (config.extensions && config.extensions.length)) {
+    extensions = extensions.reduce((accum, extension) => {
       if ('register' in extension) {
         accum.push(extension)
       } else if (!isExtensionRegistered(extension, Extensions)) {
@@ -150,6 +149,16 @@ function resolveConfig (playbook = {}) {
       }
       return accum
     }, [])
+    extensions = (config.extensions ? config.extensions : []).reduce((accum, extensionPath) => {
+      const extension = loadModule(extensionPath, playbook.dir)
+      if ('register' in extension) {
+        accum.push(extension)
+      } else if (!isExtensionRegistered(extension, Extensions)) {
+        // QUESTION should we assign an antora-specific group name?
+        Extensions.register(extension)
+      }
+      return accum
+    }, extensions)
     if (extensions.length) {
       config.extensions = extensions
     } else {
@@ -158,11 +167,11 @@ function resolveConfig (playbook = {}) {
   } else {
     delete config.extensions
   }
-  if (config.converters && config.converters.length) {
-    const converters = config.converters.reduce((accum, converterPath) => {
+  if (converters.length || (config.converters && config.converters.length)) {
+    converters = (config.converters ? config.converters : []).reduce((accum, converterPath) => {
       accum.push(loadModule(converterPath, playbook.dir))
       return accum
-    }, [])
+    }, converters.slice(0))
     config.converters = converters
   } else {
     delete config.converters
