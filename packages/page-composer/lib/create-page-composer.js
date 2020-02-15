@@ -68,6 +68,8 @@ function createPageComposerInternal (siteModel, env, layouts) {
    * @returns {File} The file whose contents were wrapped in the specified page layout.
    */
   return function composePage (file, contentCatalog, navigationCatalog) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (file.asciidoc && file.asciidoc.attributes && !file.asciidoc.attributes['page-layout'] && file.asciidoc.attributes.hasOwnProperty('page-layout')) return file
     // QUESTION should we pass the playbook to the uiModel?
     const uiModel = buildUiModel(siteModel, file, contentCatalog, navigationCatalog, env)
 

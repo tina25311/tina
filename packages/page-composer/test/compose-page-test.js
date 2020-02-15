@@ -392,6 +392,30 @@ describe('createPageComposer()', () => {
       expect(file.contents.toString()).to.include('<html class="default">')
     })
 
+    it('should use no layout if layout is specified null', () => {
+      file.asciidoc.attributes['page-layout'] = null
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const originalContent = file.contents.toString()
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.equal(originalContent)
+    })
+
+    it('should use no layout if layout is specified undefined', () => {
+      file.asciidoc.attributes['page-layout'] = undefined
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const originalContent = file.contents.toString()
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.equal(originalContent)
+    })
+
+    it('should use no layout if layout is specified empty', () => {
+      file.asciidoc.attributes['page-layout'] = ''
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const originalContent = file.contents.toString()
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.equal(originalContent)
+    })
+
     // QUESTION should this be checked in the function generator?
     it('should throw an error if default layout cannot be found', () => {
       playbook.ui.defaultLayout = 'does-not-exist'
