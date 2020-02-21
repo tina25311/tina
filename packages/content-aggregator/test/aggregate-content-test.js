@@ -7,6 +7,7 @@ const aggregateContent = require('@antora/content-aggregator')
 const computeOrigin = aggregateContent._computeOrigin
 const { createHash } = require('crypto')
 const { execFile } = require('child_process')
+const EventEmitter = require('events')
 const fs = require('fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
@@ -22,6 +23,7 @@ const {
   CONTENT_CACHE_FOLDER,
   GIT_CORE,
   GIT_OPERATION_LABEL_LENGTH,
+  ON_COMPONENT_DESCRIPTOR,
 } = require('@antora/content-aggregator/lib/constants')
 const CACHE_DIR = getCacheDir('antora-test')
 const CONTENT_CACHE_DIR = ospath.join(CACHE_DIR, CONTENT_CACHE_FOLDER)
@@ -1038,6 +1040,50 @@ describe('aggregateContent()', function () {
       expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
+    })
+    describe('onComopnentDescriptor event', () => {
+      let eventEmitter
+
+      beforeEach(() => {
+        const baseEmitter = new EventEmitter()
+
+        eventEmitter = {
+
+          emit: async (name, ...args) => {
+            const promises = []
+            baseEmitter.emit(name, promises, ...args)
+            promises.length && await Promise.all(promises)
+          },
+
+          on: (name, listener) => baseEmitter.on(name, (promises, ...args) => promises.push(listener(...args))),
+
+          listenerCount: (name) => baseEmitter.listenerCount(name),
+        }
+      })
+
+      it('can register an onComponentDescriptor pipeline extension', async () => {
+        var pluginArgs
+        eventEmitter.on(ON_COMPONENT_DESCRIPTOR,
+          (args) => { pluginArgs = args })
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const componentDesc = {
+          name: 'the-component',
+          title: 'The Component',
+          version: 'v1.2.3',
+        }
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
+        const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
+        await fsp.mkdir(newWorkDir)
+        process.chdir(newWorkDir)
+        playbookSpec.dir = WORK_DIR
+        playbookSpec.content.sources.push({ url: ospath.relative(newWorkDir, repoBuilder.url) })
+        let aggregate
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec, eventEmitter)
+        expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include(componentDesc)
+        expect(pluginArgs.componentDescriptor).to.include(componentDesc)
+      })
     })
   })
 

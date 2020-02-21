@@ -1,5 +1,6 @@
 'use strict'
 
+const EventEmitter = require('events')
 const aggregateContent = require('@antora/content-aggregator')
 const buildNavigation = require('@antora/navigation-builder')
 const buildPlaybook = require('@antora/playbook-builder')
@@ -13,20 +14,53 @@ const publishSite = require('@antora/site-publisher')
 const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 
 async function generateSite (args, env) {
-  const playbook = buildPlaybook(args, env)
-  const asciidocConfig = resolveAsciiDocConfig(playbook)
+  const baseEmitter = new EventEmitter()
+
+  const eventEmitter = {
+
+    emit: async (name, ...args) => {
+      const promises = []
+      baseEmitter.emit(name, promises, ...args)
+      promises.length && await Promise.all(promises)
+    },
+
+    on: (name, listener) => baseEmitter.on(name, (promises, ...args) => promises.push(listener(...args))),
+  }
+  const playbook = await buildPlaybook(args, env, undefined, eventEmitter)
+  const asciidocConfig = await wrapSync(eventEmitter, 'ResolveAsciiDocConfig', resolveAsciiDocConfig, playbook, { playbook })
   const [contentCatalog, uiCatalog] = await Promise.all([
-    aggregateContent(playbook).then((contentAggregate) => classifyContent(playbook, contentAggregate, asciidocConfig)),
-    loadUi(playbook),
+    wrapAsync(eventEmitter, 'AggregateContent', aggregateContent, playbook, [playbook])
+      .then((contentAggregate) => wrapSync(eventEmitter, 'ClassifyContent', classifyContent, playbook, { playbook, contentAggregate, asciidocConfig })),
+    wrapAsync(eventEmitter, 'LoadUi', loadUi, playbook, [playbook]),
   ])
-  const pages = convertDocuments(contentCatalog, asciidocConfig)
-  const navigationCatalog = buildNavigation(contentCatalog, asciidocConfig)
-  const composePage = createPageComposer(playbook, contentCatalog, uiCatalog, env)
-  pages.forEach((page) => composePage(page, contentCatalog, navigationCatalog))
-  const siteFiles = [...mapSite(playbook, pages), ...produceRedirects(playbook, contentCatalog)]
+  const pages = await wrapAsync(eventEmitter, 'ConvertDocuments', convertDocuments, playbook, { contentCatalog, asciidocConfig })
+  const navigationCatalog = await wrapSync(eventEmitter, 'BuildNavigation', buildNavigation, playbook, { contentCatalog, asciidocConfig })
+  const composePage = await wrapSync(eventEmitter, 'CreatePageComposer', createPageComposer, playbook, { playbook, contentCatalog, uiCatalog, env })
+  await Promise.all(pages.map((page) => wrapSync(eventEmitter, 'ComposePage', composePage, playbook, { page, contentCatalog, navigationCatalog })))
+  const siteFiles = (await wrapSync(eventEmitter, 'MapSite', mapSite, playbook, { playbook, pages }))
+    .concat(await wrapSync(eventEmitter, 'ProduceRedirects', produceRedirects, playbook, { playbook, contentCatalog }))
   if (playbook.site.url) siteFiles.push(composePage(create404Page()))
   const siteCatalog = { getFiles: () => siteFiles }
-  return publishSite(playbook, [contentCatalog, uiCatalog, siteCatalog])
+  return wrapAsync(eventEmitter, 'PublishSite', publishSite, playbook, { playbook, catalogs: [contentCatalog, uiCatalog, siteCatalog] })
+}
+
+async function wrapAsync (eventEmitter, name, funct, playbook, argObject) {
+  const args = Object.values(argObject)
+  'playbook' in argObject || (argObject.playbook = playbook)
+  await eventEmitter.emit('before' + name, argObject)
+  return funct(...args, eventEmitter).then(async (result) => {
+    await eventEmitter.emit('after' + name, playbook, result)
+    return result
+  })
+}
+
+async function wrapSync (eventEmitter, name, funct, playbook, argObject) {
+  const args = Object.values(argObject)
+  'playbook' in argObject || (argObject.playbook = playbook)
+  await eventEmitter.emit('before' + name, argObject)
+  const result = funct(...args, eventEmitter)
+  await eventEmitter.emit('after' + name, playbook, result)
+  return result
 }
 
 function create404Page () {

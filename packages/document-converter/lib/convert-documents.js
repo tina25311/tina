@@ -2,6 +2,7 @@
 
 const convertDocument = require('./convert-document')
 const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-loader')
+const ON_DOCUMENT_HEADERS_PARSED = 'onDocumentHeadersParsed'
 
 /**
  * Converts the contents of publishable pages with the media type text/asciidoc
@@ -25,7 +26,7 @@ const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-load
  *
  * @returns {Array<File>} The publishable virtual files in the page family taken from the content catalog.
  */
-function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
+async function convertDocuments (contentCatalog, siteAsciiDocConfig = {}, eventEmitter) {
   const mainAsciiDocConfigs = new Map()
   contentCatalog.getComponents().forEach(({ name: component, versions }) => {
     versions.forEach(({ version, asciidoc }) => {
@@ -37,7 +38,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
   for (const [cacheKey, mainAsciiDocConfig] of mainAsciiDocConfigs) {
     headerAsciiDocConfigs.set(cacheKey, Object.assign({}, mainAsciiDocConfig, headerOverrides))
   }
-  return contentCatalog
+  const pagesWithHeaders = contentCatalog
     .getPages((page) => page.out)
     .map((page) => {
       if (page.mediaType === 'text/asciidoc') {
@@ -55,6 +56,10 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
       }
       return page
     })
+  if (eventEmitter) {
+    await eventEmitter.emit(ON_DOCUMENT_HEADERS_PARSED, { pagesWithHeaders, contentCatalog })
+  }
+  return pagesWithHeaders
     .map((page) =>
       page.mediaType === 'text/asciidoc'
         ? convertDocument(page, contentCatalog, mainAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig)

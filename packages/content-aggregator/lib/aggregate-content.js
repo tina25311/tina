@@ -32,6 +32,7 @@ const {
   GIT_OPERATION_LABEL_LENGTH,
   GIT_PROGRESS_PHASES,
   VALID_STATE_FILENAME,
+  ON_COMPONENT_DESCRIPTOR,
 } = require('./constants')
 
 const ANY_SEPARATOR_RX = /[:/]/
@@ -73,10 +74,27 @@ const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)
  * @param {Boolean} [playbook.git.ensureGitSuffix=true] - Whether the .git
  * suffix is automatically appended to each repository URL, if missing.
  * @param {Array} playbook.content - An array of content sources.
+ * @param {EventEmitter} eventEmitter - global event emitter for plugins
  *
  * @returns {Promise<Object>} A map of files organized by component version.
  */
-function aggregateContent (playbook) {
+function aggregateContent (playbook, eventEmitter) {
+  if (!eventEmitter) {
+    const baseEmitter = new EventEmitter()
+
+    eventEmitter = {
+
+      emit: async (name, ...args) => {
+        const promises = []
+        baseEmitter.emit(name, promises, ...args)
+        promises.length && await Promise.all(promises)
+      },
+
+      on: (name, listener) => baseEmitter.on(name, (promises, ...args) => promises.push(listener(...args))),
+
+      listenerCount: (name) => baseEmitter.listenerCount(name),
+    }
+  }
   const startDir = playbook.dir || '.'
   const { branches, editUrl, tags, sources } = playbook.content
   const sourcesByUrl = sources.reduce(
@@ -106,7 +124,7 @@ function aggregateContent (playbook) {
                 // NOTE if repository is managed (has a url), we can assume the remote name is origin
                 // TODO if the repo has no remotes, then remoteName should be undefined
                 const remoteName = repo.url ? 'origin' : source.remote || 'origin'
-                return collectFilesFromSource(source, repo, remoteName, authStatus)
+                return collectFilesFromSource(source, repo, remoteName, authStatus, eventEmitter)
               })
             )
           )
@@ -221,10 +239,11 @@ function extractCredentials (url) {
   }
 }
 
-async function collectFilesFromSource (source, repo, remoteName, authStatus) {
+async function collectFilesFromSource (source, repo, remoteName, authStatus, eventEmitter) {
   const originUrl = repo.url || (await resolveRemoteUrl(repo, remoteName))
   return selectReferences(source, repo, remoteName).then((refs) =>
-    Promise.all(refs.map((ref) => collectFilesFromReference(source, repo, remoteName, authStatus, ref, originUrl)))
+    Promise.all(refs.map((ref) =>
+      collectFilesFromReference(source, repo, remoteName, authStatus, ref, originUrl, eventEmitter)))
   )
 }
 
@@ -331,7 +350,7 @@ function getCurrentBranchName (repo, remote) {
   return refPromise.then((ref) => (ref.startsWith('refs/') ? ref.replace(SHORTEN_REF_RX, '') : undefined))
 }
 
-async function collectFilesFromReference (source, repo, remoteName, authStatus, ref, originUrl) {
+async function collectFilesFromReference (source, repo, remoteName, authStatus, ref, originUrl, eventEmitter) {
   const url = repo.url
   const displayUrl = url || repo.dir
   const editUrl = source.editUrl
@@ -355,24 +374,28 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
     }
     return Promise.all(
       startPaths.map((startPath) =>
-        collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl)
+        collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, eventEmitter)
       )
     )
   }
   const startPath = cleanStartPath(coerceToString(source.startPath))
-  return collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl)
+  return collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, eventEmitter)
 }
 
-function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl) {
+function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, eventEmitter) {
   return (worktreePath
     ? readFilesFromWorktree(worktreePath, startPath)
     : readFilesFromGitTree(repo, ref.oid, startPath)
   )
-    .then((files) => {
+    .then(async (files) => {
       const componentVersionBucket = loadComponentDescriptor(files)
       const origin = computeOrigin(originUrl, authStatus, ref, startPath, worktreePath, editUrl)
-      componentVersionBucket.files = files.map((file) => assignFileProperties(file, origin))
-      return componentVersionBucket
+      return eventEmitter.emit(ON_COMPONENT_DESCRIPTOR,
+        { componentDescriptor: componentVersionBucket, files, startPath, repo, authStatus, ref, worktreePath, origin })
+        .then(() => {
+          componentVersionBucket.files = files.map((file) => assignFileProperties(file, origin))
+          return componentVersionBucket
+        })
     })
     .catch((err) => {
       const refInfo = `ref: ${ref.fullname.replace(/^heads\//, '')}${worktreePath ? ' <worktree>' : ''}`

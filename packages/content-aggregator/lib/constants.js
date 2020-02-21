@@ -10,4 +10,6 @@ module.exports = Object.freeze({
   GIT_OPERATION_LABEL_LENGTH: 8,
   GIT_PROGRESS_PHASES: ['Counting objects', 'Compressing objects', 'Receiving objects', 'Resolving deltas'],
   VALID_STATE_FILENAME: 'valid',
+  // events
+  ON_COMPONENT_DESCRIPTOR: 'onComponentDescriptor',
 })

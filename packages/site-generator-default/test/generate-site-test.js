@@ -729,6 +729,78 @@ describe('generateSite()', function () {
     }).timeout(timeoutOverride)
   })
 
+  it('should register pipeline extension configured in playbook; events should be as expected', async () => {
+    fs.mkdirSync(ospath.resolve(WORK_DIR, 'pipeline-extensions'))
+    fs.writeFileSync(
+      ospath.resolve(WORK_DIR, 'pipeline-extensions', 'argument-test-extension.js'),
+      fs.readFileSync(ospath.resolve(FIXTURES_DIR, 'argument-test-extension.js'), 'utf8')
+    )
+    playbookSpec.extensions = ['./pipeline-extensions/argument-test-extension']
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const reports = await generateSite(['--playbook', playbookFile], env)
+    const eventContext = reports[reports.length - 1]
+    expect(eventContext).to.be.an('object')
+    expect(eventContext.beforeBuildPlaybook).to.be.a('undefined')
+    expect(eventContext.afterBuildPlaybook.playbook).to.be.an('object')
+
+    expect(eventContext.beforeResolveAsciiDocConfig.playbook).to.be.an('object')
+    expect(eventContext.afterResolveAsciiDocConfig.asciidocConfig).to.be.an('object')
+
+    expect(eventContext.beforeAggregateContent.playbook).to.be.an('object')
+    expect(eventContext.onComponentDescriptor.componentDescriptor).to.be.an('object')
+    expect(eventContext.afterAggregateContent.contentAggregate).to.be.an('array')
+    expect(eventContext.afterAggregateContent.contentAggregate.length).to.equal(1)
+
+    expect(eventContext.beforeClassifyContent.playbook).to.be.an('object')
+    expect(eventContext.beforeClassifyContent.contentAggregate).to.be.an('array')
+    expect(eventContext.beforeClassifyContent.contentAggregate.length).to.equal(1)
+    expect(eventContext.beforeClassifyContent.asciidocConfig).to.be.an('object')
+    expect(eventContext.afterClassifyContent.contentCatalog).to.be.an('object')
+
+    expect(eventContext.beforeLoadUi.playbook).to.be.an('object')
+    expect(eventContext.afterLoadUi.uiCatalog).to.be.an('object')
+
+    expect(eventContext.beforeConvertDocuments.contentCatalog).to.be.an('object')
+    expect(eventContext.beforeConvertDocuments.asciidocConfig).to.be.an('object')
+    expect(eventContext.onDocumentHeadersParsed.contentCatalog).to.be.an('object')
+    expect(eventContext.onDocumentHeadersParsed.pagesWithHeaders).to.be.an('array')
+    expect(eventContext.onDocumentHeadersParsed.pagesWithHeaders.length).to.equal(3)
+    expect(eventContext.afterConvertDocuments.pages).to.be.an('array')
+    expect(eventContext.afterConvertDocuments.pages.length).to.equal(3)
+
+    expect(eventContext.beforeBuildNavigation.contentCatalog).to.be.an('object')
+    expect(eventContext.beforeBuildNavigation.asciidocConfig).to.be.an('object')
+    expect(eventContext.afterBuildNavigation.navigationCatalog).to.be.an('object')
+
+    expect(eventContext.beforeCreatePageComposer.playbook).to.be.an('object')
+    expect(eventContext.beforeCreatePageComposer.contentCatalog).to.be.an('object')
+    expect(eventContext.beforeCreatePageComposer.uiCatalog).to.be.an('object')
+    expect(eventContext.beforeCreatePageComposer.env).to.be.an('object')
+    expect(eventContext.afterCreatePageComposer.composePage).to.be.an('function')
+
+    expect(eventContext.beforeComposePage.page).to.be.an('object')
+    expect(eventContext.beforeComposePage.contentCatalog).to.be.an('object')
+    expect(eventContext.beforeComposePage.navigationCatalog).to.be.an('object')
+    expect(eventContext.afterComposePage.page).to.be.an('object')
+
+    expect(eventContext.beforeMapSite.playbook).to.be.an('object')
+    expect(eventContext.beforeMapSite.pages).to.be.an('array')
+    expect(eventContext.beforeMapSite.pages.length).to.equal(3)
+    expect(eventContext.afterMapSite.siteFiles).to.be.an('array')
+    expect(eventContext.afterMapSite.siteFiles.length).to.equal(0)
+
+    expect(eventContext.beforeProduceRedirects.playbook).to.be.an('object')
+    expect(eventContext.beforeProduceRedirects.contentCatalog).to.be.an('object')
+    expect(eventContext.afterProduceRedirects.siteFiles).to.be.an('array')
+    expect(eventContext.afterProduceRedirects.siteFiles.length).to.equal(0)
+
+    expect(eventContext.beforePublishSite.playbook).to.be.an('object')
+    expect(eventContext.beforePublishSite.catalogs).to.be.an('array')
+    expect(eventContext.beforePublishSite.catalogs.length).to.equal(3)
+    expect(eventContext.afterPublishSite.reports).to.be.an('array')
+    expect(eventContext.afterPublishSite.reports.length).to.equal(2)
+  }).timeout(timeoutOverride)
+
   // to test:
   // - don't pass environment variable map to generateSite
   // - pass environment variable override to generateSite

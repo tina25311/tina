@@ -11,13 +11,13 @@ describe('convertDocuments()', () => {
   const asciidocConfig = resolveAsciiDocConfig()
   const expectPageLink = (html, url, content) => expect(html).to.include(`<a href="${url}" class="page">${content}</a>`)
 
-  it('should run on all files in the page family', () => {
+  it('should run on all files in the page family', async () => {
     const contentCatalog = mockContentCatalog().spyOn('getPages')
-    convertDocuments(contentCatalog)
+    await convertDocuments(contentCatalog)
     expect(contentCatalog.getPages).to.have.been.called()
   })
 
-  it('should only process and return publishable files from the page family in the content catalog', () => {
+  it('should only process and return publishable files from the page family in the content catalog', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -48,13 +48,13 @@ describe('convertDocuments()', () => {
     ])
     const attributesFile = contentCatalog.getFiles().find((f) => f.src.relative === '_attributes.adoc')
     const attributesFileContents = attributesFile.contents
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages).to.have.lengthOf(2)
     pages.forEach((page) => expect(page.src.mediaType).to.equal('text/asciidoc'))
     expect(attributesFile.contents).to.equal(attributesFileContents)
   })
 
-  it('should convert contents of files in page family to embeddable HTML', () => {
+  it('should convert contents of files in page family to embeddable HTML', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -67,7 +67,7 @@ describe('convertDocuments()', () => {
         mediaType: 'text/asciidoc',
       },
     ])
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages).to.have.lengthOf(2)
     pages.forEach((page) => {
       expect(page.mediaType).to.equal('text/html')
@@ -75,7 +75,7 @@ describe('convertDocuments()', () => {
     })
   })
 
-  it('should remove src.contents property after all documents are converted', () => {
+  it('should remove src.contents property after all documents are converted', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -89,14 +89,14 @@ describe('convertDocuments()', () => {
       },
     ])
     expect(asciidocConfig).to.not.have.nested.property('attributes.page-partial')
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages).to.have.lengthOf(2)
     pages.forEach((page) => {
       expect(page.src).to.not.have.property('contents')
     })
   })
 
-  it('should assign relevant properties to asciidoc property on file object', () => {
+  it('should assign relevant properties to asciidoc property on file object', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -114,7 +114,7 @@ describe('convertDocuments()', () => {
         mediaType: 'text/asciidoc',
       },
     ])
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages).to.have.lengthOf(3)
     pages.forEach((page) => {
       expect(page).to.have.nested.property('asciidoc.attributes')
@@ -133,7 +133,7 @@ describe('convertDocuments()', () => {
     expect(untitledPage).to.not.have.nested.property('asciidoc.navtitle')
   })
 
-  it('should assign value of doctitle to title property on file', () => {
+  it('should assign value of doctitle to title property on file', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -141,13 +141,13 @@ describe('convertDocuments()', () => {
         mediaType: 'text/asciidoc',
       },
     ])
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages).to.have.lengthOf(1)
     const homePage = pages.find((it) => it.src.relative === 'index.adoc')
     expect(homePage.title).to.equal('Welcome')
   })
 
-  it('should convert contents to embeddable HTML using default settings if AsciiDoc config not provided', () => {
+  it('should convert contents to embeddable HTML using default settings if AsciiDoc config not provided', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -160,7 +160,7 @@ describe('convertDocuments()', () => {
         mediaType: 'text/asciidoc',
       },
     ])
-    const pages = convertDocuments(contentCatalog)
+    const pages = await convertDocuments(contentCatalog)
     expect(pages).to.have.lengthOf(1)
     pages.forEach((page) => {
       expect(page.mediaType).to.equal('text/html')
@@ -168,7 +168,7 @@ describe('convertDocuments()', () => {
     })
   })
 
-  it('should use AsciiDoc config scoped to component version, if available', () => {
+  it('should use AsciiDoc config scoped to component version, if available', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -181,7 +181,7 @@ describe('convertDocuments()', () => {
       asciidoc: { attributes: { experimental: '' } },
     })
     expect(asciidocConfig.attributes).to.not.have.property('experimental')
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages).to.have.lengthOf(1)
     pages.forEach((page) => {
       expect(page.mediaType).to.equal('text/html')
@@ -189,7 +189,7 @@ describe('convertDocuments()', () => {
     })
   })
 
-  it('should only convert documents that have the text/asciidoc media type', () => {
+  it('should only convert documents that have the text/asciidoc media type', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -202,7 +202,7 @@ describe('convertDocuments()', () => {
         mediaType: 'text/html',
       },
     ])
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages[0].contents.toString()).to.equal(heredoc`
     <div class="paragraph">
     <p>This one should be converted.</p>
@@ -211,7 +211,7 @@ describe('convertDocuments()', () => {
     expect(pages[1].contents.toString()).to.equal('<p>This one should <em>not</em> be converted.</p>')
   })
 
-  it('should only convert documents that have the text/asciidoc media type even if the asciidoc property set', () => {
+  it('should only convert documents that have the text/asciidoc media type even if the asciidoc property set', async () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',
@@ -228,7 +228,7 @@ describe('convertDocuments()', () => {
       },
     ])
     contentCatalog.getPages().find(({ src }) => src.relative === 'other.html').asciidoc = { doctitle: 'Hello, HTML!' }
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages[0].contents.toString()).to.equal(heredoc`
     <div class="paragraph">
     <p>This one should be converted.</p>
@@ -240,7 +240,7 @@ describe('convertDocuments()', () => {
     `)
   })
 
-  it('should register aliases defined by page-aliases document attribute', () => {
+  it('should register aliases defined by page-aliases document attribute', async () => {
     const contents = Buffer.from(heredoc`
       = Page Title
       :page-aliases: the-alias.adoc,topic/the-alias.adoc, 1.0.0@page-a.adoc ,another-alias.adoc
@@ -256,7 +256,7 @@ describe('convertDocuments()', () => {
     ])
     const inputFile = contentCatalog.getFiles()[0]
     contentCatalog.registerPageAlias = spy(() => {})
-    convertDocuments(contentCatalog, asciidocConfig)
+    await convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
     expect(contentCatalog.registerPageAlias).first.be.called.with('the-alias.adoc', inputFile)
     expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias.adoc', inputFile)
@@ -266,7 +266,7 @@ describe('convertDocuments()', () => {
       .be.called.with('another-alias.adoc', inputFile)
   })
 
-  it('should register aliases split across lines using a line continuation', () => {
+  it('should register aliases split across lines using a line continuation', async () => {
     const contents = Buffer.from(heredoc`
       = Page Title
       :page-aliases: the-alias.adoc, \
@@ -285,7 +285,7 @@ describe('convertDocuments()', () => {
     ])
     contentCatalog.registerPageAlias = spy(() => {})
     const inputFile = contentCatalog.getFiles()[0]
-    convertDocuments(contentCatalog, asciidocConfig)
+    await convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
     expect(contentCatalog.registerPageAlias).first.called.with('the-alias.adoc', inputFile)
     expect(contentCatalog.registerPageAlias).second.called.with('topic/the-alias', inputFile)
@@ -295,7 +295,7 @@ describe('convertDocuments()', () => {
       .called.with('another-alias.adoc', inputFile)
   })
 
-  it('should register alias specified with no file extension', () => {
+  it('should register alias specified with no file extension', async () => {
     const contents = Buffer.from(heredoc`
       = Page Title
       :page-aliases: the-alias,topic/the-alias
@@ -311,13 +311,13 @@ describe('convertDocuments()', () => {
     ])
     const inputFile = contentCatalog.getFiles()[0]
     contentCatalog.registerPageAlias = spy(() => {})
-    convertDocuments(contentCatalog, asciidocConfig)
+    await convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(2)
     expect(contentCatalog.registerPageAlias).first.be.called.with('the-alias', inputFile)
     expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias', inputFile)
   })
 
-  it('should not register aliases if page-aliases document attribute is empty', () => {
+  it('should not register aliases if page-aliases document attribute is empty', async () => {
     const contents = Buffer.from(heredoc`
       = Page Title
       :page-aliases:
@@ -332,11 +332,11 @@ describe('convertDocuments()', () => {
       },
     ])
     contentCatalog.registerPageAlias = spy(() => {})
-    convertDocuments(contentCatalog, asciidocConfig)
+    await convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.not.have.been.called()
   })
 
-  it('should fill in missing contents of page reference with automatic reference text', () => {
+  it('should fill in missing contents of page reference with automatic reference text', async () => {
     const fromContents = Buffer.from(heredoc`
       = From
 
@@ -359,12 +359,12 @@ describe('convertDocuments()', () => {
         mediaType: 'text/asciidoc',
       },
     ])
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     const fromConvertedContents = pages.find((it) => it.src.relative === 'from.adoc').contents.toString()
     expectPageLink(fromConvertedContents, 'to.html', 'To')
   })
 
-  it('should be able to reference page alias as target of xref', () => {
+  it('should be able to reference page alias as target of xref', async () => {
     const contentsA = Buffer.from(heredoc`
       = The Page
       :page-aliases: a-page.adoc
@@ -396,7 +396,7 @@ describe('convertDocuments()', () => {
     contentCatalog.resolvePage = (spec, ctx = {}) => {
       return (aliases[spec] || {}).rel
     }
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     const thePageContents = pages.find((it) => it.src.relative === 'the-page.adoc').contents.toString()
     const zaPageContents = pages.find((it) => it.src.relative === 'za-page.adoc').contents.toString()
     expectPageLink(thePageContents, 'za-page.html', 'the end page')
@@ -404,7 +404,7 @@ describe('convertDocuments()', () => {
     expectPageLink(zaPageContents, 'za-page.html', 'the end page')
   })
 
-  it('should be able to include a page which has already been converted', () => {
+  it('should be able to include a page which has already been converted', async () => {
     const contentsA = Buffer.from(heredoc`
       = Changelog
 
@@ -433,7 +433,7 @@ describe('convertDocuments()', () => {
         mediaType: 'text/asciidoc',
       },
     ])
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const pages = await convertDocuments(contentCatalog, asciidocConfig)
     expect(pages[1].contents.toString()).to.include(heredoc`
       <div class="sect1">
       <h2 id="_recent_changes"><a class="anchor" href="#_recent_changes"></a>Recent Changes</h2>

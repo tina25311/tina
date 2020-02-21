@@ -1,14 +1,16 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('../../../test/test-utils')
+const EventEmitter = require('events')
+
+const { deferExceptions, expect } = require('../../../test/test-utils')
 
 const buildPlaybook = require('@antora/playbook-builder')
 const ospath = require('path')
 
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 
-describe('buildPlaybook()', () => {
+describe('buildPlaybook()', async () => {
   let schema, expectedPlaybook
 
   beforeEach(() => {
@@ -100,30 +102,32 @@ describe('buildPlaybook()', () => {
   const legacyUiStartPathSpec = ospath.join(FIXTURES_DIR, 'legacy-ui-start-path-sample.yml')
   const invalidSiteUrlSpec = ospath.join(FIXTURES_DIR, 'invalid-site-url-spec-sample.yml')
   const defaultSchemaSpec = ospath.join(FIXTURES_DIR, 'default-schema-spec-sample.yml')
+  const defaultSchemaSpecWithPipelineExtension = ospath.join(FIXTURES_DIR, 'default-schema-spec-pipeline-extension-sample.yml')
+  const defaultSchemaSpecWithPipelineExtensionConfigs = ospath.join(FIXTURES_DIR, 'default-schema-spec-pipeline-extension-config-sample.yml')
 
-  it('should set dir to process.cwd() when playbook file is not specified', () => {
-    const playbook = buildPlaybook([], {}, { playbook: { format: String, default: undefined } })
+  it('should set dir to process.cwd() when playbook file is not specified', async () => {
+    const playbook = await buildPlaybook([], {}, { playbook: { format: String, default: undefined } })
     expect(playbook.dir).to.equal(process.cwd())
     expect(playbook.file).to.not.exist()
   })
 
-  it('should set dir and file properties based on absolute path of playbook file', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: ospath.relative('.', ymlSpec) }, schema)
+  it('should set dir and file properties based on absolute path of playbook file', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: ospath.relative('.', ymlSpec) }, schema)
     expect(playbook.dir).to.equal(ospath.dirname(ymlSpec))
     expect(playbook.file).to.equal(ymlSpec)
     expect(playbook.playbook).to.not.exist()
   })
 
-  it('should load YAML playbook file with .yml extension', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
+  it('should load YAML playbook file with .yml extension', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(ymlSpec)
     expectedPlaybook.file = ymlSpec
     expectedPlaybook.one.one = 'yml-spec-value-one'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
-  it('should load YAML playbook file with .yaml extension', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: yamlSpec }, schema)
+  it('should load YAML playbook file with .yaml extension', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: yamlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(yamlSpec)
     expectedPlaybook.file = yamlSpec
     expectedPlaybook.one.one = 'yaml-spec-value-one'
@@ -134,173 +138,180 @@ describe('buildPlaybook()', () => {
     expect(playbook).to.eql(expectedPlaybook)
   })
 
-  it('should load JSON (JSON 5) playbook file', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: jsonSpec }, schema)
+  it('should load JSON (JSON 5) playbook file', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: jsonSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(jsonSpec)
     expectedPlaybook.file = jsonSpec
     expectedPlaybook.one.one = 'json-spec-value-one'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
-  it('should load TOML playbook file', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: tomlSpec }, schema)
+  it('should load TOML playbook file', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: tomlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(tomlSpec)
     expectedPlaybook.file = tomlSpec
     expectedPlaybook.one.one = 'toml-spec-value-one'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
-  it('should load YAML playbook file first when no file extension is given', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: extensionlessSpec }, schema)
+  it('should load YAML playbook file first when no file extension is given', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: extensionlessSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(extensionlessSpec)
     expectedPlaybook.file = extensionlessSpec + '.yml'
     expectedPlaybook.one.one = 'yml-spec-value-one'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
-  it('should discover JSON playbook when no file extension is given', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: extensionlessJsonSpec }, schema)
+  it('should discover JSON playbook when no file extension is given', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: extensionlessJsonSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(extensionlessJsonSpec)
     expectedPlaybook.file = extensionlessJsonSpec + '.json'
     expectedPlaybook.one.one = 'json-spec-value-one'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
-  it('should discover TOML playbook when no file extension is given', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: extensionlessTomlSpec }, schema)
+  it('should discover TOML playbook when no file extension is given', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: extensionlessTomlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(extensionlessTomlSpec)
     expectedPlaybook.file = extensionlessTomlSpec + '.toml'
     expectedPlaybook.one.one = 'toml-spec-value-one'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
-  it('should throw error when loading unknown type file', () => {
-    expect(() => buildPlaybook([], { PLAYBOOK: iniSpec }, schema)).to.throw('Unexpected playbook file type')
+  it('should throw error when loading unknown type file', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: iniSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw('Unexpected playbook file type')
   })
 
-  it('should throw error if specified playbook file does not exist', () => {
+  it('should throw error if specified playbook file does not exist', async () => {
     const expectedMessage =
       `playbook file not found at ${ospath.resolve('non-existent/file.yml')} ` +
       `(path: non-existent/file.yml, cwd: ${process.cwd()})`
-    expect(() => buildPlaybook([], { PLAYBOOK: 'non-existent/file.yml' }, schema)).to.throw(expectedMessage)
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: 'non-existent/file.yml' }, schema)
+    expect(buildPlaybookDeferred).to.throw(expectedMessage)
   })
 
-  it('should not show details in error message if input path of playbook file matches resolved path', () => {
+  it('should not show details in error message if input path of playbook file matches resolved path', async () => {
     const playbookFilePath = ospath.resolve('non-existent/file.yml')
     const expectedMessage = `playbook file not found at ${playbookFilePath}`
     // FIXME: technically this does not assert that the details are absent
-    expect(() => buildPlaybook([], { PLAYBOOK: playbookFilePath }, schema)).to.throw(expectedMessage)
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: playbookFilePath }, schema)
+    expect(buildPlaybookDeferred).to.throw(expectedMessage)
   })
 
-  it('should not show cwd in error message if input path of playbook file is absolute', () => {
+  it('should not show cwd in error message if input path of playbook file is absolute', async () => {
     const playbookFilePath = ospath.resolve('non-existent/file.yml')
     const requestedPlaybookFilePath = [process.cwd(), 'non-existent', '..', 'non-existent/file.yml'].join(ospath.sep)
     const expectedMessage = `playbook file not found at ${playbookFilePath} (path: ${requestedPlaybookFilePath})`
-    expect(() => buildPlaybook([], { PLAYBOOK: requestedPlaybookFilePath }, schema)).to.throw(expectedMessage)
+    const buildPlaybookDeferred =
+      await deferExceptions(buildPlaybook, [], { PLAYBOOK: requestedPlaybookFilePath }, schema)
+    expect(buildPlaybookDeferred).to.throw(expectedMessage)
   })
 
-  it('should throw error if playbook file without extension cannot be resolved', () => {
+  it('should throw error if playbook file without extension cannot be resolved', async () => {
     const resolvedRootPath = ospath.resolve('non-existent/file')
     const expectedMessage =
       'playbook file not found at ' +
       `${resolvedRootPath}.yml, ${resolvedRootPath}.json, or ${resolvedRootPath}.toml` +
       ` (path: non-existent/file, cwd: ${process.cwd()})`
-    expect(() => buildPlaybook([], { PLAYBOOK: 'non-existent/file' }, schema)).to.throw(expectedMessage)
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: 'non-existent/file' }, schema)
+    expect(buildPlaybookDeferred).to.throw(expectedMessage)
   })
 
-  it('should use default value if playbook file is not specified', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
+  it('should use default value if playbook file is not specified', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
     expect(playbook.one.two).to.equal('default-value')
   })
 
-  it('should use env value over value in playbook file', () => {
+  it('should use env value over value in playbook file', async () => {
     const env = { PLAYBOOK: ymlSpec, ANTORA_ONE_ONE: 'the-env-value' }
-    const playbook = buildPlaybook([], env, schema)
+    const playbook = await buildPlaybook([], env, schema)
     expect(playbook.one.one).to.equal('the-env-value')
   })
 
-  it('should use env value over value in playbook file when env value is empty string', () => {
+  it('should use env value over value in playbook file when env value is empty string', async () => {
     const env = { PLAYBOOK: ymlSpec, ANTORA_ONE_ONE: '' }
-    const playbook = buildPlaybook([], env, schema)
+    const playbook = await buildPlaybook([], env, schema)
     expect(playbook.one.one).to.equal('')
   })
 
-  it('should use args value over value in playbook file or env value even if value is falsy', () => {
+  it('should use args value over value in playbook file or env value even if value is falsy', async () => {
     const args = ['--one-one', 'the-args-value']
     const env = { PLAYBOOK: ymlSpec, ANTORA_ONE_ONE: 'the-env-value' }
-    const playbook = buildPlaybook(args, env, schema)
+    const playbook = await buildPlaybook(args, env, schema)
     expect(playbook.one.one).to.equal('the-args-value')
   })
 
-  it('should use arg value over value in playbook file when arg value is falsy', () => {
+  it('should use arg value over value in playbook file when arg value is falsy', async () => {
     const args = ['--two', '0']
     const env = { PLAYBOOK: ymlSpec, ANTORA_TWO: '47' }
-    const playbook = buildPlaybook(args, env, schema)
+    const playbook = await buildPlaybook(args, env, schema)
     expect(playbook.two).to.equal(0)
   })
 
-  it('should convert properties of playbook to camelCase', () => {
+  it('should convert properties of playbook to camelCase', async () => {
     const env = { PLAYBOOK: ymlSpec, WIDGET_KEY: 'xxxyyyzzz' }
-    const playbook = buildPlaybook([], env, schema)
+    const playbook = await buildPlaybook([], env, schema)
     expect(playbook.one.widgetKey).to.equal('xxxyyyzzz')
   })
 
-  it('should coerce Number values in playbook file', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
+  it('should coerce Number values in playbook file', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
     expect(playbook.two).to.equal(42)
   })
 
-  it('should coerce Number values in env', () => {
+  it('should coerce Number values in env', async () => {
     const env = { PLAYBOOK: ymlSpec, ANTORA_TWO: '777' }
-    const playbook = buildPlaybook([], env, schema)
+    const playbook = await buildPlaybook([], env, schema)
     expect(playbook.two).to.equal(777)
   })
 
-  it('should use env value over value in playbook file when env value is falsy', () => {
+  it('should use env value over value in playbook file when env value is falsy', async () => {
     const env = { PLAYBOOK: ymlSpec, ANTORA_TWO: '0' }
-    const playbook = buildPlaybook([], env, schema)
+    const playbook = await buildPlaybook([], env, schema)
     expect(playbook.two).to.equal(0)
   })
 
-  it('should coerce Number values in args', () => {
-    const playbook = buildPlaybook(['--two', '777'], { PLAYBOOK: ymlSpec }, schema)
+  it('should coerce Number values in args', async () => {
+    const playbook = await buildPlaybook(['--two', '777'], { PLAYBOOK: ymlSpec }, schema)
     expect(playbook.two).to.equal(777)
   })
 
-  it('should coerce Boolean values in playbook file', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
+  it('should coerce Boolean values in playbook file', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
     expect(playbook.three).to.be.false()
   })
 
-  it('should coerce Boolean values in env', () => {
+  it('should coerce Boolean values in env', async () => {
     const env = { PLAYBOOK: ymlSpec, ANTORA_THREE: 'true' }
-    const playbook = buildPlaybook([], env, schema)
+    const playbook = await buildPlaybook([], env, schema)
     expect(playbook.three).to.be.true()
   })
 
-  it('should coerce Boolean values in args', () => {
-    const playbook = buildPlaybook(['--three'], { PLAYBOOK: ymlSpec }, schema)
+  it('should coerce Boolean values in args', async () => {
+    const playbook = await buildPlaybook(['--three'], { PLAYBOOK: ymlSpec }, schema)
     expect(playbook.three).to.be.true()
   })
 
-  it('should coerce primitive map value in playbook file from Object', () => {
+  it('should coerce primitive map value in playbook file from Object', async () => {
     schema.keyvals.format = 'primitive-map'
-    const playbook = buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
+    const playbook = await buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
     expect(playbook.keyvals).to.eql({ key: 'val', keyOnly: '', foo: 'bar', nada: null, yep: true, nope: false })
   })
 
-  it('should throw error if value of primitive map key is a String', () => {
+  it('should throw error if value of primitive map key is a String', async () => {
     schema.keyvals2.format = 'primitive-map'
-    expect(() => buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)).to.throw(
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: coerceValueSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw(
       'must be a primitive map (i.e., key/value pairs, primitive values only)'
     )
   })
 
-  it('should coerce primitive map value in env', () => {
+  it('should coerce primitive map value in env', async () => {
     schema.keyvals.format = 'primitive-map'
     const val = 'key=val,key-only,=valonly,empty=,tilde="~",site_tags="a,b,c",nada=~,y=true,n=false,when=2020-01-01'
     const env = { PLAYBOOK: ymlSpec, KEYVALS: val }
-    const playbook = buildPlaybook([], env, schema)
+    const playbook = await buildPlaybook([], env, schema)
     expect(playbook.keyvals).to.eql({
       key: 'val',
       keyOnly: '',
@@ -314,9 +325,9 @@ describe('buildPlaybook()', () => {
     })
   })
 
-  it('should coerce primitive map value in args', () => {
+  it('should coerce primitive map value in args', async () => {
     schema.keyvals.format = 'primitive-map'
-    const playbook = buildPlaybook(
+    const playbook = await buildPlaybook(
       [
         '--keyval',
         'key=val',
@@ -355,51 +366,55 @@ describe('buildPlaybook()', () => {
     })
   })
 
-  it('should use primitive map value in args to update map value from playbook file', () => {
+  it('should use primitive map value in args to update map value from playbook file', async () => {
     schema.keyvals.format = 'primitive-map'
     const args = ['--keyval', 'foo=baz', '--keyval', 'key-only=useme']
-    const playbook = buildPlaybook(args, { PLAYBOOK: coerceValueSpec }, schema)
+    const playbook = await buildPlaybook(args, { PLAYBOOK: coerceValueSpec }, schema)
     expect(playbook.keyvals.key).to.equal('val')
     expect(playbook.keyvals.keyOnly).to.equal('useme')
     expect(playbook.keyvals.foo).to.equal('baz')
   })
 
-  it('should throw error if value of primitive map key is not an object', () => {
+  it('should throw error if value of primitive map key is not an object', async () => {
     schema.keyvals.format = 'primitive-map'
-    expect(() => buildPlaybook([], { PLAYBOOK: invalidMapSpec }, schema)).to.throw(
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: invalidMapSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw(
       'must be a primitive map (i.e., key/value pairs, primitive values only)'
     )
   })
 
-  it('should throw error if value of primitive map key is not primitive', () => {
+  it('should throw error if value of primitive map key is not primitive', async () => {
     schema.keyvals.format = 'primitive-map'
-    expect(() => buildPlaybook([], { PLAYBOOK: invalidPrimitiveMapSpec }, schema)).to.throw(
+    const buildPlaybookDeferred =
+      await deferExceptions(buildPlaybook, [], { PLAYBOOK: invalidPrimitiveMapSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw(
       'must be a primitive map (i.e., key/value pairs, primitive values only)'
     )
   })
 
-  it('should allow value of primitive map key to be null', () => {
+  it('should allow value of primitive map key to be null', async () => {
     schema.keyvals.format = 'primitive-map'
-    const playbook = buildPlaybook([], { PLAYBOOK: nullMapSpec }, schema)
+    const playbook = await buildPlaybook([], { PLAYBOOK: nullMapSpec }, schema)
     expect(playbook.keyvals).to.be.null()
   })
 
-  it('should coerce map value in playbook file from Object', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
+  it('should coerce map value in playbook file from Object', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
     expect(playbook.keyvals).to.eql({ key: 'val', keyOnly: '', foo: 'bar', nada: null, yep: true, nope: false })
   })
 
-  it('should throw error if value of map key is a String', () => {
+  it('should throw error if value of map key is a String', async () => {
     schema.keyvals2.format = 'map'
-    expect(() => buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)).to.throw(
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: coerceValueSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw(
       'must be a map (i.e., key/value pairs)'
     )
   })
 
-  it('should coerce map value in env', () => {
+  it('should coerce map value in env', async () => {
     const val = 'key=val,key-only,=valonly,empty=,tilde="~",site_tags="a,b,c",nada=~,y=true,n=false'
     const env = { PLAYBOOK: ymlSpec, KEYVALS: val }
-    const playbook = buildPlaybook([], env, schema)
+    const playbook = await buildPlaybook([], env, schema)
     expect(playbook.keyvals).to.eql({
       key: 'val',
       keyOnly: '',
@@ -412,8 +427,8 @@ describe('buildPlaybook()', () => {
     })
   })
 
-  it('should coerce map value in args', () => {
-    const playbook = buildPlaybook(
+  it('should coerce map value in args', async () => {
+    const playbook = await buildPlaybook(
       [
         '--keyval',
         'key=val',
@@ -449,15 +464,15 @@ describe('buildPlaybook()', () => {
     })
   })
 
-  it('should use map value in args to update map value from playbook file', () => {
-    const playbook = buildPlaybook(['--keyval', 'foo=baz'], { PLAYBOOK: coerceValueSpec }, schema)
+  it('should use map value in args to update map value from playbook file', async () => {
+    const playbook = await buildPlaybook(['--keyval', 'foo=baz'], { PLAYBOOK: coerceValueSpec }, schema)
     expect(playbook.keyvals.key).to.equal('val')
     expect(playbook.keyvals.foo).to.equal('baz')
   })
 
-  it('should update map value from playbook file with map values in args when name is asciidoc.attributes', () => {
+  it('should update map value from playbook file with map values in args when name is asciidoc.attributes', async () => {
     const args = ['--playbook', defaultSchemaSpec, '--attribute', 'idprefix=user-', '--attribute', 'idseparator=-']
-    const playbook = buildPlaybook(args, {})
+    const playbook = await buildPlaybook(args, {})
     expect(playbook.asciidoc.attributes).to.eql({
       'allow-uri-read': true,
       idprefix: 'user-',
@@ -467,26 +482,25 @@ describe('buildPlaybook()', () => {
     })
   })
 
-  it('should throw error if value of map key is not an object', () => {
-    expect(() => buildPlaybook([], { PLAYBOOK: invalidMapSpec }, schema)).to.throw(
-      'must be a map (i.e., key/value pairs)'
-    )
+  it('should throw error if value of map key is not an object', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: invalidMapSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw('must be a map (i.e., key/value pairs)')
   })
 
-  it('should allow value of map key to be null', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: nullMapSpec }, schema)
+  it('should allow value of map key to be null', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: nullMapSpec }, schema)
     expect(playbook.keyvals).to.be.null()
   })
 
-  it('should coerce String value to Array', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
+  it('should coerce String value to Array', async () => {
+    const playbook = await buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
     expect(playbook.file).to.equal(coerceValueSpec)
     expect(playbook.dir).to.equal(ospath.dirname(coerceValueSpec))
     expect(playbook.one.one).to.equal('one')
     expect(playbook.four).to.eql(['John'])
   })
 
-  it('should throw error if dir-or-virtual-files key is not a string or array', () => {
+  it('should throw error if dir-or-virtual-files key is not a string or array', async () => {
     Object.keys(schema).forEach((key) => {
       if (key !== 'playbook') delete schema[key]
     })
@@ -494,29 +508,32 @@ describe('buildPlaybook()', () => {
       format: 'dir-or-virtual-files',
       default: undefined,
     }
-    expect(() => buildPlaybook([], { PLAYBOOK: invalidDirOrFilesSpec }, schema)).to.throw(
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: invalidDirOrFilesSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw(
       'must be a directory path or list of virtual files'
     )
   })
 
-  it('should throw error when trying to load values not declared in the schema', () => {
-    expect(() => buildPlaybook([], { PLAYBOOK: badSpec }, schema)).to.throw('not declared')
+  it('should throw error when trying to load values not declared in the schema', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: badSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw('not declared')
   })
 
-  it('should throw error when playbook file uses values of the wrong format', () => {
+  it('should throw error when playbook file uses values of the wrong format', async () => {
     schema.two.format = String
-    expect(() => buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)).to.throw('must be of type String')
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, [], { PLAYBOOK: ymlSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw('must be of type String')
   })
 
-  it('should return an immutable playbook', () => {
+  it('should return an immutable playbook', async () => {
     const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
     expect(() => {
       playbook.one.two = 'override'
     }).to.throw()
   })
 
-  it('should use default schema if no schema is specified', () => {
-    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
+  it('should use default schema if no schema is specified', async () => {
+    const playbook = await buildPlaybook(['--playbook', defaultSchemaSpec], {})
     expect(playbook.runtime.cacheDir).to.equal('./.antora-cache')
     expect(playbook.runtime.fetch).to.equal(true)
     expect(playbook.runtime.quiet).to.equal(false)
@@ -562,48 +579,54 @@ describe('buildPlaybook()', () => {
     expect(playbook.output.destinations[0].path).to.equal('./site.zip')
   })
 
-  it('should allow site.url to be a pathname', () => {
-    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--url', '/docs'], {})
+  it('should allow site.url to be a pathname', async () => {
+    const playbook = await buildPlaybook(['--playbook', defaultSchemaSpec, '--url', '/docs'], {})
     expect(playbook.site.url).to.equal('/docs')
   })
 
-  it('should throw error if site.url is a relative path', () => {
-    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'docs'], {})).to.throw(
+  it('should throw error if site.url is a relative path', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, ['--playbook', defaultSchemaSpec, '--url', 'docs'], {})
+    expect(buildPlaybookDeferred).to.throw(
       'must be an absolute URL or a pathname (i.e., root-relative path)'
     )
   })
 
-  it('should throw error if site.url is a file URI', () => {
-    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'file:///path/to/docs'], {})).to.throw(
+  it('should throw error if site.url is a file URI', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, ['--playbook', defaultSchemaSpec, '--url', 'file:///path/to/docs'], {})
+    expect(buildPlaybookDeferred).to.throw(
       'must be an absolute URL or a pathname (i.e., root-relative path)'
     )
   })
 
-  it('should throw error if site.url is an invalid URL', () => {
-    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', ':/foo'], {})).to.throw(
+  it('should throw error if site.url is an invalid URL', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, ['--playbook', defaultSchemaSpec, '--url', ':/foo'], {})
+    expect(buildPlaybookDeferred).to.throw(
       'must be an absolute URL or a pathname (i.e., root-relative path)'
     )
   })
 
-  it('should throw error if site.url is not a string', () => {
-    expect(() => buildPlaybook(['--playbook', invalidSiteUrlSpec], {})).to.throw(
+  it('should throw error if site.url is not a string', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, ['--playbook', invalidSiteUrlSpec], {})
+    expect(buildPlaybookDeferred).to.throw(
       'must be an absolute URL or a pathname (i.e., root-relative path)'
     )
   })
 
-  it('should throw error if site.url is a pathname containing spaces', () => {
-    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', '/my docs'], {})).to.throw(
+  it('should throw error if site.url is a pathname containing spaces', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, ['--playbook', defaultSchemaSpec, '--url', '/my docs'], {})
+    expect(buildPlaybookDeferred).to.throw(
       'must not contain spaces'
     )
   })
 
-  it('should throw error if site.url is an absolute URL containing spaces in the pathname', () => {
-    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'https://example.org/my docs'], {})).to.throw(
+  it('should throw error if site.url is an absolute URL containing spaces in the pathname', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook, ['--playbook', defaultSchemaSpec, '--url', 'https://example.org/my docs'], {})
+    expect(buildPlaybookDeferred).to.throw(
       'must not contain spaces'
     )
   })
 
-  it('should throw error if boolean-or-string key is not a boolean or string', () => {
+  it('should throw error if boolean-or-string key is not a boolean or string', async () => {
     Object.keys(schema).forEach((key) => {
       if (key !== 'playbook') delete schema[key]
     })
@@ -611,49 +634,201 @@ describe('buildPlaybook()', () => {
       format: 'boolean-or-string',
       default: undefined,
     }
-    expect(() => buildPlaybook([], { PLAYBOOK: invalidStringOrBooleanSpec }, schema)).to.throw(
+    const buildPlaybookDeferred =
+      await deferExceptions(buildPlaybook, [], { PLAYBOOK: invalidStringOrBooleanSpec }, schema)
+    expect(buildPlaybookDeferred).to.throw(
       'must be a boolean or string'
     )
   })
 
-  it('should not accept playbook data that defines git.ensureGitSuffix', () => {
-    expect(() => buildPlaybook(['--playbook', legacyGitEnsureGitSuffixSpec], {})).to.throw(/not declared in the schema/)
+  it('should not accept playbook data that defines git.ensureGitSuffix', async () => {
+    expect(await deferExceptions(buildPlaybook, ['--playbook', legacyGitEnsureGitSuffixSpec], {})).to.throw(/not declared in the schema/)
   })
 
-  it('should not accept playbook data that defines runtime.pull', () => {
-    expect(() => buildPlaybook(['--playbook', legacyRuntimePullSpec], {})).to.throw(/not declared in the schema/)
+  it('should not accept playbook data that defines runtime.pull', async () => {
+    expect(await deferExceptions(buildPlaybook, ['--playbook', legacyRuntimePullSpec], {})).to.throw(/not declared in the schema/)
   })
 
-  it('should not accept playbook data that defines ui.bundle as a String', () => {
-    expect(() => buildPlaybook(['--playbook', legacyUiBundleSpec], {})).to.throw(/not declared in the schema/)
+  it('should not accept playbook data that defines ui.bundle as a String', async () => {
+    expect(await deferExceptions(buildPlaybook, ['--playbook', legacyUiBundleSpec], {})).to.throw(/not declared in the schema/)
   })
 
-  it('should not accept playbook data that defines ui.start_path', () => {
-    expect(() => buildPlaybook(['--playbook', legacyUiStartPathSpec], {})).to.throw(/not declared in the schema/)
+  it('should not accept playbook data that defines ui.start_path', async () => {
+    expect(await deferExceptions(buildPlaybook, ['--playbook', legacyUiStartPathSpec], {})).to.throw(/not declared in the schema/)
   })
 
-  it('should throw if no configuration data is given', () => {
-    expect(() => buildPlaybook()).to.throw()
+  it('should throw if no configuration data is given', async () => {
+    const buildPlaybookDeferred = await deferExceptions(buildPlaybook)
+    expect(buildPlaybookDeferred).to.throw()
   })
 
-  it('should be decoupled from the process environment', () => {
+  it('should be decoupled from the process environment', async () => {
     const originalEnv = process.env
     process.env = { URL: 'https://docs.example.org' }
-    const playbook = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'])
+    const playbook = await buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'])
     expect(playbook.site.url).to.be.undefined()
     process.env = originalEnv
   })
 
-  it('should leave the process environment unchanged', () => {
+  it('should leave the process environment unchanged', async () => {
     const processArgv = process.argv
     const processEnv = process.env
     const args = ['--one-one', 'the-args-value']
     const env = { PLAYBOOK: ymlSpec, ANTORA_TWO: 99 }
-    const playbook = buildPlaybook(args, env, schema)
+    const playbook = await buildPlaybook(args, env, schema)
     expect(playbook.one.one).to.equal('the-args-value')
     expect(playbook.two).to.equal(99)
     expect(playbook.three).to.equal(false)
     expect(process.argv).to.equal(processArgv)
     expect(process.env).to.equal(processEnv)
+  })
+
+  describe('build playbook with pipeline extensions', async () => {
+    let eventEmitter, eventContext
+
+    beforeEach(() => {
+      const baseEmitter = new EventEmitter()
+
+      eventEmitter = {
+
+        emit: async (name, ...args) => {
+          const promises = []
+          baseEmitter.emit(name, promises, ...args)
+          promises.length && await Promise.all(promises)
+        },
+
+        on: (name, listener) => baseEmitter.on(name, (promises, ...args) => promises.push(listener(...args))),
+      }
+
+      eventContext = {}
+    })
+    it('should accept empty default pipeline extensions supplied', async () => {
+      await buildPlaybook(['--playbook', defaultSchemaSpec], {}, undefined,
+        eventEmitter, eventContext, [])
+    })
+
+    it('should accept default pipeline extensions supplied', async () => {
+      const eventContext = {}
+      const plugin = {
+        eventContext,
+
+        register: (eventEmitter) => {
+          eventEmitter.on('beforeBuildPlaybook', ({ args, env, schema }) => {
+            eventContext.before = 'called'
+          })
+          eventEmitter.on('afterBuildPlaybook', (playbook) => {
+            eventContext.after = 'called'
+          })
+        },
+      }
+      await buildPlaybook(['--playbook', defaultSchemaSpec], {}, undefined,
+        eventEmitter, [plugin])
+      expect(eventContext.before).to.equal('called')
+      expect(eventContext.after).to.equal('called')
+    })
+
+    it('default pipeline extension should be able to modify args', async () => {
+      const eventContext = {}
+      const plugin = {
+        eventContext,
+
+        register: (eventEmitter) => {
+          eventEmitter.on('beforeBuildPlaybook', ({ args, env, schema }) => {
+            eventContext.before = 'called'
+            args.push('--attribute')
+            args.push('foo=bar')
+          })
+          eventEmitter.on('afterBuildPlaybook', (playbook) => {
+            eventContext.after = 'called'
+          })
+        },
+      }
+      const env = {}
+      const playbook = await buildPlaybook(['--playbook', defaultSchemaSpec], env, undefined,
+        eventEmitter, [plugin])
+      expect(eventContext.before).to.equal('called')
+      expect(eventContext.after).to.equal('called')
+      expect(playbook.asciidoc.attributes.foo).to.equal('bar')
+    })
+
+    it('default pipeline extension should be able to modify playbook', async () => {
+      const eventContext = {}
+      const plugin = {
+        eventContext,
+
+        register: (eventEmitter) => {
+          eventEmitter.on('beforeBuildPlaybook', ({ args, env, schema }) => {
+            eventContext.before = 'called'
+          })
+          eventEmitter.on('afterBuildPlaybook', (playbook) => {
+            eventContext.after = 'called'
+            playbook.extra = ['foo', 'bar']
+          })
+        },
+      }
+      const env = {}
+      const playbook = await buildPlaybook(['--playbook', defaultSchemaSpec], env, undefined,
+        eventEmitter, [plugin])
+      expect(eventContext.before).to.equal('called')
+      expect(eventContext.after).to.equal('called')
+      expect(playbook.extra.length).to.equal(2)
+      expect(playbook.extra[0]).to.equal('foo')
+      expect(playbook.extra[1]).to.equal('bar')
+    })
+
+    it('should accept pipeline extensions specified in playbook', async () => {
+      const env = {}
+      const playbook = await buildPlaybook(['--playbook', defaultSchemaSpecWithPipelineExtension], env, undefined,
+        eventEmitter)
+      expect(env.beforeLoaded).to.equal(undefined)
+      expect(playbook.afterLoaded).to.equal('called')
+    })
+
+    it('should accept pipeline extensions via cli', async () => {
+      const env = {}
+      const playbook = await buildPlaybook(['--playbook', defaultSchemaSpec, '--pipeline-extension', './pipeline-extensions/test-extension.js'], env, undefined,
+        eventEmitter)
+      expect(env.beforeLoaded).to.equal(undefined)
+      expect(playbook.afterLoaded).to.equal('called')
+    })
+
+    it('should accept pipeline extensions added to playbook by default pipeline extension', async () => {
+      const eventContext = {}
+      const extension = {
+        eventContext,
+
+        register: (eventEmitter) => {
+          eventEmitter.on('beforeBuildPlaybook', ({ args, env, schema }) => {
+            eventContext.before = 'called'
+            args.push('--pipeline-extension')
+            args.push('./pipeline-extensions/test-extension.js')
+          })
+          eventEmitter.on('afterBuildPlaybook', (playbook) => {
+            eventContext.after = 'called'
+          })
+        },
+      }
+      const env = {}
+      const playbook = await buildPlaybook(['--playbook', defaultSchemaSpec], env, undefined,
+        eventEmitter, [extension])
+      expect(eventContext.before).to.equal('called')
+      expect(eventContext.after).to.equal('called')
+      expect(env.beforeLoaded).to.equal(undefined)
+      expect(playbook.afterLoaded).to.equal('called')
+    })
+
+    it('should accept pipeline extensions specified in playbook with config', async () => {
+      const env = {}
+      const playbook = await buildPlaybook(['--playbook', defaultSchemaSpecWithPipelineExtensionConfigs], env, undefined,
+        eventEmitter)
+      expect(env.beforeLoaded).to.equal(undefined)
+      expect(playbook.afterLoaded).to.equal('called')
+      const configs = playbook.configs
+      expect(configs.length).to.equal(2)
+      const config1 = configs[0]
+      expect(config1).to.deep.equal({ param1: 'foo', param2: 'bar' })
+      const config2 = configs[1]
+      expect(config2).to.deep.equal({ param3: 'foo', param4: { subparam1: 3, arrayparam: ['foo', 'bar'] } })
+    })
   })
 })

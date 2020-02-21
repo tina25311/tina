@@ -1,0 +1,56 @@
+runtime:
+  cache_dir: ./.antora-cache
+  fetch: true
+site:
+  url: https://example.com
+  title: Example site
+  start_page: 1.0@server::intro
+  keys:
+    google_analytics: 'XX-123456'
+content:
+  branches: v*
+  edit_url: '{web_url}/blob/{refname}/{path}'
+  sources:
+  - url: https://gitlab.com/antora/demo/demo-component-a.git
+    branches: [master, v*]
+ui:
+  bundle:
+    url: ./../ui/build/ui-bundles.zip
+    start_path: dark-theme
+  default_layout: default
+  supplemental_files:
+  - path: head-meta.hbs
+    contents: <link rel="stylesheet" href="https://example.org/shared.css">
+urls:
+  html_extension_style: indexify
+  redirect_facility: nginx
+asciidoc:
+  attributes:
+    allow-uri-read: true
+    idprefix: ''
+    toc: false
+    uri-project: https://antora.org
+  extensions:
+  - asciidoctor-plantuml
+  - ./lib/shout-block
+git:
+  credentials:
+    path: ./.git-credentials
+output:
+  dir: ./_site
+  destinations:
+  - provider: archive
+    path: ./site.zip
+extensions:
+- path: ./pipeline-extensions/test-extension
+  config:
+     param1: foo
+     param2: bar
+- path: ./pipeline-extensions/test-extension
+  config:
+    param3: foo
+    param4:
+      subparam1: 3
+      arrayparam:
+        - foo
+        - bar

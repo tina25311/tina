@@ -5,6 +5,7 @@ const convict = require('./solitary-convict')
 const fs = require('fs')
 const { hasOwnProperty } = Object.prototype
 const ospath = require('path')
+const { requireLibrary } = require('@antora/util')
 
 /**
  * Builds a playbook object according to the provided schema from the specified
@@ -21,12 +22,18 @@ const ospath = require('path')
  *   option flags and switches. Should begin with the first flag or switch.
  * @param {Object} [env={}] - A map of environment variables.
  * @param {Object} [schema=undefined] - A convict configuration schema.
- *
+ * @param {Object} [eventEmitter=undefined] - Node EventEmitter.
+ * @param {Array} [defaultExtensions=[]] - an array of explicit extensions.
  * @returns {Object} A playbook object containing a hierarchical structure that
  *   mirrors the configuration schema. With the exception of the top-level asciidoc
  *   key and its descendants, all keys in the playbook are camelCased.
  */
-function buildPlaybook (args = [], env = {}, schema = undefined) {
+async function buildPlaybook (args = [], env = {}, schema = undefined,
+  eventEmitter = undefined, defaultExtensions = []) {
+  if (eventEmitter && defaultExtensions.length) {
+    defaultExtensions.forEach((extension) => ('register' in extension) && extension.register(eventEmitter))
+    eventEmitter.emit('beforeBuildPlaybook', { args, env, schema })
+  }
   const config = loadConvictConfig(args, env, schema)
 
   const relSpecFilePath = config.get('playbook')
@@ -59,7 +66,12 @@ function buildPlaybook (args = [], env = {}, schema = undefined) {
 
   config.validate({ allowed: 'strict' })
 
-  return exportModel(config)
+  const playbook = exportModel(config)
+  if (eventEmitter) {
+    registerExtensions(playbook, eventEmitter)
+    eventEmitter.emit('afterBuildPlaybook', playbook)
+  }
+  return freeze(playbook)
 }
 
 function loadConvictConfig (args, env, customSchema) {
@@ -87,7 +99,21 @@ function exportModel (config) {
   const playbook = camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
   playbook.dir = playbook.playbook ? ospath.dirname((playbook.file = playbook.playbook)) : process.cwd()
   delete playbook.playbook
-  return freeze(playbook)
+  return playbook
+}
+
+function registerExtensions (playbook, eventEmitter) {
+  const cache = {}
+  if (playbook.extensions && playbook.extensions.length) {
+    playbook.extensions.forEach((extensionData) => {
+      const extensionPath = extensionData.path || extensionData
+      const extensionConfig = extensionData.config
+      const extension = requireLibrary(extensionPath, playbook.dir, cache)
+      if ('register' in extension) {
+        extension.register(eventEmitter, extensionConfig)
+      }
+    })
+  }
 }
 
 module.exports = buildPlaybook

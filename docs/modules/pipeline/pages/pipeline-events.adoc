@@ -1,0 +1,224 @@
+= Site Generator Events
+
+The playbook builder and default site generator emit events through an event emitter.
+The Antora event emitter wraps the link:https://nodejs.org/api/events.html#events_class_eventemitter[Node EventEmitter] and allows both synchronous and asynchronous listeners.
+This allows considerable customization of the default pipeline through configuration.
+
+Events are emitted before each stage, with the arguments to that stage, and after the stage ,with the playbook and return value from that stage.
+
+=== Pipeline Extension registration code
+
+Pipeline extensions are used to register listeners for these events.
+A pipeline extension must export a `register` method taking an EventEmitter and optional config object as arguments.
+The pipeline extension can register listeners for as many events as needed.
+The config object is only configurable in the playbook.
+For instance,
+
+[source,js]
+----
+module.exports.register = (eventEmitter, config) => {
+  eventEmitter.on('beforeBuildPlaybook', ({ args, env, schema }) => {
+    args.push.('--attribute')
+    args.push('page-layout=pdf')
+  })
+  eventEmitter.on('afterClassifyContent', (playbook, contentCatalog) => {
+    contentCatalog.addFile(...)
+  })
+}
+----
+
+=== Pipeline extension registration
+
+Pipeline extensions can be registered in three ways:
+
+* Specifing the pipeline extension file or package in the playbook under the `extensions.path` key, similarly to specifying an asciidoctor extension under asciidcod.extensions.
+This may be accompanied by an arbitrary configuration object under the pipeline extensions.config key.
+* Specifying the same information as a command line --pipeline-extension argument.
+* With a custom pipeline, the resolved pipeline extension module can be passed in to the build-playbook function.
+This is the only way the `beforeBuildPlaybook` event can be intercepted.
+
+In the first two approaches, the supplied path is passed to the node `require` function after some possible path adjustment so search starts at the playbook rather than the Antora installation
+The path may be the name of an installed node module, a relative path from the playbook, or an absolute path.
+Although `~` paths work on the command line due to shell expansion, they do not work in the playbook.
+
+=== Pipeline extension configuration
+
+An example of specifying a pipeline extension with configuration in the playbook is:
+
+[source,yml]
+----
+extensions:
+- path: antora-lunr
+    config:
+      facet: "component.name"
+      boost:
+        title: 2
+----
+
+== Listener arguments
+
+The arguments for any event listener other than `beforeBuildPlaybook` or `afterBuildPlaybook` consist of:
+
+* for a `before` event, the arguments to the pipeline stage, arranged in an object, together with the playbook if not otherwise present.
+* for an `after` event, the playbook followed by the return value from the pipeline stage.
+The listener may generally modify these arguments but not replace them.
+
+* `beforeBuildPlaybook` receives an object `{ args, env, schema }`; the playbook is not yet available.
+* `afterBuildPlaybook` receives a single argument, the playbook.
+
+Sets of listeners registered together as one pipeline extension may communicate through a shared object in the pipeline extension.
+
+In contradistinction to the Node EventEmitter, the Antora event emitter allows both synchronous and asynchrounous listeners.
+Asynchronous listeners for an event are allowed to execute in parallel, and complete before the next action is taken.
+
+To register either a synchronous or an asynchronous listener, call
+
+[source,js]
+----
+  eventEmitter.on(<event name>, listener)
+----
+
+Here are the events and the listener arguments.
+
+[cols="3,5a",options="headers"]
+|===
+|Event Name
+|Event Arguments
+
+|beforeBuildPlaybook
+|args
+
+env
+
+schema
+
+|afterBuildPlaybook
+
+|playbook
+
+|beforeResolveAsciiDocConfig
+|playbook
+
+|afterResolveAsciiDocConfig
+|playbook
+
+asciidocConfig
+
+|beforeAggregateContent
+|playbook
+
+|afterAggregateContent
+|playbook
+
+contentAggregate
+
+|beforeClassifyContent
+|playbook
+
+contentAggregate
+
+asciidocConfig
+
+|afterClassifyContent
+|playbook
+
+contentCatalog
+
+|beforeLoadUi
+|playbook
+
+|afterLoadUi
+|playbook
+
+uiCatalog
+
+
+|beforeConvertDocuments
+|contentCatalog
+
+asciidocConfig
+
+playbook
+
+|afterConvertDocuments
+|playbook
+
+pages
+
+
+|beforeBuildNavigation
+|contentCatalog
+
+asciidocConfig
+
+playbook
+
+|afterBuildNavigation
+|playbook
+
+navigationCatalog
+
+
+|beforeCreatePageComposer
+|playbook
+
+contentCatalog
+
+uiCatalog
+
+env
+
+|afterCreatePageComposer
+|playbook
+
+composePage
+
+
+|beforeComposePage
+|page
+
+contentCatalog
+
+navigationCatalog
+
+playbook
+
+|afterComposePage
+|playbook
+
+page
+
+
+|beforeMapSite
+|playbook
+
+pages
+
+|afterMapSite
+|playbook
+
+siteFiles
+
+
+|beforeProduceRedirects
+|playbook
+
+contentCatalog
+
+|afterProduceRedirects
+|playbook
+
+siteFiles
+
+
+|beforePublishSite
+|playbook
+
+catalogs
+
+|afterPublishSite
+|playbook
+
+reports
+
+|===

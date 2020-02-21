@@ -115,7 +115,7 @@ module.exports = {
       arg: 'attribute',
     },
     extensions: {
-      doc: 'A list of require paths for registering extensions per instance of the AsciiDoc processor.',
+      doc: 'A list of require paths for registering asciidoctor extensions per instance of the AsciiDoc processor.',
       format: Array,
       default: [],
     },
@@ -216,5 +216,11 @@ module.exports = {
       format: Array,
       default: undefined,
     },
+  },
+  extensions: {
+    doc: 'A list of require paths for registering Antora pipeline extensions, with configuration.',
+    format: Array,
+    default: [],
+    arg: 'pipeline-extension',
   },
 }
