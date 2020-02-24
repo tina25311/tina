@@ -10,7 +10,7 @@
 
 = Antora 2.3.0
 
-_**Release date:** 2019.11.xx | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
+_**Release date:** 2020.xx.xx | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
 
 == Resolved issues
 

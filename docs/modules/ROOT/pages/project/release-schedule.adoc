@@ -11,7 +11,7 @@ Each major release line of the Antora Core components is typically supported for
 |Antora 3.x
 |NA
 |Pending
-|~ 2020/01
+|~ 2020/04
 |TBD
 |TBD
 
@@ -19,8 +19,8 @@ Each major release line of the Antora Core components is typically supported for
 |2.2.0
 |Active
 |2018/12/25
-|~ 2020/01/25
-|~ 2020/04/25
+|~ 2020/05/25
+|~ 2020/07/25
 
 |===
 
@@ -50,9 +50,9 @@ Patch releases fix bugs and maintain backwards compatibility.
 Only the latest minor release of a major release line will receive patches.
 Patch releases happen as needed depending on the urgency of the fix.
 
-Pre-release::
-Major and minor releases may include pre-release versions (major.minor.patch-alpha.n | -beta.n | -rc.n).
-Pre-release versions will be tagged as _next_ so that the npm client doesn't prefer a pre-release over a stable version.
+Prerelease::
+Major and minor releases may include prerelease versions (major.minor.patch-alpha.n | -beta.n | -rc.n).
+Prerelease versions will be tagged as _next_ so that the npm client doesn't prefer a prerelease over a stable version.
 Once a release candidate (rc) has been thoroughly tested, the stable release will be published.
 
 [#roadmap]
