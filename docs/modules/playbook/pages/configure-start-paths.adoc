@@ -1,0 +1,211 @@
+= Start paths configuration
+
+On this page, you'll learn:
+
+* [x] What problem the `start_paths` feature solves.
+* [x] Supported syntax for path globbing features.
+* [x] How to add multiple `start_paths` using different pattern matching strategies.
+
+== About start_paths
+
+The `start_paths` feature lets you register more than one Antora component version within a single repository. 
+If one repository branch or tag contains multiple [.path]_antora.yml_ component descriptors, you can specify the multiple start paths for a single repository URL using the `start_paths` key.
+
+The `start_paths` key is different to `start_path` as described in the xref:configure-content-sources.adoc#add-start-path[Specify a start path] section.
+
+The `start_path` key only lets you specify _one path_ in your playbook for each source you specify.
+In contrast, the `start_paths` key lets you specify _multiple paths_, either using exact paths or https://en.wikipedia.org/wiki/Glob_(programming)[glob^] patterns that Antora resolves to exact paths.
+
+=== Precedence and processing
+
+If you specify a `start_paths` key in a playbook source, it takes precedence over any `start_path` keys defined for that `source:`.
+Any `start_path` keys do not get processed when `start_paths` is specified.
+
+=== Use case examples
+
+==== Monorepo code structures
+
+If you have tried to store documentation as part of a https://en.wikipedia.org/wiki/Monorepo[monorepo^] repository structure, you may have put documentation into one documentation component with many separate modules.
+
+You may have managed documentation sources by specifying a lengthy list of source entries, each containing the same URL with a different `start_path` value.
+With `start_paths`, you can use pattern matching to simplify how Antora searches for and locates documentation for a single content source URL.
+Implementing `start_paths` can give you the ability to put the documentation for products right where the developers are working, even in large monorepo projects.
+
+==== Versioned documentation not stored in branches
+
+You can use `start_paths` for versions of a documentation component within the docs component itself, rather than using branches for each version.
+
+If your component has multiple versions stored in the directory, you can pattern match on each of these directories and treat them like separate branches.
+
+==== Monolithic documentation repositories
+
+The `start_paths` feature is ideally suited for a repository that stores documentation for many docs components (for example, an extensions marketplace). 
+
+Consider an extensions documentation site with each extensions' documentation stored in a separate directory ([.path]_repo/akka_).
+In the [.path]_akka_ directory are one or more folders containing the documentation for a version of that integration:
+
+* [.path]_repo/akka/v1/antora.yml_,
+
+* [.path]_repo/akka/v2/antora.yml_, 
+
+* [.path]_repo/akka/v3/antora.yml_,
+
+* etc.
+
+[source,bash]
+====
+- repo
+-- akka
+--- v1
+--- v2
+--- v5.x
+-- ansible
+--- v3.9
+--- v4.0
+--- v4.1
+--- v5.0
+-- [70+ more product integrations]
+-- zoom
+--- v1.0
+--- ...
+--- v34.x
+====
+
+Imagine having to register each path manually for each documentation component. 
+Doing so would be error-prone and frustrating to manage without some wildcard or pattern matching ability.
+
+The `start_paths` feature can simplify how you register all the components that make up your integration documentation. 
+
+[#using-exact-path-patterns]
+== Using exact path patterns
+
+If you only have a couple of paths to register, you might find that using exact path patterns is suitable.
+
+.Exact start paths examples
+[source,yaml]
+----
+content:
+  sources:
+  - url: https://github.com/org/repo1 <1>
+    start_paths: docs
+  - url: https://github.com/org/repo2 <2>
+    start_paths: docs, more-docs
+  - url: https://github.com/org/repo3 <3>
+    start_paths: [docs, more-docs]
+  - url: https://github.com/org/repo4
+    start_paths:
+    - docs <4>
+    - more-docs
+----
+<1> A single path (which is processed the same as a `start_path` path).
+<2> A comma-separated list; if necessary, you can enclose each value in single quotes.
+<3> An array on a single-line delimited by square brackets.
+<4> An array on multiple lines delimited by a leading `-`.
+
+IMPORTANT: If you specify multiple `start_paths` along with multiple references (branches or tags), a component descriptor (`antora.yml`) must exist at each `start_path` for each reference when Antora expands the paths.
+
+== Using glob pattern matching
+
+Along with the methods described in <<<using-exact-path-patterns>>, you can use a selection of https://github.com/micromatch/picomatch#globbing-features[picomatch basic and advanced path globbing features^] to implement pattern matching.  
+A combination of wildcards, braces, and negated patterns are supported.
+
+When Antora transforms your documentation site, the glob patterns resolve to exact paths during the build process.
+
+=== Path globbing restrictions
+
+The following Antora-specific restrictions apply to how Antora implements path globbing against the full range of supported basic and advanced globbing rules:
+
+* Wildcards in expressions only match directories, not files. 
+For example, an expression like `product-a/docs/*/index.adoc` is not supported by glob pattern matching. 
+
+* A path segment after a segment containing a wildcard is optional to simplify directory matching logic. 
+For example, `src/*/docs` would mean that [.path]_/src/product-a/docs_ could be missing but not result in any build errors.
+
+* Explicit or range brace expressions are not wildcard supported unless there are two entries in the pattern. 
+For example, you can not use patterns like `docs/product-{a*}`, however a pattern such as `docs/product-{a*,b}` is supported.
+
+* Double globstar patterns like `docs/product-{**}` are not supported in any path globbing pattern.
+
+=== Wildcards
+
+Use wildcard matching to reduce the number of start path patterns you need to register in your component descriptor file.
+
+For example, if you have separate Antora components stored in one repository, you could list them all in a comma-separated list within `start_paths` key values.
+
+`start_paths: docs/product-a, docs/product-b, docs/product-c`
+
+In the example above, you can use wildcard segment matching to reduce the number of start paths you need to register in your component descriptor file manually.
+
+`start_paths: docs/product-*`
+
+As you add more components to your repository, wildcard matching automatically registers components as you add them, providing you keep the pattern consistent.
+
+=== Braces
+
+Brace expressions can specify an explicit list of items to expand ([.path]_docs/product-{a,b,c,f}_) or specify a range of items to expand ([.path]_docs/product-{a..f}_)
+
+When you use braces in a `start_paths` key-value, all entries within the braces must exist when expanded. 
+
+If you specify [.path]_docs/product-{a,b}_ as a `start_paths` key value the following paths must be present within your documentation component: 
+
+* [.path]_docs/product-a_ 
+
+* [.path]_docs/product-b_
+
+You can use a prefix in your file path before a brace expression so you can simplify what you check for in the expression:
+
+`start_paths: docs/v{1..9}`
+
+You can also use wildcards in brace expressions to help expand values like multiple version branches in your directories:
+
+`start_paths: docs/product-v{1*,2*}`
+
+This example gives you the following `start_paths` expanded paths:
+
+* `docs/product-v1.1`
+
+* `docs/product-v1.2`
+
+* `docs/product-v1.2.1`
+
+* `docs/product-v2.0`
+
+* `docs/product-v2.1.1`
+
+=== Negated path globbing patterns
+
+Use negated patterns to exclude patterns previously matched.
+This approach is useful if you want to match all directories except for those that match a certain pattern.
+
+.Exact start paths examples
+[source,yaml]
+----
+content:
+  sources:
+  - url: https://github.com/org/repo1 <1>
+    start_paths:
+    - docs/user/*
+    - docs/dev/*
+    - !**/*-beta.* <2>
+----
+<1> This content source builds the internal documentation contained within `repo-1`.
+<2> Negated path globbing patterns must follow any path inclusions, and must be declared after locations that have already been matched.
+
+== Ignored directories
+
+The first iteration of glob pattern matching makes some opinionated decisions about how Antora handles objects in file paths.
+
+If a wildcarded segmented path contains a trailing directory, and no directory is matched, Antora ignores it. 
+
+For example, [.path]_docs/product-*/client_ would still be valid if `product-a` contained a [.path]_/client_ directory *and* `product-b` did not.
+
+Another valid example would be [.path]_docs/product/*/client_ where the `*` represents different version directories (v1.0, v1.1, etc) of client documentation. 
+If the `client` directory does not exist in one of the version directories, Antora ignores it from a validation perspective.
+
+If the final segment of a file path pattern contains an unmatched braced directory pattern, Antora treats it as optional from a validation perspective.
+
+For example, [.path]_docs/product-*/{client,b2b}_ will not fail vaildation if [.path]_docs/product-a/b2b_ is not present.
+
+Hidden directories (directories that begin with a `.`) are ignored by default. 
+To include them in a `start_paths` path globbing pattern, use a `.*` in the pattern. 
+For example [.path]_docs/.*-{a,b}_ to include all hidden directories with the suffix of `a` or `b`.
