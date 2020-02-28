@@ -412,6 +412,46 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should not match dot folders when resolving start paths from match all wildcard pattern', () => {
+      testAll(async (repoBuilder) => {
+        const startPath = 'docs'
+        const startPath2 = '.docs'
+        const componentDesc = { name: 'a-component', title: 'A Component', version: '1.0', startPath }
+        const componentDesc2 = { name: 'b-component', title: 'B Component', version: '1.0', startPath: startPath2 }
+        let componentDescEntry
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
+          repoBuilder.addComponentDescriptor(componentDesc2)
+            .then(() => repoBuilder.commitAll('add component descriptor in dot folder'))
+            .then(() => repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry)))
+        )
+        expect(componentDescEntry).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '*' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.deep.include(componentDesc)
+      })
+    })
+
+    describe('should not match dot folders when resolving start paths from match specific wildcard pattern', () => {
+      testAll(async (repoBuilder) => {
+        const startPath = 'docs'
+        const startPath2 = '.docs'
+        const componentDesc = { name: 'a-component', title: 'A Component', version: '1.0', startPath }
+        const componentDesc2 = { name: 'b-component', title: 'B Component', version: '1.0', startPath: startPath2 }
+        let componentDescEntry
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
+          repoBuilder.addComponentDescriptor(componentDesc2)
+            .then(() => repoBuilder.commitAll('add component descriptor in dot folder'))
+            .then(() => repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry)))
+        )
+        expect(componentDescEntry).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '*ocs' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.deep.include(componentDesc)
+      })
+    })
+
     describe('should read component descriptors located at start paths specified as CSV string', () => {
       testAll(async (repoBuilder) => {
         const startPath1 = 'docs'
@@ -581,6 +621,26 @@ describe('aggregateContent()', function () {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
         expect(aggregate[0]).to.deep.include(componentDesc1)
+        expect(aggregate[1]).to.deep.include(componentDesc2)
+      })
+    })
+
+    describe('should match dot folders if wildcard pattern in brace pattern begins with dot', () => {
+      testAll(async (repoBuilder) => {
+        const startPath = 'docs'
+        const startPath2 = '.docs'
+        const componentDesc = { name: 'a-component', title: 'A Component', version: '1.0', startPath }
+        const componentDesc2 = { name: 'b-component', title: 'B Component', version: '1.0', startPath: startPath2 }
+        let componentDescEntry
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
+          repoBuilder.addComponentDescriptor(componentDesc2)
+            .then(() => repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry)))
+        )
+        expect(componentDescEntry).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{d*,.d*}' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        expect(aggregate[0]).to.deep.include(componentDesc)
         expect(aggregate[1]).to.deep.include(componentDesc2)
       })
     })
