@@ -190,12 +190,17 @@ function buildPageUiModel (file, contentCatalog, navigationCatalog, site) {
   Object.assign(model, getNavContext(url, title, navigation))
 
   // NOTE the site URL has already been normalized at this point
-  if (site.url && site.url.charAt() !== '/') {
+  const siteUrl = site.url
+  if (siteUrl && siteUrl.charAt() !== '/') {
     // NOTE not always the same as the latest component version (since the page might cease to exist)
     const latestPageVersion = versions
       ? versions.find((candidate) => !(candidate.prerelease || candidate.missing))
       : !componentVersion.prerelease && { url }
-    if (latestPageVersion) model.canonicalUrl = file.pub.canonicalUrl = site.url + latestPageVersion.url
+    if (latestPageVersion) {
+      let canonicalUrl = latestPageVersion.url
+      if (canonicalUrl.charAt() === '/') canonicalUrl = siteUrl + canonicalUrl
+      model.canonicalUrl = file.pub.canonicalUrl = canonicalUrl
+    }
   }
 
   return model

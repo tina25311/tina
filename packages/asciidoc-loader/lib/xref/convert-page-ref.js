@@ -41,15 +41,15 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
     // TODO log "Invalid page ID syntax" (or e.message)
     return { content, target: `#${refSpec}`, unresolved: true }
   }
-  let target
+  let targetUrl
   let internal
   if (relativize) {
-    target = computeRelativeUrlPath(currentPage.pub.url, targetPage.pub.url, hash)
-    if (target === hash) internal = true
+    targetUrl = computeRelativeUrlPath(currentPage.pub.url, targetPage.pub.url, hash)
+    if (targetUrl === hash) internal = true
   } else {
-    target = targetPage.pub.url + hash
+    targetUrl = targetPage.pub.url + hash
   }
-  return { content: content || `${pageIdSpec}.adoc${hash}`, target, internal }
+  return { content: content || `${pageIdSpec}.adoc${hash}`, target: targetUrl, internal }
 }
 
 module.exports = convertPageRef
