@@ -548,7 +548,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry1).to.exist()
         expect(componentDescEntry2).to.exist()
         expect(componentDescEntry3).to.exist()
-        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{doc{s,x},moredocs}' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{doc{s,x},more*}' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(3)
         expect(aggregate[0]).to.deep.include(componentDesc1)
