@@ -136,11 +136,15 @@ function listDirentsGit (repo, treeOid) {
 }
 
 function makeAlternationMatcherRx (patterns) {
-  return new RegExp('^' + patterns.map((it) => escapeStringForRx(it).replace(RX_ESCAPED_GLOB, '.*')).join('|') + '$')
+  return new RegExp('^(?:' + patterns.map(patternToRx).join('|') + ')$')
 }
 
 function makeMatcherRx (pattern) {
-  return new RegExp('^' + escapeStringForRx(pattern).replace(RX_ESCAPED_GLOB, '.*') + '$')
+  return new RegExp('^' + patternToRx(pattern) + '$')
+}
+
+function patternToRx (pattern) {
+  return escapeStringForRx(pattern).replace(RX_ESCAPED_GLOB, '.*')
 }
 
 const readdirWithFileTypes = fs.Dirent

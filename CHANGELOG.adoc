@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Fixed
+
+* *content-aggregator*: Brace pattern in start paths value should match whole filename segment, even if pattern contains a wildcard (#583)
+
 === Changed
 
 * *page-composer*: Upgrade Handlebars to fix performance regression (#551)
