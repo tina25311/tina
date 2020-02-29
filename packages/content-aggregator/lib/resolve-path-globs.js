@@ -40,7 +40,7 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
   patternSegments = patternSegments.slice(1)
   if (RX_MAGIC_DETECTOR.test(patternSegment)) {
     let isMatch
-    let expressed
+    let explicit
     if (patternSegment === '*') {
       isMatch = invariably.true
     } else if (~patternSegment.indexOf('{')) {
@@ -49,20 +49,20 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
         if (~patternSegment.indexOf('?')) patternSegment = patternSegment.replace(RX_QUESTION_MARK, '\\?')
         isMatch = (isMatch = makePicomatchRx(patternSegment, PICO_OPTS)).test.bind(isMatch)
       } else if (~patternSegment.indexOf('*')) {
-        const [wildPatterns, fixedSegments] = expandBraces(patternSegment).reduce(
-          ([wild, fixed], item) => (~item.indexOf('*') ? [wild.concat(item), fixed] : [wild, fixed.concat(item)]),
+        const [wildPatterns, literals] = expandBraces(patternSegment).reduce(
+          ([wild, literal], it) => (~it.indexOf('*') ? [wild.concat(it), literal] : [wild, literal.concat(it)]),
           [[], []]
         )
         isMatch = (isMatch = makeAlternationMatcherRx(wildPatterns)).test.bind(isMatch)
-        expressed = new Set(fixedSegments)
+        explicit = new Set(literals)
       } else {
         return expandBraces(patternSegment).map((it) => joinPath(path, it))
       }
     } else {
       isMatch = (isMatch = makeMatcherRx(patternSegment)).test.bind(isMatch)
     }
-    const dirents = await listDirents(base, oid || path)
-    if (expressed) dirents.forEach((dirent) => expressed.delete(dirent.name))
+    let dirents = await listDirents(base, oid || path)
+    if (explicit) dirents = dirents.filter((dirent) => !explicit.has(dirent.name))
     const discovered = flattenDeep(
       await Promise.all(
         dirents.map((dirent) =>
@@ -78,7 +78,7 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
         )
       )
     )
-    return expressed ? discovered.concat([...expressed].map((it) => joinPath(path, it))) : discovered
+    return explicit ? [...explicit].map((it) => joinPath(path, it)).concat(discovered) : discovered
   } else {
     const [magicBase, nextSegment] = extractMagicBase(patternSegments, patternSegment)
     patternSegment = magicBase

@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *content-aggregator*: Brace pattern in start paths value should match whole filename segment, even if pattern contains a wildcard (#583)
+* *content-aggregator*: Brace pattern in start paths value should match explicit entries if wildcard entry is also present (#584)
 
 === Changed
 
