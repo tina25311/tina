@@ -493,6 +493,39 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should anchor start paths specified as brace pattern with wildcards to start of filename', () => {
+      testAll(async (repoBuilder) => {
+        const startPath1 = 'docs'
+        const startPath2 = 'moredocs'
+        const startPath3 = 'nodocs'
+        const componentDesc1 = { name: 'the-component', title: 'Component Title', version: '1', startPath: startPath1 }
+        const componentDesc2 = { name: 'the-component', title: 'Component Title', version: '2', startPath: startPath2 }
+        const componentDesc3 = { name: 'not-these', title: 'Not These', version: '1', startPath: startPath3 }
+        let componentDescEntry1
+        let componentDescEntry2
+        let componentDescEntry3
+        await repoBuilder
+          .init(componentDesc1.name)
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc1))
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc2))
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc3))
+          .then(async () => {
+            componentDescEntry1 = await repoBuilder.findEntry(startPath1 + '/antora.yml')
+            componentDescEntry2 = await repoBuilder.findEntry(startPath2 + '/antora.yml')
+            componentDescEntry3 = await repoBuilder.findEntry(startPath3 + '/antora.yml')
+          })
+          .then(() => repoBuilder.close())
+        expect(componentDescEntry1).to.exist()
+        expect(componentDescEntry2).to.exist()
+        expect(componentDescEntry3).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{more*,doc*}' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        expect(aggregate[0]).to.deep.include(componentDesc1)
+        expect(aggregate[1]).to.deep.include(componentDesc2)
+      })
+    })
+
     describe('should read component descriptors at start paths specified as nested brace patterns', () => {
       testAll(async (repoBuilder) => {
         const componentDesc1 = { name: 'the-component', title: 'Component Title', version: '1', startPath: 'docs' }
