@@ -42,7 +42,7 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
     let isMatch
     let explicit
     if (patternSegment === '*') {
-      isMatch = invariably.true
+      isMatch = (it) => it.charAt() !== '.'
     } else if (~patternSegment.indexOf('{')) {
       if (globbed) {
         if (patternSegment.charAt() === '!') patternSegment = '\\' + patternSegment
@@ -144,7 +144,7 @@ function makeMatcherRx (pattern) {
 }
 
 function patternToRx (pattern) {
-  return escapeStringForRx(pattern).replace(RX_ESCAPED_GLOB, '.*')
+  return (pattern.charAt() === '.' ? '' : '(?!\\.)') + escapeStringForRx(pattern).replace(RX_ESCAPED_GLOB, '.*')
 }
 
 const readdirWithFileTypes = fs.Dirent

@@ -14,6 +14,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *content-aggregator*: Ignore dot (hidden) folders when matching start paths unless pattern begins with a dot (#581)
 * *page-composer*: Upgrade Handlebars to fix performance regression (#551)
 * *page-composer*: Fix resolvePage and resolvePageUrl helpers to retrieve content catalog independent of template context (#554)
 * *page-composer*: Make resolvePage and resolvePageUrl helpers resilient against falsy page spec (#554)
