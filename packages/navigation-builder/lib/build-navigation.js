@@ -37,7 +37,7 @@ function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
       const val = accum.get(key)
       if (val) return new Map(accum).set(key, Object.assign({}, val, { navFiles: val.navFiles.concat(navFile) }))
       const componentVersion = contentCatalog.getComponentVersion(component, version)
-      const asciidocConfig = Object.assign({}, componentVersion.asciidocConfig || siteAsciiDocConfig, navAsciiDocConfig)
+      const asciidocConfig = Object.assign({}, componentVersion.asciidoc || siteAsciiDocConfig, navAsciiDocConfig)
       return new Map(accum).set(key, { component, version, componentVersion, asciidocConfig, navFiles: [navFile] })
     }, new Map())
     .forEach(({ component, version, componentVersion, asciidocConfig, navFiles }) => {

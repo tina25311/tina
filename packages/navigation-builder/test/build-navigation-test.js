@@ -532,7 +532,7 @@ describe('buildNavigation()', () => {
       { family: 'page', relative: 'index.adoc' },
     ])
     const componentVersion = contentCatalog.getComponentVersion('component-a', 'master')
-    componentVersion.asciidocConfig = resolveAsciiDocConfig(playbook)
+    componentVersion.asciidoc = resolveAsciiDocConfig(playbook)
     const navCatalog = buildNavigation(contentCatalog)
     const menu = navCatalog.getNavigation('component-a', 'master')
     expect(menu).to.exist()
