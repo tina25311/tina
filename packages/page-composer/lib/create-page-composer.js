@@ -194,14 +194,18 @@ function buildPageUiModel (file, contentCatalog, navigationCatalog, site) {
   // NOTE the site URL has already been normalized at this point
   const siteUrl = site.url
   if (siteUrl && siteUrl.charAt() !== '/') {
-    // NOTE not always the same as the latest component version (since the page might cease to exist)
-    const latestPageVersion = versions
-      ? versions.find((candidate) => !(candidate.prerelease || candidate.missing))
-      : !componentVersion.prerelease && { url }
-    if (latestPageVersion) {
-      let canonicalUrl = latestPageVersion.url
-      if (canonicalUrl.charAt() === '/') canonicalUrl = siteUrl + canonicalUrl
-      model.canonicalUrl = file.pub.canonicalUrl = canonicalUrl
+    if (versions) {
+      let latestReached
+      // NOTE latest could be older than the latest component version since the page might cease to exist
+      const latest = versions.find((candidate) =>
+        (latestReached || (latestReached = candidate.latest)) && !candidate.missing)
+      if (latest && !latest.prerelease) {
+        let canonicalUrl = latest.url
+        if (canonicalUrl === url || canonicalUrl.charAt() === '/') canonicalUrl = siteUrl + canonicalUrl
+        model.canonicalUrl = file.pub.canonicalUrl = canonicalUrl
+      }
+    } else if (!componentVersion.prerelease) {
+      model.canonicalUrl = file.pub.canonicalUrl = siteUrl + url
     }
   }
 
