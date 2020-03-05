@@ -6,7 +6,7 @@ This syntax is also used to xref:navigation:link-syntax-and-content.adoc[referen
 
 == Reference by page ID
 
-In Antora, a cross reference, commonly abbreviated xref, needs a xref:page:page-id.adoc[page ID] in order to link to another page in the site.
+In Antora, a cross reference, commonly abbreviated to xref, needs a xref:page:page-id.adoc[page ID] in order to link to another page in the site.
 The number of page ID coordinates you need to specify in the xref depends on the location of the current page in relation to the location of the destination page (i.e., the page you want to link to).
 The closer the two files are, the shorter the page ID.
 
@@ -59,13 +59,6 @@ This part is always optional.
 The text of the link that is displayed to the reader.
 This text must be entered inside a set of square brackets (`[]`) at the end of the macro.
 If the text is not specified, the raw target is used.
-
-////
-[link text,aspect=name-of-aspect] ::
-To link to the aspect variant of a page, add the aspect attribute after the link text.
-A comma (`,`) should directly follow the link text, and the aspect attribute should directly follow the comma, i.e., don't add a blank space after the comma.
-To learn more about referencing aspect pages, go to the xref:apect-page-link.adoc[referencing an aspect page].
-////
 
 [#same-module]
 == Scenario: In the same component and module

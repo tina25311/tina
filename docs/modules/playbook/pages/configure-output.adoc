@@ -200,10 +200,12 @@ Otherwise, Antora will require the value as a Node module installed in the playb
 The custom provider is a JavaScript function that matches the following signature:
 
 [source,js]
+----
 async function publish (destConfig, files, playbook)
+----
 
-The destConfig argument is an object containing key/value pairs that correspond to the properties of the destination specification.
-The files argument is a ReadableStream of virtual files.
-The playbook argument is the object containing key/value pairs from the playbook as a whole.
+The `destConfig` argument is an object containing key/value pairs that correspond to the properties of the destination specification.
+The files argument is a `ReadableStream` of virtual files.
+The `playbook` argument is the object containing key/value pairs from the playbook as a whole.
 
 WARNING: The custom provider is an alpha API and subject to change.

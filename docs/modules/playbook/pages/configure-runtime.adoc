@@ -63,9 +63,6 @@ runtime:
   fetch: true
 ----
 
-NOTE: Prior to Antora 2, the name of this key was `pull`.
-Although that key is still recognized, it's considered deprecated.
-
 However, you don't have to modify the playbook file directly to set this key.
 Most of the time, you'll just use the `--fetch` CLI switch.
 

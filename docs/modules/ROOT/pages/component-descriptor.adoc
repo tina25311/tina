@@ -56,9 +56,9 @@ The value can contain letters, numbers, underscores (`+_+`), hyphens (`-`), and 
 The value isn't related to the name of the repository or directory the component it's describing is stored in, though they may be the same or similar.
 For instance, a documentation component might be stored in a GitLab repository named _Coco B's Massive Quantum App_ but this doesn't impact how Antora handles the component when it publishes a documentation site that uses it.
 Antora only uses the value assigned to the component's name key when converting resource IDs and generating the URLs for the component's pages.
-//, which Coco B's docs manager decided should be `mq`,
+
 [TIP]
-To minimise the likelyhood of portability issues between web servers, letters used in component name and component version should be lowercase.
+To minimize the likelihood of portability issues between web servers, letters used in the component `name` and component `version` should be lowercase.
 
 === `title`
 
@@ -110,7 +110,7 @@ See xref:component-versions.adoc#setting-the-version-for-a-branch[Setting the ve
 === `prerelease`
 
 The `prerelease` key is a marker that this version is considered prerelease.
-Prerelease versions are skipped when selecting the latest version of a component (unless all versions are prereleases, in which case the normal rules apply).
+xref:component-versions.adoc#prerelease-versions[Prerelease versions] are skipped when selecting the xref:component-versions.adoc#latest-version[latest version of a component] (unless all versions are prereleases, in which case the normal rules apply).
 
 ```yaml
 prerelease: true
