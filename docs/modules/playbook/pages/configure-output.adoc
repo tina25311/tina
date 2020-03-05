@@ -11,7 +11,7 @@ On this page, you'll learn:
 [#output-dir]
 == Directory
 
-When you only need to output the site to a single directory, you can use the output dir key.
+When you only need to output the site to a single directory, you can use the output `dir` key.
 This key is meant to provide a shorthand to the more formal destinations key.
 
 The output `dir` specifies the directory where the generated site will be published.
@@ -26,7 +26,7 @@ A relative path will be expanded to an absolute path.
 IMPORTANT: The dir key overrides the path key of the first `fs` provider specified in the destinations key.
 This allows the output directory to be overridden from the xref:cli:index.adoc[CLI] using the `--to-dir=<dir>` option.
 
-=== Default output dir
+=== Default output directory
 
 The default output directory is [.path]_build/site_.
 If no destinations are specified in the playbook, all site files will be written to this directory.
@@ -76,7 +76,7 @@ You can also create custom providers for SSH, S3, etc.
 ==== Filesystem provider
 
 The `fs` provider publishes the site to a directory.
-It's the formal equivalent to specifying the dir key on output.
+It's the formal equivalent to specifying the `dir` key on output.
 
 .Filesystem provider
 [source,yaml]
@@ -189,7 +189,7 @@ The site published using the `fs` provider to the directory [.path]_tmp/releases
 This directory will be removed prior to publishing since we've turned the clean key on.
 The site is also published as an archive to [.path]_/home/user/projects/docs-site/blue.zip_ by the `archive` provider.
 
-=== Custom Provider
+=== Custom provider
 
 If the provider key does not contain a recognized built-in provider, Antora will attempt to require it as a Node module.
 This allows you to supply a custom provider.
@@ -200,10 +200,12 @@ Otherwise, Antora will require the value as a Node module installed in the playb
 The custom provider is a JavaScript function that matches the following signature:
 
 [source,js]
+----
 async function publish (destConfig, files, playbook)
+----
 
-The destConfig argument is an object containing key/value pairs that correspond to the properties of the destination specification.
-The files argument is a ReadableStream of virtual files.
-The playbook argument is the object containing key/value pairs from the playbook as a whole.
+The `destConfig` argument is an object containing key/value pairs that correspond to the properties of the destination specification.
+The `files` argument is a `ReadableStream` of virtual files.
+The `playbook` argument is the object containing key/value pairs from the playbook as a whole.
 
 WARNING: The custom provider is an alpha API and subject to change.

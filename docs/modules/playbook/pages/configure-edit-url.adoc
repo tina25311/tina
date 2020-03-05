@@ -65,7 +65,7 @@ content:
 ----
 
 Let's determine what the edit URL would look like for the page generated from a file named [.path]_index.adoc_.
-This [.path]_index.adoc_ file is stored in branch v1.2.5 of the zap repository in the pages directory of the ROOT module.
+This [.path]_index.adoc_ file is stored in branch _v1.2.5_ of the _zap_ repository in the pages directory of the ROOT module.
 Using the pattern assigned to `edit_url` in <<ex-value>>, Antora would compute the edit URL shown in <<ex-value-result>> for [.path]_index.adoc_.
 
 [#ex-value-result]

@@ -48,8 +48,6 @@ The attributes should be entered as key=value pairs separated by commas.
 include::version@component:module:partial$name-of-file.adoc**[optional attributes]**
 ----
 
-NOTE: Currently, Antora only supports filtering includes by tags.
-
 == Include a partial from the same module
 
 When the partial file and the standard page file belong to the same module, you only need to enter the family name (`partial$`) and the name of the partial file.

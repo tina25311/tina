@@ -48,7 +48,7 @@ This functionality helps you finely tune the navigation list order when you xref
 
 Storing a navigation file in the module it references the most simplifies the page cross references entered into it.
 It also helps writers locate the navigation that may be affected when they add pages to, or remove pages from, a module.
-However, links to other modules' pages (and even other components' pages) can be entered into any module's navigation file.
+However, links to other modules`' pages (and even other components`' pages) can be entered into any module's navigation file.
 You'll just need to xref:asciidoc:page-to-page-xref.adoc#different-module[add the module coordinate] (or xref:asciidoc:page-to-page-xref.adoc#different-component[component coordinate]) to the cross references you create in the navigation file.
 For example, you could store a single navigation file in a component's ROOT module, and, instead of having navigation files in each module that may exist in the component, you could just add the cross references to pages in those other modules directly to the ROOT module's navigation file.
 

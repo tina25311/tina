@@ -81,7 +81,7 @@ In effect, the display version allows the sortable version and the version displ
 [#prerelease-versions]
 == Prerelease versions
 
-A version may be designated a [.term]_prerelease version_ by assigning a value to the `prerelease` property in [.path]_antora.yml_.
+A version may be designated a [.term]*prerelease version* by assigning a value to the `prerelease` key in [.path]_antora.yml_.
 For example:
 
 [source,yaml]
@@ -94,9 +94,9 @@ title: Versioned Component
 
 This assignment has two effects:
 
-* The value of the `prerelease` property is combined with the value of the `version` property to generate the `display_version` (e.g., `2.2 Beta`).
+* The value of the `prerelease` key is combined with the value of the `version` key to generate the `display_version` (e.g., `2.2 Beta`).
  ** If the `prerelease` value begins with a hyphen (`-`) or dot (`.`), a space is not added between the values when combining them.
- ** This computed value is replaced by the value of the `display_version` property, if set.
+ ** This computed value is replaced by the value of the `display_version` key, if set.
 * The prerelease version is skipped when determining the latest version, unless all versions are prerelease versions.
 
 [#latest-version]
@@ -105,7 +105,7 @@ This assignment has two effects:
 In addition to sorting versions, Antora keeps track of the latest version of each component.
 The sorting rules previously covered impact how the latest version is selected.
 
-The [.term]_latest version_ is the first version in the sorted list that is not prerelease.
+The [.term]*latest version* is the first version in the sorted list that is not prerelease.
 If all versions are prereleases, then the first version in the list is used.
 
 Antora uses the latest version when qualifying a resource ID if it cannot otherwise determine the version.
@@ -134,5 +134,5 @@ title: Tutorials
 A page in the versionless component shown in the previous example might have a URL such as `/tutorials/build-a-restful-web-service.html`.
 However, the version name is still referenced in resource IDs as normal (e.g., `master@tutorials::build-a-restful-web-service.adoc`).
 
-If the component only has a single version, and that version is the reserved word `master`, we say that the component is a [.term]_versionless component_.
+If the component only has a single version, and that version is the reserved word `master`, we say that the component is a [.term]*versionless component*.
 Typically, the `master` version is only used for a versionless component.

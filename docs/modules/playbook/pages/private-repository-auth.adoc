@@ -38,9 +38,9 @@ If a protocol (e.g., `https`) and hostname (and, optionally, the path) are found
 The credential store contains zero or more line-based entries.
 The structure of each entry is expected to be as follows:
 
-----
+....
 https://<credentials>@<hostname>
-----
+....
 
 `<credentials>` is either a username and password pair (`username:password`) or a personal access token (`token:`).
 `<hostname>` is the address of the git server (e.g., `github.com`).
@@ -93,28 +93,28 @@ Enter the credentials for each private repository on its own line.
 
 Here's an example entry that uses a username and password pair:
 
-----
+....
 https://octocat:ilovegit@github.com
-----
+....
 
 Here's an example that uses a token (pay attention to the trailing `:` after the token):
 
-----
+....
 https://abcdefg0123456:@github.com
-----
+....
 
 To use different credentials for a given repository, you can append a repository path (i.e., `<repo>`) to the entry to make the matching more strict.
 (The `.git` file extension in the repository path is optional).
 
-----
+....
 https://<credentials>@<hostname>/<repo>
-----
+....
 
 Here's an example for a specific repository path:
 
-----
+....
 https://octocat:ilovegit@github.com/octocat/Hello-World
-----
+....
 
 To ensure this file is protected, immediately set its file permissions so it cannot be read by others.
 
@@ -131,7 +131,7 @@ Here's an example that uses the CLI option to specify a path relative to the pla
 
 You can also specify this location directly in your playbook file under the `git` key.
 
-.antora-playbook.yml (fragment)
+.antora-playbook.yml
 [source,yaml]
 ----
 git:
@@ -171,7 +171,7 @@ Antora will extract the credentials that precede the hostname (i.e., `username:p
 
 Here are several examples:
 
-.antora-playbook.yml (fragment)
+.antora-playbook.yml
 [source,yaml]
 ----
 content:
@@ -192,7 +192,7 @@ However, you can emulate this behavior by using a script to substitute reference
 
 Let's assume you have the following source defined in your playbook file:
 
-.antora-playbook.yml (fragment)
+.antora-playbook.yml
 [source,yaml]
 ----
 content:
@@ -202,7 +202,7 @@ content:
 
 If you're using multiple private repositories that require the same credentials, you can instead define the credentials once under the `git` key as follows:
 
-.antora-playbook.yml (fragment)
+.antora-playbook.yml
 [source,yaml]
 ----
 git:
@@ -240,7 +240,7 @@ The method that looks up the credentials is `fill`.
 It must return either a `{ username, password }` or `{ token }` data object.
 The `approved` and `rejected` methods are called when the credentials are approved or rejected by the server, respectively.
 
-The optional `configure` and `status` methods are specific to Antora, extending the capabilities of what a credential manager in isomomrphic-git typically provides.
+The optional `configure` and `status` methods are specific to Antora, extending the capabilities of what a credential manager in isomorphic-git typically provides.
 If defined, the `configure` method is called each time Antora starts, providing an opportunity to perform initialization steps such as defining properties.
 The `status` method, if available, is used by Antora to look up whether authentication was requested for a given URL.
 
@@ -267,7 +267,7 @@ Either you'll encounter the error `Cannot find module 'isomorphic-git'` or your 
 To fix this problem, set the `NODE_PATH` environment variable to tell Node where to look for Antora's dependencies:
 
  $ NODE_PATH=$(npm -g list --parseable=true @antora/site-generator-default)/node_modules \
-   antora -r ./system-git-credential-manager.js antora-playbook.yml 
+   antora -r ./system-git-credential-manager.js antora-playbook.yml
 
 The alternate solution is to install Antora locally (i.e., add the Antora packages to the dependencies in [.path]_package.json_ file and run `npm i`).
 

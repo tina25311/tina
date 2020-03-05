@@ -50,7 +50,7 @@ Antora carries out this assembly process for each version of each component that
 [#component-dropdown]
 === image:four.svg[Four,30] Site: Component version selector
 
-When your site has several components and/or several versions of one or more components, Antora assembles an aggregated list of the components and their versions.
+When your site has several components and several versions of one or more components, Antora assembles an aggregated list of the components and their versions.
 We refer to this master menu of components and versions as the component version selector.
 Antora automatically lists the components in alphabetical order and the versions in order from the greatest or latest.
 

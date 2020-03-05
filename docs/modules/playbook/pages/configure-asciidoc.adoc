@@ -68,7 +68,7 @@ This behavior can be changed by appending the modifier `@`.
 
 If you add the `@` symbol at the end of an attribute value defined in the playbook, it lowers the precedence of the attribute assignment so the page may override the value.
 The `@` modifier is then stripped from the value.
-We refer to this technique as [.term]_soft setting_ an attribute.
+We refer to this technique as [.term]*soft setting* an attribute.
 
 .Defining attributes that can be overridden by a page
 [source,yaml]
@@ -198,7 +198,7 @@ It does not invoke its exported function).
 
 Here's an example showing how to use the Antora CLI to preload multiple Asciidoctor extensions:
 
- $ antora -r ./lib/shout-block -r asciidoctor-emoji-macro anotra-playbook.yml
+ $ antora -r ./lib/shout-block -r asciidoctor-emoji-macro antora-playbook.yml
 
 The `-r` option can also be used for other purposes, such as to alter global state or override Antora components.
 

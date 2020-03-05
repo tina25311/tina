@@ -6,14 +6,14 @@
 
 On this page, you'll learn:
 
-* [x] The purpose of the component descriptor nav key.
+* [x] The purpose of the component descriptor `nav` key.
 * [x] How to register navigation files in a component descriptor.
 * [x] How registration order affects the component menu.
 
 == The component descriptor nav key
 
-The nav key (`nav`) is set in the xref:ROOT:component-descriptor.adoc[component descriptor file] ([.path]_antora.yml_) of a component.
-The nav key accepts a list of xref:filenames-and-locations.adoc[navigation files].
+The navigation key (`nav`) is set in the xref:ROOT:component-descriptor.adoc[component descriptor file] ([.path]_antora.yml_) of a component.
+The `nav` key accepts a list of xref:filenames-and-locations.adoc[navigation files].
 Each value specifies the path to an individual navigation file.
 
 .Component descriptor with two registered navigation files
@@ -26,22 +26,22 @@ nav: # <1>
 - modules/ROOT/nav.adoc # <2>
 - modules/module-one/nav.adoc # <3>
 ----
-<1> Nav key
-<2> Value registering a navigation file located in the ROOT module
-<3> Value registering a navigation file located in a module named module-one
+<1> Navigation key
+<2> Value registering a navigation file located in the `ROOT` module
+<3> Value registering a navigation file located in a module named `module-one`
 
-When a file is assigned to the nav key, this file is [.term]_registered_.
-Only the contents of registered navigation files are assembled into, and published as, a component navigation menu.
+When a file is assigned to the `nav` key, this file is [.term]*registered*.
+Only the contents of registered navigation files are assembled into and published as a component navigation menu.
 
-=== Nav key structure
+=== nav key structure
 
-The nav key must be entered on its own line be directly followed by a colon (`:`).
-Do not indent the nav key or its list of values.
+The `nav` key must be entered on its own line be directly followed by a colon (`:`).
+Don't indent the `nav` key or its list of values.
 
-Nav key values must be structured as follows:
+Navigation values must be structured as follows:
 
-* Each nav key value must be entered on its own line.
-* Each nav key value must start with a hyphen (`-`) and then a single blank space.
+* Each `nav` key value must be entered on its own line.
+* Each `nav` key value must start with a hyphen (`-`) and then a single blank space.
 * Following the single blank space, enter the path to an individual navigation file relative to the location of the component descriptor file.
 
 In this example, two navigation files have been registered.
@@ -60,7 +60,7 @@ The navigation lists in these two files will be published into a single componen
 
 === How registration order affects the component menu
 
-The order of the nav key values dictates the order the contents of the navigation files are assembled in the published component menu.
+The order of the `nav` key values dictates the order the contents of the navigation files are assembled in the published component menu.
 In the case of the example from the previous section, the contents of the ROOT navigation file will be at the top of the component menu and the contents of the Module One navigation file will be appended to the end of the ROOT navigation list.
 
 == What's next?

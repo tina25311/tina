@@ -32,7 +32,7 @@ to a page in a topic in a module of different component version:
 
 Let's explore the syntax of the include directive in detail.
 
-== Syntax Walkthrough
+== Syntax walkthrough
 
 . On a new line, enter the name of the directive followed by two colons.
 +
@@ -95,9 +95,9 @@ include::version@component:module:page$topic/page.adoc**[tag=definition]**
 All the attributes (e.g., `lines`, `tags`, `leveloffset`, `indent`) on the include directive are supported.
 --
 
-Antora supports filtering the lines of an include file by either line numbers using the `lines` attribute (since Antora 2.2) or tags using the `tag` or `tags` attributes.
+Antora supports filtering the lines of an include file by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
 Filtering by line numbers takes precedence.
-See https://asciidoctor.org/docs/user-manual/#include-partial[the asciidoctor documentation] for full details of the `lines` and `tag` or `tags` syntax.
+See https://asciidoctor.org/docs/user-manual/#include-partial[the Asciidoctor documentation] for full details of the `lines` and `tag` or `tags` syntax.
 
 [#page-partial]
 == The page-partial attribute
@@ -126,7 +126,7 @@ asciidoc:
 ----
 
 The `page-partial` attribute will no longer be set globally.
-Now you *must* set the `page-partial` atttribute on any page you want to use in an include directive.
+Now you *must* set the `page-partial` attribute on any page you want to use in an include directive.
 For example:
 
 [source,asciidoc]

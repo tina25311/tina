@@ -155,7 +155,7 @@ Learn more:
 === branches
 
 The branches key accepts a list of branch name patterns, either as exact names or shell glob patterns (`v3.*`).
-When no branches are specified for a sources `url`, Antora will use the [.term]_default branches set_, i.e., the `master` branch and every branch that begins with `v`.
+When no branches are specified for a sources `url`, Antora will use the [.term]*default branches set*, i.e., the `master` branch and every branch that begins with `v`.
 
 Learn more:
 
@@ -298,7 +298,7 @@ The key accepts a relative or absolute filesystem path.
 
 If the destinations are unspecified, and `dir` is not set, the value defaults to [.path]_build/site_.
 
-IMPORTANT: The dir key overrides the path key of the first `fs` provider in the list of destinations.
+IMPORTANT: The `dir` key overrides the path key of the first `fs` provider in the list of destinations.
 This allows the output directory to be overridden from the CLI using the `--to-dir=<dir>` option.
 
 Learn more:
