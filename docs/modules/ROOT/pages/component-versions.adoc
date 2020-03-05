@@ -51,13 +51,13 @@ Understanding how Antora sorts versions is important when choosing your versioni
 Antora applies the following rules when sorting component versions:
 
 * Separate named versions from semantic versions.
- ** A semantic version is identified either as an integer (e.g., 2 or 30) or a string that starts with a digit and contains at least one "`.`" character (e.g., 2.0.1 or 30.5).
+ ** A semantic version is identified either as an integer (e.g., 2 or 30) or a string that starts with a digit and contains at least one dot (.) character (e.g., 2.0.1 or 30.5).
 A semantic version may begin with an optional leading "`v`" (e.g., v2.0.1), which is ignored when sorting.
  ** All other versions are assumed to be named versions.
  ** Although the version named `master` has special meaning when <<versionless-urls,creating URLs for a component version>>, it's given no special treatment when sorting.
 * Sort named versions (including `master`) in reverse (i.e., descending) alphabetical order and add them to the list.
  ** The assumption is that named versions that fall later in the alphabet are newer.
- ** Upper characters come before lower characters (e.g., "`A"` comes before "`a"`, meaning it's newer)
+ ** Upper characters come before lower characters (e.g., "`A`" comes before "`a`", meaning it's newer)
 * Sort semantic versions in descending order and add them to the list.
  ** Discard the leading "`v`", if present.
  ** Apply the ordering rules for semantic versioning as defined by https://semver.org.
@@ -119,7 +119,7 @@ The latest version information is typically used to inform the reader if there's
 == Versionless URLs
 
 The version of the component is normally included as a segment in the URL of publishable files.
-For example, if the version is a named version like `latest` or a semantic version like `2.1`, that value will appear in the URL (and, by association, the output path) of these files (e.g., `/component-name/2.1/page-name.html`).
+For example, if the version is a named version like `latest` or a semantic version like `2.1`, that value will appear in the URL (and, by association, the output path) of these files (e.g., [.path]_/component-name/2.1/page-name.html_).
 
 The exception to this rule is if the version matches the reserved word `master`.
 In this case, Antora *does not* include the version segment in the URL for publishable files in that component version.
@@ -133,7 +133,7 @@ version: master
 title: Tutorials
 ----
 
-A page with the filename `build-a-restful-web-service.adoc` in this component version would have the URL `/tutorials/build-a-restful-web-service.html`.
+A page with the filename [.path]_build-a-restful-web-service.adoc_ in this component version would have the URL `/tutorials/build-a-restful-web-service.html`.
 When making a qualified reference to this page, you'd still include the version as you normally would (e.g., `master@tutorials::build-a-restful-web-service.adoc`).
 
 If the component only has a single version, and that version matches the reserved word `master`, we say that the component is a [.term]*versionless component*.
