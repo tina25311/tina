@@ -5,7 +5,7 @@
 :url-docker-hub: https://hub.docker.com/r/antora/antora
 :url-plantuml-npm: https://www.npmjs.com/package/asciidoctor-plantuml
 
-The Antora project provides a Docker image so you can run the `antora` command inside a container (a process known as [.term]_containerization_).
+The Antora project provides a Docker image so you can run the `antora` command inside a container (a process known as [.term]*containerization*).
 The benefit of this approach is that you can bypass installing Antora and skip right to running it.
 All you need is Docker.
 

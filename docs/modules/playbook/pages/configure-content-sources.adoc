@@ -129,8 +129,8 @@ Let's look at some examples of each of these name declaration methods.
 [#default-branch]
 === Default branch filter
 
-When no branches are specified for a source, Antora will use the [.term]_default branch filter_.
-By default, Antora will select branches from the repository that begin with "`v`" as well as the branch named "`master`".
+When no branches are specified for a source, Antora will use the [.term]*default branch filter*.
+By default, Antora will select branches from the repository that begin with the letter `v` as well as the branch named `master`.
 
 .Use default branch filter
 [source,yaml]
@@ -285,13 +285,13 @@ content:
   - url: https://gitlab.com/antora/demo/demo-component-b.git
 ----
 
-Antora will now discover and use tags that begin with "`v`" for all content sources that don't declare the `tags` key.
+Antora will now discover and use tags that begin with the letter `v` for all content sources that don't declare the `tags` key.
 
 [#mix-branches-and-tags]
 === Use tags and branches from the same content repository
 
-In this example, we'll fetch the "`master`" branch from a content repository.
-From the same repository, we'll also fetch all of the tags starting with "`v`".
+In this example, we'll fetch the `master` branch from a content repository.
+From the same repository, we'll also fetch all of the tags starting with the letter `v`.
 
 [source,yaml]
 ----
