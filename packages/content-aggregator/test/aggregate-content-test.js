@@ -420,7 +420,8 @@ describe('aggregateContent()', function () {
         const componentDesc2 = { name: 'b-component', title: 'B Component', version: '1.0', startPath: startPath2 }
         let componentDescEntry
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
-          repoBuilder.addComponentDescriptor(componentDesc2)
+          repoBuilder
+            .addComponentDescriptor(componentDesc2)
             .then(() => repoBuilder.commitAll('add component descriptor in dot folder'))
             .then(() => repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry)))
         )
@@ -440,7 +441,8 @@ describe('aggregateContent()', function () {
         const componentDesc2 = { name: 'b-component', title: 'B Component', version: '1.0', startPath: startPath2 }
         let componentDescEntry
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
-          repoBuilder.addComponentDescriptor(componentDesc2)
+          repoBuilder
+            .addComponentDescriptor(componentDesc2)
             .then(() => repoBuilder.commitAll('add component descriptor in dot folder'))
             .then(() => repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry)))
         )
@@ -633,7 +635,8 @@ describe('aggregateContent()', function () {
         const componentDesc2 = { name: 'b-component', title: 'B Component', version: '1.0', startPath: startPath2 }
         let componentDescEntry
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
-          repoBuilder.addComponentDescriptor(componentDesc2)
+          repoBuilder
+            .addComponentDescriptor(componentDesc2)
             .then(() => repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry)))
         )
         expect(componentDescEntry).to.exist()
