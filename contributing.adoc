@@ -34,6 +34,7 @@
 :uri-chai-fs: https://www.chaijs.com/plugins/chai-fs/
 :uri-chai-spies: https://www.chaijs.com/plugins/chai-spies/
 :uri-dirty-chai: https://www.chaijs.com/plugins/dirty-chai/
+:uri-docker-install: https://docs.docker.com/install/
 :uri-eslint-ide: https://eslint.org/docs/user-guide/integrations#editors
 :uri-git: https://git-scm.com
 :uri-git-dl: {uri-git}/downloads
@@ -709,6 +710,101 @@ For example:
  fix typo in README [skip ci]
 
 This flag is reserved for small, non-software changes, as suggested by the example.
+
+=== Develop with Docker
+
+After {uri-docker-install}[installing Docker], copy the Dockerfile below to a new folder (to limit the build context). The Dockerfile uses the most recent version of Ubuntu.
+
+NOTE: The instructions below are based on linux and have not been tested on other platforms.
+It assumes your user id is `1000` (check from command line using `id -u`).
+If not, the `Dockerfile` below should be adjusted.
+
+[source,docker]
+--
+FROM ubuntu:latest
+
+# to allow sourcing of nvm environment scripts
+SHELL ["/bin/bash", "-c"]
+
+RUN apt-get update && apt-get install -y \
+      curl \
+      git \
+    && apt-get -y autoclean
+
+RUN groupadd node \
+    && useradd -m -u 1000 -g node node # create user as part of node group with home directory
+
+USER node
+
+ENV NVM_DIR "/home/node/.nvm"
+ENV NODE_VERSION 10.14.2
+
+RUN mkdir $NVM_DIR \
+    && curl --silent -o- "https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh" | bash \
+    && source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+RUN npm install -g gulp-cli yarn # install dependencies
+
+RUN cd $HOME \
+    && git clone https://gitlab.com/antora/antora \
+    && cd "$(basename "$_")" \
+    && yarn # install packages
+
+WORKDIR /home/node/antora
+
+CMD ["bash"]
+--
+
+To build the image use
+
+ $ docker build --no-cache -t antora-my-dev:latest .
+
+Now to run a bash console in the container use
+
+ $ docker run -it antora-my-dev bash
+ node@bcb6b82c8224:~/antora$
+
+You now have a development environment! You may use e.g. `gulp build` as described previously.
+
+==== Develop from a host machine
+
+If you want to run tests within a container when editing code from a host machine, you may wish to share the code between the container and the host.
+
+However Docker intentionally disallows mounting from the container to the host because it breaks container portability.
+// see https://stackoverflow.com/questions/26050899/how-to-mount-host-volumes-into-docker-containers-in-dockerfile-during-build[stackoverflow]
+For the sake of development, we can work around this:
+
+1. run a container
+
+ $ docker run --name dev01 -it antora-my-dev bash
+ node@bcb6b82c8224:~/antora$
+
+2. transfer data from the container to the host. In another terminal window:
+
+ $ docker cp dev01:/home/node/antora antora
+
+3. exit the first terminal window (by typing `exit` in the bash console) and start a new container with the bind mount for the data  from the host to the container:
+
+ $ docker run -it --mount type=bind,source=$(pwd)/antora,destination=/home/node/antora antora-my-dev bash
+
+The `antora` folder on the host machine can now be opened for development.
+
+One can leave e.g. `gulp test` running inside the container or `gulp test:watch`
+
+[TIP]
+====
+If using `gulp test:watch` make sure there are enough file watches allowed on the system. To adjust this on linux (temporarily), use the following command on the host machine:
+
+ $ sudo sysctl fs.inotify.max_user_watches=524288
+====
+
+To restart the development environment, execute the command described in the 3rd step above from the working folder.
 
 == Project Maintainers
 
