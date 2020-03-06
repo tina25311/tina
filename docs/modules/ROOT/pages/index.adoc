@@ -80,8 +80,7 @@ This is a sharp contrast to many other site generators that intermix all of thes
 == Where to begin
 
 If you're just beginning your journey with Antora, you'll probably want to know xref:features.adoc[how Antora can help you].
-
-When you are familiar with the basic concepts, you may want to xref:quick-start.adoc[quick start with Antora].
+When you are familiar with the basic concepts, you can try out Antora using the xref:quickstart.adoc[Antora quickstart guide].
 
 If you're ready to set up a new documentation project, or you want to migrate an existing project to Antora, start by xref:component-structure.adoc[organizing your documentation files] into the project structure Antora expects.
 You'll then need to xref:playbook:index.adoc[create a playbook] to tell Antora where to find the documentation and UI to use for your site.

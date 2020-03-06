@@ -90,7 +90,6 @@ The cloning progress of each repository is displayed in the terminal.
 [clone] https://gitlab.com/antora/demo/demo-component-a.git [################]
 [clone] https://gitlab.com/antora/demo/demo-component-b.git [################]
 ....
-====
 
 Once cloning is complete, Antora converts the AsciiDoc pages to embeddable HTML, wraps the HTML in the UI page templates, then assembles the pages into a site under the destination folder, which defaults to _build/site_.
 --
