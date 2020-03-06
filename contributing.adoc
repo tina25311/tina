@@ -613,6 +613,18 @@ To run the test suite, use:
 
  $ gulp build
 
+[TIP]
+====
+Tests use the Internet to query gitlab.com to download the default UI.
+If tests are failing with an error in `run-command` plugin, this may be caused by Internet speed/latency and low timeout value.
+By default, Mocha fails any test that takes more than 2 seconds to complete.
+To increase the timeout (up to 30 seconds), set the `CI` variable:
+
+ $ CI=true gulp build
+
+This value can be customised in `gulpfile.js/test-task.js` -- search for `process.env.CI`
+====
+
 If you want to generate a coverage report when running the tests (enabled by default in CI), set the `COVERAGE` environment variable when running the `build` command as shown here:
 
  $ COVERAGE=true gulp build
