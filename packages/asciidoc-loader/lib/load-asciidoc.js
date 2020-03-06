@@ -43,7 +43,7 @@ const EXTENSION_DSL_TYPES = Extensions.$constants(false).filter((name) => name.e
 function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   const fileSrc = file.src
   const relative = fileSrc.relative
-  const extname = fileSrc.extname || relative.replace(/.*(?=\.)/g, '')
+  const extname = fileSrc.extname || path.extname(relative)
   const intrinsicAttrs = {
     docname: (fileSrc.family === 'nav' ? 'nav$' : '') + relative.substr(0, relative.length - extname.length),
     docfile: file.path,
