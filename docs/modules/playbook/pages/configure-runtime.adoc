@@ -8,10 +8,9 @@ On this page, you'll learn:
 [#cache]
 == Cache directory
 
-The first time Antora runs, it will cache remote git repositories and remote UI bundle.
-On subsequent runs, Antora will attempt to resolve remote resources from the cache instead.
-
-This section explains where the cache is located by default and how to configure the location of the cache.
+The first time Antora runs, it caches any remote git repositories and UI bundles.
+On subsequent runs, Antora then resolves the remote resources from this cache instead.
+The remote resources are stored in Antora's default cache location unless an alternate location is configured in the playbook using the `cache_dir` key.
 
 [#default-cache]
 === Default cache directory
@@ -29,7 +28,7 @@ Another option is to locate the Antora cache directory on your system and delete
 [#cache-dir]
 === Specify a cache directory
 
-The cache directory can be specified using the cache dir key (`cache_dir`) under the `runtime` category in the playbook.
+The cache directory can be specified using the `cache_dir` key under the `runtime` category in the playbook.
 The key specifies the directory where the remote repositories should be cloned and the remote UI bundle should be downloaded.
 The key accepts a relative or absolute filesystem path.
 
@@ -52,9 +51,8 @@ A relative path is expanded to an absolute path using the following rules:
 [#fetch]
 == Fetch updates
 
-As previously stated, the first time Antora runs, it caches the remote git repositories and remote UI bundle.
-On subsequent runs, Antora looks for these resources in the cache folder by default (effectively running offline).
-
+The first time Antora runs, it caches any remote git repositories and UI bundles.
+On subsequent runs, Antora looks for these resources in the cache folder, effectively running offline.
 You can tell Antora to refresh the cache by setting the `fetch` key under the `runtime` category to `true`.
 
 [source,yaml]
@@ -64,15 +62,14 @@ runtime:
 ----
 
 However, you don't have to modify the playbook file directly to set this key.
-Most of the time, you'll just use the `--fetch` CLI switch.
+You can use the `--fetch` CLI switch.
 
  $ antora --fetch antora-playbook.yml
 
-The `--fetch` CLI switch sets the `fetch` key described in this section to `true`, overriding any value set in the playbook file.
-
+The `--fetch` CLI switch sets the `fetch` key to `true`, overriding any value set in the playbook file.
 Setting the `fetch` key to true activates two behaviors in Antora:
 
 . Run a fetch operation on all cloned repositories (content sources that are remote)
 . Download the remote UI bundle again if it's marked as a xref:configure-ui.adoc#snapshot[snapshot]
 
-Enable the `fetch` key whenever you want to retrieve updates to the remote content sources and/or remote UI bundle snapshot.
+Use `fetch` whenever you want to retrieve updates to the remote content sources and UI bundle snapshots.

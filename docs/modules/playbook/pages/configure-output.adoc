@@ -189,7 +189,7 @@ The site published using the `fs` provider to the directory [.path]_tmp/releases
 This directory will be removed prior to publishing since we've turned the clean key on.
 The site is also published as an archive to [.path]_/home/user/projects/docs-site/blue.zip_ by the `archive` provider.
 
-=== Custom Provider
+=== Custom provider
 
 If the provider key does not contain a recognized built-in provider, Antora will attempt to require it as a Node module.
 This allows you to supply a custom provider.
