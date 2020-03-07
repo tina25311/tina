@@ -1,7 +1,6 @@
 'use strict'
 
 const computeRelativeUrlPath = require('../util/compute-relative-url-path')
-const splitOnce = require('../util/split-once')
 
 /**
  * Converts the specified page reference to the data necessary to build an HTML link.
@@ -25,9 +24,14 @@ const splitOnce = require('../util/split-once')
  * internal or unresolved.
  */
 function convertPageRef (refSpec, content, currentPage, contentCatalog, relativize = true) {
+  let hash = ''
+  let hashIdx
+  let pageIdSpec = refSpec
+  if (~(hashIdx = refSpec.indexOf('#'))) {
+    hash = refSpec.substr(hashIdx)
+    pageIdSpec = refSpec.substr(0, hashIdx)
+  }
   let targetPage
-  const [pageIdSpec, fragment] = splitOnce(refSpec, '#')
-  const hash = fragment ? '#' + fragment : ''
   try {
     if (!((targetPage = contentCatalog.resolvePage(pageIdSpec, currentPage.src)) && targetPage.pub)) {
       // TODO log "Unresolved page ID"
