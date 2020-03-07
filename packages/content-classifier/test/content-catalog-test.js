@@ -73,7 +73,7 @@ describe('ContentCatalog', () => {
   })
 
   describe('#registerComponentVersion()', () => {
-    it('should add new component to catalog if component is not present', () => {
+    it('should add new component to catalog and return component version if component is not present', () => {
       const name = 'the-component'
       const version = '1.0.0'
       const title = 'The Component'
@@ -92,7 +92,8 @@ describe('ContentCatalog', () => {
           mediaType: 'text/asciidoc',
         },
       })
-      contentCatalog.registerComponentVersion(name, version, descriptor)
+      const componentVersion = contentCatalog.registerComponentVersion(name, version, descriptor)
+      expect(componentVersion).to.exist()
       const components = contentCatalog.getComponents()
       expect(components).to.have.lengthOf(1)
       expect(components[0]).to.deep.include({
@@ -104,9 +105,10 @@ describe('ContentCatalog', () => {
       expect(components[0].latest).to.eql({ version, displayVersion: version, title, url })
       // NOTE verify latestVersion alias
       expect(components[0].latestVersion).to.equal(components[0].latest)
+      expect(components[0].latestVersion).to.equal(componentVersion)
     })
 
-    it('should add new version to existing component if component is already present', () => {
+    it('should add new version to existing component and return it if component is already present', () => {
       const name = 'the-component'
       const version1 = '1.0.0'
       const title1 = 'The Component (1.0.0)'
@@ -119,12 +121,15 @@ describe('ContentCatalog', () => {
       const indexPageT = { family: 'page', relative: 'index.adoc', stem: 'index', mediaType: 'text/asciidoc' }
       const contentCatalog = new ContentCatalog()
       contentCatalog.addFile({ src: Object.assign({ component: name, version: version1, module: 'ROOT' }, indexPageT) })
-      contentCatalog.registerComponentVersion(name, version1, descriptor1)
+      const componentVersion1 = contentCatalog.registerComponentVersion(name, version1, descriptor1)
+      expect(componentVersion1).to.exist()
       expect(contentCatalog.getComponents()).to.have.lengthOf(1)
       const component = contentCatalog.getComponent(name)
+      expect(component.latest).to.equal(componentVersion1)
 
       contentCatalog.addFile({ src: Object.assign({ component: name, version: version2, module: 'ROOT' }, indexPageT) })
-      contentCatalog.registerComponentVersion(name, version2, descriptor2)
+      const componentVersion2 = contentCatalog.registerComponentVersion(name, version2, descriptor2)
+      expect(componentVersion2).to.exist()
       expect(contentCatalog.getComponents()).to.have.lengthOf(1)
       expect(contentCatalog.getComponent(name)).to.equal(component)
       expect(component).to.deep.include({
@@ -142,6 +147,7 @@ describe('ContentCatalog', () => {
         title: title2,
         url: url2,
       })
+      expect(component.latest).to.equal(componentVersion2)
     })
 
     it('should throw error if component version already exists', () => {
