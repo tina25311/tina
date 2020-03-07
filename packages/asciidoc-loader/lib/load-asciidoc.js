@@ -16,6 +16,8 @@ const ospath = require('path')
 const { posix: path } = ospath
 const resolveIncludeFile = require('./include/resolve-include-file')
 
+const BLANK_LINE_BUF = Buffer.from('\n\n')
+const DOCTITLE_MARKER_BUF = Buffer.from('= ')
 const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').replace('\\', '\\\\')}]`)
 const { EXAMPLES_DIR_TOKEN, PARTIALS_DIR_TOKEN } = require('./constants')
 const EXTENSION_DSL_TYPES = Extensions.$constants(false).filter((name) => name.endsWith('Dsl'))
@@ -57,21 +59,30 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   }
   const attributes = fileSrc.family === 'page' ? { 'page-partial': '@' } : {}
   Object.assign(attributes, config.attributes, intrinsicAttrs, computePageAttrs(fileSrc, contentCatalog))
-  const relativizePageRefs = config.relativizePageRefs !== false
-  const converter = createConverter({
-    onImageRef: (resourceSpec) => convertImageRef(resourceSpec, file, contentCatalog),
-    onPageRef: (pageSpec, content) => convertPageRef(pageSpec, content, file, contentCatalog, relativizePageRefs),
-  })
   const extensionRegistry = createExtensionRegistry(asciidoctor, {
     onInclude: (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog),
   })
   const extensions = config.extensions || []
-  if (extensions.length) {
-    extensions.forEach((extension) => extension.register(extensionRegistry, { file, contentCatalog, config }))
-  }
-  const opts = { attributes, converter, extension_registry: extensionRegistry, safe: 'safe' }
+  if (extensions.length) extensions.forEach((ext) => ext.register(extensionRegistry, { file, contentCatalog, config }))
+  const opts = { attributes, extension_registry: extensionRegistry, safe: 'safe' }
   if (config.doctype) opts.doctype = config.doctype
-  const doc = asciidoctor.load(file.contents.toString(), opts)
+  let contents = file.contents
+  if (config.headerOnly) {
+    opts.parse_header_only = true
+    const firstBlankLineIdx = contents.indexOf(BLANK_LINE_BUF)
+    if (~firstBlankLineIdx) {
+      const partialContents = contents.slice(0, firstBlankLineIdx)
+      const doctitleIdx = partialContents.indexOf(DOCTITLE_MARKER_BUF)
+      if (!doctitleIdx || partialContents[doctitleIdx - 1] === 10) contents = partialContents
+    }
+  } else {
+    const relativizePageRefs = config.relativizePageRefs !== false
+    opts.converter = createConverter({
+      onImageRef: (resourceSpec) => convertImageRef(resourceSpec, file, contentCatalog),
+      onPageRef: (pageSpec, content) => convertPageRef(pageSpec, content, file, contentCatalog, relativizePageRefs),
+    })
+  }
+  const doc = asciidoctor.load(contents.toString(), opts)
   if (extensions.length) freeExtensions()
   return doc
 }

@@ -54,7 +54,7 @@ function resolveIncludeFile (target, page, cursor, catalog) {
       file: resolvedSrc.path,
       path: resolvedSrc.basename,
       // NOTE src.contents is set if page is marked as a partial
-      // TODO if include file is a page, warn if not marked as a partial
+      // TODO if mediaType is not text/asciidoc, warn
       contents: (resolvedSrc.contents || resolved.contents).toString(),
     }
   }

@@ -177,6 +177,25 @@ describe('convertDocument()', () => {
     })
   })
 
+  it('should not set asciidoc property on file object if already set', () => {
+    inputFile.contents = Buffer.from(heredoc`
+      = Document Title From Document
+      :foo: bar
+
+      article contents
+    `)
+    inputFile.asciidoc = {
+      doctitle: 'Document Title',
+      attributes: { yin: 'yang' },
+    }
+    convertDocument(inputFile, undefined, asciidocConfig)
+    expect(inputFile.asciidoc).to.exist()
+    expect(inputFile.asciidoc.doctitle).to.equal('Document Title')
+    expect(inputFile.asciidoc.attributes).to.exist()
+    expect(inputFile.asciidoc.attributes).to.have.property('yin', 'yang')
+    expect(inputFile.asciidoc.attributes).not.to.have.property('foo')
+  })
+
   it('should pass custom attributes to processor', () => {
     inputFile.contents = Buffer.from(heredoc`
       = Document Title
@@ -193,53 +212,6 @@ describe('convertDocument()', () => {
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.attributes).to.exist()
     expect(inputFile.asciidoc.attributes).to.include(customAttributes)
-  })
-
-  it('should register aliases defined by page-aliases document attribute', () => {
-    inputFile.contents = Buffer.from(heredoc`
-      = Page Title
-      :page-aliases: the-alias.adoc,topic/the-alias, 1.0.0@page-a.adoc ,another-alias.adoc
-
-      Page content.
-    `)
-    const contentCatalog = { registerPageAlias: spy(() => {}), getComponent: () => {} }
-    convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
-    expectCalledWith(contentCatalog.registerPageAlias, ['the-alias.adoc', inputFile], 1)
-    expectCalledWith(contentCatalog.registerPageAlias, ['topic/the-alias', inputFile], 2)
-    expectCalledWith(contentCatalog.registerPageAlias, ['1.0.0@page-a.adoc', inputFile], 3)
-    expectCalledWith(contentCatalog.registerPageAlias, ['another-alias.adoc', inputFile], 4)
-  })
-
-  it('should register aliases broken across lines using a line continuation', () => {
-    inputFile.contents = Buffer.from(heredoc`
-      = Page Title
-      :page-aliases: the-alias.adoc, \
-                     topic/the-alias, \
-      1.0.0@page-a.adoc , \
-      another-alias.adoc
-
-      Page content.
-    `)
-    const contentCatalog = { registerPageAlias: spy(() => {}), getComponent: () => {} }
-    convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
-    expectCalledWith(contentCatalog.registerPageAlias, ['the-alias.adoc', inputFile], 1)
-    expectCalledWith(contentCatalog.registerPageAlias, ['topic/the-alias', inputFile], 2)
-    expectCalledWith(contentCatalog.registerPageAlias, ['1.0.0@page-a.adoc', inputFile], 3)
-    expectCalledWith(contentCatalog.registerPageAlias, ['another-alias.adoc', inputFile], 4)
-  })
-
-  it('should not register aliases if page-aliases document attribute is empty', () => {
-    inputFile.contents = Buffer.from(heredoc`
-      = Page Title
-      :page-aliases:
-
-      Page content.
-    `)
-    const contentCatalog = { registerPageAlias: spy(() => {}), getComponent: () => {} }
-    convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.registerPageAlias).to.not.have.been.called()
   })
 
   it('should convert page reference to URL of page in content catalog', () => {

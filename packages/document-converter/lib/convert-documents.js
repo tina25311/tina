@@ -1,6 +1,9 @@
 'use strict'
 
 const convertDocument = require('./convert-document')
+const loadAsciiDoc = require('@antora/asciidoc-loader')
+
+const COMMA_DELIMITER_RX = /\s*,\s*/
 
 /**
  * Converts the contents of AsciiDoc files in the content catalog to embeddable HTML.
@@ -18,22 +21,51 @@ const convertDocument = require('./convert-document')
  * @returns {Array<File>} The virtual files in the page family taken from the content catalog.
  */
 function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
-  const asciidocConfigs = new Map(
-    contentCatalog.getComponents().reduce((accum, { name, versions }) => {
-      return accum.concat(versions.map(({ version, asciidoc }) => [`${version}@${name}`, asciidoc]))
-    }, [])
-  )
+  const mainAsciiDocConfigs = new Map()
+  contentCatalog.getComponents().forEach(({ name: component, versions }) => {
+    versions.forEach(({ version, asciidoc }) => {
+      mainAsciiDocConfigs.set(buildCacheKey({ component, version }), asciidoc)
+    })
+  })
+  const headerAsciiDocConfigs = new Map()
+  const headerOverrides = { extensions: [], headerOnly: true }
+  for (const [cacheKey, mainAsciiDocConfig] of mainAsciiDocConfigs) {
+    headerAsciiDocConfigs.set(cacheKey, Object.assign({}, mainAsciiDocConfig, headerOverrides))
+  }
   return contentCatalog
     .getPages()
     .filter((page) => page.out)
     .map((page) => {
       if (page.mediaType === 'text/asciidoc') {
-        const asciidocConfig = asciidocConfigs.get(`${page.src.version}@${page.src.component}`) || siteAsciiDocConfig
-        return convertDocument(page, contentCatalog, asciidocConfig)
+        const doc = loadAsciiDoc(
+          page,
+          contentCatalog,
+          headerAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig
+        )
+        const attributes = doc.getAttributes()
+        page.asciidoc = doc.hasHeader() ? { attributes, doctitle: doc.getDocumentTitle() } : { attributes }
+        registerPageAliases(attributes['page-aliases'], page, contentCatalog)
+        if ('page-partial' in attributes) page.src.contents = page.contents
       }
       return page
     })
+    .map((page) =>
+      page.asciidoc
+        ? convertDocument(page, contentCatalog, mainAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig)
+        : page
+    )
     .map((page) => delete page.src.contents && page)
+}
+
+function buildCacheKey ({ component, version }) {
+  return `${version}@${component}`
+}
+
+function registerPageAliases (aliases, targetFile, contentCatalog) {
+  if (!aliases) return
+  return aliases
+    .split(COMMA_DELIMITER_RX)
+    .forEach((aliasSpec) => aliasSpec && contentCatalog.registerPageAlias(aliasSpec, targetFile))
 }
 
 module.exports = convertDocuments

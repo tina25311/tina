@@ -73,6 +73,49 @@ describe('loadAsciiDoc()', () => {
     expect(allBlocks).to.have.lengthOf(8)
   })
 
+  it('should load document model with only header from AsciiDoc contents if headerOnly option is set', () => {
+    const contents = heredoc`
+      = Document Title
+      :page-layout: home
+
+      == Section Title
+
+      paragraph
+
+      * list item 1
+      * list item 2
+      * list item 3
+    `
+    setInputFileContents(contents)
+    const doc = loadAsciiDoc(inputFile, undefined, { headerOnly: true })
+    expect(doc.getBlocks()).to.have.lengthOf(0)
+    expect(doc.getDocumentTitle()).to.eql('Document Title')
+    expect(doc.getAttribute('page-layout')).to.eql('home')
+  })
+
+  it('should load document model with only header if headerOnly option is set and doctitle has block attributes', () => {
+    const contents = heredoc`
+      // the next line sets the document id
+      [#docid]
+      = Document Title
+      :page-layout: home
+
+      == Section Title
+
+      paragraph
+
+      * list item 1
+      * list item 2
+      * list item 3
+    `
+    setInputFileContents(contents)
+    const doc = loadAsciiDoc(inputFile, undefined, { headerOnly: true })
+    expect(doc.getBlocks()).to.have.lengthOf(0)
+    expect(doc.getDocumentTitle()).to.eql('Document Title')
+    expect(doc.getId()).to.eql('docid')
+    expect(doc.getAttribute('page-layout')).to.eql('home')
+  })
+
   it('should not hang on mismatched passthrough syntax', () => {
     const contents = 'Link the system library `+libconfig++.so.9+` located at `+/usr/lib64/libconfig++.so.9+`.'
     const html = Asciidoctor.convert(contents, { safe: 'safe' })
@@ -1896,7 +1939,14 @@ describe('loadAsciiDoc()', () => {
         module: 'module-b',
         family: 'page',
         relative: 'topic-foo/topic-bar/the-page.adoc',
-      })
+      }, 1)
+      expectCalledWith(contentCatalog.getById, {
+        component: 'component-b',
+        version: '4.5.6',
+        module: 'module-b',
+        family: 'alias',
+        relative: 'topic-foo/topic-bar/the-page.adoc',
+      }, 2)
       expectUnresolvedPageLink(html, '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc', 'The Page Title')
     })
 

@@ -1074,6 +1074,15 @@ describe('ContentCatalog', () => {
       const page = classifyContent(playbook, aggregate).resolvePage(pageSpec, context)
       expect(page).not.to.exist()
     })
+
+    it('should dereference alias in order to resolve page', () => {
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const targetPage = contentCatalog.resolvePage('v1.2.3@the-component::page-one.adoc')
+      contentCatalog.registerPageAlias('alias.adoc', targetPage)
+      const pageResolvedFromAlias = contentCatalog.resolvePage('v1.2.3@the-component::alias.adoc')
+      expect(pageResolvedFromAlias).to.exist()
+      expect(pageResolvedFromAlias).to.equal(targetPage)
+    })
   })
 
   describe('#resolveResource()', () => {
