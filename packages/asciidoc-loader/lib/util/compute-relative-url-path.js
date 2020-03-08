@@ -19,7 +19,7 @@ const { posix: path } = require('path')
  */
 function computeRelativeUrlPath (from, to, hash = '') {
   if (to.charAt() === '/') {
-    return from === to
+    return to === from
       ? hash || (isDir(to) ? './' : path.basename(to))
       : (path.relative(path.dirname(from + '.'), to) || '.') + (isDir(to) ? '/' + hash : hash)
   } else {
