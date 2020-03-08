@@ -2,6 +2,8 @@
 
 const handlebars = require('handlebars')
 const { posix: path } = require('path')
+const resolvePageHelper = require('./helpers/resolve-page')
+const resolvePageUrlHelper = require('./helpers/resolve-page-url')
 const requireFromString = require('require-from-string')
 const { URL } = require('url')
 
@@ -204,16 +206,6 @@ function buildPageUiModel (file, contentCatalog, navigationCatalog, site) {
   }
 
   return model
-}
-
-function resolvePageHelper (spec, { data: { root }, hash: context }) {
-  return spec ? root.site.contentCatalog.resolvePage(spec, context) : undefined
-}
-
-function resolvePageUrlHelper (spec, { data: { root }, hash: context }) {
-  if (!spec) return
-  const page = root.site.contentCatalog.resolvePage(spec, context)
-  if (page) return page.pub.url
 }
 
 function getNavContext (url, title, navigation) {
