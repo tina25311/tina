@@ -85,4 +85,16 @@ describe('computeRelativeUrlPath()', () => {
       expect(computeRelativeUrlPath('/file/', '/file/', '#the-fragment')).to.equal('#the-fragment')
     })
   })
+
+  describe('absolute URL', () => {
+    it('should only modify root-relative URL, not an absolute URL', () => {
+      const to = 'https://example.org/foo/bar.html'
+      expect(computeRelativeUrlPath('/from.html', to)).to.equal(to)
+    })
+
+    it('should preserve hash on absolute URL', () => {
+      const to = 'https://example.org/foo/bar.html#baz'
+      expect(computeRelativeUrlPath('/from.html', to)).to.equal(to)
+    })
+  })
 })

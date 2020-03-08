@@ -1093,7 +1093,7 @@ describe('build UI model', () => {
       expect(model.canonicalUrl).to.equal('http://example.com/the-component/1.0/the-page.html')
     })
 
-    it('should not set canonicalUrl property if url is not absolute', () => {
+    it('should not set canonicalUrl property if site url is not absolute', () => {
       site.url = '/docs'
       component.versions.unshift({
         version: '2.0',
@@ -1104,6 +1104,33 @@ describe('build UI model', () => {
       contentCatalog.getById = spy((filter) => files[filter.version])
       const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
       expect(model.canonicalUrl).not.to.exist()
+    })
+
+    it('should not prepend site url to canonicalUrl property if page url is absolute', () => {
+      site.url = 'http://archive.docs.example.com'
+      component.versions.unshift({
+        version: '2.0',
+        title: 'The Component',
+        url: '/the-component/2.0/index.html',
+      })
+      const files = {
+        '1.0': file,
+        '2.0': {
+          src: {
+            path: 'modules/ROOT/pages/the-page.adoc',
+            component: 'the-component',
+            version: '2.0',
+            module: 'ROOT',
+          },
+          pub: {
+            url: 'http://example.com/the-component/2.0/the-page.html',
+          },
+        },
+      }
+      contentCatalog.getById = spy((filter) => files[filter.version])
+      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      expect(model.canonicalUrl).to.exist()
+      expect(model.canonicalUrl).to.equal('http://example.com/the-component/2.0/the-page.html')
     })
 
     it('should not set canonicalUrl property if all versions are prereleases', () => {
