@@ -102,6 +102,8 @@ class ContentCatalog {
     let publishable
     if (file.out) {
       publishable = true
+    } else if ('out' in file) {
+      delete file.out
     } else if (
       (actingFamily === 'page' || actingFamily === 'image' || actingFamily === 'attachment') &&
       !~('/' + file.src.relative).indexOf('/_')

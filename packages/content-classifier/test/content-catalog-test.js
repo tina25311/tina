@@ -664,6 +664,24 @@ describe('ContentCatalog', () => {
       expect(result).to.not.have.property('pub')
     })
 
+    it('should not populate out or pub property if out property of file is falsy', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: '_attributes.adoc',
+        basename: '_attributes.adoc',
+        stem: '_attributes',
+        mediaType: 'text/asciidoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.addFile(new File({ src, out: undefined }))
+      const result = contentCatalog.getById(src)
+      expect(result).to.not.have.property('out')
+      expect(result).to.not.have.property('pub')
+    })
+
     it('should respect htmlUrlExtensionStyle setting when computing pub', () => {
       const src = {
         component: 'the-component',
