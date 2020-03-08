@@ -3,7 +3,7 @@ TODO: explain how this relates to page versions
 ////
 = Component Versions and Branches
 
-Although there is no necessary relationship between version control repository branches and start_paths as specified in the playbook and component-versions, relating these results in a simple, convenient, flexible, and easy to understand organization.
+Although there isn't necessarily a relationship between version control repository branches or tags, as specified in the playbook, and component versions, relating these results in a simple, convenient, flexible, and easy to understand organization.
 
 In this scheme, versions of a xref:component-structure.adoc[documentation component] are stored in branches in a version control repository such as git.
 The name of the branch itself doesn't matter.
