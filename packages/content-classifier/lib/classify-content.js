@@ -23,8 +23,8 @@ function classifyContent (playbook, aggregate, siteAsciiDocConfig = undefined) {
   const contentCatalog = aggregate.reduce((catalog, descriptor) => {
     const { name, version, nav, files } = descriptor
     delete descriptor.files
+    descriptor.asciidoc = resolveAsciiDocConfig(siteAsciiDocConfig, descriptor)
     files.forEach((file) => allocateSrc(file, name, version, nav) && catalog.addFile(file))
-    descriptor.asciidocConfig = resolveAsciiDocConfig(siteAsciiDocConfig, descriptor)
     catalog.registerComponentVersion(name, version, descriptor)
     return catalog
   }, new ContentCatalog(playbook))

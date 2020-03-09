@@ -125,7 +125,7 @@ describe('convertDocuments()', () => {
       },
     ])
     const componentVersion = contentCatalog.getComponentVersion('component-a', 'master')
-    componentVersion.asciidocConfig = resolveAsciiDocConfig({
+    componentVersion.asciidoc = resolveAsciiDocConfig({
       asciidoc: { attributes: { experimental: '' } },
     })
     expect(asciidocConfig.attributes).not.to.have.property('experimental')

@@ -23,10 +23,11 @@ This project utilizes semantic versioning.
 * *content-classifier*: Modify ContentCatalog#registerComponentVersion to return component version added (#561)
 * *content-classifier*: Modify ContentCatalog#addFile to return file added (#562)
 * *content-classifier*: Don't assign out property when adding file to content catalog if out property has falsy value (#563)
+* *content-classifier*: Rename `asciidocConfig` property on component version to `asciidoc` (#542)
+* *asciidoc-loader*: Don't relativize absolute pub URL (#564)
 * *page-composer*: Upgrade Handlebars to fix performance regression (#551)
 * *page-composer*: Fix resolvePage and resolvePageUrl helpers to retrieve content catalog independent of template context (#554)
 * *page-composer*: Make resolvePage and resolvePageUrl helpers resilient against falsy page spec (#554)
-* *asciidoc-loader*: Don't relativize absolute pub URL (#564)
 * *page-composer*: Don't prepend site URL to absolute canonical URL (#564)
 
 == 2.3.0-alpha.2 (2019-12-18)

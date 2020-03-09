@@ -21,7 +21,7 @@ class ContentCatalog {
   }
 
   registerComponentVersion (name, version, descriptor = {}) {
-    const { asciidocConfig, displayVersion, prerelease, title, startPage: startPageSpec } = descriptor
+    const { asciidoc, displayVersion, prerelease, title, startPage: startPageSpec } = descriptor
     let startPage = this.resolvePage(startPageSpec || 'index.adoc', { component: name, version, module: 'ROOT' })
     if (!startPage) {
       //if (startPageSpec) throw new Error(`Start page specified for ${version}@${name} not found: ` + startPageSpec)
@@ -47,7 +47,7 @@ class ContentCatalog {
         componentVersion.displayVersion = `${version}${sep}${prerelease}`
       }
     }
-    if (asciidocConfig) componentVersion.asciidocConfig = asciidocConfig
+    if (asciidoc) componentVersion.asciidoc = asciidoc
     const component = this.getComponent(name)
     if (component) {
       const componentVersions = component.versions

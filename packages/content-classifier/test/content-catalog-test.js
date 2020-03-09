@@ -416,15 +416,13 @@ describe('ContentCatalog', () => {
       const descriptor = {
         title: 'ACME',
         displayVersion: '1.0 Beta',
-        asciidocConfig,
+        asciidoc: asciidocConfig,
       }
       contentCatalog.registerComponentVersion('the-component', '1.0', descriptor)
       const component = contentCatalog.getComponent('the-component')
       expect(component).to.exist()
       expect(component.versions[0]).to.exist()
-      expect(component.versions[0].asciidocConfig).to.eql(asciidocConfig)
-      //expect(descriptor).not.to.have.property('asciidocConfig')
-      //expect(component.versions[0].descriptor).not.to.have.property('asciidocConfig')
+      expect(component.versions[0].asciidoc).to.eql(asciidocConfig)
     })
   })
 

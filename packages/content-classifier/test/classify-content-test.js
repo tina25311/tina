@@ -227,7 +227,6 @@ describe('classifyContent()', () => {
       expect(() => classifyContent(playbook, aggregate)).to.throw('version')
     })
 
-    // QUESTION: should asciidocConfig not be assigned in this case?
     it('should attach site AsciiDoc config to component version if component version has no AsciiDoc config', () => {
       const siteAsciiDocConfig = {
         attributes: { foo: 'bar' },
@@ -239,8 +238,7 @@ describe('classifyContent()', () => {
       expect(component).to.exist()
       const componentVersions = component.versions
       expect(componentVersions).to.have.lengthOf(1)
-      const asciidocConfig = componentVersions[0].asciidocConfig
-      expect(asciidocConfig).to.equal(siteAsciiDocConfig)
+      expect(componentVersions[0].asciidoc).to.equal(siteAsciiDocConfig)
     })
 
     it('should copy AsciiDoc extensions to scoped AsciiDoc config', () => {
@@ -255,7 +253,7 @@ describe('classifyContent()', () => {
       expect(component).to.exist()
       const componentVersions = component.versions
       expect(componentVersions).to.have.lengthOf(1)
-      const asciidocConfig = componentVersions[0].asciidocConfig
+      const asciidocConfig = componentVersions[0].asciidoc
       expect(asciidocConfig).to.have.property('extensions', siteAsciiDocConfig.extensions)
       expect(asciidocConfig).to.have.property('attributes')
       expect(asciidocConfig.attributes).to.include({ foo: 'bar' })
@@ -287,7 +285,7 @@ describe('classifyContent()', () => {
       expect(component).to.exist()
       const componentVersions = component.versions
       expect(componentVersions).to.have.lengthOf(1)
-      const asciidocConfig = componentVersions[0].asciidocConfig
+      const asciidocConfig = componentVersions[0].asciidoc
       expect(asciidocConfig).to.exist()
       expect(asciidocConfig).to.have.property('attributes')
       expect(asciidocConfig.attributes).to.eql({
