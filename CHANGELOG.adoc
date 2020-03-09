@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *page-composer*: Add `relativize` as built-in UI helper (#555)
+
 === Fixed
 
 * *content-aggregator*: Brace pattern in start paths value should match whole filename segment, even if pattern contains a wildcard (#583)

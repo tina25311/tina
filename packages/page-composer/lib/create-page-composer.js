@@ -2,6 +2,7 @@
 
 const handlebars = require('handlebars')
 const { posix: path } = require('path')
+const relativizeHelper = require('./helpers/relativize')
 const resolvePageHelper = require('./helpers/resolve-page')
 const resolvePageUrlHelper = require('./helpers/resolve-page-url')
 const requireFromString = require('require-from-string')
@@ -29,6 +30,7 @@ const { version: VERSION } = require('../package.json')
  *   HTML contents in a standalone page layout).
  */
 function createPageComposer (playbook, contentCatalog, uiCatalog, env = process.env) {
+  handlebars.registerHelper('relativize', relativizeHelper)
   handlebars.registerHelper('resolvePage', resolvePageHelper)
   handlebars.registerHelper('resolvePageUrl', resolvePageUrlHelper)
 

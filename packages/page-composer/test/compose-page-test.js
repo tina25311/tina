@@ -596,6 +596,30 @@ describe('createPageComposer()', () => {
       expect(file.contents.toString()).to.include('<p>/the-component/0.9/the-page.html</p>')
     })
 
+    it('should be able to call built-in helper to relativize URL', () => {
+      definePartial(
+        'body-relativize-url',
+        heredoc`
+        <ul>
+        {{#each page.component.versions}}
+        <li>{{relativize ./url}}</li>
+        {{/each}}
+        <li>{{relativize '/'}}</li>
+        <li>{{relativize '/index.html'}}</li>
+        </ul>
+        `
+      )
+      replaceCallToBodyPartial('{{> body-relativize-url}}')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include(heredoc`<ul>
+      <li>../0.9/index.html</li>
+      <li>index.html</li>
+      <li>../../</li>
+      <li>../../index.html</li>
+      </ul>`)
+    })
+
     // QUESTION what should we do with a template execution error? (e.g., missing partial or helper)
   })
 })
