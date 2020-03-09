@@ -20,7 +20,7 @@ const convertDocument = require('./convert-document')
 function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
   const asciidocConfigs = new Map(
     contentCatalog.getComponents().reduce((accum, { name, versions }) => {
-      return accum.concat(versions.map(({ version, asciidocConfig }) => [name + '@' + version, asciidocConfig]))
+      return accum.concat(versions.map(({ version, asciidocConfig }) => [`${version}@${name}`, asciidocConfig]))
     }, [])
   )
   return contentCatalog
@@ -28,7 +28,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
     .filter((page) => page.out)
     .map((page) => {
       if (page.mediaType === 'text/asciidoc') {
-        const asciidocConfig = asciidocConfigs.get(page.src.component + '@' + page.src.version) || siteAsciiDocConfig
+        const asciidocConfig = asciidocConfigs.get(`${page.src.version}@${page.src.component}`) || siteAsciiDocConfig
         return convertDocument(page, contentCatalog, asciidocConfig)
       }
       return page
