@@ -83,11 +83,11 @@ module.exports = {
     return deferredFn
   },
   expect: chai.expect,
-  expectCalledWith: (observed, args, i = 0) => {
+  expectCalledWith: (observed, args, i = 1) => {
     if (!Array.isArray(args)) args = [args]
     chai
       .expect(observed)
-      .on.nth(i)
+      .nth(i)
       .called.with(...args)
   },
   heredoc: (literals, ...values) => {

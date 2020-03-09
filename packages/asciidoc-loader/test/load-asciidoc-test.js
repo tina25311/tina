@@ -815,7 +815,7 @@ describe('loadAsciiDoc()', () => {
             relative: 'outer.adoc',
           },
         ],
-        1
+        2
       )
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
@@ -899,7 +899,7 @@ describe('loadAsciiDoc()', () => {
             relative: 'page-a.adoc',
           },
         ],
-        0
+        1
       )
       expectCalledWith(
         contentCatalog.resolveResource,
@@ -913,7 +913,7 @@ describe('loadAsciiDoc()', () => {
             relative: 'outer.adoc',
           },
         ],
-        1
+        2
       )
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
@@ -953,7 +953,7 @@ describe('loadAsciiDoc()', () => {
             relative: 'page-a.adoc',
           },
         ],
-        0
+        1
       )
       expectCalledWith(
         contentCatalog.resolveResource,
@@ -967,7 +967,7 @@ describe('loadAsciiDoc()', () => {
             relative: 'outer.adoc',
           },
         ],
-        1
+        2
       )
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
@@ -2091,7 +2091,8 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b::the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
+      expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
+      expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
       expectCalledWith(contentCatalog.getById, {
         component: 'component-b',
         version: '1.1',
@@ -2112,7 +2113,8 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b::the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
+      expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
+      expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
       expectCalledWith(contentCatalog.getById, {
         component: 'component-b',
         version: '1.0',
@@ -2133,7 +2135,8 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b:module-b:the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
+      expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
+      expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
       expectCalledWith(contentCatalog.getById, {
         component: 'component-b',
         version: '2.0',
@@ -2154,7 +2157,8 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b:module-b:the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 1)
+      expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
+      expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
       expectCalledWith(contentCatalog.getById, {
         component: 'component-b',
         version: 'master',

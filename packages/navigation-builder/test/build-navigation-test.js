@@ -258,7 +258,7 @@ describe('buildNavigation()', () => {
           relative: 'page-a.adoc',
         },
       ],
-      0
+      1
     )
     expectCalledWith(
       contentCatalog.getById,
@@ -271,7 +271,7 @@ describe('buildNavigation()', () => {
           relative: 'page-b.adoc',
         },
       ],
-      1
+      2
     )
     expectCalledWith(
       contentCatalog.getById,
@@ -284,9 +284,10 @@ describe('buildNavigation()', () => {
           relative: 'page-c.adoc',
         },
       ],
-      2
+      3
     )
-    expectCalledWith(contentCatalog.getComponent, 'component-b')
+    expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
+    expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
     expectCalledWith(
       contentCatalog.getById,
       [
@@ -298,7 +299,7 @@ describe('buildNavigation()', () => {
           relative: 'page-d.adoc',
         },
       ],
-      3
+      4
     )
   })
 

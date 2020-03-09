@@ -205,10 +205,10 @@ describe('convertDocument()', () => {
     const contentCatalog = { registerPageAlias: spy(() => {}), getComponent: () => {} }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
-    expectCalledWith(contentCatalog.registerPageAlias, ['the-alias.adoc', inputFile], 0)
-    expectCalledWith(contentCatalog.registerPageAlias, ['topic/the-alias', inputFile], 1)
-    expectCalledWith(contentCatalog.registerPageAlias, ['1.0.0@page-a.adoc', inputFile], 2)
-    expectCalledWith(contentCatalog.registerPageAlias, ['another-alias.adoc', inputFile], 3)
+    expectCalledWith(contentCatalog.registerPageAlias, ['the-alias.adoc', inputFile], 1)
+    expectCalledWith(contentCatalog.registerPageAlias, ['topic/the-alias', inputFile], 2)
+    expectCalledWith(contentCatalog.registerPageAlias, ['1.0.0@page-a.adoc', inputFile], 3)
+    expectCalledWith(contentCatalog.registerPageAlias, ['another-alias.adoc', inputFile], 4)
   })
 
   it('should register aliases broken across lines using a line continuation', () => {
@@ -224,10 +224,10 @@ describe('convertDocument()', () => {
     const contentCatalog = { registerPageAlias: spy(() => {}), getComponent: () => {} }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
-    expectCalledWith(contentCatalog.registerPageAlias, ['the-alias.adoc', inputFile], 0)
-    expectCalledWith(contentCatalog.registerPageAlias, ['topic/the-alias', inputFile], 1)
-    expectCalledWith(contentCatalog.registerPageAlias, ['1.0.0@page-a.adoc', inputFile], 2)
-    expectCalledWith(contentCatalog.registerPageAlias, ['another-alias.adoc', inputFile], 3)
+    expectCalledWith(contentCatalog.registerPageAlias, ['the-alias.adoc', inputFile], 1)
+    expectCalledWith(contentCatalog.registerPageAlias, ['topic/the-alias', inputFile], 2)
+    expectCalledWith(contentCatalog.registerPageAlias, ['1.0.0@page-a.adoc', inputFile], 3)
+    expectCalledWith(contentCatalog.registerPageAlias, ['another-alias.adoc', inputFile], 4)
   })
 
   it('should not register aliases if page-aliases document attribute is empty', () => {
