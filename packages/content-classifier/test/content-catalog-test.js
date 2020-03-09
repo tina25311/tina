@@ -608,6 +608,24 @@ describe('ContentCatalog', () => {
   })
 
   describe('#addFile()', () => {
+    it('should return file registered', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        stem: 'the-page',
+        mediaType: 'text/asciidoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      const file = contentCatalog.addFile({ src })
+      expect(file).to.be.instanceOf(File)
+      expect(file).to.have.property('contents')
+      expect(file).to.have.property('src')
+    })
+
     it('should populate out and pub when called with vinyl file that has src property', () => {
       const src = {
         component: 'the-component',

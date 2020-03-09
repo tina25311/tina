@@ -21,6 +21,7 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Ignore dot (hidden) folders when matching start paths unless pattern begins with a dot (#581)
 * *content-classifier*: Modify ContentCatalog#registerComponentVersion to return component version added (#561)
+* *content-classifier*: Modify ContentCatalog#addFile to return file added (#562)
 * *content-classifier*: Don't assign out property when adding file to content catalog if out property has falsy value (#563)
 * *page-composer*: Upgrade Handlebars to fix performance regression (#551)
 * *page-composer*: Fix resolvePage and resolvePageUrl helpers to retrieve content catalog independent of template context (#554)

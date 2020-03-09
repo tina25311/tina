@@ -115,6 +115,7 @@ class ContentCatalog {
       file.pub = computePub(file.src, file.out, actingFamily, this.htmlUrlExtensionStyle)
     }
     this[$files].set(key, file)
+    return file
   }
 
   findBy (criteria) {
