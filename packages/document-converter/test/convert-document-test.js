@@ -283,7 +283,7 @@ describe('convertDocument()', () => {
     expect(inputFile.contents.toString()).to.include('cloud: someone else&#8217;s computer')
   })
 
-  it('should be able to include which has already been converted', () => {
+  it('should be able to include a page which has already been converted', () => {
     inputFile.contents = Buffer.from(heredoc`
       = Page Title
 
