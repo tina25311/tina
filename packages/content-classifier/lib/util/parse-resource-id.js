@@ -49,7 +49,7 @@ function parseResourceId (spec, ctx = {}, defaultFamily = 'page', permittedFamil
       .filter((it) => it && it !== '.' && it !== '..')
       .join('/')
   }
-  if (family === 'page' && !relative.endsWith('.adoc')) relative += '.adoc'
+  if ((family === 'page' || family === 'alias') && !relative.endsWith('.adoc')) relative += '.adoc'
 
   if (component) {
     if (!module) module = 'ROOT'

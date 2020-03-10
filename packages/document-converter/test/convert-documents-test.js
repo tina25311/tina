@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, heredoc } = require('../../../test/test-utils')
+const { expect, heredoc, spy } = require('../../../test/test-utils')
 
 const convertDocuments = require('@antora/document-converter')
 const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
@@ -9,6 +9,7 @@ const mockContentCatalog = require('../../../test/mock-content-catalog')
 
 describe('convertDocuments()', () => {
   const asciidocConfig = resolveAsciiDocConfig()
+  const expectPageLink = (html, url, content) => expect(html).to.include(`<a href="${url}" class="page">${content}</a>`)
 
   it('should run on all files in the page family', () => {
     const contentCatalog = mockContentCatalog().spyOn('getPages')
@@ -157,5 +158,164 @@ describe('convertDocuments()', () => {
     </div>
     `)
     expect(pages[1].contents.toString()).to.equal('<p>This one should <em>not</em> be converted.</p>')
+  })
+
+  it('should register aliases defined by page-aliases document attribute', () => {
+    const contents = Buffer.from(heredoc`
+      = Page Title
+      :page-aliases: the-alias.adoc,topic/the-alias, 1.0.0@page-a.adoc ,another-alias.adoc
+
+      Page content.
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'page-a.adoc',
+        contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const inputFile = contentCatalog.getFiles()[0]
+    contentCatalog.registerPageAlias = spy(() => {})
+    convertDocuments(contentCatalog, asciidocConfig)
+    expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
+    expect(contentCatalog.registerPageAlias).first.be.called.with('the-alias.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias', inputFile)
+    expect(contentCatalog.registerPageAlias).third.be.called.with('1.0.0@page-a.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).nth(4).be.called.with('another-alias.adoc', inputFile)
+  })
+
+  it('should register aliases broken across lines using a line continuation', () => {
+    const contents = Buffer.from(heredoc`
+      = Page Title
+      :page-aliases: the-alias.adoc, \
+                     topic/the-alias, \
+      1.0.0@page-a.adoc , \
+      another-alias.adoc
+
+      Page content.
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'page-a.adoc',
+        contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    contentCatalog.registerPageAlias = spy(() => {})
+    const inputFile = contentCatalog.getFiles()[0]
+    convertDocuments(contentCatalog, asciidocConfig)
+    expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
+    expect(contentCatalog.registerPageAlias).first.called.with('the-alias.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).second.called.with('topic/the-alias', inputFile)
+    expect(contentCatalog.registerPageAlias).third.called.with('1.0.0@page-a.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).nth(4).called.with('another-alias.adoc', inputFile)
+  })
+
+  it('should not register aliases if page-aliases document attribute is empty', () => {
+    const contents = Buffer.from(heredoc`
+      = Page Title
+      :page-aliases:
+
+      Page content.
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'page-a.adoc',
+        contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    contentCatalog.registerPageAlias = spy(() => {})
+    convertDocuments(contentCatalog, asciidocConfig)
+    expect(contentCatalog.registerPageAlias).to.not.have.been.called()
+  })
+
+  it('should be able to reference page alias as target of xref', () => {
+    const contentsA = Buffer.from(heredoc`
+      = The Page
+      :page-aliases: a-page.adoc
+
+      Go to xref:end-page.adoc[the end page].
+    `)
+    const contentsB = Buffer.from(heredoc`
+      = Za Page
+      :page-aliases: end-page.adoc
+
+      Read from xref:a-page.adoc[the start page] to xref:end-page.adoc[the end page].
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'the-page.adoc',
+        contents: contentsA,
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'za-page.adoc',
+        contents: contentsB,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const aliases = {}
+    contentCatalog.registerPageAlias = (spec, targetPage) => {
+      aliases[spec] = { rel: targetPage }
+    }
+    contentCatalog.resolvePage = (spec, ctx = {}) => {
+      return (aliases[spec + '.adoc'] || {}).rel
+    }
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const thePageContents = pages.find((it) => it.src.relative === 'the-page.adoc').contents.toString()
+    const zaPageContents = pages.find((it) => it.src.relative === 'za-page.adoc').contents.toString()
+    expectPageLink(thePageContents, 'za-page.html', 'the end page')
+    expectPageLink(zaPageContents, 'the-page.html', 'the start page')
+    expectPageLink(zaPageContents, 'za-page.html', 'the end page')
+  })
+
+  it('should be able to include a page which has already been converted', () => {
+    const contentsA = Buffer.from(heredoc`
+      = Changelog
+
+      // tag::entries[]
+      == Version 1.1
+
+      * Bug fixes.
+      // end::entries[]
+    `)
+    const contentsB = Buffer.from(heredoc`
+      = Page Title
+
+      == Recent Changes
+
+      include::changelog.adoc[tag=entries,leveloffset=+1]
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'changelog.adoc',
+        contents: contentsA,
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'z-page.adoc',
+        contents: contentsB,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    expect(pages[1].contents.toString()).to.include(heredoc`
+      <div class="sect1">
+      <h2 id="_recent_changes"><a class="anchor" href="#_recent_changes"></a>Recent Changes</h2>
+      <div class="sectionbody">
+      <div class="sect2">
+      <h3 id="_version_1_1"><a class="anchor" href="#_version_1_1"></a>Version 1.1</h3>
+      <div class="ulist">
+      <ul>
+      <li>
+      <p>Bug fixes.</p>
+      </li>
+      </ul>
+      </div>
+      </div>
+      </div>
+      </div>
+    `)
   })
 })
