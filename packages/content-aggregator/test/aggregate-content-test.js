@@ -768,6 +768,40 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should not expand brace pattern with a single entry', () => {
+      testAll(async (repoBuilder) => {
+        const startPath = 'docs'
+        const componentDesc = { name: 'the-component', title: 'Component Title', version: '1.0', startPath }
+        let componentDescEntry
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
+          repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry))
+        )
+        expect(componentDescEntry).to.exist()
+        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc{s}' })
+        const expectedMessage = `the start path 'doc{s}' does not exist in ${repoBuilder.url} (ref: ${ref})`
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        expect(aggregateContentDeferred).to.throw(expectedMessage)
+      })
+    })
+
+    describe('should not expand negated brace pattern with a single entry', () => {
+      testAll(async (repoBuilder) => {
+        const startPath = 'docs'
+        const componentDesc = { name: 'the-component', title: 'Component Title', version: '1.0', startPath }
+        let componentDescEntry
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
+          repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry))
+        )
+        expect(componentDescEntry).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'docs, !doc{s}' })
+        let aggregate
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+        expect(aggregate).to.have.lengthOf(1)
+      })
+    })
+
     describe('should throw if no start paths are resolved', () => {
       testAll(async (repoBuilder) => {
         const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
