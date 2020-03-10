@@ -497,7 +497,7 @@ describe('createPageComposer()', () => {
       definePartial(
         'body-resolve-page-url',
         heredoc`
-        <p>{{resolvePageUrl 'the-component::the-page.adoc'}}</p>
+        <p>{{resolvePageURL 'the-component::the-page.adoc'}}</p>
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url}}')
@@ -527,7 +527,7 @@ describe('createPageComposer()', () => {
       definePartial(
         'body-resolve-page-url-falsy',
         heredoc`
-        <p>{{resolvePageUrl page.attributes.no-such-page}}</p>
+        <p>{{resolvePageURL page.attributes.no-such-page}}</p>
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-falsy}}')
@@ -558,7 +558,7 @@ describe('createPageComposer()', () => {
         'body-resolve-page-url-inside-with',
         heredoc`
         {{#with page.component}}
-        <p>{{resolvePageUrl 'the-component::the-page.adoc'}}</p>
+        <p>{{resolvePageURL 'the-component::the-page.adoc'}}</p>
         {{/with}}
         `
       )
@@ -587,7 +587,7 @@ describe('createPageComposer()', () => {
       definePartial(
         'body-resolve-page-url-from-context',
         heredoc`
-        <p>{{resolvePageUrl 'the-page.adoc' component=page.component.name version='0.9'}}</p>
+        <p>{{resolvePageURL 'the-page.adoc' component=page.component.name version='0.9'}}</p>
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-from-context}}')
