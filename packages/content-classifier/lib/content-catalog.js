@@ -67,6 +67,11 @@ class ContentCatalog {
         Object.defineProperties(
           { name, latest: componentVersion, versions: [componentVersion] },
           {
+            asciidoc: {
+              get: function () {
+                return this.latest.asciidoc
+              },
+            },
             // NOTE alias latestVersion to latest for backwards compatibility
             latestVersion: {
               get: function () {

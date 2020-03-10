@@ -145,7 +145,7 @@ describe('classifyContent()', () => {
       expect(component.title).to.equal(component.name)
     })
 
-    it('should update title of component to match title of latest version', () => {
+    it('should update title for component to match title of latest version', () => {
       aggregate.push({
         name: 'the-component',
         title: 'The Component (Newest)',
@@ -169,6 +169,57 @@ describe('classifyContent()', () => {
       expect(component.title).to.equal('The Component (Newest)')
       expect(component.versions[0].title).to.equal('The Component (Newest)')
       expect(component.versions[1].title).to.equal('The Component (Patch)')
+    })
+
+    it('should update url for component to match url of latest version', () => {
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component (Newest)',
+        version: 'v2.0.0',
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component (Patch)',
+        version: 'v1.2.4',
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component (Oldest)',
+        version: 'v1.0.0',
+        files: [],
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      expect(component).to.exist()
+      expect(component.url).to.equal('/the-component/v2.0.0/index.html')
+    })
+
+    it('should update asciidoc for component to match asciidoc of latest version', () => {
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v2.0.0',
+        asciidoc: { attributes: { modifier: 'newest' } },
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v1.2.4',
+        asciidoc: { attributes: { modifier: 'patch' } },
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v1.0.0',
+        asciidoc: { attributes: { modifier: 'oldest' } },
+        files: [],
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      expect(component).to.exist()
+      expect(component.asciidoc.attributes).to.have.property('modifier', 'newest')
     })
 
     it('should configure latest property to resolve to latest version', () => {
@@ -238,6 +289,7 @@ describe('classifyContent()', () => {
       expect(component).to.exist()
       const componentVersions = component.versions
       expect(componentVersions).to.have.lengthOf(1)
+      expect(component.asciidoc).to.equal(siteAsciiDocConfig)
       expect(componentVersions[0].asciidoc).to.equal(siteAsciiDocConfig)
     })
 
