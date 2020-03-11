@@ -123,6 +123,23 @@ The main difference is that if the extension exports the `register` function, it
 
 //Perhaps we should require #register at the end of the extension; hmmm
 
+[#nav-extensions]
+=== Extensions for nav files
+
+Since nav files can contain only list content, most asciidoctor extensions will be useless on nav files.
+However, it is possible to write extensions that generate lists, for instance indexes of a module or component.
+To register such an extension for use only with nav files, list it under `nav_extensions`.
+Specifying and locating the code is the same as for page extensions.
+Only scoped extensions that have access to the Antora content catalog are likely to be useful.
+
+.Register an extension for nav files.
+[source,yaml]
+----
+asciidoc:
+  nav_extensions:
+  - antora-index
+----
+
 === Preloading modules
 
 Instead of registering extensions using the playbook, you can preload extensions using the `-r` (or `--require`) CLI option.
