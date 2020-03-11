@@ -1715,7 +1715,7 @@ describe('aggregateContent()', function () {
             expect(CONTENT_CACHE_DIR).to.be.a.directory()
             expect(ospath.join(CONTENT_CACHE_DIR, repoDir))
               .to.be.a.directory()
-              .and.include.files(['HEAD'])
+              .and.include.files(['HEAD', 'valid'])
           } else {
             expect(CONTENT_CACHE_DIR)
               .to.be.a.directory()
@@ -2579,6 +2579,40 @@ describe('aggregateContent()', function () {
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
   })
 
+  it('should clone repository again if valid file is not found in cached repository', async () => {
+    const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+    await initRepoWithFiles(repoBuilder)
+    playbookSpec.content.sources.push({ url: repoBuilder.url })
+    let aggregate = await aggregateContent(playbookSpec)
+    expect(aggregate).to.have.lengthOf(1)
+    expect(CONTENT_CACHE_DIR)
+      .to.be.a.directory()
+      .with.subDirs.have.lengthOf(1)
+    const cachedRepoName = await fs.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+    const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
+    expect(cachedRepoDir).to.match(/\.git$/)
+    const validFile = ospath.join(cachedRepoDir, 'valid')
+    const headFile = ospath.join(cachedRepoDir, 'HEAD')
+    expect(validFile)
+      .to.be.a.file()
+      .and.be.empty()
+    expect(headFile)
+      .to.be.a.file()
+      .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+    await fs.writeFile(validFile, 'marker')
+    await fs.writeFile(headFile, '')
+    await fs.unlink(validFile)
+    aggregate = await aggregateContent(playbookSpec)
+    expect(aggregate).to.have.lengthOf(1)
+    expect(cachedRepoDir).to.be.a.directory()
+    expect(validFile)
+      .to.be.a.file()
+      .and.be.empty()
+    expect(headFile)
+      .to.be.a.file()
+      .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+  })
+
   it('should fetch updates into non-empty cached repository when runtime.fetch option is enabled', async () => {
     const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
     await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
@@ -2630,7 +2664,7 @@ describe('aggregateContent()', function () {
     expect(page4v2).to.exist()
   })
 
-  it('should fetch updates into empty cached repository when runtime.fetch option is enabled', async () => {
+  it('should fetch updates into partially populated cached repository when runtime.fetch option is enabled', async () => {
     const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
     await repoBuilder.init('the-component').then(() => repoBuilder.close())
     playbookSpec.content.sources.push({ url: repoBuilder.url })
