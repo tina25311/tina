@@ -28,7 +28,12 @@ const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
  */
 function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
   const navCatalog = new NavigationCatalog()
-  const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizePageRefs: false }
+  const navAsciiDocConfig = {
+    doctype: 'article',
+    extensions: siteAsciiDocConfig.extensions,
+    relativizePageRefs: false,
+    stage: 'nav',
+  }
   contentCatalog
     .findBy({ family: 'nav' })
     .reduce((accum, navFile) => {

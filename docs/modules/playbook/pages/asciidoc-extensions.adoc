@@ -129,3 +129,32 @@ Here's an example showing how to use the Antora CLI to preload multiple Asciidoc
 The `-r` option can also be used for other purposes, such as to alter global state or override Antora components.
 
 For more information about the CLI, see xref:cli:index.adoc[].
+
+[#extensions-per-stage]
+== Extensions for specific conversion stages
+
+By default an extension is only used in the second conversion stage of a regular non-nav page, after header content is processed.
+An extension may configure when it is used, by implementing a `isEnabled` function, which is supplied with all available information.
+The available stages are:
+
+page:: The second pass, when the entire document is converted.
+page-header:: The first pass, when only the header content is converted, and the document attributes added to the page.
+nav:: The single pass processing a nav file.
+
+Specifying and locating the code is the same as for page extensions.
+
+.Mark an extension for nav files only.
+[source,javascript]
+----
+module.exports.isEnabled = function (config, file, contentCatalog) {
+  return config.stage === 'nav'
+}
+----
+
+.Mark an extension for header and body modes on page files.
+[source,javascript]
+----
+module.exports.isEnabled = function (config, file, contentCatalog) {
+  return config.stage === 'page-header' || config.stage === 'page'
+}
+----

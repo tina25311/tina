@@ -22,6 +22,8 @@ const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').rep
 const { EXAMPLES_DIR_TOKEN, PARTIALS_DIR_TOKEN } = require('./constants')
 const EXTENSION_DSL_TYPES = Extensions.$constants(false).filter((name) => name.endsWith('Dsl'))
 
+const STAGES = { PAGE: 'page', PAGE_HEADER: 'page-header', NAV: 'nav' }
+
 /**
  * Loads the AsciiDoc source from the specified file into a Document object.
  *
@@ -67,11 +69,22 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
       : () => undefined,
   })
   const extensions = config.extensions || []
-  if (extensions.length) extensions.forEach((ext) => ext.register(extensionRegistry, { file, contentCatalog, config }))
+  const stage = config.stage || STAGES.PAGE
+  if (extensions.length) {
+    extensions
+      .filter((ext) => (typeof ext.isEnabled === 'function' ? ext.isEnabled(config, file, contentCatalog) : stage === STAGES.PAGE))
+      .forEach((ext) =>
+        ext.register(extensionRegistry, {
+          file,
+          contentCatalog,
+          config,
+        })
+      )
+  }
   const opts = { attributes, extension_registry: extensionRegistry, safe: 'safe' }
   if (config.doctype) opts.doctype = config.doctype
   let contents = file.contents
-  if (config.headerOnly) {
+  if (config.stage === STAGES.PAGE_HEADER) {
     opts.parse_header_only = true
     const firstBlankLineIdx = contents.indexOf(BLANK_LINE_BUF)
     if (~firstBlankLineIdx) {

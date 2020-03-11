@@ -78,7 +78,7 @@ describe('loadAsciiDoc()', () => {
     expect(allBlocks).to.have.lengthOf(8)
   })
 
-  it('should load document model with only header from AsciiDoc contents if headerOnly option is set', () => {
+  it('should load document model with only header from AsciiDoc contents if mode is page-header', () => {
     const contents = heredoc`
       = Document Title
       :page-layout: home
@@ -92,7 +92,7 @@ describe('loadAsciiDoc()', () => {
       * list item 3
     `
     setInputFileContents(contents)
-    const doc = loadAsciiDoc(inputFile, undefined, { headerOnly: true })
+    const doc = loadAsciiDoc(inputFile, undefined, { stage: 'page-header' })
     expect(doc.getBlocks()).to.have.lengthOf(0)
     expect(doc.getDocumentTitle()).to.eql('Document Title')
     expect(doc.getAttribute('page-layout')).to.eql('home')
@@ -114,7 +114,7 @@ describe('loadAsciiDoc()', () => {
       * list item 3
     `
     setInputFileContents(contents)
-    const doc = loadAsciiDoc(inputFile, undefined, { headerOnly: true })
+    const doc = loadAsciiDoc(inputFile, undefined, { stage: 'page-header' })
     expect(doc.getBlocks()).to.have.lengthOf(0)
     expect(doc.getDocumentTitle()).to.eql('Document Title')
     expect(doc.getId()).to.eql('docid')
@@ -470,7 +470,7 @@ describe('loadAsciiDoc()', () => {
   describe('extensions', () => {
     it('should not fail if custom extensions are null', () => {
       setInputFileContents('= Document Title')
-      const doc = loadAsciiDoc(inputFile, undefined, { extensions: null })
+      const doc = loadAsciiDoc(inputFile, undefined, {})
       expect(doc.getDocumentTitle()).equals('Document Title')
     })
 
@@ -520,6 +520,20 @@ describe('loadAsciiDoc()', () => {
       const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
       expect(html).to.include('Files in catalog: 3')
       expect(html).to.include('URL of current page: /component-a/module-a/page-a.html')
+    })
+
+    it('isEnabled method should receive context, file and content catalog', () => {
+      setInputFileContents('files::[]')
+      const contentCatalog = mockContentCatalog([
+        { family: 'page', relative: 'page-a.adoc' },
+      ])
+      const ext = require(ospath.resolve(FIXTURES_DIR, 'ext/recording-extension.js'))
+      const config = { extensions: [ext], stage: 'page' }
+      loadAsciiDoc(inputFile, contentCatalog, config)
+      const args = ext.retrieve()
+      expect(args.config).to.equal(config)
+      expect(args.file).to.equal(inputFile)
+      expect(args.contentCatalog).to.equal(contentCatalog)
     })
   })
 
@@ -3741,7 +3755,7 @@ describe('loadAsciiDoc()', () => {
       expect(config.extensions).to.not.exist()
     })
 
-    it('should load scoped extension into config but not register it globally', () => {
+    it('should load scoped default (page) extension into config but not register it globally', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/scoped-shout-block.js')] } }
       const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
