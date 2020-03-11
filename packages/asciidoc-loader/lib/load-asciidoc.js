@@ -169,8 +169,20 @@ function resolveConfig (playbook = {}) {
   if (!playbook.asciidoc) return config
   // TODO process !name attributes
   Object.assign(config, playbook.asciidoc, { attributes: Object.assign(attributes, playbook.asciidoc.attributes) })
-  if (config.extensions && config.extensions.length) {
-    const extensions = config.extensions.reduce((accum, extensionPath) => {
+  config.extensions = extensions(config.extensions, playbook)
+  if (!config.extensions.length) {
+    delete config.extensions
+  }
+  config.nav_extensions = extensions(config.nav_extensions, playbook)
+  if (!config.nav_extensions.length) {
+    delete config.nav_extensions
+  }
+  return config
+}
+
+function extensions (extensionPaths, playbook) {
+  if (extensionPaths && extensionPaths.length) {
+    return extensionPaths.reduce((accum, extensionPath) => {
       if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
         // NOTE require resolves a dot-relative path relative to current file; resolve relative to playbook dir instead
         extensionPath = ospath.resolve(playbook.dir || '.', extensionPath)
@@ -188,15 +200,9 @@ function resolveConfig (playbook = {}) {
       }
       return accum
     }, [])
-    if (extensions.length) {
-      config.extensions = extensions
-    } else {
-      delete config.extensions
-    }
   } else {
-    delete config.extensions
+    return []
   }
-  return config
 }
 
 function isExtensionRegistered (ext, registry) {

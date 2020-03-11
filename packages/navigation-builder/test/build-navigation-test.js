@@ -6,6 +6,8 @@ const { expect, heredoc } = require('../../../test/test-utils')
 const buildNavigation = require('@antora/navigation-builder')
 const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 const mockContentCatalog = require('../../../test/mock-content-catalog')
+const ospath = require('path')
+const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 
 describe('buildNavigation()', () => {
   it('should run on all files in the navigation family', () => {
@@ -1629,4 +1631,40 @@ describe('buildNavigation()', () => {
       ],
     })
   })
+
+  it('should register extension listed under asciidoc.nav_extensions in playbook', () => {
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: '',
+        navIndex: 0,
+      },
+      {
+        family: 'page',
+        relative: 'index.adoc',
+      },
+      {
+        family: 'page',
+        relative: 'requirements.adoc',
+      },
+    ])
+    const asciidocConfig = resolveAsciiDocConfig({ asciidoc: { nav_extensions: [ospath.resolve(FIXTURES_DIR, 'nav-extension.js')] } })
+    const navCatalog = buildNavigation(contentCatalog, asciidocConfig)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu).to.have.lengthOf(1)
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'Requirements',
+          url: '/component-a/module-a/requirements.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  }
+  )
 })

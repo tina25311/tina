@@ -327,6 +327,20 @@ describe('generateSite()', function () {
     global.Opal.Asciidoctor.Extensions.unregisterAll()
   }).timeout(timeoutOverride)
 
+  it('should register nav_extensions defined in playbook on AsciiDoc processor', async () => {
+    playbookSpec.asciidoc = {
+      attributes: { volume: '3' },
+      nav_extensions: [ospath.resolve(FIXTURES_DIR, 'nav-extension.js')],
+    }
+    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    await generateSite(['--playbook', playbookFile], env)
+    expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html'))
+      .to.be.a.file()
+      .with.contents.that.match(/new-page.html/)
+      .and.with.contents.that.match(/New!/)
+    global.Opal.Asciidoctor.Extensions.unregisterAll()
+  }).timeout(timeoutOverride)
+
   it('should be able to reference environment variable from UI template added as supplemental file', async () => {
     env.SITE_NAME = 'Learn All The Things!'
     playbookSpec.ui.supplemental_files = [

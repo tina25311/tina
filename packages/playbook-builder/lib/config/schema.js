@@ -107,9 +107,15 @@ module.exports = {
       arg: 'attribute',
     },
     extensions: {
-      doc: 'A list of require paths for registering extensions per instance of the AsciiDoc processor.',
+      doc: 'A list of require paths for registering extensions per instance of the AsciiDoc processor, for pages.',
       format: Array,
       default: [],
+    },
+    nav_extensions: {
+      doc: 'A list of require paths for registering extensions per instance of the AsciiDoc processor, for nav files.',
+      format: Array,
+      default: [],
+      //arg: 'nav_extension',
     },
   },
   git: {
