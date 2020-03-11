@@ -42,7 +42,7 @@ const EXTENSION_DSL_TYPES = Extensions.$constants(false).filter((name) => name.e
  *
  * @returns {Document} An Asciidoctor Document object created from the source of the specified file.
  */
-function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
+function loadAsciiDoc (file, contentCatalog = undefined, config = {}, extensions) {
   const { family, relative, extname = path.extname(relative) } = file.src
   const intrinsicAttrs = {
     docname: (family === 'nav' ? 'nav$' : '') + relative.substr(0, relative.length - extname.length),
@@ -62,7 +62,7 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   const extensionRegistry = createExtensionRegistry(asciidoctor, {
     onInclude: (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog),
   })
-  const extensions = config.extensions || []
+  extensions = extensions || []
   if (extensions.length) extensions.forEach((ext) => ext.register(extensionRegistry, { file, contentCatalog, config }))
   const opts = { attributes, extension_registry: extensionRegistry, safe: 'safe' }
   if (config.doctype) opts.doctype = config.doctype
@@ -171,34 +171,53 @@ function resolveConfig (playbook = {}) {
   if (!playbook.asciidoc) return config
   // TODO process !name attributes
   Object.assign(config, playbook.asciidoc, { attributes: Object.assign(attributes, playbook.asciidoc.attributes) })
-  if (config.extensions && config.extensions.length) {
-    const extensions = config.extensions.reduce((accum, extensionPath) => {
-      if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
-        // NOTE require resolves a dot-relative path relative to current file; resolve relative to playbook dir instead
-        extensionPath = ospath.resolve(playbook.dir || '.', extensionPath)
-      } else if (!ospath.isAbsolute(extensionPath)) {
-        // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
-        const paths = [playbook.dir || '.', ospath.dirname(__dirname)].map((root) => ospath.join(root, 'node_modules'))
-        extensionPath = require.resolve(extensionPath, { paths })
-      }
-      const extension = require(extensionPath)
-      if ('register' in extension) {
-        accum.push(extension)
-      } else if (!isExtensionRegistered(extension, Extensions)) {
-        // QUESTION should we assign an antora-specific group name?
-        Extensions.register(extension)
-      }
-      return accum
-    }, [])
-    if (extensions.length) {
-      config.extensions = extensions
-    } else {
-      delete config.extensions
-    }
-  } else {
-    delete config.extensions
-  }
+  extensions(config, playbook)
   return config
+}
+
+function extensions (config, playbook) {
+  const extensionPaths = config.extensions
+  delete config.extensions
+  if (extensionPaths && extensionPaths.length) {
+    const extensionMap = extensionPaths.reduce(
+      (accum, extensionObj) => {
+        let extensionPath
+        let types
+        if (typeof extensionObj === 'string') {
+          extensionPath = extensionObj
+          types = ['body']
+        } else {
+          const entry = Object.entries(extensionObj)[0]
+          extensionPath = entry[0]
+          types = entry[1]
+        }
+        if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
+          //NOTE require resolves a dot-relative path relative to current file; resolve relative to playbook dir instead
+          extensionPath = ospath.resolve(playbook.dir || '.', extensionPath)
+        } else if (!ospath.isAbsolute(extensionPath)) {
+          // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
+          const paths = [playbook.dir || '.', ospath.dirname(__dirname)].map((root) =>
+            ospath.join(root, 'node_modules')
+          )
+          extensionPath = require.resolve(extensionPath, { paths })
+        }
+        const extension = require(extensionPath)
+        if ('register' in extension) {
+          types.forEach((type) => accum[type].push(extension))
+        } else if (!isExtensionRegistered(extension, Extensions)) {
+          // QUESTION should we assign an antora-specific group name?
+          Extensions.register(extension)
+        }
+        return accum
+      },
+      { body: [], header: [], nav: [] }
+    )
+    Object.entries(extensionMap).forEach(([type, extensions]) => {
+      if (extensions.length) {
+        config[type + '_extensions'] = extensions
+      }
+    })
+  }
 }
 
 function isExtensionRegistered (ext, registry) {

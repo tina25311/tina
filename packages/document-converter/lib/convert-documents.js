@@ -33,7 +33,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
     })
   })
   const headerAsciiDocConfigs = new Map()
-  const headerOverrides = { extensions: [], headerOnly: true }
+  const headerOverrides = { headerOnly: true }
   for (const [cacheKey, mainAsciiDocConfig] of mainAsciiDocConfigs) {
     headerAsciiDocConfigs.set(cacheKey, Object.assign({}, mainAsciiDocConfig, headerOverrides))
   }
@@ -43,7 +43,12 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
       if (page.mediaType === 'text/asciidoc') {
         const asciidocConfig = headerAsciiDocConfigs.get(buildCacheKey(page.src))
         const { attributes } = (page.asciidoc = extractAsciiDocMetadata(
-          loadAsciiDoc(page, contentCatalog, asciidocConfig || Object.assign({}, siteAsciiDocConfig, headerOverrides))
+          loadAsciiDoc(
+            page,
+            contentCatalog,
+            asciidocConfig || Object.assign({}, siteAsciiDocConfig, headerOverrides),
+            siteAsciiDocConfig.header_extensions
+          )
         ))
         Object.defineProperty(page, 'title', {
           get () {
@@ -57,7 +62,12 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
     })
     .map((page) =>
       page.mediaType === 'text/asciidoc'
-        ? convertDocument(page, contentCatalog, mainAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig)
+        ? convertDocument(
+          page,
+          contentCatalog,
+          mainAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig,
+          siteAsciiDocConfig.body_extensions
+        )
         : page
     )
     .map((page) => delete page.src.contents && page)

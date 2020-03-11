@@ -32,7 +32,9 @@ asciidoc:
     toc: false
     uri-project: https://antora.org
   extensions:
-  - asciidoctor-plantuml
+  - asciidoctor-plantuml:
+      - nav
+      - header
   - ./lib/shout-block
 git:
   credentials:

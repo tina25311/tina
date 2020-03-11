@@ -23,8 +23,8 @@ const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-load
  *
  * @returns {File} The virtual file that was converted.
  */
-function convertDocument (file, contentCatalog = undefined, asciidocConfig = {}) {
-  const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig)
+function convertDocument (file, contentCatalog = undefined, asciidocConfig = {}, body_extensions = []) {
+  const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig, body_extensions)
   if (!file.asciidoc) {
     file.asciidoc = extractAsciiDocMetadata(doc)
     if (doc.hasAttribute('page-partial')) file.src.contents = file.contents

@@ -28,7 +28,10 @@ const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
  */
 function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
   const navCatalog = new NavigationCatalog()
-  const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizePageRefs: false }
+  const navAsciiDocConfig = { doctype: 'article', relativizePageRefs: false }
+  if (siteAsciiDocConfig.nav_extensions) {
+    navAsciiDocConfig.nav_extensions = siteAsciiDocConfig.nav_extensions
+  }
   contentCatalog
     .findBy({ family: 'nav' })
     .reduce((accum, navFile) => {
@@ -50,7 +53,9 @@ function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
 }
 
 function loadNavigationFile (navFile, contentCatalog, asciidocConfig) {
-  const lists = loadAsciiDoc(navFile, contentCatalog, asciidocConfig).blocks.filter((b) => b.getContext() === 'ulist')
+  const lists = loadAsciiDoc(navFile, contentCatalog, asciidocConfig, asciidocConfig.nav_extensions).blocks.filter(
+    (b) => b.getContext() === 'ulist'
+  )
   if (!lists.length) return []
   const index = navFile.nav.index
   return lists.map((list, idx) => {

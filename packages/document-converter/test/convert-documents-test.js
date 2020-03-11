@@ -6,6 +6,8 @@ const { expect, heredoc, spy } = require('../../../test/test-utils')
 const convertDocuments = require('@antora/document-converter')
 const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 const mockContentCatalog = require('../../../test/mock-content-catalog')
+const ospath = require('path')
+const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 
 describe('convertDocuments()', () => {
   const asciidocConfig = resolveAsciiDocConfig()
@@ -451,5 +453,65 @@ describe('convertDocuments()', () => {
       </div>
       </div>
     `)
+  })
+
+  it('should apply header extension in first stage', () => {
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'index.adoc',
+        contents: `= Header Extension Test
+:existing: existing-attribute-value
+include::attributes$foo[]
+
+{existing}
+
+{test-attribute}
+`,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const ext = {}
+    ext[ospath.resolve(FIXTURES_DIR, 'header-extension.js')] = ['header']
+    const asciiDocConfigWithExtensions = resolveAsciiDocConfig({
+      asciidoc: { extensions: [ext] },
+    })
+    const pages = convertDocuments(contentCatalog, asciiDocConfigWithExtensions)
+    expect(pages).to.have.lengthOf(1)
+    pages.forEach((page) => {
+      expect(page.mediaType).to.equal('text/html')
+      expect(page.asciidoc.attributes.existing).to.equal('existing-attribute-value')
+      expect(page.asciidoc.attributes['test-attribute']).to.equal('test-attribute-value')
+      expect(page.contents.toString()).to.include('{test-attribute}')
+    })
+  })
+
+  it('should apply header + body extension in first and second stage', () => {
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'index.adoc',
+        contents: `= Header Extension Test
+:existing: existing-attribute-value
+include::attributes$foo[]
+
+{existing}
+
+{test-attribute}
+`,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const ext = {}
+    ext[ospath.resolve(FIXTURES_DIR, 'header-extension.js')] = ['header', 'body']
+    const asciiDocConfigWithExtensions = resolveAsciiDocConfig({
+      asciidoc: { extensions: [ext] },
+    })
+    const pages = convertDocuments(contentCatalog, asciiDocConfigWithExtensions)
+    expect(pages).to.have.lengthOf(1)
+    pages.forEach((page) => {
+      expect(page.mediaType).to.equal('text/html')
+      expect(page.asciidoc.attributes.existing).to.equal('existing-attribute-value')
+      expect(page.asciidoc.attributes['test-attribute']).to.equal('test-attribute-value')
+      expect(page.contents.toString()).to.include('test-attribute-value')
+    })
   })
 })

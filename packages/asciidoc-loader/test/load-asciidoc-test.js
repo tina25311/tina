@@ -433,7 +433,7 @@ describe('loadAsciiDoc()', () => {
   describe('extensions', () => {
     it('should not fail if custom extensions are null', () => {
       setInputFileContents('= Document Title')
-      const doc = loadAsciiDoc(inputFile, undefined, { extensions: null })
+      const doc = loadAsciiDoc(inputFile, undefined, {}, null)
       expect(doc.getDocumentTitle()).equals('Document Title')
     })
 
@@ -454,14 +454,15 @@ describe('loadAsciiDoc()', () => {
         shoutBlockExtension.registered++
         registry.block('shout', shoutBlockExtension)
       }
-      const config = { extensions: [shoutBlockExtension] }
+      const config = {}
+      const extensions = [shoutBlockExtension]
       let html
 
-      html = loadAsciiDoc(inputFile, undefined, config).convert()
+      html = loadAsciiDoc(inputFile, undefined, config, extensions).convert()
       expect(shoutBlockExtension.registered).to.equal(1)
       expect(html).to.include('RELEASE EARLY. RELEASE OFTEN')
 
-      html = loadAsciiDoc(inputFile, undefined, config).convert()
+      html = loadAsciiDoc(inputFile, undefined, config, extensions).convert()
       expect(shoutBlockExtension.registered).to.equal(2)
       expect(html).to.include('RELEASE EARLY. RELEASE OFTEN')
 
@@ -479,8 +480,9 @@ describe('loadAsciiDoc()', () => {
         { family: 'page', relative: 'page-b.adoc' },
         { family: 'page', relative: 'page-c.adoc' },
       ])
-      const config = { extensions: [require(ospath.resolve(FIXTURES_DIR, 'ext/file-report-block-macro.js'))] }
-      const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+      const html = loadAsciiDoc(inputFile, contentCatalog, {}, [
+        require(ospath.resolve(FIXTURES_DIR, 'ext/file-report-block-macro.js')),
+      ]).convert()
       expect(html).to.include('Files in catalog: 3')
       expect(html).to.include('URL of current page: /component-a/module-a/page-a.html')
     })
@@ -3174,8 +3176,7 @@ describe('loadAsciiDoc()', () => {
         )
       }
       extension.register = (registry) => registry.inlineMacro('man', extension)
-      const config = { extensions: [extension] }
-      const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+      const html = loadAsciiDoc(inputFile, contentCatalog, {}, [extension]).convert()
       expectPageLink(html, 'the-page.html', 'the-page')
     })
 
@@ -3606,12 +3607,59 @@ describe('loadAsciiDoc()', () => {
       expect(config.extensions).to.not.exist()
     })
 
-    it('should load scoped extension into config but not register it globally', () => {
+    it('should load scoped default (body) extension into config but not register it globally', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/scoped-shout-block.js')] } }
       const config = resolveConfig(playbook)
-      expect(config.extensions).to.exist()
-      expect(config.extensions).to.have.lengthOf(1)
-      expect(config.extensions[0]).to.be.instanceOf(Function)
+      expect(config.body_extensions).to.exist()
+      expect(config.body_extensions).to.have.lengthOf(1)
+      expect(config.body_extensions[0]).to.be.instanceOf(Function)
+      expect(config.nav_extensions).to.not.exist()
+      expect(config.header_extensions).to.not.exist()
+      const Extensions = Asciidoctor.Extensions
+      const extensionGroupNames = Object.keys(Extensions.getGroups())
+      expect(extensionGroupNames).to.have.lengthOf(0)
+    })
+
+    it('should load scoped body extension into config but not register it globally', () => {
+      const ext = {}
+      ext[ospath.resolve(FIXTURES_DIR, 'ext/scoped-shout-block.js')] = ['body']
+      const playbook = { asciidoc: { extensions: [ext] } }
+      const config = resolveConfig(playbook)
+      expect(config.body_extensions).to.exist()
+      expect(config.body_extensions).to.have.lengthOf(1)
+      expect(config.body_extensions[0]).to.be.instanceOf(Function)
+      expect(config.header_extensions).to.not.exist()
+      expect(config.nav_extensions).to.not.exist()
+      const Extensions = Asciidoctor.Extensions
+      const extensionGroupNames = Object.keys(Extensions.getGroups())
+      expect(extensionGroupNames).to.have.lengthOf(0)
+    })
+
+    it('should load scoped header extension into config but not register it globally', () => {
+      const ext = {}
+      ext[ospath.resolve(FIXTURES_DIR, 'ext/scoped-shout-block.js')] = ['header']
+      const playbook = { asciidoc: { extensions: [ext] } }
+      const config = resolveConfig(playbook)
+      expect(config.header_extensions).to.exist()
+      expect(config.header_extensions).to.have.lengthOf(1)
+      expect(config.header_extensions[0]).to.be.instanceOf(Function)
+      expect(config.body_extensions).to.not.exist()
+      expect(config.nav_extensions).to.not.exist()
+      const Extensions = Asciidoctor.Extensions
+      const extensionGroupNames = Object.keys(Extensions.getGroups())
+      expect(extensionGroupNames).to.have.lengthOf(0)
+    })
+
+    it('should load scoped nav extension into config but not register it globally', () => {
+      const ext = {}
+      ext[ospath.resolve(FIXTURES_DIR, 'ext/scoped-shout-block.js')] = ['nav']
+      const playbook = { asciidoc: { extensions: [ext] } }
+      const config = resolveConfig(playbook)
+      expect(config.nav_extensions).to.exist()
+      expect(config.nav_extensions).to.have.lengthOf(1)
+      expect(config.nav_extensions[0]).to.be.instanceOf(Function)
+      expect(config.body_extensions).to.not.exist()
+      expect(config.header_extensions).to.not.exist()
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(0)
@@ -3645,9 +3693,9 @@ describe('loadAsciiDoc()', () => {
         },
       }
       const config = resolveConfig(playbook)
-      expect(config.extensions).to.exist()
-      expect(config.extensions).to.have.lengthOf(1)
-      expect(config.extensions[0]).to.be.instanceOf(Function)
+      expect(config.body_extensions).to.exist()
+      expect(config.body_extensions).to.have.lengthOf(1)
+      expect(config.body_extensions[0]).to.be.instanceOf(Function)
     })
 
     it('should load extension from modules path', () => {
@@ -3658,9 +3706,9 @@ describe('loadAsciiDoc()', () => {
         },
       }
       const config = resolveConfig(playbook)
-      expect(config.extensions).to.exist()
-      expect(config.extensions).to.have.lengthOf(1)
-      expect(config.extensions[0]).to.be.instanceOf(Function)
+      expect(config.body_extensions).to.exist()
+      expect(config.body_extensions).to.have.lengthOf(1)
+      expect(config.body_extensions[0]).to.be.instanceOf(Function)
     })
 
     it('should load all extensions', () => {
@@ -3675,10 +3723,10 @@ describe('loadAsciiDoc()', () => {
         },
       }
       const config = resolveConfig(playbook)
-      expect(config.extensions).to.exist()
-      expect(config.extensions).to.have.lengthOf(2)
-      expect(config.extensions[0]).to.be.instanceOf(Function)
-      expect(config.extensions[1]).to.be.instanceOf(Function)
+      expect(config.body_extensions).to.exist()
+      expect(config.body_extensions).to.have.lengthOf(2)
+      expect(config.body_extensions[0]).to.be.instanceOf(Function)
+      expect(config.body_extensions[1]).to.be.instanceOf(Function)
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(1)
