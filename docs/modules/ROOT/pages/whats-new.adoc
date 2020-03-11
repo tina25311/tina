@@ -10,19 +10,45 @@
 
 = Antora 2.3.0
 
+Antora {page-component-display-version} is available.
+
 _**Release date:** 2020.xx.xx | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
 
 == Resolved issues
 
 === Added
 
-//Issue {url-issues}/251[#251^]:: Recognize AsciiDoc attributes defined in the component (version) descriptor.
+Issue {url-issues}/192[#192^]:: Add Apache `httpd` redirect facility.
+({url-gitlab}/djencks[@djencks^])
+Issue {url-issues}/251[#251^]:: Allow AsciiDoc, `page-`, and user attributes to be scoped per component version.
+Add support for attributes to be set and defined in the component version descriptor ([.path]_antora.yml_).
+Issue {url-issues}/328[#328^]:: Expose the content catalog's public API to the UI model as `site.contentCatalog`.
+Add the built-in helpers `resolvePage` and `resolvePageUrl` to resolve pages and their publish URLs in UI templates.
+Issue {url-issues}/494[#494^]:: Add trailing newline to all generated files.
+({url-gitlab}/djencks[@djencks^])
+Issue {url-issues}/495[#495^]:: Allow a single content source to contain numerous component versions`' source directories in a single git repository branch with the `start_paths` playbook key.
+({url-gitlab}/djencks[@djencks^])
+Issue {url-issues}/495[#495^]:: Add support for glob patterns (wildcards and brace expressions) to value of `start_paths` key.
+Implement scan + filter logic for glob patterns specified in `start_paths` key for both git tree and filesystem worktree.
+Issue {url-issues}/517[#517^]:: Verify downloaded UI bundle is a valid zip file before caching and throw an error if invalid.
+//* *page-composer*: Add `relativize` as built-in UI helper (#555)
 
-//=== Changed
+=== Fixed
 
-== Declare attributes in antora.yml
+Issue {url-issues}/565[#565^]:: Latest page version should never be newer than latest component version.
 
-See xref:page:component-scoped-attributes.adoc[Component-scoped attributes] to learn more.
+=== Changed
+
+Issue {url-issues}/516[#516^]:: Preserve stack from got (HTTP client) error when downloading UI.
+Issue {url-issues}/517[#517^]:: Report clearer error when local or cached UI bundle is not valid or cannot otherwise be read.
+Issue {url-issues}/531[#531^]:: Add start path to error message thrown while aggregating files.
+Consistently enclose details in error message in round brackets.
+Issue {url-issues}/538[#538^]:: Rename `getFiles()` method on content catalog and UI catalog to `getAll()`; retain `getFiles()` as deprecated method.
+Issue {url-issues}/551[#551^]:: Upgrade Handlebars to fix performance regression.
+
+== Declare component version attributes in antora.yml
+
+See xref:component-attributes.adoc[Assign attributes to a component version] to learn more.
 
 [#thank-you-2-3-0]
 == Thank you!
@@ -31,10 +57,44 @@ Most important of all, a huge *thank you!* to all the folks who helped make Anto
 
 We want to call out the following people for making contributions to this release:
 
-//David Jencks ({url-gitlab}/djencks[@djencks^]):: For implementing the [.path]_robots.txt_ generation {url-issues}/219[#219^], for helping to get to the bottom of {url-issues}/497[#497^] and come up with a solution, and for helping to improve the documentation.
+Antonio ({url-gitlab}/bandantonio[@bandantonio^]):: For writing the xref:install-and-run-quickstart.adoc[Install and Run Antora Quickstart] guide and assisting Matthew Setter with the redirect facility documentation.
+{url-issues}/299[#299^]
+
+Rob Donnelly ({url-gitlab}/rfdonnelly[@rfdonnelly^]):: For fixing typos in the Run Antora in a Container page.
+{url-mr}/434[!434^]
+
+Guillaume Grossetie ({url-gitlab}/g.grossetie[@g.grossetie^]):: For fixing the xref:install:linux-requirements.adoc#install-nvm[nvm installation link] on the Linux and macOS Requirements pages.
+{url-mr}/405[!405^]
+
+David Jencks ({url-gitlab}/djencks[@djencks^])::
++
+--
+For making numerous improvements to Antora's documentation, including (but not limited to) clarifying component version sort order and distributed component versions, providing tips for the `start_path` key and component and version names, and adding filtering by line numbering information.
+
+For implementing trailing newlines on generated files {url-issues}/494[#494^], the `start_paths` playbook key {url-issues}/495[#495^], and the Apache `httpd` redirect facility {url-issues}/192[#192^].
+
+For documenting the `page-aliases` attribute.
+{url-issues}/509[#509^]
+//{url-issues}/502[#502^], {url-issues}/521[#521^]
+--
+
+Daniel Mulholland ({url-gitlab}/danyill[@danyill^]):: For adding documentation about https://gitlab.com/antora/antora/-/blob/master/contributing.adoc#user-content-develop-with-docker[developing Antora with Docker] and Gulp test errors to the contributing guide.
+{url-issues}/388[#388^]
+
+Matthew Setter:: For documenting the redirect facility and assisting Antonio with the Antora quickstart guide.
+{url-mr}/281[!281^]
+
+Ben Walding ({url-gitlab}/bwalding[@bwalding^]):: For documenting the `prerelease` key in the component version descriptor page.
+https://gitlab.com/antora/antora/-/commit/ad7e039ede287605da345f7fa36350e2745cb84f[Commit ad7e039e^]
+
+Anthony Vanelverdinghe ({url-gitlab}/anthonyv.be[@anthonyv.be^]):: For editing the How Antora Can Help page.
+{url-issues}/518[#518^]
+
+Yoginth:: For fixing typos in the package comments, test cases, and releasing guide.
+{url-mr}/433[!433^]
 
 [#deprecation]
-== Scheduled deprecations for Antora 3.0
+== Deprecations scheduled for Antora 3.0
 
 The ability to use parent references in the target of the AsciiDoc image macro (e.g., `image::../../../module-b/_images/image-filename.png[]`) will be deprecated in Antora 3.0.
 You should begin replacing any such image targets with resource IDs.
