@@ -40,7 +40,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
         const doc = loadAsciiDoc(
           page,
           contentCatalog,
-          headerAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig
+          headerAsciiDocConfigs.get(buildCacheKey(page.src)) || Object.assign({}, siteAsciiDocConfig, headerOverrides)
         )
         const attributes = doc.getAttributes()
         page.asciidoc = doc.hasHeader() ? { attributes, doctitle: doc.getDocumentTitle() } : { attributes }
