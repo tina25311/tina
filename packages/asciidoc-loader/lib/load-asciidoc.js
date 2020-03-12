@@ -117,6 +117,17 @@ function computePageAttrs (fileSrc, contentCatalog) {
   return attrs
 }
 
+function extractAsciiDocMetadata (doc) {
+  const metadata = { attributes: doc.getAttributes() }
+  if (doc.hasHeader()) {
+    const doctitle = (metadata.doctitle = doc.getDocumentTitle())
+    const xreftext = (metadata.xreftext = doc.$reftext().$to_s() || doctitle)
+    const navtitle = doc.getAttribute('navtitle')
+    metadata.navtitle = navtitle ? doc.$apply_reftext_subs(navtitle) : xreftext
+  }
+  return metadata
+}
+
 /**
  * Resolves a global AsciiDoc configuration object from data in the playbook.
  *
@@ -197,5 +208,4 @@ function freeExtensions () {
   EXTENSION_DSL_TYPES.forEach((type) => (Opal.const_get_local(Extensions, type).$$iclasses.length = 0))
 }
 
-module.exports = loadAsciiDoc
-module.exports.resolveConfig = resolveConfig
+module.exports = Object.assign(loadAsciiDoc, { loadAsciiDoc, extractAsciiDocMetadata, resolveConfig })
