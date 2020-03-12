@@ -35,8 +35,10 @@ function resolveResource (spec, catalog, ctx = {}, defaultFamily = undefined, pe
   }
   if (!id.module) id.module = 'ROOT'
 
-  return catalog.getById(id) ||
+  return (
+    catalog.getById(id) ||
     (id.family === 'page' ? (catalog.getById(Object.assign({}, id, { family: 'alias' })) || {}).rel : undefined)
+  )
 }
 
 module.exports = resolveResource

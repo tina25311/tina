@@ -868,7 +868,8 @@ describe('build UI model', () => {
       contentCatalog.getById = spy((filter) => files[filter.version])
       const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
       expectCalledWith(
-        contentCatalog.getById, [
+        contentCatalog.getById,
+        [
           {
             component: 'the-component',
             module: 'ROOT',
@@ -941,7 +942,8 @@ describe('build UI model', () => {
       contentCatalog.getById = spy((filter) => files[filter.version])
       const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
       expectCalledWith(
-        contentCatalog.getById, [
+        contentCatalog.getById,
+        [
           {
             component: 'the-component',
             module: 'ROOT',
@@ -1015,7 +1017,8 @@ describe('build UI model', () => {
       contentCatalog.getById = spy((filter) => files[filter.version])
       const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
       expectCalledWith(
-        contentCatalog.getById, [
+        contentCatalog.getById,
+        [
           {
             component: 'the-component',
             module: 'ROOT',

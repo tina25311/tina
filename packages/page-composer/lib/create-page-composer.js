@@ -199,8 +199,9 @@ function buildPageUiModel (file, contentCatalog, navigationCatalog, site) {
     if (versions) {
       let latestReached
       // NOTE latest could be older than the latest component version since the page might cease to exist
-      const latest = versions.find((candidate) =>
-        (latestReached || (latestReached = candidate.latest)) && !candidate.missing)
+      const latest = versions.find(
+        (candidate) => (latestReached || (latestReached = candidate.latest)) && !candidate.missing
+      )
       if (latest && !latest.prerelease) {
         let canonicalUrl = latest.url
         if (canonicalUrl === url || canonicalUrl.charAt() === '/') canonicalUrl = siteUrl + canonicalUrl

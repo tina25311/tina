@@ -1933,20 +1933,28 @@ describe('loadAsciiDoc()', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
-      }, 1)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'alias',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
-      }, 2)
+      expectCalledWith(
+        contentCatalog.getById,
+        {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        },
+        1
+      )
+      expectCalledWith(
+        contentCatalog.getById,
+        {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'alias',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        },
+        2
+      )
       expectUnresolvedPageLink(html, '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc', 'The Page Title')
     })
 
