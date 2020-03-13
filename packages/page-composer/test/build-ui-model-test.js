@@ -261,20 +261,20 @@ describe('build UI model', () => {
     })
 
     it('should set component property to component from content catalog', () => {
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expectCalledWith(contentCatalog.getComponent, ['the-component'])
       expect(model.component).to.exist()
       expect(model.component.name).to.equal('the-component')
     })
 
     it('should set componentVersion property to component version from content catalog', () => {
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.componentVersion).to.exist()
       expect(model.componentVersion).to.equal(component.versions[0])
     })
 
     it('should set the module and version properties to values from file src object', () => {
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.module).to.exist()
       expect(model.module).to.equal('ROOT')
       expect(model.version).to.exist()
@@ -289,7 +289,7 @@ describe('build UI model', () => {
         branch: 'master',
         editUrlPattern: 'https://github.com/foo/bar/edit/master/%s',
       }
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.origin).to.exist()
       expect(model.origin).to.equal(file.src.origin)
     })
@@ -297,37 +297,37 @@ describe('build UI model', () => {
     it('should set editUrl and fileUri properties from file.src object', () => {
       file.src.editUrl = 'https://github.com/org/repo/edit/master/modules/ROOT/pages/the-page.adoc'
       file.src.fileUri = 'file:///path/to/worktree/modules/ROOT/pages/the-page.adoc'
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.editUrl).to.equal(file.src.editUrl)
       expect(model.fileUri).to.equal(file.src.fileUri)
     })
 
     it('should set url property to pub url of file', () => {
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.url).to.equal('/the-component/1.0/the-page.html')
     })
 
     it('should set contents property to contents of file', () => {
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.contents).to.equal(file.contents)
     })
 
     it('should set canonicalUrl property based on pub url of file if file has no versions', () => {
       site.url = 'http://example.com'
       component.latest = component.versions[0]
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.canonicalUrl).to.equal('http://example.com/the-component/1.0/the-page.html')
     })
 
     it('should set home property to false if url of page does not match site homeUrl property', () => {
       site.homeUrl = '/path/to/home.html'
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.home).to.be.false()
     })
 
     it('should set home property to true if url of page matches site homeUrl property', () => {
       site.homeUrl = file.pub.url
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.home).to.be.true()
     })
 
@@ -339,7 +339,7 @@ describe('build UI model', () => {
           keywords: 'keyword-a, keyword-b',
         },
       }
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.title).to.equal(file.asciidoc.doctitle)
       expect(model.description).to.equal(file.asciidoc.attributes.description)
       expect(model.keywords).to.equal(file.asciidoc.attributes.keywords)
@@ -352,7 +352,7 @@ describe('build UI model', () => {
           'page-tags': 'basics,guide',
         },
       }
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.attributes).to.eql({
         foo: 'bar',
         tags: 'basics,guide',
@@ -363,19 +363,19 @@ describe('build UI model', () => {
       file.asciidoc = {
         attributes: { 'page-layout': 'chapter' },
       }
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.layout).to.equal('chapter')
     })
 
     it('should set layout property to default layout if the page-layout attribute is not specified', () => {
       site.ui.defaultLayout = 'default'
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.layout).to.equal('default')
     })
 
     it('should set navigation property to empty array if no navigation is defined for component version', () => {
       menu = undefined
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.navigation).to.exist()
       expect(model.navigation).to.be.empty()
     })
@@ -390,7 +390,7 @@ describe('build UI model', () => {
           },
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expectCalledWith(navigationCatalog.getNavigation, ['the-component', '1.0'])
       expect(model.navigation).to.exist()
       expect(model.navigation).to.equal(menu)
@@ -430,7 +430,7 @@ describe('build UI model', () => {
           }),
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.breadcrumbs).to.exist()
       expect(model.breadcrumbs).to.have.lengthOf(3)
       expect(model.breadcrumbs[0]).to.equal(menu[0])
@@ -469,7 +469,7 @@ describe('build UI model', () => {
           }),
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.breadcrumbs).to.include(category)
     })
 
@@ -485,7 +485,7 @@ describe('build UI model', () => {
           },
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.breadcrumbs).to.exist()
       expect(model.breadcrumbs).to.have.lengthOf(1)
       expect(model.breadcrumbs[0]).to.equal(menu[0].items[0])
@@ -506,7 +506,7 @@ describe('build UI model', () => {
           },
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.breadcrumbs).to.exist()
       expect(model.breadcrumbs).to.have.lengthOf(1)
       expect(model.breadcrumbs[0]).to.eql({
@@ -551,7 +551,7 @@ describe('build UI model', () => {
           },
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.breadcrumbs).to.exist()
       expect(model.breadcrumbs).to.have.lengthOf(3)
       expect(model.breadcrumbs[0]).to.equal(menu[0])
@@ -589,7 +589,7 @@ describe('build UI model', () => {
           },
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.breadcrumbs).to.exist()
       expect(model.breadcrumbs).to.have.lengthOf(2)
       expect(model.breadcrumbs[0]).to.equal(menu[0])
@@ -628,7 +628,7 @@ describe('build UI model', () => {
           },
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.breadcrumbs).to.exist()
       expect(model.breadcrumbs).to.have.lengthOf(1)
       expect(model.breadcrumbs[0]).to.equal(item1)
@@ -665,7 +665,7 @@ describe('build UI model', () => {
           },
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.breadcrumbs).to.exist()
       expect(model.breadcrumbs).to.have.lengthOf(1)
       expect(model.breadcrumbs[0]).to.equal(item1)
@@ -711,7 +711,7 @@ describe('build UI model', () => {
           }),
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.parent).to.exist()
       expect(model.parent).to.equal(parent)
       expect(model.previous).to.exist()
@@ -766,7 +766,7 @@ describe('build UI model', () => {
           ],
         })
       )
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.parent).to.exist()
       expect(model.parent).to.equal(parent)
       expect(model.previous).to.exist()
@@ -815,7 +815,7 @@ describe('build UI model', () => {
           }),
         ],
       })
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.next).to.exist()
       expect(model.next).to.equal(next)
       expect(model.previous).to.exist()
@@ -823,7 +823,7 @@ describe('build UI model', () => {
     })
 
     it('should not set versions property if component only has one version', () => {
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.versions).to.not.exist()
     })
 
@@ -866,7 +866,7 @@ describe('build UI model', () => {
         },
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expectCalledWith(
         contentCatalog.getById,
         [
@@ -940,7 +940,7 @@ describe('build UI model', () => {
         },
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expectCalledWith(
         contentCatalog.getById,
         [
@@ -1015,7 +1015,7 @@ describe('build UI model', () => {
         },
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expectCalledWith(
         contentCatalog.getById,
         [
@@ -1088,7 +1088,7 @@ describe('build UI model', () => {
         },
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.canonicalUrl).to.exist()
       expect(model.canonicalUrl).to.equal('http://example.com/the-component/1.0/the-page.html')
     })
@@ -1116,7 +1116,7 @@ describe('build UI model', () => {
         },
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.canonicalUrl).to.exist()
       expect(model.canonicalUrl).to.equal('http://example.com/the-component/1.0/the-page.html')
     })
@@ -1131,7 +1131,7 @@ describe('build UI model', () => {
       component.latest = component.versions[0]
       const files = { '1.0': file }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.canonicalUrl).to.exist()
       expect(model.canonicalUrl).to.equal('http://example.com/the-component/1.0/the-page.html')
     })
@@ -1146,7 +1146,7 @@ describe('build UI model', () => {
       })
       const files = { '1.0': file }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.canonicalUrl).not.to.exist()
     })
 
@@ -1173,7 +1173,7 @@ describe('build UI model', () => {
         },
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.canonicalUrl).to.exist()
       expect(model.canonicalUrl).to.equal('http://example.com/the-component/2.0/the-page.html')
     })
@@ -1203,7 +1203,7 @@ describe('build UI model', () => {
         },
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.canonicalUrl).to.not.exist()
     })
 
@@ -1211,7 +1211,7 @@ describe('build UI model', () => {
       site.url = 'http://example.com'
       component.latest = component.versions[0]
       component.versions[0].prerelease = true
-      const model = buildPageUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.versions).to.not.exist()
       expect(model.canonicalUrl).to.not.exist()
     })
@@ -1229,37 +1229,37 @@ describe('build UI model', () => {
     })
 
     it('should set site property to provided site model', () => {
-      const model = buildUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.site).to.exist()
       expect(model.site).to.equal(site)
     })
 
     it('should set env property to provided env object', () => {
-      const model = buildUiModel(file, contentCatalog, navigationCatalog, site, process.env)
+      const model = buildUiModel(site, file, contentCatalog, navigationCatalog, process.env)
       expect(model.env).to.exist()
       expect(model.env).to.equal(process.env)
     })
 
     it('should compute and set page property', () => {
-      const model = buildUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.page).to.exist()
       expect(model.page.url).to.equal(file.pub.url)
     })
 
     it('should set antoraVersion property to version of Antora', () => {
-      const model = buildUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.antoraVersion).to.exist()
       expect(model.antoraVersion).to.equal(VERSION)
     })
 
     it('should set siteRootPath property to pub.rootPath of file', () => {
-      const model = buildUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.siteRootPath).to.exist()
       expect(model.siteRootPath).to.equal(file.pub.rootPath)
     })
 
     it('should set uiRootPath property relative to page', () => {
-      const model = buildUiModel(file, contentCatalog, navigationCatalog, site)
+      const model = buildUiModel(site, file, contentCatalog, navigationCatalog)
       expect(model.uiRootPath).to.exist()
       expect(model.uiRootPath).to.equal('../../_')
     })

@@ -69,7 +69,7 @@ function createPageComposerInternal (siteModel, env, layouts) {
    */
   return function composePage (file, contentCatalog, navigationCatalog) {
     // QUESTION should we pass the playbook to the uiModel?
-    const uiModel = buildUiModel(file, contentCatalog, navigationCatalog, siteModel, env)
+    const uiModel = buildUiModel(siteModel, file, contentCatalog, navigationCatalog, env)
 
     let layout = uiModel.page.layout
     if (!layouts.has(layout)) {

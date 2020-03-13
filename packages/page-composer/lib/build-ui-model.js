@@ -45,19 +45,19 @@ function buildSiteUiModel (playbook, contentCatalog) {
   return model
 }
 
-function buildUiModel (file, contentCatalog, navigationCatalog, siteModel, env) {
+function buildUiModel (siteModel, file, contentCatalog, navigationCatalog, env = {}) {
   const siteRootPath = file.pub.rootPath || siteModel.path || ''
   return {
     antoraVersion: VERSION,
     env,
-    page: buildPageUiModel(file, contentCatalog, navigationCatalog, siteModel),
+    page: buildPageUiModel(siteModel, file, contentCatalog, navigationCatalog),
     site: siteModel,
     siteRootPath,
     uiRootPath: siteRootPath + siteModel.ui.url,
   }
 }
 
-function buildPageUiModel (file, contentCatalog, navigationCatalog, siteModel) {
+function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
   const { component: componentName, version, stem } = file.src
 
   if (!componentName && stem === '404') return { layout: stem, title: file.title }
