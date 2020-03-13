@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect, expectCalledWith, spy } = require('../../../test/test-utils')
-const { buildUiModel, buildSiteUiModel, buildPageUiModel } = require('@antora/page-composer/lib/build-ui-model')
+const { buildPageUiModel, buildSiteUiModel, buildUiModel } = require('@antora/page-composer/lib/build-ui-model')
 const { version: VERSION } = require('@antora/page-composer/package.json')
 
 describe('build UI model', () => {
@@ -66,8 +66,12 @@ describe('build UI model', () => {
           }, {})
       ),
       getSiteStartPage: spy(() => undefined),
-      exportToModel: spy(() => new Proxy(contentCatalog, {})),
     }
+
+    contentCatalog.exportToModel = spy(() => ({
+      getComponent: contentCatalog.getComponent,
+      getComponentVersion: contentCatalog.getComponentVersion,
+    }))
 
     menu = []
 

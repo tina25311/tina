@@ -1,8 +1,6 @@
 'use strict'
 
-const resolvePageHelper = require('./resolve-page')
-
-module.exports = (spec, model) => {
-  const page = resolvePageHelper(spec, model)
+module.exports = (spec, { data, hash: context }) => {
+  const page = spec && data.root.site.contentCatalog.resolvePage(spec, context)
   if (page) return page.pub.url
 }

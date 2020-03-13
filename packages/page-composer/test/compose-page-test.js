@@ -152,7 +152,7 @@ describe('createPageComposer()', () => {
     contentCatalog = {
       getComponentMapSortedBy: (property) => ({}),
       getSiteStartPage: () => undefined,
-      exportToModel: () => new Proxy(contentCatalog, {}),
+      exportToModel: () => {},
     }
 
     uiCatalog = {
@@ -190,17 +190,19 @@ describe('createPageComposer()', () => {
         url: '/the-component/1.0/index.html',
         versions: [
           {
-            version: '0.9',
-            title: 'The Component',
-            url: '/the-component/0.9/index.html',
-          },
-          {
             version: '1.0',
             title: 'The Component',
             url: '/the-component/1.0/index.html',
           },
+          {
+            version: '0.9',
+            title: 'The Component',
+            url: '/the-component/0.9/index.html',
+          },
         ],
       }
+
+      component.latest = component.versions[0]
 
       components = [component]
 
@@ -273,8 +275,15 @@ describe('createPageComposer()', () => {
             return files['0.9']
           }
         },
-        exportToModel: () => new Proxy(contentCatalog, {}),
       }
+
+      contentCatalog.exportToModel = () => ({
+        getById: contentCatalog.getById,
+        getComponent: contentCatalog.getComponent,
+        getComponentVersion: contentCatalog.getComponentVersion,
+        getPages: contentCatalog.getPages,
+        resolvePage: contentCatalog.resolvePage,
+      })
 
       menu = []
 
@@ -483,14 +492,16 @@ describe('createPageComposer()', () => {
         'body-resolve-page',
         heredoc`
         {{#with (resolvePage 'the-component::the-page.adoc')}}
-        <p>{{./pub.url}}</p>
+        <p>{{./url}} matches {{./latest.url}}</p>
         {{/with}}
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page}}')
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       composePage(file, contentCatalog, navigationCatalog)
-      expect(file.contents.toString()).to.include('<p>/the-component/1.0/the-page.html</p>')
+      expect(file.contents.toString()).to.include(
+        '<p>/the-component/1.0/the-page.html matches /the-component/1.0/the-page.html</p>'
+      )
     })
 
     it('should be able to call built-in helper to resolve URL of page', () => {
@@ -511,7 +522,7 @@ describe('createPageComposer()', () => {
         'body-resolve-page-falsy',
         heredoc`
         {{#with (resolvePage page.attributes.no-such-page)}}
-        <p>{{./pub.url}}</p>
+        <p>{{./url}}</p>
         {{else}}
         <p>no such page</p>
         {{/with}}
@@ -536,13 +547,28 @@ describe('createPageComposer()', () => {
       expect(file.contents.toString()).to.include('<p></p>')
     })
 
+    it('should be able to instruct resolvePage helper to not convert return value to page model', () => {
+      definePartial(
+        'body-resolve-page',
+        heredoc`
+        {{#with (resolvePage 'the-component::the-page.adoc' model=false)}}
+        <p>{{./pub.url}}</p>
+        {{/with}}
+        `
+      )
+      replaceCallToBodyPartial('{{> body-resolve-page}}')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include('<p>/the-component/1.0/the-page.html</p>')
+    })
+
     it('should be able to call built-in helper to resolve page inside #with block', () => {
       definePartial(
         'body-resolve-page-inside-with',
         heredoc`
         {{#with page.component}}
-        {{#with (resolvePage 'the-component::the-page.adoc')}}
-        <p>{{./pub.url}}</p>
+        {{#with (resolvePage 'the-component::the-page.adoc' model=true)}}
+        <p>{{./url}} matches {{./latest.url}}</p>
         {{/with}}
         {{/with}}
         `
@@ -550,7 +576,9 @@ describe('createPageComposer()', () => {
       replaceCallToBodyPartial('{{> body-resolve-page-inside-with}}')
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       composePage(file, contentCatalog, navigationCatalog)
-      expect(file.contents.toString()).to.include('<p>/the-component/1.0/the-page.html</p>')
+      expect(file.contents.toString()).to.include(
+        '<p>/the-component/1.0/the-page.html matches /the-component/1.0/the-page.html</p>'
+      )
     })
 
     it('should be able to call built-in helper to resolve URL of page inside #with block', () => {
@@ -573,14 +601,16 @@ describe('createPageComposer()', () => {
         'body-resolve-page-from-context',
         heredoc`
         {{#with (resolvePage 'the-page.adoc' component=page.component.name version='0.9')}}
-        <p>{{./pub.url}}</p>
+        <p>{{./url}} is older than {{./latest.url}}</p>
         {{/with}}
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-from-context}}')
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       composePage(file, contentCatalog, navigationCatalog)
-      expect(file.contents.toString()).to.include('<p>/the-component/0.9/the-page.html</p>')
+      expect(file.contents.toString()).to.include(
+        '<p>/the-component/0.9/the-page.html is older than /the-component/1.0/the-page.html</p>'
+      )
     })
 
     it('should be able to call built-in helper with context to resolve URL of page', () => {
@@ -613,8 +643,8 @@ describe('createPageComposer()', () => {
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include(heredoc`<ul>
-      <li>../0.9/index.html</li>
       <li>index.html</li>
+      <li>../0.9/index.html</li>
       <li>../../</li>
       <li>../../index.html</li>
       </ul>`)
