@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect, expectCalledWith, spy } = require('../../../test/test-utils')
-const { buildUiModel, buildSiteUiModel, buildPageUiModel } = require('@antora/page-composer')
+const { buildUiModel, buildSiteUiModel, buildPageUiModel } = require('@antora/page-composer/lib/build-ui-model')
 const { version: VERSION } = require('@antora/page-composer/package.json')
 
 describe('build UI model', () => {
