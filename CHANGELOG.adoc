@@ -12,6 +12,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: If `ContentCatalog#resolvePage` cannot locate page, look for alias and dereference if found (#586)
 * *content-classifier*: Add `getComponentVersion` method to exported API
 * *asciidoc-loader*: Allow target of xref to be a page alias (#586)
+* *asciidoc-loader*: Assign value of family-relative path of page to page-src-path attribute on document (#568)
 * *document-converter*: Load the AsciiDoc header for all pages before any page is converted so xref can reference page alias (#586)
 * *page-composer*: Add `relativize` as built-in UI helper (#555)
 
@@ -36,6 +37,7 @@ This project utilizes semantic versioning.
 * *page-composer*: Make resolvePage and resolvePageUrl helpers resilient against falsy page spec (#554)
 * *page-composer*: Don't prepend site URL to absolute canonical URL (#564)
 * *page-composer*: resolvePage helper returns page model instead of virtual file object, which can be disabled using model=false (#541)
+* *page-composer*: Assign value of family-relative path of page to srcPath property on page UI model (#568)
 
 == 2.3.0-alpha.2 (2019-12-18)
 

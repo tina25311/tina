@@ -177,6 +177,7 @@ describe('loadAsciiDoc()', () => {
         'page-version': 'master',
         'page-module': 'module-a',
         'page-relative': 'page-a.adoc',
+        'page-src-path': 'page-a.adoc',
         // computed
         doctitle: 'Document Title',
         notitle: '',
@@ -213,7 +214,8 @@ describe('loadAsciiDoc()', () => {
         'page-component-version',
         'page-version',
         'page-module',
-        'page-relative'
+        'page-relative',
+        'page-src-path'
       )
     })
 
