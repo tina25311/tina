@@ -5,7 +5,7 @@ const { expand: expandBraces } = require('braces')
 const flattenDeep = require('./flatten-deep')
 const fs = require('fs-extra')
 const git = require('isomorphic-git')
-const invariably = { true: () => true, false: () => false, undefined: () => undefined, emptyArray: () => [] }
+const invariably = { true: () => true, false: () => false, void: () => {}, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 
 const RX_ESCAPED_GLOB = /\\\*/g
@@ -169,7 +169,7 @@ function retrievePathFs (base, { path }, subpath) {
 }
 
 function retrievePathGit (repo, { oid }, filepath) {
-  return git.readObject({ ...repo, oid, filepath, format: 'deflated' }).catch(invariably.undefined)
+  return git.readObject({ ...repo, oid, filepath, format: 'deflated' }).catch(invariably.void)
 }
 
 function joinPath (parent, child) {
