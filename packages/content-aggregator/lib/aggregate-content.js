@@ -11,6 +11,7 @@ const fs = require('fs-extra')
 const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('isomorphic-git')
+const invariably = { false: () => false, void: () => {} }
 const { obj: map } = require('through2')
 const matcher = require('matcher')
 const mimeTypes = require('./mime-types-with-asciidoc')
@@ -31,6 +32,7 @@ const {
   GIT_CORE,
   GIT_OPERATION_LABEL_LENGTH,
   GIT_PROGRESS_PHASES,
+  VALID_STATE_FILENAME,
 } = require('./constants')
 
 const ABBREVIATE_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
@@ -149,12 +151,12 @@ async function loadRepository (url, opts) {
 
   // QUESTION should we capture the current branch in repo object here?
 
-  try {
-    // NOTE attempt to resolve HEAD to determine whether dir is a valid git repo
-    // QUESTION should we also check for shallow file?
-    await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
-    if (repo.url) {
+  if (repo.url) {
+    const validStateFile = ospath.join(repo.gitdir, VALID_STATE_FILENAME)
+    try {
+      await fs.access(validStateFile)
       if (opts.fetch) {
+        await fs.unlink(validStateFile)
         const fetchOpts = getFetchOptions(repo, opts.progress, displayUrl, credentials, opts.fetchTags, 'fetch')
         await git
           .fetch(fetchOpts)
@@ -167,19 +169,19 @@ async function loadRepository (url, opts) {
             if (fetchErr.name === git.E.HTTPError && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
             throw fetchErr
           })
+          .then(() => fs.createFile(validStateFile).catch(invariably.void))
           .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
       } else {
         // use cached value from previous fetch
         authStatus = await git.config(Object.assign({ path: 'remote.origin.private' }, repo))
       }
-    }
-  } catch (gitErr) {
-    if (repo.url) {
+    } catch (gitErr) {
       await fs.remove(dir)
       if (gitErr.rethrow) throw transformGitCloneError(gitErr, displayUrl)
       const fetchOpts = getFetchOptions(repo, opts.progress, displayUrl, credentials, opts.fetchTags, 'clone')
       await git
         .clone(fetchOpts)
+        .then(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)))
         .then(() => {
           authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
           return git.config(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
@@ -190,12 +192,17 @@ async function loadRepository (url, opts) {
           //fetchOpts.emitter && fetchOpts.emitter.emit('error', cloneErr)
           throw transformGitCloneError(cloneErr, displayUrl)
         })
+        .then(() => fs.createFile(validStateFile).catch(invariably.void))
         .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
-    } else {
-      throw new Error(
-        `Local content source must be a git repository: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`
-      )
     }
+  } else {
+    await git
+      .resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
+      .catch(() => {
+        throw new Error(
+          `Local content source must be a git repository: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`
+        )
+      })
   }
   return { repo, authStatus }
 }
@@ -714,7 +721,7 @@ function isLocalDirectory (url) {
   return fs
     .stat(url)
     .then((stat) => stat.isDirectory())
-    .catch(() => false)
+    .catch(invariably.false)
 }
 
 function tagsSpecified (sources, defaultTags) {
