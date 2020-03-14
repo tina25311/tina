@@ -266,12 +266,12 @@ class ContentCatalog {
         return target.getComponent(name)
       }
 
-      getComponents () {
-        return target.getComponents()
-      }
-
       getComponentVersion (component, version) {
         return target.getComponentVersion(component, version)
+      }
+
+      getComponents () {
+        return target.getComponents()
       }
 
       getPages () {

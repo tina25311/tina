@@ -1275,7 +1275,9 @@ describe('ContentCatalog', () => {
         'resolveResource',
       ]
       expectedMethods.forEach((method) => {
-        expect(model).to.have.property(method).that.is.a('function')
+        expect(model)
+          .to.have.property(method)
+          .that.is.a('function')
       })
       expect(model.getComponents()).to.have.lengthOf(1)
       const component = model.getComponent('the-component')

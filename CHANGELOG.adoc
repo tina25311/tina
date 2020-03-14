@@ -35,6 +35,7 @@ This project utilizes semantic versioning.
 * *page-composer*: Fix resolvePage and resolvePageUrl helpers to retrieve content catalog independent of template context (#554)
 * *page-composer*: Make resolvePage and resolvePageUrl helpers resilient against falsy page spec (#554)
 * *page-composer*: Don't prepend site URL to absolute canonical URL (#564)
+* *page-composer*: resolvePage helper returns page model instead of virtual file object, which can be disabled using model=false (#541)
 
 == 2.3.0-alpha.2 (2019-12-18)
 

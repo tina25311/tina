@@ -45,7 +45,7 @@ function buildSiteUiModel (playbook, contentCatalog) {
   return model
 }
 
-function buildUiModel (siteModel, file, contentCatalog, navigationCatalog, env = {}) {
+function buildUiModel (siteModel, file, contentCatalog, navigationCatalog, env) {
   const siteRootPath = file.pub.rootPath || siteModel.path || ''
   return {
     antoraVersion: VERSION,
@@ -75,7 +75,6 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
   const componentVersion = contentCatalog.getComponentVersion(component, version)
   // QUESTION can we cache versions on file.rel so only computed once per page version lineage?
   const versions = component.versions.length > 1 ? getPageVersions(file.src, component, contentCatalog) : undefined
-  const navigation = navigationCatalog.getNavigation(componentName, version) || []
   const title = asciidoc.doctitle
 
   const model = {
@@ -93,11 +92,16 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
     module: file.src.module,
     origin: file.src.origin,
     versions,
-    navigation,
     editUrl: file.src.editUrl,
     fileUri: file.src.fileUri,
     home: url === siteModel.homeUrl,
   }
+
+  if (navigationCatalog) {
+    const navigation = (model.navigation = navigationCatalog.getNavigation(componentName, version) || [])
+    Object.assign(model, getNavContext(url, title, navigation))
+  }
+
   if (versions) {
     Object.defineProperty(model, 'latest', {
       get () {
@@ -105,7 +109,6 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
       },
     })
   }
-  Object.assign(model, getNavContext(url, title, navigation))
 
   // NOTE site URL has already been normalized at this point
   const siteUrl = siteModel.url
