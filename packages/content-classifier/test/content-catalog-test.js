@@ -1246,4 +1246,56 @@ describe('ContentCatalog', () => {
       expect(result.contents.toString()).to.equal('I am your home base!')
     })
   })
+
+  describe('#exportToModel()', () => {
+    it('should export public API that delegates to real instance', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.0',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        stem: 'the-page',
+        mediaType: 'text/asciidoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.addFile(new File({ src }))
+      contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
+      const model = contentCatalog.exportToModel()
+      const expectedMethods = [
+        'findBy',
+        'getAll',
+        'getById',
+        'getComponent',
+        'getComponents',
+        'getComponentVersion',
+        'getPages',
+        'resolvePage',
+        'resolveResource',
+      ]
+      expectedMethods.forEach((method) => {
+        expect(model).to.have.property(method).that.is.a('function')
+      })
+      expect(model.getComponents()).to.have.lengthOf(1)
+      const component = model.getComponent('the-component')
+      expect(component).to.exist()
+      expect(component.name).to.equal('the-component')
+      const componentVersion = model.getComponentVersion(component, '1.0')
+      expect(componentVersion).to.exist()
+      expect(componentVersion.version).to.equal('1.0')
+      let pages = model.getPages()
+      expect(pages).to.have.lengthOf(1)
+      expect(pages[0].src.relative).to.equal('the-page.adoc')
+      pages = model.findBy({ family: 'page', component: 'the-component' })
+      expect(pages).to.have.lengthOf(1)
+      expect(pages[0].src.relative).to.equal('the-page.adoc')
+      let page = model.getById(src)
+      expect(page).to.exist()
+      expect(page.src.relative).to.equal('the-page.adoc')
+      page = model.resolvePage('the-component::the-page.adoc')
+      expect(page).to.exist()
+      expect(page.src.relative).to.equal('the-page.adoc')
+    })
+  })
 })

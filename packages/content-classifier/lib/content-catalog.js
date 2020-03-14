@@ -270,6 +270,10 @@ class ContentCatalog {
         return target.getComponents()
       }
 
+      getComponentVersion (component, version) {
+        return target.getComponentVersion(component, version)
+      }
+
       getPages () {
         return target.getPages()
       }

@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Added
 
 * *content-classifier*: If `ContentCatalog#resolvePage` cannot locate page, look for alias and dereference if found (#586)
+* *content-classifier*: Add `getComponentVersion` method to exported API
 * *asciidoc-loader*: Allow target of xref to be a page alias (#586)
 * *document-converter*: Load the AsciiDoc header for all pages before any page is converted so xref can reference page alias (#586)
 * *page-composer*: Add `relativize` as built-in UI helper (#555)
