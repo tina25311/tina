@@ -99,7 +99,7 @@ function computePageAttrs (fileSrc, contentCatalog) {
     attrs['page-component-title'] = component.title
   }
   attrs['page-module'] = fileSrc.module
-  attrs['page-relative'] = fileSrc.relative
+  attrs['page-relative'] = attrs['page-src-path'] = fileSrc.relative
   const origin = fileSrc.origin
   if (origin) {
     attrs['page-origin-type'] = origin.type
