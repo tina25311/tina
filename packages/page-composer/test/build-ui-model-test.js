@@ -77,8 +77,9 @@ describe('build UI model', () => {
 
     file = {
       contents: Buffer.from('contents'),
+      path: 'modules/ROOT/pages/the-page.adoc',
       src: {
-        path: 'modules/ROOT/pages/the-page.adoc',
+        path: 'the-page.adoc',
         component: 'the-component',
         version: '1.0',
         module: 'ROOT',
