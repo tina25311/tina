@@ -107,7 +107,7 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
   }
   Object.assign(model, getNavContext(url, title, navigation))
 
-  // NOTE the site URL has already been normalized at this point
+  // NOTE site URL has already been normalized at this point
   const siteUrl = siteModel.url
   if (siteUrl && siteUrl.charAt() !== '/') {
     if (versions) {
@@ -194,12 +194,7 @@ function getUrlWithoutHash (item) {
 // QUESTION should this function go in ContentCatalog?
 // QUESTION should this function accept component, module, relative instead of pageSrc?
 function getPageVersions (pageSrc, component, contentCatalog) {
-  const basePageId = {
-    component: pageSrc.component,
-    module: pageSrc.module,
-    family: 'page',
-    relative: pageSrc.relative,
-  }
+  const basePageId = { component: component.name, module: pageSrc.module, family: 'page', relative: pageSrc.relative }
   return component.versions.map((componentVersion) => {
     const page = contentCatalog.getById(Object.assign({ version: componentVersion.version }, basePageId))
     // QUESTION should title be title of component or page?
