@@ -9,6 +9,8 @@ Antora uses content organized into documentation components when it generates a 
 A [.term]*documentation component* typically represents the documentation for a product, application, project, microservice, or training course.
 It's a collection of files grouped into modules and families that share common metadata.
 Antora can generate a site that only contains one documentation component or a site that contains as many documentation components as you require.
+For simplicity, most of this page is written to describe the simple case when a component has one [.path]_antora.yml_ file from one source.
+The more complicated distributed component case is described at the end.
 
 [#overview]
 == Standard directory structure of a documentation component
@@ -78,6 +80,16 @@ See xref:component-descriptor.adoc[Component Descriptor: antora.yml] to learn ab
 [TIP]
 While all of a documentation component's source files can be stored in a single repository, it isn't a requirement.
 Antora can collect a component's source files from 5, 25, and even more repositories.
-That means a few of a component's modules could be store in one repository, while the [.path]_examples_ directory of another module is stored in a tutorial repository that's maintained by a training team, and then that same module's pages could be stored in [.path]_pages_ directories across three different repositories.
+That means a few of a component's modules could be stored in one repository, while the [.path]_examples_ directory of another module is stored in a tutorial repository that's maintained by a training team, and then that same module's pages could be stored in [.path]_pages_ directories across three different repositories.
 When a documentation component's source files are stored in multiple repositories, it's referred to as a [.term]*distributed component*.
 This capability is provided by the simple, but-oh-so-powerful component descriptor file, [.path]_antora.yml_.
+
+Recall that an [.path]_antora.yml_ component descriptor specifies the component name and version.
+If Antora discovers several [.path]_antora.yml_ files that specify the same component name and version, that component is said to be [.term]*distributed*.
+All the sources associated with these [.path]_antora.yml_ files are added to the content catalog and included in the component version.
+
+Only one [.path]_antora.yml_ file should specify additional metadata, such as the title, start page, display version, and navigation files in addition to the required component name and version.
+All other [.path]_antora.yml_ files for that component version should only specify the component name and version.
+Results of conflicting or duplicate metadata may be unpredictable.
+
+Antora will fail with an error if there is a duplicated path/name for navigation or content files across multiple sources for a component.
