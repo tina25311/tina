@@ -1907,7 +1907,15 @@ describe('loadAsciiDoc()', () => {
   })
 
   describe('page reference macro', () => {
-    it('should skip invalid page reference', () => {
+    it('should skip invalid page reference with explicit content', () => {
+      const contentCatalog = mockContentCatalog().spyOn('getById')
+      setInputFileContents('xref:component-b::.adoc[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).to.not.have.been.called()
+      expectUnresolvedPageLink(html, '#component-b::', 'The Page Title')
+    })
+
+    it('should skip invalid page reference with fragment and explicit content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:component-b::#frag[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
@@ -1915,7 +1923,15 @@ describe('loadAsciiDoc()', () => {
       expectUnresolvedPageLink(html, '#component-b::#frag', 'The Page Title')
     })
 
-    it('should delegate the built-in converter to process an in-page reference', () => {
+    it('should skip invalid page reference with empty content', () => {
+      const contentCatalog = mockContentCatalog().spyOn('getById')
+      setInputFileContents('xref:component-b::#frag[]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).to.not.have.been.called()
+      expectUnresolvedPageLink(html, '#component-b::#frag', 'component-b::#frag')
+    })
+
+    it('should delegate to built-in converter to process an in-page reference', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:section-a[]\n\n== Section A')
       const config = {
@@ -1926,7 +1942,7 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, '#section-a', 'Section A')
     })
 
-    it('should delegate the built-in converter to process a normal link', () => {
+    it('should delegate to built-in converter to process a normal link', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('https://example.com[Example Domain]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
@@ -1934,7 +1950,7 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, 'https://example.com', 'Example Domain')
     })
 
-    it('should skip unresolved page reference', () => {
+    it('should skip unresolved page reference with explicit content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
@@ -1963,7 +1979,40 @@ describe('loadAsciiDoc()', () => {
       expectUnresolvedPageLink(html, '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc', 'The Page Title')
     })
 
-    it('should skip unresolved page reference with fragment', () => {
+    it('should skip unresolved page reference with empty content', () => {
+      const contentCatalog = mockContentCatalog().spyOn('getById')
+      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expectCalledWith(
+        contentCatalog.getById,
+        {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        },
+        1
+      )
+      expectCalledWith(
+        contentCatalog.getById,
+        {
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'alias',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        },
+        2
+      )
+      expectUnresolvedPageLink(
+        html,
+        '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc',
+        '4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc'
+      )
+    })
+
+    it('should skip unresolved page reference with fragment and explicit content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
@@ -1978,6 +2027,24 @@ describe('loadAsciiDoc()', () => {
         html,
         '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag',
         'The Page Title'
+      )
+    })
+
+    it('should skip unresolved page reference with fragment and empty content', () => {
+      const contentCatalog = mockContentCatalog().spyOn('getById')
+      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag[]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expectCalledWith(contentCatalog.getById, {
+        component: 'component-b',
+        version: '4.5.6',
+        module: 'module-b',
+        family: 'page',
+        relative: 'topic-foo/topic-bar/the-page.adoc',
+      })
+      expectUnresolvedPageLink(
+        html,
+        '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag',
+        '4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag'
       )
     })
 

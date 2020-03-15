@@ -15,6 +15,7 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Assign value of family-relative path of page to page-src-path attribute on document (#568)
 * *asciidoc-loader*: Add function for extracting metadata from the AsciiDoc header (#310)
 * *asciidoc-loader*: Use automatic reference text (i.e., xreftext) if contents of page xref is empty (#310)
+* *asciidoc-loader*: Use target as fallback content for unresolved or invalid xref (#594)
 * *document-converter*: Load the AsciiDoc header for all pages before any page is converted so xref can reference page alias (#586)
 * *navigation-builder*: Use automatic reference text (i.e., navtitle attribute or xreftext) if contents of page xref is empty (#310)
 * *page-composer*: Add `relativize` as built-in UI helper (#555)
