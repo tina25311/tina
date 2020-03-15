@@ -196,13 +196,11 @@ async function loadRepository (url, opts) {
         .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
     }
   } else {
-    await git
-      .resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
-      .catch(() => {
-        throw new Error(
-          `Local content source must be a git repository: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`
-        )
-      })
+    await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)).catch(() => {
+      throw new Error(
+        `Local content source must be a git repository: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`
+      )
+    })
   }
   return { repo, authStatus }
 }
