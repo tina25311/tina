@@ -50,6 +50,10 @@ describe('generateSite()', function () {
   beforeEach(async () => {
     env = { ANTORA_CACHE_DIR: ospath.join(WORK_DIR, '.antora/cache') }
     removeSyncForce(CONTENT_REPOS_DIR)
+    fs.ensureDirSync(WORK_DIR)
+    fs.removeSync(playbookFile)
+    removeSyncForce(ospath.join(WORK_DIR, destDir.split('/')[0]))
+    removeSyncForce(ospath.join(env.ANTORA_CACHE_DIR, 'content'))
     await repoBuilder
       .init('the-component')
       .then(() => repoBuilder.checkoutBranch('v2.0'))
@@ -75,9 +79,6 @@ describe('generateSite()', function () {
         destinations: [{ provider: 'fs', path: '.' + ospath.sep + destDir }],
       },
     }
-    fs.ensureDirSync(WORK_DIR)
-    fs.removeSync(playbookFile)
-    removeSyncForce(ospath.join(WORK_DIR, destDir.split('/')[0]))
   })
 
   after(async () => {
