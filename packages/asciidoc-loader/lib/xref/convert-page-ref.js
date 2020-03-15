@@ -49,7 +49,17 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
   } else {
     targetUrl = targetPage.pub.url + hash
   }
-  return { content: content || `${pageIdSpec}.adoc${hash}`, target: targetUrl, internal }
+  if (!content) {
+    if (hash) {
+      content = `${pageIdSpec}.adoc${hash}`
+    } else {
+      content =
+        (currentPage.src.family === 'nav'
+          ? (targetPage.asciidoc || {}).navtitle
+          : (targetPage.asciidoc || {}).xreftext) || `${pageIdSpec}.adoc`
+    }
+  }
+  return { content, target: targetUrl, internal }
 }
 
 module.exports = convertPageRef

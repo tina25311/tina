@@ -1,6 +1,6 @@
 'use strict'
 
-const loadAsciiDoc = require('@antora/asciidoc-loader')
+const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-loader')
 
 /**
  * Converts the contents on the specified file from AsciiDoc to embeddable HTML.
@@ -25,8 +25,7 @@ const loadAsciiDoc = require('@antora/asciidoc-loader')
 function convertDocument (file, contentCatalog = undefined, asciidocConfig = {}) {
   const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig)
   if (!file.asciidoc) {
-    const attributes = doc.getAttributes()
-    file.asciidoc = doc.hasHeader() ? { attributes, doctitle: doc.getDocumentTitle() } : { attributes }
+    file.asciidoc = extractAsciiDocMetadata(doc)
     if (doc.hasAttribute('page-partial')) file.src.contents = file.contents
   }
   file.contents = Buffer.from(doc.convert())

@@ -96,6 +96,43 @@ describe('convertDocuments()', () => {
     })
   })
 
+  it('should assign relevant properties to asciidoc property on file object', () => {
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'index.adoc',
+        contents: '[reftext=Home]\n= Welcome\n\nThis is the index page.',
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'topic/index.adoc',
+        contents: '= Topic\n:navtitle: About Topic\n\nThis is a topic page.',
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'untitled.adoc',
+        contents: 'Untitled page.',
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    expect(pages).to.have.lengthOf(3)
+    pages.forEach((page) => {
+      expect(page).to.have.nested.property('asciidoc.attributes')
+    })
+    const homePage = pages.find((it) => it.src.relative === 'index.adoc')
+    expect(homePage).to.have.nested.property('asciidoc.doctitle', 'Welcome')
+    expect(homePage).to.have.nested.property('asciidoc.xreftext', 'Home')
+    expect(homePage).to.have.nested.property('asciidoc.navtitle', 'Home')
+    const topicPage = pages.find((it) => it.src.relative === 'topic/index.adoc')
+    expect(topicPage).to.have.nested.property('asciidoc.doctitle', 'Topic')
+    expect(topicPage).to.have.nested.property('asciidoc.xreftext', 'Topic')
+    expect(topicPage).to.have.nested.property('asciidoc.navtitle', 'About Topic')
+    const untitledPage = pages.find((it) => it.src.relative === 'untitled.adoc')
+    expect(untitledPage).not.to.have.nested.property('asciidoc.doctitle')
+    expect(untitledPage).not.to.have.nested.property('asciidoc.xreftext')
+    expect(untitledPage).not.to.have.nested.property('asciidoc.navtitle')
+  })
+
   it('should convert contents to embeddable HTML using default settings if AsciiDoc config not provided', () => {
     const contentCatalog = mockContentCatalog([
       {
@@ -232,6 +269,34 @@ describe('convertDocuments()', () => {
     contentCatalog.registerPageAlias = spy(() => {})
     convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.not.have.been.called()
+  })
+
+  it('should fill in missing contents of page reference with automatic reference text', () => {
+    const fromContents = Buffer.from(heredoc`
+      = From
+
+      Go to xref:to.adoc[].
+    `)
+    const toContents = Buffer.from(heredoc`
+      = To
+
+      You have arrived.
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'from.adoc',
+        contents: fromContents,
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'to.adoc',
+        contents: toContents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const fromConvertedContents = pages.find((it) => it.src.relative === 'from.adoc').contents.toString()
+    expectPageLink(fromConvertedContents, 'to.html', 'To')
   })
 
   it('should be able to reference page alias as target of xref', () => {

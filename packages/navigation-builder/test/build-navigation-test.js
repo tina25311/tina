@@ -332,6 +332,135 @@ describe('buildNavigation()', () => {
     })
   })
 
+  it('should use navtitle of target page if content not given and target page has navtitle', () => {
+    const navContents = heredoc`
+      * xref:the-page.adoc[]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      {
+        relative: 'the-page.adoc',
+      },
+    ])
+    const targetPage = contentCatalog.getFiles()[1]
+    targetPage.asciidoc = { doctitle: 'The Page Title', xreftext: 'reference me', navtitle: 'Page Title' }
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'Page Title',
+          url: '/component-a/module-a/the-page.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  it('should use spec of target page if content not given and target page has no navtitle', () => {
+    const navContents = heredoc`
+      * xref:the-page.adoc[]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      {
+        relative: 'the-page.adoc',
+      },
+    ])
+    const targetPage = contentCatalog.getFiles()[1]
+    targetPage.asciidoc = { doctitle: 'The Page Title', xreftext: 'reference me' }
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'the-page.adoc',
+          url: '/component-a/module-a/the-page.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  it('should use page ID spec of target page if content not given and target page has no navtitle or xreftext', () => {
+    const navContents = heredoc`
+      * xref:the-page.adoc[]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      {
+        relative: 'the-page.adoc',
+      },
+    ])
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'the-page.adoc',
+          url: '/component-a/module-a/the-page.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  it('should use page ID spec of target page if content not given and page ID spec has fragment', () => {
+    const navContents = heredoc`
+      * xref:the-page.adoc#anchor[]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      {
+        relative: 'the-page.adoc',
+      },
+    ])
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'the-page.adoc#anchor',
+          hash: '#anchor',
+          url: '/component-a/module-a/the-page.html#anchor',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
   it('should store url for page reference as root relative path with urlType set to internal', () => {
     const navContents = heredoc`
       * xref:page-a.adoc[This Module]

@@ -3,8 +3,7 @@
 
 const { expect, expectCalledWith, heredoc } = require('../../../test/test-utils')
 
-const loadAsciiDoc = require('@antora/asciidoc-loader')
-const { resolveConfig } = loadAsciiDoc
+const { loadAsciiDoc, resolveConfig } = require('@antora/asciidoc-loader')
 const mockContentCatalog = require('../../../test/mock-content-catalog')
 const ospath = require('path')
 
@@ -53,6 +52,10 @@ describe('loadAsciiDoc()', () => {
         rootPath: '../..',
       },
     }
+  })
+
+  it('should export loadAsciiDoc as default function', () => {
+    expect(require('@antora/asciidoc-loader')).to.equal(loadAsciiDoc)
   })
 
   it('should load document model from AsciiDoc contents', () => {
@@ -2713,7 +2716,29 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, '#the-fragment', 'Deep Link to Self')
     })
 
-    it('should use default content for page reference if content not specified', () => {
+    it('should use xreftext of target page as content if content not specified', () => {
+      const contentCatalog = mockContentCatalog({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-b',
+        family: 'page',
+        relative: 'the-topic/the-page.adoc',
+      }).spyOn('getById')
+      const targetPage = contentCatalog.getFiles()[0]
+      targetPage.asciidoc = { doctitle: 'Page Title', xreftext: 'reference me' }
+      setInputFileContents('xref:module-b:the-topic/the-page.adoc#[]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expectCalledWith(contentCatalog.getById, {
+        component: 'component-a',
+        version: 'master',
+        module: 'module-b',
+        family: 'page',
+        relative: 'the-topic/the-page.adoc',
+      })
+      expectPageLink(html, '../module-b/the-topic/the-page.html', 'reference me')
+    })
+
+    it('should use page ID spec of target page as content if content not specified and target has no xreftext', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
         version: 'master',
@@ -2730,11 +2755,10 @@ describe('loadAsciiDoc()', () => {
         family: 'page',
         relative: 'the-topic/the-page.adoc',
       })
-      // TODO eventually this will resolve to the title of the target page
       expectPageLink(html, '../module-b/the-topic/the-page.html', 'module-b:the-topic/the-page.adoc')
     })
 
-    it('should use default content for page reference with fragment if content not specified', () => {
+    it('should use page ID spec as content for page reference with fragment if content not specified', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
         version: 'master',
@@ -2742,6 +2766,8 @@ describe('loadAsciiDoc()', () => {
         family: 'page',
         relative: 'the-topic/the-page.adoc',
       }).spyOn('getById')
+      const targetPage = contentCatalog.getFiles()[0]
+      targetPage.asciidoc = { doctitle: 'Page Title', xreftext: 'page title' }
       setInputFileContents('xref:module-b:the-topic/the-page.adoc#frag[]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expectCalledWith(contentCatalog.getById, {
@@ -2751,7 +2777,6 @@ describe('loadAsciiDoc()', () => {
         family: 'page',
         relative: 'the-topic/the-page.adoc',
       })
-      // TODO eventually this will resolve to the title of the target page
       expectPageLink(html, '../module-b/the-topic/the-page.html#frag', 'module-b:the-topic/the-page.adoc#frag')
     })
 

@@ -1,7 +1,7 @@
 'use strict'
 
 const convertDocument = require('./convert-document')
-const loadAsciiDoc = require('@antora/asciidoc-loader')
+const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-loader')
 
 const COMMA_DELIMITER_RX = /\s*,\s*/
 
@@ -37,13 +37,10 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
     .filter((page) => page.out)
     .map((page) => {
       if (page.mediaType === 'text/asciidoc') {
-        const doc = loadAsciiDoc(
-          page,
-          contentCatalog,
-          headerAsciiDocConfigs.get(buildCacheKey(page.src)) || Object.assign({}, siteAsciiDocConfig, headerOverrides)
-        )
-        const attributes = doc.getAttributes()
-        page.asciidoc = doc.hasHeader() ? { attributes, doctitle: doc.getDocumentTitle() } : { attributes }
+        const asciidocConfig = headerAsciiDocConfigs.get(buildCacheKey(page.src))
+        const { attributes } = (page.asciidoc = extractAsciiDocMetadata(
+          loadAsciiDoc(page, contentCatalog, asciidocConfig || Object.assign({}, siteAsciiDocConfig, headerOverrides))
+        ))
         registerPageAliases(attributes['page-aliases'], page, contentCatalog)
         if ('page-partial' in attributes) page.src.contents = page.contents
       }
@@ -58,7 +55,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
 }
 
 function buildCacheKey ({ component, version }) {
-  return `${version}@${component}`
+  return version + '@' + component
 }
 
 function registerPageAliases (aliases, targetFile, contentCatalog) {
@@ -68,5 +65,4 @@ function registerPageAliases (aliases, targetFile, contentCatalog) {
     .forEach((aliasSpec) => aliasSpec && contentCatalog.registerPageAlias(aliasSpec, targetFile))
 }
 
-module.exports = convertDocuments
-module.exports.convertDocument = convertDocument
+module.exports = Object.assign(convertDocuments, { convertDocuments, convertDocument })

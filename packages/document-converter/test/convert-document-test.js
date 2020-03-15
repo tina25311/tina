@@ -149,13 +149,64 @@ describe('convertDocument()', () => {
     expect(inputFile.asciidoc.doctitle).to.equal('<em>Awesome</em> Document Title')
   })
 
-  it('should not set asciidoc.doctitle property on file object if document has no header', () => {
+  it('should not set doctitle, xreftext, or navtitle properties on file.asciidoc object if document has no header', () => {
     inputFile.contents = Buffer.from(heredoc`
       article contents only
     `)
     convertDocument(inputFile, undefined, asciidocConfig)
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.doctitle).to.not.exist()
+    expect(inputFile.asciidoc.xreftext).to.not.exist()
+    expect(inputFile.asciidoc.navtitle).to.not.exist()
+  })
+
+  it('should set formatted xreftext to asciidoc.xreftext property on file object', () => {
+    inputFile.contents = Buffer.from(heredoc`
+      [[docid,_Awesome_ Document Title]]
+      = Document Title
+
+      article contents
+    `)
+    convertDocument(inputFile, undefined, asciidocConfig)
+    expect(inputFile.asciidoc).to.exist()
+    expect(inputFile.asciidoc.xreftext).to.equal('<em>Awesome</em> Document Title')
+  })
+
+  it('should set formatted doctitle to asciidoc.xreftext property on file object if document has no reftext', () => {
+    inputFile.contents = Buffer.from(heredoc`
+      = _Awesome_ Document Title
+
+      article contents
+    `)
+    convertDocument(inputFile, undefined, asciidocConfig)
+    expect(inputFile.asciidoc).to.exist()
+    expect(inputFile.asciidoc.doctitle).to.equal(inputFile.asciidoc.xreftext)
+    expect(inputFile.asciidoc.xreftext).to.equal('<em>Awesome</em> Document Title')
+  })
+
+  it('should set formatted navtitle to asciidoc.navtitle property on file object', () => {
+    inputFile.contents = Buffer.from(heredoc`
+      = Get Started
+      :navtitle: Start _Here_
+
+      article contents
+    `)
+    convertDocument(inputFile, undefined, asciidocConfig)
+    expect(inputFile.asciidoc).to.exist()
+    expect(inputFile.asciidoc.navtitle).to.equal('Start <em>Here</em>')
+  })
+
+  it('should set asciidoc.navtitle property on file object to xreftext if navtitle not given', () => {
+    inputFile.contents = Buffer.from(heredoc`
+      [reftext=Start _Here_]
+      = Get Started
+
+      article contents
+    `)
+    convertDocument(inputFile, undefined, asciidocConfig)
+    expect(inputFile.asciidoc).to.exist()
+    expect(inputFile.asciidoc.navtitle).to.exist()
+    expect(inputFile.asciidoc.navtitle).to.equal('Start <em>Here</em>')
   })
 
   it('should save document header attributes to asciidoc.attributes property on file object', () => {
@@ -212,6 +263,17 @@ describe('convertDocument()', () => {
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.attributes).to.exist()
     expect(inputFile.asciidoc.attributes).to.include(customAttributes)
+  })
+
+  it('should backup contents to src.contents property on file object is page-partial attribute is set', () => {
+    const sourceContents = (inputFile.contents = Buffer.from(heredoc`
+      = Get Started
+      :page-partial:
+
+      article contents
+    `))
+    convertDocument(inputFile, undefined, asciidocConfig)
+    expect(inputFile.src.contents).to.equal(sourceContents)
   })
 
   it('should convert page reference to URL of page in content catalog', () => {
