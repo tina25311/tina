@@ -164,6 +164,7 @@ Exporting the environment variable saves you from having to type it each time yo
 == Encode credentials in a URL (not recommended)
 
 Another option for passing credentials to the credential manager is to encode them directly in the URL listed in the playbook.
+Since this option doesn't trigger the challenge-response workflow, Antora automatically assumes the repository is private.
 
 WARNING: This strategy is not recommended unless you're using a placeholder to inject the real credentials, as described at the end of this section.
 
