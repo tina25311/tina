@@ -44,10 +44,9 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
     target = `#${refSpec}`
     return { content: content || target.substr(1), target, unresolved: true }
   }
-  let internal
   if (relativize) {
     target = computeRelativeUrlPath(currentPage.pub.url, targetPage.pub.url, hash)
-    if (target === hash) internal = true
+    if (target === hash) return { content, target, internal: true }
   } else {
     target = targetPage.pub.url + hash
   }
@@ -61,7 +60,7 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
           : (targetPage.asciidoc || {}).xreftext) || `${pageIdSpec}.adoc`
     }
   }
-  return { content, target, internal }
+  return { content, target }
 }
 
 module.exports = convertPageRef

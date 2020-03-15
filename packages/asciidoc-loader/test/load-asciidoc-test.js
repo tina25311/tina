@@ -2578,7 +2578,7 @@ describe('loadAsciiDoc()', () => {
       const contentCatalog = mockContentCatalog({
         family: 'page',
         relative: 'this-page.adoc',
-        contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
+        contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]\n\n[#the-fragment]\n== Target Section',
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
@@ -2590,6 +2590,24 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
       })
       expectLink(html, '#the-fragment', 'Deep Link to Self')
+    })
+
+    it('should convert a deep page reference to self with implicit content', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'page',
+        relative: 'this-page.adoc',
+        contents: 'xref:module-a:this-page.adoc#the-fragment[]\n\n[#the-fragment]\n== Target Section',
+      }).spyOn('getById')
+      inputFile = contentCatalog.getAll()[0]
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expectCalledWith(contentCatalog.getById, {
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'page',
+        relative: 'this-page.adoc',
+      })
+      expectLink(html, '#the-fragment', 'Target Section')
     })
 
     it('should convert a deep page reference to self that matches docname', () => {
