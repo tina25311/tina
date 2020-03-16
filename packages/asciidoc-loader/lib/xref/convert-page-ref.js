@@ -31,23 +31,24 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
     hash = refSpec.substr(hashIdx)
     pageIdSpec = refSpec.substr(0, hashIdx)
   }
+  let target
   let targetPage
   try {
     if (!((targetPage = contentCatalog.resolvePage(pageIdSpec, currentPage.src)) && targetPage.pub)) {
       // TODO log "Unresolved page ID"
-      return { content, target: `#${pageIdSpec}.adoc${hash}`, unresolved: true }
+      target = `#${pageIdSpec}.adoc${hash}`
+      return { content: content || target.substr(1), target, unresolved: true }
     }
   } catch (e) {
     // TODO log "Invalid page ID syntax" (or e.message)
-    return { content, target: `#${refSpec}`, unresolved: true }
+    target = `#${refSpec}`
+    return { content: content || target.substr(1), target, unresolved: true }
   }
-  let targetUrl
-  let internal
   if (relativize) {
-    targetUrl = computeRelativeUrlPath(currentPage.pub.url, targetPage.pub.url, hash)
-    if (targetUrl === hash) internal = true
+    target = computeRelativeUrlPath(currentPage.pub.url, targetPage.pub.url, hash)
+    if (target === hash) return { content, target, internal: true }
   } else {
-    targetUrl = targetPage.pub.url + hash
+    target = targetPage.pub.url + hash
   }
   if (!content) {
     if (hash) {
@@ -59,7 +60,7 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
           : (targetPage.asciidoc || {}).xreftext) || `${pageIdSpec}.adoc`
     }
   }
-  return { content, target: targetUrl, internal }
+  return { content, target }
 }
 
 module.exports = convertPageRef

@@ -24,18 +24,17 @@ const Html5Converter = (() => {
         const attrs = node.getAttributes()
         if (attrs.fragment === Opal.nil) delete attrs.fragment
         const { content, target, internal, unresolved } = callback(attrs.refid, node.getText())
-        let options
+        let type
         if (internal) {
-          // QUESTION should we propagate the role in this case?
-          options = Opal.hash2(['type', 'target'], { type: 'link', target })
+          type = 'xref'
+          delete attrs.path
+          attrs.refid = target.substr(1)
         } else {
+          type = 'link'
           attrs.role = `page${unresolved ? ' unresolved' : ''}${attrs.role ? ' ' + attrs.role : ''}`
-          options = Opal.hash2(['type', 'target', 'attrs'], {
-            type: 'link',
-            target,
-            attributes: Opal.hash2(Object.keys(attrs), attrs),
-          })
         }
+        const attributes = Opal.hash2(Object.keys(attrs), attrs)
+        const options = Opal.hash2(['type', 'target', 'attrs'], { type, target, attributes })
         node = Opal.module(null, 'Asciidoctor').Inline.$new(node.getParent(), 'anchor', content, options)
       }
     }
