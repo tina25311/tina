@@ -1,0 +1,16 @@
+= Register a Component Version's Navigation Files
+
+[#nav-key]
+== nav key
+
+The `nav` key accepts a list of xref:navigation:filenames-and-locations.adoc[navigation files].
+
+```yaml
+nav:
+- modules/ROOT/nav.adoc
+- modules/module-three/nav.adoc
+- modules/module-one/install-nav.adoc
+```
+
+Each xref:navigation:register-navigation-files.adoc[value specifies the path to a navigation file] (e.g., [.path]_modules/name-of-module/name-of-nav-file.adoc_).
+The order the values are listed in dictates the order the contents of the navigation files are assembled in the site's xref:navigation:index.adoc#component-menu[component menu].
