@@ -1,0 +1,44 @@
+= What's antora.yml?
+:page-aliases: component-descriptor.adoc
+//When Antora receives instructions from a playbook to scan a content source repository, its first objective is to find a xref:component-version-descriptor.adoc[component version descriptor file named _antora.yml_] in that repository.
+//This file marks the subsequent directories and files as part of a xref:component-version.adoc[component version] and classifies the files according to the component name, component version, and other stable metadata it provides.
+
+== antora.yml
+
+[.path]_antora.yml_ is a YAML file that has two crucial functions:
+
+. [.path]_antora.yml_ marks the system location of a set of directories and source files that belong to a component version.
+. [.path]_antora.yml_ provides required and optional component version metadata, that Antora assigns to the source files it collects from the system location marked by that [.path]_antora.yml_ file.
+
+[#component-version-marker]
+== How does antora.yml mark the location of a component version's source files?
+
+A xref:playbook:index.adoc[playbook] tells Antora what xref:playbook:configure-content-sources.adoc[remote repositories and local content sources] it should fetch and use.
+Then Antora searches those content sources for [.path]_antora.yml_ files.
+Once Antora finds an [.path]_antora.yml_ file, it considers all of the xref:component-structure.adoc[subsequent directories and files] to be part of that xref:component-version.adoc[component version].
+
+This ability to store the source files of component version anywhere in a directory hierarchy as long as the parent directory contains an [.path]_antora.yml_ file, allows you to maintain and manage a component version (or part of a component version) in a repository with the software it documents, a sample project, or in its own repository.
+
+[#component-version-configuration]
+== What component version information does antora.yml provide?
+
+[.path]_antora.yml_ is often referred to as the [.term]*component version descriptor* file because it provides required and optional information that identifies, describes, and configures a xref:component-version.adoc[component version].
+In turn, this metadata and configuration is applied to all of the source files that belong to the component version.
+This assignment of component version information decouples the source files from the repository, branch, tag, and directory where they're stored.
+Antora doesn't process files based on their file system or repository location.
+Instead, Antora classifies and converts files based on the information assigned to the source files by a component version descriptor file.
+This is why Antora can collect files from multiple repositories, directories, branches, and tags and compile them into one component version.
+
+An [.path]_antora.yml_ file can contain the following keys and their assigned values:
+
+* `name` key (required)
+* `version` key (required)
+* `title` key
+* `display_version` key
+* `prerelease` key
+* `start_page` key
+* `asciidoc` and `attributes` keys
+* `nav` key
+
+//The `name` and `version` keys in the component version's [.path]_antora.yml_ file are also used for constructing its page IDs and resource IDs.
+//Finally, the component descriptor identifies and orders the files Antora uses to build the component version's navigation.

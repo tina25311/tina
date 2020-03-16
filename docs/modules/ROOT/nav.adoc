@@ -11,15 +11,27 @@
 ** xref:install:upgrade-antora.adoc[Upgrade Antora]
 ** xref:install:supported-platforms.adoc[Supported Platforms]
 
+* Project & File Setup
+** xref:component-structure.adoc[Documentation Components and Repositories]
+** xref:modules.adoc[Modules, Families, and Subdirectories]
+** xref:component-versions.adoc[Component Versions and Branches]
+
+* Configure Component Versions
+** xref:component-version.adoc[What's a Component Version?]
+** xref:component-version-descriptor.adoc[What's antora.yml?]
+** How are Component Versions Sorted?
+** xref:component-name-and-version.adoc[Define a Component Version with antora.yml]
+** xref:component-title.adoc[Customize the Title]
+** xref:component-display-version.adoc[Customize the Display Version]
+** xref:component-prerelease.adoc[Label a Prerelease Version]
+** xref:component-attributes.adoc[Assign Attributes to a Component Version]
+** xref:component-start-page.adoc[Select a Start Page]
+** xref:component-navigation.adoc[Register a Component Version's Navigation Files]
+** xref:environment-and-page-attributes.adoc[Built-in Page and Environment Attribute Reference]
+
 * xref:run-antora.adoc[Run Antora]
 ** xref:run-antora.adoc#cache[About the Cache]
 ** xref:run-antora.adoc#local-site-preview[Local Preview]
 ** xref:run-antora.adoc#publish-to-github-pages[Publish to GitHub Pages]
 ** xref:antora-container.adoc[Run Antora in a Container]
 ** xref:cli:index.adoc[CLI Reference]
-
-* File Organization
-** xref:component-structure.adoc[Documentation Components and Repositories]
-** xref:modules.adoc[Modules, Families, and Subdirectories]
-** xref:component-descriptor.adoc[Component Descriptor: antora.yml]
-** xref:component-versions.adoc[Component Versions and Branches]
