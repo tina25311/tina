@@ -99,8 +99,7 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
   }
 
   if (navigationCatalog) {
-    const navigation = (model.navigation = navigationCatalog.getNavigation(componentName, version) || [])
-    Object.assign(model, getNavContext(url, title, navigation))
+    attachNavProperties(model, url, title, navigationCatalog.getNavigation(componentName, version))
   }
 
   if (versions) {
@@ -133,22 +132,36 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
   return model
 }
 
-function getNavContext (url, title, navigation) {
-  const navContext = { breadcrumbs: [] }
+// QUESTION should this function go in ContentCatalog?
+// QUESTION should this function accept component, module, relative instead of pageSrc?
+function getPageVersions (pageSrc, component, contentCatalog) {
+  const basePageId = { component: component.name, module: pageSrc.module, family: 'page', relative: pageSrc.relative }
+  return component.versions.map((componentVersion) => {
+    const page = contentCatalog.getById(Object.assign({ version: componentVersion.version }, basePageId))
+    // QUESTION should title be title of component or page?
+    return Object.assign(
+      componentVersion === component.latest ? { latest: true } : {},
+      componentVersion,
+      page ? { url: page.pub.url } : { missing: true }
+    )
+  })
+}
+
+function attachNavProperties (model, url, title, navigation = []) {
+  if (!(model.navigation = navigation).length) return
   const { current, ancestors, previous, next } = findNavItem({ url, ancestors: [], seekNext: true }, navigation)
   if (current) {
     // QUESTION should we filter out component start page from the breadcrumbs?
     const breadcrumbs = ancestors.filter((item) => 'content' in item)
     const parent = breadcrumbs.find((item) => item.urlType === 'internal')
     breadcrumbs.reverse().push(current)
-    navContext.breadcrumbs = breadcrumbs
-    if (parent) navContext.parent = parent
-    if (previous) navContext.previous = previous
-    if (next) navContext.next = next
+    model.breadcrumbs = breadcrumbs
+    if (parent) model.parent = parent
+    if (previous) model.previous = previous
+    if (next) model.next = next
   } else if (title) {
-    navContext.breadcrumbs = [{ content: title, url, urlType: 'internal', discrete: true }]
+    model.breadcrumbs = [{ content: title, url, urlType: 'internal', discrete: true }]
   }
-  return navContext
 }
 
 function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candidate = undefined) {
@@ -193,21 +206,6 @@ function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candida
 
 function getUrlWithoutHash (item) {
   return item.hash ? item.url.substr(0, item.url.length - item.hash.length) : item.url
-}
-
-// QUESTION should this function go in ContentCatalog?
-// QUESTION should this function accept component, module, relative instead of pageSrc?
-function getPageVersions (pageSrc, component, contentCatalog) {
-  const basePageId = { component: component.name, module: pageSrc.module, family: 'page', relative: pageSrc.relative }
-  return component.versions.map((componentVersion) => {
-    const page = contentCatalog.getById(Object.assign({ version: componentVersion.version }, basePageId))
-    // QUESTION should title be title of component or page?
-    return Object.assign(
-      componentVersion === component.latest ? { latest: true } : {},
-      componentVersion,
-      page ? { url: page.pub.url } : { missing: true }
-    )
-  })
 }
 
 module.exports = { buildSiteUiModel, buildPageUiModel, buildUiModel }
