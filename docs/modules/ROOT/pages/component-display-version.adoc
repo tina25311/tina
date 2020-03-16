@@ -1,0 +1,63 @@
+= Customize the Display Version
+
+The `display_version` key is strictly used for presentation purposes in the reference UI when a component version's official version contains uppercase letters, symbols, or blank spaces.
+It doesn't affect page and resource IDs, the version segment in the page URL, or how component versions are sorted.
+
+[#display-version-key]
+== display_version key
+
+The `display_version` key is optional.
+It's set in a component version's [.path]_antora.yml_ file and used by the reference UI where ever the version is displayed, including the xref:navigation:index.adoc#component-menu[component navigation menu], xref:navigation:index.adoc#component-dropdown[component version selector], and xref:navigation:index.adoc#page-dropdown[page version selector].
+
+If `display_version` isn't set, the reference UI falls back to xref:component-name-and-version.adoc#version-key[the version key].
+Unlike `version`, the value of `display_version` can contain empty spaces, uppercase letters, and most characters (e.g., `3.0 Beta`, `RED WREN!`, `rawhide`).
+
+.antora.yml
+[source,yaml]
+----
+name: colorado
+title: Colorado ∆
+version: '5.6'
+display_version: '5.6 (EOL)' # <1>
+----
+<1> If the value starts with a number, enclose it within a set of single quote marks (`'`).
+
+The `display_version` key should be used when a version contains spaces or characters that break Antora's page and resource IDs, prevent portability between web servers, and aren't recommended in URLs.
+It's also useful when the component version is a prerelease or is archived since the value of `display_version` doesn't affect page URLs or internal IDs.
+
+Prerelease versions (e.g., alpha, beta, etc.) can also be configured with xref:component-prerelease.adoc[the prerelease key].
+The `prerelease` key provides additional UI presentation and sorting capabilities.
+//The `display_version` key overrides the label assigned to the `prerelease` key when both keys are set in the component version's [.path]_antora.yml_ file.
+
+[#assign-display-version]
+== Assign a display_version to a component version
+
+Let's expand on the [.path]_antora.yml_ example where you previously learned xref:component-name-and-version.adoc#assign-name-and-version[how to assign a component name and version].
+The _Silver Leaf_ project team wants the version code name in addition to its version number to be displayed in the UI.
+Since `version` can't contain blank spaces, let's set `display_version` in the component version's [.path]_antora.yml_ file.
+
+. Open the component version's [.path]_antora.yml_ file in the text editor or IDE of your choice.
++
+.antora.yml for the component version silver-leaf 7.1
+[source,yaml]
+----
+name: silver-leaf
+title: Silver Leaf
+version: '7.1'
+----
+
+. On a blank line, type `display_version`, directly followed by a colon (`:`).
+. Insert a blank space after the colon, and then type the value you want to assign to `display_version`.
+Since the value begins with a number, enclose it in a set of single quote marks (`'`).
++
+[source,yaml]
+----
+name: silver-leaf
+title: Silver Leaf
+version: '7.1'
+display_version: '7.1 Spiny'
+----
+
+. Save the file.
+
+Now, the UI will display _7.1 Spiny_ in the component navigation menu, component version selector, and page version selector.
