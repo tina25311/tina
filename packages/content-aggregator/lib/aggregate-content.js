@@ -128,30 +128,17 @@ function buildAggregate (componentVersionBuckets) {
 }
 
 async function loadRepository (url, opts) {
-  let displayUrl
-  let credentials
-  let credentialManager
   let dir
   let repo
   let authStatus
-
   if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
+    let displayUrl
+    let credentials
     ;({ displayUrl, url, credentials } = extractCredentials(url))
     dir = ospath.join(opts.cacheDir, generateCloneFolderName(displayUrl))
-    // NOTE if url is set on repo, we assume it's remote
+    // NOTE the presence of the url property on the repo object implies the repository is remote
     repo = { core: GIT_CORE, dir, gitdir: dir, url, noGitSuffix: !opts.ensureGitSuffix, noCheckout: true }
-    credentialManager = opts.credentialManager
-  } else if (await isLocalDirectory((dir = expandPath(url, '~+', opts.startDir)))) {
-    repo = (await isLocalDirectory(ospath.join(dir, '.git')))
-      ? { core: GIT_CORE, dir }
-      : { core: GIT_CORE, dir, gitdir: dir, noCheckout: true }
-  } else {
-    throw new Error(`Local content source does not exist: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`)
-  }
-
-  // QUESTION should we capture the current branch in repo object here?
-
-  if (repo.url) {
+    const credentialManager = opts.credentialManager
     const validStateFile = ospath.join(repo.gitdir, VALID_STATE_FILENAME)
     try {
       await fs.access(validStateFile)
@@ -172,7 +159,7 @@ async function loadRepository (url, opts) {
           .then(() => fs.createFile(validStateFile).catch(invariably.void))
           .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
       } else {
-        // use cached value from previous fetch
+        // NOTE use cached value from previous fetch
         authStatus = await git.config(Object.assign({ path: 'remote.origin.private' }, repo))
       }
     } catch (gitErr) {
@@ -195,12 +182,17 @@ async function loadRepository (url, opts) {
         .then(() => fs.createFile(validStateFile).catch(invariably.void))
         .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
     }
-  } else {
+  } else if (await isLocalDirectory((dir = expandPath(url, '~+', opts.startDir)))) {
+    repo = (await isLocalDirectory(ospath.join(dir, '.git')))
+      ? { core: GIT_CORE, dir }
+      : { core: GIT_CORE, dir, gitdir: dir, noCheckout: true }
     await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)).catch(() => {
       throw new Error(
         `Local content source must be a git repository: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`
       )
     })
+  } else {
+    throw new Error(`Local content source does not exist: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`)
   }
   return { repo, authStatus }
 }
