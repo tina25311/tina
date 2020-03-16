@@ -1,0 +1,21 @@
+= Select a Start Page
+
+[#start-page-key]
+== start_page key
+
+By default, Antora looks for a file named [.path]_index.adoc_ in the ROOT module of a component version.
+It uses this page as the component version's start page (e.g., _\https://example.org/component-name/version/index.html_).
+If there isn't an [.path]_index.adoc_ file in the ROOT module, you must specify a file as the start page in the component descriptor.
+
+```yaml
+start_page: getting-started:overview.adoc
+```
+
+The `start_page` key accepts a xref:page:page-id.adoc[page ID] that points to a page in the component version.
+
+.*Start page value examples*
+* security:get-started.adoc
+* ROOT:welcome.adoc
+* org-governance:help.adoc
+
+If Antora can't find [.path]_index.adoc_ in a component version's ROOT module and a start page isn't specified in its component version descriptor, site visitors are directed to a 404 page when navigating to that component version from the xref:navigation:index.adoc#component-dropdown[component version selector] on any page.
