@@ -1,14 +1,14 @@
-= Site-Scoped Attributes
+= Assign Attributes to a Site
 
-Built-in AsciiDoc attributes, user-defined AsciiDoc attributes, and `page-` attributes can be declared in a site's playbook file.
+Built-in and user-defined AsciiDoc attributes as well as `page-` attributes can be declared in a site's playbook file.
 These attributes are applied to all of a site's pages according to the attribute precedence rules.
-Attributes declared in the playbook are referred to as [.term]*site-scoped attributes*.
+Attributes declared in the playbook are referred to as [.term]*site attributes*.
 
 == Set and unset attributes in the playbook
 
-Each site-scoped attribute is entered on its own line under the playbook's `asciidoc` and `attributes` category keys.
+Each site attribute is entered on its own line under the playbook's `asciidoc` and `attributes` category keys.
 
-.Declaring site-scoped attributes in the playbook
+.Declaring site attributes in the playbook
 [source,yaml]
 ----
 site:
@@ -29,7 +29,7 @@ asciidoc: # <1>
 <1> Enter the `asciidoc` key, followed by a colon (`:`), and press kbd:[Enter].
 <2> The `attributes` key is nested under the `asciidoc` key.
 Enter `attributes`, followed by a colon (`:`), and press kbd:[Enter].
-<3> Site-scoped attributes are nested under the `attributes` key.
+<3> Site attributes are nested under the `attributes` key.
 Enter the name of the attribute, followed by a colon (`:`).
 Press kbd:[space] once after the colon, then enter the value of the attribute.
 <4> The tilde symbol (`~`) hard unsets this attribute.
@@ -40,19 +40,19 @@ Press kbd:[space] once after the colon, then enter the value of the attribute.
 <7> This user-defined attribute is hard set.
 See the <<assign-precedence,next section>> to learn more about hard and soft setting rules.
 
-Site-scoped attributes are applied and available to every page in your site.
+Site attributes are applied and available to every page in your site.
 The values of user-defined attributes, such as `page-team` and `db` can be displayed in a page using the attribute reference syntax (e.g., `+{db}+`).
 
-include::partial$dont-use-these-attributes.adoc[]
+include::ROOT:partial$dont-use-these-attributes.adoc[]
 
 [#assign-precedence]
-== Assign precedence to site-scoped attributes
+== Assign precedence to site attributes
 
-You can control whether a site-scoped attribute can be overridden from a component descriptor file or a page.
-Site-scoped attributes that are hard set and hard unset can't be changed by a component descriptor file or a page.
-However, soft set and unset site-scoped attributes can be overridden from the component descriptor or page.
+You can control whether a site attribute can be overridden from a component version descriptor file or a page.
+Site attributes that are hard set and hard unset can't be changed by a component version descriptor file or a page.
+However, soft set and unset site attributes can be overridden from the component version descriptor or page.
 
-The following example shows how site-scoped attributes are assigned hard and soft precedence.
+The following example shows how site attributes are assigned hard and soft precedence.
 
 .Assigning hard and soft precedence to attributes in the playbook
 [source,yaml]
@@ -65,23 +65,23 @@ asciidoc:
     table-caption: false # <4>
 ----
 <1> To hard set an attribute, simply enter its value.
-Hard set site-scoped attributes can't be reassigned or unset by a component descriptor or page.
+Hard set site attributes can't be reassigned or unset by a component version descriptor or page.
 <2> To soft set an attribute, attach the `@` modifier to the end of its value.
-A component descriptor or page can override soft set site-scoped attributes.
+A component version descriptor or page can override soft set site attributes.
 <3> To hard unset an attribute, assign it the tilde symbol (`~`).
-Hard unset site-scoped attributes can't be set by a component descriptor or page.
+Hard unset site attributes can't be set by a component version descriptor or page.
 <4> To soft unset an attribute, assign the value `false`.
-A component descriptor or page can override soft unset site-scoped attributes.
+A component version descriptor or page can override soft unset site attributes.
 
 include::partial$playbook-vs-descriptor.adoc[]
 
 Antora takes the precedence assigned to attributes in the site's playbook into account first.
-*Only soft set and soft unset site-scoped attributes can be overridden*.
+*Only soft set and soft unset site attributes can be overridden*.
 
-.*Site-scoped attribute precedence rules*
-. Hard setting a site-scoped attribute to a string value with no trailing `@` modifier (e.g., `value`) prevents a component descriptor or page from changing (setting or unsetting) the attribute.
-. Soft setting a site-scoped attribute to a string value with a trailing `@` modifier (e.g., `value@`) allows a component descriptor or page to change (set or unset) the attribute.
-. Hard unsetting a site-scoped attribute using the tilde symbol (`~`) prevents  component descriptor or page from setting the attribute.
-. Soft unsetting a site-scoped attribute using the `false` value allows a component descriptor or page to set the attribute.
+.*Site attribute precedence rules*
+. Hard setting a site attribute to a string value with no trailing `@` modifier (e.g., `value`) prevents a component version descriptor or page from changing (setting or unsetting) the attribute.
+. Soft setting a site attribute to a string value with a trailing `@` modifier (e.g., `value@`) allows a component version descriptor or page to change (set or unset) the attribute.
+. Hard unsetting a site attribute using the tilde symbol (`~`) prevents  component version descriptor or page from setting the attribute.
+. Soft unsetting a site attribute using the `false` value allows a component version descriptor or page to set the attribute.
 
-To learn more about how site-scoped and component-scoped attributes interact, see xref:component-scoped-attributes.adoc[Component-scoped attributes].
+To learn more about how site and component version attributes interact, see xref:ROOT:component-attributes.adoc[Assign attributes to a component version].
