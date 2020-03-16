@@ -944,7 +944,7 @@ describe('ContentCatalog', () => {
       })
     })
 
-    it('should register alias if component does not exist and version is not specified', () => {
+    it('should register alias in master version if component does not exist and version is not specified', () => {
       contentCatalog.addFile(new File({ src: targetPageSrc }))
       const targetPage = contentCatalog.getById(targetPageSrc)
       const result = contentCatalog.registerPageAlias('unknown-component::alias.adoc', targetPage)

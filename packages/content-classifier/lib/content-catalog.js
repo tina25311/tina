@@ -209,7 +209,7 @@ class ContentCatalog {
         throw new Error(message + ': ' + qualifiedSpec)
       }
     } else if (!src.version) {
-      // QUESTION is this correct to assume?
+      // QUESTION should we skip registering alias in this case?
       src.version = 'master'
     }
     expandPageSrc(src, 'alias')
