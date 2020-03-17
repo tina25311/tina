@@ -87,20 +87,19 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   return doc
 }
 
-function computePageAttrs (fileSrc, contentCatalog) {
+// QUESTION should we soft set the page-id attribute?
+function computePageAttrs ({ component: componentName, version, module, relative, origin }, contentCatalog) {
   const attrs = {}
-  // QUESTION should we soft set the page-id attribute?
-  attrs['page-component-name'] = fileSrc.component
-  const component = contentCatalog && contentCatalog.getComponent(fileSrc.component)
-  const version = (attrs['page-component-version'] = attrs['page-version'] = fileSrc.version)
+  attrs['page-component-name'] = componentName
+  attrs['page-component-version'] = attrs['page-version'] = version
+  const component = contentCatalog && contentCatalog.getComponent(componentName)
   if (component) {
     const componentVersion = component.versions.find((it) => it.version === version)
     if (componentVersion) attrs['page-component-display-version'] = componentVersion.displayVersion
     attrs['page-component-title'] = component.title
   }
-  attrs['page-module'] = fileSrc.module
-  attrs['page-relative'] = attrs['page-src-path'] = fileSrc.relative
-  const origin = fileSrc.origin
+  attrs['page-module'] = module
+  attrs['page-relative'] = attrs['page-src-path'] = relative
   if (origin) {
     attrs['page-origin-type'] = origin.type
     attrs['page-origin-url'] = origin.url
