@@ -361,7 +361,10 @@ describe('generateSite()', function () {
     const remoteGitUrl = 'git@gitlab.com:org/docs-repo.git'
     const remoteWebUrl = 'https://gitlab.com/org/docs-repo'
     const refname = 'v2.0'
-    await repoBuilder.open().then(() => repoBuilder.config('remote.origin.url', remoteGitUrl))
+    await repoBuilder
+      .open()
+      .then(() => repoBuilder.config('remote.origin.url', remoteGitUrl))
+      .then(() => repoBuilder.close())
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
@@ -396,7 +399,10 @@ describe('generateSite()', function () {
   }).timeout(timeoutOverride)
 
   it('should add edit page link to toolbar that links to local file if page.fileUri is set in UI model', async () => {
-    await repoBuilder.open().then(() => repoBuilder.checkoutBranch('v2.0'))
+    await repoBuilder
+      .open()
+      .then(() => repoBuilder.checkoutBranch('v2.0'))
+      .then(() => repoBuilder.close())
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
     expect(env).not.to.have.property('CI')
     await generateSite(['--playbook', playbookFile], env)
