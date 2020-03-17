@@ -210,6 +210,10 @@ class RepositoryBuilder {
     return git.listFiles({ ...this.repository, ref }).then((files) => files.find((candidate) => candidate === filepath))
   }
 
+  async resolveRef (ref = 'HEAD') {
+    return git.resolveRef({ ...this.repository, ref })
+  }
+
   async close (branchName = undefined) {
     if (branchName) await git.checkout({ ...this.repository, ref: branchName })
     this.repository = undefined

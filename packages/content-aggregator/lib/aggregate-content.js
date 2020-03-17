@@ -320,8 +320,12 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
   const displayUrl = url || repo.dir
   const originUrl = url || (await resolveRemoteUrl(repo, remoteName))
   const editUrl = source.editUrl
-  // Q: should worktreePath be passed in to this function?
-  const worktreePath = ref.isHead && !(url || repo.noCheckout) ? repo.dir : undefined
+  let worktreePath
+  if (ref.isHead && !(url || repo.noCheckout)) {
+    worktreePath = repo.dir
+  } else {
+    ref.oid = await git.resolveRef(Object.assign({ ref: ref.qname }, repo))
+  }
   if ('startPaths' in source) {
     let startPaths
     startPaths = Array.isArray((startPaths = source.startPaths))
@@ -329,9 +333,7 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
       : (startPaths = coerceToString(startPaths)) && startPaths.split(VENTILATED_CSV_RX).map(cleanStartPath)
     startPaths = await (worktreePath
       ? resolvePathGlobsFs(worktreePath, startPaths)
-      : git
-        .resolveRef(Object.assign({ ref: ref.qname }, repo))
-        .then((oid) => resolvePathGlobsGit(repo, oid, startPaths)))
+      : resolvePathGlobsGit(repo, ref.oid, startPaths))
     if (!startPaths.length) {
       throw new Error(`no start paths found in ${displayUrl} (ref: ${ref.qname}${worktreePath ? ' <worktree>' : ''})`)
     }
@@ -340,16 +342,15 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
         collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl)
       )
     )
-  } else {
-    const startPath = cleanStartPath(coerceToString(source.startPath))
-    return collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl)
   }
+  const startPath = cleanStartPath(coerceToString(source.startPath))
+  return collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl)
 }
 
 function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl) {
   return (worktreePath
     ? readFilesFromWorktree(worktreePath, startPath)
-    : readFilesFromGitTree(repo, ref.qname, startPath)
+    : readFilesFromGitTree(repo, ref.oid, startPath)
   )
     .then((files) => {
       const componentVersion = loadComponentDescriptor(files)
@@ -415,22 +416,20 @@ function collectFiles (done) {
   return map((file, enc, next) => accum.push(file) && next(), () => done(accum)) // prettier-ignore
 }
 
-function readFilesFromGitTree (repo, ref, startPath) {
-  return getGitTree(repo, ref, startPath).then((tree) => srcGitTree(repo, tree))
+function readFilesFromGitTree (repo, oid, startPath) {
+  return getGitTree(repo, oid, startPath).then((tree) => srcGitTree(repo, tree))
 }
 
-function getGitTree (repo, ref, startPath) {
-  return git.resolveRef(Object.assign({ ref }, repo)).then((oid) =>
-    git
-      .readObject(Object.assign({ oid, filepath: startPath }, repo))
-      .catch(() => {
-        throw new Error(`the start path '${startPath}' does not exist`)
-      })
-      .then(({ type, object }) => {
-        if (type !== 'tree') throw new Error(`the start path '${startPath}' is not a directory`)
-        return object
-      })
-  )
+function getGitTree (repo, oid, startPath) {
+  return git
+    .readObject(Object.assign({ oid, filepath: startPath }, repo))
+    .catch(() => {
+      throw new Error(`the start path '${startPath}' does not exist`)
+    })
+    .then(({ type, object }) => {
+      if (type !== 'tree') throw new Error(`the start path '${startPath}' is not a directory`)
+      return object
+    })
 }
 
 function srcGitTree (repo, tree) {
@@ -530,6 +529,8 @@ function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefine
       'file://' + (posixify ? '/' + posixify(worktreePath) : worktreePath) + path.join('/', startPath, '%s')
     // Q: should we set worktreePath instead (or additionally?)
     origin.worktree = true
+  } else {
+    origin.refhash = ref.oid
   }
   if (editUrl === true) {
     let match

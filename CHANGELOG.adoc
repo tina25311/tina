@@ -9,10 +9,12 @@ This project utilizes semantic versioning.
 
 === Added
 
+* *content-aggregator*: Assign the resolved SHA-1 commit hash for the content source ref (branch or tag) to the `src.origin.refhash` property on the virtual file unless file is taken from worktree (#578)
 * *content-classifier*: If `ContentCatalog#resolvePage` cannot locate page, look for alias and dereference if found (#586)
 * *content-classifier*: Add `getComponentVersion` method to exported API
 * *asciidoc-loader*: Allow target of xref to be a page alias (#586)
 * *asciidoc-loader*: Assign value of family-relative path of page to page-src-path attribute on document (#568)
+* *asciidoc-loader*: Assign the resolved SHA-1 commit hash for the content source ref (branch or tag) to the `page-origin-refhash` page attribute unless page is taken from worktree (#578)
 * *asciidoc-loader*: Add function for extracting metadata from the AsciiDoc header (#310)
 * *asciidoc-loader*: Use automatic reference text (i.e., xreftext) if contents of page xref is empty (#310)
 * *asciidoc-loader*: Use target as fallback content for unresolved or invalid xref (#594)
