@@ -43,11 +43,9 @@ const EXTENSION_DSL_TYPES = Extensions.$constants(false).filter((name) => name.e
  * @returns {Document} An Asciidoctor Document object created from the source of the specified file.
  */
 function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
-  const fileSrc = file.src
-  const relative = fileSrc.relative
-  const extname = fileSrc.extname || path.extname(relative)
+  const { family, relative, extname = path.extname(relative) } = file.src
   const intrinsicAttrs = {
-    docname: (fileSrc.family === 'nav' ? 'nav$' : '') + relative.substr(0, relative.length - extname.length),
+    docname: (family === 'nav' ? 'nav$' : '') + relative.substr(0, relative.length - extname.length),
     docfile: file.path,
     // NOTE docdir implicitly sets base_dir on document; Opal only expands value to absolute path if it starts with ./
     docdir: file.dirname,
@@ -57,8 +55,8 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
     examplesdir: EXAMPLES_DIR_TOKEN,
     partialsdir: PARTIALS_DIR_TOKEN,
   }
-  const attributes = fileSrc.family === 'page' ? { 'page-partial': '@' } : {}
-  Object.assign(attributes, config.attributes, intrinsicAttrs, computePageAttrs(fileSrc, contentCatalog))
+  const attributes = family === 'page' ? { 'page-partial': '@' } : {}
+  Object.assign(attributes, config.attributes, intrinsicAttrs, computePageAttrs(file.src, contentCatalog))
   const extensionRegistry = createExtensionRegistry(asciidoctor, {
     onInclude: (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog),
   })
