@@ -2123,7 +2123,7 @@ describe('aggregateContent()', function () {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
-              const origin = computeOrigin(url, false, name, type, '')
+              const origin = computeOrigin(url, false, { name, type }, '')
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(name)
               if (hostname === 'github.com') {
@@ -2151,7 +2151,7 @@ describe('aggregateContent()', function () {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
-              const origin = computeOrigin(url, false, name, type, '')
+              const origin = computeOrigin(url, false, { name, type }, '')
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(name)
               if (hostname === 'gitlab.com') {
@@ -2178,7 +2178,7 @@ describe('aggregateContent()', function () {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
-              const origin = computeOrigin(url, false, name, type, '')
+              const origin = computeOrigin(url, false, { name, type }, '')
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(name)
               if (hostname === 'bitbucket.org') {
@@ -2205,7 +2205,7 @@ describe('aggregateContent()', function () {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
-              const origin = computeOrigin(url, false, name, type, '')
+              const origin = computeOrigin(url, false, { name, type }, '')
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(name)
               if (hostname === 'pagure.io') {
@@ -2226,7 +2226,7 @@ describe('aggregateContent()', function () {
         const expectedfileUriPattern = posixify
           ? 'file:///' + posixify(worktreePath) + '/%s'
           : 'file://' + worktreePath + '/%s'
-        const origin = computeOrigin(url, false, branch, 'branch', '', worktreePath)
+        const origin = computeOrigin(url, false, { name: branch, type: 'branch' }, '', worktreePath)
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
         expect(origin.fileUriPattern).to.equal(expectedfileUriPattern)
@@ -2235,7 +2235,7 @@ describe('aggregateContent()', function () {
 
       it('should set correct origin data if URL requires auth', () => {
         const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
-        const origin = computeOrigin(url, 'auth-required', 'master', 'branch', '')
+        const origin = computeOrigin(url, 'auth-required', { name: 'master', type: 'branch' }, '')
         expect(origin.private).to.equal('auth-required')
       })
 

@@ -347,19 +347,18 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
 }
 
 function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl) {
-  const { name: refnameShort, qname: refname, type: reftype } = ref
   return (worktreePath
     ? readFilesFromWorktree(worktreePath, startPath)
-    : readFilesFromGitTree(repo, refname, startPath)
+    : readFilesFromGitTree(repo, ref.qname, startPath)
   )
     .then((files) => {
       const componentVersion = loadComponentDescriptor(files)
-      const origin = computeOrigin(originUrl, authStatus, refnameShort, reftype, startPath, worktreePath, editUrl)
+      const origin = computeOrigin(originUrl, authStatus, ref, startPath, worktreePath, editUrl)
       componentVersion.files = files.map((file) => assignFileProperties(file, origin))
       return componentVersion
     })
     .catch((err) => {
-      const refInfo = `ref: ${refname}${worktreePath ? ' <worktree>' : ''}`
+      const refInfo = `ref: ${ref.qname}${worktreePath ? ' <worktree>' : ''}`
       const pathInfo = !startPath || err.message.startsWith('the start path ') ? '' : ' | path: ' + startPath
       err.message += ` in ${repo.url || repo.dir} (${refInfo}${pathInfo})`
       throw err
@@ -520,7 +519,8 @@ function loadComponentDescriptor (files) {
   return camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
 }
 
-function computeOrigin (url, authStatus, refname, reftype, startPath, worktreePath = undefined, editUrl = true) {
+function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefined, editUrl = true) {
+  const { name: refname, type: reftype } = ref
   const origin = { type: 'git', startPath }
   if (url) origin.url = url
   if (authStatus) origin.private = authStatus
