@@ -234,7 +234,7 @@ async function selectReferences (source, repo, remote) {
       : String(tagPatterns).split(CSV_RX)
     if (tagPatterns.length) {
       const tags = await git.listTags(repo)
-      for (const name of matcher(tags, tagPatterns)) {
+      for (const name of tags.length ? matcher(tags, tagPatterns) : tags) {
         // NOTE tags are stored using symbol keys to distinguish them from branches
         refs.set(Symbol(name), { name, qname: 'tags/' + name, type: 'tag' })
       }
@@ -278,7 +278,7 @@ async function selectReferences (source, repo, remote) {
       // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
       const headIdx = remoteBranches.indexOf('HEAD')
       if (~headIdx) remoteBranches.splice(headIdx, 1)
-      for (const name of matcher(remoteBranches, branchPatterns)) {
+      for (const name of remoteBranches.length ? matcher(remoteBranches, branchPatterns) : remoteBranches) {
         refs.set(name, { name, qname: path.join('remotes', remote, name), type: 'branch', remote })
       }
     }
@@ -294,7 +294,7 @@ async function selectReferences (source, repo, remote) {
     } else if (!remoteBranches.length) {
       // QUESTION should local branches be used if only remote branch is HEAD?
       const localBranches = await git.listBranches(repo)
-      for (const name of matcher(localBranches, branchPatterns)) {
+      for (const name of localBranches.length ? matcher(localBranches, branchPatterns) : localBranches) {
         refs.set(name, { name, qname: name, type: 'branch' })
       }
     }
