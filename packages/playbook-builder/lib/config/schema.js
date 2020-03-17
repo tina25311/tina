@@ -32,21 +32,6 @@ module.exports = {
       format: String,
       default: undefined,
     },
-    //root: {
-    //  doc: 'The name of the component to use as the root of the site.',
-    //  format: String,
-    //  default: undefined,
-    //},
-    //aspect: {
-    //  doc: 'The name of the aspect navigation to make available on every page in the site.',
-    //  format: String,
-    //  default: undefined,
-    //},
-    //nav: {
-    //  doc: 'The list of descriptors which define the aspect navigation domains.',
-    //  format: Array,
-    //  default: undefined,
-    //},
     keys: {
       google_analytics: {
         doc: 'The Google Analytics account key.',
@@ -55,12 +40,6 @@ module.exports = {
         arg: 'google-analytics-key',
         env: 'GOOGLE_ANALYTICS_KEY',
       },
-      //swiftype: {
-      //  doc: 'The key to activate the Swiftype widget.',
-      //  format: String,
-      //  default: undefined,
-      //  arg: 'swiftype-key',
-      //},
     },
   },
   content: {
@@ -131,7 +110,6 @@ module.exports = {
       doc: 'A list of require paths for registering extensions per instance of the AsciiDoc processor.',
       format: Array,
       default: [],
-      //arg: 'extension',
     },
   },
   git: {
@@ -156,10 +134,9 @@ module.exports = {
       default: true,
     },
     ensureGitSuffix: {
-      doc: [
-        '(Deprecated; to be removed in Antora 3)',
+      doc:
+        '(Deprecated; to be removed in Antora 3) ' +
         'Instructs the git client to automatically append .git to the repository URL if absent.',
-      ].join(' '),
       format: Boolean,
       default: undefined,
     },
