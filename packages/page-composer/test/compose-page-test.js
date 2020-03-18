@@ -650,6 +650,35 @@ describe('createPageComposer()', () => {
       </ul>`)
     })
 
+    it('should relativize URL by prepending site path if page.url is undefined', () => {
+      definePartial(
+        'body-relativize-url',
+        heredoc`
+        <p>{{relativize '/to.html'}}</p>
+        `
+      )
+      replaceCallToBodyPartial('{{> body-relativize-url}}')
+      playbook.site.url = 'https://docs.example.org/site'
+      delete file.pub.url
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include('<p>/site/to.html</p>')
+    })
+
+    it('should not relativize URL if page.url and site.path are undefined', () => {
+      definePartial(
+        'body-relativize-url',
+        heredoc`
+        <p>{{relativize '/to.html'}}</p>
+        `
+      )
+      replaceCallToBodyPartial('{{> body-relativize-url}}')
+      delete file.pub.url
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include('<p>/to.html</p>')
+    })
+
     // QUESTION what should we do with a template execution error? (e.g., missing partial or helper)
   })
 })
