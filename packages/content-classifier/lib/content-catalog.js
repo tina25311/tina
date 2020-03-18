@@ -240,7 +240,7 @@ class ContentCatalog {
    * file cannot be resolved.
    */
   resolvePage (spec, context = {}) {
-    return resolveResource(spec, this, context, 'page', ['page'])
+    return this.resolveResource(spec, context, 'page', ['page'])
   }
 
   resolveResource (spec, context = {}, defaultFamily = undefined, permittedFamilies = undefined) {
