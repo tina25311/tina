@@ -20,6 +20,7 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Use automatic reference text (i.e., xreftext) if contents of page xref is empty (#310)
 * *asciidoc-loader*: Use target as fallback content for unresolved or invalid xref (#594)
 * *document-converter*: Load the AsciiDoc header for all pages before any page is converted so xref can reference page alias (#586)
+* *document-converter*: Map `title` property on file to AsciiDoc doctitle (#593)
 * *navigation-builder*: Use automatic reference text (i.e., navtitle attribute or xreftext) if contents of page xref is empty (#310)
 * *page-composer*: Add `relativize` as built-in UI helper (#555)
 

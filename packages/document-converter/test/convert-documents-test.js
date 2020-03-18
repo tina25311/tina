@@ -133,6 +133,20 @@ describe('convertDocuments()', () => {
     expect(untitledPage).not.to.have.nested.property('asciidoc.navtitle')
   })
 
+  it('should assign value of doctitle to title property on file', () => {
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'index.adoc',
+        contents: '= Welcome\n\nThis is the index page.',
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    expect(pages).to.have.lengthOf(1)
+    const homePage = pages.find((it) => it.src.relative === 'index.adoc')
+    expect(homePage.title).to.equal('Welcome')
+  })
+
   it('should convert contents to embeddable HTML using default settings if AsciiDoc config not provided', () => {
     const contentCatalog = mockContentCatalog([
       {
