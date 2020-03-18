@@ -267,6 +267,35 @@ describe('loadAsciiDoc()', () => {
         url: 'https://example.org/component-a.git',
         startPath: 'docs',
         branch: 'v4.5.x',
+        refhash: 'a185bc03d7c07a3a98dcd14214d884ebd6387578',
+      }
+      const docFromBranch = loadAsciiDoc(inputFileFromBranch, contentCatalog)
+      expect(docFromBranch.getAttributes()).to.include({
+        'page-origin-type': 'git',
+        'page-origin-url': 'https://example.org/component-a.git',
+        'page-origin-start-path': 'docs',
+        'page-origin-branch': 'v4.5.x',
+        'page-origin-refname': 'v4.5.x',
+        'page-origin-reftype': 'branch',
+        'page-origin-refhash': 'a185bc03d7c07a3a98dcd14214d884ebd6387578',
+      })
+      expect(docFromBranch.hasAttribute('page-origin-tag')).to.be.false()
+      expect(docFromBranch.hasAttribute('page-origin-worktree')).to.be.false()
+    })
+
+    it('should set page origin attributes if origin information is available for file from worktree branch', () => {
+      const contentCatalog = mockContentCatalog({
+        version: '4.5.x',
+        family: 'page',
+        relative: 'page-a.adoc',
+        contents: '= Document Title',
+      })
+      const inputFileFromBranch = contentCatalog.getAll()[0]
+      inputFileFromBranch.src.origin = {
+        type: 'git',
+        url: 'https://example.org/component-a.git',
+        startPath: 'docs',
+        branch: 'v4.5.x',
         worktree: true,
       }
       const docFromBranch = loadAsciiDoc(inputFileFromBranch, contentCatalog)
@@ -277,8 +306,10 @@ describe('loadAsciiDoc()', () => {
         'page-origin-branch': 'v4.5.x',
         'page-origin-refname': 'v4.5.x',
         'page-origin-reftype': 'branch',
+        'page-origin-refhash': '(worktree)',
         'page-origin-worktree': '',
       })
+      expect(docFromBranch.hasAttribute('page-origin-tag')).to.be.false()
     })
 
     it('should set page origin attributes if origin information is available for file from tag', () => {
@@ -294,6 +325,7 @@ describe('loadAsciiDoc()', () => {
         url: 'https://example.org/component-a.git',
         startPath: '',
         tag: 'v4.5.1',
+        refhash: 'a185bc03d7c07a3a98dcd14214d884ebd6387578',
       }
       const docFromTag = loadAsciiDoc(inputFileFromTag, contentCatalog)
       expect(docFromTag.getAttributes()).to.include({
@@ -303,7 +335,10 @@ describe('loadAsciiDoc()', () => {
         'page-origin-tag': 'v4.5.1',
         'page-origin-refname': 'v4.5.1',
         'page-origin-reftype': 'tag',
+        'page-origin-refhash': 'a185bc03d7c07a3a98dcd14214d884ebd6387578',
       })
+      expect(docFromTag.hasAttribute('page-origin-branch')).to.be.false()
+      expect(docFromTag.hasAttribute('page-origin-worktree')).to.be.false()
     })
 
     it('should add custom attributes to document', () => {

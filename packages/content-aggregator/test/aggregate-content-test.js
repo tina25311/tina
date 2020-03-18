@@ -1907,7 +1907,9 @@ describe('aggregateContent()', function () {
 
     describe('should assign correct properties to virtual files taken from root of repository', () => {
       testAll(async (repoBuilder) => {
-        await initRepoWithFiles(repoBuilder)
+        let refhash
+        await initRepoWithFiles(repoBuilder, undefined, undefined, () =>
+          repoBuilder.resolveRef().then((oid) => (refhash = oid)))
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -1935,7 +1937,9 @@ describe('aggregateContent()', function () {
           },
         }
         if (repoBuilder.remote) expectedFileSrc.origin.url = repoBuilder.url
-        if (!(repoBuilder.bare || repoBuilder.remote)) {
+        if (repoBuilder.bare || repoBuilder.remote) {
+          expectedFileSrc.origin.refhash = refhash
+        } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.fileUriPattern = fileUriScheme + repoBuilder.repoPath + '/%s'
@@ -1954,7 +1958,9 @@ describe('aggregateContent()', function () {
     describe('should assign correct properties to virtual files taken from start path', () => {
       testAll(async (repoBuilder) => {
         const componentDesc = { name: 'the-component', version: 'v1.2.3', startPath: 'docs' }
-        await initRepoWithFiles(repoBuilder, componentDesc)
+        let refhash
+        await initRepoWithFiles(repoBuilder, componentDesc, undefined, () =>
+          repoBuilder.resolveRef().then((oid) => (refhash = oid)))
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: repoBuilder.startPath })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -1982,7 +1988,9 @@ describe('aggregateContent()', function () {
           },
         }
         if (repoBuilder.remote) expectedFileSrc.origin.url = repoBuilder.url
-        if (!(repoBuilder.bare || repoBuilder.remote)) {
+        if (repoBuilder.bare || repoBuilder.remote) {
+          expectedFileSrc.origin.refhash = refhash
+        } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, repoBuilder.startPath, expectedFileSrc.path)
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.fileUriPattern =
@@ -2001,7 +2009,9 @@ describe('aggregateContent()', function () {
 
     describe('should encode spaces in editUrl and fileUri', () => {
       testAll(async (repoBuilder) => {
-        await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page with spaces.adoc')
+        let refhash
+        await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page with spaces.adoc', () =>
+          repoBuilder.resolveRef().then((oid) => (refhash = oid)))
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2029,7 +2039,9 @@ describe('aggregateContent()', function () {
           },
         }
         if (repoBuilder.remote) expectedFileSrc.origin.url = repoBuilder.url
-        if (!(repoBuilder.bare || repoBuilder.remote)) {
+        if (repoBuilder.bare || repoBuilder.remote) {
+          expectedFileSrc.origin.refhash = refhash
+        } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.fileUriPattern = fileUriScheme + repoBuilder.repoPath + '/%s'
