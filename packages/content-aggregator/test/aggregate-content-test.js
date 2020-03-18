@@ -6,6 +6,7 @@ const { deferExceptions, expect, heredoc, removeSyncForce, spy } = require('../.
 const aggregateContent = require('@antora/content-aggregator')
 const computeOrigin = aggregateContent._computeOrigin
 const { createHash } = require('crypto')
+const { execFile } = require('child_process')
 const freeze = require('deep-freeze-node')
 const fs = require('fs-extra')
 const getCacheDir = require('cache-directory')
@@ -2946,6 +2947,33 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: repoBuilder.url.replace('//localhost:', '//[::1]:') })
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
+    })
+  })
+
+  describe('should fail to read start path located at submodule', () => {
+    testLocal(async (repoBuilder) => {
+      const contentRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(contentRepoBuilder)
+      const addSubmodule = (cwd) =>
+        new Promise((resolve, reject) => {
+          execFile(
+            'git',
+            ['submodule', 'add', contentRepoBuilder.url],
+            { cwd, windowsHide: true },
+            (err, stdout, stderr) => (err ? reject(err) : resolve())
+          )
+        })
+      await repoBuilder
+        .init('delegate-component')
+        .then(() => addSubmodule(repoBuilder.repoPath))
+        .then(() => repoBuilder.commitAll('add submodule'))
+        .then(() => repoBuilder.checkoutBranch('other'))
+        .then(() => repoBuilder.close())
+      playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'master' })
+      // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
+      const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: master)`
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      expect(aggregateContentDeferred).to.throw(expectedMessage)
     })
   })
 
