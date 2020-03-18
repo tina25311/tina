@@ -42,6 +42,7 @@ This project utilizes semantic versioning.
 * *page-composer*: Don't prepend site URL to absolute canonical URL (#564)
 * *page-composer*: resolvePage helper returns page model instead of virtual file object, which can be disabled using model=false (#541)
 * *page-composer*: Assign value of family-relative path of page to srcPath property on page UI model (#568)
+* *redirect-producer*: Configure netlify redirects to be forced as recommended by Netlify (#595)
 
 == 2.3.0-alpha.2 (2019-12-18)
 

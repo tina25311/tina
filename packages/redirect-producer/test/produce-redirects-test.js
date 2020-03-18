@@ -154,13 +154,13 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        '/ /component-a/module-a/the-target.html 301',
-        '/component-a/module-a/alias-a.html /component-a/module-a/the-target.html 301',
-        '/component-a/module-a/old-target/ /component-a/module-a/the-target.html 301',
-        '/component-a/module-a/old-target/index.html /component-a/module-a/the-target.html 301',
-        '/component-a/module-b/alias-b.html /component-a/module-a/the-target.html 301',
-        '/component-b/1.0/alias-c.html /component-a/module-a/the-target.html 301',
-        '/index.html /component-a/module-a/the-target.html 301',
+        '/ /component-a/module-a/the-target.html 301!',
+        '/component-a/module-a/alias-a.html /component-a/module-a/the-target.html 301!',
+        '/component-a/module-a/old-target/ /component-a/module-a/the-target.html 301!',
+        '/component-a/module-a/old-target/index.html /component-a/module-a/the-target.html 301!',
+        '/component-a/module-b/alias-b.html /component-a/module-a/the-target.html 301!',
+        '/component-b/1.0/alias-c.html /component-a/module-a/the-target.html 301!',
+        '/index.html /component-a/module-a/the-target.html 301!',
       ])
     })
 
@@ -178,7 +178,7 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        '/component-a/module-a/alias%20with%20spaces.html /component-a/module-a/target%20with%20spaces.html 301',
+        '/component-a/module-a/alias%20with%20spaces.html /component-a/module-a/target%20with%20spaces.html 301!',
       ])
     })
 
@@ -193,11 +193,11 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        '/ /component-a/module-a/the-target/ 301',
-        '/component-a/module-a/alias-a/ /component-a/module-a/the-target/ 301',
-        '/component-a/module-a/old-target/ /component-a/module-a/the-target/ 301',
-        '/component-a/module-b/alias-b/ /component-a/module-a/the-target/ 301',
-        '/component-b/1.0/alias-c/ /component-a/module-a/the-target/ 301',
+        '/ /component-a/module-a/the-target/ 301!',
+        '/component-a/module-a/alias-a/ /component-a/module-a/the-target/ 301!',
+        '/component-a/module-a/old-target/ /component-a/module-a/the-target/ 301!',
+        '/component-a/module-b/alias-b/ /component-a/module-a/the-target/ 301!',
+        '/component-b/1.0/alias-c/ /component-a/module-a/the-target/ 301!',
       ])
     })
 
@@ -212,11 +212,11 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        '/ /component-a/module-a/the-target 301',
-        '/component-a/module-a/alias-a /component-a/module-a/the-target 301',
-        '/component-a/module-a/old-target/ /component-a/module-a/the-target 301',
-        '/component-a/module-b/alias-b /component-a/module-a/the-target 301',
-        '/component-b/1.0/alias-c /component-a/module-a/the-target 301',
+        '/ /component-a/module-a/the-target 301!',
+        '/component-a/module-a/alias-a /component-a/module-a/the-target 301!',
+        '/component-a/module-a/old-target/ /component-a/module-a/the-target 301!',
+        '/component-a/module-b/alias-b /component-a/module-a/the-target 301!',
+        '/component-b/1.0/alias-c /component-a/module-a/the-target 301!',
       ])
     })
 
@@ -228,13 +228,13 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        '/docs/ /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-a/module-a/old-target/ /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-a/module-a/old-target/index.html /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-a/module-b/alias-b.html /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-b/1.0/alias-c.html /docs/component-a/module-a/the-target.html 301',
-        '/docs/index.html /docs/component-a/module-a/the-target.html 301',
+        '/docs/ /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-a/module-a/old-target/ /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-a/module-a/old-target/index.html /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-a/module-b/alias-b.html /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-b/1.0/alias-c.html /docs/component-a/module-a/the-target.html 301!',
+        '/docs/index.html /docs/component-a/module-a/the-target.html 301!',
       ])
     })
 
@@ -246,13 +246,13 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        '/docs/ /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-a/module-a/old-target/ /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-a/module-a/old-target/index.html /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-a/module-b/alias-b.html /docs/component-a/module-a/the-target.html 301',
-        '/docs/component-b/1.0/alias-c.html /docs/component-a/module-a/the-target.html 301',
-        '/docs/index.html /docs/component-a/module-a/the-target.html 301',
+        '/docs/ /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-a/module-a/old-target/ /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-a/module-a/old-target/index.html /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-a/module-b/alias-b.html /docs/component-a/module-a/the-target.html 301!',
+        '/docs/component-b/1.0/alias-c.html /docs/component-a/module-a/the-target.html 301!',
+        '/docs/index.html /docs/component-a/module-a/the-target.html 301!',
       ])
     })
 
@@ -263,7 +263,7 @@ describe('produceRedirects()', () => {
       expect(result[0].out.path).to.equal('_redirects')
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
-      expect(rules).to.include('/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301')
+      expect(rules).to.include('/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301!')
     })
 
     it('should not prefix rewrite rule with extra prefix if URL context is /', () => {
@@ -274,13 +274,13 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        '/ /component-a/module-a/the-target.html 301',
-        '/component-a/module-a/alias-a.html /component-a/module-a/the-target.html 301',
-        '/component-a/module-a/old-target/ /component-a/module-a/the-target.html 301',
-        '/component-a/module-a/old-target/index.html /component-a/module-a/the-target.html 301',
-        '/component-a/module-b/alias-b.html /component-a/module-a/the-target.html 301',
-        '/component-b/1.0/alias-c.html /component-a/module-a/the-target.html 301',
-        '/index.html /component-a/module-a/the-target.html 301',
+        '/ /component-a/module-a/the-target.html 301!',
+        '/component-a/module-a/alias-a.html /component-a/module-a/the-target.html 301!',
+        '/component-a/module-a/old-target/ /component-a/module-a/the-target.html 301!',
+        '/component-a/module-a/old-target/index.html /component-a/module-a/the-target.html 301!',
+        '/component-a/module-b/alias-b.html /component-a/module-a/the-target.html 301!',
+        '/component-b/1.0/alias-c.html /component-a/module-a/the-target.html 301!',
+        '/index.html /component-a/module-a/the-target.html 301!',
       ])
     })
 
