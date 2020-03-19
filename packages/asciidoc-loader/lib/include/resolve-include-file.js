@@ -37,7 +37,7 @@ function resolveIncludeFile (target, page, cursor, catalog) {
       })
       // NOTE require family segment for now
     } else if (~target.indexOf('$')) {
-      resolved = catalog.resolveResource(target, selectResourceId(ctx))
+      resolved = catalog.resolveResource(target, extractResourceId(ctx))
     }
   } else {
     resolved = catalog.getByPath({
@@ -60,7 +60,7 @@ function resolveIncludeFile (target, page, cursor, catalog) {
   }
 }
 
-function selectResourceId ({ component, version, module, family, relative }) {
+function extractResourceId ({ component, version, module, family, relative }) {
   return { component, version, module, family, relative }
 }
 
