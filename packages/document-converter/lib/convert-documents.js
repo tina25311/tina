@@ -41,6 +41,11 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
         const { attributes } = (page.asciidoc = extractAsciiDocMetadata(
           loadAsciiDoc(page, contentCatalog, asciidocConfig || Object.assign({}, siteAsciiDocConfig, headerOverrides))
         ))
+        Object.defineProperty(page, 'title', {
+          get () {
+            return this.asciidoc.doctitle
+          },
+        })
         registerPageAliases(attributes['page-aliases'], page, contentCatalog)
         if ('page-partial' in attributes) page.src.contents = page.contents
       }
