@@ -552,6 +552,31 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock.getSourceLines()).to.eql(['before', expectedSource, 'after'])
     })
 
+    it('should not crash if contents of included file is undefined', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'partial',
+        relative: 'undefined-contents.adoc',
+      }).spyOn('getById')
+      contentCatalog.getFiles()[0].contents = undefined
+      setInputFileContents(heredoc`
+        before
+        include::partial$undefined-contents.adoc[]
+        after
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expectCalledWith(contentCatalog.getById, {
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'partial',
+        relative: 'undefined-contents.adoc',
+      })
+      const para = doc.getBlocks()[0]
+      expect(para).not.to.be.undefined()
+      expect(para.getContext()).to.equal('paragraph')
+      expect(para.getSourceLines()).to.eql(['before', 'after'])
+    })
+
     it('should resolve include target prefixed with {partialsdir}', () => {
       const includeContents = 'Hello, World!'
       const contentCatalog = mockContentCatalog({

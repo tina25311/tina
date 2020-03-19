@@ -53,9 +53,9 @@ function resolveIncludeFile (target, page, cursor, catalog) {
       context: resolvedSrc,
       file: resolvedSrc.path,
       path: resolvedSrc.basename,
-      // NOTE src.contents is set if page is marked as a partial
-      // TODO if mediaType is not text/asciidoc, warn
-      contents: (resolvedSrc.contents || resolved.contents).toString(),
+      // NOTE src.contents holds AsciiDoc source for page marked as a partial
+      // QUESTION should we only use src.contents if family is 'page' and mediaType is 'text/asciidoc'?
+      contents: (resolvedSrc.contents || resolved.contents || '').toString(),
     }
   }
 }
