@@ -126,8 +126,7 @@ class ContentCatalog {
   findBy (criteria) {
     const criteriaEntries = Object.entries(criteria)
     const accum = []
-    for (const entry of this[$files]) {
-      const candidate = entry[1]
+    for (const candidate of this[$files].values()) {
       const candidateSrc = candidate.src
       if (criteriaEntries.every(([key, val]) => candidateSrc[key] === val)) accum.push(candidate)
     }
@@ -139,8 +138,7 @@ class ContentCatalog {
   }
 
   getByPath ({ component, version, path: path_ }) {
-    for (const entry of this[$files]) {
-      const candidate = entry[1]
+    for (const candidate of this[$files].values()) {
       if (candidate.path === path_ && candidate.src.component === component && candidate.src.version === version) {
         return candidate
       }
@@ -183,8 +181,7 @@ class ContentCatalog {
 
   getPages () {
     const accum = []
-    for (const entry of this[$files]) {
-      const candidate = entry[1]
+    for (const candidate of this[$files].values()) {
       if (candidate.src.family === 'page') accum.push(candidate)
     }
     return accum
