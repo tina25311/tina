@@ -35,7 +35,6 @@ const {
   VALID_STATE_FILENAME,
 } = require('./constants')
 
-const ABBREVIATE_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const ANY_SEPARATOR_RX = /[:/]/
 const CSV_RX = /\s*,\s*/
 const VENTILATED_CSV_RX = /\s*,\s+/
@@ -43,6 +42,7 @@ const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name)|path)\}/g
 const GIT_EXTENSION_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
 const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
+const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const SPACE_RX = / /g
 const SUPERFLUOUS_SEPARATORS_RX = /^\/+|\/+$|\/+(?=\/)/g
 const URL_AUTH_CLEANER_RX = /^(https?:\/\/)[^/@]*@/
@@ -234,9 +234,9 @@ async function selectReferences (source, repo, remote) {
       : String(tagPatterns).split(CSV_RX)
     if (tagPatterns.length) {
       const tags = await git.listTags(repo)
-      for (const name of tags.length ? matcher(tags, tagPatterns) : tags) {
+      for (const shortname of tags.length ? matcher(tags, tagPatterns) : tags) {
         // NOTE tags are stored using symbol keys to distinguish them from branches
-        refs.set(Symbol(name), { name, qname: 'tags/' + name, type: 'tag' })
+        refs.set(Symbol(shortname), { shortname, fullname: 'tags/' + shortname, type: 'tag' })
       }
     }
   }
@@ -245,11 +245,11 @@ async function selectReferences (source, repo, remote) {
     const branchPatternsString = String(branchPatterns)
     if (branchPatternsString === 'HEAD' || branchPatternsString === '.') {
       // NOTE current branch is undefined when HEAD is detached
-      const currentBranchName = await getCurrentBranchName(repo, remote)
-      if (currentBranchName) {
-        branchPatterns = [currentBranchName]
+      const currentBranch = await getCurrentBranchName(repo, remote)
+      if (currentBranch) {
+        branchPatterns = [currentBranch]
       } else {
-        if (!isBare) refs.set('HEAD', { name: 'HEAD', qname: 'HEAD', type: 'branch', isHead: true })
+        if (!isBare) refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', head: 'detached' })
         return Array.from(refs.values())
       }
     } else {
@@ -261,11 +261,11 @@ async function selectReferences (source, repo, remote) {
         // NOTE we can assume at least two entries if HEAD or . are present
         if (~(currentBranchIdx = branchPatterns.indexOf('HEAD')) || ~(currentBranchIdx = branchPatterns.indexOf('.'))) {
           // NOTE current branch is undefined when HEAD is detached
-          const currentBranchName = await getCurrentBranchName(repo, remote)
-          if (currentBranchName) {
-            branchPatterns[currentBranchIdx] = currentBranchName
+          const currentBranch = await getCurrentBranchName(repo, remote)
+          if (currentBranch) {
+            branchPatterns[currentBranchIdx] = currentBranch
           } else {
-            if (!isBare) refs.set('HEAD', { name: 'HEAD', qname: 'HEAD', type: 'branch', isHead: true })
+            if (!isBare) refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', head: 'detached' })
             branchPatterns.splice(currentBranchIdx, 1)
           }
         }
@@ -278,24 +278,26 @@ async function selectReferences (source, repo, remote) {
       // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
       const headIdx = remoteBranches.indexOf('HEAD')
       if (~headIdx) remoteBranches.splice(headIdx, 1)
-      for (const name of remoteBranches.length ? matcher(remoteBranches, branchPatterns) : remoteBranches) {
-        refs.set(name, { name, qname: path.join('remotes', remote, name), type: 'branch', remote })
+      for (const shortname of remoteBranches.length ? matcher(remoteBranches, branchPatterns) : remoteBranches) {
+        refs.set(shortname, { shortname, fullname: path.join('remotes', remote, shortname), type: 'branch', remote })
       }
     }
     // NOTE only consider local branches if repo has a worktree or there are no remote tracking branches
     if (!isBare) {
       const localBranches = await git.listBranches(repo)
       if (localBranches.length) {
-        const currentBranchName = await git.currentBranch(repo)
-        for (const name of matcher(localBranches, branchPatterns)) {
-          refs.set(name, { name, qname: name, type: 'branch', isHead: name === currentBranchName })
+        const currentBranch = await git.currentBranch(repo)
+        for (const shortname of matcher(localBranches, branchPatterns)) {
+          const ref = { shortname, fullname: 'heads/' + shortname, type: 'branch' }
+          if (shortname === currentBranch) ref.head = true
+          refs.set(shortname, ref)
         }
       }
     } else if (!remoteBranches.length) {
       // QUESTION should local branches be used if only remote branch is HEAD?
       const localBranches = await git.listBranches(repo)
-      for (const name of localBranches.length ? matcher(localBranches, branchPatterns) : localBranches) {
-        refs.set(name, { name, qname: name, type: 'branch' })
+      for (const shortname of localBranches.length ? matcher(localBranches, branchPatterns) : localBranches) {
+        refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch' })
       }
     }
   }
@@ -303,6 +305,9 @@ async function selectReferences (source, repo, remote) {
   return Array.from(refs.values())
 }
 
+/**
+ * Returns the current branch name unless the HEAD is detatched.
+ */
 function getCurrentBranchName (repo, remote) {
   let refPromise
   if (repo.noCheckout) {
@@ -312,7 +317,7 @@ function getCurrentBranchName (repo, remote) {
   } else {
     refPromise = git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo))
   }
-  return refPromise.then((ref) => (ref.startsWith('refs/') ? ref.replace(ABBREVIATE_REF_RX, '') : undefined))
+  return refPromise.then((ref) => (ref.startsWith('refs/') ? ref.replace(SHORTEN_REF_RX, '') : undefined))
 }
 
 async function collectFilesFromReference (source, repo, remoteName, authStatus, ref) {
@@ -321,10 +326,10 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
   const originUrl = url || (await resolveRemoteUrl(repo, remoteName))
   const editUrl = source.editUrl
   let worktreePath
-  if (ref.isHead && !(url || repo.noCheckout)) {
+  if (ref.head && !(url || repo.noCheckout)) {
     worktreePath = repo.dir
   } else {
-    ref.oid = await git.resolveRef(Object.assign({ ref: ref.qname }, repo))
+    ref.oid = await git.resolveRef(Object.assign({ ref: 'refs/' + ref.fullname }, repo))
   }
   if ('startPaths' in source) {
     let startPaths
@@ -335,7 +340,8 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
       ? resolvePathGlobsFs(worktreePath, startPaths)
       : resolvePathGlobsGit(repo, ref.oid, startPaths))
     if (!startPaths.length) {
-      throw new Error(`no start paths found in ${displayUrl} (ref: ${ref.qname}${worktreePath ? ' <worktree>' : ''})`)
+      const refInfo = `ref: ${ref.fullname.replace(/^heads\//, '')}${worktreePath ? ' <worktree>' : ''}`
+      throw new Error(`no start paths found in ${displayUrl} (${refInfo})`)
     }
     return Promise.all(
       startPaths.map((startPath) =>
@@ -359,7 +365,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
       return componentVersion
     })
     .catch((err) => {
-      const refInfo = `ref: ${ref.qname}${worktreePath ? ' <worktree>' : ''}`
+      const refInfo = `ref: ${ref.fullname.replace(/^heads\//, '')}${worktreePath ? ' <worktree>' : ''}`
       const pathInfo = !startPath || err.message.startsWith('the start path ') ? '' : ' | path: ' + startPath
       err.message += ` in ${repo.url || repo.dir} (${refInfo}${pathInfo})`
       throw err
@@ -519,7 +525,7 @@ function loadComponentDescriptor (files) {
 }
 
 function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefined, editUrl = true) {
-  const { name: refname, oid: refhash, type: reftype } = ref
+  const { shortname: refname, oid: refhash, type: reftype } = ref
   const origin = { type: 'git', startPath }
   if (url) origin.url = url
   if (authStatus) origin.private = authStatus
