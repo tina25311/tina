@@ -97,7 +97,7 @@ function mockContentCatalog (seed = []) {
       (typeof component === 'string' ? components[component] : component).versions.find((it) => it.version === version),
     getAll: () => entries,
     getFiles: () => entries,
-    getPages: () => entriesByFamily.page || [],
+    getPages: (filter) => filter ? (entriesByFamily.page || []).filter(filter) : entriesByFamily.page || [],
     resolvePage: function (spec, ctx = {}) {
       return resolveResource(spec, this, ctx, 'page', ['page'])
     },

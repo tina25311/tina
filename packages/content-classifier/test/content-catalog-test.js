@@ -504,6 +504,49 @@ describe('ContentCatalog', () => {
     })
   })
 
+  describe('#getPages()', () => {
+    beforeEach(() => {
+      aggregate = [
+        {
+          name: 'the-component',
+          title: 'The Component',
+          version: 'v4.5.6',
+          files: [
+            createFile('modules/ROOT/assets/images/launch-page.png'),
+            createFile('modules/ROOT/pages/page-one.adoc'),
+          ],
+        },
+        {
+          name: 'the-other-component',
+          title: 'The Other Component',
+          version: 'v1.0.0',
+          files: [
+            createFile('modules/ROOT/pages/page-two.adoc'),
+          ],
+        },
+      ]
+    })
+
+    it('should find all pages', () => {
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const pages = contentCatalog.getPages()
+      expect(pages.length).to.equal(2)
+      pages.sort((a, b) => a.src.version.localeCompare(b.src.version) || a.path.localeCompare(b.path))
+      expect(pages[0].path).to.equal('modules/ROOT/pages/page-two.adoc')
+      expect(pages[0].src.version).to.equal('v1.0.0')
+      expect(pages[1].path).to.equal('modules/ROOT/pages/page-one.adoc')
+      expect(pages[1].src.version).to.equal('v4.5.6')
+    })
+
+    it('should find pages that match filter', () => {
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const pages = contentCatalog.getPages((page) => page.src.version === 'v1.0.0')
+      expect(pages.length).to.equal(1)
+      expect(pages[0].path).to.equal('modules/ROOT/pages/page-two.adoc')
+      expect(pages[0].src.version).to.equal('v1.0.0')
+    })
+  })
+
   describe('#findBy()', () => {
     beforeEach(() => {
       aggregate = [

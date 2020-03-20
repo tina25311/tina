@@ -29,6 +29,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Use state file to validate repository in cache and reclone the repository if file is missing (i.e., corrupt) (#556)
 * *content-aggregator*: Brace pattern in start paths value should match whole filename segment, even if pattern contains a wildcard (#583)
 * *content-aggregator*: Brace pattern in start paths value should match explicit entries if wildcard entry is also present (#584)
+* *content-classifier*: Update `ContentCatalog#getPages` to accept a filter function to filter pages
 * *asciidoc-loader*: Fix crash if contents of include file is undefined
 * *page-composer*: Latest page version should never be newer than latest component version (#565)
 

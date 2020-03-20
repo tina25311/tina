@@ -179,10 +179,16 @@ class ContentCatalog {
     return [...this[$files].values()]
   }
 
-  getPages () {
+  getPages (filter) {
     const accum = []
-    for (const candidate of this[$files].values()) {
-      if (candidate.src.family === 'page') accum.push(candidate)
+    if (filter) {
+      for (const candidate of this[$files].values()) {
+        if (candidate.src.family === 'page' && filter(candidate)) accum.push(candidate)
+      }
+    } else {
+      for (const candidate of this[$files].values()) {
+        if (candidate.src.family === 'page') accum.push(candidate)
+      }
     }
     return accum
   }

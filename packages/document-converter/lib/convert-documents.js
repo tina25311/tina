@@ -33,8 +33,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
     headerAsciiDocConfigs.set(cacheKey, Object.assign({}, mainAsciiDocConfig, headerOverrides))
   }
   return contentCatalog
-    .getPages()
-    .filter((page) => page.out)
+    .getPages((page) => page.out)
     .map((page) => {
       if (page.mediaType === 'text/asciidoc') {
         const asciidocConfig = headerAsciiDocConfigs.get(buildCacheKey(page.src))
