@@ -1909,7 +1909,8 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         let refhash
         await initRepoWithFiles(repoBuilder, undefined, undefined, () =>
-          repoBuilder.resolveRef().then((oid) => (refhash = oid)))
+          repoBuilder.resolveRef().then((oid) => (refhash = oid))
+        )
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -1960,7 +1961,8 @@ describe('aggregateContent()', function () {
         const componentDesc = { name: 'the-component', version: 'v1.2.3', startPath: 'docs' }
         let refhash
         await initRepoWithFiles(repoBuilder, componentDesc, undefined, () =>
-          repoBuilder.resolveRef().then((oid) => (refhash = oid)))
+          repoBuilder.resolveRef().then((oid) => (refhash = oid))
+        )
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: repoBuilder.startPath })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2011,7 +2013,8 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         let refhash
         await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page with spaces.adoc', () =>
-          repoBuilder.resolveRef().then((oid) => (refhash = oid)))
+          repoBuilder.resolveRef().then((oid) => (refhash = oid))
+        )
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)

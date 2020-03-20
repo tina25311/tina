@@ -263,7 +263,9 @@ describe('produceRedirects()', () => {
       expect(result[0].out.path).to.equal('_redirects')
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
-      expect(rules).to.include('/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301!')
+      expect(rules).to.include(
+        '/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301!'
+      )
     })
 
     it('should not prefix rewrite rule with extra prefix if URL context is /', () => {
