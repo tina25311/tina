@@ -398,6 +398,21 @@ describe('generateSite()', function () {
     expect($('.toolbar .edit-this-page')).to.not.exist()
   }).timeout(timeoutOverride)
 
+  it('should add edit page link to toolbar for private repository if env.FORCE_SHOW_EDIT_PAGE_LINK=true', async () => {
+    const editBaseUrl = repoBuilder.url.replace(/\.git$/, '')
+    const refname = 'v2.0'
+    playbookSpec.content.sources[0].url = repoBuilder.url.replace('//', '//@')
+    playbookSpec.content.sources[0].editUrl = `${editBaseUrl}/edit/{refname}/{path}`
+    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    env.FORCE_SHOW_EDIT_PAGE_LINK = 'true'
+    await generateSite(['--playbook', playbookFile], env)
+    expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
+    $ = loadHtmlFile('the-component/2.0/the-page.html')
+    const thePagePath = 'modules/ROOT/pages/the-page.adoc'
+    const editLinkUrl = `${editBaseUrl}/edit/${refname}/${thePagePath}`
+    expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
+  }).timeout(timeoutOverride)
+
   it('should add edit page link to toolbar that links to local file if page.fileUri is set in UI model', async () => {
     await repoBuilder
       .open()
