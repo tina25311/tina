@@ -38,7 +38,7 @@ function buildSiteUiModel (playbook, contentCatalog) {
 
   const uiConfig = playbook.ui
   model.ui = {
-    url: path.join('/', uiConfig.outputDir),
+    url: path.resolve('/', uiConfig.outputDir),
     defaultLayout: uiConfig.defaultLayout || DEFAULT_LAYOUT_NAME,
   }
 
