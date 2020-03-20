@@ -21,8 +21,7 @@ class UiCatalog {
 
   findByType (type) {
     const accum = []
-    for (const entry of this[$files]) {
-      const candidate = entry[1]
+    for (const candidate of this[$files].values()) {
       if (candidate.type === type) accum.push(candidate)
     }
     return accum
