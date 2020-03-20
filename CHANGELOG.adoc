@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Added
 
 * *content-aggregator*: Assign the resolved SHA-1 commit hash for the content source ref (branch or tag) to the `src.origin.refhash` property on the virtual file unless file is taken from worktree (#578)
+* *content-aggregator*: Make `refhash` available as template in edit URL pattern (#578)
 * *content-classifier*: If `ContentCatalog#resolvePage` cannot locate page, look for alias and dereference if found (#586)
 * *content-classifier*: Add `getComponentVersion` method to exported API
 * *content-classifier*: Map `asciidoc` property on component to `asciidoc` property on latest version (#543)

@@ -39,7 +39,7 @@ const ABBREVIATE_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const ANY_SEPARATOR_RX = /[:/]/
 const CSV_RX = /\s*,\s*/
 const VENTILATED_CSV_RX = /\s*,\s+/
-const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|refname|path)\}/g
+const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name)|path)\}/g
 const GIT_EXTENSION_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
 const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
@@ -519,7 +519,7 @@ function loadComponentDescriptor (files) {
 }
 
 function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefined, editUrl = true) {
-  const { name: refname, type: reftype } = ref
+  const { name: refname, oid: refhash, type: reftype } = ref
   const origin = { type: 'git', startPath }
   if (url) origin.url = url
   if (authStatus) origin.private = authStatus
@@ -530,7 +530,7 @@ function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefine
     // Q: should we set worktreePath instead (or additionally?)
     origin.worktree = true
   } else {
-    origin.refhash = ref.oid
+    origin.refhash = refhash
   }
   if (editUrl === true) {
     let match
@@ -551,6 +551,7 @@ function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefine
   } else if (editUrl) {
     const vars = {
       path: () => (startPath ? path.join(startPath, '%s') : '%s'),
+      refhash: () => refhash,
       refname: () => refname,
       web_url: () => (url ? url.replace(GIT_EXTENSION_RX, '') : ''),
     }
