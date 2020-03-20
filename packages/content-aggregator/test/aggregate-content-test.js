@@ -2265,13 +2265,24 @@ describe('aggregateContent()', function () {
       }).timeout(this.timeout() * 2)
 
       it('should use editUrl pattern to generate editUrl', async () => {
-        const webUrl = 'https://gitlab.com/antora/demo/demo-component-a'
+        const webUrl = 'https://gitlab.com/antora/demo/demo-component-b'
         const url = webUrl + '.git'
-        playbookSpec.content.sources.push({ url, editUrl: '{web_url}/blob/{refname}/{path}' })
+        const sourceDev = { url, branches: 'master', startPath: 'docs', editUrl: '{web_url}/blob/{refhash}/{path}' }
+        const sourceTwo = { url, branches: 'v2.0', startPath: 'docs', editUrl: '{web_url}/blob/{refname}/{path}' }
+        playbookSpec.content.sources.push(sourceDev)
+        playbookSpec.content.sources.push(sourceTwo)
         const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        const file = aggregate[0].files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
-        expect(file.src.editUrl).to.equal(webUrl + '/blob/master/' + file.src.path)
+        expect(aggregate).to.have.lengthOf(2)
+        const aggregateDev = aggregate.find(({ version }) => version === 'dev')
+        const aggregateTwo = aggregate.find(({ version }) => version === '2.0')
+        const fileDev = aggregateDev.files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
+        const fileTwo = aggregateTwo.files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
+        expect(fileDev.src.editUrl).to.equal(
+          `${webUrl}/blob/${fileDev.src.origin.refhash}/${fileDev.src.origin.startPath}/${fileDev.src.path}`
+        )
+        expect(fileTwo.src.editUrl).to.equal(
+          `${webUrl}/blob/${fileTwo.src.origin.branch}/${fileTwo.src.origin.startPath}/${fileTwo.src.path}`
+        )
       }).timeout(this.timeout() * 2)
     })
   })
