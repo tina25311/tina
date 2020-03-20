@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, expectCalledWith, spy } = require('../../../test/test-utils')
+const { expect, spy } = require('../../../test/test-utils')
 const { buildPageUiModel, buildSiteUiModel, buildUiModel } = require('@antora/page-composer/lib/build-ui-model')
 const { version: VERSION } = require('@antora/page-composer/package.json')
 
@@ -267,7 +267,7 @@ describe('build UI model', () => {
 
     it('should set component property to component from content catalog', () => {
       const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
-      expectCalledWith(contentCatalog.getComponent, ['the-component'])
+      expect(contentCatalog.getComponent).nth(1).called.with('the-component')
       expect(model.component).to.exist()
       expect(model.component.name).to.equal('the-component')
     })
@@ -398,7 +398,7 @@ describe('build UI model', () => {
         ],
       })
       const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
-      expectCalledWith(navigationCatalog.getNavigation, ['the-component', '1.0'])
+      expect(navigationCatalog.getNavigation).nth(1).called.with('the-component', '1.0')
       expect(model.navigation).to.exist()
       expect(model.navigation).to.equal(menu)
     })
@@ -874,45 +874,33 @@ describe('build UI model', () => {
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
       const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
-      expectCalledWith(
-        contentCatalog.getById,
-        [
-          {
-            component: 'the-component',
-            module: 'ROOT',
-            family: 'page',
-            relative: 'the-page.adoc',
-            version: '2.0',
-          },
-        ],
-        1
-      )
-      expectCalledWith(
-        contentCatalog.getById,
-        [
-          {
-            component: 'the-component',
-            module: 'ROOT',
-            family: 'page',
-            relative: 'the-page.adoc',
-            version: '1.0',
-          },
-        ],
-        2
-      )
-      expectCalledWith(
-        contentCatalog.getById,
-        [
-          {
-            component: 'the-component',
-            module: 'ROOT',
-            family: 'page',
-            relative: 'the-page.adoc',
-            version: '1.0-beta',
-          },
-        ],
-        3
-      )
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'the-component',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+          version: '2.0',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'the-component',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+          version: '1.0',
+        })
+      expect(contentCatalog.getById)
+        .nth(3)
+        .called.with({
+          component: 'the-component',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+          version: '1.0-beta',
+        })
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(3)
       expect(model.versions).to.eql([
@@ -948,32 +936,24 @@ describe('build UI model', () => {
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
       const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
-      expectCalledWith(
-        contentCatalog.getById,
-        [
-          {
-            component: 'the-component',
-            module: 'ROOT',
-            family: 'page',
-            relative: 'the-page.adoc',
-            version: '2.0',
-          },
-        ],
-        1
-      )
-      expectCalledWith(
-        contentCatalog.getById,
-        [
-          {
-            component: 'the-component',
-            module: 'ROOT',
-            family: 'page',
-            relative: 'the-page.adoc',
-            version: '1.0',
-          },
-        ],
-        2
-      )
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'the-component',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+          version: '2.0',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'the-component',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+          version: '1.0',
+        })
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(2)
       expect(model.versions).to.eql([
@@ -1023,45 +1003,33 @@ describe('build UI model', () => {
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
       const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
-      expectCalledWith(
-        contentCatalog.getById,
-        [
-          {
-            component: 'the-component',
-            module: 'ROOT',
-            family: 'page',
-            relative: 'the-page.adoc',
-            version: '2.0',
-          },
-        ],
-        1
-      )
-      expectCalledWith(
-        contentCatalog.getById,
-        [
-          {
-            component: 'the-component',
-            module: 'ROOT',
-            family: 'page',
-            relative: 'the-page.adoc',
-            version: '1.0',
-          },
-        ],
-        2
-      )
-      expectCalledWith(
-        contentCatalog.getById,
-        [
-          {
-            component: 'the-component',
-            module: 'ROOT',
-            family: 'page',
-            relative: 'the-page.adoc',
-            version: '1.0-beta',
-          },
-        ],
-        3
-      )
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'the-component',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+          version: '2.0',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'the-component',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+          version: '1.0',
+        })
+      expect(contentCatalog.getById)
+        .nth(3)
+        .called.with({
+          component: 'the-component',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+          version: '1.0-beta',
+        })
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(3)
       expect(model.versions).to.eql([

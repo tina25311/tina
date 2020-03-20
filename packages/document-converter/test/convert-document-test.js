@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, expectCalledWith, heredoc, spy } = require('../../../test/test-utils')
+const { expect, heredoc, spy } = require('../../../test/test-utils')
 
 const { convertDocument } = require('@antora/document-converter')
 const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
@@ -285,7 +285,7 @@ describe('convertDocument()', () => {
     }
     const contentCatalog = { resolvePage: spy(() => targetFile), getComponent: () => {} }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expectCalledWith(contentCatalog.resolvePage, ['module-b:page-b', inputFile.src])
+    expect(contentCatalog.resolvePage).nth(1).called.with('module-b:page-b', inputFile.src)
     expectPageLink(inputFile.contents.toString(), '../module-b/page-b.html', 'Page B')
   })
 
@@ -307,13 +307,15 @@ describe('convertDocument()', () => {
     }
     const contentCatalog = { getById: spy(() => partialFile), getComponent: () => {} }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expectCalledWith(contentCatalog.getById, {
-      component: 'component-a',
-      version: '1.2.3',
-      module: 'module-a',
-      family: 'partial',
-      relative: 'definitions.adoc',
-    })
+    expect(contentCatalog.getById)
+      .nth(1)
+      .called.with({
+        component: 'component-a',
+        version: '1.2.3',
+        module: 'module-a',
+        family: 'partial',
+        relative: 'definitions.adoc',
+      })
     expect(inputFile.contents.toString()).to.include('cloud: someone else&#8217;s computer')
   })
 
@@ -356,7 +358,7 @@ describe('convertDocument()', () => {
     convertDocument(includedFile, undefined, asciidocConfig)
     expect(includedFile.src).to.have.property('contents')
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expectCalledWith(contentCatalog.getByPath, {
+    expect(contentCatalog.getByPath).nth(1).called.with({
       component: 'component-a',
       version: '1.2.3',
       path: 'modules/module-a/pages/changelog.adoc',
@@ -422,7 +424,7 @@ describe('convertDocument()', () => {
     convertDocument(includedFile, undefined, asciidocConfig)
     expect(includedFile.src).to.have.property('contents')
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expectCalledWith(contentCatalog.getByPath, {
+    expect(contentCatalog.getByPath).nth(1).called.with({
       component: 'component-a',
       version: '1.2.3',
       path: 'modules/module-a/pages/changelog.adoc',

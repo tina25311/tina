@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, expectCalledWith, heredoc } = require('../../../test/test-utils')
+const { expect, heredoc } = require('../../../test/test-utils')
 
 const { loadAsciiDoc, resolveConfig } = require('@antora/asciidoc-loader')
 const mockContentCatalog = require('../../../test/mock-content-catalog')
@@ -509,13 +509,15 @@ describe('loadAsciiDoc()', () => {
       const inputContents = 'include::partial$does-not-exist.adoc[]'
       setInputFileContents(inputContents)
       const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'does-not-exist.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'does-not-exist.adoc',
+        })
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('page-a.adoc: line 1: include target not found: partial$does-not-exist.adoc')
       const firstBlock = doc.getBlocks()[0]
@@ -533,13 +535,15 @@ describe('loadAsciiDoc()', () => {
       const inputContents = 'before\ninclude::partial$does-not-exist.adoc[]\nafter'
       setInputFileContents(inputContents)
       const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'does-not-exist.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'does-not-exist.adoc',
+        })
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('page-a.adoc: line 2: include target not found: partial$does-not-exist.adoc')
       const firstBlock = doc.getBlocks()[0]
@@ -564,13 +568,15 @@ describe('loadAsciiDoc()', () => {
         after
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'undefined-contents.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'undefined-contents.adoc',
+        })
       const para = doc.getBlocks()[0]
       expect(para).not.to.be.undefined()
       expect(para.getContext()).to.equal('paragraph')
@@ -586,13 +592,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('include::{partialsdir}/greeting.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'greeting.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -608,13 +616,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('include::partial$greeting.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'greeting.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -635,13 +645,15 @@ describe('loadAsciiDoc()', () => {
         ----
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'example',
-        relative: 'ruby/hello.rb',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'example',
+          relative: 'ruby/hello.rb',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
@@ -663,13 +675,15 @@ describe('loadAsciiDoc()', () => {
         ----
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'example',
-        relative: 'ruby/hello.rb',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'example',
+          relative: 'ruby/hello.rb',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
@@ -687,13 +701,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('include::another-module:partial$greeting.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'another-module',
-        family: 'partial',
-        relative: 'greeting.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'another-module',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -712,13 +728,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('include::1.1@another-component::partial$greeting.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'another-component',
-        version: '1.1',
-        module: 'ROOT',
-        family: 'partial',
-        relative: 'greeting.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'another-component',
+          version: '1.1',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -790,18 +808,22 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('getById', 'getByPath')
       setInputFileContents('include::{partialsdir}/outer.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'outer.adoc',
-      })
-      expectCalledWith(contentCatalog.getByPath, {
-        component: 'component-a',
-        version: 'master',
-        path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'outer.adoc',
+        })
+      expect(contentCatalog.getByPath)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -817,18 +839,22 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getByPath')
       setInputFileContents('include::{partialsdir}/outer.adoc[]')
       const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'outer.adoc',
-      })
-      expectCalledWith(contentCatalog.getByPath, {
-        component: 'component-a',
-        version: 'master',
-        path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'outer.adoc',
+        })
+      expect(contentCatalog.getByPath)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
+        })
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('outer.adoc: line 1: include target not found: deeply/nested.adoc')
       const firstBlock = doc.getBlocks()[0]
@@ -860,21 +886,24 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('resolveResource', 'getByPath')
       setInputFileContents('include::other-module:partial$outer.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.resolveResource, [
-        'other-module:partial$outer.adoc',
-        {
-          component: inputFile.src.component,
-          version: inputFile.src.version,
-          module: inputFile.src.module,
-          family: 'page',
-          relative: 'page-a.adoc',
-        },
-      ])
-      expectCalledWith(contentCatalog.getByPath, {
-        component: 'component-a',
-        version: 'master',
-        path: 'modules/other-module/pages/_partials/deeply/nested.adoc',
-      })
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with(
+          'other-module:partial$outer.adoc',
+          {
+            component: inputFile.src.component,
+            version: inputFile.src.version,
+            module: inputFile.src.module,
+            family: 'page',
+            relative: 'page-a.adoc',
+          })
+      expect(contentCatalog.getByPath)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          path: 'modules/other-module/pages/_partials/deeply/nested.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -901,19 +930,20 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('include::other-module:partial$outer.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(contentCatalog.resolveResource).to.have.been.called.twice()
-      expectCalledWith(contentCatalog.resolveResource, [
-        'other-module:partial$outer.adoc',
-        {
-          component: inputFile.src.component,
-          version: inputFile.src.version,
-          module: inputFile.src.module,
-          family: 'page',
-          relative: 'page-a.adoc',
-        },
-      ])
-      expectCalledWith(
-        contentCatalog.resolveResource,
-        [
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with(
+          'other-module:partial$outer.adoc',
+          {
+            component: inputFile.src.component,
+            version: inputFile.src.version,
+            module: inputFile.src.module,
+            family: 'page',
+            relative: 'page-a.adoc',
+          })
+      expect(contentCatalog.resolveResource)
+        .nth(2)
+        .called.with(
           'yet-another-module:partial$deeply/nested.adoc',
           {
             component: 'component-a',
@@ -921,10 +951,7 @@ describe('loadAsciiDoc()', () => {
             module: 'other-module',
             family: 'partial',
             relative: 'outer.adoc',
-          },
-        ],
-        2
-      )
+          })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -952,21 +979,24 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('resolveResource', 'getByPath')
       setInputFileContents('include::component-b::partial$outer.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.resolveResource, [
-        'component-b::partial$outer.adoc',
-        {
-          component: inputFile.src.component,
-          version: inputFile.src.version,
-          module: inputFile.src.module,
-          family: 'page',
-          relative: 'page-a.adoc',
-        },
-      ])
-      expectCalledWith(contentCatalog.getByPath, {
-        component: 'component-b',
-        version: 'master',
-        path: 'modules/ROOT/pages/_partials/deeply/nested.adoc',
-      })
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with(
+          'component-b::partial$outer.adoc',
+          {
+            component: inputFile.src.component,
+            version: inputFile.src.version,
+            module: inputFile.src.module,
+            family: 'page',
+            relative: 'page-a.adoc',
+          })
+      expect(contentCatalog.getByPath)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: 'master',
+          path: 'modules/ROOT/pages/_partials/deeply/nested.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -995,9 +1025,9 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('include::component-b::partial$outer.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(contentCatalog.resolveResource).to.have.been.called.twice()
-      expectCalledWith(
-        contentCatalog.resolveResource,
-        [
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with(
           'component-b::partial$outer.adoc',
           {
             component: inputFile.src.component,
@@ -1005,13 +1035,10 @@ describe('loadAsciiDoc()', () => {
             module: inputFile.src.module,
             family: 'page',
             relative: 'page-a.adoc',
-          },
-        ],
-        1
-      )
-      expectCalledWith(
-        contentCatalog.resolveResource,
-        [
+          })
+      expect(contentCatalog.resolveResource)
+        .nth(2)
+        .called.with(
           'another-module:partial$deeply/nested.adoc',
           {
             component: 'component-b',
@@ -1019,10 +1046,7 @@ describe('loadAsciiDoc()', () => {
             module: 'ROOT',
             family: 'partial',
             relative: 'outer.adoc',
-          },
-        ],
-        2
-      )
+          })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -1049,9 +1073,9 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('include::component-b::partial$outer.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(contentCatalog.resolveResource).to.have.been.called.twice()
-      expectCalledWith(
-        contentCatalog.resolveResource,
-        [
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with(
           'component-b::partial$outer.adoc',
           {
             component: inputFile.src.component,
@@ -1059,13 +1083,10 @@ describe('loadAsciiDoc()', () => {
             module: inputFile.src.module,
             family: 'page',
             relative: 'page-a.adoc',
-          },
-        ],
-        1
-      )
-      expectCalledWith(
-        contentCatalog.resolveResource,
-        [
+          })
+      expect(contentCatalog.resolveResource)
+        .nth(2)
+        .called.with(
           'component-a:module-a:partial$deeply/nested.adoc',
           {
             component: 'component-b',
@@ -1073,10 +1094,7 @@ describe('loadAsciiDoc()', () => {
             module: 'ROOT',
             family: 'partial',
             relative: 'outer.adoc',
-          },
-        ],
-        2
-      )
+          })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -1108,13 +1126,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('include::partial$greeting.adoc[]')
       const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'greeting.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
       const maxIncludeDepth = doc.getAttribute('max-include-depth')
       expect(doc.getBlocks()).to.have.lengthOf(maxIncludeDepth)
       expect(messages).to.have.lengthOf(1)
@@ -1132,13 +1152,15 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('include::partial$greeting.adoc[depth=0]')
       const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
       expect(contentCatalog.getById).to.have.been.called.once()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'greeting.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
       expect(doc.getBlocks()).to.have.lengthOf(1)
       expect(messages).to.have.lengthOf(1)
       expect(messages[0].trim()).to.equal(
@@ -1155,13 +1177,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('include::{partialsdir}/greeting.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'greeting.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
       expect(doc.getCatalog().includes['$key?']('greeting')).to.be.true()
       expect(doc.getCatalog().includes['$[]']('greeting')).to.equal(global.Opal.nil)
     })
@@ -1954,11 +1978,13 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getByPath')
       setInputFileContents('include::changelog.adoc[]')
       const doc = loadAsciiDoc(inputFile, contentCatalog)
-      expectCalledWith(contentCatalog.getByPath, {
-        component: 'component-a',
-        version: 'master',
-        path: 'modules/module-a/pages/changelog.adoc',
-      })
+      expect(contentCatalog.getByPath)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          path: 'modules/module-a/pages/changelog.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -2014,28 +2040,24 @@ describe('loadAsciiDoc()', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(
-        contentCatalog.getById,
-        {
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
           component: 'component-b',
           version: '4.5.6',
           module: 'module-b',
           family: 'page',
           relative: 'topic-foo/topic-bar/the-page.adoc',
-        },
-        1
-      )
-      expectCalledWith(
-        contentCatalog.getById,
-        {
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
           component: 'component-b',
           version: '4.5.6',
           module: 'module-b',
           family: 'alias',
           relative: 'topic-foo/topic-bar/the-page.adoc',
-        },
-        2
-      )
+        })
       expectUnresolvedPageLink(html, '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc', 'The Page Title')
     })
 
@@ -2043,28 +2065,24 @@ describe('loadAsciiDoc()', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(
-        contentCatalog.getById,
-        {
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
           component: 'component-b',
           version: '4.5.6',
           module: 'module-b',
           family: 'page',
           relative: 'topic-foo/topic-bar/the-page.adoc',
-        },
-        1
-      )
-      expectCalledWith(
-        contentCatalog.getById,
-        {
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
           component: 'component-b',
           version: '4.5.6',
           module: 'module-b',
           family: 'alias',
           relative: 'topic-foo/topic-bar/the-page.adoc',
-        },
-        2
-      )
+        })
       expectUnresolvedPageLink(
         html,
         '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc',
@@ -2076,13 +2094,15 @@ describe('loadAsciiDoc()', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        })
       expectUnresolvedPageLink(
         html,
         '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag',
@@ -2094,13 +2114,15 @@ describe('loadAsciiDoc()', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag[]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        })
       expectUnresolvedPageLink(
         html,
         '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag',
@@ -2113,13 +2135,15 @@ describe('loadAsciiDoc()', () => {
       delete contentCatalog.getPages()[0].pub
       setInputFileContents('xref:_hidden.adoc[Hidden Page]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: '_hidden.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: '_hidden.adoc',
+        })
       expectUnresolvedPageLink(html, '#_hidden.adoc', 'Hidden Page')
     })
 
@@ -2133,13 +2157,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/module-b/the-page.html', 'The Page Title')
     })
 
@@ -2153,13 +2179,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/topic-bar/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/topic-bar/the-page.adoc',
+        })
       expectPageLink(
         html,
         inputFile.pub.rootPath + '/component-b/4.5.6/module-b/topic-foo/topic-bar/the-page.html',
@@ -2177,13 +2205,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/the-page.adoc#frag[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'topic-foo/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'topic-foo/the-page.adoc',
+        })
       expectPageLink(
         html,
         inputFile.pub.rootPath + '/component-b/4.5.6/module-b/topic-foo/the-page.html#frag',
@@ -2201,13 +2231,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@module-b:the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, '../4.5.6/module-b/the-page.html', 'The Page Title')
     })
 
@@ -2221,13 +2253,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@module-b:the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, '../4.5.6/module-b/the-topic/the-page.html', 'The Page Title')
     })
 
@@ -2241,13 +2275,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b::the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/the-page.html', 'The Page Title')
     })
 
@@ -2261,13 +2297,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@component-b::the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '4.5.6',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '4.5.6',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, inputFile.pub.rootPath + '/component-b/4.5.6/the-topic/the-page.html', 'The Page Title')
     })
 
@@ -2281,15 +2319,17 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b::the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '1.1',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getComponent).nth(1).called.with('component-a')
+      expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '1.1',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, inputFile.pub.rootPath + '/component-b/1.1/the-page.html', 'The Page Title')
     })
 
@@ -2303,15 +2343,17 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b::the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '1.0',
-        module: 'ROOT',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getComponent).nth(1).called.with('component-a')
+      expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '1.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, inputFile.pub.rootPath + '/component-b/1.0/the-topic/the-page.html', 'The Page Title')
     })
 
@@ -2325,15 +2367,17 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b:module-b:the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: '2.0',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getComponent).nth(1).called.with('component-a')
+      expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '2.0',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, inputFile.pub.rootPath + '/component-b/2.0/module-b/the-page.html', 'The Page Title')
     })
 
@@ -2347,15 +2391,17 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b:module-b:the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
-      expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-b',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getComponent).nth(1).called.with('component-a')
+      expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, inputFile.pub.rootPath + '/component-b/module-b/the-topic/the-page.html', 'The Page Title')
     })
 
@@ -2369,13 +2415,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, '../4.5.6/module-a/the-page.html', 'The Page Title')
     })
 
@@ -2383,13 +2431,15 @@ describe('loadAsciiDoc()', () => {
       const contentCatalog = mockContentCatalog({ relative: '@the-page.adoc' }).spyOn('getById')
       setInputFileContents('xref:module-a:@the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: '@the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: '@the-page.adoc',
+        })
       expectPageLink(html, '@the-page.html', 'The Page Title')
     })
 
@@ -2400,13 +2450,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:5.6.4@@the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '5.6.4',
-        module: 'module-a',
-        family: 'page',
-        relative: '@the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '5.6.4',
+          module: 'module-a',
+          family: 'page',
+          relative: '@the-page.adoc',
+        })
       expectPageLink(html, '../5.6.4/module-a/@the-page.html', 'The Page Title')
     })
 
@@ -2420,13 +2472,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:4.5.6@the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: '4.5.6',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, '../4.5.6/module-a/the-topic/the-page.html', 'The Page Title')
     })
 
@@ -2440,13 +2494,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:module-b:the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, '../module-b/the-page.html', 'The Page Title')
     })
 
@@ -2460,13 +2516,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:module-b:the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, '../module-b/the-topic/the-page.html', 'The Page Title')
     })
 
@@ -2480,13 +2538,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, 'the-page.html', 'The Page Title')
     })
 
@@ -2500,13 +2560,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:i like spaces.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'i like spaces.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'i like spaces.adoc',
+        })
       expectPageLink(html, 'i%20like%20spaces.html', 'The Page Title')
     })
 
@@ -2524,13 +2586,15 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expectPageLink(html, '../the-page.html', 'The Page Title')
     })
 
@@ -2544,13 +2608,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:the-page.adoc[The Page Title,role=secret,opts=nofollow]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
       expect(html).to.include('<a href="the-page.html" class="page secret" rel="nofollow">The Page Title</a>')
     })
 
@@ -2564,13 +2630,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, 'the-topic/the-page.html', 'The Page Title')
     })
 
@@ -2588,13 +2656,15 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'topic-b/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'topic-b/the-page.adoc',
+        })
       expectPageLink(html, '../topic-b/the-page.html', 'The Page Title')
     })
 
@@ -2606,13 +2676,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
       expectPageLink(html, 'this-page.html', 'Link to Self')
     })
 
@@ -2624,13 +2696,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
       expectPageLink(html, 'this-page.html', 'Link to Self')
     })
 
@@ -2642,13 +2716,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
       expectLink(html, '#the-fragment', 'Deep Link to Self')
     })
 
@@ -2660,13 +2736,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
       expectLink(html, '#the-fragment', 'Target Section')
     })
 
@@ -2696,13 +2774,15 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog, { relativizePageRefs: false }).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'that-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'that-page.adoc',
+        })
       expectPageLink(html, '/component-a/module-a/that-page.html', 'The Page Title')
     })
 
@@ -2723,13 +2803,15 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'that-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'that-page.adoc',
+        })
       expectPageLink(html, '../../module-b/that-page/', 'The Page Title')
     })
 
@@ -2749,13 +2831,15 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'the-topic/that-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/that-page.adoc',
+        })
       expectPageLink(html, '../the-topic/that-page/', 'The Page Title')
     })
 
@@ -2775,13 +2859,15 @@ describe('loadAsciiDoc()', () => {
       ]).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'that-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'that-page.adoc',
+        })
       expectPageLink(html, '../../that-page/', 'The Page Title')
     })
 
@@ -2794,13 +2880,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
       expectPageLink(html, './', 'Link to Self')
     })
 
@@ -2813,13 +2901,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
       expectPageLink(html, './', 'Link to Self')
     })
 
@@ -2832,13 +2922,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
       expectLink(html, '#the-fragment', 'Deep Link to Self')
     })
 
@@ -2851,13 +2943,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-a',
-        family: 'page',
-        relative: 'this-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
       expectLink(html, '#the-fragment', 'Deep Link to Self')
     })
 
@@ -2873,13 +2967,15 @@ describe('loadAsciiDoc()', () => {
       targetPage.asciidoc = { doctitle: 'Page Title', xreftext: 'reference me' }
       setInputFileContents('xref:module-b:the-topic/the-page.adoc#[]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, '../module-b/the-topic/the-page.html', 'reference me')
     })
 
@@ -2893,13 +2989,15 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents('xref:module-b:the-topic/the-page.adoc[]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, '../module-b/the-topic/the-page.html', 'module-b:the-topic/the-page.adoc')
     })
 
@@ -2915,13 +3013,15 @@ describe('loadAsciiDoc()', () => {
       targetPage.asciidoc = { doctitle: 'Page Title', xreftext: 'page title' }
       setInputFileContents('xref:module-b:the-topic/the-page.adoc#frag[]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expectCalledWith(contentCatalog.getById, {
-        component: 'component-a',
-        version: 'master',
-        module: 'module-b',
-        family: 'page',
-        relative: 'the-topic/the-page.adoc',
-      })
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
       expectPageLink(html, '../module-b/the-topic/the-page.html#frag', 'module-b:the-topic/the-page.adoc#frag')
     })
 

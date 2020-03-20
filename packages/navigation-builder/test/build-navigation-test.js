@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, expectCalledWith, heredoc } = require('../../../test/test-utils')
+const { expect, heredoc } = require('../../../test/test-utils')
 
 const buildNavigation = require('@antora/navigation-builder')
 const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
@@ -11,7 +11,7 @@ describe('buildNavigation()', () => {
   it('should run on all files in the navigation family', () => {
     const contentCatalog = mockContentCatalog().spyOn('findBy')
     buildNavigation(contentCatalog)
-    expectCalledWith(contentCatalog.findBy, { family: 'nav' })
+    expect(contentCatalog.findBy).nth(1).called.with({ family: 'nav' })
   })
 
   it('should build single navigation list with title', () => {
@@ -247,60 +247,44 @@ describe('buildNavigation()', () => {
       { component: 'component-b', version: '1.1', module: 'ROOT', family: 'page', relative: 'page-d.adoc' },
     ]).spyOn('getById', 'getComponent')
     buildNavigation(contentCatalog)
-    expectCalledWith(
-      contentCatalog.getById,
-      [
-        {
-          component: 'component-a',
-          version: 'master',
-          module: 'module-a',
-          family: 'page',
-          relative: 'page-a.adoc',
-        },
-      ],
-      1
-    )
-    expectCalledWith(
-      contentCatalog.getById,
-      [
-        {
-          component: 'component-a',
-          version: 'master',
-          module: 'module-b',
-          family: 'page',
-          relative: 'page-b.adoc',
-        },
-      ],
-      2
-    )
-    expectCalledWith(
-      contentCatalog.getById,
-      [
-        {
-          component: 'component-a',
-          version: '0.9',
-          module: 'module-a',
-          family: 'page',
-          relative: 'page-c.adoc',
-        },
-      ],
-      3
-    )
-    expectCalledWith(contentCatalog.getComponent, 'component-a', 1)
-    expectCalledWith(contentCatalog.getComponent, 'component-b', 2)
-    expectCalledWith(
-      contentCatalog.getById,
-      [
-        {
-          component: 'component-b',
-          version: '1.1',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'page-d.adoc',
-        },
-      ],
-      4
-    )
+    expect(contentCatalog.getById)
+      .nth(1)
+      .called.with({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'page',
+        relative: 'page-a.adoc',
+      })
+    expect(contentCatalog.getById)
+      .nth(2)
+      .called.with({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-b',
+        family: 'page',
+        relative: 'page-b.adoc',
+      })
+    expect(contentCatalog.getById)
+      .nth(3)
+      .called.with({
+        component: 'component-a',
+        version: '0.9',
+        module: 'module-a',
+        family: 'page',
+        relative: 'page-c.adoc',
+      })
+    expect(contentCatalog.getComponent).nth(1).called.with('component-a')
+    expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+    expect(contentCatalog.getById)
+      .nth(4)
+      .called.with({
+        component: 'component-b',
+        version: '1.1',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'page-d.adoc',
+      })
   })
 
   it('should mark entry with unresolved page reference as unresolved internal url', () => {
@@ -1512,15 +1496,15 @@ describe('buildNavigation()', () => {
       { family: 'page', relative: 'basics/requirements.adoc' },
     ]).spyOn('getById')
     const navCatalog = buildNavigation(contentCatalog, resolveAsciiDocConfig())
-    expectCalledWith(contentCatalog.getById, [
-      {
+    expect(contentCatalog.getById)
+      .nth(1)
+      .called.with({
         component: 'component-a',
         version: 'master',
         module: 'module-a',
         family: 'partial',
         relative: 'nav/basics.adoc',
-      },
-    ])
+      })
     const menu = navCatalog.getNavigation('component-a', 'master')
     expect(menu).to.exist()
     expect(menu).to.have.lengthOf(1)
@@ -1561,15 +1545,15 @@ describe('buildNavigation()', () => {
       { family: 'page', relative: 'intermediate/redirects.adoc' },
     ]).spyOn('getById')
     const navCatalog = buildNavigation(contentCatalog, resolveAsciiDocConfig())
-    expectCalledWith(contentCatalog.getById, [
-      {
+    expect(contentCatalog.getById)
+      .nth(1)
+      .called.with({
         component: 'component-a',
         version: 'master',
         module: 'module-a',
         family: 'partial',
         relative: 'nav/intermediate.adoc',
-      },
-    ])
+      })
     const menu = navCatalog.getNavigation('component-a', 'master')
     expect(menu).to.exist()
     expect(menu).to.have.lengthOf(1)
@@ -1612,15 +1596,15 @@ describe('buildNavigation()', () => {
       { module: 'advanced', family: 'page', relative: 'caching.adoc' },
     ]).spyOn('getById')
     const navCatalog = buildNavigation(contentCatalog, resolveAsciiDocConfig())
-    expectCalledWith(contentCatalog.getById, [
-      {
+    expect(contentCatalog.getById)
+      .nth(1)
+      .called.with({
         component: 'component-a',
         version: 'master',
         module: 'advanced',
         family: 'partial',
         relative: 'nav/advanced.adoc',
-      },
-    ])
+      })
     const menu = navCatalog.getNavigation('component-a', 'master')
     expect(menu).to.exist()
     expect(menu).to.have.lengthOf(1)
