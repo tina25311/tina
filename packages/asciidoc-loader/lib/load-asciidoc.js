@@ -173,10 +173,10 @@ function resolveConfig (playbook = {}) {
     const extensions = config.extensions.reduce((accum, extensionPath) => {
       if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
         // NOTE require resolves a dot-relative path relative to current file; resolve relative to playbook dir instead
-        extensionPath = ospath.resolve(playbook.dir, extensionPath)
+        extensionPath = ospath.resolve(playbook.dir || '.', extensionPath)
       } else if (!ospath.isAbsolute(extensionPath)) {
         // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
-        const paths = [playbook.dir, ospath.dirname(__dirname)].map((start) => ospath.join(start, 'node_modules'))
+        const paths = [playbook.dir || '.', ospath.dirname(__dirname)].map((root) => ospath.join(root, 'node_modules'))
         extensionPath = require.resolve(extensionPath, { paths })
       }
       const extension = require(extensionPath)
