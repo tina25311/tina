@@ -35,7 +35,7 @@ class UiCatalog {
 UiCatalog.prototype.getFiles = UiCatalog.prototype.getAll
 
 function generateKey ({ type, path }) {
-  return `${type}$${path}`
+  return type + '$' + path
 }
 
 module.exports = UiCatalog
