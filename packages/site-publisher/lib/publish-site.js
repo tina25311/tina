@@ -62,7 +62,7 @@ async function publishSite (playbook, catalogs) {
   // Q: add getPublishableFiles / getOutFiles; return a stream? or getOutFilesAsStream?
   // TODO remove check for getAll on catalog in Antora 3
   const filesToPublish = catalogs.reduce(
-    (accum, catalog) => accum.concat((catalog.getAll || catalog.getFiles)().filter((file) => file.out)),
+    (accum, catalog) => accum.concat((catalog.getAll || catalog.getFiles).apply(catalog).filter((file) => file.out)),
     []
   )
 
