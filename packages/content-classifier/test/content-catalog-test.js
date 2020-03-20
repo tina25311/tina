@@ -520,9 +520,7 @@ describe('ContentCatalog', () => {
           name: 'the-other-component',
           title: 'The Other Component',
           version: 'v1.0.0',
-          files: [
-            createFile('modules/ROOT/pages/page-two.adoc'),
-          ],
+          files: [createFile('modules/ROOT/pages/page-two.adoc')],
         },
       ]
     })

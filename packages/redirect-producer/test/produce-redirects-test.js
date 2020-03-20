@@ -38,7 +38,9 @@ describe('produceRedirects()', () => {
     const emptyContentCatalog = mockContentCatalog().spyOn('findBy')
     const result = produceRedirects(playbook, emptyContentCatalog)
     expect(result).to.have.lengthOf(0)
-    expect(emptyContentCatalog.findBy).nth(1).called.with({ family: 'alias' })
+    expect(emptyContentCatalog.findBy)
+      .nth(1)
+      .called.with({ family: 'alias' })
   })
 
   describe('static facility', () => {

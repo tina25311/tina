@@ -11,7 +11,9 @@ describe('buildNavigation()', () => {
   it('should run on all files in the navigation family', () => {
     const contentCatalog = mockContentCatalog().spyOn('findBy')
     buildNavigation(contentCatalog)
-    expect(contentCatalog.findBy).nth(1).called.with({ family: 'nav' })
+    expect(contentCatalog.findBy)
+      .nth(1)
+      .called.with({ family: 'nav' })
   })
 
   it('should build single navigation list with title', () => {
@@ -274,8 +276,12 @@ describe('buildNavigation()', () => {
         family: 'page',
         relative: 'page-c.adoc',
       })
-    expect(contentCatalog.getComponent).nth(1).called.with('component-a')
-    expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+    expect(contentCatalog.getComponent)
+      .nth(1)
+      .called.with('component-a')
+    expect(contentCatalog.getComponent)
+      .nth(2)
+      .called.with('component-b')
     expect(contentCatalog.getById)
       .nth(4)
       .called.with({

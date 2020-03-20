@@ -888,15 +888,13 @@ describe('loadAsciiDoc()', () => {
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(contentCatalog.resolveResource)
         .nth(1)
-        .called.with(
-          'other-module:partial$outer.adoc',
-          {
-            component: inputFile.src.component,
-            version: inputFile.src.version,
-            module: inputFile.src.module,
-            family: 'page',
-            relative: 'page-a.adoc',
-          })
+        .called.with('other-module:partial$outer.adoc', {
+          component: inputFile.src.component,
+          version: inputFile.src.version,
+          module: inputFile.src.module,
+          family: 'page',
+          relative: 'page-a.adoc',
+        })
       expect(contentCatalog.getByPath)
         .nth(1)
         .called.with({
@@ -932,26 +930,22 @@ describe('loadAsciiDoc()', () => {
       expect(contentCatalog.resolveResource).to.have.been.called.twice()
       expect(contentCatalog.resolveResource)
         .nth(1)
-        .called.with(
-          'other-module:partial$outer.adoc',
-          {
-            component: inputFile.src.component,
-            version: inputFile.src.version,
-            module: inputFile.src.module,
-            family: 'page',
-            relative: 'page-a.adoc',
-          })
+        .called.with('other-module:partial$outer.adoc', {
+          component: inputFile.src.component,
+          version: inputFile.src.version,
+          module: inputFile.src.module,
+          family: 'page',
+          relative: 'page-a.adoc',
+        })
       expect(contentCatalog.resolveResource)
         .nth(2)
-        .called.with(
-          'yet-another-module:partial$deeply/nested.adoc',
-          {
-            component: 'component-a',
-            version: 'master',
-            module: 'other-module',
-            family: 'partial',
-            relative: 'outer.adoc',
-          })
+        .called.with('yet-another-module:partial$deeply/nested.adoc', {
+          component: 'component-a',
+          version: 'master',
+          module: 'other-module',
+          family: 'partial',
+          relative: 'outer.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -981,15 +975,13 @@ describe('loadAsciiDoc()', () => {
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(contentCatalog.resolveResource)
         .nth(1)
-        .called.with(
-          'component-b::partial$outer.adoc',
-          {
-            component: inputFile.src.component,
-            version: inputFile.src.version,
-            module: inputFile.src.module,
-            family: 'page',
-            relative: 'page-a.adoc',
-          })
+        .called.with('component-b::partial$outer.adoc', {
+          component: inputFile.src.component,
+          version: inputFile.src.version,
+          module: inputFile.src.module,
+          family: 'page',
+          relative: 'page-a.adoc',
+        })
       expect(contentCatalog.getByPath)
         .nth(1)
         .called.with({
@@ -1027,26 +1019,22 @@ describe('loadAsciiDoc()', () => {
       expect(contentCatalog.resolveResource).to.have.been.called.twice()
       expect(contentCatalog.resolveResource)
         .nth(1)
-        .called.with(
-          'component-b::partial$outer.adoc',
-          {
-            component: inputFile.src.component,
-            version: inputFile.src.version,
-            module: inputFile.src.module,
-            family: 'page',
-            relative: 'page-a.adoc',
-          })
+        .called.with('component-b::partial$outer.adoc', {
+          component: inputFile.src.component,
+          version: inputFile.src.version,
+          module: inputFile.src.module,
+          family: 'page',
+          relative: 'page-a.adoc',
+        })
       expect(contentCatalog.resolveResource)
         .nth(2)
-        .called.with(
-          'another-module:partial$deeply/nested.adoc',
-          {
-            component: 'component-b',
-            version: 'master',
-            module: 'ROOT',
-            family: 'partial',
-            relative: 'outer.adoc',
-          })
+        .called.with('another-module:partial$deeply/nested.adoc', {
+          component: 'component-b',
+          version: 'master',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'outer.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -1075,26 +1063,22 @@ describe('loadAsciiDoc()', () => {
       expect(contentCatalog.resolveResource).to.have.been.called.twice()
       expect(contentCatalog.resolveResource)
         .nth(1)
-        .called.with(
-          'component-b::partial$outer.adoc',
-          {
-            component: inputFile.src.component,
-            version: inputFile.src.version,
-            module: inputFile.src.module,
-            family: 'page',
-            relative: 'page-a.adoc',
-          })
+        .called.with('component-b::partial$outer.adoc', {
+          component: inputFile.src.component,
+          version: inputFile.src.version,
+          module: inputFile.src.module,
+          family: 'page',
+          relative: 'page-a.adoc',
+        })
       expect(contentCatalog.resolveResource)
         .nth(2)
-        .called.with(
-          'component-a:module-a:partial$deeply/nested.adoc',
-          {
-            component: 'component-b',
-            version: 'master',
-            module: 'ROOT',
-            family: 'partial',
-            relative: 'outer.adoc',
-          })
+        .called.with('component-a:module-a:partial$deeply/nested.adoc', {
+          component: 'component-b',
+          version: 'master',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'outer.adoc',
+        })
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).not.to.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -2319,8 +2303,12 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b::the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expect(contentCatalog.getComponent).nth(1).called.with('component-a')
-      expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+      expect(contentCatalog.getComponent)
+        .nth(1)
+        .called.with('component-a')
+      expect(contentCatalog.getComponent)
+        .nth(2)
+        .called.with('component-b')
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2343,8 +2331,12 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b::the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expect(contentCatalog.getComponent).nth(1).called.with('component-a')
-      expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+      expect(contentCatalog.getComponent)
+        .nth(1)
+        .called.with('component-a')
+      expect(contentCatalog.getComponent)
+        .nth(2)
+        .called.with('component-b')
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2367,8 +2359,12 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b:module-b:the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expect(contentCatalog.getComponent).nth(1).called.with('component-a')
-      expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+      expect(contentCatalog.getComponent)
+        .nth(1)
+        .called.with('component-a')
+      expect(contentCatalog.getComponent)
+        .nth(2)
+        .called.with('component-b')
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2391,8 +2387,12 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById', 'getComponent')
       setInputFileContents('xref:component-b:module-b:the-topic/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
-      expect(contentCatalog.getComponent).nth(1).called.with('component-a')
-      expect(contentCatalog.getComponent).nth(2).called.with('component-b')
+      expect(contentCatalog.getComponent)
+        .nth(1)
+        .called.with('component-a')
+      expect(contentCatalog.getComponent)
+        .nth(2)
+        .called.with('component-b')
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({

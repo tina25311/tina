@@ -267,7 +267,9 @@ describe('build UI model', () => {
 
     it('should set component property to component from content catalog', () => {
       const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
-      expect(contentCatalog.getComponent).nth(1).called.with('the-component')
+      expect(contentCatalog.getComponent)
+        .nth(1)
+        .called.with('the-component')
       expect(model.component).to.exist()
       expect(model.component.name).to.equal('the-component')
     })
@@ -398,7 +400,9 @@ describe('build UI model', () => {
         ],
       })
       const model = buildPageUiModel(site, file, contentCatalog, navigationCatalog)
-      expect(navigationCatalog.getNavigation).nth(1).called.with('the-component', '1.0')
+      expect(navigationCatalog.getNavigation)
+        .nth(1)
+        .called.with('the-component', '1.0')
       expect(model.navigation).to.exist()
       expect(model.navigation).to.equal(menu)
     })

@@ -285,7 +285,9 @@ describe('convertDocument()', () => {
     }
     const contentCatalog = { resolvePage: spy(() => targetFile), getComponent: () => {} }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.resolvePage).nth(1).called.with('module-b:page-b', inputFile.src)
+    expect(contentCatalog.resolvePage)
+      .nth(1)
+      .called.with('module-b:page-b', inputFile.src)
     expectPageLink(inputFile.contents.toString(), '../module-b/page-b.html', 'Page B')
   })
 
@@ -358,11 +360,13 @@ describe('convertDocument()', () => {
     convertDocument(includedFile, undefined, asciidocConfig)
     expect(includedFile.src).to.have.property('contents')
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.getByPath).nth(1).called.with({
-      component: 'component-a',
-      version: '1.2.3',
-      path: 'modules/module-a/pages/changelog.adoc',
-    })
+    expect(contentCatalog.getByPath)
+      .nth(1)
+      .called.with({
+        component: 'component-a',
+        version: '1.2.3',
+        path: 'modules/module-a/pages/changelog.adoc',
+      })
     expect(inputFile.contents.toString()).to.include(heredoc`
       <div class="sect1">
       <h2 id="_recent_changes"><a class="anchor" href="#_recent_changes"></a>Recent Changes</h2>
@@ -424,11 +428,13 @@ describe('convertDocument()', () => {
     convertDocument(includedFile, undefined, asciidocConfig)
     expect(includedFile.src).to.have.property('contents')
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.getByPath).nth(1).called.with({
-      component: 'component-a',
-      version: '1.2.3',
-      path: 'modules/module-a/pages/changelog.adoc',
-    })
+    expect(contentCatalog.getByPath)
+      .nth(1)
+      .called.with({
+        component: 'component-a',
+        version: '1.2.3',
+        path: 'modules/module-a/pages/changelog.adoc',
+      })
     expect(inputFile.contents.toString()).to.include(heredoc`
       <div class="sect1">
       <h2 id="_recent_changes"><a class="anchor" href="#_recent_changes"></a>Recent Changes</h2>
