@@ -48,7 +48,7 @@ class ContentCatalog {
       }
     }
     if (asciidoc) componentVersion.asciidoc = asciidoc
-    const component = this.getComponent(name)
+    const component = this[$components].get(name)
     if (component) {
       const componentVersions = component.versions
       const insertIdx = componentVersions.findIndex(({ version: candidate }) => {
