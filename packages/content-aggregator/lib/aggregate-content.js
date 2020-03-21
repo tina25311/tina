@@ -71,15 +71,18 @@ const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)
 function aggregateContent (playbook) {
   const startDir = playbook.dir || '.'
   const { branches, editUrl, tags, sources } = playbook.content
-  const sourcesByUrl = _.groupBy(sources, 'url')
+  const sourcesByUrl = sources.reduce(
+    (accum, source) => accum.set(source.url, [...(accum.get(source.url) || []), source]),
+    new Map()
+  )
   const { cacheDir, fetch, silent, quiet } = playbook.runtime
-  const progress = !quiet && !silent && createProgress(sourcesByUrl, process.stdout)
+  const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
   const { ensureGitSuffix, credentials } = Object.assign({ ensureGitSuffix: true }, playbook.git)
   const credentialManager = registerGitPlugins(credentials, startDir).get('credentialManager')
   return promiseFinally(
     ensureCacheDir(cacheDir, startDir).then((resolvedCacheDir) =>
       Promise.all(
-        Object.entries(sourcesByUrl).map(([url, sources]) =>
+        Array.from(sourcesByUrl, ([url, sources]) =>
           loadRepository(url, {
             cacheDir: resolvedCacheDir,
             credentialManager,
@@ -601,22 +604,19 @@ function getFetchOptions (repo, progress, url, credentials, fetchTags, operation
   return opts
 }
 
-function createProgress (sourcesByUrl, term) {
+function createProgress (urls, term) {
   if (term.isTTY && term.columns > 59) {
     //term.write('Aggregating content...\n')
+    let maxUrlLength = 0
+    for (const url of urls) {
+      if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
+        const urlLength = extractCredentials(url).displayUrl.length
+        if (urlLength > maxUrlLength) maxUrlLength = urlLength
+      }
+    }
     const progress = new MultiProgress(term)
-    progress.maxLabelWidth = Math.min(
-      // NOTE remove the width of the operation, then split the difference between the url and bar
-      Math.ceil((term.columns - GIT_OPERATION_LABEL_LENGTH) / 2),
-      Object.keys(sourcesByUrl).reduce(
-        (max, url) =>
-          Math.max(
-            max,
-            ~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url) ? extractCredentials(url).displayUrl.length : 0
-          ),
-        0
-      )
-    )
+    // NOTE remove the width of the operation, then partition the difference between the url and bar
+    progress.maxLabelWidth = Math.min(Math.ceil((term.columns - GIT_OPERATION_LABEL_LENGTH) / 2), maxUrlLength)
     return progress
   }
 }
