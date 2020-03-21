@@ -75,13 +75,19 @@ describe('classifyContent()', () => {
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
-        version: 'v2.0.0',
+        version: 'v1',
+        files: [],
+      })
+      aggregate.push({
+        name: 'another-component',
+        title: 'Another Component',
+        version: 'v1.0.0',
         files: [],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
-        version: 'v1',
+        version: 'v2.0.0',
         files: [],
       })
       const component = classifyContent(playbook, aggregate).getComponent('the-component')

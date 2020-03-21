@@ -1,6 +1,5 @@
 'use strict'
 
-const _ = require('lodash')
 const camelCaseKeys = require('camelcase-keys')
 const { createHash } = require('crypto')
 const EventEmitter = require('events')
@@ -115,19 +114,12 @@ function aggregateContent (playbook) {
 }
 
 function buildAggregate (componentVersionBuckets) {
-  return _(flattenDeep(componentVersionBuckets))
-    .groupBy(({ name, version }) => version + '@' + name)
-    .map((componentVersions, id) => {
-      const component = _(componentVersions)
-        .map((a) => _.omit(a, 'files'))
-        .reduce((a, b) => _.assign(a, b), {})
-      component.files = _(componentVersions)
-        .map('files')
-        .reduce((a, b) => a.concat(b), [])
-      return component
-    })
-    .sortBy(['name', 'version'])
-    .value()
+  const aggregateMap = flattenDeep(componentVersionBuckets).reduce((accum, batch) => {
+    const key = batch.version + '@' + batch.name
+    const entry = accum.get(key)
+    return accum.set(key, entry ? Object.assign(entry, batch, { files: [...entry.files, ...batch.files] }) : batch)
+  }, new Map())
+  return [...aggregateMap.values()]
 }
 
 async function loadRepository (url, opts) {
