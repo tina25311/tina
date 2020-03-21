@@ -431,14 +431,14 @@ function readFilesFromGitTree (repo, oid, startPath) {
 
 function getGitTree (repo, oid, startPath) {
   return git
-    .readObject(Object.assign({ oid, filepath: startPath }, repo))
-    .catch(() => {
-      throw new Error(`the start path '${startPath}' does not exist`)
+    .readTree(Object.assign({ oid, filepath: startPath }, repo))
+    .catch(({ code }) => {
+      console.log(code)
+      throw new Error(
+        `the start path '${startPath}' ${code === git.E.ResolveTreeError ? 'is not a directory' : 'does not exist'}`
+      )
     })
-    .then(({ type, object }) => {
-      if (type !== 'tree') throw new Error(`the start path '${startPath}' is not a directory`)
-      return object
-    })
+    .then(({ tree }) => tree)
 }
 
 function srcGitTree (repo, tree) {
@@ -457,7 +457,7 @@ function walkGitTree (repo, root, filter) {
   let depth = 1
   function visit (tree, dirname = '') {
     depth--
-    for (const entry of tree.entries) {
+    for (const entry of tree) {
       if (filter(entry)) {
         const type = entry.type
         if (type === 'blob') {
@@ -471,8 +471,8 @@ function walkGitTree (repo, root, filter) {
         } else if (type === 'tree') {
           depth++
           git
-            .readObject(Object.assign({ oid: entry.oid }, repo))
-            .then(({ object: subtree }) => visit(subtree, path.join(dirname, entry.path)))
+            .readTree(Object.assign({ oid: entry.oid }, repo))
+            .then(({ tree: subtree }) => visit(subtree, path.join(dirname, entry.path)))
             .catch((err) => emitter.emit('error', err))
         }
       }
@@ -491,7 +491,7 @@ function filterGitEntry (entry) {
 }
 
 function entryToFile (entry) {
-  return git.readObject(entry).then(({ object: contents }) => {
+  return git.readBlob(entry).then(({ blob: contents }) => {
     const stat = new fs.Stats()
     stat.mode = entry.mode
     stat.mtime = undefined
