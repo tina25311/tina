@@ -18,11 +18,6 @@ async function run (argv = process.argv) {
   return result
 }
 
-//process.on('unhandledRejection', (reason) => {
-//  console.error(`An unexpected error occurred: Unhandled promise rejection: ${reason.stack}`)
-//  process.exitCode = 1
-//})
-
 function exitWithError (err, showStack, msg = undefined) {
   msg = showStack ? err.stack : `error: ${msg || err.message}\nAdd the --stacktrace option to see the cause.`
   console.error(msg)
