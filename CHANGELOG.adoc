@@ -24,6 +24,7 @@ This project utilizes semantic versioning.
 * *document-converter*: Map `title` property on file to AsciiDoc doctitle (#593)
 * *navigation-builder*: Use automatic reference text (i.e., navtitle attribute or xreftext) if contents of page xref is empty (#310)
 * *page-composer*: Add `relativize` as built-in UI helper (#555)
+* *cli*: Allow COLUMNS environment variable to control help information width when output is not a TTY
 
 === Fixed
 
