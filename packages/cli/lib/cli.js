@@ -11,9 +11,8 @@ const ospath = require('path')
 const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').replace('\\', '\\\\')}]`)
 const { version: VERSION } = require('../package.json')
 
-async function run () {
-  if (process.argv.length < 3) process.argv.push('--help')
-  const result = cli.parse(process.argv)
+async function run (argv = process.argv) {
+  const result = cli.parse(argv.length < 3 ? [...argv, 'help'] : argv)
   /* istanbul ignore else */
   if (cli._promise) await cli._promise
   return result
