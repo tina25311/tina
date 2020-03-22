@@ -5,7 +5,6 @@ const { expect } = require('../../../test/test-utils')
 
 const { Command } = require('commander')
 require('@antora/cli/lib/commander/options-from-convict')
-require('@antora/cli/lib/commander/parse-with-default-command')
 const convict = require('convict')
 
 describe('commander', () => {
@@ -29,78 +28,94 @@ describe('commander', () => {
       }
     }
 
-    const createCli = (name) =>
+    const createCli = (name, defaultCommand = undefined) =>
       new Command()
         .name(name)
         .option('--silent', 'Silence is golden')
-        .command('sync')
-        .action(() => {})
-        .parent.command('run')
+        .command('sync', { isDefault: defaultCommand === 'sync' })
+        .action((cmd) => (lastCommand = 'sync'))
+        .parent.command('run', { isDefault: defaultCommand === 'run' })
         .option('--title <title>', 'Site title')
         .option('--url <url>', 'Site URL')
-        .action(() => {}).parent
+        .action((cmd) => (lastCommand = 'run')).parent
 
-    it('should output help if no command, options, or arguments are specified', () => {
+    let lastCommand
+
+    beforeEach(() => {
+      lastCommand = undefined
+    })
+
+    it('should run default command if no commands, options, or arguments are specified', () => {
+      trapExit(() => {
+        let helpShown
+        const command = createCli('cli', 'sync')
+        command.outputHelp = () => (helpShown = true)
+        command.parse(['node', 'cli'])
+        expect(() => command.parse(['node', 'cli'])).not.to.throw(ProcessExit)
+        expect(lastCommand).to.equal('sync')
+        expect(helpShown).to.be.undefined()
+      })
+    })
+
+    it('should output help if commands are defined but no command is specified', () => {
       trapExit(() => {
         let helpShown
         const command = createCli('cli')
         command.outputHelp = () => (helpShown = true)
-        expect(() => command.parse(['node', 'cli']))
+        expect(() => command.parse(['node', 'cli', '--silent']))
           .to.throw(ProcessExit)
-          .with.property('code', 0)
-        expect(command.rawArgs.slice(2)).to.eql(['--help'])
+          .with.property('code', 1)
+        expect(command.rawArgs.slice(2)).to.eql(['--silent'])
         expect(helpShown).to.be.true()
       })
     })
 
-    it('should not insert default command if no default command is provided', () => {
-      const command = createCli('cli').parse(['node', 'cli', '--silent'])
+    it('should insert default command if no command is present', () => {
+      const command = createCli('cli', 'run').parse(['node', 'cli', '--silent'])
       expect(command.rawArgs.slice(2)).to.eql(['--silent'])
       expect(command).to.have.property('silent', true)
-    })
-
-    it('should insert default command if no command is present', () => {
-      const command = createCli('cli').parse(['node', 'cli', '--silent'], { defaultCommand: 'run' })
-      expect(command.rawArgs.slice(2)).to.eql(['run', '--silent'])
-      expect(command).to.have.property('silent', true)
+      expect(lastCommand).to.equal('run')
     })
 
     it('should not insert default command if already present', () => {
-      const command = createCli('cli').parse(['node', 'cli', 'run'], { defaultCommand: 'run' })
+      const command = createCli('cli', 'run').parse(['node', 'cli', 'run'])
       expect(command.rawArgs.slice(2)).to.eql(['run'])
+      expect(lastCommand).to.equal('run')
     })
 
     it('should not insert default command if -h is specified', () => {
       trapExit(() => {
         let helpShown
-        const command = createCli('cli')
+        const command = createCli('cli', 'sync')
         command.outputHelp = () => (helpShown = true)
         expect(() => command.parse(['node', 'cli', '-h']))
           .to.throw(ProcessExit)
           .with.property('code', 0)
         expect(command.rawArgs.slice(2)).to.eql(['-h'])
         expect(helpShown).to.be.true()
+        expect(lastCommand).to.be.undefined()
       })
     })
 
     it('should not insert default command if --help is specified', () => {
       trapExit(() => {
         let helpShown
-        const command = createCli('cli')
+        const command = createCli('cli', 'sync')
         command.outputHelp = () => (helpShown = true)
         expect(() => command.parse(['node', 'cli', '--help']))
           .to.throw(ProcessExit)
           .with.property('code', 0)
         expect(command.rawArgs.slice(2)).to.eql(['--help'])
         expect(helpShown).to.be.true()
+        expect(lastCommand).to.be.undefined()
       })
     })
 
     it('should insert default command before other arguments and options', () => {
-      const command = createCli('cli').parse(['node', 'cli', '--title', 'Docs', '--url', 'https://docs.example.com'], {
-        defaultCommand: 'run',
-      })
-      expect(command.rawArgs.slice(2)).to.eql(['run', '--title', 'Docs', '--url', 'https://docs.example.com'])
+      const command = createCli('cli', 'run')
+      command.parse(['node', 'cli', '--title', 'Docs', '--url', 'https://docs.example.com'])
+      expect(command.rawArgs.slice(2)).to.eql(['--title', 'Docs', '--url', 'https://docs.example.com'])
+      expect(lastCommand).to.equal('run')
       const runCommand = command.commands.find((candidate) => candidate.name() === 'run')
       expect(runCommand).to.exist()
       expect(runCommand).to.have.property('title', 'Docs')
@@ -197,7 +212,8 @@ describe('commander', () => {
         flags: '--quiet',
         description: 'Be quiet',
       })
-      expect(options[0]).not.to.have.property('defaultValue')
+      expect(options[0]).to.have.property('defaultValue')
+      expect(options[0].defaultValue).to.be.undefined()
     })
 
     it('should import negatable boolean option from convict config', () => {

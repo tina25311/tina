@@ -12,7 +12,8 @@ const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').rep
 const { version: VERSION } = require('../package.json')
 
 async function run () {
-  const result = cli.parse(process.argv, { defaultCommand: 'generate' })
+  if (process.argv.length < 3) process.argv.push('--help')
+  const result = cli.parse(process.argv)
   /* istanbul ignore else */
   if (cli._promise) await cli._promise
   return result
@@ -56,7 +57,7 @@ cli
   .option('--stacktrace', 'Print the stacktrace to the console if the application fails.')
 
 cli
-  .command('generate <playbook>')
+  .command('generate <playbook>', { isDefault: true })
   .description('Generate a documentation site specified in <playbook>.')
   .optionsFromConvict(convict(configSchema), { exclude: 'playbook' })
   .option('--generator <library>', 'The site generator library.', '@antora/site-generator-default')
