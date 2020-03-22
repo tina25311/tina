@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@antora/playbook-builder": "2.3.0-alpha.2",
-    "commander": "~4.1"
+    "commander": "~5.0"
   },
   "devDependencies": {
     "@antora/site-publisher": "2.3.0-alpha.2",

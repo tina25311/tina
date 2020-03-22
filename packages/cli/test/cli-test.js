@@ -119,14 +119,13 @@ describe('cli', function () {
   })
 
   it('should output list of common options when invoked with "-h"', () => {
-    // NOTE this test assumes a column width of 80
-    return runAntora('-h')
+    return runAntora('-h', { COLUMNS: 90 })
       .ignoreUntil(/^Options:/)
       .assert(/^ *-v, --version +Output the version number\./)
       .assert(/^ *-r, --require .*/)
-      .assert(/^before executing command\.$/)
+      .assert(/^executing command\.$/)
       .assert(/^ *--stacktrace .*/)
-      .assert(/^application fails\.$/)
+      .assert(/^fails\.$/)
       .assert(/^ *-h, --help +Output usage information\./)
       .done()
   })
