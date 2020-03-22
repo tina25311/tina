@@ -213,6 +213,18 @@ describe('cli', function () {
       .done()
   })
 
+  it('should show error message if generate command is run with unknown argument', () => {
+    return runAntora('generate does-not-exist.json --unknown')
+      .assert(/unknown option '--unknown'/)
+      .done()
+  })
+
+  it('should show error message if default command is run with unknown argument', () => {
+    return runAntora('--unknown the-site')
+      .assert(/unknown option '--unknown'/)
+      .done()
+  })
+
   it('should show error message if specified playbook file does not exist', () => {
     return runAntora('generate does-not-exist.json')
       .assert(/playbook .* does not exist/)
