@@ -9,14 +9,14 @@ This project utilizes semantic versioning.
 
 === Added
 
-* *content-aggregator*: Assign the resolved SHA-1 commit hash for the content source ref (branch or tag) to the `src.origin.refhash` property on the virtual file unless file is taken from worktree (#578)
-* *content-aggregator*: Make `refhash` available as template in edit URL pattern (#578)
-* *content-classifier*: If `ContentCatalog#resolvePage` cannot locate page, look for alias and dereference if found (#586)
+* *content-aggregator*: Assign the SHA-1 commit hash for the content source ref (branch or tag) to the `src.origin.refhash` property on the virtual file unless file is taken from worktree (#578)
+* *content-aggregator*: Make `refhash` available as template variable in the edit URL pattern (#578)
+* *content-classifier*: If `ContentCatalog#resolvePage` cannot locate page, look for an alias and dereference if found (#586)
 * *content-classifier*: Add `getComponentVersion` method to exported API
-* *content-classifier*: Map `asciidoc` property on component to `asciidoc` property on latest version (#543)
+* *content-classifier*: Map `asciidoc` property on component to `asciidoc` property on latest version of component (#543)
 * *asciidoc-loader*: Allow target of xref to be a page alias (#586)
 * *asciidoc-loader*: Assign value of family-relative path of page to page-src-path attribute on document (#568)
-* *asciidoc-loader*: Assign the resolved SHA-1 commit hash for the content source ref (branch or tag) to the `page-origin-refhash` page attribute unless page is taken from worktree (#578)
+* *asciidoc-loader*: Assign the SHA-1 commit hash for the content source ref (branch or tag) to the `page-origin-refhash` attribute on document unless page is taken from worktree (#578)
 * *asciidoc-loader*: Add function for extracting metadata from the AsciiDoc header (#310)
 * *asciidoc-loader*: Use automatic reference text (i.e., xreftext) if contents of page xref is empty (#310)
 * *asciidoc-loader*: Use target as fallback content for unresolved or invalid xref (#594)
@@ -28,30 +28,30 @@ This project utilizes semantic versioning.
 
 === Fixed
 
-* *content-aggregator*: Use state file to validate repository in cache and reclone the repository if file is missing (i.e., corrupt) (#556)
+* *content-aggregator*: Use state file to verify repository in cache is valid; reclone repository if file is missing (i.e., corrupt) (#556)
 * *content-aggregator*: Brace pattern in start paths value should match whole filename segment, even if pattern contains a wildcard (#583)
-* *content-aggregator*: Brace pattern in start paths value should match explicit entries if wildcard entry is also present (#584)
+* *content-aggregator*: Brace pattern in start paths value should match fixed entries if wildcard entry is also present (#584)
 * *content-classifier*: Update `ContentCatalog#getPages` to accept a filter function to filter pages
 * *asciidoc-loader*: Fix crash if contents of include file is undefined
 * *page-composer*: Latest page version should never be newer than latest component version (#565)
 
 === Changed
 
-* *content-aggregator*: Ignore dot (hidden) folders when matching start paths unless pattern begins with a dot (#581)
-* *content-classifier*: Modify ContentCatalog#registerComponentVersion to return component version added (#561)
-* *content-classifier*: Modify ContentCatalog#addFile to return file added (#562)
-* *content-classifier*: Don't assign out property when adding file to content catalog if out property has falsy value (#563)
-* *content-classifier*: Rename `asciidocConfig` property on component version to `asciidoc` (#542)
-* *content-classifier*: Change ContentCatalog#resolvePage to delegate directly to ContentCatalog#resolveResource (#597)
+* *content-aggregator*: Ignore dot (hidden) folders when matching start paths unless pattern itself begins with a dot (#581)
+* *content-classifier*: Modify `ContentCatalog#registerComponentVersion` to return component version added (#561)
+* *content-classifier*: Modify `ContentCatalog#addFile` to return file added (#562)
+* *content-classifier*: Don't assign `out` property when adding file to content catalog if out property has falsy value (#563)
+* *content-classifier*: Rename `asciidocConfig` property on component version object to `asciidoc` (#542)
+* *content-classifier*: Change `ContentCatalog#resolvePage` to delegate to `ContentCatalog#resolveResource` (#597)
 * *asciidoc-loader*: Don't relativize absolute pub URL (#564)
-* *page-composer*: Rename resolvePageUrl UI helper to resolvePageURL (#589)
+* *page-composer*: Rename `resolvePageUrl` UI helper to `resolvePageURL` (#589)
 * *page-composer*: Upgrade Handlebars to fix performance regression (#551)
-* *page-composer*: Fix resolvePage and resolvePageUrl helpers to retrieve content catalog independent of template context (#554)
-* *page-composer*: Make resolvePage and resolvePageUrl helpers resilient against falsy page spec (#554)
+* *page-composer*: Fix `resolvePage` and `resolvePageUrl` helpers to retrieve content catalog independent of template context (#554)
+* *page-composer*: Make `resolvePage` and `resolvePageUrl` helpers resilient against falsy page spec (#554)
 * *page-composer*: Don't prepend site URL to absolute canonical URL (#564)
-* *page-composer*: resolvePage helper returns page model instead of virtual file object, which can be disabled using model=false (#541)
-* *page-composer*: Assign value of family-relative path of page to srcPath property on page UI model (#568)
-* *redirect-producer*: Configure netlify redirects to be forced as recommended by Netlify (#595)
+* *page-composer*: Update `resolvePage` helper to return page model instead of virtual file object; can be disabled using `model=false` argument (#541)
+* *page-composer*: Assign value of family-relative path of page to `srcPath` property on page UI model (#568)
+* *redirect-producer*: Modify netlify redirects to be forced as recommended by Netlify (#595)
 
 == 2.3.0-alpha.2 (2019-12-18)
 
