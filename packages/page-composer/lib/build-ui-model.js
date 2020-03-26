@@ -90,7 +90,7 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
     displayVersion: componentVersion.displayVersion,
     componentVersion,
     module: file.src.module,
-    srcPath: file.src.path,
+    srcPath: file.src.relative,
     origin: file.src.origin,
     versions,
     editUrl: file.src.editUrl,
