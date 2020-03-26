@@ -679,6 +679,19 @@ describe('createPageComposer()', () => {
       expect(file.contents.toString()).to.include('<p>/to.html</p>')
     })
 
+    it('should preserve fragment on URL passed to relativize', () => {
+      definePartial(
+        'body-relativize-url',
+        heredoc`
+        <p>{{relativize '/to.html#fragment'}}</p>
+        `
+      )
+      replaceCallToBodyPartial('{{> body-relativize-url}}')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include('<p>../../to.html#fragment</p>')
+    })
+
     // QUESTION what should we do with a template execution error? (e.g., missing partial or helper)
   })
 })
