@@ -120,7 +120,7 @@ Alternatively, you can download the playbook file from the {url-demo-repos}/docs
 .antora-playbook.yml
 [source,yaml]
 ----
-  site:
+site:
   title: Antora Demo Site
   url: https://my-antora-demo-site.org
   start_page: component-b::index.adoc
