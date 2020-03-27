@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *page-composer*: Fix relativize helper function to preserve fragment identifier on URL
+
 == 2.3.0-beta.1 (2020-03-22)
 
 === Added

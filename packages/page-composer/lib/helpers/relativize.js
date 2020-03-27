@@ -10,8 +10,8 @@ module.exports = (to, { data }) => {
   let hash = ''
   const hashIdx = to.indexOf('#')
   if (~hashIdx) {
-    to = to.substr(0, hashIdx)
     hash = to.substr(hashIdx)
+    to = to.substr(0, hashIdx)
   }
   return to === from
     ? hash || (isDir(to) ? './' : path.basename(to))
