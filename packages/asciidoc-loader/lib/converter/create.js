@@ -19,7 +19,6 @@ function createConverter (context) {
   return (context.config.converters ? context.config.converters.reverse() : []).reduce((accum, module) => {
     const custom = module(accum, context)
     return {
-
       // asciidoctor 2?
       convert: (node, transform, opts) => {
         const template = custom[transform || node.node_name]

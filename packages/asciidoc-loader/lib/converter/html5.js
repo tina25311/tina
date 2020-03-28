@@ -27,12 +27,13 @@ const Html5Converter = (() => {
         const attrs = node.getAttributes()
         const fragment = attrs.fragment
         if (fragment && fragment !== Opal.nil) refSpec += '#' + fragment
-        const { content, target, internal, unresolved } =
-          convertPageRef(refSpec,
-            node.getText(),
-            context.file,
-            context.contentCatalog,
-            context.config.relativizePageRefs !== false)
+        const { content, target, internal, unresolved } = convertPageRef(
+          refSpec,
+          node.getText(),
+          context.file,
+          context.contentCatalog,
+          context.config.relativizePageRefs !== false
+        )
         let type
         if (internal) {
           type = 'xref'
@@ -68,7 +69,11 @@ function transformImageNode (converter, node, imageTarget, context) {
     if (context) {
       const alt = node.getAttribute('alt', undefined, false)
       if (node.isAttribute('default-alt', alt, false)) node.setAttribute('alt', alt.split(/[@:]/).pop())
-      Opal.defs(node, '$image_uri', (imageSpec) => convertImageRef(imageSpec, context.file, context.contentCatalog) || imageSpec)
+      Opal.defs(
+        node,
+        '$image_uri',
+        (imageSpec) => convertImageRef(imageSpec, context.file, context.contentCatalog) || imageSpec
+      )
     }
   }
   if (node.hasAttribute('xref')) {
@@ -77,12 +82,13 @@ function transformImageNode (converter, node, imageTarget, context) {
       node.setAttribute('link', refSpec)
     } else if (refSpec.endsWith('.adoc')) {
       if (context) {
-        const { target, unresolved } =
-        convertPageRef(refSpec,
+        const { target, unresolved } = convertPageRef(
+          refSpec,
           '[image]',
           context.file,
           context.contentCatalog,
-          context.config.relativizePageRefs !== false)
+          context.config.relativizePageRefs !== false
+        )
         const role = node.getAttribute('role', undefined, false)
         node.setAttribute('role', `link-page${unresolved ? ' link-unresolved' : ''}${role ? ' ' + role : ''}`)
         node.setAttribute('link', target)
