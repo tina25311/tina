@@ -1,4 +1,4 @@
-= Antora Quickstart
+= Install and Run Antora Quickstart
 :version-node-major: 12
 :version-node: {version-node-major}.16.1
 :url-node-releases: https://nodejs.org/en/about/releases/
@@ -110,7 +110,7 @@ ui: # <3>
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
 ----
-<1> A page from a documentation component to be used as the home page for your site.
+<1> A page from a component version to be used as the home page for your site.
 <2> The `sources` category contains the list of git repository locations, branch name patterns, and other repository properties that Antora uses when aggregating the site content.
 <3> The `ui` category contains keys that specify the location of the UI bundle and how it should be processed.
 
@@ -131,7 +131,6 @@ You've successfully built your first site with Antora.
 
 TIP: For more detailed information about running Antora and troubleshooting help, see xref:run-antora.adoc[Run Antora to generate your site].
 
-== What's next?
+== Learn more
 
-* Check how xref:component-structure.adoc[files are organized] in Antora.
-* What xref:page:index.adoc[pages] are available in Antora.
+* Learn how to xref:organize-content-files.adoc[organize your content files] for Antora.
