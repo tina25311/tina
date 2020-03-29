@@ -1,0 +1,103 @@
+= Standard File and Directory Set
+:page-aliases: component-structure.adoc
+:xrefstyle: short
+:listing-caption: Example
+//Antora extracts the metadata that defines a documentation component from its component version descriptor ([.path]_antora.yml_) and the standard set of directories structure used to store the component version's source files.
+//Antora also uses this structure to assign preset behavior to the files stored in each directory.
+
+Antora collects and processes content source files that are stored in a required set of directories.
+These directories, as well as the required [.path]_antora.yml_ file and optional navigation files, are recognized by their locations in the hierarchy and because they use reserved names.
+Antora uses this [.term]*standard file and directory set* to assign custom metadata and preset behavior to the files stored in each directory.
+
+== Standard names and hierarchy
+
+<<fig-all>> shows the hierarchy of the standard file and directory set if all of the possible standard directories are used.
+The content source root in <<fig-all>> is a repository.
+However, a content source root can also be a directory in a repository, which you can see in <<fig-image>>.
+
+[#fig-all]
+.All required and optional standard files and directories
+----
+📒 repository <1>
+  📄 antora.yml <2>
+  📂 modules <3>
+    📂 ROOT <4>
+      📂 attachments <5>
+      📂 examples <6>
+      📂 images <7>
+      📂 pages <8>
+      📂 partials <9>
+      📄 nav.adoc <10>
+    📂 a-named-module <11>
+      📂 pages
+----
+<1> xref:content-source-repositories.adoc#content-source-root[Content source root].
+<2> Required xref:component-version-descriptor.adoc[component version descriptor file].
+This file indicates to Antora that the contents of the _modules_ directory should be collected and processed.
+<3> Required [.path]_modules_ directory.
+This directory contains xref:module-directories.adoc[one or more module directories].
+<4> Optional xref:root-module-directory.adoc[_ROOT_ module directory].
+<5> Optional xref:attachments-directory.adoc[_attachments_ family directory].
+<6> Optional xref:examples-directory.adoc[_examples_ family directory].
+<7> Optional xref:images-directory.adoc[_images_ family directory].
+<8> Optional xref:pages-directory.adoc[_pages_ family directory].
+<9> Optional xref:partials-directory.adoc[_partials_ family directory].
+<10> Optional navigation file named [.path]_nav.adoc_.
+<11> Optional xref:named-module-directory.adoc[named module directory].
+
+As you can see in the descriptions above, navigation files and many of the directories are optional.
+For instance, if you aren't inserting any images into the content stored in a module directory, then you don't need to create an [.path]_images_ directory.
+You can see two examples of simple standard file and directory sets in the <<minimum-requirements,next section>>.
+
+[#minimum-requirements]
+== Minimum standard file and directory set requirements
+
+From a xref:content-source-repositories.adoc#content-source-root[content source root], Antora must find:
+
+* An [.path]_antora.yml_ file
+* A [.path]_modules_ directory
+* At least one module directory
+* At least one family directory containing at least one source file
+
+The [.path]_antora.yml_ file and directories must also be organized in the standard hierarchy from the content source root.
+
+Let's look at two examples of standard file and directory sets that meet the minimum requirements.
+The directory and file set in <<fig-root>> is valid because it contains one module directory, in this case the special _ROOT_, the _ROOT_ module directory contains a family directory, and the required [.path]_antora.yml_ and [.path]_modules_ directory are at the content source root.
+
+[#fig-root]
+.Valid standard file and directory set containing a ROOT module directory
+----
+📒 repository <1>
+  📄 antora.yml <2>
+  📂 modules <3>
+    📂 ROOT <4>
+      📂 pages <5>
+        📄 a-source-file.adoc <6>
+----
+<1> Content source root
+<2> Required [.path]_antora.yml_ file
+<3> Required [.path]_modules_ directory
+<4> [.path]_ROOT_ module directory
+<5> [.path]_pages_ family directory
+<6> Source file for a page
+
+The standard directory and file set in <<fig-image>> is also valid.
+
+[#fig-image]
+.Valid standard file and directory set containing a named module directory
+----
+📒 repository
+  📂 courses
+    📂 ops-training <1>
+      📄 antora.yml <2>
+      📂 modules <3>
+        📂 rz-interface <4>
+          📂 images <5>
+            📄 an-image-file.png <6>
+----
+<1> Content source root
+<2> Required component version descriptor file
+<3> Required [.path]_modules_ directory
+<4> A module directory named [.path]_rz-interface_
+<5> [.path]_images_ family directory
+<6> Source file for an image
