@@ -99,10 +99,10 @@ Next, install the site generator package.
 The `@antora/site-generator-default` and its dependent packages will be installed into the [.path]_node_modules_ folder inside your project.
 The `antora` command will look for these packages there first before looking in the global installation folder.
 
-== Next
+== Learn more
 
 Now that Antora is installed, you're ready to:
 
 * Set up your own xref:playbook:index.adoc[playbook] or use the Demo playbook.
-* Organize a xref:ROOT:component-structure.adoc[documentation component repository] or use Antora's Demo docs components.
+* Organize your xref:ROOT:organize-content-files.adoc[content source files and repositories] or use Antora's Demo content repositories.
 * xref:ROOT:run-antora.adoc[Run Antora] and generate a documentation site.

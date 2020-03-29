@@ -10,7 +10,7 @@ Assumptions:
 
 * [x] You've xref:install:install-antora.adoc[installed the Antora CLI and a site generator pipeline].
 * [x] You have your own xref:playbook:index.adoc[playbook], or you're using the Demo playbook.
-* [x] Your playbook is configured to access at least one of your own  xref:component-structure.adoc[documentation component repositories] or Antora's Demo docs components.
+* [x] Your playbook is configured to access at least one of your own  xref:content-source-repositories.adoc[repositories containing content source files] or Antora's Demo content repositories.
 * [x] Your playbook is configured to use a xref:playbook:configure-ui.adoc[custom UI bundle or Antora's default UI bundle].
 
 On this page, you'll learn:
@@ -20,10 +20,10 @@ On this page, you'll learn:
 * [x] How to update the cache.
 * [x] How to preview a generated site locally.
 
-== Antora demo playbook and components
+== Antora demo playbook and content repositories
 
-You don't need to set up a playbook file, documentation component, or UI to evaluate Antora.
-Instead, you can use the Antora demo playbook and components.
+You don't need to set up a playbook file, xref:component-version.adoc[component version], or UI to evaluate Antora.
+Instead, you can use the Antora demo playbook and content repositories.
 
 The demo consists of a {url-demo-project}[playbook repository] containing a playbook file and content repositories ({url-demo-component-a}[component-a] and {url-demo-component-b}[component-b]) to which that playbook refers.
 It also uses the UI bundle produced by the {url-default-ui}[default UI project].
@@ -36,7 +36,7 @@ The instructions and examples on this page will guide you through the process.
 To produce a documentation site, Antora needs a playbook.
 But first, you'll need to create or choose a directory where you'll store the playbook and where the generated site files will be saved (assuming you use the default output configuration).
 
-For the examples on this page, we'll use the demo playbook and documentation components.
+For the examples on this page, we'll use the demo playbook and content repositories.
 
 . Open a terminal and make a new directory named [.path]_demo-site_.
 

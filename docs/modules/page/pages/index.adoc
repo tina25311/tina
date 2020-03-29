@@ -27,16 +27,16 @@ Learn more:
 
 * xref:create-standard-page.adoc[Create a standard page]
 * xref:asciidoc:include-page.adoc[Insert content from a standard page into another page]
-* xref:ROOT:modules.adoc#pages-dir[The _pages_ directory]
-* xref:ROOT:component-structure.adoc[Documentation component overview]
+* xref:ROOT:pages-directory.adoc[The _pages_ directory]
 * xref:navigation:link-syntax-and-content.adoc#page[Add a page xref to a navigation file]
 
 [#partial]
 == Reusable partial pages
 
-Partials are AsciiDoc files located in a [.path]_partials_ directory.
-// (or [.path]_pages/_partials_).
-These files are *not* converted to HTML by Antora automatically.
+Partials are usually AsciiDoc source files (_.adoc_) that contain content snippets, such as common descriptions, terminology, or reference tables, that you plan to insert in multiple pages.
+They may also be reusable UML, STEM, or CSV/TSV content.
+The source files for partials are stored in a [.path]_partials_ directory.
+Partials aren't converted to HTML by Antora automatically.
 Instead, they must be referenced by an xref:asciidoc:include-partial.adoc[include directive] in a standard page.
 
 Partials are good for storing snippets of content, such as concept definitions or project introductions, that you reuse in one or more standard pages.
@@ -44,24 +44,22 @@ When you change the content in a partial, those changes will be disseminated to 
 
 Learn more:
 
-//* Create a partial
-* xref:ROOT:modules.adoc#partials-dir[The _partials_ directory]
+* xref:ROOT:partials-directory.adoc[The _partials_ directory]
 * xref:asciidoc:include-partial.adoc[Insert a partial into a standard page]
-* xref:ROOT:component-structure.adoc[Documentation component overview]
 
-== Component index page
+== Component version index page
 
-If a file named [.path]_index.adoc_ exists in the ROOT module of a component, Antora will automatically set this page as the start page of that component.
+If a file named [.path]_index.adoc_ exists in the ROOT module of a component, Antora will automatically set this page as the start page of that component version.
 
 component:ROOT:index.adoc => site.com/component/index.html
 
 Learn more:
 
 //* Create a component index page
-* xref:ROOT:component-descriptor.adoc#start-page-key[Use another page to act as a component's start page]
+* xref:ROOT:component-start-page.adoc[Specify a component version's start page]
 
 //* html extension options
-* xref:ROOT:modules.adoc#root-dir[The ROOT directory]
+* xref:ROOT:root-module-directory.adoc[The ROOT module directory]
 
 // TIP: see the html strategies for dropping the html and index for URLs
 

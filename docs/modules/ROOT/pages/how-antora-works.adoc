@@ -6,8 +6,8 @@ This page describes that process in detail.
 
 The default pipeline is opinionated to get you started as quickly as possible.
 But understand that Antora features a modular, open architecture.
-That means this architecture can accommodate specialized use cases by allowing custom components, such as a validators, to be inserted into the pipeline at strategic points as needed.
-This page focuses on the core, built-in components and capabilities in Antora.
+That means this architecture can accommodate specialized use cases by allowing custom Antora components, such as a validators, to be inserted into the pipeline at strategic points as needed.
+This page focuses on the core, built-in Antora components and capabilities in Antora.
 
 == Steps in the Default Generator Pipeline
 
@@ -29,27 +29,26 @@ Using the xref:playbook:configure-content-sources.adoc[content sources] listed i
 For each remote URL, Antora clones the remote git repository into a local cache using the built-in git client.
 If the repository has already been cloned, Antora fetches updates if configured to do so.
 +
-Finally, Antora determines which references (branches and/or tags) to use from the specified repositories.
+Finally, Antora determines which references (branches, tags, and start paths) to use from the specified repositories.
 
-Find the documentation component in each selected branch and/or tag::
-Antora identifies a group of files as a documentation component when it finds a component descriptor file named [.path]_antora.yml_.
-+
-A xref:component-structure.adoc[documentation component] is a set of files that are versioned together and  usually share a common subject, such as all of the content source files for a software product.
-Component source files can be stored in a single repository, at the root of a repository or in a subpath, or distributed across multiple repositories.
+Find the content source roots::
+Starting at a xref:content-source-repositories.adoc[content source root], Antora identifies a group of files as being part of a component version when it finds a component version descriptor file named [.path]_antora.yml_.
+These source files can be stored in a single repository, at the root of a repository or in a subpath, or distributed across multiple repositories.
 
 Transform input files into virtual file objects::
-Antora collects all of the files--text, images, samples, and other supporting materials--from each documentation component subtree.
+Antora collects all of the files--text, images, samples, and other supporting materials--from each xref:standard-directories.adoc[content source root subtree].
 Then it creates a virtual file of each input file.
 
 Assign files to component version buckets::
-Antora reads the component descriptor (i.e., [.path]_antora.yml_) files.
+Antora reads the component version descriptor ( [.path]_antora.yml_) files.
 +
-A xref:component-descriptor.adoc[component descriptor] associates the files under it with a specified component name and version (aka component version).
-This allows the files to be decoupled from the repository and branch in which they live.
-The component descriptor file makes Antora's repository-spanning, file system and URL agnostic xref:asciidoc:page-to-page-xref.adoc[cross references] possible.
+A xref:component-version-descriptor.adoc[component version descriptor] associates the files under it with a specified component name and version, that is, a component version.
+This allows the files to be decoupled from the repository in which they live and makes Antora's URL agnostic xref:asciidoc:page-to-page-xref.adoc[cross references] possible.
 +
-Antora assigns the descriptor information and other source metadata to the appropriate virtual files.
+Antora assigns the descriptor information and other source metadata to the virtual files.
 Then it sorts each file into a virtual collection based on the assigned component version data.
++
+A xref:component-version.adoc[component version] typically represents a discreet and unique version of the documentation for a project, library, service, or training course.
 
 Compute additional metadata::
 Using xref:playbook:configure-site.adoc[site properties] from the playbook and information assigned to the files in the previous step, Antora adds module, family, family-relative path, and other metadata values to each file.
@@ -60,7 +59,7 @@ Antora further sorts the aggregated files into a content catalog that can be que
 
 // add pages xref when page is available
 Convert AsciiDoc files to embeddable HTML::
-The AsciiDoc files in the xref:page:index.adoc[page family] of the content catalog are converted to embeddable HTML with Asciidoctor.js.
+The AsciiDoc files in the xref:pages-directory.adoc[page family] of the content catalog are converted to embeddable HTML with Asciidoctor.js.
 
 Convert navigation files::
 Antora retrieves xref:navigation:index.adoc[navigation files] from the content catalog, translates their contents into navigation items organized in a specified hierarchy (navigation trees grouped inside a navigation menu), and returns a navigation model.
@@ -90,8 +89,8 @@ Relying on a page template to produce the pages gives the site owner complete co
 
 Produce sitemap::
 Antora generates a site map that can be used as an internal report or published with the site.
-This sitemap is partitioned by component (using a sitemap index).
-The sitemap index links to the sitemap for each component, which is where the URLs for the individual pages can be found.
+This sitemap is partitioned by component name (using a sitemap index).
+The sitemap index links to the sitemap for each component name, which is where the URLs for the individual pages can be found.
 
 Publish site::
 Antora writes the generated pages to a default or xref:playbook:configure-output.adoc#output-dir[user-specified location].
