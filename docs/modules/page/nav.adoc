@@ -1,0 +1,12 @@
+.Pages & Resources
+* xref:index.adoc[Pages]
+* xref:create-standard-page.adoc[Create a Standard Page]
+* xref:page-id.adoc[Antora Page ID]
+* xref:asciidoc:page-to-page-xref.adoc[Page to Page Xrefs]
+* xref:page-aliases.adoc[Set Up URL Redirects with Page Aliases]
+* xref:resource-id.adoc[Antora Resource ID]
+* xref:asciidoc:include-partial.adoc[Include a Partial]
+* xref:asciidoc:include-example.adoc[Include an Example]
+* xref:asciidoc:include-page.adoc[Include a Page]
+* xref:asciidoc:insert-image.adoc[Insert an Image]
+* xref:asciidoc:link-attachment.adoc[Link to an Attachment]
