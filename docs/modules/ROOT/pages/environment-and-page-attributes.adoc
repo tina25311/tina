@@ -7,7 +7,7 @@ Antora provides built-in `page-`, environment, and generator attributes.
 [#page-attributes]
 == Built-in page- attributes
 
-Antora automatically sets the following attributes for each page:
+Antora automatically sets the following attributes for each page when it runs:
 
 [cols="1,2,1"]
 |===
@@ -35,11 +35,11 @@ Antora automatically sets the following attributes for each page:
 
 |`page-origin-branch`
 |The name of the repository branch where the page's source file is stored. (mutually exclusive with `page-origin-tag`)
-|v7.1.x
+|v7.1.0
 
 |`page-origin-refname`
 |The name of the reference where the page's source file is stored.
-|{page-origin-refname}
+|v7.1.0
 
 |`page-origin-reftype`
 |The reference type (e.g., tag or branch) where the page's source file is stored.
@@ -63,7 +63,7 @@ Antora automatically sets the following attributes for each page:
 
 |`page-origin-worktree`
 |Set if the file was taken from the git worktree.
-|{page-origin-worktree}
+|_Boolean attribute, no output is returned_
 
 |`page-relative`
 |The family-relative path (e.g., pages) and file name of the page's source file.
@@ -74,26 +74,26 @@ Antora automatically sets the following attributes for each page:
 |7.1
 |===
 
-Attributes that are prefixed with `page-` are available to the pipeline and UI model during site generation, and they can be displayed in a page using the attribute reference syntax (e.g., `+{page-version}+`).
+The output of these `page-` attributes can be displayed in a page using the AsciiDoc attribute reference syntax (e.g., `+{page-version}+`).
 
+.Reference the current page's module name, component title, and version
 [source]
 ----
-Let's install *{page-component-title} {page-component-version}*.
-The source file for {page-relative} is in the *{page-module}* module.
+This page is part of the *{page-module}* module in the *{page-component-title} {page-component-version}* component version.
 ----
 
-Rendered as:
+The attribute references in the above example output the data (shown below) for the current page, that is, the page you're reading right now.
 
-[%hardbreaks]
-Let's install *{page-component-title} {page-component-version}*.
-The source file for *{page-relative}* is in the *{page-module}* module.
+====
+This page is part of the *{page-module}* module in the *{page-component-title} {page-component-version}* component version.
+====
 
-TIP: This data is also available via the xref:antora-ui-default::templates.adoc#template-variables[UI model].
+Attributes that are prefixed with `page-` are also available to the Antora pipeline and xref:antora-ui-default::templates.adoc#template-variables[UI model] during site generation.
 
 [#environment-attributes]
 == Built-in environment and generator attributes
 
-There may be times when your document needs to know that it's being processed by Antora.
+There may be times when your page needs to know that it's being processed by Antora.
 Antora sets these attributes for each page.
 
 * `env=site`
@@ -104,5 +104,5 @@ Antora sets these attributes for each page.
 == Learn more
 
 * xref:component-name-and-version.adoc[Define a component name and version with antora.yml]
-* xref:asciidoc:page-header.adoc#set-attribute[Set and unset AsciiDoc attributes].
+* xref:asciidoc:page-header.adoc#set-attribute[Set and unset AsciiDoc attributes]
 //* Create your own page attributes.

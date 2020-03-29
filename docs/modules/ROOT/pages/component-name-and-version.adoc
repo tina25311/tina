@@ -1,4 +1,4 @@
-= Define a Component Version with antora.yml
+= Define a Component Name and Version
 //:listing-caption: Example
 //:xrefstyle: short
 :note-caption: ASSUMPTIONS
@@ -15,23 +15,22 @@ On this page, you'll learn:
 * [x] How to assign a valid value to the `version` key.
 * [x] How to enter keys and values in an [.path]_antora.yml_ file.
 
-[#requirements]
+[#antora-yml-requirements]
 == antora.yml requirements
 
-The component version descriptor file must:
+A component version descriptor must:
 
 * be named [.path]_antora.yml_
 * be written in valid YAML
 * contain the `name` key and its value
 * contain the `version` key and its value
-* be stored xref:component-structure.adoc#overview[at the same directory level as the _modules_ directory]
+* be stored xref:module-directories.adoc[at the same directory level as the _modules_ directory]
 
 [#name-key]
 == name key
 
-A component name is assigned in [.path]_antora.yml_ using the `name` key.
-The `name` key is required.
-The `name` typically represents the name of your project, library, or course (e.g., `fauna`, `rudder`, `nrepl`).
+A component name typically represents the name of your project, library, or service (e.g., `fauna`, `rudder`, `nrepl`).
+The `name` key is required and assigned in [.path]_antora.yml_.
 
 .antora.yml with defined component name
 [source,yaml]
@@ -40,39 +39,44 @@ name: colorado
 ----
 
 The value can contain letters, numbers, underscores (`+_+`), hyphens (`-`), and periods (`.`).
-The value *cannot* contain spaces.
+The value *cannot* contain spaces or forward slashes (`/`).
 
 TIP: To minimize the likelihood of portability issues between web servers, letters used in the `name` key's value should be lowercase.
 
 Antora uses the `name` key when interpreting page and resource IDs and generating the URLs for the component version's pages.
-It also uses `name` where ever the component's name is displayed in the reference UI unless the xref:component-title.adoc[title key is set].
-The reference UI shows the component name in the xref:navigation:index.adoc#component-menu[component navigation menu], xref:navigation:index.adoc#component-dropdown[component version selector], and
+Unless the xref:component-title.adoc[title key is set], it uses `name` for sorting components in the component version selector and where ever the component's name is displayed in the reference UI, which includes the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector], and
 the first breadcrumb position on a component version's pages.
 
 [#version-key]
 == version key
 
-A version, such as an identifier (e.g., `master`, `stable`), code name (e.g., `jesse`), or number (e.g., `1.0`), is assigned to the `version` key in [.path]_antora.yml_.
+TIP: If you aren't familiar with how Antora sorts component versions, see xref:how-component-versions-are-sorted.adoc[How are component versions sorted?] before committing to a versioning scheme.
+
+A version, such as a named identifier (e.g., `master`, `jesse`, `edge`) or semantic identifier (e.g., `1.5`, `8`), is assigned to the `version` key in [.path]_antora.yml_.
+
 The `version` key is required.
-The `version` key is used as the version coordinate in page and resource IDs and as the version segment in page URLs.
-It's used to xref:component-versions.adoc[sort component versions that have the same name by descending version order] in the reference UI.
-When the optional `display_version` key isn't set, the value of `version` is shown in the reference UI's xref:navigation:index.adoc#component-menu[component navigation menu], xref:navigation:index.adoc#component-dropdown[component version selector], and xref:navigation:index.adoc#page-dropdown[page version selector].
+Its value is used:
+
+* as the version coordinate in page and resource IDs
+* as the version segment in page URLs, unless assigned the xref:component-with-no-version.adoc[reserved value master]
+* to xref:how-component-versions-are-sorted.adoc[sort component versions] in the reference UI
+* for display purposes, unless the optional `display_version` key is set, in the reference UI's xref:navigation:index.adoc#component-dropdown[component version selector] and xref:navigation:index.adoc#page-dropdown[page version selector]
 
 .antora.yml with defined component version
 [source,yaml]
 ----
 name: colorado
-version: '5.6'
+version: '5.6' # <1>
 ----
+<1> Values that start with a number should be enclosed in a set of single quote marks (`'`).
 
-The value can contain letters, numbers, periods (`.`), underscores (`+_+`), and hyphens (`-`) (e.g., `2.8`, `rawhide`)
-If the value starts with a number, YAML recommends that it be enclosed in a set of single quote marks (`'`).
-The value *cannot* contain spaces.
+The value can contain letters, numbers, periods (`.`), underscores (`+_+`), and hyphens (`-`).
+It *cannot* contain spaces.
 
-TIP: To minimize the likelihood of portability issues between web servers, letters used in the `version` key's value should be lowercase.
+TIP: To minimize the likelihood of portability issues between web servers, letters used in the `version` value should be lowercase.
 
-The `version` key isn't related, though it may be similar, to the xref:component-versions.adoc[name of the branch, tag, or directory] where the component version's source files are stored.
-See xref:component-versions.adoc#setting-the-version-for-a-branch[Setting the version for a branch] for more examples and xref:component-versions.adoc#versionless-components[Versionless components] to learn how to create a versionless component.
+If a component version is unstable or a prerelease, you may want to set the xref:component-prerelease.adoc[optional prerelease key] in addition to `version`.
+xref:component-with-no-version.adoc[Unversioned or version-less component versions] can be defined using the reserved value `master`.
 
 [#assign-name-and-version]
 == Assign a name and version to a component version
@@ -105,63 +109,12 @@ version: '7.1'
 That is, it should be located adjacent to the [.path]_modules_ directory.
 
 You've now associated a set of source files with a component version!
-When Antora runs, all of the subsequent subdirectories and source files will be assigned the component name `silver-leaf` and the version `7.1`.
-These values will also be used as page and resource ID coordinates and in the URLs of the pages generated from the component version's source files.
+When Antora runs, all of the xref:standard-directories.adoc[subsequent subdirectories and source files] will be assigned the component name `silver-leaf` and the version `7.1`.
+These values will be used as page and resource ID coordinates and in the URLs of the pages generated from the component version's source files.
 
 [#optional-keys]
 == Optional antora.yml keys
 
 You can assign additional metadata, designate a component version as a prerelease, apply AsciiDoc attributes, and register a component version's navigation list and start page using the component version descriptor.
 
-[cols="1,3"]
-|===
-|Key |Description
-
-|xref:component-attributes.adoc[asciidoc]
-|Accepts the `attributes` key and its nested list of `key: value` pairs.
-
-|xref:component-attributes.adoc[attributes]
-|Requires the `asciidoc` key.
-Accepts a nested list of `key: value` pairs that represent AsciiDoc attributes (e.g., `idseparator: '-'`, `page-level: Advanced`)
-Attributes that are set or unset in [.path]_antora.yml_ are applied to all of the pages and resources (where applicable) in a component version.
-
-|xref:component-display-version.adoc[display_version]
-|Alternate version displayed in the reference UI's component navigation menu, component version selector, and page version selector.
-When `display_version` isn't set, the reference UI falls back to `version`.
-`display_version` can accept empty spaces, uppercase letters, and most characters (e.g., `3.0 Beta`, `RED WREN!`).
-
-|xref:component-navigation.adoc[nav]
-|List of navigation files Antora uses to build the component version's navigation menu.
-Navigation files (e.g., [.path]_nav.adoc_) that aren't registered under the `nav` key will not be used in the component version's navigation menu.
-
-|xref:component-prerelease.adoc[prerelease]
-|Designates the component version as a prerelease version.
-Antora applies alternate sorting and routing rules to component versions marked as prereleases.
-Key can be used to append a prerelease label (e.g., Beta, alpha.2) to `version` without affecting the version coordinate or version URL segment.
-
-|xref:component-start-page.adoc[start_page]
-|Specifies that the page corresponding to the assigned page ID is the component version's home page.
-By default, Antora uses the [.path]_index.adoc_ file in a component version's ROOT module if `start_page` isn't set.
-
-|xref:component-title.adoc[title]
-|Alternate component name displayed in the reference UI's component navigation menu, component version selector, and page breadcrumbs.
-The `title` key can accept empty spaces, uppercase letters, and a broader range of characters (e.g., `SUSE Manager`, `APIkit`).
-|===
-
-////
-.antora.yml
-[#ex-1]
-[source,yaml]
-----
-name: name-of-component
-title: The title of the component used for display in the UI
-version: name-of-version
-start_page: name-of-a-module:filename.adoc
-nav:
-- modules/name-of-a-module/nav.adoc
-- modules/ROOT/nav.adoc
-----
-
-The <<name-key>> and <<version-key>> keys are always required.
-The <<title>>, <<display-version>>, <<start-page-key>>, and <<nav-key>> keys may be optional depending on the version name, structure, and file names associated with a documentation component.
-////
+include::partial$optional-component-version-keys.adoc[]

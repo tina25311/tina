@@ -1,14 +1,15 @@
 = Customize the Title
 
-The `title` key is strictly used for display purposes in the reference UI when a project's official name contains uppercase letters, symbols, or blank spaces.
+The `title` key is used for xref:how-component-versions-are-sorted.adoc[sorting the versions by name] and for display purposes in the reference UI when a component name contains uppercase letters, symbols, or blank spaces.
+It doesn't affect page and resource IDs or the component name segment in the page URL.
 
 [#title-key]
 == title key
 
 The `title` key is optional.
-It's set in a component version's [.path]_antora.yml_ file and used by the reference UI where ever the component's name is displayed, including the xref:navigation:index.adoc#component-menu[component navigation menu], xref:navigation:index.adoc#component-dropdown[component version selector], and first breadcrumb position on a component version's pages.
+It's set in a component version's [.path]_antora.yml_ file and used by the reference UI where ever the component's name is displayed, including the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector], and first breadcrumb position on a component version's pages.
 
-If `title` isn't set, the reference UI uses the value of `name` instead.
+If `title` isn't set, the reference UI uses the xref:component-name-and-version.adoc#name-key[value of name] instead.
 Unlike `name`, the value of `title` can contain empty spaces, uppercase letters, and a broader range of characters (e.g., `SUSE Manager`, `APIkit`).
 
 .antora.yml
@@ -19,7 +20,7 @@ title: Colorado ∆
 version: '5.6'
 ----
 
-This key should be used when a project's name contains spaces or characters that break Antora's page and resource IDs, prevent portability between web servers, and aren't recommended in URLs.
+This key is useful when a project's name contains spaces or characters that break Antora's page and resource IDs, prevent portability between web servers, or aren't recommended in URLs.
 Also, if the name of your project changes, you can change the value of the `title` key but not have to update page and resource IDs or redirect URLs.
 
 [#assign-title]
@@ -50,4 +51,4 @@ version: '7.1'
 
 . Save the file.
 
-Now, the UI will display _Silver Leaf_ in the component navigation menu, component version selector, and page breadcrumbs.
+Now, the UI will display _Silver Leaf_ in the component version page menu, component version selector, and page breadcrumbs.
