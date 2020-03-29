@@ -7,7 +7,7 @@
 
 On this page, you'll learn:
 
-* [x] The ways visitors can navigation to site pages.
+* [x] The ways visitors can navigate to site pages.
 * [x] The purpose of a navigation file.
 * [x] The navigation file's extension and naming rules.
 * [x] Common and alternate navigation file storage locations.
@@ -15,24 +15,24 @@ On this page, you'll learn:
 == Navigation methods
 
 All of the AsciiDoc files in a [.path]_pages_ directory are automatically published to your site by Antora.
-That means visitors can find a page using search tools, through links on other site pages, and in some scenarios, through dropdown menus such as the page version selector.
-When you want visitors to be able to locate and go to a page using a component navigation menu, then you must add a cross reference (`xref`) to that page in the appropriate navigation source file.
+That means visitors can find a page using search tools, links on other site pages, and in some scenarios, through dropdown menus such as the page version selector.
+When you want visitors to be able to locate and go to a page using a component version page menu, then you must add a cross reference (`xref`) to that page in the appropriate navigation source file.
 
 == What is a navigation source file?
 
-A navigation source file is a list of page cross references, resource links, external URIs, and other content that is marked up in AsciiDoc and stored at the base of a module.
-If registered in a component descriptor ([.path]_antora.yml_), the contents of the navigation file will be incorporated into a component menu and published to a site.
+A navigation source file is a list of page cross references, external URLs, and other content that is marked up in AsciiDoc and stored at the base of a module.
+If registered in a component version descriptor ([.path]_antora.yml_), the contents of the navigation file will be incorporated into a component version page menu and published to a site.
 
 == Navigation file format and naming
 
 Navigation files must end with the AsciiDoc file extension (`.adoc`).
-They are typically named [.path]_nav.adoc_; however, you can use any name that is meaningful to you.
-Feel free to name your navigation files [.path]_kaboom.adoc_ if that's what makes your team happy.
+They're typically named [.path]_nav.adoc_; however, you can use any name that is meaningful to you.
+Name your navigation files [.path]_kaboom.adoc_ if that's what makes your team happy.
 
 [#storage]
 == Navigation file storage locations
 
-A common pattern we see is for each module to contain its own navigation file.
+A common pattern is for each module to contain its own navigation file.
 xref:ROOT:modules.adoc[Modules already represent logical groups of concepts or objectives], so it's likely that you'd arrange the xrefs to that module's pages into a continuous, hierarchical flow of navigation menu entries.
 This also reduces the number of coordinates the page IDs in the xrefs require when you add a page to the navigation file.
 
@@ -42,21 +42,21 @@ Navigation files should be stored at the base of a module, i.e., at the same lev
 === Multiple navigation files per module
 
 A module can contain more than one navigation file.
-This functionality helps you finely tune the navigation list order when you xref:register-navigation-files.adoc[register the navigation files] in a component descriptor.
+This functionality helps you finely tune the navigation list order when you xref:register-navigation-files.adoc[register the navigation files] in an [.path]_antora.yml_ file.
 
 === Alternative storage patterns
 
-Storing a navigation file in the module it references the most simplifies the page cross references entered into it.
-It also helps writers locate the navigation that may be affected when they add pages to, or remove pages from, a module.
-However, links to other modules' pages (and even other components' pages) can be entered into any module's navigation file.
-You'll just need to xref:asciidoc:page-to-page-xref.adoc#different-module[add the module coordinate] (or xref:asciidoc:page-to-page-xref.adoc#different-component[component coordinate]) to the cross references you create in the navigation file.
-For example, you could store a single navigation file in a component's ROOT module, and, instead of having navigation files in each module that may exist in the component, you could just add the cross references to pages in those other modules directly to the ROOT module's navigation file.
+Storing a navigation file in the module it references simplifies the page cross references entered into it.
+It also helps writers locate the navigation that's affected when they add pages to or remove pages from a module.
+However, xrefs to other modules' pages (and even other component versions' pages) can be entered into any module's navigation file.
+You just need to xref:asciidoc:page-to-page-xref.adoc#different-module[add the module coordinate] (or xref:asciidoc:page-to-page-xref.adoc#different-component[component name and version coordinates]) to the cross references you create in the navigation file.
+For example, you could store a single navigation file in a component version's ROOT module, and, instead of having navigation files in each module in the component version, you could just add the cross references to pages in those other modules directly to the ROOT module's navigation file.
 
 == What's next?
 
-Learn how to register navigation files so they get included in a component menu:
+Learn how to register navigation files so they get included in a component version page menu:
 
-* xref:register-navigation-files.adoc[Register navigation files with a component for display in a component menu]
+* xref:register-navigation-files.adoc[Register a component version's navigation files for display in its component version page menu]
 
 Learn all about creating navigation lists and navigation items:
 

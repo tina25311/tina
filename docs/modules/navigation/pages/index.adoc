@@ -1,70 +1,83 @@
 = Navigation Assembly
-:description: An introduction to how Antora creates site, component, version, and page navigation menus and dropdown selectors for multiple documentation products and documentation versions.
+:description: An introduction to how Antora creates site, component version, and page menus and dropdown selectors for multiple documentation products and versions.
 :keywords: navigate between documentation versions, navigate between projects, navigate to other versions of a page, add page links to a menu, add page links to a sidebar, add page links to an AsciiDoc list, set up website navigation with Antora, multi-version navigation, create a navigation menu with AsciiDoc, UI, theme
 // Filters
 :page-collections: core concepts
 :page-tags: UI menu, component versions, page versions
 
-With Antora, you can create your site's navigation with AsciiDoc and store it right alongside your documentation files.
+With Antora, you can create your documentation's navigation with AsciiDoc and store it right alongside your documentation files.
 
 == Navigation assembly requirements
 
 The navigation for an Antora documentation site requires:
 
 * at least one navigation file that contains at least one unordered AsciiDoc list,
-* at least one navigation file registered in the component descriptor file, and
-* a UI bundle, such as the Antora default UI, that can apply styles and interaction behavior to the menu(s) Antora generates.
+* at least one navigation file registered in the component version descriptor file, and
+* a UI bundle, such as Antora's reference UI, that can apply styles and interaction behavior to the menus Antora generates.
 
-image::navigation-assembly.svg[Antora navigation assembly diagram showing the required source files and the resulting site menus where the content from the source files is displayed,600]
+image::navigation-assembly.svg[Antora navigation assembly diagram showing the required source files and the resulting menus where the content from the source files is displayed,600]
 
 Let's take a brief look at each of the numbered items in this diagram.
 
+<<<<<<< HEAD
 === image:one.svg[,18,role=conum is-hidden-toc] Navigation files (Source)
+=======
+[#nav-file-source]
+=== image:one.svg[One,30] Source: Navigation files
+>>>>>>> 902fad7... align navigation pages with component version terms
 
-The navigation for a component is described by xref:filenames-and-locations.adoc[at least one AsciiDoc file].
+The navigation for a component version is described by xref:filenames-and-locations.adoc[at least one AsciiDoc file].
 However, as seen in the diagram, you can have as many navigation files as you need.
-Creating a navigation file per module is a common organizational structure we see.
+Creating a navigation file per module is a common, but not required, organizational structure.
 
 A navigation file contains xref:list-structures.adoc[one or more AsciiDoc lists].
-xref:link-syntax-and-content.adoc[Each item in a list] can be the link to a documentation page, URL to a website that isn't part of the site, or unlinked content such as a category title that groups a nested set of links.
+xref:link-syntax-and-content.adoc[Each item in a list] can be the cross reference to a page, URL to a website that isn't part of the site, or unlinked content such as a category title that groups a nested set of list items.
 Documentation page links are created using the same cross referencing syntax used in the pages themselves.
 
-When you want the list contents of a navigation file to be published to a component's navigation menu, you need to register the file in the appropriate component descriptor file.
+When you want the list contents of a navigation file to be published to a component version's page menu, you need to register the file in the appropriate component version descriptor file.
 
+<<<<<<< HEAD
 === image:two.svg[,18,role=conum is-hidden-toc] Navigation registration (Source)
+=======
+[#register-source]
+=== image:two.svg[Two,30] Source: Navigation enlistment
+>>>>>>> 902fad7... align navigation pages with component version terms
 
-Navigation files are xref:register-navigation-files.adoc[registered in a component descriptor file] under the nav key (`nav`).
-List the navigation files in the order you want them to be displayed in when they're published to the component menu on your site.
-When you run Antora, it will only use the registered navigation files to create the component menu.
+Navigation files are xref:register-navigation-files.adoc[registered in a component version descriptor file] under the `nav` key.
+List the navigation files in the order you want them to be displayed in when they're published to the component version page menu on your site.
+When you run Antora, it will only use the registered navigation files to create the component version page menu.
 
 [#component-menu]
+<<<<<<< HEAD
 === image:three.svg[,18,role=conum is-hidden-toc] Component navigation menu (Site)
+=======
+=== image:three.svg[Three,30] Site: Component version page menu
+>>>>>>> 902fad7... align navigation pages with component version terms
 
-Antora collects the contents of each registered navigation file, puts the contents in the order the files are listed under the `nav` key, and publishes a fully assembled navigation menu for the component to the site.
-The behavior and style of the menu is dictated by the UI bundle specified in your playbook.
+Antora collects the contents of each registered navigation file, puts the contents in the order the files are listed under the `nav` key, and publishes a fully assembled menu of pages for the component version.
+The behavior and style of the component version page menu is dictated by the UI bundle specified in your playbook.
 
-image::component-navigation-menu.png[Screenshot of the component navigation menu in an Antora documentation site,660]
-
-Antora carries out this assembly process for each version of each component that it locates in the repositories, branches, and tags listed under `sources` in the site's playbook.
+image::component-navigation-menu.png[Screenshot of the component version page menu in an Antora documentation site,660]
 
 [#component-dropdown]
 === image:four.svg[,18,role=conum is-hidden-toc] Component version selector (Site)
 
-When your site has several components and/or several versions of one or more components, Antora assembles an aggregated list of the components and their versions.
-We refer to this master menu of components and versions as the component version selector.
-Antora automatically lists the components in alphabetical order and the versions in order from the greatest or latest.
+When your site has several documentation components and/or several component versions, Antora assembles an aggregated list of the docs components and their versions.
+This master menu of docs components and their component versions is the component version selector.
+Antora automatically lists the docs components in alphabetical order.
+Each component version is ordered from the greatest or latest.
 
 image::component-version-selector.png[Screenshot of the component version selector dropdown menu in an Antora documentation site,660]
 
-In the default UI, this list is displayed in the "`drawer`" located at the bottom of any component menu.
-When a visitor clicks on the drawer, it expands upwards and the reader can then select the component and version they want to see.
+In the reference UI, this list is displayed in the "`drawer`" located at the bottom of any component version page menu.
+When a visitor clicks on the drawer, it expands upwards and the reader can then select the component version they want to see.
 
 [#page-dropdown]
 === image:five.svg[,18,role=conum is-hidden-toc] Page version selector (Site)
 
-If a page is available in more than one version of a component, a dropdown selector is visible on that page.
+If a page is available in more than one version of a component, a dropdown selector is visible on that page in the reference UI.
 From this selector, a visitor can navigate between other versions of that page.
-Antora automatically populates this selector menu when multiple versions of a page are available.
+Antora automatically populates this selector when multiple versions of a page are available.
 
 image::page-version-selector.png[Screenshot of the page version selector dropdown menu in an Antora documentation site,660]
 

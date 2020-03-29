@@ -1,12 +1,11 @@
 = Single List and Multi-list Navigation Files
-:description: How to structure a single list or multi-list Antora navigation source file, nest items in a list, and use list titles to create component navigation menus.
+:description: How to structure a single list or multi-list Antora navigation source file, nest items in a list, and use list titles to create component version page menus.
 :keywords: nav.adoc, nested sidebar menu, nested navigation with AsciiDoc, Antora menu items, UI, theme
 // Filters
 :page-tags: UI menu
 
 On this page, you'll learn:
 
-* [x] The AsciiDoc list type (unordered) that navigation files require.
 * [x] How to nest list items at different hierarchy levels.
 * [x] How list titles affect item hierarchy and the number of lists a navigation file can contain.
 * [x] How to construct a single list navigation file.
@@ -51,7 +50,7 @@ Unlike list items, there must be *no spaces* between the `.` and the content of 
 * Another list item
 ----
 
-When converted into a component navigation menu, list titles become level one list items with all other item levels (`+*+` through `+*****+`) getting nested beneath them.
+When converted into a navigation menu, list titles become level one list items with all other item levels (`+*+` through `+*****+`) getting nested beneath them.
 
 A list title is optional when a navigation file only contains one list.
 If a navigation file contains <<multi,multiple lists>>, each list in that file must have a title.
@@ -104,8 +103,8 @@ The blank line between the lists is not present in the published menu.
 
 Learn all about creating and formatting navigation list items:
 
-* xref:link-syntax-and-content.adoc[Navigation link syntax and content formatting: xrefs, URIs, text styles, images, and more]
+* xref:link-syntax-and-content.adoc[Navigation link syntax and content formatting: xrefs, URLs, text styles, images, and more]
 
-Learn how to register navigation files so they get included in a component menu:
+Learn how to register navigation files so they get included in a component version page menu:
 
-* xref:register-navigation-files.adoc[Register navigation files with a component for display in a component menu]
+* xref:register-navigation-files.adoc[Register navigation files in _antora.yml_ for display in a component version page menu]

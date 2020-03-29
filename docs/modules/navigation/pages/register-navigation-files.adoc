@@ -1,67 +1,50 @@
 = Register Navigation Files
-:description: How to enlist navigation files in a component descriptor so that Antora assembles them into a component navigation menu.
-:keywords: nav.adoc, antora.yml, register navigation files, add page link lists to a menu, UI, theme
+:description: How to enlist navigation files in a component version descriptor so that Antora assembles them into a component version page menu.
+:listing-caption: Example
+:xrefstyle: short
 // Filters
 :page-tags: UI menu, antora.yml, component keys
 
 On this page, you'll learn:
 
-* [x] The purpose of the component descriptor nav key.
-* [x] How to register navigation files in a component descriptor.
-* [x] How registration order affects the component menu.
+* [x] How to register navigation files in a component version descriptor.
+* [x] How registration order affects the component version page menu.
 
-== The component descriptor nav key
+== The component version nav key
 
-The nav key (`nav`) is set in the xref:ROOT:component-descriptor.adoc[component descriptor file] ([.path]_antora.yml_) of a component.
-The nav key accepts a list of xref:filenames-and-locations.adoc[navigation files].
+The `nav` key is set in the xref:ROOT:component-version-descriptor.adoc[component descriptor file] ([.path]_antora.yml_) of a xref:ROOT:component-version.adoc[component version].
+It accepts a list of xref:filenames-and-locations.adoc[navigation files] as values.
 Each value specifies the path to an individual navigation file.
+If you aren't familiar with how to set the `nav` key and assign it values, review xref:ROOT:component-navigation.adoc[Assign navigation files to a component version] first.
 
-.Component descriptor with two registered navigation files
-[source,yaml]
-----
-name: component-b
-title: Component B
-version: '1.0'
-nav: # <1>
-- modules/ROOT/nav.adoc # <2>
-- modules/module-one/nav.adoc # <3>
-----
-<1> Nav key
-<2> Value registering a navigation file located in the ROOT module
-<3> Value registering a navigation file located in a module named module-one
+== Register a component version's navigation files
 
-When a file is assigned to the nav key, this file is [.term]_registered_.
-Only the contents of registered navigation files are assembled into, and published as, a component navigation menu.
+When a navigation file is assigned to the `nav` key, this file is [.term]*registered*.
+Only the contents of registered navigation files are assembled into, and published as, a component version page menu.
 
-=== Nav key structure
+In <<ex-register>>, two navigation files have been registered.
 
-The nav key must be entered on its own line be directly followed by a colon (`:`).
-Do not indent the nav key or its list of values.
-
-Nav key values must be structured as follows:
-
-* Each nav key value must be entered on its own line.
-* Each nav key value must start with a hyphen (`-`) and then a single blank space.
-* Following the single blank space, enter the path to an individual navigation file relative to the location of the component descriptor file.
-
-In this example, two navigation files have been registered.
-
+[#ex-register]
+.Register two navigation files in an antora.yml file
 [source,yaml]
 ----
 name: component-b
 title: Component B
 version: '1.0'
 nav:
-- modules/ROOT/nav.adoc
-- modules/module-one/nav.adoc
+- modules/ROOT/nav.adoc  # <1>
+- modules/module-one/nav.adoc # <2>
 ----
+<1> Value registering a navigation file located in the ROOT directory.
+<2> Value registering a navigation file located in the module-one directory
 
-The navigation lists in these two files will be published into a single component menu for Component B 1.0.
+The navigation lists in the two registered files will be published into a single component version page menu for _Component B 1.0_.
 
-=== How registration order affects the component menu
+[#registration-order]
+=== How registration order affects the component version page menu
 
-The order of the nav key values dictates the order the contents of the navigation files are assembled in the published component menu.
-In the case of the example from the previous section, the contents of the ROOT navigation file will be at the top of the component menu and the contents of the Module One navigation file will be appended to the end of the ROOT navigation list.
+The order of the `nav` key's values dictates the order the contents of the registered navigation files are assembled in the published component version page menu.
+In <<ex-register>>, the contents of the ROOT module's navigation file will be at the top of the component version page menu and the contents of Module One's navigation file will be appended to the end of the ROOT navigation list.
 
 == What's next?
 

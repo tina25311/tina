@@ -30,7 +30,7 @@ When the link destination is a website or resource that isn't part of your site,
 Cross references in a navigation list use the xref:asciidoc:page-to-page-xref.adoc[same syntax and page ID construction as cross references in the page content].
 Just set up the `xref` macro, insert the destination page ID, and add the link content.
 The link content can be text, images, and/or icons.
-The link content is visible to the visitor in the component navigation menu.
+The link content is visible to the visitor in the component version's page menu.
 It is also displayed in the breadcrumbs at the top of the destination page.
 When a visitor clicks on the link content, they are routed to the destination page specified by the page ID in the xref.
 
@@ -51,17 +51,17 @@ In this case, the page ID doesn't require the component or module coordinates.
 * xref:topic/page.adoc[In-module page in a topic folder]
 ----
 
-=== Links to pages in other modules and components
+=== Links to pages in other modules and component versions
 
 Using the appropriate page ID pattern, you can link to any document in the site from a navigation list, whether it's stored in a xref:asciidoc:page-to-page-xref.adoc#different-module[different module] or xref:asciidoc:page-to-page-xref.adoc#different-component[component].
 
-.xrefs to pages in other modules and components
+.xrefs to pages in other modules and component versions
 [source,asciidoc]
 ----
 * xref:index.adoc[In-module page]
-* xref:other-module:page.adoc[Page in the same component, but a different module]
+* xref:other-module:page.adoc[Page in the same component version, but a different module]
 ** xref:topic/page.adoc[In-module page in a topic folder]
-*** xref:other-module:page.adoc#fragment[A deep link to a page in the same component, but a different module]
+*** xref:other-module:page.adoc#fragment[A deep link to a page in the same component version, but a different module]
 *** xref:other-component:module:page.adoc[Page in another component]
 ----
 
@@ -103,7 +103,7 @@ When you want to include content in a navigation list, but you don't want it to 
 
 == Formatted text
 
-Whether linked or unlinked, the text you want displayed in your component menu can be formatted using inline AsciiDoc markup.
+Whether linked or unlinked, the text you want displayed in your component version page menu can be formatted using inline AsciiDoc markup.
 
 [source,asciidoc]
 ----
@@ -128,9 +128,9 @@ The inline image macro has only one colon (`:`).
 
 == What's next?
 
-Learn how to register navigation files so they get included in a component menu:
+Learn how to register navigation files so they get included in a component version page menu:
 
-* xref:register-navigation-files.adoc[Register navigation files with a component for display in a component menu]
+* xref:register-navigation-files.adoc[Register navigation files with _antora.yml_ for display in a component version page menu]
 
 Learn all about structuring navigation lists:
 
