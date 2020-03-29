@@ -1,0 +1,41 @@
+= How to Organize Your Content Files
+
+Antora generates a site based on configuration input and structural conventions.
+Before setting up or reorganizing your repositories, let's go over some key concepts that may impact how you organize and classify your source files.
+
+== Storing your content source files
+
+Antora can retrieve source files from a lot of git repositories--and that includes their tags, branches, and directories.
+And these repositories don't need to be used exclusively for storing content.
+Antora can retrieve files from repositories that also host application code, tests, and other materials.
+
+In order to fetch source files from multiple and multi-use repositories, Antora requires that each discreet group of files be:
+
+* Located at a unique xref:content-source-repositories.adoc[content source root]
+* Stored with a file named xref:component-version-descriptor.adoc[_antora.yml_]
+* Organized into a xref:standard-directories.adoc[standard set of directories]
+
+== Classifying your content source files
+
+Antora decouples the source files from their storage locations after it collects them.
+//That means the names and URLs of the repositories, branches, tags, and content source roots doesn't have any bearing on a site that's generated from these files.
+Except for the family relative path of files stored in a [.path]_pages_ directory, the source files`' storage locations don't impact how they're referenced internally, organized, labeled, and versioned in the published site, or even how their resulting page URLs are constructed when the site is being generated.
+
+Instead, groups of source files are assigned a component name and version (or no version) using a component version descriptor file named _antora.yml_.
+Antora uses these descriptor files to sort and organize the collected source files into component versions.
+You can think of a component version as all of the documentation for a version of a project.
+For example, you're reading a page in the {page-component-title} {page-component-display-version} component version right now.
+
+These _antora.yml_ files are how content that belongs to the same version of a project can be stored using a repository (or even more than one repository) and versioning method that supports the team working on it, and also be published to a site using the names, version labels, navigation flows, and URLs that are helpful to the project's users.
+
+See xref:component-version.adoc[What's a component version?] and xref:component-version-descriptor.adoc[What's antora.yml?] to learn how to assign a component name and version, as well as other optional information, to groups of content source files.
+
+////
+== What is a documentation component?
+
+A [.term]*documentation component* typically represents the documentation for a product, application, project, microservice, or training course.
+It's a collection of files grouped into modules and families that share common metadata.
+Antora can generate a site that only contains one documentation component or a site that contains as many documentation components as you require.
+For simplicity, most of this page is written to describe the simple case when a component has one [.path]_antora.yml_ file from one source.
+The more complicated distributed component case is described at the end.
+////
