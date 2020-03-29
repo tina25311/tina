@@ -1,0 +1,20 @@
+= Distributed Component Version
+
+[#distributed]
+== Distributed component version
+
+While all of a docs component and its component versions`' source files can be stored in a single repository, it isn't a requirement.
+Antora can collect a component version's source files from two, five, and even more repositories.
+That means a few of a component version's modules can be stored in one repository, while the [.path]_examples_ family directory of another module is stored in a tutorial repository that's maintained by a training team, and then that same module's pages can be stored in [.path]_pages_ family directories across three different repositories.
+When a docs component's source files are stored in multiple repositories, it's referred to as a [.term]*distributed component*.
+This capability is provided by the simple, but-oh-so-powerful component version descriptor file, [.path]_antora.yml_.
+
+Recall that an [.path]_antora.yml_ file specifies the component name and version of a component version.
+If Antora discovers several [.path]_antora.yml_ files that specify an identical component name and version, that component version is said to be [.term]*distributed*.
+All of the source files associated with these [.path]_antora.yml_ files are added to Antora's content catalog and included in a single component version.
+
+When a component version is distributed, only one of its [.path]_antora.yml_ files should specify the optional configuration keys, such as `title` and `nav`, in addition to the required component `name` and `version`.
+All of the other [.path]_antora.yml_ files that mark the locations of the component version's source files must only specify the component `name` and `version`.
+Conflicting or duplicate optional configuration keys may produce unpredictable results.
+
+Antora will fail with an error if there is a content or navigation source file with an identical file name and stored in the same module in a distributed component.
