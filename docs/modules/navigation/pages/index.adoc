@@ -19,7 +19,7 @@ image::navigation-assembly.svg[Antora navigation assembly diagram showing the re
 
 Let's take a brief look at each of the numbered items in this diagram.
 
-=== image:one.svg[One,30] Source: Navigation list files
+=== image:one.svg[,18,role=conum is-hidden-toc] Navigation files (Source)
 
 The navigation for a component is described by xref:filenames-and-locations.adoc[at least one AsciiDoc file].
 However, as seen in the diagram, you can have as many navigation files as you need.
@@ -31,14 +31,14 @@ Documentation page links are created using the same cross referencing syntax use
 
 When you want the list contents of a navigation file to be published to a component's navigation menu, you need to register the file in the appropriate component descriptor file.
 
-=== image:two.svg[Two,30] Source: Navigation enlistment
+=== image:two.svg[,18,role=conum is-hidden-toc] Navigation registration (Source)
 
 Navigation files are xref:register-navigation-files.adoc[registered in a component descriptor file] under the nav key (`nav`).
 List the navigation files in the order you want them to be displayed in when they're published to the component menu on your site.
 When you run Antora, it will only use the registered navigation files to create the component menu.
 
 [#component-menu]
-=== image:three.svg[Three,30] Site: Component navigation menu
+=== image:three.svg[,18,role=conum is-hidden-toc] Component navigation menu (Site)
 
 Antora collects the contents of each registered navigation file, puts the contents in the order the files are listed under the `nav` key, and publishes a fully assembled navigation menu for the component to the site.
 The behavior and style of the menu is dictated by the UI bundle specified in your playbook.
@@ -48,7 +48,7 @@ image::component-navigation-menu.png[Screenshot of the component navigation menu
 Antora carries out this assembly process for each version of each component that it locates in the repositories, branches, and tags listed under `sources` in the site's playbook.
 
 [#component-dropdown]
-=== image:four.svg[Four,30] Site: Component version selector
+=== image:four.svg[,18,role=conum is-hidden-toc] Component version selector (Site)
 
 When your site has several components and several versions of one or more components, Antora assembles an aggregated list of the components and their versions.
 We refer to this master menu of components and versions as the component version selector.
@@ -60,7 +60,7 @@ In the default UI, this list is displayed in the "`drawer`" located at the botto
 When a visitor clicks on the drawer, it expands upwards and the reader can then select the component and version they want to see.
 
 [#page-dropdown]
-=== image:five.svg[Five,30] Site: Page version selector
+=== image:five.svg[,18,role=conum is-hidden-toc] Page version selector (Site)
 
 If a page is available in more than one version of a component, a dropdown selector is visible on that page.
 From this selector, a visitor can navigate between other versions of that page.
