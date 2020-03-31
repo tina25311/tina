@@ -138,7 +138,7 @@ Overrides the xref:playbook:playbook-schema.adoc#site-title-key[site title value
 
 |--to-dir <dir>
 |Directory where the site is generated.
-Overrides the xref:playbook:playbook-schema.adoc#dir-key[output dir value] specified in the playbook.
+Overrides the xref:playbook:playbook-schema.adoc#ui-output-dir-key[output dir value] specified in the playbook.
 |String
 |[.path]_build/site_
 

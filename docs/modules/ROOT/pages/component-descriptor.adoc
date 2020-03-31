@@ -104,7 +104,7 @@ If `display_version` isn't set, `version` is also used in the:
 * xref:navigation:index.adoc#page-dropdown[page version selector]
 
 Like with the name key, the version key isn't related, though it may be similar, to the xref:component-versions.adoc[name of the repository branch] where the component's source files are stored.
-See xref:component-versions.adoc#setting-the-version-for-a-branch[Setting the version for a branch] for more examples and xref:component-versions.adoc#versionless-components[Versionless components] to learn how to create a versionless component.
+See xref:component-versions.adoc#setting-the-version-for-a-branch[Setting the version for a branch] for more examples and xref:component-versions.adoc#versionless-urls[Versionless components] to learn how to create a versionless component.
 
 [#prerelease-key]
 === `prerelease`

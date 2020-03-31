@@ -148,7 +148,7 @@ Learn more:
 * xref:configure-content-sources.adoc#local-urls[Use local content repositories]
 * xref:configure-content-sources.adoc#remote-urls[Fetch remote content repositories]
 * xref:private-repository-auth.adoc[Authenticate private repositories]
-* xref:configure-content-sources.adoc#author-urls[Configure remote and local content repository URLs in the same playbook]
+* xref:configure-content-sources.adoc#mixing-urls[Configure remote and local content repository URLs in the same playbook]
 * xref:configure-content-sources.adoc#mix-local-remote-branches[Mix local and remote repositories and branches]
 
 [#branches-key]
@@ -345,6 +345,7 @@ Learn more:
 * xref:configure-output.adoc#archive-path[Specify ZIP file name]
 * xref:configure-output.adoc#multiple-destinations[Specify relative and absolute provider publishing destinations]
 
+[#clean-key]
 ==== clean
 
 The clean key can be specified directly on any `fs` provider.
