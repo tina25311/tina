@@ -85,7 +85,7 @@ function createNetlifyRedirects (files, urlPath, includeDirectoryRedirects = fal
     const toUrl = urlPath + file.rel.pub.url
     accum.push(`${fromUrl} ${toUrl} 301!`)
     if (includeDirectoryRedirects && fromUrl.endsWith('/index.html')) {
-      accum.push(`${fromUrl.slice(0, -10)} ${toUrl} 301!`)
+      accum.push(`${fromUrl.substr(0, fromUrl.length - 10)} ${toUrl} 301!`)
     }
     return accum
   }, [])
