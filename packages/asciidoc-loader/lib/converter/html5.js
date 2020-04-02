@@ -41,18 +41,14 @@ const Html5Converter = (() => {
     return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_anchor', convertInlineAnchor), [node])
   })
   Opal.defn(scope, '$image', function convertImage (node) {
-    return Opal.send(
-      this,
-      Opal.find_super_dispatcher(this, 'image', convertImage),
-      [transformImageNode(this, node, node.getAttribute('target'))]
-    )
+    return Opal.send(this, Opal.find_super_dispatcher(this, 'image', convertImage), [
+      transformImageNode(this, node, node.getAttribute('target')),
+    ])
   })
   Opal.defn(scope, '$inline_image', function convertInlineImage (node) {
-    return Opal.send(
-      this,
-      Opal.find_super_dispatcher(this, 'inline_image', convertInlineImage),
-      [transformImageNode(this, node, node.getTarget())]
-    )
+    return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_image', convertInlineImage), [
+      transformImageNode(this, node, node.getTarget()),
+    ])
   })
   return scope
 })()
