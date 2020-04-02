@@ -172,7 +172,7 @@ describe('generateSite()', function () {
   }).timeout(timeoutOverride)
 
   it('should use start page from latest version of component if version not specified', async () => {
-    playbookSpec.site.start_page = 'the-component::index'
+    playbookSpec.site.start_page = 'the-component::index.adoc'
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'index.html'))

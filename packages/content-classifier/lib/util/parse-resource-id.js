@@ -33,22 +33,24 @@ function parseResourceId (spec, ctx = {}, defaultFamily = 'page', permittedFamil
   if (!match) return
 
   let family = match[RESOURCE_ID_RX_GROUP.family]
+  let version = match[RESOURCE_ID_RX_GROUP.version]
+  let component = match[RESOURCE_ID_RX_GROUP.component]
+  let module = match[RESOURCE_ID_RX_GROUP.module]
+  let relative = match[RESOURCE_ID_RX_GROUP.relative]
+
   if (family) {
     if (permittedFamilies && !permittedFamilies.includes(family)) family = undefined
   } else {
     family = defaultFamily
   }
 
-  let version = match[RESOURCE_ID_RX_GROUP.version]
-  let component = match[RESOURCE_ID_RX_GROUP.component]
-  let module = match[RESOURCE_ID_RX_GROUP.module]
-  let relative = match[RESOURCE_ID_RX_GROUP.relative]
   if (~relative.indexOf('/')) {
     relative = relative
       .split('/')
       .filter((it) => it && it !== '.' && it !== '..')
       .join('/')
   }
+
   if ((family === 'page' || family === 'alias') && !relative.endsWith('.adoc')) relative += '.adoc'
 
   if (component) {

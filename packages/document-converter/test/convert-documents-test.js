@@ -343,7 +343,7 @@ describe('convertDocuments()', () => {
       aliases[spec] = { rel: targetPage }
     }
     contentCatalog.resolvePage = (spec, ctx = {}) => {
-      return (aliases[spec + '.adoc'] || {}).rel
+      return (aliases[spec] || {}).rel
     }
     const pages = convertDocuments(contentCatalog, asciidocConfig)
     const thePageContents = pages.find((it) => it.src.relative === 'the-page.adoc').contents.toString()

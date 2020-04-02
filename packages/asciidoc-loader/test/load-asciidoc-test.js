@@ -1982,7 +1982,7 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('xref:component-b::.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById).to.not.have.been.called()
-      expectUnresolvedPageLink(html, '#component-b::', 'The Page Title')
+      expectUnresolvedPageLink(html, '#component-b::.adoc', 'The Page Title')
     })
 
     it('should skip invalid page reference with fragment and explicit content', () => {
@@ -1990,7 +1990,7 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('xref:component-b::#frag[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById).to.not.have.been.called()
-      expectUnresolvedPageLink(html, '#component-b::#frag', 'The Page Title')
+      expectUnresolvedPageLink(html, '#component-b::.adoc#frag', 'The Page Title')
     })
 
     it('should skip invalid page reference with empty content', () => {
@@ -1998,7 +1998,7 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('xref:component-b::#frag[]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById).to.not.have.been.called()
-      expectUnresolvedPageLink(html, '#component-b::#frag', 'component-b::#frag')
+      expectUnresolvedPageLink(html, '#component-b::.adoc#frag', 'component-b::.adoc#frag')
     })
 
     it('should delegate to built-in converter to process an internal reference', () => {

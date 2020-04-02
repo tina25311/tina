@@ -13,8 +13,8 @@ const computeRelativeUrlPath = require('../util/compute-relative-url-path')
  *
  * @memberof asciidoc-loader
  *
- * @param {String} refSpec - The target of an xref macro to a page, which is a page ID spec without
- * the .adoc extension and with an optional fragment identifier.
+ * @param {String} refSpec - The target of a page xref macro, which is a page ID spec with an optional
+ * fragment identifier.
  * @param {String} content - The content (i.e., formatted text) of the link (undefined if not specified).
  * @param {File} currentPage - The virtual file for the current page.
  * @param {ContentCatalog} contentCatalog - The content catalog that contains the virtual files in the site.
@@ -24,25 +24,25 @@ const computeRelativeUrlPath = require('../util/compute-relative-url-path')
  * internal or unresolved.
  */
 function convertPageRef (refSpec, content, currentPage, contentCatalog, relativize = true) {
-  let hash = ''
-  let hashIdx
-  let pageIdSpec = refSpec
-  if (~(hashIdx = refSpec.indexOf('#'))) {
-    hash = refSpec.substr(hashIdx)
-    pageIdSpec = refSpec.substr(0, hashIdx)
-  }
+  let pageIdSpec
+  let hash
   let target
   let targetPage
+  if (~(hash = refSpec.indexOf('#'))) {
+    pageIdSpec = refSpec.substr(0, hash)
+    hash = refSpec.substr(hash)
+  } else {
+    pageIdSpec = refSpec
+    hash = ''
+  }
   try {
     if (!((targetPage = contentCatalog.resolvePage(pageIdSpec, currentPage.src)) && targetPage.pub)) {
       // TODO log "Unresolved page ID"
-      target = `#${pageIdSpec}.adoc${hash}`
-      return { content: content || target.substr(1), target, unresolved: true }
+      return { content: content || refSpec, target: '#' + refSpec, unresolved: true }
     }
   } catch (e) {
     // TODO log "Invalid page ID syntax" (or e.message)
-    target = `#${refSpec}`
-    return { content: content || target.substr(1), target, unresolved: true }
+    return { content: content || refSpec, target: '#' + refSpec, unresolved: true }
   }
   if (relativize) {
     target = computeRelativeUrlPath(currentPage.pub.url, targetPage.pub.url, hash)
@@ -52,12 +52,12 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
   }
   if (!content) {
     if (hash) {
-      content = `${pageIdSpec}.adoc${hash}`
+      content = pageIdSpec + hash
     } else {
       content =
         (currentPage.src.family === 'nav'
           ? (targetPage.asciidoc || {}).navtitle
-          : (targetPage.asciidoc || {}).xreftext) || `${pageIdSpec}.adoc`
+          : (targetPage.asciidoc || {}).xreftext) || pageIdSpec
     }
   }
   return { content, target }

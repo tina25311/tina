@@ -36,6 +36,7 @@ describe('parseResourceId()', () => {
     expect(result).to.eql(expected)
   })
 
+  // NOTE: this syntax is deprecated
   it('should parse a qualified page ID sans file extension', () => {
     const input = '1.0@the-component:the-module:the-topic/the-page'
     const expected = {

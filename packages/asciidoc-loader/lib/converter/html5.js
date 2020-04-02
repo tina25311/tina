@@ -22,13 +22,19 @@ const Html5Converter = (() => {
       let callback
       if (node.getAttribute('path', undefined, false) && (callback = this[$pageRefCallback])) {
         const attrs = node.getAttributes()
-        const { content, target, internal, unresolved } = callback(attrs.refid, node.getText())
+        let { refid: refSpec, fragment } = attrs
+        if (fragment && fragment !== Opal.nil) {
+          refSpec = refSpec.substr(0, refSpec.length - fragment.length - 1) + '.adoc#' + fragment
+        } else {
+          refSpec += '.adoc'
+        }
+        const { content, target, internal, unresolved } = callback(refSpec, node.getText())
         let type
         if (internal) {
           type = 'xref'
           delete attrs.path
           delete attrs.fragment
-          attrs.refid = target.substr(1)
+          attrs.refid = fragment
         } else {
           type = 'link'
           attrs.role = `page${unresolved ? ' unresolved' : ''}${attrs.role ? ' ' + attrs.role : ''}`
