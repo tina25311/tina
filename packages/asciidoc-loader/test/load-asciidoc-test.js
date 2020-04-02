@@ -2802,6 +2802,7 @@ describe('loadAsciiDoc()', () => {
         },
       ]).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
+      expect(inputFile.pub.moduleRootPath).to.equal('..')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2858,6 +2859,7 @@ describe('loadAsciiDoc()', () => {
         },
       ]).spyOn('getById')
       inputFile = contentCatalog.getAll()[0]
+      expect(inputFile.pub.moduleRootPath).to.equal('../..')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)

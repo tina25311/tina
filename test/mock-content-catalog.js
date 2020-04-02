@@ -61,10 +61,12 @@ function mockContentCatalog (seed = []) {
         entry.out = {
           path: path.join(component, pubVersion, pubModule, relative.slice(0, -5) + (indexify ? '/' : '.html')),
           moduleRootPath: relative.includes('/')
-            ? Array(relative.split('/').length - 1)
+            ? Array(relative.split('/').length - (indexify ? 0 : 1))
               .fill('..')
               .join('/')
-            : '.',
+            : indexify
+              ? '..'
+              : '.',
         }
         let url = '/' + entry.out.path
         if (~url.indexOf(' ')) url = url.replace(SPACE_RX, '%20')
