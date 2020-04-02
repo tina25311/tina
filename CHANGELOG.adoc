@@ -75,6 +75,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *content-aggregator*: Add start path to error message thrown while aggregating files (#531)
+* *content-aggregator*: Report clearer error if component descriptor cannot be parsed (#532)
 * *content-aggregator*: Consistently enclose details in error message in round brackets (#531)
 * *content-classifier*: Rename `getFiles()` method on content catalog to `getAll()`; retain `getFiles()` as deprecated method (#538)
 * *ui-loader*: Rename `getFiles()` method on UI catalog to `getAll()`; retain `getFiles()` as deprecated method (#538)
