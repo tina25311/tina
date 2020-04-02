@@ -41,25 +41,31 @@ const Html5Converter = (() => {
     return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_anchor', convertInlineAnchor), [node])
   })
   Opal.defn(scope, '$image', function convertImage (node) {
-    let callback
-    if (matchesResourceSpec(node.getAttribute('target')) && (callback = this[$imageRefCallback])) {
-      const attrs = node.getAttributes()
-      if (attrs.alt === attrs['default-alt']) node.setAttribute('alt', attrs.alt.split(/[@:]/).pop())
-      Opal.defs(node, '$image_uri', (imageSpec) => callback(imageSpec) || imageSpec)
-    }
-    return Opal.send(this, Opal.find_super_dispatcher(this, 'image', convertImage), [node])
+    return Opal.send(
+      this,
+      Opal.find_super_dispatcher(this, 'image', convertImage),
+      [transformImageNode(this, node, node.getAttribute('target'))]
+    )
   })
   Opal.defn(scope, '$inline_image', function convertInlineImage (node) {
-    let callback
-    if (matchesResourceSpec(node.target) && (callback = this[$imageRefCallback])) {
-      const attrs = node.getAttributes()
-      if (attrs.alt === attrs['default-alt']) node.setAttribute('alt', attrs.alt.split(/[@:]/).pop())
-      Opal.defs(node, '$image_uri', (imageSpec) => callback(imageSpec) || imageSpec)
-    }
-    return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_image', convertInlineImage), [node])
+    return Opal.send(
+      this,
+      Opal.find_super_dispatcher(this, 'inline_image', convertInlineImage),
+      [transformImageNode(this, node, node.getTarget())]
+    )
   })
   return scope
 })()
+
+function transformImageNode (converter, node, target) {
+  let imageRefCallback
+  if (matchesResourceSpec(target) && (imageRefCallback = converter[$imageRefCallback])) {
+    const alt = node.getAttribute('alt')
+    if (node.isAttribute('default-alt', alt, false)) node.setAttribute('alt', alt.split(/[@:]/).pop())
+    Opal.defs(node, '$image_uri', (imageSpec) => imageRefCallback(imageSpec) || imageSpec)
+  }
+  return node
+}
 
 function matchesResourceSpec (target) {
   return ~target.indexOf(':')
