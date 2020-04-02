@@ -34,7 +34,7 @@ const Html5Converter = (() => {
           attrs.role = `page${unresolved ? ' unresolved' : ''}${attrs.role ? ' ' + attrs.role : ''}`
         }
         const attributes = Opal.hash2(Object.keys(attrs), attrs)
-        const options = Opal.hash2(['type', 'target', 'attrs'], { type, target, attributes })
+        const options = Opal.hash2(['type', 'target', 'attributes'], { type, target, attributes })
         node = Opal.module(null, 'Asciidoctor').Inline.$new(node.getParent(), 'anchor', content, options)
       }
     }
