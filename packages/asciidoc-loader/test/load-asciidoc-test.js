@@ -3104,6 +3104,80 @@ describe('loadAsciiDoc()', () => {
     })
   })
 
+  describe('image macro', () => {
+    it('should pass through unresolved target of block image that matches resource ID', () => {
+      const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
+      setInputFileContents('image::module-b:no-such-image.png[The Image,250]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'no-such-image.png',
+        })
+      //expect(html).to.include(' class="imageblock unresolved"')
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:no-such-image.png')
+    })
+
+    it('should resolve target of image block if matches resource ID', () => {
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('image::module-b:the-image.png[The Image,250]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/the-image.png"')
+    })
+
+    it('should pass through unresolved target of inline image that matches resource ID', () => {
+      const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
+      setInputFileContents('Look for image:module-b:no-such-image.png[The Image,16].')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'no-such-image.png',
+        })
+      //expect(html).to.include(' class="image unresolved"')
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:no-such-image.png')
+    })
+
+    it('should resolve target of image block if matches resource ID', () => {
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('Look for image:module-b:the-image.png[The Image,16].')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/the-image.png"')
+    })
+  })
+
   describe('resolveConfig()', () => {
     it('should return config with built-in attributes if site and asciidoc categories not set in playbook', () => {
       const config = resolveConfig()

@@ -56,10 +56,11 @@ function mockContentCatalog (seed = []) {
     if (mediaType) entry.src.mediaType = entry.mediaType = mediaType
     const pubVersion = version === 'master' ? '' : version
     const pubModule = module === 'ROOT' ? '' : module
-    if (family === 'page' || family === 'alias') {
+    if (family === 'page' || family === 'alias' || family == 'image') {
       if (!~('/' + relative).indexOf('/_')) {
+        const relativeOut = family === 'image' ? relative : relative.slice(0, -5) + (indexify ? '/' : '.html')
         entry.out = {
-          path: path.join(component, pubVersion, pubModule, relative.slice(0, -5) + (indexify ? '/' : '.html')),
+          path: path.join(component, pubVersion, pubModule, relativeOut),
           moduleRootPath: relative.includes('/')
             ? Array(relative.split('/').length - (indexify ? 0 : 1))
               .fill('..')
