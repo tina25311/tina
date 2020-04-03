@@ -36,20 +36,6 @@ describe('parseResourceId()', () => {
     expect(result).to.eql(expected)
   })
 
-  // NOTE: this syntax is deprecated
-  it('should parse a qualified page ID sans file extension', () => {
-    const input = '1.0@the-component:the-module:the-topic/the-page'
-    const expected = {
-      version: '1.0',
-      component: 'the-component',
-      module: 'the-module',
-      family: 'page',
-      relative: 'the-topic/the-page.adoc',
-    }
-    const result = parseResourceId(input)
-    expect(result).to.eql(expected)
-  })
-
   it('should remove leading self references from relative path', () => {
     const input = './the-page.adoc'
     const inputCtx = { component: 'the-component', module: 'the-module', version: '1.0' }
