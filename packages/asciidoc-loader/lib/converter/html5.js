@@ -56,7 +56,7 @@ const Html5Converter = (() => {
 function transformImageNode (converter, node, target) {
   let imageRefCallback
   if (matchesResourceSpec(target) && (imageRefCallback = converter[$imageRefCallback])) {
-    const alt = node.getAttribute('alt')
+    const alt = node.getAttribute('alt', undefined, false)
     if (node.isAttribute('default-alt', alt, false)) node.setAttribute('alt', alt.split(/[@:]/).pop())
     Opal.defs(node, '$image_uri', (imageSpec) => imageRefCallback(imageSpec) || imageSpec)
   }
