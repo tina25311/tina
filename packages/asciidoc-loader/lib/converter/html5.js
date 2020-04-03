@@ -20,14 +20,14 @@ const Html5Converter = (() => {
   Opal.defn(scope, '$inline_anchor', function convertInlineAnchor (node) {
     if (node.getType() === 'xref') {
       let callback
-      if (node.getAttribute('path') && (callback = this[$pageRefCallback])) {
+      if (node.getAttribute('path', undefined, false) && (callback = this[$pageRefCallback])) {
         const attrs = node.getAttributes()
-        if (attrs.fragment === Opal.nil) delete attrs.fragment
         const { content, target, internal, unresolved } = callback(attrs.refid, node.getText())
         let type
         if (internal) {
           type = 'xref'
           delete attrs.path
+          delete attrs.fragment
           attrs.refid = target.substr(1)
         } else {
           type = 'link'
