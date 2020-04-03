@@ -50,6 +50,8 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
     // NOTE docdir implicitly sets base_dir on document; Opal only expands value to absolute path if it starts with ./
     docdir: file.dirname,
     docfilesuffix: extname,
+    // NOTE relfilesuffix must be set for page-to-page xrefs to work correctly
+    relfilesuffix: '.adoc',
     imagesdir: path.join(file.pub.moduleRootPath, '_images'),
     attachmentsdir: path.join(file.pub.moduleRootPath, '_attachments'),
     examplesdir: EXAMPLES_DIR_TOKEN,
