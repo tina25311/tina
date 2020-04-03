@@ -287,7 +287,7 @@ describe('convertDocument()', () => {
     convertDocument(inputFile, contentCatalog, asciidocConfig)
     expect(contentCatalog.resolvePage)
       .nth(1)
-      .called.with('module-b:page-b', inputFile.src)
+      .called.with('module-b:page-b.adoc', inputFile.src)
     expectPageLink(inputFile.contents.toString(), '../module-b/page-b.html', 'Page B')
   })
 

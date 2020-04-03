@@ -22,7 +22,10 @@ class ContentCatalog {
 
   registerComponentVersion (name, version, descriptor = {}) {
     const { asciidoc, displayVersion, prerelease, title, startPage: startPageSpec } = descriptor
-    let startPage = this.resolvePage(startPageSpec || 'index.adoc', { component: name, version, module: 'ROOT' })
+    let startPage = this.resolvePage(
+      startPageSpec ? (startPageSpec.endsWith('.adoc') ? startPageSpec : `${startPageSpec}.adoc`) : 'index.adoc',
+      { component: name, version, module: 'ROOT' }
+    )
     if (!startPage) {
       //if (startPageSpec) throw new Error(`Start page specified for ${version}@${name} not found: ` + startPageSpec)
       if (startPageSpec) console.warn(`Start page specified for ${version}@${name} not found: ` + startPageSpec)

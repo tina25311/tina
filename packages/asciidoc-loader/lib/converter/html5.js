@@ -20,15 +20,20 @@ const Html5Converter = (() => {
   Opal.defn(scope, '$inline_anchor', function convertInlineAnchor (node) {
     if (node.getType() === 'xref') {
       let callback
-      if (node.getAttribute('path', undefined, false) && (callback = this[$pageRefCallback])) {
+      let refSpec = node.getAttribute('path', undefined, false)
+      if (refSpec && (callback = this[$pageRefCallback])) {
+        // NOTE handle deprecated case when extension code defines path with no file extension; remove in Antora 3.0
+        if (!~refSpec.indexOf('.')) refSpec += '.adoc'
         const attrs = node.getAttributes()
-        const { content, target, internal, unresolved } = callback(attrs.refid, node.getText())
+        const fragment = attrs.fragment
+        if (fragment && fragment !== Opal.nil) refSpec += '#' + fragment
+        const { content, target, internal, unresolved } = callback(refSpec, node.getText())
         let type
         if (internal) {
           type = 'xref'
           delete attrs.path
           delete attrs.fragment
-          attrs.refid = target.substr(1)
+          attrs.refid = fragment // or target.substr(1)
         } else {
           type = 'link'
           attrs.role = `page${unresolved ? ' unresolved' : ''}${attrs.role ? ' ' + attrs.role : ''}`

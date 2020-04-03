@@ -120,7 +120,7 @@ function getNavInfo (filepath, nav) {
 function registerSiteStartPage (playbook, contentCatalog) {
   const pageSpec = playbook.site.startPage
   if (!pageSpec) return
-  const rel = contentCatalog.resolvePage(pageSpec)
+  const rel = contentCatalog.resolvePage(pageSpec.endsWith('.adoc') ? pageSpec : `${pageSpec}.adoc`)
   if (rel) {
     const src = Object.assign({}, START_PAGE_ID, {
       family: 'alias',
