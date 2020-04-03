@@ -24,19 +24,19 @@ const computeRelativeUrlPath = require('../util/compute-relative-url-path')
  * internal or unresolved.
  */
 function convertPageRef (refSpec, content, currentPage, contentCatalog, relativize = true) {
-  let pageIdSpec
+  let pageSpec
   let hash
   let target
   let targetPage
   if (~(hash = refSpec.indexOf('#'))) {
-    pageIdSpec = refSpec.substr(0, hash)
+    pageSpec = refSpec.substr(0, hash)
     hash = refSpec.substr(hash)
   } else {
-    pageIdSpec = refSpec
+    pageSpec = refSpec
     hash = ''
   }
   try {
-    if (!((targetPage = contentCatalog.resolvePage(pageIdSpec, currentPage.src)) && targetPage.pub)) {
+    if (!((targetPage = contentCatalog.resolvePage(pageSpec, currentPage.src)) && targetPage.pub)) {
       // TODO log "Unresolved page ID"
       return { content: content || refSpec, target: '#' + refSpec, unresolved: true }
     }
@@ -52,12 +52,12 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
   }
   if (!content) {
     if (hash) {
-      content = pageIdSpec + hash
+      content = pageSpec + hash
     } else {
       content =
         (currentPage.src.family === 'nav'
           ? (targetPage.asciidoc || {}).navtitle
-          : (targetPage.asciidoc || {}).xreftext) || pageIdSpec
+          : (targetPage.asciidoc || {}).xreftext) || pageSpec
     }
   }
   return { content, target }
