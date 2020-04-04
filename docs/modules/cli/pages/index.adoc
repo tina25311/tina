@@ -74,7 +74,7 @@ Overrides the xref:playbook:playbook-schema.adoc#cache-dir-key[cache dir value] 
 |[.path]_<user's cache>/antora_
 
 |--clean
-|Remove the xref:playbook:playbook-schema.adoc#clean-key[output directory] before publishing the site.
+|Remove the xref:playbook:playbook-schema.adoc#output-clean-key[output directory] before publishing the site.
 |Boolean
 |false
 
@@ -131,7 +131,7 @@ Overrides the xref:playbook:playbook-schema.adoc#site-title-key[site title value
 
 |--to-dir <dir>
 |Directory where the site is generated.
-Overrides the xref:playbook:playbook-schema.adoc#dir-key[output dir value] specified in the playbook.
+Overrides the xref:playbook:playbook-schema.adoc#ui-output-dir-key[output dir value] specified in the playbook.
 |String
 |[.path]_build/site_
 
