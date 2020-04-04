@@ -340,7 +340,7 @@ describe('build UI model', () => {
       expect(model.home).to.be.true()
     })
 
-    it('should set title, description, and keyword based on AsciiDoc attributes', () => {
+    it('should set title, description, and keywords based on AsciiDoc attributes', () => {
       file.asciidoc = {
         doctitle: 'The Page Title',
         attributes: {
