@@ -345,7 +345,6 @@ Learn more:
 * xref:configure-output.adoc#archive-path[Specify ZIP file name]
 * xref:configure-output.adoc#multiple-destinations[Specify relative and absolute provider publishing destinations]
 
-[#clean-key]
 ==== clean
 
 The clean key can be specified directly on any `fs` provider.
