@@ -18,6 +18,7 @@ describe('loadAsciiDoc()', () => {
   const expectUnresolvedPageLink = (html, url, content) =>
     expect(html).to.include(`<a href="${url}" class="page unresolved">${content}</a>`)
   const expectPageLink = (html, url, content) => expect(html).to.include(`<a href="${url}" class="page">${content}</a>`)
+  const expectImgLink = (html, url, content) => expect(html).to.include(`<a class="image" href="${url}">${content}</a>`)
 
   const setInputFileContents = (contents) => {
     inputFile.contents = Buffer.from(contents)
@@ -3200,6 +3201,206 @@ describe('loadAsciiDoc()', () => {
           relative: 'the-image.png',
         })
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/the-image.png"')
+    })
+
+    it('should resolve internal anchor referenced by xref attribute on block image macro and link to it', () => {
+      const contents = heredoc`
+      image::module-b:the-image.png[The Image,250,xref=section-a]
+
+      [#section-a]
+      == Section A
+
+      contents
+      `
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="imageblock"')
+      expectImgLink(html, '#section-a', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should resolve internal anchor referenced by xref attribute with leading # on block image macro and link to it', () => {
+      const contents = heredoc`
+      image::module-b:the-image.png[The Image,250,xref=#section-a]
+
+      [#section-a]
+      == Section A
+
+      contents
+      `
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="imageblock"')
+      expectImgLink(html, '#section-a', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should pass through unresolved xref on block image macro as href of enclosing link', () => {
+      const contentCatalog = mockContentCatalog({
+        module: 'module-b',
+        family: 'image',
+        relative: 'the-image.png',
+      }).spyOn('getById')
+      setInputFileContents('image::module-b:the-image.png[The Image,250,xref=module-b:no-such-page.adoc]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'no-such-page.adoc',
+        })
+      expect(contentCatalog.getById)
+        .nth(0)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="imageblock link-page link-unresolved"')
+      expectImgLink(html, '#module-b:no-such-page.adoc', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should resolve page referenced by xref attribute on block image macro and link to it', () => {
+      const contentCatalog = mockContentCatalog([
+        { module: 'module-b', family: 'page', relative: 'the-page.adoc' },
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('image::module-b:the-image.png[The Image,250,role=border,xref=module-b:the-page.adoc]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="imageblock link-page border"')
+      expectImgLink(html, '../module-b/the-page.html', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should resolve anchor referenced by xref attribute on inline image macro and link to it', () => {
+      const contents = heredoc`
+      Look for image:module-b:the-image.png[The Image,16,xref=section-a].
+
+      [#section-a]
+      == Section A
+      `
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="image"')
+      expectImgLink(html, '#section-a', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should pass through unresolved xref on inline image macro as href of enclosing link', () => {
+      const contentCatalog = mockContentCatalog({
+        module: 'module-b',
+        family: 'image',
+        relative: 'the-image.png',
+      }).spyOn('getById')
+      setInputFileContents('Look for image:module-b:the-image.png[The Image,16,xref=module-b:no-such-page.adoc].')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'no-such-page.adoc',
+        })
+      expect(contentCatalog.getById)
+        .nth(0)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="image link-page link-unresolved"')
+      expectImgLink(html, '#module-b:no-such-page.adoc', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should resolve page referenced by xref attribute on inline image macro and link to it', () => {
+      const contentCatalog = mockContentCatalog([
+        { module: 'module-b', family: 'page', relative: 'the-page.adoc' },
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('Look for image:module-b:the-image.png[The Image,16,role=icon,xref=module-b:the-page.adoc].')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="image link-page icon"')
+      expectImgLink(html, '../module-b/the-page.html', html.match(/<img[^>]*>/)[0])
     })
   })
 

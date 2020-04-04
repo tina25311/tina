@@ -58,12 +58,30 @@ const Html5Converter = (() => {
   return scope
 })()
 
-function transformImageNode (converter, node, target) {
-  let imageRefCallback
-  if (matchesResourceSpec(target) && (imageRefCallback = converter[$imageRefCallback])) {
-    const alt = node.getAttribute('alt', undefined, false)
-    if (node.isAttribute('default-alt', alt, false)) node.setAttribute('alt', alt.split(/[@:]/).pop())
-    Opal.defs(node, '$image_uri', (imageSpec) => imageRefCallback(imageSpec) || imageSpec)
+function transformImageNode (converter, node, imageTarget) {
+  if (matchesResourceSpec(imageTarget)) {
+    const imageRefCallback = converter[$imageRefCallback]
+    if (imageRefCallback) {
+      const alt = node.getAttribute('alt', undefined, false)
+      if (node.isAttribute('default-alt', alt, false)) node.setAttribute('alt', alt.split(/[@:]/).pop())
+      Opal.defs(node, '$image_uri', (imageSpec) => imageRefCallback(imageSpec) || imageSpec)
+    }
+  }
+  if (node.hasAttribute('xref')) {
+    const refSpec = node.getAttribute('xref', '', false)
+    if (refSpec.charAt() === '#') {
+      node.setAttribute('link', refSpec)
+    } else if (refSpec.endsWith('.adoc')) {
+      const pageRefCallback = converter[$pageRefCallback]
+      if (pageRefCallback) {
+        const { target, unresolved } = pageRefCallback(refSpec, '[image]')
+        const role = node.getAttribute('role', undefined, false)
+        node.setAttribute('role', `link-page${unresolved ? ' link-unresolved' : ''}${role ? ' ' + role : ''}`)
+        node.setAttribute('link', target)
+      }
+    } else {
+      node.setAttribute('link', '#' + refSpec)
+    }
   }
   return node
 }
