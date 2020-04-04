@@ -88,6 +88,7 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
     url,
     description: attributes.description,
     keywords: attributes.keywords,
+    role: attributes.docrole,
     attributes: pageAttributes,
     component,
     version,

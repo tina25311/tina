@@ -366,9 +366,10 @@ describe('build UI model', () => {
       expect(model.home).to.be.true()
     })
 
-    it('should set title, description, and keywords based on AsciiDoc attributes', () => {
+    it('should set title, description, keywords, and role based on AsciiDoc attributes', () => {
       file.asciidoc = {
         doctitle: 'The Page Title',
+        docrole: 'the-role',
         attributes: {
           description: 'A description of this page',
           keywords: 'keyword-a, keyword-b',
@@ -378,6 +379,7 @@ describe('build UI model', () => {
       expect(model.title).to.equal(file.asciidoc.doctitle)
       expect(model.description).to.equal(file.asciidoc.attributes.description)
       expect(model.keywords).to.equal(file.asciidoc.attributes.keywords)
+      expect(model.role).to.equal(file.asciidoc.attributes.docrole)
     })
 
     it('should derive value of attributes property based on AsciiDoc attributes prefixed with page-', () => {

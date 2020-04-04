@@ -152,9 +152,14 @@ describe('loadAsciiDoc()', () => {
 
   describe('attributes', () => {
     it('should assign built-in and Antora integration attributes on document', () => {
-      setInputFileContents('= Document Title')
+      const contents = heredoc`
+      [#docid.docrole]
+      = Document Title
+      `
+      setInputFileContents(contents)
       const doc = loadAsciiDoc(inputFile, undefined, resolveConfig())
       expect(doc.getBaseDir()).to.equal('modules/module-a/pages')
+      expect(doc.getId()).to.equal('docid')
       expect(doc.getAttributes()).to.include({
         // env
         env: 'site',
@@ -184,6 +189,7 @@ describe('loadAsciiDoc()', () => {
         'page-src-path': 'page-a.adoc',
         // computed
         doctitle: 'Document Title',
+        docrole: 'docrole',
         notitle: '',
         embedded: '',
         'safe-mode-name': 'safe',
