@@ -202,8 +202,8 @@ class ContentCatalog {
   }
 
   // QUESTION should this be addPageAlias?
-  registerPageAlias (aliasSpec, targetPage) {
-    const src = parseResourceId(aliasSpec, targetPage.src, 'page', ['page'])
+  registerPageAlias (spec, rel) {
+    const src = parseResourceId(spec, rel.src, 'page', ['page'])
     // QUESTION should we throw an error if alias is invalid?
     if (!src) return
     const component = this.getComponent(src.component)
@@ -215,7 +215,7 @@ class ContentCatalog {
         // TODO we'll need some way to easily get a displayable page ID
         let qualifiedSpec = generateKey(existingPage.src)
         qualifiedSpec = qualifiedSpec.replace(':page$', ':')
-        const message = `Page alias cannot reference ${targetPage === existingPage ? 'itself' : 'an existing page'}`
+        const message = `Page alias cannot reference ${existingPage === rel ? 'itself' : 'an existing page'}`
         throw new Error(message + ': ' + qualifiedSpec)
       }
     } else if (!src.version) {
@@ -224,10 +224,10 @@ class ContentCatalog {
     }
     expandPageSrc(src, 'alias')
     // QUESTION should we use src.origin instead of rel with type='link'?
-    //src.origin = { type: 'link', target: targetPage }
+    //src.origin = { type: 'link', target: rel }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
     // QUESTION should we set the path property on the alias file?
-    return this.addFile({ path: targetPage.path, mediaType: 'text/html', src, rel: targetPage })
+    return this.addFile({ path: rel.path, mediaType: 'text/html', src, rel })
   }
 
   /**
