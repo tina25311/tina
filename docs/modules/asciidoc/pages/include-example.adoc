@@ -4,14 +4,14 @@
 :url-tags: {url-adoc-manual}/#by-tagged-regions
 :url-indent: {url-adoc-manual}/#normalize-block-indentation
 
-Examples are non-AsciiDoc files that contain reusable content, such as source code or data values, that are often inserted into listing blocks.
-Examples are saved in the xref:ROOT:modules.adoc#examples-dir[_examples_ directory].
+Examples are non-AsciiDoc files that contain reusable content, such as source code or data values, that are often inserted into source, listing, and literal blocks.
+Examples are saved in the xref:ROOT:examples-directory.adoc[_examples_ directory].
 Typically, an example and the standard page it's used in are stored in the same module.
 However, regardless of an example's source module, it can be inserted into any standard page in your documentation site using the include directive and the example file's resource ID.
 
 == Include directive structure for examples
 
-Let's break down the AsciiDoc syntax and resource coordinates you need to include an example into a standard page.
+Let's break down the AsciiDoc syntax and resource ID coordinates you need to include an example into a page.
 
 ----
 \include::version@component:module:example$name-of-file.ext[optional attributes]
@@ -25,7 +25,6 @@ Let's break down the AsciiDoc syntax and resource coordinates you need to includ
 ----
 
 . Enter the xref:page:resource-id.adoc[resource ID] of the example file.
-An example's resource coordinates are determined just like the xref:page-to-page-xref.adoc#same-module[coordinates in an xref].
 +
 [subs=+quotes]
 ----
@@ -40,17 +39,17 @@ An example's resource coordinates are determined just like the xref:page-to-page
 ----
 
 . Close the directive with a set of square brackets (`+[]+`).
-The brackets can contain an optional list of attributes such as `indent` and `tags`.
-The attributes should be entered as key=value pairs separated by commas.
+The brackets can contain an optional list of attributes such as `indent`, `lines`, or `tags`.
+The attributes should be entered as key-value pairs separated by commas.
 +
 [subs=+quotes]
 ----
 include::version@component:module:example$name-of-file.ext**[optional attributes]**
 ----
 
-NOTE: Antora supports filtering the lines of an include file by either line numbers using the `lines` attribute (since Antora 2.2) or tags using the tag or tags attributes.
+NOTE: Antora supports filtering the lines of an example file by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
 Filtering by line numbers takes precedence.
-See https://asciidoctor.org/docs/user-manual/#include-partial[the asciidoctor documentation] for full details of the `lines` and `tag` or `tags` syntax.
+See https://asciidoctor.org/docs/user-manual/#include-partial[the Asciidoctor documentation] for full details of the `lines`, `tag`, and `tags` syntax.
 
 == Include an example from the same module
 
@@ -98,7 +97,6 @@ include::4.5@tree::example$extension.js[] // <2>
 * xref:include-page.adoc[Include a standard page]
 * xref:page:resource-id.adoc[Resource IDs]
 
-== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-tags}[Select regions of content with tags^]
 * {url-indent}[Normalize block indentation with indent^]

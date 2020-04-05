@@ -4,14 +4,12 @@
 :url-tags: {url-adoc-manual}/#by-tagged-regions
 :url-leveloffset: {url-adoc-manual}/#include-partitioning
 
-Partials are AsciiDoc files that contain reusable snippets of content.
-Partials are saved in the xref:ROOT:modules.adoc#partials-dir[_partials_ directory].
-Typically, a partial and the standard page it's used in are stored in the same module.
-However, regardless of a partial's source module, it can be inserted into any standard page in your documentation site using the include directive and the partial file's resource ID.
+//Typically, a partial and the standard page it's used in are stored in the same module.
+A partial can be inserted into any page in your documentation site using the include directive and the partial file's resource ID.
 
 == Include directive structure for partials
 
-Let's break down the AsciiDoc syntax and resource coordinates you need to include a partial into a standard page.
+Let's break down the AsciiDoc syntax and resource ID coordinates you need to include a partial into a page.
 
 ----
 \include::version@component:module:partial$name-of-file.adoc[optional attributes]
@@ -40,15 +38,13 @@ A partial's resource coordinates are determined just like the xref:page-to-page-
 ----
 
 . Close the directive with a set of square brackets (`+[]+`).
-The brackets can contain an optional list of attributes such as `leveloffset` and `tags`.
+The brackets can contain an optional list of attributes such as `leveloffset`, `lines`, and `tags`.
 The attributes should be entered as key=value pairs separated by commas.
 +
 [subs=+quotes]
 ----
 include::version@component:module:partial$name-of-file.adoc**[optional attributes]**
 ----
-
-NOTE: Currently, Antora only supports filtering includes by tags.
 
 == Include a partial from the same module
 
@@ -97,7 +93,6 @@ In the next example, the page will include the partial specifically from the 2.0
 * xref:include-page.adoc[Include a standard page]
 * xref:page:resource-id.adoc[Resource IDs]
 
-== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-leveloffset}[Offset section headings with leveloffset^]
 * {url-tags}[Select regions of content with tags^]
