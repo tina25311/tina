@@ -304,10 +304,16 @@ function generateKey ({ component, version, module, family, relative }) {
 }
 
 function inflateSrc (src, family = 'page') {
+  const basename = (src.basename = path.basename(src.relative))
+  const extIdx = basename.lastIndexOf('.')
+  if (~extIdx) {
+    src.stem = basename.substr(0, extIdx)
+    src.extname = basename.substr(extIdx)
+  } else {
+    src.stem = basename
+    src.extname = ''
+  }
   src.family = family
-  src.basename = path.basename(src.relative)
-  src.extname = path.extname(src.relative)
-  src.stem = path.basename(src.relative, src.extname)
   src.mediaType = 'text/asciidoc'
   return src
 }
