@@ -685,6 +685,46 @@ describe('ContentCatalog', () => {
       expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html', rootPath: '../..' })
     })
 
+    it('should not require stem and basename to be set on src object of AsciiDoc file', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        mediaType: 'text/asciidoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      const result = contentCatalog.addFile({ src })
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({ path: 'the-component/1.2.3/the-page.html', rootPath: '../..' })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html', rootPath: '../..' })
+    })
+
+    it('should not require stem and basename to be set on src object of non-AsciiDoc file', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'image',
+        relative: 'screenshots/add-user.png',
+        mediaType: 'image/png',
+      }
+      const contentCatalog = new ContentCatalog()
+      const result = contentCatalog.addFile({ src })
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({
+        path: 'the-component/1.2.3/_images/screenshots/add-user.png',
+        rootPath: '../../../..',
+      })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({
+        url: '/the-component/1.2.3/_images/screenshots/add-user.png',
+        rootPath: '../../../..',
+      })
+    })
+
     it('should not populate out and pub when filename begins with an underscore', () => {
       const src = {
         component: 'the-component',
@@ -913,6 +953,9 @@ describe('ContentCatalog', () => {
         module: 'ROOT',
         family: 'alias',
         relative: 'the-topic/alias.adoc',
+        basename: 'alias.adoc',
+        stem: 'alias',
+        extname: '.adoc',
       })
       expect(result.path).to.equal(targetPage.path)
       expect(result).to.have.property('rel')
@@ -983,6 +1026,23 @@ describe('ContentCatalog', () => {
         module: 'ROOT',
         family: 'alias',
         relative: 'alias.adoc',
+      })
+    })
+
+    it('should register alias with no file extension', () => {
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
+      const result = contentCatalog.registerPageAlias('mod:topic/alias', targetPage)
+      expect(result).to.exist()
+      expect(result).to.have.property('src')
+      expect(result.src).to.include({
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'mod',
+        family: 'alias',
+        relative: 'topic/alias',
+        basename: 'alias',
+        stem: 'alias',
+        extname: '',
       })
     })
 

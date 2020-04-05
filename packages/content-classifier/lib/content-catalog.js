@@ -323,8 +323,10 @@ function computeOut (src, family, htmlUrlExtensionStyle) {
   const version = src.version === 'master' ? '' : src.version
   const module = src.module === 'ROOT' ? '' : src.module
 
-  const stem = src.stem
-  let basename = src.mediaType === 'text/asciidoc' ? stem + '.html' : src.basename
+  let basename = src.basename || path.basename(src.relative)
+  const stem = src.stem || basename.substr(0, ((basename.lastIndexOf('.') + 1) || basename.length + 1) - 1)
+  if (src.mediaType === 'text/asciidoc') basename = stem + '.html'
+
   let indexifyPathSegment = ''
   if (family === 'page' && stem !== 'index' && htmlUrlExtensionStyle === 'indexify') {
     basename = 'index.html'
