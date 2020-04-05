@@ -663,6 +663,8 @@ describe('ContentCatalog', () => {
       expect(file).to.be.instanceOf(File)
       expect(file).to.have.property('contents')
       expect(file).to.have.property('src')
+      expect(file.src).to.include(src)
+      expect(file).to.equal(contentCatalog.getById(src))
     })
 
     it('should populate out and pub when called with vinyl file that has src property', () => {
@@ -677,8 +679,8 @@ describe('ContentCatalog', () => {
         mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile(new File({ src }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src }))
+      expect(result).to.equal(contentCatalog.getById(src))
       expect(result).to.have.property('out')
       expect(result.out).to.include({ path: 'the-component/1.2.3/the-page.html', rootPath: '../..' })
       expect(result).to.have.property('pub')
@@ -737,8 +739,7 @@ describe('ContentCatalog', () => {
         mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile(new File({ src }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.not.have.property('out')
       expect(result).to.not.have.property('pub')
     })
@@ -755,8 +756,7 @@ describe('ContentCatalog', () => {
         mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile(new File({ src }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.not.have.property('out')
       expect(result).to.not.have.property('pub')
     })
@@ -773,8 +773,7 @@ describe('ContentCatalog', () => {
         mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile(new File({ src, out: undefined }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src, out: undefined }))
       expect(result).to.not.have.property('out')
       expect(result).to.not.have.property('pub')
     })
@@ -792,8 +791,7 @@ describe('ContentCatalog', () => {
       }
       const contentCatalog = new ContentCatalog()
       contentCatalog.htmlUrlExtensionStyle = 'indexify'
-      contentCatalog.addFile(new File({ src }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.have.property('out')
       expect(result.out).to.include({ path: 'the-component/1.2.3/the-page/index.html', rootPath: '../../..' })
       expect(result).to.have.property('pub')
@@ -814,8 +812,7 @@ describe('ContentCatalog', () => {
       const out = {}
       const pub = {}
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile(new File({ src, out, pub }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src, out, pub }))
       expect(result).to.have.property('out')
       expect(result.out).to.equal(out)
       expect(result).to.have.property('pub')
@@ -834,8 +831,7 @@ describe('ContentCatalog', () => {
         mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile(new File({ src }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.not.have.property('out')
       expect(result).to.have.property('pub')
       expect(result.pub.url).to.equal('/the-component/')
@@ -853,8 +849,7 @@ describe('ContentCatalog', () => {
         mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile(new File({ src }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.not.have.property('out')
       expect(result).to.have.property('pub')
       expect(result.pub.url).to.equal('/the-component/')
@@ -872,8 +867,7 @@ describe('ContentCatalog', () => {
         mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile({ path: src.relative, src })
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile({ path: src.relative, src })
       expect(File.isVinyl(result)).to.be.true()
       expect(result.relative).to.equal('the-page.adoc')
       expect(result).to.have.property('out')
@@ -892,8 +886,7 @@ describe('ContentCatalog', () => {
         stem: 'the-other-page',
         mediaType: 'text/asciidoc',
       }
-      contentCatalog.addFile(new File({ src: relSrc }))
-      const rel = contentCatalog.getById(relSrc)
+      const rel = contentCatalog.addFile(new File({ src: relSrc }))
       const src = {
         component: 'the-component',
         version: '1.2.3',
@@ -904,8 +897,7 @@ describe('ContentCatalog', () => {
         stem: 'the-page',
         mediaType: 'text/asciidoc',
       }
-      contentCatalog.addFile(new File({ src, rel }))
-      const result = contentCatalog.getById(src)
+      const result = contentCatalog.addFile(new File({ src, rel }))
       expect(result).to.have.property('out')
       expect(result.out).to.include({ path: 'the-component/1.2.3/the-page.html', rootPath: '../..' })
       expect(result).to.have.property('pub')
@@ -942,8 +934,7 @@ describe('ContentCatalog', () => {
 
     it('should register an alias for target file given a valid qualified page spec', () => {
       contentCatalog.registerComponentVersion('the-component', '1.0.0', { title: 'The Component' })
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('1.0.0@the-component::the-topic/alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
@@ -964,8 +955,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should register an alias for target file given a valid contextual page spec', () => {
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
@@ -985,8 +975,7 @@ describe('ContentCatalog', () => {
 
     it('should set version of alias to latest version of component if version not specified', () => {
       contentCatalog.registerComponentVersion('other-component', '1.0', { title: 'Other Component' })
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('other-component::alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
@@ -1000,8 +989,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should register alias if component does not exist', () => {
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('1.0@unknown-component::alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
@@ -1015,8 +1003,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should register alias if version does not exist', () => {
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('1.0@alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
@@ -1047,8 +1034,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should register alias in master version if component does not exist and version is not specified', () => {
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('unknown-component::alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
@@ -1062,22 +1048,19 @@ describe('ContentCatalog', () => {
     })
 
     it('should not allow alias to be registered that matches target page', () => {
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const expectedError = 'Page alias cannot reference itself: 1.2.3@the-component:ROOT:the-page.adoc'
       expect(() => contentCatalog.registerPageAlias(targetPageSrc.relative, targetPage)).to.throw(expectedError)
     })
 
     it('should not allow self reference to be used in page alias', () => {
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const expectedError = 'Page alias cannot reference itself: 1.2.3@the-component:ROOT:the-page.adoc'
       expect(() => contentCatalog.registerPageAlias('./' + targetPageSrc.relative, targetPage)).to.throw(expectedError)
     })
 
     it('should not allow parent reference to be used in page alias', () => {
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const expectedError = 'Page alias cannot reference itself: 1.2.3@the-component:ROOT:the-page.adoc'
       expect(() => contentCatalog.registerPageAlias('../' + targetPageSrc.relative, targetPage)).to.throw(expectedError)
     })
@@ -1085,16 +1068,14 @@ describe('ContentCatalog', () => {
     it('should not allow alias to be registered that matches existing page', () => {
       const otherPageSrc = Object.assign({}, targetPageSrc)
       otherPageSrc.relative = otherPageSrc.basename = 'the-other-page.adoc'
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       contentCatalog.addFile(new File({ src: otherPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
       const expectedError = 'Page alias cannot reference an existing page: 1.2.3@the-component:ROOT:the-other-page.adoc'
       expect(() => contentCatalog.registerPageAlias(otherPageSrc.relative, targetPage)).to.throw(expectedError)
     })
 
     it('should not allow alias to be registered multiple times', () => {
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const expectedError = 'Duplicate alias: 1.2.3@the-component:ROOT:alias.adoc'
       expect(() => contentCatalog.registerPageAlias('alias.adoc', targetPage)).to.not.throw()
       expect(() => contentCatalog.registerPageAlias('alias.adoc', targetPage)).to.throw(expectedError)
@@ -1103,8 +1084,7 @@ describe('ContentCatalog', () => {
     it('should register an alias correctly when the HTML URL extension style is indexify', () => {
       contentCatalog = new ContentCatalog({ urls: { htmlExtensionStyle: 'indexify' } })
       contentCatalog.registerComponentVersion('the-component', '1.2.3', { title: 'The Component' })
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
@@ -1122,8 +1102,7 @@ describe('ContentCatalog', () => {
     it('should register an alias correctly when the HTML URL extension style is drop', () => {
       contentCatalog = new ContentCatalog({ urls: { htmlExtensionStyle: 'drop' } })
       contentCatalog.registerComponentVersion('the-component', '1.2.3', { title: 'The Component' })
-      contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const targetPage = contentCatalog.getById(targetPageSrc)
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
