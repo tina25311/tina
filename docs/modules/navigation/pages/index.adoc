@@ -81,6 +81,7 @@ Antora automatically populates this selector when multiple versions of a page ar
 
 image::page-version-selector.png[Screenshot of the page version selector dropdown menu in an Antora documentation site,660]
 
+////
 == What's next?
 
 *Summit Stats*: All the details about each concept.
@@ -89,6 +90,8 @@ image::page-version-selector.png[Screenshot of the page version selector dropdow
 * xref:register-navigation-files.adoc[The nav key and registering navigation files]
 * xref:list-structures.adoc[Navigation list structures: list item and title nesting, single list file, multi-list file]
 * xref:link-syntax-and-content.adoc[Navigation list item syntax: xrefs, URLs, text styles, images, icons, and more]
+////
+
 //* Navigation files and the AsciiDoc include directive
 //* Component navigation menu, home icon, and the index / start page
 //* Breadcrumbs
