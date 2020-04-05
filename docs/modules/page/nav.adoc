@@ -1,12 +1,22 @@
-.Pages & Resources
-* xref:index.adoc[Pages]
-* xref:create-standard-page.adoc[Create a Standard Page]
-* xref:page-id.adoc[Antora Page ID]
-* xref:asciidoc:page-to-page-xref.adoc[Page to Page Xrefs]
+.Create & Manage Pages
+* xref:index.adoc[Add Pages to a Component Version]
+** xref:create-standard-page.adoc[Name and Set Up a Page]
+** xref:start-page.adoc[Create a Start Page]
+* xref:page-id.adoc[Page IDs and Cross References]
+** xref:module-and-page-xrefs.adoc[Xref Pages in a Component Version]
+** xref:version-and-component-xrefs.adoc[Xref Pages in Other Components and Versions]
+//Rename, Move, and Delete Pages
 * xref:page-aliases.adoc[Set Up URL Redirects with Page Aliases]
-* xref:resource-id.adoc[Antora Resource ID]
-* xref:asciidoc:include-partial.adoc[Include a Partial]
+
+.Create & Manage Resources
+* xref:resource-id.adoc[Resources and Resource IDs]
+* xref:partials-and-content-snippets.adoc[Content Snippets and Partials]
+** xref:asciidoc:include-partial.adoc[Include a Partial]
+//* xref:examples-and-source-snippets.adoc[Source Code and Example Snippets]
 * xref:asciidoc:include-example.adoc[Include an Example]
 * xref:asciidoc:include-page.adoc[Include a Page]
-* xref:asciidoc:insert-image.adoc[Insert an Image]
+* xref:images.adoc[Images]
+** xref:block-images.adoc[Add Block Images]
+** xref:inline-images.adoc[Add Inline Images]
+** xref:image-resource-id-examples.adoc[Image Resource ID Examples]
 * xref:asciidoc:link-attachment.adoc[Link to an Attachment]
