@@ -341,13 +341,7 @@ function computeOut (src, family, htmlUrlExtensionStyle) {
   const moduleRootPath = path.relative(dirname, modulePath) || '.'
   const rootPath = path.relative(dirname, '') || '.'
 
-  return {
-    dirname,
-    basename,
-    path: path_,
-    moduleRootPath,
-    rootPath,
-  }
+  return { dirname, basename, path: path_, moduleRootPath, rootPath }
 }
 
 function computePub (src, out, family, htmlUrlExtensionStyle) {
