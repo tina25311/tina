@@ -1,0 +1,16 @@
+= Create a Start Page
+
+A component version needs a start page.
+You can create a page named [.path]_index.adoc_, which Antora will use as the component version's start page by default, or you can specify a start page using the `start_page` key.
+
+== Use the default start page
+
+To use Antora's default start page option, create an AsciiDoc source file named [.path]_index.adoc_ and save it in the xref:ROOT:pages-directory.adoc[_pages_ directory] of the xref:ROOT:root-module-directory.adoc[_ROOT_ module directory].
+Structure and add content to [.path]_index.adoc_ like you would to any other page you write.
+Antora will automatically set this page as the start page of the component version when the site is generated.
+
+== Specify a start page
+
+You can assign a specific page, regardless of its file name, to be a component version's start page.
+The source file must belong to the component version it will be the starting page for, and it must be in the `pages` family.
+Once you've created or selected the page, assign it as the component version's start page using the xref:ROOT:component-start-page.adoc[start_page key] in [.path]_antora.yml_.
