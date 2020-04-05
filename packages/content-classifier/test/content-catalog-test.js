@@ -682,7 +682,7 @@ describe('ContentCatalog', () => {
       expect(result).to.have.property('out')
       expect(result.out).to.include({ path: 'the-component/1.2.3/the-page.html', rootPath: '../..' })
       expect(result).to.have.property('pub')
-      expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html' })
+      expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html', rootPath: '../..' })
     })
 
     it('should not populate out and pub when filename begins with an underscore', () => {
@@ -757,7 +757,7 @@ describe('ContentCatalog', () => {
       expect(result).to.have.property('out')
       expect(result.out).to.include({ path: 'the-component/1.2.3/the-page/index.html', rootPath: '../../..' })
       expect(result).to.have.property('pub')
-      expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page/' })
+      expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page/', rootPath: '../../..' })
     })
 
     it('should not set out and pub properties if defined on input', () => {
@@ -869,10 +869,10 @@ describe('ContentCatalog', () => {
       expect(result).to.have.property('out')
       expect(result.out).to.include({ path: 'the-component/1.2.3/the-page.html', rootPath: '../..' })
       expect(result).to.have.property('pub')
-      expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html' })
+      expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html', rootPath: '../..' })
       expect(result).to.have.property('rel')
       expect(result.rel).to.have.property('pub')
-      expect(result.rel.pub).to.include({ url: '/the-component/1.2.3/the-other-page.html' })
+      expect(result.rel.pub).to.include({ url: '/the-component/1.2.3/the-other-page.html', rootPath: '../..' })
     })
   })
 
