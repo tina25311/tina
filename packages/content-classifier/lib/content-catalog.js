@@ -28,7 +28,7 @@ class ContentCatalog {
     )
     if (!startPage) {
       if (startPageSpec) console.warn(`Start page specified for ${version}@${name} not found: ` + startPageSpec)
-      const startPageSrc = expandPageSrc({ component: name, version, module: 'ROOT', relative: 'index.adoc' })
+      const startPageSrc = inflateSrc({ component: name, version, module: 'ROOT', relative: 'index.adoc' })
       const startPageOut = computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle)
       const startPagePub = computePub(startPageSrc, startPageOut, startPageSrc.family, this.htmlUrlExtensionStyle)
       startPage = { pub: startPagePub }
@@ -219,7 +219,7 @@ class ContentCatalog {
       // QUESTION should we skip registering alias in this case?
       src.version = 'master'
     }
-    expandPageSrc(src, 'alias')
+    inflateSrc(src, 'alias')
     // QUESTION should we use src.origin instead of rel with type='link'?
     //src.origin = { type: 'link', target: rel }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
@@ -303,7 +303,7 @@ function generateKey ({ component, version, module, family, relative }) {
   return `${version}@${component}:${module}:${family}$${relative}`
 }
 
-function expandPageSrc (src, family = 'page') {
+function inflateSrc (src, family = 'page') {
   src.family = family
   src.basename = path.basename(src.relative)
   src.extname = path.extname(src.relative)
