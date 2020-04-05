@@ -425,7 +425,6 @@ function getGitTree (repo, oid, startPath) {
   return git
     .readTree(Object.assign({ oid, filepath: startPath }, repo))
     .catch(({ code }) => {
-      console.log(code)
       throw new Error(
         `the start path '${startPath}' ${code === git.E.ResolveTreeError ? 'is not a directory' : 'does not exist'}`
       )
