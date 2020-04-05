@@ -357,13 +357,63 @@ describe('ContentCatalog', () => {
 
     it('should warn if specified start page not found', () => {
       const stdErrMessages = captureStdErrSync(() =>
-        new ContentCatalog().registerComponentVersion('the-component', '1.0.0', {
+        new ContentCatalog().registerComponentVersion('the-component', '1.0', {
           title: 'The Component',
           startPage: 'home.adoc',
         })
       )
       expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0.0@the-component not found: home.adoc')
+      expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home.adoc')
+    })
+
+    it('should warn if specified start page refers to a different component', () => {
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.addFile({
+        src: {
+          component: 'other-component',
+          version: '2.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'start.adoc',
+          stem: 'start',
+          mediaType: 'text/asciidoc',
+        },
+      })
+      contentCatalog.registerComponentVersion('other-component', '2.0')
+      const stdErrMessages = captureStdErrSync(() =>
+        contentCatalog.registerComponentVersion('the-component', '1.0', {
+          title: 'The Component',
+          startPage: 'other-component::start.adoc',
+        })
+      )
+      const expectedMessage = 'Start page specified for 1.0@the-component not found: other-component::start.adoc'
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
+    })
+
+    it('should warn if specified start page refers to a different component version', () => {
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.addFile({
+        src: {
+          component: 'the-component',
+          version: '2.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'start.adoc',
+          stem: 'start',
+          mediaType: 'text/asciidoc',
+        },
+      })
+      contentCatalog.registerComponentVersion('the-component', '2.0')
+      const stdErrMessages = captureStdErrSync(() =>
+        contentCatalog.registerComponentVersion('the-component', '1.0', {
+          title: 'The Component',
+          startPage: '2.0@start.adoc',
+        })
+      )
+      const expectedMessage = 'Start page specified for 1.0@the-component not found: 2.0@start.adoc'
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
     })
 
     it('should use url of index page in ROOT module if found', () => {
