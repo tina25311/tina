@@ -227,7 +227,7 @@ class ContentCatalog {
     //src.origin = { type: 'link', target: targetPage }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
     // QUESTION should we set the path property on the alias file?
-    return this.addFile({ path: targetPage.path, mediaType: src.mediaType, src, rel: targetPage })
+    return this.addFile({ path: targetPage.path, mediaType: 'text/html', src, rel: targetPage })
   }
 
   /**

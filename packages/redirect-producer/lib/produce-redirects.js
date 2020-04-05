@@ -105,10 +105,7 @@ function createNginxRewriteConf (files, urlPath) {
 }
 
 function populateStaticRedirectFiles (files, siteUrl) {
-  files.forEach((file) => {
-    file.contents = Buffer.from(createStaticRedirectContents(file, siteUrl) + '\n')
-    file.mediaType = 'text/html'
-  })
+  files.forEach((file) => (file.contents = Buffer.from(createStaticRedirectContents(file, siteUrl) + '\n')))
   return []
 }
 

@@ -934,6 +934,7 @@ describe('ContentCatalog', () => {
         relative: 'alias.adoc',
       })
       expect(result.path).to.equal(targetPage.path)
+      expect(result.mediaType).to.equal('text/html')
       expect(result).to.have.property('rel')
       expect(result.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result.src)).to.equal(result)
