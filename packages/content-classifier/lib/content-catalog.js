@@ -71,23 +71,23 @@ class ContentCatalog {
           { name, latest: componentVersion, versions: [componentVersion] },
           {
             asciidoc: {
-              get: function () {
+              get () {
                 return this.latest.asciidoc
               },
             },
-            // NOTE alias latestVersion to latest for backwards compatibility
+            // NOTE deprecated; alias latestVersion to latest for backwards compatibility; remove in Antora 3
             latestVersion: {
-              get: function () {
+              get () {
                 return this.latest
               },
             },
             title: {
-              get: function () {
+              get () {
                 return this.latest.title
               },
             },
             url: {
-              get: function () {
+              get () {
                 return this.latest.url
               },
             },
