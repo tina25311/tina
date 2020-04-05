@@ -355,7 +355,7 @@ describe('ContentCatalog', () => {
       expect(components[0].latest).to.eql({ version, displayVersion: version, title, url })
     })
 
-    it('should throw error if specified start page not found', () => {
+    it('should warn if specified start page not found', () => {
       const stdErrMessages = captureStdErrSync(() =>
         new ContentCatalog().registerComponentVersion('the-component', '1.0.0', {
           title: 'The Component',
