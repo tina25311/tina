@@ -23,11 +23,11 @@ In Antora, a resource is referenced using an AsciiDoc include directive, link ma
 Antora constructs a resource ID for a source file from the key-value pairs specified in a xref:ROOT:component-version-descriptor.adoc[component version descriptor] and the xref:ROOT:standard-directories.adoc[standard directory set].
 Using this information, a resource can be referenced from any page, partial, or example in your site using a unique and reliable set of resource ID coordinates.
 
-include::partial$antora-id.adoc[tags=*;!page]
-
 A fully qualified resource ID with its coordinates organized in the standard sequence is shown below.
 
  version@component:module:family$resource.ext
+
+include::partial$antora-id.adoc[tags=*;!page]
 
 How many resource ID coordinates you need to specify when referencing a resource depends on the component version and module of the <<current-page,current page>> in relation to the <<target-resource,target resource>>.
 

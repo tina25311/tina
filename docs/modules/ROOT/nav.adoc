@@ -40,5 +40,5 @@
 ** xref:component-start-page.adoc[Select a Start Page]
 ** xref:component-navigation.adoc[Assign Navigation Files to a Component Version]
 ** xref:how-component-versions-are-sorted.adoc[How Component Versions are Sorted]
-** xref:environment-and-page-attributes.adoc[Built-in Page and Environment Attribute Reference]
 ** xref:distributed-component-version.adoc[Distributed Component Version]
+** xref:environment-and-page-attributes.adoc[Built-in Page and Environment Attribute Reference]

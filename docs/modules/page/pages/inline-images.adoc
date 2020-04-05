@@ -22,7 +22,7 @@ TIP: When referencing an image, you don't need to include the `image$` family co
 It's applied automatically at runtime when a resource ID is entered into an AsciiDoc image macro.
 
 [#insert-inline-image]
-== Insert an inline image into a page
+== Embed an inline image
 
 The example below assumes that the image and page belong to the same component version and module.
 Only the xref:resource-id.adoc#id-resource[resource coordinate] of the xref:resource-id.adoc#target-resource[target resource file] needs to be entered in the resource ID when the xref:resource-id.adoc#current-page[current page] and target resource belong to the same component version and module.
@@ -34,7 +34,7 @@ Only the xref:resource-id.adoc#id-resource[resource coordinate] of the xref:reso
 Here's an inline *image:*
 ----
 
-. Enter the resource ID of the image file directly after the colon.
+. Enter the resource ID of the target image file directly after the colon.
 +
 [subs=+quotes]
 ----

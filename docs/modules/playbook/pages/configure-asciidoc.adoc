@@ -13,10 +13,10 @@ On this page, you'll learn:
 [#attrs]
 == AsciiDoc attributes
 
-Built-in AsciiDoc attributes, user-defined AsciiDoc attributes, and `page-` attributes can be declared in a site's playbook file and are referred to as [.term]*site-scoped attributes*.
+Built-in AsciiDoc attributes, user-defined AsciiDoc attributes, and `page-` attributes can be declared in a site's playbook file and are referred to as [.term]*site attributes*.
 These attributes are nested under the `asciidoc` and `attributes` category keys in the playbook.
 
-.Declaring site-scoped AsciiDoc attributes
+.Declaring site attributes
 [source,yaml]
 ----
 asciidoc:
@@ -26,9 +26,9 @@ asciidoc:
     table-caption: ~
 ----
 
-Site-scoped attributes are applied and available to all of a site's pages according to the xref:page:site-scoped-attributes.adoc#assign-precedence[attribute precedence rules].
-See xref:page:site-scoped-attributes.adoc[Site-scoped attributes] to learn how to set, assign, and unset attributes in the playbook in more detail.
-Also, attributes can be xref:page:component-scoped-attributes.adoc[declared by component version] and may override site-scoped attributes depending on the the attribute's assigned precedence.
+Site attributes are applied and available to all of a site's pages according to the xref:site-attributes.adoc#assign-precedence[attribute precedence rules].
+See xref:site-attributes.adoc[Site attributes] to learn how to set, assign, and unset attributes in the playbook in more detail.
+Also, attributes can be xref:ROOT:component-attributes.adoc[declared by component version] and may override site attributes depending on the the attribute's assigned precedence.
 
 [#extensions]
 == Asciidoctor extensions

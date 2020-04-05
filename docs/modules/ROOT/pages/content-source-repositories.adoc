@@ -6,11 +6,12 @@ These source files are only retrieved and processed correctly if Antora can loca
 [#git-and-content-sources]
 == git repositories and content sources
 
-The source files containing a site's content are stored in git repositories.
+The source files containing a site's content are stored in one or more git repositories.
 These repositories can be remote, local, or a mix of both.
 In a playbook file, you'll enter several query parameters (git references and start paths) that 1. allow Antora to locate and connect to your content source repositories, and 2. provide Antora with the route criteria that leads to one or more unique <<content-source-root,content source roots>> within a git repository.
 //A [.term]*content source* is one or more routes--git references and start paths--that lead to unique <<content-source-root,content source roots>>.
 //Content sources are specified in an Antora playbook file.
+
 But before configuring a site's playbook, you'll want to determine where to set up the content source roots in your repositories.
 // to be located and then set up the directories Antora requires.
 //to place your content source roots to beet up the required directories and sorted your content source files into them at each content source root.

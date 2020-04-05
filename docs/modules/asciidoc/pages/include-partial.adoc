@@ -7,7 +7,7 @@
 //Typically, a partial and the standard page it's used in are stored in the same module.
 A partial can be inserted into any page in your documentation site using the include directive and the partial file's resource ID.
 
-== Include directive structure for partials
+== AsciiDoc include directive
 
 Let's break down the AsciiDoc syntax and resource ID coordinates you need to include a partial into a page.
 
@@ -23,7 +23,6 @@ Let's break down the AsciiDoc syntax and resource ID coordinates you need to inc
 ----
 
 . Enter the xref:page:resource-id.adoc[resource ID] of the partial file.
-A partial's resource coordinates are determined just like the xref:page-to-page-xref.adoc#same-module[coordinates in an xref].
 +
 [subs=+quotes]
 ----
@@ -39,7 +38,7 @@ A partial's resource coordinates are determined just like the xref:page-to-page-
 
 . Close the directive with a set of square brackets (`+[]+`).
 The brackets can contain an optional list of attributes such as `leveloffset`, `lines`, and `tags`.
-The attributes should be entered as key=value pairs separated by commas.
+The attributes should be entered as key-value pairs separated by commas.
 +
 [subs=+quotes]
 ----

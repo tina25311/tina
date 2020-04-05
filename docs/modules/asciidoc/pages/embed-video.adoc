@@ -40,7 +40,7 @@ To embed a video hosted on YouTube or Vimeo, put the video's ID in the macro tar
 video::rPQoq7ThGAU[youtube]
 ----
 
-TIP: Insert animated GIFs with the xref:insert-image.adoc[image macro].
+TIP: Insert animated GIFs with the xref:page:images.adoc[image macro].
 
 [discrete]
 ==== Asciidoctor resources

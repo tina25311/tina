@@ -9,7 +9,7 @@ Examples are saved in the xref:ROOT:examples-directory.adoc[_examples_ directory
 Typically, an example and the standard page it's used in are stored in the same module.
 However, regardless of an example's source module, it can be inserted into any standard page in your documentation site using the include directive and the example file's resource ID.
 
-== Include directive structure for examples
+== AsciiDoc include directive
 
 Let's break down the AsciiDoc syntax and resource ID coordinates you need to include an example into a page.
 

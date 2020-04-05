@@ -16,11 +16,11 @@ A page ID is most often used as a target in an AsciiDoc xref macro, but it can a
 Antora constructs a page ID for a page source file from the key-value pairs specified in a xref:ROOT:component-version-descriptor.adoc[component version descriptor] and the xref:ROOT:standard-directories.adoc[standard directory set].
 Using this information, each page can be cross referenced using a sequence of page ID coordinates.
 
-include::partial$antora-id.adoc[tags=*;!resource]
-
 The coordinates are organized into the standard sequence shown below.
 
 image::page-id-anatomy-diagram.svg[Page ID anatomy,600]
+
+include::partial$antora-id.adoc[tags=*;!resource]
 
 A page ID is used in an <<xref-macro,AsciiDoc xref macro>> to create a link from one page to another page.
 They're also used to create the links in a xref:navigation:link-syntax-and-content.adoc[component version's navigation files].

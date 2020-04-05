@@ -1,12 +1,12 @@
-= Add Pages to a Component Version
+= Pages
 
 == Source page to site page
 
-Antora automatically generates one HTML site page for each AsciiDoc source file assigned to the pages family.
+Antora automatically generates one HTML site page for each source file assigned to the pages family.
 Another way to think about this: one AsciiDoc page file in equals one HTML page out.
 
 [#standard-asciidoc-page]
-== Standard AsciiDoc source pages
+== Standard source pages
 
 Page source files are plain text files marked up with the xref:asciidoc:asciidoc.adoc[AsciiDoc syntax] and saved with the file extension `.adoc`.
 They're stored in a xref:ROOT:pages-directory.adoc[_pages_ family directory].
@@ -19,8 +19,3 @@ You can use just a little AsciiDoc syntax to mark up your pages, or you can expl
 Antora automatically publishes all of the standard source pages to your site, but if you want to create page-to-page links in the content, you'll need to learn about xref:page-id.adoc[Antora's page IDs] and how to create xref:page-id.adoc#whats-a-cross-reference[cross references].
 You'll also use cross references and page IDs to build and organize your site's xref:navigation:index.adoc[component version page menus].
 //If you don't want to include a page in a component menu, visitors will still be able to find it using search tools and through links to it on other pages, and in some scenarios, through dropdown menus such as the page version selector.
-
-== Learn more
-
-* xref:page-id.adoc[Page IDs and cross references]
-* xref:create-standard-page.adoc[Name and set up a page]
