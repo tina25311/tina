@@ -131,7 +131,6 @@ function registerSiteStartPage (playbook, contentCatalog) {
     contentCatalog.addFile({ src, rel })
   } else {
     console.warn('Start page specified for site not found: ' + pageSpec)
-    //throw new Error('Start page specified for site not found: ' + pageSpec)
   }
 }
 

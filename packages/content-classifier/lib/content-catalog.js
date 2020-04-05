@@ -27,10 +27,7 @@ class ContentCatalog {
       { component: name, version, module: 'ROOT' }
     )
     if (!startPage) {
-      //if (startPageSpec) throw new Error(`Start page specified for ${version}@${name} not found: ` + startPageSpec)
       if (startPageSpec) console.warn(`Start page specified for ${version}@${name} not found: ` + startPageSpec)
-      // TODO throw error or report warning; for now, we're just faking it
-      //throw new Error(`Start page for ${version}@${name} not specified and no index page found.`)
       const startPageSrc = expandPageSrc({ component: name, version, module: 'ROOT', relative: 'index.adoc' })
       const startPageOut = computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle)
       const startPagePub = computePub(startPageSrc, startPageOut, startPageSrc.family, this.htmlUrlExtensionStyle)
