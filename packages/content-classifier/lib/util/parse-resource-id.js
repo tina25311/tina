@@ -32,11 +32,19 @@ function parseResourceId (spec, ctx = {}, defaultFamily = 'page', permittedFamil
   const match = spec.match(RESOURCE_ID_RX)
   if (!match) return
 
-  let family = match[RESOURCE_ID_RX_GROUP.family]
   let version = match[RESOURCE_ID_RX_GROUP.version]
   let component = match[RESOURCE_ID_RX_GROUP.component]
   let module = match[RESOURCE_ID_RX_GROUP.module]
+  let family = match[RESOURCE_ID_RX_GROUP.family]
   let relative = match[RESOURCE_ID_RX_GROUP.relative]
+
+  if (component) {
+    if (!module) module = 'ROOT'
+  } else {
+    component = ctx.component
+    if (!version) version = ctx.version
+    if (!module) module = ctx.module
+  }
 
   if (family) {
     if (permittedFamilies && !permittedFamilies.includes(family)) family = undefined
@@ -49,14 +57,6 @@ function parseResourceId (spec, ctx = {}, defaultFamily = 'page', permittedFamil
       .split('/')
       .filter((it) => it && it !== '.' && it !== '..')
       .join('/')
-  }
-
-  if (component) {
-    if (!module) module = 'ROOT'
-  } else {
-    component = ctx.component
-    if (!version) version = ctx.version
-    if (!module) module = ctx.module
   }
 
   return { component, version, module, family, relative }
