@@ -98,7 +98,6 @@ class ContentCatalog {
     return componentVersion
   }
 
-  // QUESTION should this method return the file added?
   addFile (file) {
     const key = generateKey(file.src)
     if (this[$files].has(key)) {
