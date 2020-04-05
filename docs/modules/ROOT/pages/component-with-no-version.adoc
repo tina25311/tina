@@ -15,13 +15,14 @@ The value of the `version` key is part of the identity of a xref:component-versi
 == Assign master as the version value
 
 Antora requires the xref:component-name-and-version.adoc#version-key[version key] be assigned a value in [.path]_antora.yml_.
-This value becomes the version coordinate in the component version's page and resource IDs and the version segment in the URL of its published pages.
-For example, if the `version` value is  `2.1`, that value will appear in the URL of the component version's pages (e.g., [.path]_/component-name/2.1/page-name.html_).
+This value becomes the xref:page:page-id.adoc#id-coordinates[version coordinate] in the component version's page and xref:page:resource-id.adoc#id-coordinates[resource IDs].
 
+The value of `version` also becomes the version segment in the URL of its published pages.
+For example, if the value is  `2.1`, that value will appear in the URL of the component version's pages (e.g., [.path]_/component-name/2.1/page-name.html_).
 The exception to this rule is if `version` matches the reserved value `master`.
 Antora *does not* include the version segment in a component version's page URLs in this case.
 
-The component version defined in <<ex-unversioned>> will produce versionless URLs.
+For instance, the component version defined in <<ex-unversioned>> will produce versionless URLs.
 
 [#ex-unversioned]
 .antora.yml for an unversioned component version
@@ -34,4 +35,4 @@ display_version: Stable
 ----
 
 A page with the filename [.path]_build-a-restful-web-service.adoc_ in this component version will have the URL [.path]_/tutorials/build-a-restful-web-service.html_.
-//When making a qualified reference to this page, you'd still include the version as you normally would (e.g., `master@tutorials::build-a-restful-web-service.adoc`).
+Also, you can still reference this docs component from other docs components using a fully qualified xref:page:page-id.adoc[page ID] or xref:page:resource-id.adoc[resource ID] (e.g., `master@tutorials::build-a-restful-web-service.adoc`).

@@ -6,10 +6,10 @@ A [.term]*component version* typically represents a discreet and unique version 
 Antora collates all of a component version's source files, regardless of where the files are stored and collected from, that are associated with the same xref:component-name-and-version.adoc#name-key[component name] and xref:component-name-and-version.adoc#version-key[component version].
 A xref:component-version-descriptor.adoc[file named _antora.yml_] is responsible for marking the location of a set of source files that belong to a component version, defining the component version, and applying the specified configuration to the component version's source files.
 
-[#component-version-vs-docs-component]
-== What's the difference between a component version and a docs component?
+[#docs-component]
+== Docs component
 
-The term [.term]*docs component*, also known as a *documentation component* or simply *component*, is used when a concept or action applies to all of the component versions that have the xref:component-name-and-version.adoc#name-key[same component name].
+A [.term]*docs component*, also known as a *documentation component* or *component*, refers to all of the component versions that have the xref:component-name-and-version.adoc#name-key[same component name].
 
 ////
 move to better location

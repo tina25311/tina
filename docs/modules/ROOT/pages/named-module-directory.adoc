@@ -7,7 +7,7 @@
 Named module directories are xref:module-directories.adoc#module-dir[optional module directories] that are located in a xref:module-directories.adoc#modules-dir[_modules_ directory].
 You can create as many named module directories as you need.
 
-[#fig-named]
+[#ex-named]
 .Named module directories
 ----
 📒 repository
@@ -31,7 +31,7 @@ You can create as many named module directories as you need.
 <7> A navigation file
 <8> Another module directory, named [.path]_get-started_
 
-A <<named-module,module's name>> corresponds to the name of the module directory.
+Antora uses a module's directory name to create a <<named-module,module's name>>.
 For this reason, it's important to carefully consider xref:module-directory-names.adoc[what you name your named module directories].
 At a minimum, a named module directory must contain at least one xref:family-directories.adoc[family directory] with at least one source file.
 A named module directory can also contain an optional navigation file.
@@ -41,11 +41,11 @@ A named module directory can also contain an optional navigation file.
 
 Source files in each named module directory become part of a named module in a xref:component-version.adoc[component version].
 The name of a module corresponds to the name of a module directory.
-For instance, source files stored in the [.path]_get-started_ module directory shown in <<fig-named>> will be assigned to the module `get-started`.
+For instance, source files stored in the [.path]_get-started_ module directory shown in <<ex-named>> will be assigned to the module `get-started`.
 
 [#where-name-is-used]
-== Where is a module's name used?
+== Where's a module's name used?
 
-When you target content that belongs to a named module from another module or component version, you'll specify the module's name in the page IDs of cross references and the resource IDs for images, examples, and partials.
+When you target content that belongs to a named module from another module or component version, you'll specify the module's name in the  xref:page:page-id.adoc[page IDs] of cross references and the xref:page:resource-id.adoc[resource IDs] for images, examples, and partials.
 
 The module's name is also used as a xref:module-url-segment.adoc#named-module-urls[segment in page URLs].

@@ -43,6 +43,6 @@ The order of the values dictates the order the contents of the navigation files 
 
 Learn more about creating navigation lists and navigation files:
 
-* xref:navigation:filenames-and-locations.adoc[Navigation file names and storage locations]
-* xref:navigation:list-structures.adoc[Single and multi-list navigation files]
+* xref:navigation:filenames-and-locations.adoc[Navigation filenames and locations]
+* xref:navigation:list-structures.adoc[Single and multiple list navigation files]
 * xref:navigation:link-syntax-and-content.adoc[Navigation link syntax and content formatting]

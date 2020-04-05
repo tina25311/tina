@@ -9,13 +9,13 @@ Antora collects and processes content source files that are stored in a required
 These directories, as well as the required [.path]_antora.yml_ file and optional navigation files, are recognized by their locations in the hierarchy and because they use reserved names.
 Antora uses this [.term]*standard file and directory set* to assign custom metadata and preset behavior to the files stored in each directory.
 
-== Standard names and hierarchy
+== Hierarchy and reserved names
 
-<<fig-all>> shows the hierarchy of the standard file and directory set if all of the possible standard directories are used.
-The content source root in <<fig-all>> is a repository.
-However, a content source root can also be a directory in a repository, which you can see in <<fig-image>>.
+<<ex-standard-dirs>> shows the hierarchy of the standard file and directory set if all of the possible standard directories are used.
+The content source root in <<ex-standard-dirs>> is a repository.
+However, a content source root can also be a directory in a repository, which you can see in <<ex-image>>.
 
-[#fig-all]
+[#ex-standard-dirs]
 .All required and optional standard files and directories
 ----
 📒 repository <1>
@@ -50,7 +50,7 @@ For instance, if you aren't inserting any images into the content stored in a mo
 You can see two examples of simple standard file and directory sets in the <<minimum-requirements,next section>>.
 
 [#minimum-requirements]
-== Minimum standard file and directory set requirements
+== Minimum requirements
 
 From a xref:content-source-repositories.adoc#content-source-root[content source root], Antora must find:
 
@@ -62,9 +62,11 @@ From a xref:content-source-repositories.adoc#content-source-root[content source 
 The [.path]_antora.yml_ file and directories must also be organized in the standard hierarchy from the content source root.
 
 Let's look at two examples of standard file and directory sets that meet the minimum requirements.
-The directory and file set in <<fig-root>> is valid because it contains one module directory, in this case the special _ROOT_, the _ROOT_ module directory contains a family directory, and the required [.path]_antora.yml_ and [.path]_modules_ directory are at the content source root.
+The directory and file set in <<ex-root>> is valid because it contains the required [.path]_antora.yml_ and [.path]_modules_ directory at the content source root.
+The [.path]_modules_ directory contains one module directory, in this case the special _ROOT_ module directory.
+In turn, the _ROOT_ module directory contains a family directory that contains one source file.
 
-[#fig-root]
+[#ex-root]
 .Valid standard file and directory set containing a ROOT module directory
 ----
 📒 repository <1>
@@ -81,9 +83,9 @@ The directory and file set in <<fig-root>> is valid because it contains one modu
 <5> [.path]_pages_ family directory
 <6> Source file for a page
 
-The standard directory and file set in <<fig-image>> is also valid.
+In <<ex-image>>, the content source root is located at the directory [.path]_ops-training_.
 
-[#fig-image]
+[#ex-image]
 .Valid standard file and directory set containing a named module directory
 ----
 📒 repository
@@ -101,3 +103,5 @@ The standard directory and file set in <<fig-image>> is also valid.
 <4> A module directory named [.path]_rz-interface_
 <5> [.path]_images_ family directory
 <6> Source file for an image
+
+The standard directory and file set in <<ex-image>> is also valid.

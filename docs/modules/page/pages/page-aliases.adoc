@@ -10,7 +10,7 @@ This document attribute is useful when you delete a page, rename a page's file, 
 The `page-aliases` attribute should not be used to create bulk redirects.
 We strongly recommended that you use the router provided by your web server or service when a module, component, or version is deleted, renamed, or moved.
 
-== The page-aliases attribute
+== page-aliases attribute
 
 The `page-aliases` attribute is set in the xref:asciidoc:page-header.adoc[header] of a target page.
 [[target-page]]The [.term]*target page* refers to the page you're redirecting a source page to.
@@ -26,13 +26,13 @@ Multiple page IDs can be assigned to the attribute in a comma-separated list.
 ----
 
 Antora calculates the URL for a source page's page ID and generates redirect information so that the source page URL redirects to the target page URL.
-Any coordinates, such as xref:page-id.adoc#id-version[version] or xref:page-id.adoc#id-component[component], that are missing from a source page's page ID are interpolated from the target page's coordinates.
+Any coordinates, such as xref:page-id.adoc#id-version[version] or xref:page-id.adoc#id-component[component], that aren't specified in a page ID assigned to `page-aliases` are interpolated from the target page's coordinates.
 The generated output format of the redirect information is determined by your chosen xref:playbook:configure-redirect-facility.adoc[redirect facility].
 
 //The site start_page, if specified in the playbook, is implemented through the redirect facility.
 
 [CAUTION]
-.Page Alias Limitations
+.Page Alias Restrictions
 ====
 * A page ID assigned to a `page-aliases` attribute can't be used in an xref.
 Therefore, if you delete, rename, or move a page, you need to update any references to it in your source to the page ID of the target page.
@@ -43,7 +43,7 @@ Partials, examples, images, and attachments can't be aliased.
 
 == Create a redirect for a renamed page
 
-If you change a source page's file name from [.path]_old-name.adoc_ to [.path]_new-name.adoc_, assign the file's former page ID to `page-aliases` in the header of the target page's file.
+If you change a source page's filename from [.path]_old-name.adoc_ to [.path]_new-name.adoc_, assign the file's former page ID to `page-aliases` in its header.
 
 .new-name.adoc
 [source]
@@ -53,7 +53,7 @@ If you change a source page's file name from [.path]_old-name.adoc_ to [.path]_n
 ----
 
 This will result in [.path]_\https://base-url.com/component/version/module/old-name.html_ being redirected to [.path]_\https://base-url.com/component/version/module/new-name.html_.
-The missing page ID coordinates (version, component, module) for the source page `old-name.adoc` are interpolated from the target page's coordinates.
+The version, component, and module coordinates that weren't specified in the `old-name.adoc` page ID are interpolated from the target page's coordinates.
 //Alternatively, if you've specified `indexify` in your playbook, [.path]_\https://base-url.com/component/version/module/old-name_ will redirect to [.path]_\https://base-url.com/component/version/module/new-name_ .
 
 == Create a redirect for a moved page
@@ -71,7 +71,7 @@ Both `module-1` and `module-z` are modules in version `5.0` of `component-1`.
 
 Now, Antora will redirect the URL [.path]_\https://base-url.com/component-1/5.0/module-1/source-1.html_ to the URL [.path]_\https://base-url.com/component-1/5.0/module-z/source-1.html_.
 
-When a page is moved from one component to another component, assign the source page's fully-qualified former page ID to `page-aliases`.
+When a page is moved from one docs component to another docs component, assign the source page's fully qualified former page ID to `page-aliases`.
 In <<ex-component>>, the page `source-w.adoc` has moved from version `1.4` of `component-8`, `module-u` to version `3.0` of `component-delta`, `ROOT`.
 
 [#ex-component]

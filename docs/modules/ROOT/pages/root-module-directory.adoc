@@ -42,9 +42,9 @@ Source files that are stored in a [.path]_ROOT_ directory become part of a modul
 A ROOT module's pages become the top-level pages of a component version.
 
 [#where-root-name-is-used]
-== Where is the ROOT module name used?
+== Where's the ROOT module name used?
 
-When you target content that belongs to a ROOT module from another module or component version, you'll specify the module name `ROOT` in the page IDs of cross references and the resource IDs for images, examples, and partials.
+When you target content that belongs to a ROOT module from another module or component version, you'll specify the module name `ROOT` in the xref:page:page-id.adoc[page IDs] of cross references and the xref:page:resource-id.adoc[resource IDs] for images, examples, and partials.
 `ROOT` is always written in uppercase letters when it's specified.
 
 Since Antora considers the pages in a ROOT module to be top-level component version pages, the module name `ROOT` isn't displayed in the xref:module-url-segment.adoc#root-module-urls[module segment of its page URLs].

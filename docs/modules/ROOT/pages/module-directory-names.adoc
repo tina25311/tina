@@ -2,25 +2,25 @@
 :xrefstyle: short
 :listing-caption: Example
 
-When you're creating module directories, you need to consider the team using them and your site's URLs.
+When you're creating module directories, you need to consider how your team will use the files stored in them and how their names will affect your site's URLs.
 
 == Selecting module directory names
 
 Antora calculates the xref:named-module-directory.adoc#named-module[name of a module] from the name of a xref:module-directories.adoc#module-dir[module directory].
-A module name is used in page cross references, image macros, and include directives.
+A module name is used in xref:page:page-id.adoc[page IDs] and the xref:page:resource-id.adoc[resource IDs] of images, examples, and partials.
 It's also used in the xref:module-url-segment.adoc#named-module-urls[URLs of the pages assigned to that module].
 
 When choosing a module directory name, keep the following requirements and recommendations in mind:
 
 * Named module directories *can't contain blank spaces or forward slashes (`/`)*.
-These characters aren't permitted in AsciiDoc cross references, image macros, or include directives.
+These characters aren't permitted in the targets of AsciiDoc cross references, image macros, or include directives.
 * If possible, *don't use uppercase letters, underscores (`_`), and other characters that aren't recommended in URLs*.
 Such characters can limit web server portability, downgrade site search results, and cause visitor accessibility problems.
-* If your team often references pages, examples, images, or partials across modules, they'll have to type a module's name in page and resource IDs, so *don't make the directory name hard to remember or extremely long*.
+* If your team often references pages, examples, images, or partials across modules, they'll have to type a module's name in page and resource IDs, so *don't make the directory name, and therefore, the derived module name, hard to remember or too long*.
 
-<<fig-named>> shows a standard directory structure that contains three named module directories.
+<<ex-named>> shows a set of standard directories with three named module directories.
 
-[#fig-named]
+[#ex-named]
 .Three named module directories
 ----
 📒 repository
@@ -49,4 +49,4 @@ Such characters can limit web server portability, downgrade site search results,
 <3> [.path]_ROOT_ module directory
 <4> Module directory named [.path]_sdk_
 
-Antora would calculate the following module names from the named module directories in <<fig-named>>: `gear`, `la-garita`, and `sdk`.
+Antora would calculate the following module names from the named module directories in <<ex-named>>: `gear`, `la-garita`, and `sdk`.

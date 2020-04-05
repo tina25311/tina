@@ -39,7 +39,7 @@ name: colorado
 ----
 
 The value can contain letters, numbers, underscores (`+_+`), hyphens (`-`), and periods (`.`).
-The value *cannot* contain spaces or forward slashes (`/`).
+The value *cannot* contain blank spaces or forward slashes (`/`).
 
 TIP: To minimize the likelihood of portability issues between web servers, letters used in the `name` key's value should be lowercase.
 
@@ -50,7 +50,7 @@ the first breadcrumb position on a component version's pages.
 [#version-key]
 == version key
 
-TIP: If you aren't familiar with how Antora sorts component versions, see xref:how-component-versions-are-sorted.adoc[How are component versions sorted?] before committing to a versioning scheme.
+TIP: If you aren't familiar with how Antora sorts component versions, see xref:how-component-versions-are-sorted.adoc[How component versions are sorted] before committing to a versioning scheme.
 
 A version, such as a named identifier (e.g., `master`, `jesse`, `edge`) or semantic identifier (e.g., `1.5`, `8`), is assigned to the `version` key in [.path]_antora.yml_.
 
@@ -71,11 +71,11 @@ version: '5.6' # <1>
 <1> Values that start with a number should be enclosed in a set of single quote marks (`'`).
 
 The value can contain letters, numbers, periods (`.`), underscores (`+_+`), and hyphens (`-`).
-It *cannot* contain spaces.
+It *cannot* contain blank spaces or forward slashes (`/`).
 
 TIP: To minimize the likelihood of portability issues between web servers, letters used in the `version` value should be lowercase.
 
-If a component version is unstable or a prerelease, you may want to set the xref:component-prerelease.adoc[optional prerelease key] in addition to `version`.
+If a component version is a prerelease, you may want to set the xref:component-prerelease.adoc[optional prerelease key] in addition to `version`.
 xref:component-with-no-version.adoc[Unversioned or version-less component versions] can be defined using the reserved value `master`.
 
 [#assign-name-and-version]
@@ -105,12 +105,13 @@ name: silver-leaf
 version: '7.1'
 ----
 
-. Save the file as [.path]_antora.yml_ in the parent directory that contains the directories and files you want to assign to this component version.
-That is, it should be located adjacent to the [.path]_modules_ directory.
+. Save the file as [.path]_antora.yml_ in the xref:content-source-repositories.adoc#content-source-root[content source root].
+//the parent directory that contains the directories and files you want to assign to this component version.
+It should be located at the same hierarchy level as the [.path]_modules_ directory to which you want it applied.
 
 You've now associated a set of source files with a component version!
-When Antora runs, all of the xref:standard-directories.adoc[subsequent subdirectories and source files] will be assigned the component name `silver-leaf` and the version `7.1`.
-These values will be used as page and resource ID coordinates and in the URLs of the pages generated from the component version's source files.
+When Antora runs, all of the xref:standard-directories.adoc[source files stored in the standard set of directories] will be assigned the component name `silver-leaf` and the version `7.1`.
+These values will be used as xref:page:page-id.adoc[page] and xref:page:resource-id.adoc[resource ID] coordinates and in the URLs of the pages generated from the component version's source files.
 
 [#optional-keys]
 == Optional antora.yml keys

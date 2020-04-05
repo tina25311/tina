@@ -1,9 +1,9 @@
 = Family Directories and Families
 
-Antora assigns preset, format- and content type-specific behavior to the source files stored in the family directories.
+Antora assigns preset, content-specific behavior to the source files stored in the family directories.
 
 [#family-dir]
-== What is a family directory?
+== What's a family directory?
 
 A [.term]*family directory* stores source files that share the same output role (i.e., standalone page, image inserted into a page) and, in some cases, the same file format (i.e., _.adoc_).
 Antora recognizes five standard family directories: [.path]_attachments_, [.path]_examples_, [.path]_images_, [.path]_pages_, and [.path]_partials_.
@@ -24,7 +24,7 @@ A family directory can only be stored in a xref:module-directories.adoc#module-d
 At runtime, Antora collects the source files stored in the family directories and assigns them to a <<family,family>> within a xref:module-directories.adoc#module[module] and xref:component-version.adoc[component version].
 
 [#family]
-== What is a family?
+== What's a family?
 
 A [.term]*family* is a classification Antora applies to content collected from a family directory.
 The family corresponds to the name of the <<family-dir,family directory>>.

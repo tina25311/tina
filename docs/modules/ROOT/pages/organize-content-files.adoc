@@ -19,7 +19,7 @@ In order to fetch source files from multiple and multi-use repositories, Antora 
 
 Antora decouples the source files from their storage locations after it collects them.
 //That means the names and URLs of the repositories, branches, tags, and content source roots doesn't have any bearing on a site that's generated from these files.
-Except for the family relative path of files stored in a [.path]_pages_ directory, the source files`' storage locations don't impact how they're referenced internally, organized, labeled, and versioned in the published site, or even how their resulting page URLs are constructed when the site is being generated.
+Except for the family-relative path and filename of the files stored in the family directories, the source files`' storage locations don't impact how they're referenced internally, organized, labeled, and versioned in the published site, or even how their resulting page URLs are constructed when the site is being generated.
 
 Instead, groups of source files are assigned a component name and version (or no version) using a component version descriptor file named _antora.yml_.
 Antora uses these descriptor files to sort and organize the collected source files into component versions.
