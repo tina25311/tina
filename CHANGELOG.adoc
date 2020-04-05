@@ -15,6 +15,7 @@ This project utilizes semantic versioning.
 
 * *asciidoc-loader*: Don't allow path document attribute to interfere with internal xref
 * *content-classifier*: Set media type on alias file to `text/html` instead of using media type of rel file
+* *content-classifier*: Don't set (irrelevant) path property on alias file
 * *page-composer*: Fix relativize helper function to preserve fragment identifier on URL
 * *page-composer*: Map `page.srcPath` to `page.src.relative` instead of `page.src.path`
 

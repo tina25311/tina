@@ -226,8 +226,8 @@ class ContentCatalog {
     // QUESTION should we use src.origin instead of rel with type='link'?
     //src.origin = { type: 'link', target: rel }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
-    // QUESTION should we set the path property on the alias file?
-    return this.addFile({ path: rel.path, mediaType: 'text/html', src, rel })
+    //const path_ = path.join(targetPage.path.slice(0, -targetPage.src.relative.length), src.relative)
+    return this.addFile({ mediaType: 'text/html', src, rel })
   }
 
   /**
