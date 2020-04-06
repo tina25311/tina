@@ -209,14 +209,14 @@ class ContentCatalog {
     return this.getById(START_PAGE_ID) || (this.getById(START_ALIAS_ID) || {}).rel
   }
 
-  registerSiteStartPage (pageSpec) {
-    if (!pageSpec) return
-    const formalPageSpec = pageSpec.endsWith('.adoc') ? pageSpec : `${pageSpec}.adoc`
-    const rel = this.resolvePage(formalPageSpec)
+  registerSiteStartPage (startPageSpec) {
+    if (!startPageSpec) return
+    const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : `${startPageSpec}.adoc`
+    const rel = this.resolvePage(formalStartPageSpec)
     if (rel) {
       return this.addFile({ mediaType: 'text/html', src: inflateSrc(Object.assign({}, START_ALIAS_ID), 'alias'), rel })
     } else {
-      console.warn(`Start page specified for site not found: ${formalPageSpec}`)
+      console.warn(`Start page specified for site not found: ${formalStartPageSpec}`)
     }
   }
 
