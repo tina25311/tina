@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Added
 
 * *asciidoc-loader*: Add support for xref attribute on image macros to reference internal anchor or page (#330)
+* *content-classifier*: Register alias to start page from index page of component version if index page is missing (#379)
 
 === Fixed
 

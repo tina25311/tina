@@ -26,8 +26,12 @@ class ContentCatalog {
     const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
     if (startPageSpec) {
       const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : `${startPageSpec}.adoc`
-      startPage = this.resolvePage(formalStartPageSpec, indexPageId)
-      if (!startPage || startPage.src.component !== name || startPage.src.version !== version) {
+      const { src: startPageSrc } = (startPage = this.resolvePage(formalStartPageSpec, indexPageId)) || {}
+      if (startPageSrc && startPageSrc.component === name && startPageSrc.version === version) {
+        if (!(startPageSrc.module === 'ROOT' && startPageSrc.relative === 'index.adoc')) {
+          this.addFile({ mediaType: 'text/html', src: inflateSrc(indexPageId, 'alias'), rel: startPage })
+        }
+      } else {
         startPage = this.getById(indexPageId)
         console.warn(`Start page specified for ${version}@${name} not found: ${formalStartPageSpec}`)
       }
