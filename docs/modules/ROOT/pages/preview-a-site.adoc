@@ -35,7 +35,7 @@ Now launch the web server by pointing it at the location of the generated site.
 In the terminal, type the command name, `node-srv`, followed by the `-r` flag, then the location of the generated site (i.e., the output dir).
 After launching the command, the local address of the web server will be displayed in your terminal.
 
- demo-site $ node-srv -r build/site
+ demo-site $ node-srv build/site
 
 You should see the following output in your terminal:
 
