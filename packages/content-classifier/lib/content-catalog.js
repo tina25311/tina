@@ -6,7 +6,7 @@ const { posix: path } = require('path')
 const resolveResource = require('./util/resolve-resource')
 const versionCompare = require('./util/version-compare-desc')
 
-const { START_PAGE_ID } = require('./constants')
+const { START_ALIAS_ID, START_PAGE_ID } = require('./constants')
 const SPACE_RX = / /g
 
 const $components = Symbol('components')
@@ -206,8 +206,7 @@ class ContentCatalog {
 
   // TODO add `follow` argument to control whether alias is followed
   getSiteStartPage () {
-    const page = this.getById(START_PAGE_ID) || this.getById(Object.assign({}, START_PAGE_ID, { family: 'alias' }))
-    if (page) return page.src.family === 'alias' ? page.rel : page
+    return this.getById(START_PAGE_ID) || (this.getById(START_ALIAS_ID) || {}).rel
   }
 
   // QUESTION should this be addPageAlias?
