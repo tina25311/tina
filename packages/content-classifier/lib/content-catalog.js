@@ -22,12 +22,19 @@ class ContentCatalog {
 
   registerComponentVersion (name, version, descriptor = {}) {
     const { asciidoc, displayVersion, prerelease, title, startPage: startPageSpec } = descriptor
-    let startPage = this.resolvePage(
-      startPageSpec ? (startPageSpec.endsWith('.adoc') ? startPageSpec : `${startPageSpec}.adoc`) : 'index.adoc',
-      { component: name, version, module: 'ROOT' }
-    )
+    let startPage
+    if (startPageSpec) {
+      const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : `${startPageSpec}.adoc`
+      startPage = this.resolvePage(formalStartPageSpec, { component: name, version, module: 'ROOT' })
+      if (!startPage || startPage.src.component !== name || startPage.src.version !== version) {
+        startPage = this.getById({ component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' })
+        console.warn(`Start page specified for ${version}@${name} not found: ` + formalStartPageSpec)
+      }
+    } else {
+      startPage = this.getById({ component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' })
+    }
     if (!startPage) {
-      if (startPageSpec) console.warn(`Start page specified for ${version}@${name} not found: ` + startPageSpec)
+      // QUESTION: should we warn if the default start page cannot be found?
       const startPageSrc = inflateSrc({ component: name, version, module: 'ROOT', relative: 'index.adoc' })
       const startPageOut = computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle)
       const startPagePub = computePub(startPageSrc, startPageOut, startPageSrc.family, this.htmlUrlExtensionStyle)
