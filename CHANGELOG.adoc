@@ -12,6 +12,7 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Add support for xref attribute on image macros to reference internal anchor or page (#330)
 * *content-classifier*: Register alias to start page from index page of component version if index page is missing (#379)
 * *content-classifier*: Extract logic to register site start page to `ContentCatalog#registerSiteStartPage()`
+* *content-classifier*: Assign component name to read-only name property on component version object (#606)
 
 === Fixed
 

@@ -100,9 +100,9 @@ describe('ContentCatalog', () => {
         name,
         title,
         url,
-        versions: [{ version, displayVersion: version, title, url }],
+        versions: [{ name, version, displayVersion: version, title, url }],
       })
-      expect(components[0].latest).to.eql({ version, displayVersion: version, title, url })
+      expect(components[0].latest).to.eql({ name, version, displayVersion: version, title, url })
       // NOTE verify latestVersion alias
       expect(components[0].latestVersion).to.equal(components[0].latest)
       expect(components[0].latestVersion).to.equal(componentVersion)
@@ -137,11 +137,12 @@ describe('ContentCatalog', () => {
         title: title2,
         url: url2,
         versions: [
-          { version: version2, displayVersion: version2, title: title2, url: url2 },
-          { version: version1, displayVersion: version1, title: title1, url: url1 },
+          { name, version: version2, displayVersion: version2, title: title2, url: url2 },
+          { name, version: version1, displayVersion: version1, title: title1, url: url1 },
         ],
       })
       expect(component.latest).to.eql({
+        name,
         version: version2,
         displayVersion: version2,
         title: title2,
@@ -199,6 +200,7 @@ describe('ContentCatalog', () => {
 
       expect(component.versions).to.eql([
         {
+          name: componentName,
           version: version2,
           displayVersion: version2,
           title: title2,
@@ -206,6 +208,7 @@ describe('ContentCatalog', () => {
           prerelease: prerelease2,
         },
         {
+          name: componentName,
           version: version1,
           displayVersion: version1,
           title: title1,
@@ -213,6 +216,7 @@ describe('ContentCatalog', () => {
         },
       ])
       expect(component.latest).to.eql({
+        name: componentName,
         version: version1,
         displayVersion: version1,
         title: title1,
@@ -252,6 +256,7 @@ describe('ContentCatalog', () => {
 
       expect(component.versions).to.eql([
         {
+          name: componentName,
           version: version2,
           displayVersion: version2,
           title: title2,
@@ -259,6 +264,7 @@ describe('ContentCatalog', () => {
           prerelease: prerelease2,
         },
         {
+          name: componentName,
           version: version1,
           displayVersion: version1,
           title: title1,
@@ -267,6 +273,7 @@ describe('ContentCatalog', () => {
         },
       ])
       expect(component.latest).to.eql({
+        name: componentName,
         version: version2,
         displayVersion: version2,
         title: title2,
@@ -350,9 +357,9 @@ describe('ContentCatalog', () => {
         name,
         title,
         url,
-        versions: [{ version, displayVersion: version, title, url }],
+        versions: [{ name, version, displayVersion: version, title, url }],
       })
-      expect(components[0].latest).to.eql({ version, displayVersion: version, title, url })
+      expect(components[0].latest).to.eql({ name, version, displayVersion: version, title, url })
     })
 
     it('should warn if specified start page not found', () => {

@@ -23,6 +23,7 @@ class ContentCatalog {
   registerComponentVersion (name, version, descriptor = {}) {
     const { asciidoc, displayVersion, prerelease, title, startPage: startPageSpec } = descriptor
     const componentVersion = { displayVersion: displayVersion || version, title: title || name, version }
+    Object.defineProperty(componentVersion, 'name', { value: name, enumerable: true })
     let startPage
     const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
     if (startPageSpec) {
