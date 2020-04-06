@@ -1029,6 +1029,7 @@ describe('ContentCatalog', () => {
         basename: 'alias.adoc',
         stem: 'alias',
         extname: '.adoc',
+        mediaType: 'text/asciidoc',
       })
       expect(result.path).to.equal(targetPage.path)
       expect(result).to.have.property('rel')

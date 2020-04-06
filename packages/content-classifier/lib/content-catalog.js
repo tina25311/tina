@@ -325,7 +325,7 @@ function generateKey ({ component, version, module, family, relative }) {
   return `${version}@${component}:${module}:${family}$${relative}`
 }
 
-function inflateSrc (src, family = 'page') {
+function inflateSrc (src, family = 'page', mediaType = 'text/asciidoc') {
   const basename = (src.basename = path.basename(src.relative))
   const extIdx = basename.lastIndexOf('.')
   if (~extIdx) {
@@ -336,7 +336,7 @@ function inflateSrc (src, family = 'page') {
     src.extname = ''
   }
   src.family = family
-  src.mediaType = 'text/asciidoc'
+  src.mediaType = mediaType
   return src
 }
 
