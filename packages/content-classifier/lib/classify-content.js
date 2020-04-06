@@ -2,8 +2,6 @@
 
 const ContentCatalog = require('./content-catalog')
 
-const { START_PAGE_ID } = require('./constants')
-
 /**
  * Organizes the raw aggregate of virtual files into a {ContentCatalog}.
  *
@@ -19,6 +17,7 @@ const { START_PAGE_ID } = require('./constants')
  * @returns {ContentCatalog} A structured catalog of content components and virtual content files.
  */
 function classifyContent (playbook, aggregate, siteAsciiDocConfig = undefined) {
+  // deprecated; remove fallback in Antora 3.x
   if (!siteAsciiDocConfig) siteAsciiDocConfig = require('@antora/asciidoc-loader').resolveConfig(playbook)
   const contentCatalog = aggregate.reduce((catalog, descriptor) => {
     const { name, version, nav, files } = descriptor
@@ -28,7 +27,7 @@ function classifyContent (playbook, aggregate, siteAsciiDocConfig = undefined) {
     catalog.registerComponentVersion(name, version, descriptor)
     return catalog
   }, new ContentCatalog(playbook))
-  registerSiteStartPage(playbook, contentCatalog)
+  contentCatalog.registerSiteStartPage(playbook.site.startPage)
   return contentCatalog
 }
 
@@ -97,7 +96,6 @@ function allocateSrc (file, component, version, nav) {
     // ignore file
     return
   }
-
   file.src.component = component
   file.src.version = version
   return true
@@ -115,23 +113,6 @@ function allocateSrc (file, component, version, nav) {
 function getNavInfo (filepath, nav) {
   const index = nav.findIndex((candidate) => candidate === filepath)
   if (~index) return { index }
-}
-
-function registerSiteStartPage (playbook, contentCatalog) {
-  const pageSpec = playbook.site.startPage
-  if (!pageSpec) return
-  const rel = contentCatalog.resolvePage(pageSpec.endsWith('.adoc') ? pageSpec : `${pageSpec}.adoc`)
-  if (rel) {
-    const src = Object.assign({}, START_PAGE_ID, {
-      family: 'alias',
-      basename: 'index.adoc',
-      stem: 'index',
-      mediaType: 'text/asciidoc',
-    })
-    contentCatalog.addFile({ src, rel })
-  } else {
-    console.warn('Start page specified for site not found: ' + pageSpec)
-  }
 }
 
 function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc }) {
