@@ -241,12 +241,11 @@ class ContentCatalog {
       // QUESTION should we skip registering alias in this case?
       src.version = 'master'
     }
-    inflateSrc(src, 'alias')
     // QUESTION should we use src.origin instead of rel with type='link'?
     //src.origin = { type: 'link', target: rel }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
     //const path_ = path.join(targetPage.path.slice(0, -targetPage.src.relative.length), src.relative)
-    return this.addFile({ mediaType: 'text/html', src, rel })
+    return this.addFile({ mediaType: 'text/html', src: inflateSrc(src, 'alias'), rel })
   }
 
   /**
