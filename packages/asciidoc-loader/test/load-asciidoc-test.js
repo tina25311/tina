@@ -2187,7 +2187,7 @@ describe('loadAsciiDoc()', () => {
         family: 'page',
         relative: 'topic-foo/topic-bar/the-page.adoc',
       }).spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
+      setInputFileContents('xref:4.5.6@component-b:module-b:page$topic-foo/topic-bar/the-page.adoc[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
