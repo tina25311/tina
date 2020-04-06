@@ -4,8 +4,10 @@ prerelease: -alpha.2
 title: Antora
 nav:
 - modules/ROOT/nav.adoc
+- modules/page/nav.adoc
 - modules/asciidoc/nav.adoc
 - modules/navigation/nav.adoc
 - modules/playbook/nav.adoc
+- modules/ROOT/nav-run.adoc
 - modules/pipeline/nav.adoc
 - modules/ROOT/nav-end.adoc

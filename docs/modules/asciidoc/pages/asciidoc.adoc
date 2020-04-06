@@ -19,12 +19,9 @@ That's because the syntax elements were carefully chosen to look like what they 
 
 AsciiDoc only requires a text editor to read or write, thereby offering a very low bar to get started.
 
-You can use this section of the documentation to learn more about the AsciiDoc syntax, which starts at the top of the document with the xref:page-header.adoc[page header].
-From there, you can follow the items in the site navigation to learn about most syntax elements, or jump to a specific topic such as xref:page-to-page-xref.adoc[page references].
-
 == Parser
 
-Asciidoctor is the processor that converts AsciiDoc content to HTML and other formats.
+Asciidoctor.js is the processor that converts AsciiDoc content to HTML and other formats.
 
 === Speed and security
 
@@ -35,5 +32,5 @@ Asciidoctor also offers several levels of security, further justifying its suita
 
 == The advantages of Open Source
 
-The Asciidoctor project, home to the AsciiDoc syntax, the reference processor, and its extensions, is open source and made available under the MIT license.
+The Asciidoctor project, home to the AsciiDoc syntax, Asciidoctor.js, and its extensions, is open source and made available under the MIT license.
 The Antora developers are also the lead Asciidoctor maintainers, which helps ensures a tight integration and keeps both technologies moving forward to address ever-changing documentation requirements and needs.

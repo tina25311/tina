@@ -94,6 +94,6 @@ If you have nvm installed but your Node version is not an LTS release, type the 
 
 IMPORTANT: When using nvm for Windows, you must enter the full version of Node (i.e., `nvm install {version-node}`).
 
-== Next
+== Learn more
 
 Once you've installed Node, you're ready to xref:install-antora.adoc[install Antora].

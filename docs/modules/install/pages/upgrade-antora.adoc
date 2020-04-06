@@ -114,6 +114,6 @@ It may be necessary to pass the `--force` flag to force an update.
 
 You've now upgraded to the latest version of Antora.
 
-== Next
+== Learn more
 
 Review xref:ROOT:whats-new.adoc[What's New in Antora] for the latest features and potential breaking changes.

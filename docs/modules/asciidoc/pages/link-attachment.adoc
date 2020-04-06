@@ -2,15 +2,19 @@
 
 On this page, you'll learn:
 
-* [x] How to link to a file stored in a documentation component's [.path]_attachments_ directory.
+* [x] How to create a link to an attachment.
 
-== Insert a link to an attachment file
+Attachment files are stored in an xref:ROOT:attachments-directory.adoc[_attachments_ family directory].
 
-An attachment is a resource that you want your user to download, such as a PDF or a sample project ZIP archive.
-To insert a link to an attachment for download, use the AsciiDoc link macro (`+link:[]+`).
+WARNING: Currently, you can't reference an attachment using an Antora resource ID.
+
+== Create a link to an attachment
+
+An attachment is a resource, such as a PDF or a sample project ZIP archive, that a visitor can download from your site.
+To insert a link to an attachment in a page, use the AsciiDoc link macro (`+link:[]+`).
 
 .Attachment link syntax
-[source,asciidoc]
+[source]
 ----
 link:{attachmentsdir}/example.raml[Download the RAML example] and run it.
 ----
@@ -25,5 +29,4 @@ Finally, end with the text of the link (as the reader will see it) between a pai
 You don't need to set the path to the [.path]_attachments_ directory in the header of your file.
 This is managed automatically by Antora.
 
-A module's attachment files should be saved in its xref:ROOT:modules.adoc#attachments-dir[attachments folder].
 Links to attachments can also be added to the xref:navigation:link-syntax-and-content.adoc[site navigation].

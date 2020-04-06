@@ -66,7 +66,7 @@ This option allows you to use volume mounts when running SELinux.
 This option tells Docker to run the entrypoint command (i.e., `antora`) as the current user.
 If you use the `--privileged` flag without specifying this option, the generated files are (most likely) written as the root user (and become rather tricky to delete).
 
-If you want Antora to put the xref:run-antora.adoc#cache[cache folder] inside the mounted directory, specify a playbook-relative cache directory in the command using the `--cache-dir` option:
+If you want Antora to put the xref:cache.adoc[cache folder] inside the mounted directory, specify a playbook-relative cache directory in the command using the `--cache-dir` option:
 
  docs-site $ docker run -u $UID --privileged -v `pwd`:/antora --rm -t antora/antora --cache-dir=./.cache/antora antora-playbook.yml
 

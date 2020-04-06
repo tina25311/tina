@@ -1,0 +1,99 @@
+= Assign Attributes to a Component Version
+
+You can apply AsciiDoc attributes to all of the pages in a component version by declaring them in its [.path]_antora.yml_ file.
+
+== Component version attributes
+
+AsciiDoc document attributes that are defined in a component version descriptor are referred to as [.term]*component version attributes*.
+These document attributes can be built-in AsciiDoc attributes, user-defined AsciiDoc attributes, and user-defined or built-in `page-` prefixed attributes that Antora will pass to the reference UI.
+These attributes are applied and available to all of a component version's pages according to the attribute precedence rules.
+
+[#set-and-unset]
+== Set and unset attributes in antora.yml
+
+Component version attributes are set or unset in a component version's [.path]_antora.yml_ file.
+First, the `asciidoc` and `attributes` keys must be set.
+Then, each component version attribute is entered on its own line under `attributes`.
+
+.Declaring attributes in antora.yml
+[source,yaml]
+----
+name: light
+title: Data Light
+version: '2.3'
+asciidoc: # <1>
+  attributes: # <2>
+    page-product-desc: Analyze your data at the speed of light # <3>
+    page-level: Advanced # <4>
+    page-category: Statistics; Cloud Infrastructure # <5>
+    experimental: '' # <6>
+    listing-caption: false # <7>
+nav:
+- modules/ROOT/nav.adoc
+----
+<1> On a new line, type `asciidoc`, followed by a colon (`:`), and press kbd:[Enter].
+<2> Nest the `attributes` key on the line directly underneath the `asciidoc` key.
+Press kbd:[Space] twice, then type `attributes`, followed by a colon (`:`), and press kbd:[Enter].
+<3> Each attribute is nested under the `attributes` key and defined on its own line.
+Type the name of the attribute, followed by a colon (`:`).
+Press kbd:[space] once after the colon, then type the value of the attribute.
+<4> This attribute is <<assign-precedence,hard set>>.
+<5> When an attribute has multiple, independent values, separate each value with a semicolon (`;`).
+<6> To assign the default value, or in the case of a boolean AsciiDoc attribute, the _empty string_ value, type two consecutive single quotation marks (`''`) in the value field.
+<7> The value `false` <<assign-precedence,soft unsets>> this attribute.
+
+The values of user-defined attributes, such as `page-level`, and built-in `page-` attributes can be displayed in a page using the AsciiDoc attribute reference syntax (e.g., `+{page-level}+` or `+{page-version}+`).
+
+TIP: Antora declares `page-` attributes for most of the keys in the component version descriptor file.
+For instance, Antora automatically sets the built-in attribute `page-component-title` and assigns it the value specified by the `title` key.
+Check out the xref:environment-and-page-attributes.adoc#page-attributes[Built-in page- attributes] for a complete list of the `page-` attributes Antora automatically declares.
+
+[#assign-precedence]
+== Assign precedence to component version attributes
+
+When component version attributes are declared, you can control whether a page can reset or unset each attribute on a case by case basis.
+Pages can't override hard set and unset component version attributes, but they can override soft set and unset attributes.
+
+The following example shows how component version attributes are assigned hard and soft precedence.
+
+.Assigning hard and soft precedence to attributes in antora.yml
+[source,yaml]
+----
+asciidoc:
+  attributes:
+    page-category: Database # <1>
+    example-caption: Scenario@ # <2>
+    figure-caption: ~ # <3>
+    table-caption: false # <4>
+----
+<1> To hard set an attribute, simply enter its value.
+Hard set component version attributes can't be reassigned or unset by a page.
+<2> To soft set an attribute, attach the `@` modifier to the end of its value.
+A page can override soft set component version attributes.
+<3> To hard unset an attribute, assign it the tilde symbol (`~`).
+Hard unset component version attributes can't be set by a page.
+<4> To soft unset an attribute, assign the value `false`.
+A page can override soft unset component version attributes.
+
+The example assumes that the declared attributes weren't previously xref:playbook:site-attributes.adoc[hard set or unset in the site's playbook], so the following precedence rules are applied to the attributes defined in the component version descriptor:
+
+[#component-rules]
+.*Component version attribute precedence rules*
+. Hard setting an attribute to a string value with no trailing `@` modifier (e.g., `value`) prevents the page from changing (setting or unsetting) the attribute.
+. Soft setting an attribute to a string value with a trailing `@` modifier (e.g., `value@`) allows the page to change (set or unset) the attribute.
+. Hard unsetting an attribute using the tilde symbol (`~`) prevents the page from setting the attribute.
+. Soft unsetting an attribute using a `false` value allows the page to set the attribute.
+
+Where things get more complicated is when both site and component version attributes are defined.
+Antora takes the precedence assigned to attributes in the site's playbook into account first.
+A component version attribute can override a site attribute *only if the site attribute is soft set or unset*.
+
+.*Site and component version attribute precedence rules*
+. Hard setting a site attribute to a string value with no trailing `@` modifier prevents the component version descriptor from changing (setting or unsetting) the attribute.
+. Soft setting a site attribute to a string value with a trailing `@` modifier allows the component version descriptor to change (set or unset) the attribute.
+. Hard unsetting a site attribute using the tilde symbol (`~`) prevents the component version descriptor from setting the attribute.
+. Soft unsetting a site attribute using a `false` value allows the component version descriptor to set the attribute.
+
+If an attribute in the component version descriptor can be set or unset, then the <<component-rules,first set of rules>> kick in for that attribute as it relates to the page.
+
+include::partial$dont-use-these-attributes.adoc[]

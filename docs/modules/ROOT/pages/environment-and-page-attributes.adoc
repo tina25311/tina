@@ -1,0 +1,101 @@
+= Built-in Page and Environment Attribute Reference
+:page-aliases: page:page-and-site-attributes.adoc
+//These attributes are helpful when passing data from a page to the site UI and integrations, such as a search service.
+
+Antora provides built-in `page-`, environment, and generator attributes.
+
+[#page-attributes]
+== Built-in page- attributes
+
+Antora automatically sets the following attributes for each page when it runs:
+
+[cols="1,2,1"]
+|===
+|Attribute |Description |Example Output
+
+|`page-component-display-version`
+|The xref:component-display-version.adoc[display version] of the component version as specified in _antora.yml_.
+|7.1 Beta
+
+|`page-component-name`
+|The xref:component-name-and-version.adoc#name-key[component name] of the component version as specified in _antora.yml_.
+|silver-leaf
+
+|`page-component-title`
+|The xref:component-title.adoc[component title] of the component version as specified in  _antora.yml_.
+|Silver Leaf
+
+|`page-component-version`
+|The xref:component-name-and-version.adoc#version-key[version] of the component version as specified in _antora.yml_.
+|7.1
+
+|`page-module`
+|The xref:module-directories.adoc#module[name of the page's module].
+|ROOT
+
+|`page-origin-branch`
+|The name of the repository branch where the page's source file is stored. (mutually exclusive with `page-origin-tag`)
+|v7.1.0
+
+|`page-origin-refname`
+|The name of the reference where the page's source file is stored.
+|v7.1.0
+
+|`page-origin-reftype`
+|The reference type (e.g., tag or branch) where the page's source file is stored.
+|branch
+
+|`page-origin-tag`
+|The name of the repository tag where the page's source file is stored. (mutually exclusive with `page-origin-branch`)
+|v7.1.0
+
+|`page-origin-start-path`
+|The start path of the content source where the page's source file is stored.
+|docs
+
+|`page-origin-type`
+|The type (e.g., git) of content source where the page's source file is stored.
+|git
+
+|`page-origin-url`
+|The URL, without credentials, of the content source where the page's source file is stored.
+|\https://gitlab.com/forest-co/silver-leaf.git
+
+|`page-origin-worktree`
+|Set if the file was taken from the git worktree.
+|_Boolean attribute, no output is returned_
+
+|`page-relative`
+|The family-relative path (e.g., pages) and file name of the page's source file.
+|whats-new-in-spiky.adoc
+
+|`page-version`
+|Alias for `page-component-version`.
+|7.1
+|===
+
+The output of these `page-` attributes can be displayed in a page using the AsciiDoc attribute reference syntax (e.g., `+{page-version}+`).
+
+.Reference the current page's module name, component title, and version
+----
+This page belongs to the *{page-module}* module in the *{page-component-title} {page-component-version}* component version.
+----
+
+The attribute references in the above example output the data (shown below) for the current page, that is, the page you're reading right now.
+
+====
+This page belongs to the *{page-module}* module in the *{page-component-title} {page-component-version}* component version.
+====
+
+Attributes that are prefixed with `page-` are also available to the Antora pipeline and xref:antora-ui-default::templates.adoc#template-variables[UI model] during site generation.
+
+[#environment-attributes]
+== Built-in environment and generator attributes
+
+There may be times when your page needs to know that it's being processed by Antora.
+Antora sets these attributes for each page.
+
+* `env=site`
+* `env-site`
+* `site-gen=antora`
+* `site-gen-antora`

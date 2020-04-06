@@ -1,0 +1,25 @@
+= Repositories and Content Source Roots
+
+Antora collects content source files from branches, tags, and directories in git repositories.
+These source files are only retrieved and processed correctly if Antora can locate them at a specified content source root.
+
+[#git-and-content-sources]
+== git repositories and content sources
+
+The source files containing a site's content are stored in one or more git repositories.
+These repositories can be remote, local, or a mix of both.
+In a playbook file, you'll enter several query parameters (git references and start paths) that 1. allow Antora to locate and connect to your content source repositories, and 2. provide Antora with the route criteria that leads to one or more unique <<content-source-root,content source roots>> within a git repository.
+//A [.term]*content source* is one or more routes--git references and start paths--that lead to unique <<content-source-root,content source roots>>.
+//Content sources are specified in an Antora playbook file.
+
+But before configuring a site's playbook, you'll want to determine where to set up the content source roots in your repositories.
+// to be located and then set up the directories Antora requires.
+//to place your content source roots to beet up the required directories and sorted your content source files into them at each content source root.
+
+[#content-source-root]
+== What's a content source root?
+
+A [.term]*content source root* is a unique location from where Antora begins collecting content source files.
+Think of the content source root as the starting line for a race.
+From a content source root, Antora expects to find an [.path]_antora.yml_ file and a collection of source files that are organized into a xref:standard-directories.adoc[standard set of directories].
+A repository can host a multitude of content source roots, even within a single branch in certain scenarios.

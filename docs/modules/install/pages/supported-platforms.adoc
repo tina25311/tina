@@ -93,7 +93,7 @@ On subsequent runs, Antora only reconnects to the remote repositories if the xre
 |Maximum throughput and minimum latency always make things nicer but aren't required.
 |===
 
-== Next
+== Learn more
 
 * xref:upgrade-antora.adoc[Upgrade to the latest Antora release].
 

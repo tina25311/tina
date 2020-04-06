@@ -1,86 +1,94 @@
-= Page Identifier
+= Page IDs and Cross References
+:page-aliases: asciidoc:page-to-page-xref.adoc
+:family: page
+:colon: :
 
-== What is a page identifier?
+[#whats-a-page-id]
+== What's a page ID?
 
-In order for a page to be linked to, i.e., referenced, that page must have a unique and stable identifier.
-This identifier is like your mobile phone number.
-When someone calls your mobile number, they know they're calling you and that they'll reach your phone no matter where your phone is located.
-So, when an identifier is "`called`", the page that is connected to that identifier answers, no matter where it's published.
+In order for a page to be referenced, that page must have an identifier--a page ID.
+An [.term]*Antora page ID* is a unique and reliable set of identifying coordinates, organized in a standard sequence, that are constructed from the properties assigned to each page's source file.
+A page ID is most often used as a target in an AsciiDoc xref macro, but it can also be assigned to certain attributes and keys.
 
-We call a page's "`number`" a page identifier, or page ID for short.
+[#id-coordinates]
+== What are the page ID coordinates?
 
-[#structure]
-== How is a page ID structured?
+Antora constructs a page ID for a page source file from the key-value pairs specified in a xref:ROOT:component-version-descriptor.adoc[component version descriptor] and the xref:ROOT:standard-directories.adoc[standard directory set].
+Using this information, each page can be cross referenced using a sequence of page ID coordinates.
 
-The page ID is unique and stable because it's constructed from the properties of the source document.
-
-A page ID is based on a documentation component's xref:ROOT:component-structure.adoc[standard project structure].
-Documentation components ensure that each page lives in a defined, describable location.
-From this structure, each location derives unique, reliable coordinates we can use to refer to it.
-
-These source document coordinates are described below.
-
-[#id-version]
-Version::
-The version of the component in which the page lives; often mapped to a repository branch.
-
-[#id-component]
-Component::
-The documentation component to which the page belongs; often mapped to a repository.
-
-[#id-module]
-Module::
-The content bundle in which the page is grouped; if empty, defaults to ROOT.
-
-Page::
-The path to the page's source file in the module, including any leading topic directories and the _.adoc_ file extension.
-
-These coordinates are organize in a standard structure to create a unique, fully-qualified page ID.
+The coordinates are organized into the standard sequence shown below.
 
 image::page-id-anatomy-diagram.svg[Page ID anatomy,600]
 
-For example, this is the fully-qualified page ID for the "`How Antora Works`" page, which is located in the ROOT module of the Antora docs component.
+include::partial$antora-id.adoc[tags=*;!resource]
 
-[source,asciidoc]
-1.1@antora:ROOT:how-antora-works.adoc
+A page ID is used in an <<xref-macro,AsciiDoc xref macro>> to create a link from one page to another page.
+They're also used to create the links in a xref:navigation:link-syntax-and-content.adoc[component version's navigation files].
 
-== How is a page referenced with its ID?
+[#whats-a-cross-reference]
+== What's a cross reference?
 
-A page ID is used in an AsciiDoc cross reference, also called an xref, to link one documentation page to another documentation page.
+A [.term]*cross reference* indicates that an element in a page, such as a term or concept, is related to information on another page.
+Cross reference is often abbreviated to *xref*.
 
-image::xref-macro-anatomy-diagram.svg[Page reference anatomy,780]
+A cross reference is created using the AsciiDoc xref macro and the <<whats-a-page-id,page ID>> of the target page.
+[[target-page]]The [.term]*target page* is the page the xref will link the site visitor to.
+[[current-page]]The [.term]*current page* is the page containing the xref that links to the target page.
+When a visitor clicks on an xref in the current page, that is, the page they're currently viewing, they'll be redirected to the target page.
 
-Here's how that looks in practice:
+[#xref-macro]
+== AsciiDoc xref macro
 
-[source,asciidoc]
-Learn all about xref:1.0@antora:ROOT:how-antora-works.adoc[the Antora pipeline].
+An AsciiDoc xref macro needs to be supplied with a valid <<whats-a-page-id,page ID>> in order to create a link to the target page when the site is generated.
+How many page ID coordinates you need to specify depends on the component version and module of the <<current-page,current page>> in relation to the <<target-page,target page>>.
 
-Specifying the version, component, and even module every time seems like overkill, right?
-Don't worry, there's a shorthand.
+First, let's review the AsciiDoc xref macro syntax.
 
-For instance, if you're linking to a page in the same module as the page you're linking from, all you need to do is specify the `page` coordinate.
-The next example shows a cross reference from the "`How Antora Works`"  page ([.path]_how-antora-works.adoc_) to the "`Run Antora`" page ([.path]_run-antora.adoc_).
-Both of these pages live in the same component and module.
+image::xref-macro-anatomy-diagram.svg[Page reference anatomy,role=grow-x]
 
-[source,asciidoc]
-Let's xref:run-antora.adoc[run Antora]!
+xref{colon}::
+The prefix of the AsciiDoc xref macro.
 
-A whole range of examples, from linking between different components to linking to different versions of a page, are explained in xref:asciidoc:page-to-page-xref.adoc[page cross references].
+page ID:: The page ID coordinates of the target page relative to the current page.
+
+#fragment::
+A section, block, or inline ID that deep links to an element in the target page.
+A fragment is always optional.
+The fragment ID starts with the hash symbol (`#`).
+
+[link text]::
+The text that's displayed on the site.
+When a visitor clicks on the link text, they're directed to the target page.
+The text is entered inside a set of square brackets (`[]`) at the end of the macro.
+If no text is specified, the generated URL of the target page is displayed.
+
+Here's how an xref macro with a fully qualified page ID looks in practice:
+
+[subs=attributes+]
+----
+See xref:{page-component-version}@antora:ROOT:how-antora-works.adoc[how Antora works].
+----
+
+Specifying the version, component name, and even module every time seems verbose, right?
+Don't worry, the more related the current and target pages are, the less coordinates you need to enter in the page ID.
+For instance, if the target and current pages belong to the same component version and module, you only need to specify the page coordinate of the target page.
+
+xref:module-and-page-xrefs.adoc[Xrefs to pages in the same component version] has several examples showing how to create xrefs to pages that belong to the same module or component version.
+For xref examples where the target and current pages belong to different components or different versions of the same component, see xref:version-and-component-xrefs.adoc[Xrefs to pages in other components and versions].
 
 [#important]
 == Why are page IDs important?
 
-*We've avoided coupling to the published URL* by using a source-to-source reference.
+*They're not coupled to a published URL* because they're a source-to-source reference.
 Notice the page coordinate ends with [.path]_.adoc_, the file extension of an AsciiDoc source file.
 Regardless of whether you're deploying your site locally, to a staging or production environment, or you change URL strategies, the page ID always remains the same.
-The cross reference locks on to the target page and produces a URL that points to it wherever it gets published.
+The xref locks on to the target page and produces a URL that points to it wherever it gets published.
 
-*We've avoided coupling to the filesystem* by using a location based on the documentation component structure.
-The page ID describes the source file's project (component & version) and where the source file is located in that project (module, family, & family-relative path).
+*They're minimally coupled to the filesystem* by using an identifier based on the Antora's virtual component version classification system.
 
-*We've eliminated the relative path (../../) problem* by specifying the page as a module-relative path.
+*They've eliminated the relative path (../../) problem* by specifying the page as a pages-relative path.
 The path always starts from a module's [.path]_pages_ directory, even when the referencing page is located inside a topic folder.
-If you move or rename a page within a module, you don't have to change any references to other pages.
+//If you move or rename a page within a module, you don't have to change any references to other pages.
 
 *This human-friendly referencing system saves you from having to do computations in your head while writing*.
 You just specify the coordinates of the page you want to reference.
