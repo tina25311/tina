@@ -22,6 +22,7 @@ class ContentCatalog {
 
   registerComponentVersion (name, version, descriptor = {}) {
     const { asciidoc, displayVersion, prerelease, title, startPage: startPageSpec } = descriptor
+    const componentVersion = { displayVersion: displayVersion || version, title: title || name, version }
     let startPage
     const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
     if (startPageSpec) {
@@ -38,18 +39,17 @@ class ContentCatalog {
     } else {
       startPage = this.getById(indexPageId)
     }
-    if (!startPage) {
+    if (startPage) {
+      componentVersion.url = startPage.pub.url
+    } else {
       // QUESTION: should we warn if the default start page cannot be found?
       const startPageSrc = inflateSrc(indexPageId)
-      const startPageOut = computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle)
-      const startPagePub = computePub(startPageSrc, startPageOut, startPageSrc.family, this.htmlUrlExtensionStyle)
-      startPage = { pub: startPagePub }
-    }
-    const componentVersion = {
-      displayVersion: displayVersion || version,
-      title: title || name,
-      url: startPage.pub.url,
-      version,
+      componentVersion.url = computePub(
+        startPageSrc,
+        computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle),
+        startPageSrc.family,
+        this.htmlUrlExtensionStyle
+      ).url
     }
     if (prerelease) {
       componentVersion.prerelease = prerelease
