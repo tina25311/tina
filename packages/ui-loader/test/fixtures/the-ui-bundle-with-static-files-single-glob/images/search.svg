@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" id="svg2" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 100 100" inkscape:version="0.91 r13725" sodipodi:docname="search.svg">
+  <defs id="defs10">
+    <inkscape:path-effect id="path-effect4225" is_visible="true" effect="spiro"/>
+    <inkscape:path-effect id="path-effect4221" effect="spiro" is_visible="true"/>
+    <inkscape:path-effect id="path-effect4213" effect="spiro" is_visible="true"/>
+    <inkscape:path-effect id="path-effect4209" is_visible="true" effect="spiro"/>
+    <inkscape:path-effect id="path-effect4204" effect="spiro" is_visible="true"/>
+    <inkscape:path-effect id="path-effect4191" is_visible="true" effect="spiro"/>
+    <inkscape:path-effect id="path-effect4187" effect="spiro" is_visible="true"/>
+    <inkscape:path-effect id="path-effect4183" effect="spiro" is_visible="true"/>
+    <inkscape:path-effect id="path-effect4179" is_visible="true" effect="spiro"/>
+    <inkscape:path-effect id="path-effect4173" effect="spiro" is_visible="true"/>
+    <inkscape:path-effect id="path-effect4169" is_visible="true" effect="spiro"/>
+    <inkscape:path-effect id="path-effect4165" effect="spiro" is_visible="true"/>
+    <style id="style3352">
+      .cls-1 { fill: #fff; } .cls-2 { fill: #99999a; } .cls-3 { fill: #dadfe1; } .cls-4 { fill: #007cba; } .cls-5 { fill: #00a1df; } .cls-6 { fill: #39b54a; } .cls-7 { fill: none; stroke: #00a1df; stroke-miterlimit: 10; stroke-width: 1.22px; }
+    </style>
+  </defs>
+  <sodipodi:namedview id="namedview8" inkscape:window-height="1406" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="2560" bordercolor="#666666" pagecolor="#ffffff" showgrid="false" inkscape:zoom="8.146" inkscape:cx="16.242" inkscape:cy="42.008" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="g4"/>
+  <g id="g4" transform="translate(0,-952.36218)">
+    <circle id="path3630" cx="42.692" cy="995.824" r="30.568" fill="none" stroke="#000" stroke-width="4"/>
+    <path id="path4442" fill="none" fill-rule="evenodd" stroke="#000" stroke-width="8" d="M64.342 1015.25l23.45 23.452" inkscape:connector-curvature="0" sodipodi:nodetypes="cc"/>
+  </g>
+</svg>
