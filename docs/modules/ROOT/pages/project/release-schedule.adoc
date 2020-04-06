@@ -11,7 +11,7 @@ Each major release line of the Antora Core components is typically supported for
 |Antora 3.x
 |NA
 |Pending
-|~ 2020/04
+|~ 2020/08
 |TBD
 |TBD
 
@@ -19,8 +19,8 @@ Each major release line of the Antora Core components is typically supported for
 |2.2.0
 |Active
 |2018/12/25
-|~ 2020/05/25
-|~ 2020/07/25
+|~ 2020/09/25
+|~ 2020/11/25
 
 |===
 
