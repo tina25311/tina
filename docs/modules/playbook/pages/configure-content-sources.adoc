@@ -333,15 +333,15 @@ content:
 
 == Start path key
 
-Antora automatically looks for a xref:ROOT:component-descriptor.adoc[component descriptor] file ([.path]_antora.yml_) at the root of a source repository.
+Antora automatically looks for a xref:ROOT:component-version-descriptor.adoc[component version descriptor] file ([.path]_antora.yml_) at the root of a source repository.
 *When this default repository structure is used, the start path key doesn't need to be set or assigned in the playbook.*
-If the component isn't stored at the root of a content repository, then you need to use the start path key to tell Antora where to find the component descriptor file.
+If the [.path]_antora.yml_ isn't stored at the root of a repository, then you need to use the `start_path` key to tell Antora where to find it.
 
 [#add-start-path]
 === Specify a start path
 
-The value of the `start_path` key is the repository relative path to the component descriptor file.
-Let's define the start path value for a repository with the structure shown below.
+The value of the `start_path` key is the repository relative path to a component version descriptor file.
+Let's define the `start_path` value for a repository with the structure shown below.
 
 image::start-path-dir.png[,176]
 

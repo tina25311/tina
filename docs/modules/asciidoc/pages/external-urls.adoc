@@ -20,7 +20,7 @@ On this page, you'll learn:
 Use AsciiDoc's URL syntax when you need to create a link to an external URL.
 External URLs are links to webpages that aren't built as part of your documentation site by your Antora pipeline.
 
-When you want to link to a page that is part of your documentation site, use the xref:page-to-page-xref.adoc[page cross reference] instead.
+When you want to link to a page that is part of your documentation site, use the xref:page:page-id.adoc#xref-macro[xref macro] instead.
 
 [#url-syntax]
 == URL syntax

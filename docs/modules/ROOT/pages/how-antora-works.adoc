@@ -43,7 +43,7 @@ Assign files to component version buckets::
 Antora reads the component version descriptor ( [.path]_antora.yml_) files.
 +
 A xref:component-version-descriptor.adoc[component version descriptor] associates the files under it with a specified component name and version, that is, a component version.
-This allows the files to be decoupled from the repository in which they live and makes Antora's URL agnostic xref:asciidoc:page-to-page-xref.adoc[cross references] possible.
+This allows the files to be decoupled from the repository in which they live and makes Antora's URL agnostic xref:page:page-id.adoc[cross references] possible.
 +
 Antora assigns the descriptor information and other source metadata to the virtual files.
 Then it sorts each file into a virtual collection based on the assigned component version data.

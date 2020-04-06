@@ -178,8 +178,8 @@ Learn more:
 [#sources-start-path-key]
 === start_path
 
-Antora automatically looks for the xref:ROOT:component-descriptor.adoc[component descriptor] file at the root of a repository.
-When the documentation component isn't stored at the root, you need to specify the repository relative path to the component descriptor's location using `start_path`.
+Antora automatically looks for the xref:ROOT:component-version-descriptor.adoc[component version descriptor] file at a the root of a repository.
+When the component version isn't stored at the repository root, you need to specify the repository relative path to the component version descriptor's location using `start_path`.
 The `url` identifies where the git repository is and the `start_path` identifies where [.path]_antora.yml_ is in the git repository (or local worktree).
 
 Learn more:
@@ -379,7 +379,7 @@ Learn more:
 == antora.yml
 
 The file system name of the repository and branch are ignored by Antora once the content is retrieved.
-Instead, metadata about the component is read from a xref:ROOT:component-descriptor.adoc[component descriptor file] in the repository.
+Instead, metadata about the component is read from a component version descriptor file in the repository.
 Inside each branch is a file named [.path]_antora.yml_ at the documentation component root.
 The file defines the name and version of the component.
 
