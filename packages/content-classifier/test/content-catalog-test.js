@@ -416,11 +416,42 @@ describe('ContentCatalog', () => {
       expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
     })
 
+    it('should register alias at index page if start page does not point to index page', () => {
+      const name = 'the-component'
+      const version = '1.0'
+      const title = 'The Component'
+      const url = '/the-component/1.0/home.html'
+      const contentCatalog = new ContentCatalog()
+      const startPage = contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'home.adoc',
+          mediaType: 'text/asciidoc',
+        },
+      })
+      contentCatalog.registerComponentVersion(name, version, { title, startPage: 'home.adoc' })
+      const component = contentCatalog.getComponent(name)
+      expect(component.url).to.equal(url)
+      const aliases = contentCatalog.findBy({ family: 'alias' })
+      expect(aliases).to.have.lengthOf(1)
+      const indexPageAlias = aliases[0]
+      expect(indexPageAlias.src).to.include({
+        component: name,
+        version,
+        module: 'ROOT',
+        relative: 'index.adoc',
+      })
+      expect(indexPageAlias.rel).to.equal(startPage)
+    })
+
     it('should use url of index page in ROOT module if found', () => {
       const name = 'the-component'
-      const version = '1.0.0'
+      const version = '1.0'
       const title = 'The Component'
-      const url = '/the-component/1.0.0/index.html'
+      const url = '/the-component/1.0/index.html'
       const contentCatalog = new ContentCatalog()
       contentCatalog.addFile({
         src: {
@@ -447,6 +478,7 @@ describe('ContentCatalog', () => {
       contentCatalog.registerComponentVersion(name, version, { title })
       const component = contentCatalog.getComponent(name)
       expect(component.url).to.equal(url)
+      expect(contentCatalog.findBy({ family: 'alias' })).to.be.empty()
     })
 
     it('should use url of synthetic index page in ROOT module if page not found', () => {
