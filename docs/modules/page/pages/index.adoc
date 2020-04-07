@@ -5,7 +5,7 @@
 Antora automatically generates one HTML site page for each source file assigned to the pages family.
 Another way to think about this: one AsciiDoc page file in equals one HTML page out.
 
-[#standard-asciidoc-page]
+[#standard-page]
 == Standard source pages
 
 Page source files are plain text files marked up with the xref:asciidoc:asciidoc.adoc[AsciiDoc syntax] and saved with the file extension `.adoc`.

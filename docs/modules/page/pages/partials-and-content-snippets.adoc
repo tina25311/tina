@@ -6,5 +6,5 @@ They're stored in a xref:ROOT:partials-directory.adoc[_partials_ directory] and 
 == Reusable, single source content
 
 Partials are good for storing snippets of content, such as common descriptions, project introductions, terminology, frequent admonitions, and reference tables, that you reuse in one or more pages throughout your site.
-When you change the content in a partial, those changes will disseminate to all of the pages where you embedded that partial with an xref:asciidoc:include-partial.adoc[AsciiDoc include directive].
+When you change the content in a partial, those changes will disseminate to all of the pages where you embedded that partial with an xref:include-a-partial.adoc[AsciiDoc include directive].
 Specific regions or lines from a partial can also be inserted in a page using the include directive's `tag`, `tags`, or `lines` attributes.

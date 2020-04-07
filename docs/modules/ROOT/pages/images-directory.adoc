@@ -23,7 +23,7 @@ Antora applies preset behavior to the source files stored in an [.path]_images_ 
 [#images]
 == Images
 
-An [.term]*image* is a resource, such as a photograph, diagram, or screenshot.
+xref:page:images.adoc[Images] are resources, such as photographs, diagrams, and screenshots.
 The source files for images are stored in an [.path]_images_ family directory.
 Antora supports the PNG, JPG, SVG, and GIF (static and animated) image file formats.
 
