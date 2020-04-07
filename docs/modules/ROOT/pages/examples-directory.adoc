@@ -28,12 +28,12 @@ Antora applies preset behavior to the source files stored in an [.path]_examples
 [#examples]
 == Examples
 
-[.term]*Examples* are resources, such as source code snippets (e.g., [.path]_runner.js_), terminal output, or sample data sets (e.g., [.path]_choptank-co2.csv_).
+xref:page:examples-and-source-snippets.adoc[Examples] are resources, such as source code (e.g., [.path]_runner.js_), terminal output, and data sets (e.g., [.path]_choptank-co2.csv_).
 The source files for examples are stored in an [.path]_examples_ directory.
 Examples shouldn't be confused with the AsciiDoc example block, though they can be inserted into an example block using an include directive.
 
 If an example isn't referenced in an AsciiDoc include directive, its content won't be published to a site.
-Examples and tagged regions in an example can be inserted into any page or partial, regardless of the module or component version it belongs to, using the xref:asciidoc:include-example.adoc[include directive] and the example's xref:page:resource-id.adoc[resource ID].
+Examples and tagged regions in an example can be inserted into any page or partial, regardless of the module or component version it belongs to, using the xref:page:include-an-example.adoc[include directive] and the example's xref:page:resource-id.adoc[resource ID].
 
 When referencing an example, the `example$` family coordinate must be included in its resource ID.
 This coordinate is required because the include directive is also used to reference xref:partials-directory.adoc[partials] and, occasionally, xref:pages-directory.adoc[pages].

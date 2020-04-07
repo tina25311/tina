@@ -73,8 +73,8 @@ Specifying the version, component name, and even module every time seems verbose
 Don't worry, the more related the current and target pages are, the less coordinates you need to enter in the page ID.
 For instance, if the target and current pages belong to the same component version and module, you only need to specify the page coordinate of the target page.
 
-xref:module-and-page-xrefs.adoc[Xrefs to pages in the same component version] has several examples showing how to create xrefs to pages that belong to the same module or component version.
-For xref examples where the target and current pages belong to different components or different versions of the same component, see xref:version-and-component-xrefs.adoc[Xrefs to pages in other components and versions].
+xref:module-and-page-xrefs.adoc[Xref pages in the same component version] has several examples showing how to create xrefs to pages that belong to the same module or component version.
+For xref examples where the target and current pages belong to different components or different versions of the same component, see xref:version-and-component-xrefs.adoc[Xref pages in other components and versions].
 
 [#important]
 == Why are page IDs important?

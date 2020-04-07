@@ -53,10 +53,10 @@ The syntax that requires an explicit family coordinate is listed in the table be
 *The attribute reference `+{attachmentsdir}+` is required* in the target value.
 See xref:asciidoc:link-attachment.adoc[Link to an attachment].
 
-|Examples
+|xref:examples-and-source-snippets.adoc[Examples]
 |`include::resource-id[]`
 |*The `example$` coordinate is required* in the target value.
-See xref:asciidoc:include-example.adoc[Include an example].
+See xref:include-an-example.adoc[Include an example].
 
 .2+|xref:images.adoc[Images]
 |`image::resource-id[]`
@@ -70,10 +70,10 @@ See xref:inline-images.adoc[Add inline images] and xref:image-resource-id-exampl
 |xref:index.adoc[Pages]
 |`include::resource-id[]`
 |*The `page$` coordinate is required* in the target value.
-See xref:asciidoc:include-page.adoc[Include a page].
+See xref:include-a-page.adoc[Include a page].
 
 |xref:partials-and-content-snippets.adoc[Partials]
 |`include::resource-id[]`
 |*The `partial$` coordinate is required* in the target value.
-See xref:asciidoc:include-partial.adoc[Include a partial].
+See xref:include-a-partial.adoc[Include a partial].
 |===
