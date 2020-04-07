@@ -1,12 +1,15 @@
 .Create & Manage Pages
 * xref:index.adoc[Pages]
-** xref:create-standard-page.adoc[Name and Set Up a Page]
-** xref:start-page.adoc[Create a Start Page]
+* xref:standard-page.adoc[Set Up a Standard Page]
+* xref:title-and-metadata.adoc[Add a Title and Metadata]
+* xref:attributes.adoc[Configure Attributes]
+** xref:asciidoc-attributes.adoc[Use Built-in and Custom AsciiDoc Attributes]
+* xref:start-page.adoc[Create a Start Page]
 * xref:page-id.adoc[Page IDs and Cross References]
 ** xref:module-and-page-xrefs.adoc[Xref Pages in a Component Version]
 ** xref:version-and-component-xrefs.adoc[Xref Pages in Other Components and Versions]
 //Rename, Move, and Delete Pages
-* xref:page-aliases.adoc[Set Up URL Redirects with Page Aliases]
+* xref:page-aliases.adoc[Set Up URL Redirects with page-aliases]
 
 .Create & Manage Resources
 * xref:resource-id.adoc[Resources and Resource IDs]
@@ -22,4 +25,4 @@
 * xref:asciidoc:link-attachment.adoc[Link to an Attachment]
 // Pages as Resources
 * xref:include-a-page.adoc[Include a Page]
-** xref:page-partial-attribute.adoc[page-partial Attribute]
+** xref:page-partial.adoc[Unset page-partial Globally]

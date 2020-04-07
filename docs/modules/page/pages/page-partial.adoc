@@ -1,4 +1,4 @@
-= page-partial Attribute
+= Unset page-partial Globally
 
 As Antora processes each page, it converts the contents of the file from AsciiDoc to HTML.
 (Within a component version, pages are typically processed in order by module and relative filename).
@@ -8,7 +8,7 @@ Specifically, a page that uses the include directive to include a page that has 
 To rectify this ordering problem, Antora can retain the AsciiDoc source until all pages have been converted.
 This behavior is activated by setting the `page-partial` attribute in the document header of the page.
 As of Antora 2.2, the `page-partial` attribute is (soft) set globally by default.
-(Soft set means the it can still be overridden by the page).
+(Soft set means that it can still be overridden by the page).
 So, really, you don't even have to think of it.
 It will just work.
 

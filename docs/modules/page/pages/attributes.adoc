@@ -1,0 +1,18 @@
+= Configure Attributes
+:url-adoc-manual: https://asciidoctor.org/docs/user-manual
+:url-attrs: {url-adoc-manual}/#attributes
+
+Antora and AsciiDoc provide built-in attributes that activate and control syntax output behavior and styles.
+
+[#page-attrs]
+== Built-in AsciiDoc attributes
+
+Built-in AsciiDoc attributes are reserved attributes that have special, pre-defined behavior.
+Many built-in attributes also have a restricted set of accepted values.
+These attributes usually do two things; they toggle a behavior on or off (boolean), and they change the generated output by accepting an alternate value or replacement content (variable).
+
+TIP: If you're not familiar with AsciiDoc attribute restrictions or operations precedence, review the {url-attrs}[attributes section of the Asciidoctor manual^].
+
+//== Custom AsciiDoc attributes
+
+//== Built-in and custom Antora page attributes
