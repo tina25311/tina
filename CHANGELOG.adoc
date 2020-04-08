@@ -18,7 +18,7 @@ This project utilizes semantic versioning.
 
 * *asciidoc-loader*: Don't allow path document attribute to interfere with internal xref
 * *content-classifier*: Restrict start page for component version to component version (#524)
-* *content-classifier*: Set media type on alias file to `text/html` instead of using media type of rel file
+* *content-classifier*: Set media type on alias file to `text/html` (instead of media type of rel file); use `text/asciidoc` media type on `src` property
 * *content-classifier*: Don't set (irrelevant) path property on alias file
 * *content-classifier*: Drop requirement for `src.stem` and `src.basename` to be set on argument to `ContentCatalog#addFile()`
 * *page-composer*: Fix relativize helper function to preserve fragment identifier on URL
