@@ -60,7 +60,7 @@ IDs in a partial can't conflict with IDs in a current page.
 
 === Attributes
 
-Document attributes can be set, assigned, and referenced in a partial.
+xref:attributes.adoc[Attributes] can be set, assigned, and referenced in a partial.
 When an attribute is referenced in a partial, either the partial, current page, or current page's component version descriptor must set and assign a value to the attribute.
 
 If an attribute is set and assigned a value in a partial, the attribute will be available in the current page starting from the point where the partial is included.

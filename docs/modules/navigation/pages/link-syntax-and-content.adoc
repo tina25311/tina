@@ -105,7 +105,7 @@ The default `modules/XYZ/nav.adoc` location of navigation files is not indexed, 
 * xref:index.adoc[In-module page]
 +
 --
-include::XYZ:partial$my-partial-nav.adoc[]
+\include::XYZ:partial$my-partial-nav.adoc[]
 --
 ----
 

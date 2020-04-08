@@ -62,7 +62,7 @@ All the attributes (e.g., `lines`, `tags`, `leveloffset`, `indent`) on the inclu
 
 == Learn more
 
-* xref:page-partial-attribute.adoc[page-partial attribute]
+* xref:page-partial.adoc[page-partial attribute]
 * xref:resource-id.adoc[Resource IDs]
 * xref:include-a-partial.adoc[Include a partial]
 * xref:include-an-example.adoc[Include an example]

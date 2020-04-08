@@ -1,0 +1,64 @@
+= Use Built-in and Custom AsciiDoc Attributes
+:note-caption: OPS HINT
+:url-adoc-manual: https://asciidoctor.org/docs/user-manual
+:url-attrs: {url-adoc-manual}/#attributes
+:url-builtin-attrs: {url-adoc-manual}/#builtin-attributes
+
+On this page, you'll learn:
+
+* [x] How to set and define built-in AsciiDoc attributes.
+* [x] How to set and define custom AsciiDoc attributes.
+* [x] How to unset AsciiDoc attributes.
+
+[#set-attribute]
+== Set and define a built-in attribute
+
+Let's turn on the attribute `sectanchors`.
+
+.Set a built-in attribute
+[source]
+----
+= Page Title
+:sectanchors:
+----
+
+When turned _on_, `sectanchors` adds an anchor to the left of each xref:asciidoc:section-headings.adoc[section title].
+The anchor is rendered as the symbol `§`.
+The attribute is turned on, also known as _set_, by simply entering it into the header.
+
+== Unset a built-in attribute
+
+Built-in attributes that are on by default, like `table-captions`, can be _unset_ (turned _off_) with a leading or trailing `!` added to its name.
+
+.Unset a built-in attribute
+[source]
+----
+= Page Title
+:sectanchors:
+:table-caption!:
+----
+
+== Change a built-in value
+
+Let's look at an example of a built-in attribute that has a default value that we want to replace with a custom value.
+
+The label on a xref:asciidoc:admonitions.adoc[Note admonition] is controlled by the attribute `note-caption`.
+This attribute is set (on) by default and has an implicit value of `NOTE`.
+Let's change the value to "`OPS HINT`".
+
+.Change a built-in page attribute value
+[source]
+----
+= Page Title
+:note-caption: OPS HINT
+----
+
+Now, when we create a Note admonition, its label is displayed as OPS HINT.
+
+NOTE: This is an Ops Hint.
+
+== Learn more
+
+.*Asciidoctor resources*
+* {url-builtin-attrs}[Built-in page attributes^]
+* {url-attrs}[AsciiDoc attribute restrictions or operations precedence^]
