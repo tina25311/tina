@@ -1,0 +1,214 @@
+= Multiple Start Paths
+
+On this page, you'll learn:
+
+* [x] How to use the `start_paths` key to specify multiple start paths for each branch of a single content source URL
+* [x] What patterns the `start_paths` key supports for matching directories.
+* [x] How to exclude directories matched by previous patterns.
+
+== About the start_paths key
+
+The `start_paths` key allows you to specify multiple content roots per branch of a single content source (i.e., URL).
+In other words, you can put multiple component versions, multiple components, or multiple distributed components--each with its own [.path]_antora.yml_ file--in a single branch of a repository.
+You can then refer to all these content roots using a single content source entry.
+This feature provides the benefit of reducing the verbosity of the content sources in your playbook.
+
+=== Relationship to the start_path key
+
+//The `start_paths` feature lets you register more than one Antora component version within a single repository. 
+//If one repository branch or tag contains multiple [.path]_antora.yml_ component descriptors, you can specify the multiple start paths for a single repository URL using the `start_paths` key.
+
+The `start_path` key only lets you specify _a single path_ in your playbook for a given content source.
+In contrast, the `start_paths` key lets you specify _multiple paths_, which can be even further consolidated as patterns.
+Each pattern can be a fixed path or a https://en.wikipedia.org/wiki/Glob_(programming)[glob^] pattern that Antora resolves to one or more fixed paths.
+
+The `start_paths` key is mutually exclusive with the `start_path` as described in the xref:configure-content-sources.adoc#add-start-path[Specify a start path] section.
+If you specify both the `start_paths` and `start_path` key in the content source, only the `start_paths` key is recognized.
+
+=== Relationship to references
+
+Like with the singular start path, the start paths are searched in each reference (branch or tag).
+That means the component version descriptor, [.path]_antora.yml_, _must_ be found at each start path for each reference.
+
+Often times, however, when using multiple start paths, you'll only be using a single reference (e.g., `master`).
+Or, if you are using multiple references, the folder structure in each reference is the same.
+
+== Use cases
+
+Multiple start paths are designed primarily to accommodate two use cases:
+
+* Documentation versions organized using folders instead of branches
+* Documentation for multiple products in a single repository branch (aka monorepo)
+
+=== Documentation versions as folders
+
+You can use `start_paths` to store all versions of a documentation component in a single repository branch using folders instead of using multiple branches.
+Although you may miss out on some of the advantages of the version control system, this arrangement can make it easier on writers who are frequently updating multiple versions of the documentation at once.
+
+In this scenario, you'd provide a single value for the `branches` key and use the `start_paths` key to tell Antora which directories in the branch to use as content roots.
+If the version folders are named consistently, it becomes easy to match them using a glob pattern.
+
+Here's an example of a repository layout that uses folders to store documentation versions:
+
+----
+📒 repository
+  📂 docs
+    📂 v1.0
+      📄 antora.yml
+    📂 v1.1
+      📄 antora.yml
+    📂 v2.0
+      📄 antora.yml
+----
+
+=== Documentation components as folders
+
+You can take it a step further and store all documentation components in a single repository branch using folders instead of using multiple repositories.
+If those documentation components have versions, you'd likely use subfolders to store the versions as well.
+This arrangement works best if all the documentation is maintained by the same team or individual and the distributed nature of git just gets in the way.
+It might also be used for a monorepo, in which the source code for multiple products is stored in the same repository.
+Antora can discover the documentation wherever it starts within that structure.
+
+In this scenario, you'd again provide a single value for the `branches` key and use the `start_paths` key to tell Antora which directories in the branch to use as content roots.
+Only this time, the content roots will match different components (and possibly versions), not just versions of a single component.
+
+Here's an example of a repository layout that uses folders to store documentation components:
+
+----
+📒 repository
+  📂 product-a
+    📂 docs
+      📄 antora.yml
+  📂 product-b
+    📂 docs
+      📄 antora.yml
+  📂 product-c
+    📂 docs
+      📄 antora.yml
+----
+
+Naturally, the repository may have many other files and folders that do not pertain to the documentation.
+
+== Start path patterns
+
+[#exact-paths]
+=== Exact paths
+
+If you only have a couple of paths to register, you might find that using exact path patterns is suitable.
+
+.Exact start paths examples
+[source,yaml]
+----
+content:
+  sources:
+  - url: https://github.com/org/repo1 <1>
+    start_paths: docs
+  - url: https://github.com/org/repo2 <2>
+    start_paths: docs, more-docs
+  - url: https://github.com/org/repo3 <3>
+    start_paths: [docs, more-docs]
+  - url: https://github.com/org/repo4
+    start_paths:
+    - docs <4>
+    - more-docs
+----
+<1> A single path (which is equivalent to using `start_path`).
+<2> A comma-separated list; if necessary, you can enclose each value in single quotes.
+<3> An array on a single-line delimited by square brackets.
+<4> An array on multiple lines, each delimited by a leading `-`.
+
+=== Path globbing
+
+Along with the methods described in <<exact-paths>>, you can use a selection of https://github.com/micromatch/picomatch#globbing-features[picomatch basic and advanced path globbing features^] to implement pattern matching.  
+A combination of wildcards, braces, and negated patterns are supported.
+
+Antora uses these glob patterns during the build process to locate exact paths from which read the content.
+
+==== Globbing restrictions
+
+The following Antora-specific restrictions apply to how Antora implements path globbing against the full range of supported basic and advanced globbing rules:
+
+* Wildcards in expressions only match directories, not files. 
+For example, an expression like `product-a/docs/*/index.adoc` is not supported by glob pattern matching. 
+* A path segment after a segment containing a wildcard is optional to simplify directory matching logic. 
+For example, `src/*/docs` would mean that [.path]_/src/product-a/docs_ could be missing but not result in any build errors.
+* Explicit or range brace expressions are not wildcard supported unless there are two entries in the pattern. 
+For example, you can not use patterns like `+docs/product-{a*}+`, however a pattern such as `+docs/product-{a*,b}+` is supported.
+* Double globstar patterns such as `docs/product-{**}` are not supported in any path globbing pattern.
+
+==== Wildcards
+
+Use wildcard matching to reduce the number of start path patterns you need to register in your component descriptor file.
+
+For example, if you have separate Antora components stored in one repository, you could list them all in a comma-separated list within `start_paths` key values.
+
+ start_paths: docs/product-a, docs/product-b, docs/product-c
+
+In the example above, you can use wildcard segment matching to reduce the number of start paths you need to register in your component descriptor file manually.
+
+ start_paths: docs/product-*
+
+As you add more components to your repository, wildcard matching automatically registers components as you add them, providing you keep the pattern consistent.
+
+==== Braces
+
+Brace expressions can specify an explicit list of items to expand ([.path]_docs/product-{a,b,c,f}_) or specify a range of items to expand ([.path]_docs/product-{a..f}_)
+
+When you use braces in a `start_paths` value, all entries within the braces must exist when expanded. 
+
+If you specify [.path]_docs/product-{a,b}_ as a `start_paths` key value the following paths must be present within your documentation component: 
+
+* [.path]_docs/product-a_ 
+* [.path]_docs/product-b_
+
+You can use a prefix in your file path before a brace expression so you can simplify what you check for in the expression:
+
+ start_paths: docs/v{1..9}
+
+You can also use wildcards in brace expressions to help expand values like multiple version branches in your directories:
+
+ start_paths: docs/product-v{1*,2*}
+
+This example gives you the following `start_paths` expanded paths:
+
+* docs/product-v1.1
+* docs/product-v1.2
+* docs/product-v1.2.1
+* docs/product-v2.0
+* docs/product-v2.1.1
+
+=== Negated globs
+
+Use negated patterns to exclude patterns previously matched.
+This approach is useful if you want to match all directories except for those that match a certain pattern.
+
+.Exact start paths examples
+[source,yaml]
+----
+content:
+  sources:
+  - url: https://github.com/org/repo1 <1>
+    start_paths:
+    - docs/user/*
+    - docs/dev/*
+    - !**/*-beta.* <2>
+----
+<1> This content source builds the internal documentation contained within `repo-1`.
+<2> Negated path globbing patterns must follow any path inclusions, and must be declared after locations that have already been matched.
+
+== Ignored directories
+
+Hidden directories (i.e., directories that begin with `.`) are ignored by default. 
+To include them in a `start_paths` path globbing pattern, use a `+.*+` in the pattern. 
+For example [.path]_docs/.*-{a,b}_ to include all hidden directories with the suffix of `a` or `b`.
+
+If a wildcarded segmented path contains a trailing directory segment, and no directory is matched, Antora ignores it. 
+
+For example, [.path]_docs/product-*/client_ would still be valid if [.path]_product-a_ contains a [.path]_client_ folder and [.path]_product-b_ does not.
+
+Another valid example would be [.path]_docs/product/*/client_ where the `+*+` represents different version directories (v1.0, v1.1, etc) of client documentation. 
+If the [.path]_client_ folder does not exist in one of the version directories, Antora ignores it from a validation perspective.
+
+If the final segment of a file path pattern contains an unmatched braced directory pattern, Antora treats it as optional from a validation perspective.
+
+For example, [.path]_docs/product-*/{client,b2b}_ will not fail vaildation if [.path]_docs/product-a/b2b_ is not present.
