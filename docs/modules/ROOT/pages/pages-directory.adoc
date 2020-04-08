@@ -28,7 +28,7 @@ A [.path]_pages_ family directory must contain at least one AsciiDoc source file
 [.term]*Pages* are source files stored in a [.path]_pages_ directory.
 Each page is automatically converted to HTML and published as an individual page in a site.
 xref:page:index.adoc[Valid pages] are marked up using AsciiDoc and saved with the _.adoc_ file extension.
-Antora uses the xref:page:create-standard-page.adoc[filename of each page file] as the page segment in its URL.
+Antora uses the xref:page:standard-page.adoc[filename of each page file] as the page segment in its URL.
 
 A page can be cross referenced by any other page, regardless of the component version or module it's assigned to, using the AsciiDoc xref macro and the page's xref:page:page-id.adoc[page ID].
 
