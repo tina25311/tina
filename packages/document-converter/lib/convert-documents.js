@@ -51,7 +51,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
       return page
     })
     .map((page) =>
-      page.asciidoc
+      page.mediaType === 'text/asciidoc'
         ? convertDocument(page, contentCatalog, mainAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig)
         : page
     )

@@ -153,9 +153,9 @@ describe('convertDocuments()', () => {
         relative: 'index.adoc',
         contents: heredoc`
         = Topic
-        
+
         == Heading
-        
+
         contents`,
         mediaType: 'text/asciidoc',
       },
@@ -209,6 +209,35 @@ describe('convertDocuments()', () => {
     </div>
     `)
     expect(pages[1].contents.toString()).to.equal('<p>This one should <em>not</em> be converted.</p>')
+  })
+
+  it('should only convert documents that have the text/asciidoc media type even if the asciidoc property set', () => {
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'index.adoc',
+        contents: '= Hello, AsciiDoc!\n\nThis one should be converted.',
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'other.html',
+        contents: '<h1>Hello, HTML!</h1>\n<p>This one should <em>not</em> be converted.</p>',
+        mediaType: 'text/html',
+        asciidoc: {
+          doctitle: 'Hello, HTML!',
+        },
+      },
+    ])
+    contentCatalog.getPages().find(({ src }) => src.relative === 'other.html').asciidoc = { doctitle: 'Hello, HTML!' }
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    expect(pages[0].contents.toString()).to.equal(heredoc`
+    <div class="paragraph">
+    <p>This one should be converted.</p>
+    </div>
+    `)
+    expect(pages[1].contents.toString()).to.equal(heredoc`
+    <h1>Hello, HTML!</h1>
+    <p>This one should <em>not</em> be converted.</p>
+    `)
   })
 
   it('should register aliases defined by page-aliases document attribute', () => {

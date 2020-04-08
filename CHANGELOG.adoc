@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *document-converter*: Always consult media type when looking for AsciiDoc pages in document converter (#607)
+
 == 2.3.0-beta.2 (2020-04-06)
 
 === Added
