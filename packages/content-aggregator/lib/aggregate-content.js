@@ -354,10 +354,10 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
     : readFilesFromGitTree(repo, ref.oid, startPath)
   )
     .then((files) => {
-      const componentVersion = loadComponentDescriptor(files)
+      const componentVersionBucket = loadComponentDescriptor(files)
       const origin = computeOrigin(originUrl, authStatus, ref, startPath, worktreePath, editUrl)
-      componentVersion.files = files.map((file) => assignFileProperties(file, origin))
-      return componentVersion
+      componentVersionBucket.files = files.map((file) => assignFileProperties(file, origin))
+      return componentVersionBucket
     })
     .catch((err) => {
       const refInfo = `ref: ${ref.fullname.replace(/^heads\//, '')}${worktreePath ? ' <worktree>' : ''}`
