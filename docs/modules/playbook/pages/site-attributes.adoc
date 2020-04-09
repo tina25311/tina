@@ -1,8 +1,12 @@
 = Assign Attributes to a Site
 
-Built-in and user-defined AsciiDoc attributes as well as `page-` attributes can be declared in a site's playbook file.
-These attributes are applied to all of a site's pages according to the attribute precedence rules.
-Attributes declared in the playbook are referred to as [.term]*site attributes*.
+You can apply AsciiDoc and `page-` attributes to all of the pages in a site by declaring them in its playbook file.
+
+== Site attributes
+
+Attributes that are declared in a playbook are referred to as [.term]*site attributes*.
+They can be xref:page:attributes.adoc[built-in and custom AsciiDoc and Antora page- attributes].
+These attributes are applied and available to all of a site's pages according to the attribute precedence rules.
 
 == Set and unset attributes in the playbook
 

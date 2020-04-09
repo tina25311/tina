@@ -3,13 +3,15 @@
 * xref:standard-page.adoc[Set Up a Standard Page]
 * xref:title-and-metadata.adoc[Add a Title and Metadata]
 * xref:attributes.adoc[Configure Attributes]
-** xref:asciidoc-attributes.adoc[Use Built-in and Custom AsciiDoc Attributes]
+** xref:asciidoc-attributes.adoc[AsciiDoc Attributes]
+** xref:antora-page-attributes.adoc[Antora page- Attributes]
 * xref:start-page.adoc[Create a Start Page]
 * xref:page-id.adoc[Page IDs and Cross References]
 ** xref:module-and-page-xrefs.adoc[Xref Pages in a Component Version]
 ** xref:version-and-component-xrefs.adoc[Xref Pages in Other Components and Versions]
 //Rename, Move, and Delete Pages
 * xref:page-aliases.adoc[Set Up URL Redirects with page-aliases]
+* xref:page-layout.adoc[Assign UI Templates with page-layout]
 
 .Create & Manage Resources
 * xref:resource-id.adoc[Resources and Resource IDs]
