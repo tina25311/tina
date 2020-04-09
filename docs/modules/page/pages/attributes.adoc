@@ -12,7 +12,7 @@ Built-in xref:asciidoc-attributes.adoc[AsciiDoc attributes] are reserved attribu
 Many built-in attributes also have a restricted set of accepted values.
 These attributes usually do two things; they toggle a behavior on or off, and they change the generated output by accepting an alternate value or replacement content.
 
-Antora provides a few xref:antora-page-attributes.adoc[additional built-in attributes].
+Antora provides a few xref:environment-and-page-attributes.adoc[additional built-in attributes].
 These attributes are prefixed with `page-`, such as `page-aliases` and `page-layout`, and are passed to the xref:antora-ui-default::templates.adoc#template-variables[UI model and templates].
 The intention of the `page-` prefix is to make it clear what attributes provide site information and what attributes contain information that's only specific or internal to processing AsciiDoc.
 
@@ -24,7 +24,7 @@ See the xref:ROOT:environment-and-page-attributes.adoc[Page and environment attr
 [.term]*Custom attributes* are user-defined attributes that typically provide replacement content.
 You can also define your own custom `page-` attributes to pass additional information about a page to the UI templates.
 Like built-in attributes, custom attributes are defined in the header of a page using an <<attribute-entry,attribute entry>>.
-See xref:asciidoc-attributes.adoc#custom-attribute[Define a custom AsciiDoc attribute] and xref:antora-page-attributes.adoc#custom-attribute[Define a custom page- attribute] to learn how to create custom attributes.
+See xref:asciidoc-attributes.adoc#custom-attribute[Define a custom AsciiDoc attribute] and xref:page-attributes.adoc#custom-attribute[Define a custom page attribute] to learn how to create custom attributes.
 
 [#attribute-entry]
 == What's an attribute entry?
