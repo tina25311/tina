@@ -1,11 +1,11 @@
 = Assign Attributes to a Component Version
 
-You can apply AsciiDoc attributes to all of the pages in a component version by declaring them in its [.path]_antora.yml_ file.
+You can apply AsciiDoc and `page-` attributes to all of the pages in a component version by declaring them in its [.path]_antora.yml_ file.
 
 == Component version attributes
 
-AsciiDoc document attributes that are defined in a component version descriptor are referred to as [.term]*component version attributes*.
-These document attributes can be built-in AsciiDoc attributes, user-defined AsciiDoc attributes, and user-defined or built-in `page-` prefixed attributes that Antora will pass to the reference UI.
+Attributes that are defined in a component version descriptor are referred to as [.term]*component version attributes*.
+They can be xref:page:attributes.adoc[built-in and custom AsciiDoc and Antora page- attributes].
 These attributes are applied and available to all of a component version's pages according to the attribute precedence rules.
 
 [#set-and-unset]
@@ -46,7 +46,7 @@ The values of user-defined attributes, such as `page-level`, and built-in `page-
 
 TIP: Antora declares `page-` attributes for most of the keys in the component version descriptor file.
 For instance, Antora automatically sets the built-in attribute `page-component-title` and assigns it the value specified by the `title` key.
-Check out the xref:environment-and-page-attributes.adoc#page-attributes[Built-in page- attributes] for a complete list of the `page-` attributes Antora automatically declares.
+Check out the xref:environment-and-page-attributes.adoc[Page and environment attribute reference] for a complete list of the `page-` attributes Antora automatically declares.
 
 [#assign-precedence]
 == Assign precedence to component version attributes

@@ -1,5 +1,6 @@
-= Use Built-in and Custom AsciiDoc Attributes
-:note-caption: OPS HINT
+= AsciiDoc Attributes
+:xrefstyle: short
+:listing-caption: Example
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual
 :url-attrs: {url-adoc-manual}/#attributes
 :url-builtin-attrs: {url-adoc-manual}/#builtin-attributes
@@ -11,51 +12,87 @@ On this page, you'll learn:
 * [x] How to unset AsciiDoc attributes.
 
 [#set-attribute]
-== Set and define a built-in attribute
+== Set a built-in attribute
 
-Let's turn on the attribute `sectanchors`.
+Let's activate the AsciiDoc attribute named `sectanchors`.
+The attribute is set by entering its name in an xref:attributes.adoc#attribute-entry[attribute entry] in the header of the page.
 
 .Set a built-in attribute
 [source]
 ----
 = Page Title
-:sectanchors:
+:sectanchors: <1>
 ----
+<1> The attribute is set in page header by directly preceding its name, `sectanchors`, with an opening colon (`:`) and directly following it with a closing colon (`:`).
 
-When turned _on_, `sectanchors` adds an anchor to the left of each xref:asciidoc:section-headings.adoc[section title].
-The anchor is rendered as the symbol `§`.
-The attribute is turned on, also known as _set_, by simply entering it into the header.
+When set, `sectanchors` adds an anchor to the left of each xref:asciidoc:section-headings.adoc[section title].
+`sectanchors` is a xref:attributes.adoc#boolean[boolean attribute], so its value is an _empty string_.
 
-== Unset a built-in attribute
+== Assign a value to a built-in attribute
 
-Built-in attributes that are on by default, like `table-captions`, can be _unset_ (turned _off_) with a leading or trailing `!` added to its name.
+In the next example, let's assign a value to a built-in AsciiDoc attribute.
+The attribute `xrefstyle` has three built-in values it can accept, `short`, `full`, and `basic`.
 
-.Unset a built-in attribute
 [source]
 ----
 = Page Title
-:sectanchors:
+:xrefstyle: short <1>
+----
+<1> Set `xrefstyle` in the page header and assign it the value `short`.
+Explicit values must be offset from the closing colon (`:`) by at least one space.
+
+When the `short` value is assigned to `xrefstyle`, any in-page references to blocks with anchors will display the blocks`' label and number, e.g., _Listing 1_, if no link text is specified in the reference.
+
+include::ROOT:partial$dont-use-these-attributes.adoc[]
+
+[#custom-attribute]
+== Define a custom attribute
+
+Custom attributes are often used to promote frequently used text and URLs to the top of a page.
+They're then referenced throughout the page by simply entering their name (instead of repeatedly typing the text or URLs).
+Before they can be referenced, custom attributes must have a user-defined name and be assigned a value.
+
+The attribute's name must:
+
+* be at least one character long,
+* begin with a word character (A-Z, a-z, 0-9, or _), and
+* only contain word characters and hyphens.
+
+The name cannot contain dots (`.`) or blank spaces.
+
+Although uppercase characters are permitted in an attribute name, the name is converted to lowercase before being stored.
+A best practice is to only use lowercase letters in the name and avoid starting the name with a number.
+
+Attribute values can:
+
+* be any inline content, and
+* contain line breaks, but only if an explicit line continuation (`+`) is used.
+
+In <<ex-custom>>, a custom attribute's name and value are defined using an xref:attributes.adoc#attribute-entry[attribute entry].
+
+[#ex-custom]
+.Define a custom attribute using an attribute entry
+[source]
+----
+= Page Title
+:url-repo: https://gitlab.com/antora/demo/docs-site
+----
+
+Now, you can reference the attribute wherever needed throughout the page by entering its name inside a set of curly braces (`+{attribute-name}+`).
+You can see another example of a custom attribute being used to replace a complex URL in xref:asciidoc:external-urls.adoc#create-page-attribute[Create an attribute for a URL].
+
+== Unset an attribute
+
+Built-in and custom attributes can be [.term]*unset*, that is, turned off, with a leading or trailing bang symbol (`!`) added to its name in an attribute entry.
+
+[source]
+----
+= Page Title
+:!sectanchors:
 :table-caption!:
 ----
 
-== Change a built-in value
-
-Let's look at an example of a built-in attribute that has a default value that we want to replace with a custom value.
-
-The label on a xref:asciidoc:admonitions.adoc[Note admonition] is controlled by the attribute `note-caption`.
-This attribute is set (on) by default and has an implicit value of `NOTE`.
-Let's change the value to "`OPS HINT`".
-
-.Change a built-in page attribute value
-[source]
-----
-= Page Title
-:note-caption: OPS HINT
-----
-
-Now, when we create a Note admonition, its label is displayed as OPS HINT.
-
-NOTE: This is an Ops Hint.
+Once unset, an attribute's behavior and value are no longer available to the page.
 
 == Learn more
 

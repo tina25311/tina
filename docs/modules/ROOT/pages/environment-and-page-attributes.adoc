@@ -1,11 +1,16 @@
-= Built-in Page and Environment Attribute Reference
+= Page and Environment Attribute Reference
 :page-aliases: page:page-and-site-attributes.adoc
-//These attributes are helpful when passing data from a page to the site UI and integrations, such as a search service.
 
-Antora provides built-in `page-`, environment, and generator attributes.
+Antora automatically sets the following `page-` and environment attributes at runtime.
+Antora uses these attributes to pass data from a page to any pipeline extensions, integrations, and the site UI.
+*These attributes should be treated as read-only!*
+
+NOTE: There are a few `page-` attributes, such as `page-aliases`, that accept user-defined values.
+You can also create custom `page-` attributes using an attribute entry.
+See the xref:page:antora-page-attributes.adoc[Antora page- attributes] to learn more.
 
 [#page-attributes]
-== Built-in page- attributes
+== Read-only page- attributes
 
 Antora automatically sets the following attributes for each page when it runs:
 
@@ -87,10 +92,10 @@ The attribute references in the above example output the data (shown below) for 
 This page belongs to the *{page-module}* module in the *{page-component-title} {page-component-version}* component version.
 ====
 
-Attributes that are prefixed with `page-` are also available to the Antora pipeline and xref:antora-ui-default::templates.adoc#template-variables[UI model] during site generation.
+Attributes that are prefixed with `page-` are available to the Antora pipeline and xref:antora-ui-default::templates.adoc#template-variables[UI model] during site generation.
 
 [#environment-attributes]
-== Built-in environment and generator attributes
+== Read-only environment attributes
 
 There may be times when your page needs to know that it's being processed by Antora.
 Antora sets these attributes for each page.

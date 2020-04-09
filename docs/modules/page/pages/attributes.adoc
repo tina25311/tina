@@ -1,18 +1,75 @@
 = Configure Attributes
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-attrs: {url-adoc-manual}/#attributes
 
-Antora and AsciiDoc provide built-in attributes that activate and control syntax output behavior and styles.
+Antora and AsciiDoc provide built-in attributes that control output behavior and styles.
+You can also create and define your own attributes.
 
-[#page-attrs]
-== Built-in AsciiDoc attributes
+== Built-in attributes
 
-Built-in AsciiDoc attributes are reserved attributes that have special, pre-defined behavior.
+[.term]*Built-in attributes* add, configure, and control common features in a page.
+Many built-in attributes only take effect when defined in the page header with an <<attribute-entry,attribute entry>>.
+
+Built-in xref:asciidoc-attributes.adoc[AsciiDoc attributes] are reserved attributes that have special, pre-defined behavior.
 Many built-in attributes also have a restricted set of accepted values.
-These attributes usually do two things; they toggle a behavior on or off (boolean), and they change the generated output by accepting an alternate value or replacement content (variable).
+These attributes usually do two things; they toggle a behavior on or off, and they change the generated output by accepting an alternate value or replacement content.
 
-TIP: If you're not familiar with AsciiDoc attribute restrictions or operations precedence, review the {url-attrs}[attributes section of the Asciidoctor manual^].
+Antora provides a few xref:antora-page-attributes.adoc[additional built-in attributes].
+These attributes are prefixed with `page-`, such as `page-aliases` and `page-layout`, and are passed to the xref:antora-ui-default::templates.adoc#template-variables[UI model and templates].
+The intention of the `page-` prefix is to make it clear what attributes provide site information and what attributes contain information that's only specific or internal to processing AsciiDoc.
 
-//== Custom AsciiDoc attributes
+TIP: Antora automatically sets a number of read-only `page-` attributes at runtime that it derives from the site's playbook and the component version descriptor files.
+See the xref:ROOT:environment-and-page-attributes.adoc[Page and environment attribute reference] to learn more.
 
-//== Built-in and custom Antora page attributes
+== Custom attributes
+
+[.term]*Custom attributes* are user-defined attributes that typically provide replacement content.
+You can also define your own custom `page-` attributes to pass additional information about a page to the UI templates.
+Like built-in attributes, custom attributes are defined in the header of a page using an <<attribute-entry,attribute entry>>.
+See xref:asciidoc-attributes.adoc#custom-attribute[Define a custom AsciiDoc attribute] and xref:antora-page-attributes.adoc#custom-attribute[Define a custom page- attribute] to learn how to create custom attributes.
+
+[#attribute-entry]
+== What's an attribute entry?
+
+Before you can use a built-in or custom page attribute, you have to declare it.
+An [.term]*attribute entry* is the primary mechanism for activating the attribute and assigning it a value in a page.
+It's like a global variable assignment for AsciiDoc.
+
+An attribute entry consists of two parts: a *name* and a *value*.
+Each attribute entry must be entered on its own line in a page header.
+An attribute entry starts with an opening colon (`:`), directly followed by the attribute's name, and then a closing colon (`:`).
+This activates, or [.term]*sets*, the attribute so you can use it in your page.
+
+[source]
+----
+= Page Title
+:name-of-an-attribute: <1>
+----
+<1> The attribute's name is directly preceded with a opening colon (`:`) and directly followed by a closing colon (`:`).
+
+In many cases, you explicitly assign a value to an attribute by entering information after its name in the attribute entry.
+The value must be offset from the closing colon (`:`) by at least one space.
+
+[source]
+----
+= Page Title
+:name-of-an-attribute: value of the attribute <1>
+----
+<1> An explicitly assigned value is offset from the closing colon (`:`) by at least one blank space.
+At the end of the value, press kbd:[Enter].
+
+[[boolean]]
+Some built-in AsciiDoc attributes don't require a value to be explicitly assigned in an attribute entry because they're a boolean attribute or have a default value.
+
+[source]
+----
+= Page Title
+:name-of-an-attribute: <1>
+----
+<1> If you don't want to explicitly assign a value to the attribute, press kbd:[Enter] after the closing colon (`:`).
+
+The values of built-in boolean attributes are always blank because their only accepted value is an _empty string_.
+Other built-in attributes may have a default value.
+If you set a built-in attribute and leave its value blank, Antora assigns the default value (if it has one) to the attribute at processing time.
+
+TIP: AsciiDoc and `page-` attributes can also be xref:ROOT:component-attributes.adoc[scoped to a component version] or xref:playbook:site-attributes.adoc[scoped to a whole site].
+
+include::ROOT:partial$dont-use-these-attributes.adoc[]
