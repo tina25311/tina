@@ -64,11 +64,11 @@ runtime: # <25>
 <12> <<sources-start-path-key,Content source start path key>>
 <13> <<asciidoc-category,AsciiDoc category>>
 <14> <<asciidoc-attributes-key,AsciiDoc attributes key>>
-<15> <<ui-category,UI category>>
-<16> <<ui-bundle-key,UI bundle URL key>>
-<17> <<ui-start-path-key,Bundle start path key>>
-<18> <<ui-default-layout-key,UI default layout key>>
-<19> <<ui-output-dir-key,UI output directory key>>
+<15> UI category
+<16> UI bundle URL key
+<17> Bundle start path key
+<18> Default layout key
+<19> UI output directory key
 <20> <<output-category,Output category>>
 <21> <<output-clean-key,Clean output directory key>>
 <22> <<output-dir-key,Output directory key>>
@@ -213,61 +213,6 @@ Learn more:
 
 * xref:configure-asciidoc.adoc#global-extensions[Register global Asciidoctor extensions]
 * xref:configure-asciidoc.adoc#scoped-extensions[Register scoped Asciidoctor extensions]
-
-[#ui-category]
-== UI category
-
-The `ui` category contains keys that specify the location of the UI bundle and how it should be processed.
-
-[#ui-bundle-key]
-=== url
-
-The `url` key under the `bundle` subcategory accepts a URL or local filesystem path to a UI bundle ZIP archive.
-The filesystem path can be absolute or relative.
-
-Learn more:
-
-* xref:configure-ui.adoc#remote-bundle[Fetch and load a remote UI bundle]
-* xref:configure-ui.adoc#local-bundle[Load a local UI bundle]
-
-[#ui-snapshot-key]
-=== snapshot
-
-The `snapshot` key under the `bundle` subcategory indicates whether the URL points to a snapshot (i.e., it doesn't always point to the same artifact).
-By default, Antora assumes that URL is permanent.
-
-Learn more:
-
-* xref:configure-ui.adoc#snapshot[Mark a URL as a snapshot]
-
-[#ui-start-path-key]
-=== start_path
-
-The `start_path` key under the `bundle` category is the path inside the bundle from which UI files should be selected.
-When no value is specified, it defaults to the root of the bundle.
-
-Learn more:
-
-* xref:configure-ui.adoc#start-path[Specify a start path for the UI files]
-
-[#ui-default-layout-key]
-=== default_layout
-
-The `default_layout` key applies a layout template to pages that don't specify a page layout.
-
-Learn more:
-
-* xref:configure-ui.adoc#default-layout[Specify a default page layout template in the playbook]
-
-[#ui-output-dir-key]
-=== output_dir
-
-This key specifies the output directory path where the UI files are written in the published site.
-When a UI `output_dir` isn't specified, the files are published to the [.path]_++_++_ directory relative to the root of the published site.
-
-Learn more:
-
-* xref:configure-ui.adoc#output-dir[Specify an output directory for the UI files]
 
 [#output-category]
 == Output category

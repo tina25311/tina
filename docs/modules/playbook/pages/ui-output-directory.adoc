@@ -1,0 +1,45 @@
+= UI Output Directory
+
+== Default UI output directory
+
+The UI files are published to a directory labeled with a single [.path]_++_++_ (underscore) located relative to the site's output directory.
+For instance, when the site is published to the xref:configure-output.adoc#output-dir[default destination directory] ([.path]_build/site_), and no UI `output_dir` is specified, the UI files are written to [.path]_++build/site/_++_.
+
+[#output-dir]
+== Use an alternate output directory
+
+The output directory key (`output_dir`) allows you to specify an alternate directory where Antora should publish the UI files.
+The path is relative to the root of the published site.
+
+.Relative UI output path
+[source,yaml]
+----
+ui:
+  bundle:
+    url: /home/user/projects/docs-ui/build/ui-bundle-with-themes.zip
+    start_path: dark
+  output_dir: _/dark
+----
+
+In this example, the site will be written to the default destination directory, therefore, the UI files will be published [.path]_++build/site/_/dark++_.
+
+Antora will automatically reconfigure all references to UI files, regardless of what value you use.
+This is thanks in part to the use of the `+{{uiRootPath}}+` placeholder in the UI templates.
+
+In the next example, the site's output directory (`dir`) has been specified in addition to the UI output directory.
+
+.Custom site and UI output directories
+[source,yaml]
+----
+ui:
+  bundle:
+    url: /home/user/projects/docs-ui/build/ui-bundle-with-themes.zip
+    start_path: dark
+  output_dir: _/dark
+output:
+  dir: ./public
+----
+
+The UI files will be published to [.path]_++public/_/dark++_.
+
+In general, we recommend that you stick with the default output directory unless you have a good reason to change it.
