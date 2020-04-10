@@ -199,7 +199,7 @@ These document attributes are made available to each page in the site.
 
 Learn more:
 
-* xref:configure-asciidoc.adoc#define-global-document-attributes[Define global document attributes]
+* xref:configure-asciidoc.adoc#attrs[Define global document attributes]
 * xref:configure-asciidoc.adoc#default-attribute-values[Allow pages to override certain global document attributes]
 
 [#asciidoc-extensions-key]

@@ -51,10 +51,10 @@ _Required_; _Reserved_
 +
 Except for [.path]_antora.yml_, all of the files in a component reside in this directory.
 
-xref:modules.adoc#root[modules/ROOT] ::
+xref:modules.adoc#root-dir[modules/ROOT] ::
 _Recommended_; _Reserved_
 +
-Directory that contains the xref:modules.adoc#root[ROOT module].
+Directory that contains the xref:modules.adoc#root-dir[ROOT module].
 This special directory does not appear in the output path.
 Instead, it becomes the parent folder of any additional, named modules that you create in a component.
 The directory name must be written in all uppercase letters.
