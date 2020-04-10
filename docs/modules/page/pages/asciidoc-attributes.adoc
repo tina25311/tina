@@ -79,7 +79,7 @@ In <<ex-custom>>, a custom attribute's name and value are defined using an xref:
 ----
 
 Now, you can reference the attribute wherever needed throughout the page by entering its name inside a set of curly braces (`+{attribute-name}+`).
-You can see another example of a custom attribute being used to replace a complex URL in xref:asciidoc:external-urls.adoc#create-page-attribute[Create an attribute for a URL].
+You can see another example of a custom attribute being used to replace a complex URL in xref:asciidoc:external-urls.adoc#create-custom-attribute[Create an attribute for a URL].
 
 == Unset an attribute
 
