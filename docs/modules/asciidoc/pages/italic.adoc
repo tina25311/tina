@@ -63,7 +63,7 @@ Italic syntax is always the innermost formatting set.
 == Site styles
 
 How italic text appears on your site depends on the fonts loaded by your UI and any CSS styles applied to the `<em>` HTML tag.
-You can learn more about customizing xref:antora-ui-default::inline-text-styles.adoc#italics[how italic text appears in your site] in the UI documentation.
+You can learn more about customizing xref:antora-ui-default::inline-text-styles.adoc#italic[how italic text appears in your site] in the UI documentation.
 
 [discrete]
 === Asciidoctor resources
