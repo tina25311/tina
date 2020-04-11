@@ -69,14 +69,14 @@ runtime: # <25>
 <17> Bundle start path key
 <18> Default layout key
 <19> UI output directory key
-<20> <<output-category,Output category>>
-<21> <<output-clean-key,Clean output directory key>>
-<22> <<output-dir-key,Output directory key>>
-<23> <<output-destinations-key,Output destinations key>>
-<24> <<output-provider-key,Output provider key>>
-<25> <<runtime-category,Runtime category>>
-<26> <<cache-dir-key,Cache directory key>>
-<27> <<fetch-key,Fetch cache key>>
+<20> Output category
+<21> Clean output directory key
+<22> Output directory key
+<23> Output destinations key
+<24> Output provider key
+<25> Runtime category
+<26> Cache directory key
+<27> Fetch key
 
 Let's explore the purpose and usage of each key and its values.
 
@@ -213,112 +213,6 @@ Learn more:
 
 * xref:configure-asciidoc.adoc#global-extensions[Register global Asciidoctor extensions]
 * xref:configure-asciidoc.adoc#scoped-extensions[Register scoped Asciidoctor extensions]
-
-[#output-category]
-== Output category
-
-The `output` category contains common output settings and a list of destination specifications.
-The destination specifications tell Antora which provider(s) to use to publish the site (e.g., fs, archive, ssh, s3) and where those files should go.
-The provider, in turn, determines which transport protocol to use (local, SSH, HTTP, etc.) and manages the low-level details of publication.
-
-The output key is not required.
-
-[#output-clean-key]
-=== clean
-
-The clean key is a boolean.
-By default, it's set to false (turned off).
-When true (turned on), it will remove the destination path recursively before generating the site.
-This key only applies to the filesystem providers currently.
-
-WARNING: Use this key with great care.
-For example, if you set `dir` to your computer's home directory and `clean` to true, you will delete ALL of the folders and files in your home directory.
-
-[#output-dir-key]
-=== dir
-
-The output `dir` key specifies the directory to publish the generated site files.
-The key accepts a relative or absolute filesystem path.
-
-If the destinations are unspecified, and `dir` is not set, the value defaults to [.path]_build/site_.
-
-IMPORTANT: The dir key overrides the path key of the first `fs` provider in the list of destinations.
-This allows the output directory to be overridden from the CLI using the `--to-dir=<dir>` option.
-
-Learn more:
-
-* xref:configure-output.adoc#output-dir[Specify an output directory]
-
-[#output-destinations-key]
-=== destinations
-
-The destinations key contains a list of specifications that determine how, by which provider, and where the site will be published.
-A site can be published to multiple destinations.
-
-When no destinations are specified, Antora publishes the site to the local filesystem at the location specified by the dir key or, if the dir key is not specified, the default output directory location ([.path]_build/site_).
-
-To disable publishing entirely, including the default output, set destinations to an empty array (`[]`).
-
-[#output-provider-key]
-==== provider
-
-The provider key specifies the transport protocol Antora should use for publishing the generated site.
-Antora has two built-in providers, `fs` (filesytem) and `archive` (ZIP archive).
-This value is also an extension point that can be used to delegate to a custom provider, such as SSH, S3, etc.
-The default provider is `fs`.
-
-Learn more:
-
-* xref:configure-output.adoc#archive-path[Publish the site as a ZIP file]
-* xref:configure-output.adoc#multiple-destinations[Specify multiple publishing destinations]
-
-==== path
-
-The path key designates the target location where the output file(s) are to be written.
-The value gets interpreted appropriately by each provider.
-For example, the `fs` provider treats this value as a target directory, while the `archive` provider treats it as the target file.
-
-If the path key is not specified, it typically gets populated with a default value.
-The default `fs` path is [.path]_build/site_, and the default `archive` path is [.path]_build/site.zip_.
-The key accepts a relative or absolute filesystem path.
-
-IMPORTANT: If you set the dir key in the playbook or via the CLI, its value will override the `path` value for the first `fs` provider specified in the destinations key.
-
-Learn more:
-
-* xref:configure-output.adoc#archive-path[Specify ZIP file name]
-* xref:configure-output.adoc#multiple-destinations[Specify relative and absolute provider publishing destinations]
-
-==== clean
-
-The clean key can be specified directly on any `fs` provider.
-When specified at this location (instead of directly under output), it only cleans the output location specified by this destination.
-
-[#runtime-category]
-== Runtime category
-
-The `runtime` category contains keys that manage the console output, resource update behavior, and cache location.
-
-[#cache-dir-key]
-=== cache_dir
-
-The `cache_dir` key specifies the directory where Antora will cache any remote git repositories and UI bundles.
-The key accepts a relative or absolute filesystem path.
-If `cache_dir` isn't set, the repositories and UI bundle are saved to the [.path]_antora_ folder under the operating system cache directory for the current user.
-
-Learn more:
-
-* xref:configure-runtime.adoc#default-cache[Locate default cache directory]
-* xref:configure-runtime.adoc#cache-dir[Override default cache location]
-
-[#fetch-key]
-=== fetch
-
-If you want Antora to refresh the files in the cache, you need to set the `fetch` key under the `runtime` category to true.
-
-Learn more:
-
-* xref:configure-runtime.adoc#fetch[Fetch updates]
 
 ////
 == antora.yml
