@@ -9,6 +9,8 @@ const http = require('http')
 const loadUi = require('@antora/ui-loader')
 const os = require('os')
 const ospath = require('path')
+const vfs = require('vinyl-fs')
+const zip = require('gulp-vinyl-zip')
 
 const { UI_CACHE_FOLDER } = require('@antora/ui-loader/lib/constants')
 const CACHE_DIR = getCacheDir('antora-test')
@@ -40,6 +42,15 @@ describe('loadUi()', () => {
 
   const prefixPath = (prefix, path_) => [prefix, path_].join(ospath.sep)
 
+  const zipDir = (dir) =>
+    new Promise((resolve, reject) =>
+      vfs
+        .src('**/*', { base: dir, cwd: dir })
+        .pipe(zip.dest(dir + '.zip'))
+        .on('error', reject)
+        .on('end', resolve)
+    )
+
   const testAll = (archive, testBlock) => {
     const makeTest = (url) => testBlock({ ui: { bundle: { url } } })
     it('with dot-relative bundle path', () =>
@@ -57,6 +68,18 @@ describe('loadUi()', () => {
       process.chdir(WORK_DIR)
     }
   }
+
+  before(() =>
+    fs
+      .readdir(FIXTURES_DIR)
+      .then((entries) =>
+        Promise.all(
+          entries
+            .filter((entry) => ~entry.indexOf('-ui-bundle') && entry.indexOf('.') < 0)
+            .map((it) => zipDir(ospath.join(FIXTURES_DIR, it)))
+        )
+      )
+  )
 
   beforeEach(() => {
     clean()
@@ -76,6 +99,16 @@ describe('loadUi()', () => {
       })
       .listen(1337)
   })
+
+  after(() =>
+    fs
+      .readdir(FIXTURES_DIR)
+      .then((entries) =>
+        Promise.all(
+          entries.filter((entry) => entry.endsWith('.zip')).map((it) => fs.unlink(ospath.join(FIXTURES_DIR, it)))
+        )
+      )
+  )
 
   afterEach(() => {
     clean(true)
