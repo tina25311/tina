@@ -10,7 +10,7 @@ const loadUi = require('@antora/ui-loader')
 const os = require('os')
 const ospath = require('path')
 const vfs = require('vinyl-fs')
-const vzip = require('gulp-vinyl-zip')
+const zip = require('gulp-vinyl-zip')
 
 const { UI_CACHE_FOLDER } = require('@antora/ui-loader/lib/constants')
 const CACHE_DIR = getCacheDir('antora-test')
@@ -36,25 +36,20 @@ describe('loadUi()', () => {
     'js/01-one.js',
     'js/02-two.js',
   ]
-  const bundleDirs = [
-    'the-ui-bundle',
-    'the-ui-bundle-with-output-dir',
-    'the-ui-bundle-with-start-path',
-    'the-ui-bundle-with-static-files',
-    'the-ui-bundle-with-static-files-single-glob',
-  ]
 
   let server
   let serverRequests
 
   const prefixPath = (prefix, path_) => [prefix, path_].join(ospath.sep)
 
-  const zip = (directory, target) => new Promise((resolve, reject) => {
-    vfs.src(`${ospath.join(FIXTURES_DIR, directory)}/**/*`)
-      .pipe(vzip.dest(ospath.join(FIXTURES_DIR, target)))
-      .on('error', reject)
-      .on('end', resolve)
-  })
+  const zipDir = (dir) =>
+    new Promise((resolve, reject) =>
+      vfs
+        .src('**/*', { base: dir, cwd: dir })
+        .pipe(zip.dest(dir + '.zip'))
+        .on('error', reject)
+        .on('end', resolve)
+    )
 
   const testAll = (archive, testBlock) => {
     const makeTest = (url) => testBlock({ ui: { bundle: { url } } })
@@ -74,17 +69,17 @@ describe('loadUi()', () => {
     }
   }
 
-  before(async () => {
-    for (const bundleDir of bundleDirs) {
-      await zip(bundleDir, `${bundleDir}.zip`)
-    }
-  })
-
-  after(() => {
-    for (const bundleDir of bundleDirs) {
-      fs.unlinkSync(ospath.join(FIXTURES_DIR, `${bundleDir}.zip`))
-    }
-  })
+  before(() =>
+    fs
+      .readdir(FIXTURES_DIR)
+      .then((entries) =>
+        Promise.all(
+          entries
+            .filter((entry) => ~entry.indexOf('-ui-bundle') && entry.indexOf('.') < 0)
+            .map((it) => zipDir(ospath.join(FIXTURES_DIR, it)))
+        )
+      )
+  )
 
   beforeEach(() => {
     clean()
@@ -104,6 +99,16 @@ describe('loadUi()', () => {
       })
       .listen(1337)
   })
+
+  after(() =>
+    fs
+      .readdir(FIXTURES_DIR)
+      .then((entries) =>
+        Promise.all(
+          entries.filter((entry) => entry.endsWith('.zip')).map((it) => fs.unlink(ospath.join(FIXTURES_DIR, it)))
+        )
+      )
+  )
 
   afterEach(() => {
     clean(true)
