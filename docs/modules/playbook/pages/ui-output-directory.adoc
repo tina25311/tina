@@ -1,9 +1,10 @@
 = UI Output Directory
 
+[#default]
 == Default UI output directory
 
-The UI files are published to a directory labeled with a single [.path]_++_++_ (underscore) located relative to the site's output directory.
-For instance, when the site is published to the xref:configure-output.adoc#output-dir[default destination directory] ([.path]_build/site_), and no UI `output_dir` is specified, the UI files are written to [.path]_++build/site/_++_.
+The UI files are published to a directory labeled with a single underscore, [.path]_++_++_ , located relative to the site's xref:output-directory.adoc[output directory].
+For instance, when the site is published to the default site output directory ([.path]_build/site_), and no UI `output_dir` is specified, the UI files are written to [.path]_++build/site/_++_.
 
 [#output-dir]
 == Use an alternate output directory
@@ -23,10 +24,10 @@ ui:
 
 In this example, the site will be written to the default destination directory, therefore, the UI files will be published [.path]_++build/site/_/dark++_.
 
-Antora will automatically reconfigure all references to UI files, regardless of what value you use.
+Antora will automatically reconfigure all references to the UI files, regardless of what value you use.
 This is thanks in part to the use of the `+{{uiRootPath}}+` placeholder in the UI templates.
 
-In the next example, the site's output directory (`dir`) has been specified in addition to the UI output directory.
+In the next example, the site's output directory (`dir`) is specified in addition to the UI output directory.
 
 .Custom site and UI output directories
 [source,yaml]
@@ -41,5 +42,3 @@ output:
 ----
 
 The UI files will be published to [.path]_++public/_/dark++_.
-
-In general, we recommend that you stick with the default output directory unless you have a good reason to change it.

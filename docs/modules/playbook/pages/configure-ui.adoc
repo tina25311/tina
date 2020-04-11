@@ -1,7 +1,11 @@
 = UI Keys
 
-The keys described below are configured under the `ui` key in a playbook.
-These keys define the location of the UI bundle and control how it's processed.
+The playbook keys configured under `ui` define the location of the UI bundle and control how it's processed.
+
+[#ui-key]
+== ui key
+
+The `ui` key specifies the UI bundle's location, state, default page template name, and output directory.
 
 .antora-playbook.yml
 [source,yaml]
@@ -22,59 +26,37 @@ ui: # <1>
 <6> Optional `default_layout` key
 <7> Optional `output_dir` key
 
-[#ui-category]
-== ui and bundle keys
+The `ui`, `bundle`, and `url` keys are required.
+The other keys are optional; Antora will use their default values if they're not specified.
 
-The `ui` key contains keys that specify the location of the UI bundle and how it should be processed.
+[#ui-reference]
+== Available ui keys
 
-[#ui-bundle-key]
-== url key
+[cols="3,6,1"]
+|===
+|UI Keys |Description |Required
 
-The `url` key under the `bundle` subcategory accepts a URL or local filesystem path to a UI bundle ZIP archive.
-The filesystem path can be absolute or relative.
+|`bundle.url`
+|Accepts a xref:ui-url.adoc#remote-bundle[URL] or xref:ui-url.adoc#local-bundle[filesystem path] to a UI bundle archive.
+|Yes
 
-Learn more:
+|`bundle.snapshot`
+|Indicates whether the xref:ui-url.adoc#snapshot[URL points to a snapshot].
+|No
 
-* xref:ui-bundle-url.adoc#remote-bundle[Fetch and load a remote UI bundle]
-* xref:ui-bundle-url.adoc#local-bundle[Load a local UI bundle]
+|`bundle.start_path`
+|Accepts a xref:ui-url.adoc#start-path[path inside the UI bundle] from which files should be selected.
+|No
 
-[#ui-snapshot-key]
-== snapshot key
+|`default_layout`
+|Applies a xref:ui-default-layout.adoc[layout template] to pages that don't specify a page layout.
+|No
 
-The `snapshot` key under the `bundle` subcategory indicates whether the URL points to a snapshot (i.e., it doesn't always point to the same artifact).
-By default, Antora assumes that URL is permanent.
+|`output_dir`
+|Accepts a filesystem path to the xref:ui-output-directory.adoc[output directory] where Antora writes the published site's UI files.
+|No
+|===
 
-Learn more:
 
-* xref:ui-bundle-url.adoc#snapshot[Mark a URL as a snapshot]
-
-[#ui-start-path-key]
-== start_path key
-
-The `start_path` key under the `bundle` category is the path inside the bundle from which UI files should be selected.
-When no value is specified, it defaults to the root of the bundle.
-
-Learn more:
-
-* xref:ui-bundle-url.adoc#start-path[Specify a start path for the UI files]
-
-[#ui-default-layout-key]
-== default_layout key
-
-The `default_layout` key applies a layout template to pages that don't specify a page layout.
-
-Learn more:
-
-* xref:ui-default-page-layout.adoc[Specify a default page layout template in the playbook]
-
-[#ui-output-dir-key]
-== output_dir key
-
-This key specifies the output directory path where the UI files are written in the published site.
-When a UI `output_dir` isn't specified, the files are published to the [.path]_++_++_ directory relative to the root of the published site.
-
-Learn more:
-
-* xref:ui-output-directory.adoc[Specify an output directory for the UI files]
-
+//supplemental_files: ./supplemental-ui
 //supplemental_files: Supplemental file list or a directory of files to append to the UI bundle.
