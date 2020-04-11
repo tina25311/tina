@@ -70,7 +70,11 @@ describe('cli', function () {
 
   beforeEach(() => {
     fs.ensureDirSync(WORK_DIR)
-    fs.removeSync(playbookFile)
+    try {
+      fs.unlinkSync(playbookFile)
+    } catch (ioe) {
+      if (ioe.code !== 'ENOENT') throw ioe
+    }
     // NOTE keep the default cache folder between tests
     removeSyncForce(ospath.join(WORK_DIR, destDir.split('/')[0]))
     removeSyncForce(ospath.join(WORK_DIR, '.antora-cache-override'))
@@ -88,7 +92,7 @@ describe('cli', function () {
     removeSyncForce(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
       removeSyncForce(ospath.join(WORK_DIR, destDir.split('/')[0]))
-      fs.removeSync(playbookFile)
+      fs.unlinkSync(playbookFile)
     } else {
       removeSyncForce(WORK_DIR)
     }

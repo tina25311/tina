@@ -462,7 +462,7 @@ describe('publishSite()', () => {
         .to.be.a.file()
         .with.contents('published 6 files for The Site')
     } finally {
-      fs.removeSync(absProviderPath)
+      fs.unlinkSync(absProviderPath)
     }
   })
 
