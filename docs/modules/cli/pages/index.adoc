@@ -56,11 +56,11 @@ When executed from the CLI, the options that are mapped to xref:playbook:index.a
 
 [#cli-options]
 .CLI Options
-[cols="3,5,2,2"]
+[cols="3a,5,2,2"]
 |===
 |Option |Purpose |Format |Default
 
-|--attribute <attribute>
+|`--attribute <attribute>`
 |A global document attribute to set on each AsciiDoc document.
 May be specified multiple times.
 The value must adhere to the form `name` or `name=value`.
@@ -68,103 +68,105 @@ Append `@` to the value to allow it to be overridden in a document.
 |String, String=String
 |not set
 
-|--cache-dir <dir>
-|Directory where cached files are stored (git repositories clones and the UI bundle).
-Overrides the xref:playbook:playbook-schema.adoc#cache-dir-key[cache dir value] specified in the playbook.
+|[[cache-dir]]`--cache-dir <dir>`
+|Directory where remote content sources git repositories and UI bundles are cached.
+Overrides the xref:playbook:runtime-cache-directory.adoc#cache-dir-key[cache dir value] specified in a playbook.
 |String
-|[.path]_<user's cache>/antora_
+|[.path]_<user cache>/antora_
 
-|--clean
-|Remove the xref:playbook:playbook-schema.adoc#output-clean-key[output directory] before publishing the site.
+|[[clean]]`--clean`
+|Removes the output directory before generating the site.
+Overrides the xref:playbook:output-directory.adoc#clean-key[clean key] specified in a playbook.
 |Boolean
 |false
 
-|--generator
+|`--generator`
 |The site generator library (package name) or script (path) to use.
 Must export a function with the signature `generateSite(args, env)`.
 _Intended for advanced users comfortable with the inner workings of Antora.
 Effectively substitutes Antora's entire pipeline with a user-defined function._
 |String
-|@antora/site-generator-default
+|`@antora/site-generator-default`
 
-|--git-credentials-path
+|`--git-credentials-path`
 |An alternate path to a file that contains credentials for git matching the format used by `git-credential-store`.
 |String
 |not set
 
-|--google-analytics-key
+|`--google-analytics-key`
 |The API key for Google Analytics / Tag Manager.
 Setting this option implicitly enables the Google Analytics / Tag Manager embed code when using the default UI.
 |String
 |not set
 
-|--fetch
-|Download updates from remote resources (including content repositories and UI bundle).
+|[[fetch]]`--fetch`
+|Updates the cache by downloading updates from remote content sources git repositories and UI bundles (if xref:playbook:ui-url.adoc#snapshot[snapshot] is `true`).
+Overrides the xref:playbook:runtime-fetch.adoc[fetch key] specified in a playbook.
 |Boolean
 |false
 
-|--quiet
+|`--quiet`
 |Do not write any messages to stdout.
 |Boolean
 |false
 
-|--redirect-facility <facility>
+|[[redirect-facility]]`--redirect-facility <facility>`
 |Facility for handling URL redirects calculated from xref:page:page-aliases.adoc[page-aliases].
-The xref:playbook:configure-redirect-facility.adoc[supported facilities] are `disabled`, `netlify`, `nginx`, and `static`.
+The supported facilities are `disabled`, `netlify`, `nginx`, and `static`.
+Overrides the xref:playbook:configure-redirect-facility.adoc#redirect-facility-key[redirect_facility key] configured in a playbook.
 |String
 |`static`
 
-|-r, --require <name>
+|`-r`, `--require <name>`
 |Preload the specified library or script.
 May be specified multiple times.
 |String
 |not set
 
-|--silent
+|`--silent`
 |Suppress all messages, including warnings and errors.
 |Boolean
 |false
 
-|--stacktrace
+|`--stacktrace`
 |Print the stacktrace to the console if the application fails.
 |Boolean
 |false
 
-|--title <title>
+|`--title <title>`
 |Specify the title of the site.
 Overrides the xref:playbook:playbook-schema.adoc#site-title-key[site title value] specified in the playbook.
 |String
 |not set
 
-|--to-dir <dir>
-|Directory where the site is generated.
-Overrides the xref:playbook:playbook-schema.adoc#ui-output-dir-key[output dir value] specified in the playbook.
+|[[to-dir]]`--to-dir <dir>`
+|Directory where the site files are published.
+Overrides the xref:playbook:output-directory.adoc[output dir key] specified in a playbook.
 |String
 |[.path]_build/site_
 
-|--ui-bundle-url <bundle>
-|UI bundle URL.
-The URL can be a path on the local filesystem.
-Overrides the xref:playbook:playbook-schema.adoc#ui-bundle-key[ui bundle value] specified in the playbook.
+|[[ui-bundle]]`--ui-bundle-url <bundle>`
+|Specifies the URL or filesystem path to a UI bundle.
+Overrides the xref:playbook:ui-url.adoc[UI bundle url key] specified in a playbook.
 |String
 |not set
 
-|--url <url>
+|`--url <url>`
 |Base URL of the published site.
 The URL should not include a trailing slash.
 Overrides the xref:playbook:playbook-schema.adoc#site-url-key[site url value] specified in the playbook.
 |String
 |not set
 
-|-v, --version
+|`-v`, `--version`
 |Output the Antora version information.
 |Built-in
-|n/a
+|NA
 
-|-h, --help
+|`-h`, `--help`
 |Output the command usage information.
 |Built-in
-|n/a
+|NA
 |===
 
 == Get help with the CLI

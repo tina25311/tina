@@ -1,4 +1,4 @@
-= Redirect Facility Configuration
+= Redirect Facility Key
 // URLS
 :url-netlify-redirects: https://docs.netlify.com/routing/redirects/
 :url-nginx-rewrites: https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#return
@@ -9,9 +9,10 @@ These redirects are derived from a source page's page ID that's assigned to a xr
 The xref:page:page-aliases.adoc#source-page[source page] refers to the page you're redirecting from.
 The xref:page:page-aliases.adoc#target-page[target page] refers to the page you're redirecting to.
 
-== Redirect facility key
+[#redirect-facility-key]
+== redirect_facility key and its values
 
-The playbook key `redirect-facility` is optional.
+The playbook key `redirect_facility` is optional.
 It can be configured in the playbook or via the CLI and accepts one of the following built-in values:
 
 disabled::
@@ -24,22 +25,22 @@ static::
 (default) A static HTML file with the `http-equiv` meta element set to `refresh` is generated at the source page's URL.
 The file provides a redirect notice and routes the source page URL to the target page URL.
 
-Antora automatically assigns the value `static` to the `redirect-facility` key unless you explicitly configure it in the playbook or CLI.
+Antora automatically assigns the value `static` to the `redirect_facility` key unless you explicitly configure it in the playbook or CLI.
 
-=== Configure redirect-facility in the playbook
+=== Configure the redirect facility from the playbook
 
-The `redirect-facility` key is configured in the playbook under the `urls` category key.
+The `redirect_facility` key is configured in the playbook under the `urls` category key.
 
 .antora-playbook.yml
 [source,yaml]
 ----
 urls:
-  redirect-facility: netlify
+  redirect_facility: netlify
 ----
 
-=== Configure redirect-facility in the CLI
+=== Configure the redirect facility from the CLI
 
-The `redirect-facility` key can also be configured in the xref:cli:index.adoc[CLI].
+The `redirect_facility` key can also be configured from the xref:cli:index.adoc[CLI].
 
  $ antora --redirect-facility netlify antora-playbook.yml
 
