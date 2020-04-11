@@ -2,9 +2,9 @@
 
 const { buildSiteUiModel, buildUiModel } = require('./build-ui-model')
 const handlebars = require('handlebars')
-const relativizeHelper = require('./helpers/relativize')
-const resolvePageHelper = require('./helpers/resolve-page')
-const resolvePageURLHelper = require('./helpers/resolve-page-url')
+const relativize = require('./helpers/relativize')
+const resolvePage = require('./helpers/resolve-page')
+const resolvePageURL = require('./helpers/resolve-page-url')
 const requireFromString = require('require-from-string')
 
 const { HANDLEBARS_COMPILE_OPTIONS } = require('./constants')
@@ -28,20 +28,23 @@ const { HANDLEBARS_COMPILE_OPTIONS } = require('./constants')
  *   HTML contents in a standalone page layout).
  */
 function createPageComposer (playbook, contentCatalog, uiCatalog, env = process.env) {
-  handlebars.registerHelper('relativize', relativizeHelper)
-  handlebars.registerHelper('resolvePage', resolvePageHelper)
-  handlebars.registerHelper('resolvePageURL', resolvePageURLHelper)
+  handlebars.registerHelper('relativize', relativize)
+  handlebars.registerHelper('resolvePage', resolvePage)
+  handlebars.registerHelper('resolvePageURL', resolvePageURL)
 
   uiCatalog
     .findByType('helper')
-    .forEach((file) => handlebars.registerHelper(file.stem, requireFromString(file.contents.toString(), file.path)))
+    .forEach(({ path, stem, contents }) =>
+      handlebars.registerHelper(stem, requireFromString(contents.toString(), path))
+    )
 
-  uiCatalog.findByType('partial').forEach((file) => handlebars.registerPartial(file.stem, file.contents.toString()))
+  uiCatalog.findByType('partial').forEach(({ stem, contents }) => handlebars.registerPartial(stem, contents.toString()))
 
   const layouts = uiCatalog
     .findByType('layout')
     .reduce(
-      (accum, file) => accum.set(file.stem, handlebars.compile(file.contents.toString(), HANDLEBARS_COMPILE_OPTIONS)),
+      (accum, { stem, contents }) =>
+        accum.set(stem, handlebars.compile(contents.toString(), HANDLEBARS_COMPILE_OPTIONS)),
       new Map()
     )
 
