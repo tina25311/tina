@@ -7,8 +7,6 @@ const resolvePage = require('./helpers/resolve-page')
 const resolvePageURL = require('./helpers/resolve-page-url')
 const requireFromString = require('require-from-string')
 
-const { HANDLEBARS_COMPILE_OPTIONS } = require('./constants')
-
 /**
  * Generates a function to wrap the page contents in a page layout.
  *
@@ -31,23 +29,19 @@ function createPageComposer (playbook, contentCatalog, uiCatalog, env = process.
   handlebars.registerHelper('relativize', relativize)
   handlebars.registerHelper('resolvePage', resolvePage)
   handlebars.registerHelper('resolvePageURL', resolvePageURL)
-
   uiCatalog
     .findByType('helper')
     .forEach(({ path, stem, contents }) =>
       handlebars.registerHelper(stem, requireFromString(contents.toString(), path))
     )
-
   uiCatalog.findByType('partial').forEach(({ stem, contents }) => handlebars.registerPartial(stem, contents.toString()))
-
   const layouts = uiCatalog
     .findByType('layout')
     .reduce(
-      (accum, { stem, contents }) =>
-        accum.set(stem, handlebars.compile(contents.toString(), HANDLEBARS_COMPILE_OPTIONS)),
+      (accum, { path: srcName, stem, contents }) =>
+        accum.set(stem, handlebars.compile(contents.toString(), { preventIndent: true, srcName })),
       new Map()
     )
-
   return createPageComposerInternal(buildSiteUiModel(playbook, contentCatalog), env, layouts)
 }
 
