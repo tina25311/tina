@@ -346,7 +346,7 @@ function computeOut (src, family, htmlUrlExtensionStyle) {
   const module = src.module === 'ROOT' ? '' : src.module
 
   let basename = src.basename || path.basename(src.relative)
-  const stem = src.stem || basename.substr(0, ((basename.lastIndexOf('.') + 1) || basename.length + 1) - 1)
+  const stem = src.stem || basename.substr(0, (basename.lastIndexOf('.') + 1 || basename.length + 1) - 1)
   if (src.mediaType === 'text/asciidoc') basename = stem + '.html'
 
   let indexifyPathSegment = ''
