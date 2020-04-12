@@ -60,8 +60,8 @@ function resolveIncludeFile (target, page, cursor, catalog) {
   }
 }
 
-function extractResourceId ({ component, version, module, family, relative }) {
-  return { component, version, module, family, relative }
+function extractResourceId ({ component, version, module: module_, family, relative }) {
+  return { component, version, module: module_, family, relative }
 }
 
 module.exports = resolveIncludeFile

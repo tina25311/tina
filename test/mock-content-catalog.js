@@ -21,10 +21,10 @@ function mockContentCatalog (seed = []) {
   const entriesById = {}
   const entriesByPath = {}
   const entriesByFamily = {}
-  seed.forEach(({ component, version, module, family, relative, contents, mediaType, navIndex, indexify }) => {
+  seed.forEach(({ component, version, module: module_, family, relative, contents, mediaType, navIndex, indexify }) => {
     if (component == null) component = 'component-a'
     if (version == null) version = 'master'
-    if (module == null) module = 'module-a'
+    if (module_ == null) module_ = 'module-a'
     if (!family) family = 'page'
     if (!contents) contents = ''
     let versions
@@ -37,7 +37,7 @@ function mockContentCatalog (seed = []) {
     // NOTE assume we want the latest to be the last version we register
     components[component].latest = versions[0]
     const componentVersionKey = buildComponentVersionKey(component, version)
-    const componentRelativePath = path.join(module ? 'modules' : '', module, familyDirs[family], relative)
+    const componentRelativePath = path.join(module_ ? 'modules' : '', module_, familyDirs[family], relative)
     const entry = {
       path: componentRelativePath,
       dirname: path.dirname(componentRelativePath),
@@ -46,7 +46,7 @@ function mockContentCatalog (seed = []) {
         path: componentRelativePath,
         component,
         version,
-        module: module === '' ? undefined : module,
+        module: module_ === '' ? undefined : module_,
         relative,
         family,
         basename: path.basename(relative),
@@ -55,7 +55,7 @@ function mockContentCatalog (seed = []) {
     }
     if (mediaType) entry.src.mediaType = entry.mediaType = mediaType
     const pubVersion = version === 'master' ? '' : version
-    const pubModule = module === 'ROOT' ? '' : module
+    const pubModule = module_ === 'ROOT' ? '' : module_
     if (family === 'page' || family === 'alias' || family === 'image') {
       if (!~('/' + relative).indexOf('/_')) {
         const relativeOut = family === 'image' ? relative : relative.slice(0, -5) + (indexify ? '/' : '.html')
@@ -80,7 +80,7 @@ function mockContentCatalog (seed = []) {
       }
       entry.nav = { index: navIndex }
     }
-    const byIdKey = componentVersionKey + (module || '') + ':' + family + '$' + relative
+    const byIdKey = componentVersionKey + (module_ || '') + ':' + family + '$' + relative
     const byPathKey = componentVersionKey + componentRelativePath
     entries.push(entry)
     entriesById[byIdKey] = entriesByPath[byPathKey] = entry
@@ -90,8 +90,8 @@ function mockContentCatalog (seed = []) {
 
   return {
     findBy: ({ family }) => entriesByFamily[family] || [],
-    getById: ({ component, version, module, family, relative }) =>
-      entriesById[buildComponentVersionKey(component, version) + (module || '') + ':' + family + '$' + relative],
+    getById: ({ component, version, module: module_, family, relative }) =>
+      entriesById[buildComponentVersionKey(component, version) + (module_ || '') + ':' + family + '$' + relative],
     getByPath: ({ path: path_, component, version }) =>
       entriesByPath[buildComponentVersionKey(component, version) + path_],
     getComponent: (name) => components[name],
