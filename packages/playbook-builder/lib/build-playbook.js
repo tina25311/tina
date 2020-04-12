@@ -56,14 +56,14 @@ function loadConvictConfig (args, env, customSchema) {
 }
 
 function exportModel (config) {
-  const schema = config.getSchema()
+  const { properties: schemaProperties } = config.getSchema()
   const data = config.getProperties()
-  if ('git' in schema.properties && 'ensureGitSuffix' in schema.properties.git.properties) {
+  if ('git' in schemaProperties && 'ensureGitSuffix' in schemaProperties.git.properties) {
     const git = data.git
     if (git.ensureGitSuffix != null) git.ensure_git_suffix = git.ensureGitSuffix
     delete git.ensureGitSuffix
   }
-  if ('runtime' in schema.properties && 'pull' in schema.properties.runtime.properties) {
+  if ('runtime' in schemaProperties && 'pull' in schemaProperties.runtime.properties) {
     const runtime = data.runtime
     if (runtime.pull != null) runtime.fetch = runtime.pull
     delete runtime.pull
