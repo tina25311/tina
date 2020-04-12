@@ -34,16 +34,16 @@ function parseResourceId (spec, ctx = {}, defaultFamily = 'page', permittedFamil
 
   let version = match[RESOURCE_ID_RX_GROUP.version]
   let component = match[RESOURCE_ID_RX_GROUP.component]
-  let module = match[RESOURCE_ID_RX_GROUP.module]
+  let module_ = match[RESOURCE_ID_RX_GROUP.module]
   let family = match[RESOURCE_ID_RX_GROUP.family]
   let relative = match[RESOURCE_ID_RX_GROUP.relative]
 
   if (component) {
-    if (!module) module = 'ROOT'
+    if (!module_) module_ = 'ROOT'
   } else {
     component = ctx.component
     if (!version) version = ctx.version
-    if (!module) module = ctx.module
+    if (!module_) module_ = ctx.module
   }
 
   if (family) {
@@ -59,7 +59,7 @@ function parseResourceId (spec, ctx = {}, defaultFamily = 'page', permittedFamil
       .join('/')
   }
 
-  return { component, version, module, family, relative }
+  return { component, version, module: module_, family, relative }
 }
 
 module.exports = parseResourceId

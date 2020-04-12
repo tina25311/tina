@@ -145,8 +145,8 @@ class ContentCatalog {
     return accum
   }
 
-  getById ({ component, version, module, family, relative }) {
-    return this[$files].get(generateKey({ component, version, module, family, relative }))
+  getById ({ component, version, module: module_, family, relative }) {
+    return this[$files].get(generateKey({ component, version, module: module_, family, relative }))
   }
 
   getByPath ({ component, version, path: path_ }) {
@@ -321,8 +321,8 @@ class ContentCatalog {
  */
 ContentCatalog.prototype.getFiles = ContentCatalog.prototype.getAll
 
-function generateKey ({ component, version, module, family, relative }) {
-  return `${version}@${component}:${module}:${family}$${relative}`
+function generateKey ({ component, version, module: module_, family, relative }) {
+  return `${version}@${component}:${module_}:${family}$${relative}`
 }
 
 function inflateSrc (src, family = 'page', mediaType = 'text/asciidoc') {
@@ -343,7 +343,7 @@ function inflateSrc (src, family = 'page', mediaType = 'text/asciidoc') {
 function computeOut (src, family, htmlUrlExtensionStyle) {
   const component = src.component
   const version = src.version === 'master' ? '' : src.version
-  const module = src.module === 'ROOT' ? '' : src.module
+  const module_ = src.module === 'ROOT' ? '' : src.module
 
   let basename = src.basename || path.basename(src.relative)
   const stem = src.stem || basename.substr(0, (basename.lastIndexOf('.') + 1 || basename.length + 1) - 1)
@@ -362,7 +362,7 @@ function computeOut (src, family, htmlUrlExtensionStyle) {
     familyPathSegment = '_attachments'
   }
 
-  const modulePath = path.join(component, version, module)
+  const modulePath = path.join(component, version, module_)
   const dirname = path.join(modulePath, familyPathSegment, path.dirname(src.relative), indexifyPathSegment)
   const path_ = path.join(dirname, basename)
   const moduleRootPath = path.relative(dirname, modulePath) || '.'
