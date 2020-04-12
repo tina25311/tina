@@ -1,0 +1,38 @@
+= Account Keys
+
+The `keys` key accepts a list of key-value pairs that specify account identifiers that are used by global site services such as search tools and Google Analytics.
+
+[#keys-key]
+== keys key
+
+The `keys` key is optional.
+It's configured under the xref:configure-site.adoc[site key] in a playbook.
+`keys` accepts a list of key-value pairs that specify account identifiers.
+
+.antora-playbook.yml
+[source,yaml]
+----
+site:
+  title: Site Title
+  url: https://example.org
+  keys:
+    name-of-account-key: 'identifier'
+    google_analytics: 'XX-123456'
+----
+
+[#google-analytics-key]
+== Add a Google analytics account
+
+The `google_analytics` key assigns a Google Analytics account to the site.
+
+.antora-playbook.yml
+[source,yaml]
+----
+site:
+  title: Demo Docs Site
+  url: https://demo.antora.org
+  keys:
+    google_analytics: 'XX-123456'
+----
+
+The value assigned to the `google_analytics` key must be enclosed in single quotation marks (`'`).

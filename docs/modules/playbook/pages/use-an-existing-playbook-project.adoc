@@ -17,10 +17,10 @@ $ git clone your-playbook-repo && cd "`basename $_`"
 
 The command clones an existing playbook project and then switches to the project folder.
 
-== What's next?
+== Learn more
 
 * xref:ROOT:run-antora.adoc[Run Antora] to generate the site.
-* Modify the playbook to xref:playbook-schema.adoc[configure the site properties, inputs, and outputs].
+* Modify the playbook to configure the xref:configure-site.adoc[site properties] or the site's xref:configure-content-sources.adoc[content sources].
 
 ////
 Stay in this project folder in order to initialize the project using Yarn.

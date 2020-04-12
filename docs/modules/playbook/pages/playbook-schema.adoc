@@ -50,12 +50,12 @@ runtime: # <25>
   cache_dir: ./.cache/antora # <26>
   fetch: true # <27>
 ----
-<1> <<site-category,Site category>>
-<2> <<site-title-key,Site title key>>
-<3> <<site-url-key,Base URL key>>
-<4> <<site-start-page-key,Start page key>>
-<5> <<site-service-integration-keys,Service integration keys>>
-<6> <<site-ga-key,Google analytics key>>
+<1> Site category
+<2> Site title key
+<3> Base URL key
+<4> Start page key
+<5> Service integration keys
+<6> Google analytics key
 <7> <<content-category,Content category>>
 <8> <<content-category,Content sources key>>
 <9> <<sources-url-key,Content source repository URL key>>
@@ -79,54 +79,6 @@ runtime: # <25>
 <27> Fetch key
 
 Let's explore the purpose and usage of each key and its values.
-
-[#site-category]
-== Site category
-
-The site's global properties are defined under the `site` category in the playbook schema.
-Antora applies these properties to the whole site when it is generated.
-
-[#site-title-key]
-=== title
-
-The title of the documentation site.
-
-Learn more:
-
-* xref:configure-site.adoc#configure-title[Add a title to the site]
-
-[#site-url-key]
-=== url
-
-The base URL of the published site.
-
-Learn more:
-
-* xref:configure-site.adoc#configure-url[Configure the site's base url]
-
-[#site-start-page-key]
-=== start_page
-
-You can use a page from a documentation component as the index page for your site.
-The start page key accepts a xref:page:page-id.adoc[page ID] as a value.
-
-Learn more:
-
-* xref:configure-site.adoc#configure-start-page[Configure a start page for the base url]
-
-[#site-service-integration-keys]
-=== keys
-
-The account keys for global site services such as document search tools and Google Analytics.
-
-[#site-ga-key]
-==== google_analytics
-
-This key associates a Google Analytics account with the site.
-
-Learn more:
-
-* xref:configure-site.adoc#configure-ga[Add a Google Analytics account key to the site]
 
 [#content-category]
 == Content category

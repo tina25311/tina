@@ -1,8 +1,12 @@
 .Configure a Site
 * xref:index.adoc[Antora Playbook]
-//*** xref:playbook-formats.adoc[File Formats]
 ** xref:playbook-schema.adoc[Configuration Schema]
 * xref:configure-site.adoc[Site Keys]
+** xref:site-base-url.adoc[Base URL]
+** xref:site-title.adoc[Site Title]
+** xref:site-start-page.adoc[Start Page]
+** xref:site-robots-file.adoc[Robots File]
+** xref:site-accounts.adoc[Account Keys]
 * xref:configure-content-sources.adoc[Content Sources Keys]
 ** xref:private-repository-auth.adoc[Private Repository Authentication]
 ** xref:configure-start-paths.adoc[Start paths]
