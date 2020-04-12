@@ -503,9 +503,7 @@ describe('build UI model', () => {
     })
 
     it('should create breadcrumb entry for current page if entry not found in any navigation tree', () => {
-      file.asciidoc = {
-        doctitle: 'The Page Title',
-      }
+      file.asciidoc = { doctitle: 'The Page Title' }
       menu.push({
         order: 0,
         root: true,

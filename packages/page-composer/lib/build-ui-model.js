@@ -58,9 +58,9 @@ function buildUiModel (siteModel, file, contentCatalog, navigationCatalog, env) 
 }
 
 function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
-  const { component: componentName, version, stem } = file.src
-
-  if (!componentName && stem === '404') return { layout: stem, title: file.title }
+  const fileSrc = file.src
+  if (fileSrc.stem === '404' && !fileSrc.component) return { layout: '404', title: file.title }
+  const { component: componentName, version, module: module_, relative: srcPath, origin, editUrl, fileUri } = fileSrc
 
   // QUESTION should attributes be scoped to AsciiDoc, or should this work regardless of markup language? file.data?
   const asciidoc = file.asciidoc || {}
@@ -74,8 +74,8 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
   const component = contentCatalog.getComponent(componentName)
   const componentVersion = contentCatalog.getComponentVersion(component, version)
   // QUESTION can we cache versions on file.rel so only computed once per page version lineage?
-  const versions = component.versions.length > 1 ? getPageVersions(file.src, component, contentCatalog) : undefined
-  const title = asciidoc.doctitle
+  const versions = component.versions.length > 1 ? getPageVersions(fileSrc, component, contentCatalog) : undefined
+  const title = file.title || asciidoc.doctitle
 
   const model = {
     contents: file.contents,
@@ -89,12 +89,12 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
     version,
     displayVersion: componentVersion.displayVersion,
     componentVersion,
-    module: file.src.module,
-    srcPath: file.src.relative,
-    origin: file.src.origin,
+    module: module_,
+    srcPath,
+    origin,
     versions,
-    editUrl: file.src.editUrl,
-    fileUri: file.src.fileUri,
+    editUrl,
+    fileUri,
     home: url === siteModel.homeUrl,
   }
 
