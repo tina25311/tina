@@ -46,7 +46,7 @@ function mockContentCatalog (seed = []) {
         path: componentRelativePath,
         component,
         version,
-        module: module_ === '' ? undefined : module_,
+        module: module_ || undefined,
         relative,
         family,
         basename: path.basename(relative),
