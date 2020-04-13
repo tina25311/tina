@@ -244,15 +244,6 @@ describe('build UI model', () => {
       const model = buildSiteUiModel(playbook, contentCatalog)
       expect(model.ui.url).to.equal('/_')
     })
-
-    it('should expose proxy of content catalog', () => {
-      const model = buildSiteUiModel(playbook, contentCatalog)
-      expect(contentCatalog.exportToModel).to.have.been.called()
-      expect(model.contentCatalog).to.exist()
-      expect(model.contentCatalog).not.to.equal(contentCatalog)
-      expect(model.contentCatalog.getComponent('the-component').name).to.equal('the-component')
-      expect(contentCatalog.getComponent).to.have.been.called()
-    })
   })
 
   describe('buildPageUiModel()', () => {
@@ -1215,6 +1206,15 @@ describe('build UI model', () => {
       const model = buildUiModel(site, file, contentCatalog, navigationCatalog, process.env)
       expect(model.env).to.exist()
       expect(model.env).to.equal(process.env)
+    })
+
+    it('should expose proxy of content catalog', () => {
+      const model = buildUiModel(site, file, contentCatalog)
+      expect(contentCatalog.exportToModel).to.have.been.called()
+      expect(model.contentCatalog).to.exist()
+      expect(model.contentCatalog).not.to.equal(contentCatalog)
+      expect(model.contentCatalog.getComponent('the-component').name).to.equal('the-component')
+      expect(contentCatalog.getComponent).to.have.been.called()
     })
 
     it('should compute and set page property', () => {

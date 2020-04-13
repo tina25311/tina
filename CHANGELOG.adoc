@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *page-composer*: Promote `contentCatalog` to top-level variable in UI model (#614)
+
 === Fixed
 
 * *asciidoc-loader*: Declare the opal-runtime package as a direct dependency (#613)

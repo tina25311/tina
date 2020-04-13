@@ -7,7 +7,7 @@ const { DEFAULT_LAYOUT_NAME } = require('./constants')
 const { version: VERSION } = require('../package.json')
 
 function buildSiteUiModel (playbook, contentCatalog) {
-  const model = { title: playbook.site.title, contentCatalog: contentCatalog.exportToModel() }
+  const model = { title: playbook.site.title }
 
   let siteUrl = playbook.site.url
   if (siteUrl) {
@@ -49,6 +49,7 @@ function buildUiModel (siteModel, file, contentCatalog, navigationCatalog, env) 
   const siteRootPath = file.pub.rootPath || siteModel.path || ''
   return {
     antoraVersion: VERSION,
+    contentCatalog: contentCatalog && contentCatalog.exportToModel(),
     env,
     page: buildPageUiModel(siteModel, file, contentCatalog, navigationCatalog),
     site: siteModel,

@@ -60,7 +60,7 @@ describe('createPageComposer()', () => {
         stem: 'get-the-page',
         contents: Buffer.from(
           heredoc`
-          module.exports = function ({ data: { root } }) { return root.site.contentCatalog.getById({ version: '0.9' }) }
+          module.exports = function ({ data: { root } }) { return root.contentCatalog.getById({ version: '0.9' }) }
           ` + '\n'
         ),
       },
