@@ -53,7 +53,7 @@ function registerFormats (convict) {
   convict.addFormat({
     name: 'boolean-or-string',
     validate: (val) => {
-      if (!(val == null || typeof val === 'string' || val instanceof String || typeof val === 'boolean')) {
+      if (!(val == null || val.constructor === String || val.constructor === Boolean)) {
         throw new Error('must be a boolean or string')
       }
     },
@@ -61,7 +61,7 @@ function registerFormats (convict) {
   convict.addFormat({
     name: 'dir-or-virtual-files',
     validate: (val) => {
-      if (!(typeof val === 'string' || val instanceof String || Array.isArray(val))) {
+      if (!(val == null || val.constructor === String || Array.isArray(val))) {
         throw new Error('must be a directory path or list of virtual files')
       }
     },
@@ -69,7 +69,8 @@ function registerFormats (convict) {
   convict.addFormat({
     name: 'url-or-pathname',
     validate: (val) => {
-      if (typeof val === 'string' || val instanceof String) {
+      if (val == null) return
+      if (val.constructor === String) {
         if (val.charAt() === '/') val = 'https://example.org' + val
         let parsed
         try {
@@ -80,7 +81,7 @@ function registerFormats (convict) {
         if (~parsed.pathname.indexOf('%20')) {
           throw new Error('must not contain spaces')
         }
-      } else if (val) {
+      } else {
         throw new Error('must be an absolute URL or a pathname (i.e., root-relative path)')
       }
     },
