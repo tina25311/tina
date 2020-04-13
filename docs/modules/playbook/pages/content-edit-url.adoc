@@ -1,4 +1,5 @@
-= Edit URL Configuration
+= Edit URL Key
+:page-aliases: configure-edit-url.adoc
 :xrefstyle: short
 :listing-caption: Example
 // placeholders that are fulfilled by the file's origin information
@@ -10,7 +11,7 @@ On this page, you'll learn:
 * [x] How to customize the edit URL.
 * [x] How to disable the edit URL.
 
-[#default]
+[#default-edit-url]
 == Antora's default edit URL behavior
 
 Antora automatically provides edit URLs for pages that are sourced from the hosted GitLab, GitHub, Bitbucket, and Pagure services.

@@ -20,17 +20,14 @@ Switch to the newly created directory and clone one of the repositories:
  $ git clone https://github.com/my-antora-demo/server-docs workspace/server-docs
 
 Next, make a copy of your playbook file for local use.
-In the example below, [.path]_antora-playbook.yml_ is copied and the new file is named [.path]_antora-playbook-author-mode.yml_.
+In the example below, [.path]_antora-playbook.yml_ is copied and the new file is named [.path]_local-antora-playbook.yml_.
 
- $ cp antora-playbook.yml antora-playbook-author-mode.yml
+ $ cp antora-playbook.yml local-antora-playbook.yml
 
 Next, open your new playbook file and configure it to use the cloned repository instead of the remote repository.
-You can specify the repository either as a path relative to the playbook file or as an absolute path.
+You can specify the repository either as a xref:content-url.adoc#local-urls[path relative to the playbook file or as an absolute path].
 
-// also a good place to use the demo
-// need clarification about where these local sources can be in relation to the playbook project
-
-.antora-playbook-author-mode.yml (excerpt)
+.local-antora-playbook.yml
 [source,yaml]
 ----
 content:
@@ -38,11 +35,11 @@ content:
   - url: ./workspace/server-docs
     branches: HEAD # <1>
 ----
-<1> In author mode, you usually want to use the currently checked out HEAD of the local repository.
+<1> In author mode, you usually want to use the currently checked out HEAD of the local repository
 
 Build your Antora site using the new playbook file.
 
- $ antora antora-playbook-author-mode.yml
+ $ antora local-antora-playbook.yml
 
 The contents of your local repository will be incorporated into the pipeline.
 
@@ -53,19 +50,19 @@ NOTE: If your [.path]_workspace_ directory is inside of your playbook repository
 You may be wondering what branches the generator selects when the repository is local and whether it will pick up your uncommitted changes.
 Here's how a local repository is handled:
 
-* The repository contents on your local machine is used instead of its contents from its remote storage location.
+* The repository contents on your local machine are used instead of the contents from its remote storage location.
 //being cloned from its remote storage location  into build/sources.
-* The local repository is not updated from its remote storage location; Antora assumes the author will manage the repository (explicitly calling fetch or pull on the repository as needed).
+* The local repository is not updated from its remote storage location; Antora assumes the author will manage the repository (explicitly calling `git fetch` or `git pull` on the repository as needed).
 
 Here's how the branches are selected in author mode:
 
-* Both local branches and remote branches associated with the remote named origin are considered.
+* Both local branches and remote branches associated with the remote `url` are considered.
 * If a local branch has the same name as a remote branch, the local branch is chosen.
-* The contents of the working tree get used in place of the files from the current branch.
+* The contents of the worktree get used in place of the files from the current branch.
 Aside from its name, the current branch is effectively ignored.
-* The current HEAD branch of your working tree must match the `branches` filter configured in your `sources` entry.
-If not the working tree will be ignored.
-You can use the special `HEAD` value to ensure the current working tree is always used.
+* The current branch of your worktree must match the `branches` filter configured on the `url` entry.
+If not, the working tree will be ignored.
+You can use the xref:content-branches.adoc#current-local-branch[reserved HEAD value] to ensure the current working tree is always used.
 
-If you want to use multiple working trees, simply clone the repository multiple times and configure multiple entries in the playbook.
-You can use the `branches` key to xref:configure-content-sources.adoc#branches[filter out the names of branches you don't want].
+If you want to use multiple worktrees, simply clone the repository multiple times and configure multiple entries in the playbook.
+You can use the `branches` key to xref:content-branches.adoc[filter out the names of branches you don't want].

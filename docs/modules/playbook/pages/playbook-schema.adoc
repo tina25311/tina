@@ -56,12 +56,12 @@ runtime: # <25>
 <4> Start page key
 <5> Service integration keys
 <6> Google analytics key
-<7> <<content-category,Content category>>
-<8> <<content-category,Content sources key>>
-<9> <<sources-url-key,Content source repository URL key>>
-<10> <<branches-key,Content source branches key>>
-<11> <<tags-key,Content source tags key>>
-<12> <<sources-start-path-key,Content source start path key>>
+<7> Content category
+<8> Content sources key
+<9> Content source repository URL key
+<10> Content source branches key
+<11> Content source tags key
+<12> Content source start path key
 <13> <<asciidoc-category,AsciiDoc category>>
 <14> <<asciidoc-attributes-key,AsciiDoc attributes key>>
 <15> UI category
@@ -79,64 +79,6 @@ runtime: # <25>
 <27> Fetch key
 
 Let's explore the purpose and usage of each key and its values.
-
-[#content-category]
-== Content category
-
-The `content` category contains an array of source repository specifications.
-These specifications are arranged under the `sources` subcategory.
-
-The sources key contains the list of git repository locations, branch name patterns, and other repository properties that Antora uses when aggregating the site content.
-
-[#sources-url-key]
-=== url
-
-The `url` key tells Antora where to find a documentation component's repository.
-The key accepts any URI that git supports, including a local filesystem path.
-
-Learn more:
-
-* xref:configure-content-sources.adoc#local-urls[Use local content repositories]
-* xref:configure-content-sources.adoc#remote-urls[Fetch remote content repositories]
-* xref:private-repository-auth.adoc[Authenticate private repositories]
-* xref:configure-content-sources.adoc#mixing-urls[Configure remote and local content repository URLs in the same playbook]
-* xref:configure-content-sources.adoc#mix-local-remote-branches[Mix local and remote repositories and branches]
-
-[#branches-key]
-=== branches
-
-The branches key accepts a list of branch name patterns, either as exact names or shell glob patterns (`v3.*`).
-When no branches are specified for a sources `url`, Antora will use the [.term]_default branches set_, i.e., the `master` branch and every branch that begins with `v`.
-
-Learn more:
-
-* xref:configure-content-sources.adoc#default-branch[Use or modify the default branches set]
-* xref:configure-content-sources.adoc#separate-branch-names[Separate branch names with commas or markers]
-* xref:configure-content-sources.adoc#exact-branch[Specify branches by name]
-* xref:configure-content-sources.adoc#glob-branch[Specify and exclude branches by glob patterns]
-* xref:configure-content-sources.adoc#current-branch[Use the current local branch (HEAD)]
-* xref:configure-content-sources.adoc#mix-local-remote-branches[Mix local and remote branches and repositories]
-
-[#tags-key]
-=== tags
-
-The `tags` key (`tags`) accepts a list of tag name patterns, either as exact names or shell glob patterns.
-
-Learn more:
-
-* xref:configure-content-sources.adoc#default-tag[Set a default sources tag]
-* xref:configure-content-sources.adoc#mix-branches-and-tags[Use tags and branches from the same content repository]
-
-[#sources-start-path-key]
-=== start_path
-
-Antora automatically looks for the xref:ROOT:component-version-descriptor.adoc[component version descriptor] file at a the root of a repository.
-When the component version isn't stored at the repository root, you need to specify the repository relative path to the component version descriptor's location using `start_path`.
-The `url` identifies where the git repository is and the `start_path` identifies where [.path]_antora.yml_ is in the git repository (or local worktree).
-
-Learn more:
-
-* xref:configure-content-sources.adoc#add-start-path[Specify a start path for a content repository]
 
 [#asciidoc-category]
 == AsciiDoc category
