@@ -85,6 +85,7 @@ describe('buildPlaybook()', () => {
   const badSpec = ospath.join(FIXTURES_DIR, 'bad-spec-sample.yml')
   const coerceValueSpec = ospath.join(FIXTURES_DIR, 'coerce-value-spec-sample.yml')
   const invalidMapSpec = ospath.join(FIXTURES_DIR, 'invalid-map-spec-sample.yml')
+  const nullMapSpec = ospath.join(FIXTURES_DIR, 'null-map-spec-sample.yml')
   const invalidDirOrFilesSpec = ospath.join(FIXTURES_DIR, 'invalid-dir-or-files-spec-sample.yml')
   const invalidStringOrBooleanSpec = ospath.join(FIXTURES_DIR, 'invalid-string-or-boolean-spec-sample.yml')
   const legacyGitSpec = ospath.join(FIXTURES_DIR, 'legacy-git-sample.yml')
@@ -332,7 +333,14 @@ describe('buildPlaybook()', () => {
   })
 
   it('should throw error if value of object key is not an object', () => {
-    expect(() => buildPlaybook([], { PLAYBOOK: invalidMapSpec }, schema)).to.throw('must be a map')
+    expect(() => buildPlaybook([], { PLAYBOOK: invalidMapSpec }, schema)).to.throw(
+      'must be a map (i.e., key/value pairs)'
+    )
+  })
+
+  it('should allow value of map key to be null', () => {
+    const playbook = buildPlaybook([], { PLAYBOOK: nullMapSpec }, schema)
+    expect(playbook.stuff).to.be.null()
   })
 
   it('should coerce String value to Array', () => {
