@@ -11,7 +11,7 @@ The [.path]_modules_ directory is required wherever a component version descript
   📂 docs <1>
     📄 antora.yml <2>
     📂 modules <3>
-    📂 a-directory <4>
+    📂 non-docs-directory <4>
 ----
 <1> Content source root
 <2> Required component version descriptor file
@@ -21,7 +21,7 @@ The [.path]_modules_ directory is required wherever a component version descript
 Except for [.path]_antora.yml_, the standard directories and their files must reside in a valid hierarchy in the [.path]_modules_ directory.
 A [.path]_modules_ directory can contain as many <<module-dir,module directories>> as you require.
 
-The [.path]_modules_ directory may seem unnecessary, but it keeps documentation source files separate from application code, tests, and other materials if a xref:content-source-repositories.adoc#content-source-root[content source root] is located in a repository that stores non-documentation projects.
+The [.path]_modules_ directory keeps documentation source files isolated from configuration files, scripts, application code, tests, and other materials located in the xref:content-source-repositories.adoc#content-source-root[content source root].
 
 [#module-dir]
 == What's a module directory?
@@ -47,21 +47,21 @@ The source files stored in a module directory become part of a <<module,module>>
 <5> A navigation file
 
 At a minimum, a module directory must contain at least one xref:family-directories.adoc[family directory] with at least one source file.
-A module directory can also contain an optional navigation file.
+A module directory may also contain zero or more navigation files.
 
-There are two types of module directories: xref:named-module-directory.adoc[named module directories] and xref:root-module-directory.adoc[ROOT module directories].
+There are two types of module directories: xref:named-module-directory.adoc[named module directories] and the xref:root-module-directory.adoc[ROOT module directory].
 At runtime, Antora collects the source files stored in the ROOT and named module directories and assigns them to modules.
-The <<module,module>> corresponds to the name of the module directory.
-For this reason, it's important to carefully consider what files you store in a [.path]_ROOT_ module directory and xref:module-directory-names.adoc[what you name your named module directories].
+By convention, the <<module,module>> name corresponds to the name of the module folder.
 
 [#module]
 == What's a module?
 
-Antora classifies, assembles, and publishes the content of a xref:component-version.adoc[component version] into one or more modules.
-A [.term]*module* is a collection of content that's typically related by concept, stage, feature, or other project-specific criteria.
-Antora determines the module a source file belongs to according to its module name.
+A [.term]*module* is a collection of content in a component version that's related by concept, stage, feature, or other project-specific grouping.
+While the module does get represented as a path segment in the generated site, it's primarily an organization tool for the writer.
+A module cannot be individually configured (meaning it has no metadata of its own).
 
-A [.term]*module name* is a unique identifier Antora calculates based on the name of the module directory from where it retrieved the content's source files.
+The [.term]*module name* and the name of the module folder are the same.
+Antora assigns the module name to all files found inside the module's folder.
 
 ////
 [#where-module-name-is-used]

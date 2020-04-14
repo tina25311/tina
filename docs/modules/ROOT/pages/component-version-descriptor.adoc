@@ -4,7 +4,7 @@
 [.path]_antora.yml_ is a configuration file that serves two crucial functions.
 
 . The presence of an [.path]_antora.yml_ file at a content source root signals to Antora that it should find a sibling [.path]_modules_ directory that contains the source files of a component version.
-. The [.path]_antora.yml_ file at a content source root provides the required and optional component version metadata that Antora assigns to the source files it collects from the sibling [.path]_modules_ directory.
+. The [.path]_antora.yml_ file at a content source root provides the required and optional component version metadata that Antora assigns to the source files it collects for that component version (located under the [.path]_modules_ directory).
 
 [#locate-content-source-root-with-antora-yml]
 == Why is antora.yml stored at a content source root?
@@ -16,7 +16,7 @@ Starting at each content source root, Antora looks for an [.path]_antora.yml_ fi
 When it finds [.path]_antora.yml_, it searches for a  xref:module-directories.adoc[sibling _modules_ directory] and considers all of its xref:standard-directories.adoc[subdirectories and files] to be part of a xref:component-version.adoc[component version].
 
 If Antora doesn't find [.path]_antora.yml_ at a content source root, it doesn't look for a [.path]_modules_ directory or collect any files from that location.
-This minimizes the chances of Antora using server resources in an attempt to process source files that aren't part of a documentation site.
+This minimizes the chances of Antora wasting memory and CPU time to process source files that aren't part of a documentation site.
 
 The [.path]_antora.yml_ files provide the ability to store your content source files anywhere in a directory hierarchy.
 As long as the xref:content-source-repositories.adoc#content-source-root[content source root] contains an [.path]_antora.yml_ file, you can maintain and manage your content source files in a repository that also stores application code, tests, and other materials.

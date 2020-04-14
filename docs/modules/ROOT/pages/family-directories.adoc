@@ -5,7 +5,9 @@ Antora assigns preset, content-specific behavior to the source files stored in t
 [#family-dir]
 == What's a family directory?
 
-A [.term]*family directory* stores source files that share the same output role (i.e., standalone page, image inserted into a page) and, in some cases, the same file format (i.e., _.adoc_).
+A [.term]*family directory* groups source files that share the same function, processing requirements, and publishing rules.
+Certain families, like the page family, require that all files share the same file extension (e.g., _.adoc_).
+
 Antora recognizes five standard family directories: [.path]_attachments_, [.path]_examples_, [.path]_images_, [.path]_pages_, and [.path]_partials_.
 
 ----

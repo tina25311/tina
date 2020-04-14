@@ -3,16 +3,17 @@
 
 == Version content using branches
 
-In this scheme, each branch in a git repository stores a xref:component-version.adoc[version of a docs component] just like we use branches to store versions of a software project.
+In this scheme, each branch in a git repository stores a xref:component-version.adoc[version of a component] just like we use branches to store versions of a software project.
 The name of the branch itself doesn't matter.
 It's the xref:component-name-and-version.adoc#version-key[version key] in the xref:component-version-descriptor.adoc[component version descriptor] that determines the version.
 
 Branches are ideally suited for managing multiple versions of the same content.
-If we didn't use branches to specify versions, but instead used, for example, folders with trailing version numbers in a single branch, then we'd have to explicitly duplicate all the files in a docs component for each version.
+If we didn't use branches to specify versions, but instead used, for example, version folders in a single branch, then we'd have to explicitly copy all the files from a previous version to start a new version.
 And we'd have no easy way to compare, manage, and merge different instances of a document.
 
 Branches handle this for us.
 You simply create a new branch from an existing reference in the repository, and the repository only stores what's changed since that branch point.
+That's what git does best.
 
 == Version content using tags
 
@@ -22,6 +23,8 @@ You can compare different instances of a file and the repository only stores wha
 The downside of tags is that, once released, you can't update them (unlike branches).
 So if you find a typo, or need to add an example, you can't edit the content in a released tag.
 You'll need to release a new tag, or use another versioning method in combination with tags, in order to publish your updates.
+
+If you do decide to take this approach, we recommend having separate tags for documentation that can be created after the tag for the software release is made (or else release the software _very_ frequently).
 
 //== Version content using directories
 

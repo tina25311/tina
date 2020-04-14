@@ -40,6 +40,13 @@ While the extra structure seems like overkill now, in the long run, you'll be gl
 
 Source files that are stored in a [.path]_ROOT_ directory become part of a module named `ROOT` in a xref:component-version.adoc[component version].
 A ROOT module's pages become the top-level pages of a component version.
+In other words, unlike other modules, the name of the ROOT module does not get used in the generated site.
+
+You can think of the name "`ROOT`" as an alias for a blank module name (i.e., no module segment).
+Using this special value allows all modules to be siblings.
+
+It's important to carefully consider what files you store in a [.path]_ROOT_ module directory since there is a potential for them to conflict with files in the named module directories.
+Generally, the ROOT module doesn't use topic folders for this reason.
 
 [#where-root-name-is-used]
 == Where's the ROOT module name used?
