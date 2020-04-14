@@ -384,6 +384,33 @@ describe('cli', function () {
     )
   }).timeout(timeoutOverride)
 
+  it('should pass keys defined using options to UI model', () => {
+    playbookSpec.site.keys = { google_analytics: 'UA-12345-1' }
+    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    // NOTE we're treating hyphens and underscores in the key name as equivalent
+    const args = ['generate', 'the-site', '--key', 'foo=bar', '--key', 'google-analytics=UA-67890-1']
+    // Q: how do we assert w/ kapok when there's no output; use promise as workaround
+    return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html'))
+        .to.be.a.file()
+        .with.contents.that.match(/src="https:\/\/www[.]googletagmanager[.]com\/gtag\/js\?id=UA-67890-1">/)
+    })
+  }).timeout(timeoutOverride)
+
+  it('should remap legacy --google-analytics-key option', () => {
+    playbookSpec.site.keys = { google_analytics: 'UA-12345-1' }
+    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    const args = ['generate', 'the-site', '--google-analytics-key', 'UA-67890-1']
+    // Q: how do we assert w/ kapok when there's no output; use promise as workaround
+    return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html'))
+        .to.be.a.file()
+        .with.contents.that.match(/src="https:\/\/www[.]googletagmanager[.]com\/gtag\/js\?id=UA-67890-1">/)
+    })
+  }).timeout(timeoutOverride)
+
   it('should pass attributes defined using options to AsciiDoc processor', () => {
     playbookSpec.asciidoc = { attributes: { idprefix: '' } }
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })

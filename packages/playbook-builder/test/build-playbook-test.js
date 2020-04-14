@@ -51,11 +51,11 @@ describe('buildPlaybook()', () => {
         format: Array,
         default: null,
       },
-      stuff: {
+      keyvals: {
         format: 'map',
         default: {},
-        arg: 'stuff',
-        env: 'STUFF',
+        arg: 'keyval',
+        env: 'KEYVALS',
       },
     }
 
@@ -70,7 +70,7 @@ describe('buildPlaybook()', () => {
         { lastname: 'Lennon', name: 'John' },
         { lastname: 'McCartney', name: 'Paul' },
       ],
-      stuff: {},
+      keyvals: {},
     }
   })
 
@@ -84,6 +84,7 @@ describe('buildPlaybook()', () => {
   const iniSpec = ospath.join(FIXTURES_DIR, 'spec-sample.ini')
   const badSpec = ospath.join(FIXTURES_DIR, 'bad-spec-sample.yml')
   const coerceValueSpec = ospath.join(FIXTURES_DIR, 'coerce-value-spec-sample.yml')
+  const invalidPrimitiveMapSpec = ospath.join(FIXTURES_DIR, 'invalid-primitive-map-spec-sample.yml')
   const invalidMapSpec = ospath.join(FIXTURES_DIR, 'invalid-map-spec-sample.yml')
   const nullMapSpec = ospath.join(FIXTURES_DIR, 'null-map-spec-sample.yml')
   const invalidDirOrFilesSpec = ospath.join(FIXTURES_DIR, 'invalid-dir-or-files-spec-sample.yml')
@@ -256,21 +257,115 @@ describe('buildPlaybook()', () => {
     expect(playbook.three).to.be.true()
   })
 
+  it('should coerce primitive map value in playbook file', () => {
+    schema.keyvals.format = 'primitive-map'
+    const playbook = buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
+    expect(playbook.keyvals).to.eql({ key: 'val', keyOnly: '', foo: 'bar', nada: null, yep: true, nope: false })
+  })
+
+  it('should coerce primitive map value in env', () => {
+    schema.keyvals.format = 'primitive-map'
+    const val = 'key=val,key-only,=valonly,empty=,tilde="~",site_tags="a,b,c",nada=~,y=true,n=false,when=2020-01-01'
+    const env = { PLAYBOOK: ymlSpec, KEYVALS: val }
+    const playbook = buildPlaybook([], env, schema)
+    expect(playbook.keyvals).to.eql({
+      key: 'val',
+      keyOnly: '',
+      empty: '',
+      tilde: '~',
+      siteTags: 'a,b,c',
+      nada: null,
+      y: true,
+      n: false,
+      when: '2020-01-01',
+    })
+  })
+
+  it('should coerce primitive map value in args', () => {
+    schema.keyvals.format = 'primitive-map'
+    const playbook = buildPlaybook(
+      [
+        '--keyval',
+        'key=val',
+        '--keyval',
+        'key-only',
+        '--keyval',
+        '=valonly',
+        '--keyval',
+        'empty=',
+        '--keyval',
+        'tilde="~"',
+        '--keyval',
+        'site_tags="a,b,c"',
+        '--keyval',
+        'nada=~',
+        '--keyval',
+        'y=true',
+        '--keyval',
+        'n=false',
+        '--keyval',
+        'when=2020-01-01',
+      ],
+      { PLAYBOOK: ymlSpec },
+      schema
+    )
+    expect(playbook.keyvals).to.eql({
+      key: 'val',
+      keyOnly: '',
+      empty: '',
+      tilde: '~',
+      siteTags: 'a,b,c',
+      nada: null,
+      y: true,
+      n: false,
+      when: '2020-01-01',
+    })
+  })
+
+  it('should use primitive map value in args to update map value from playbook file', () => {
+    schema.keyvals.format = 'primitive-map'
+    const args = ['--keyval', 'foo=baz', '--keyval', 'key-only=useme']
+    const playbook = buildPlaybook(args, { PLAYBOOK: coerceValueSpec }, schema)
+    expect(playbook.keyvals.key).to.equal('val')
+    expect(playbook.keyvals.keyOnly).to.equal('useme')
+    expect(playbook.keyvals.foo).to.equal('baz')
+  })
+
+  it('should throw error if value of primitive map key is not an object', () => {
+    schema.keyvals.format = 'primitive-map'
+    expect(() => buildPlaybook([], { PLAYBOOK: invalidMapSpec }, schema)).to.throw(
+      'must be a primitive map (i.e., key/value pairs, primitive values only)'
+    )
+  })
+
+  it('should throw error if value of primitive map key is not primitive', () => {
+    schema.keyvals.format = 'primitive-map'
+    expect(() => buildPlaybook([], { PLAYBOOK: invalidPrimitiveMapSpec }, schema)).to.throw(
+      'must be a primitive map (i.e., key/value pairs, primitive values only)'
+    )
+  })
+
+  it('should allow value of primitive map key to be null', () => {
+    schema.keyvals.format = 'primitive-map'
+    const playbook = buildPlaybook([], { PLAYBOOK: nullMapSpec }, schema)
+    expect(playbook.keyvals).to.be.null()
+  })
+
   it('should coerce map value in playbook file', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
-    expect(playbook.stuff).to.eql({ key: 'val', foo: 'bar', nada: null, yep: true, nope: false })
+    expect(playbook.keyvals).to.eql({ key: 'val', keyOnly: '', foo: 'bar', nada: null, yep: true, nope: false })
   })
 
   it('should coerce map value in env', () => {
-    const val = 'key=val,keyonly,=valonly,empty=,tilde="~",tags="a,b,c",nada=~,y=true,n=false'
-    const env = { PLAYBOOK: ymlSpec, STUFF: val }
+    const val = 'key=val,key-only,=valonly,empty=,tilde="~",site_tags="a,b,c",nada=~,y=true,n=false'
+    const env = { PLAYBOOK: ymlSpec, KEYVALS: val }
     const playbook = buildPlaybook([], env, schema)
-    expect(playbook.stuff).to.eql({
+    expect(playbook.keyvals).to.eql({
       key: 'val',
-      keyonly: '',
+      keyOnly: '',
       empty: '',
       tilde: '~',
-      tags: 'a,b,c',
+      siteTags: 'a,b,c',
       nada: null,
       y: true,
       n: false,
@@ -280,34 +375,34 @@ describe('buildPlaybook()', () => {
   it('should coerce map value in args', () => {
     const playbook = buildPlaybook(
       [
-        '--stuff',
+        '--keyval',
         'key=val',
-        '--stuff',
-        'keyonly',
-        '--stuff',
+        '--keyval',
+        'key-only',
+        '--keyval',
         '=valonly',
-        '--stuff',
+        '--keyval',
         'empty=',
-        '--stuff',
+        '--keyval',
         'tilde="~"',
-        '--stuff',
-        'tags="a,b,c"',
-        '--stuff',
+        '--keyval',
+        'site_tags="a,b,c"',
+        '--keyval',
         'nada=~',
-        '--stuff',
+        '--keyval',
         'y=true',
-        '--stuff',
+        '--keyval',
         'n=false',
       ],
       { PLAYBOOK: ymlSpec },
       schema
     )
-    expect(playbook.stuff).to.eql({
+    expect(playbook.keyvals).to.eql({
       key: 'val',
-      keyonly: '',
+      keyOnly: '',
       empty: '',
       tilde: '~',
-      tags: 'a,b,c',
+      siteTags: 'a,b,c',
       nada: null,
       y: true,
       n: false,
@@ -315,9 +410,9 @@ describe('buildPlaybook()', () => {
   })
 
   it('should use map value in args to update map value from playbook file', () => {
-    const playbook = buildPlaybook(['--stuff', 'foo=baz'], { PLAYBOOK: coerceValueSpec }, schema)
-    expect(playbook.stuff.key).to.equal('val')
-    expect(playbook.stuff.foo).to.equal('baz')
+    const playbook = buildPlaybook(['--keyval', 'foo=baz'], { PLAYBOOK: coerceValueSpec }, schema)
+    expect(playbook.keyvals.key).to.equal('val')
+    expect(playbook.keyvals.foo).to.equal('baz')
   })
 
   it('should update map value from playbook file with map values in args when name is asciidoc.attributes', () => {
@@ -332,7 +427,7 @@ describe('buildPlaybook()', () => {
     })
   })
 
-  it('should throw error if value of object key is not an object', () => {
+  it('should throw error if value of map key is not an object', () => {
     expect(() => buildPlaybook([], { PLAYBOOK: invalidMapSpec }, schema)).to.throw(
       'must be a map (i.e., key/value pairs)'
     )
@@ -340,7 +435,7 @@ describe('buildPlaybook()', () => {
 
   it('should allow value of map key to be null', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: nullMapSpec }, schema)
-    expect(playbook.stuff).to.be.null()
+    expect(playbook.keyvals).to.be.null()
   })
 
   it('should coerce String value to Array', () => {
@@ -390,6 +485,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.site.title).to.equal('Example site')
     expect(playbook.site.startPage).to.equal('1.0@server::intro')
     expect(playbook.site.keys.googleAnalytics).to.equal('XX-123456')
+    expect(playbook.site.keys.jiraCollectorId).to.equal('xyz123')
     expect(playbook.content.branches).to.eql(['v*'])
     expect(playbook.content.editUrl).to.equal('{web_url}/blob/{refname}/{path}')
     expect(playbook.content.sources).to.have.lengthOf(1)

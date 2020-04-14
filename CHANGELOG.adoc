@@ -7,8 +7,13 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *cli*: Add `--key` option to `generate` command to define entries for site.keys; may be specified multiple times (#486)
+
 === Changed
 
+* *playbook-builder*: Make site.keys map in playbook schemaless; ensure values are primitive (#486)
 * *content-classifier*: Deprecate `getComponentMap` and `getComponentMapSortedBy` methods on content catalog (#614)
 * *page-composer*: Promote `contentCatalog` to top-level variable in UI model (#614)
 * *page-composer*: Use exported content catalog to build UI model (#614)
