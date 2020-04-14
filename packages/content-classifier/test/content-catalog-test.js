@@ -1433,7 +1433,6 @@ describe('ContentCatalog', () => {
       const contentCatalog = new ContentCatalog()
       contentCatalog.addFile(new File({ src }))
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
-      const model = contentCatalog.exportToModel()
       const expectedMethods = [
         'findBy',
         'getAll',
@@ -1445,6 +1444,8 @@ describe('ContentCatalog', () => {
         'resolvePage',
         'resolveResource',
       ]
+      const model = contentCatalog.exportToModel()
+      expect(model).to.not.equal(contentCatalog)
       expectedMethods.forEach((method) => {
         expect(model)
           .to.have.property(method)

@@ -275,44 +275,20 @@ class ContentCatalog {
   }
 
   exportToModel () {
-    const target = this
-    return new (class ContentCatalog {
-      findBy (criteria) {
-        return target.findBy(criteria)
-      }
-
-      getAll () {
-        return target.getAll()
-      }
-
-      getById (id) {
-        return target.getById(id)
-      }
-
-      getComponent (name) {
-        return target.getComponent(name)
-      }
-
-      getComponentVersion (component, version) {
-        return target.getComponentVersion(component, version)
-      }
-
-      getComponents () {
-        return target.getComponents()
-      }
-
-      getPages () {
-        return target.getPages()
-      }
-
-      resolvePage (spec, context = {}) {
-        return target.resolvePage(spec, context)
-      }
-
-      resolveResource (spec, context = {}, defaultFamily = undefined, permittedFamilies = undefined) {
-        return target.resolveResource(spec, context, defaultFamily, permittedFamilies)
-      }
-    })()
+    return Object.assign(
+      new (class ContentCatalogProxy {})(),
+      [
+        this.findBy,
+        this.getAll,
+        this.getById,
+        this.getComponent,
+        this.getComponentVersion,
+        this.getComponents,
+        this.getPages,
+        this.resolvePage,
+        this.resolveResource,
+      ].reduce((accum, method) => (accum[method.name] = method.bind(this)) && accum, {})
+    )
   }
 }
 
