@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *asciidoc-loader*: Declare the opal-runtime package as a direct dependency (#613)
 * *document-converter*: Always consult media type when looking for AsciiDoc pages in document converter (#607)
 
 == 2.3.0-beta.2 (2020-04-06)
