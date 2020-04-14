@@ -9,7 +9,9 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *content-classifier*: Deprecate `getComponentMap` and `getComponentMapSortedBy` methods on content catalog (#614)
 * *page-composer*: Promote `contentCatalog` to top-level variable in UI model (#614)
+* *page-composer*: Use exported content catalog to build UI model (#614)
 
 === Fixed
 

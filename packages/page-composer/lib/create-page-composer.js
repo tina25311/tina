@@ -1,6 +1,6 @@
 'use strict'
 
-const { buildSiteUiModel, buildUiModel } = require('./build-ui-model')
+const { buildBaseUiModel, buildUiModel } = require('./build-ui-model')
 const handlebars = require('handlebars')
 const relativize = require('./helpers/relativize')
 const resolvePage = require('./helpers/resolve-page')
@@ -42,11 +42,10 @@ function createPageComposer (playbook, contentCatalog, uiCatalog, env = process.
         accum.set(stem, handlebars.compile(contents.toString(), { preventIndent: true, srcName })),
       new Map()
     )
-  const contentCatalogModel = contentCatalog.exportToModel()
-  return createPageComposerInternal(buildSiteUiModel(playbook, contentCatalogModel), contentCatalogModel, env, layouts)
+  return createPageComposerInternal(buildBaseUiModel(playbook, contentCatalog, env), layouts)
 }
 
-function createPageComposerInternal (siteModel, contentCatalogModel, env, layouts) {
+function createPageComposerInternal (baseUiModel, layouts) {
   /**
    * Wraps the embeddable HTML contents of the specified file in a page layout.
    *
@@ -60,19 +59,19 @@ function createPageComposerInternal (siteModel, contentCatalogModel, env, layout
    * @param {File} file - The virtual file the contains embeddable HTML
    *   contents to wrap in a layout.
    * @param {ContentCatalog} contentCatalog - The content catalog
-   *   that provides access to the virtual files in the site.
+   *   that provides access to the virtual files in the site (ignored).
    * @param {NavigationCatalog} navigationCatalog - The navigation catalog
    *   that provides access to the navigation for each component version.
    * @returns {File} The file whose contents were wrapped in the specified page layout.
    */
-  return function composePage (file, contentCatalog, navigationCatalog) {
+  return function composePage (file, _contentCatalog, navigationCatalog) {
     // QUESTION should we pass the playbook to the uiModel?
-    const uiModel = buildUiModel(siteModel, file, contentCatalogModel, navigationCatalog, env)
+    const uiModel = buildUiModel(baseUiModel, file, baseUiModel.contentCatalog, navigationCatalog)
 
     let layout = uiModel.page.layout
     if (!layouts.has(layout)) {
       if (layout === '404') throw new Error('404 layout not found')
-      const defaultLayout = siteModel.ui.defaultLayout
+      const defaultLayout = uiModel.site.ui.defaultLayout
       if (defaultLayout === layout) {
         throw new Error(`${layout} layout not found`)
       } else if (!layouts.has(defaultLayout)) {
