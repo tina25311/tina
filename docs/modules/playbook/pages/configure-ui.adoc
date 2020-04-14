@@ -36,27 +36,29 @@ The other keys are optional; Antora will use their default values if they're not
 |===
 |UI Keys |Description |Required
 
-|`bundle.url`
-|Accepts a xref:ui-url.adoc#remote-bundle[URL] or xref:ui-url.adoc#local-bundle[filesystem path] to a UI bundle archive.
+|xref:ui-bundle-url.adoc#snapshot[bundle.snapshot]
+|Indicates whether the URL points to a snapshot.
+|No
+
+|xref:ui-bundle-url.adoc#start-path[bundle.start_path]
+|Accepts a path inside the UI bundle from which files should be selected.
+|No
+
+|xref:ui-bundle-url.adoc[bundle.url]
+|Accepts a URL or filesystem path to a UI bundle archive.
 |Yes
 
-|`bundle.snapshot`
-|Indicates whether the xref:ui-url.adoc#snapshot[URL points to a snapshot].
+|xref:ui-default-layout.adoc[default_layout]
+|Applies a layout template to pages that don't specify a page layout.
 |No
 
-|`bundle.start_path`
-|Accepts a xref:ui-url.adoc#start-path[path inside the UI bundle] from which files should be selected.
+|xref:ui-output-dir.adoc[output_dir]
+|Accepts a filesystem path to the output directory where Antora writes the published site's UI files.
 |No
 
-|`default_layout`
-|Applies a xref:ui-default-layout.adoc[layout template] to pages that don't specify a page layout.
-|No
-
-|`output_dir`
-|Accepts a filesystem path to the xref:ui-output-directory.adoc[output directory] where Antora writes the published site's UI files.
+|supplemental_files
+|Supplemental file list or a directory of files to append to the UI bundle.
 |No
 |===
 
-
 //supplemental_files: ./supplemental-ui
-//supplemental_files: Supplemental file list or a directory of files to append to the UI bundle.

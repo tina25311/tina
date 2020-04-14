@@ -70,13 +70,13 @@ Append `@` to the value to allow it to be overridden in a document.
 
 |[[cache-dir]]`--cache-dir <dir>`
 |Directory where remote content sources git repositories and UI bundles are cached.
-Overrides the xref:playbook:runtime-cache-directory.adoc[cache_dir key] in a playbook.
+Overrides the xref:playbook:runtime-cache-dir.adoc[cache_dir key] in a playbook.
 |String
 |[.path]_<user cache>/antora_
 
 |[[clean]]`--clean`
 |Removes the output directory before generating the site.
-Overrides the xref:playbook:output-directory.adoc#clean-key[clean key] in a playbook.
+Overrides the xref:playbook:output-dir.adoc#clean-key[clean key] in a playbook.
 |Boolean
 |false
 
@@ -100,7 +100,7 @@ Setting this option implicitly enables the Google Analytics / Tag Manager embed 
 |not set
 
 |[[fetch]]`--fetch`
-|Updates the cache by downloading updates from remote content sources git repositories and UI bundles (if xref:playbook:ui-url.adoc#snapshot[snapshot] is `true`).
+|Updates the cache by downloading updates from remote content sources git repositories and UI bundles (if xref:playbook:ui-bundle-url.adoc#snapshot[snapshot] is `true`).
 Overrides the xref:playbook:runtime-fetch.adoc[fetch key] in a playbook.
 |Boolean
 |false
@@ -141,20 +141,20 @@ Overrides the xref:playbook:site-title.adoc[site title key] in a playbook.
 
 |[[to-dir]]`--to-dir <dir>`
 |Directory where the site files are published.
-Overrides the xref:playbook:output-directory.adoc[output dir key] in a playbook.
+Overrides the xref:playbook:output-dir.adoc[output dir key] in a playbook.
 |String
 |[.path]_build/site_
 
 |[[ui-bundle]]`--ui-bundle-url <bundle>`
 |Specifies the URL or filesystem path to a UI bundle.
-Overrides the xref:playbook:ui-url.adoc[ui bundle url key] in a playbook.
+Overrides the xref:playbook:ui-bundle-url.adoc[ui bundle url key] in a playbook.
 |String
 |not set
 
 |[[site-url]]`--url <url>`
 |Base URL of the published site.
 The URL should not include a trailing slash.
-Overrides the xref:playbook:site-base-url.adoc[site url key] in a playbook.
+Overrides the xref:playbook:site-url.adoc[site url key] in a playbook.
 |String
 |not set
 

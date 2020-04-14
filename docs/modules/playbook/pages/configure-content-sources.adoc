@@ -1,4 +1,4 @@
-= Content and Sources Keys
+= Content Keys
 
 The playbook keys configured under `content` and `sources` define the locations of the content source repositories and how they're processed.
 
@@ -6,7 +6,7 @@ The playbook keys configured under `content` and `sources` define the locations 
 == content key
 
 The content sources git references and other source location properties are defined under the required `content` key.
-With the exception of the `url` key, any of the available key-value pairs can be specified directly under `content`.
+The `branches`, `tags`, and `edit_url` keys can be specified directly on `content`.
 They can also be listed under `sources` or under both `content` and `sources` in a playbook.
 
 [source,yaml]
@@ -14,26 +14,26 @@ They can also be listed under `sources` or under both `content` and `sources` in
 content: # <1>
   branches: [v2.0, v2.5, v3.0] # <2>
   tags: [release/*, '!release/*-patch'] # <3>
-  start_path: path-to/content-source-root # <4>
-  edit_url: '{web_url}/blob/{refname}/{path}' # <5>
-  sources: # <6>
-  - url: https://git-service.com/org/repo-z.git # <7>
+  edit_url: '{web_url}/blob/{refname}/{path}' # <4>
+  sources: # <5>
+  - url: https://git-service.com/org/repo-z.git # <6>
+    start_path: path-to/content-source-root # <7>
   - url: https://git-service.com/org/repo-y.git # <8>
 ----
 <1> Required `content` key
 <2> Optional `branches` key
 <3> Optional `tags` key
-<4> Optional `start_path` key
-<5> Optional `edit_url` key
-<6> Required `sources` key
-<7> Required `url` key
+<4> Optional `edit_url` key
+<5> Required `sources` key
+<6> Required `url` key
+<7> Optional `start_path` key
 <8> Another `url` key
-
-Keys-value pairs that are specified directly under `content` are, with a few exceptions, applied to all of the `url` key entries under `sources`.
 
 The `content`, `sources`, and `url` keys are required.
 The other keys are optional.
 The xref:content-branches.adoc#default-branches[branches] and xref:content-edit-url.adoc#default-edit-url[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly set in the playbook.
+
+Keys-value pairs that are specified directly under `content` are applied to all of the `url` key entries under `sources`, unless the key is also specified on a specific `url`.
 
 [#sources-key]
 == sources key
@@ -85,21 +85,21 @@ The xref:content-branches.adoc#default-branches[branches] and xref:content-edit-
 |Accepts a URL pattern that contains the URL segments of the git solution or source file view plus three placeholder segments, `+{web_url}+`, `+{refname}+`, and `+{path}+`.
 |No
 
-|xref:content-start-path.adoc[start_path]
+|xref:content-source-url.adoc[sources++[n]++.url]
+|Accepts any URI that git supports, including a local filesystem path.
+|Yes
+
+|xref:content-source-start-path.adoc[sources++[n]++.start_path]
 |Specifies the repository relative path to a content source root's location.
 |No
 
-|xref:content-start-paths.adoc[start_paths]
+|xref:content-source-start-paths.adoc[sources++[n]++.start_paths]
 |Accepts a list of repository relative path patterns to content source root locations, either as exact paths or shell glob patterns.
 |No
 
 |xref:content-tags.adoc[tags]
 |Accepts a list of tag name patterns, either as exact names or shell glob patterns.
 |No
-
-|xref:content-url.adoc[url]
-|Accepts any URI that git supports, including a local filesystem path.
-|Yes
 |===
 
 ////

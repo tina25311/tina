@@ -1,4 +1,4 @@
-= UI URL and Start Path
+= UI Bundle URL
 :url-zip-file-format: https://en.wikipedia.org/wiki/Zip_(file_format)
 
 A UI bundle is a {url-zip-file-format}[ZIP archive] that contains one or more UIs for a site.

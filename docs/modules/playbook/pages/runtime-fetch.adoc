@@ -7,7 +7,7 @@ Use the `fetch` key whenever you want to retrieve updates from the remote conten
 Activating the `fetch` key from a playbook or the CLI causes Antora to perform both of the following actions each time it runs:
 
 . Run a fetch operation on all cloned, remote content sources repositories.
-. Download the remote UI bundle if it's marked as a xref:ui-url.adoc#snapshot[snapshot].
+. Download the remote UI bundle if it's marked as a xref:ui-bundle-url.adoc#snapshot[snapshot].
 
 [#fetch-key]
 == fetch key

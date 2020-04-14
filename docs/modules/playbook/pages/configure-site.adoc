@@ -36,24 +36,24 @@ The other keys are optional; Antora will use their default values if they're not
 |===
 |Site Keys |Description |Required
 
-|`keys.google_analytics`
-|Associates a xref:site-accounts.adoc#google-analytics-key[Google Analytics account] with the site.
+|xref:site-keys.adoc#google-analytics-key[keys.google_analytics]
+|Associates a Google Analytics account with the site.
 |No
 
-|`robots`
-|Specifies whether Antora generates a xref:site-robots-file.adoc[_robots.txt_ file].
+|xref:site-robots.adoc[robots]
+|Specifies whether Antora generates a _robots.txt_ file.
 Accepts the values `allow`, `disallow`, and a custom, multi-line string.
 |No
 
-|`start_page`
-|Accepts a page ID that specifies the xref:site-start-page.adoc[start page of a site].
+|xref:site-start-page.adoc[start_page]
+|Accepts a page ID that specifies the start page of a site.
 |No
 
-|`title`
-|Specifies the xref:site-title.adoc[title of a site].
+|xref:site-title.adoc[title]
+|Specifies the title of a site.
 |Yes
 
-|`url`
-|Specifies the xref:site-base-url.adoc[base URL of a site].
+|xref:site-url.adoc[url]
+|Specifies the base URL of a site.
 |Yes
 |===

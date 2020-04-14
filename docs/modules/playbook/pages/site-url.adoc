@@ -1,4 +1,4 @@
-= Base URL
+= Site URL
 
 [#url-key]
 == url key
@@ -42,5 +42,5 @@ The canonical URL property gets included in the head of each published page.
 The component, version, module, and page segments are then appended to the site URL to produce the complete URL.
 For example, _\https://docs.example.org/component/version/page.html_.
 
-The generated sitemap and xref:site-robots-file.adoc[robots.txt files] require an absolute URL are the sitemap files.
+The generated sitemap and xref:site-robots.adoc[robots.txt files] require an absolute URL are the sitemap files.
 The 404 page and URL prefix on redirect rules require a pathname, which can be derived from the absolute URL.

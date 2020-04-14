@@ -21,7 +21,7 @@ output:
 <2> Under `destinations`, type a hyphen (`-`) and a blank space, then the key name `provider`, followed by a colon (`:`).
 After the colon, enter a blank space, and then the built-in value name `fs`.
 
-Unless the `path` key or xref:output-directory.adoc[dir key] is specified, the default path for the `fs` provider is [.path]_build/site_.
+Unless the `path` key or xref:output-dir.adoc[dir key] is specified, the default path for the `fs` provider is [.path]_build/site_.
 
 [#path-key]
 == path key
@@ -34,7 +34,7 @@ The provider will create any interim directories as needed.
 include::partial$relative-path-rules.adoc[]
 
 If `path` isn't specified, it gets populated with the default value, [.path]_build/site_, or, in the case of the first `fs` provider, the value of `dir`.
-When the xref:output-directory.adoc[dir key] is specified, its value is assigned to (or overrides) the first `fs` provider `path`.
+When the xref:output-dir.adoc[dir key] is specified, its value is assigned to (or overrides) the first `fs` provider `path`.
 When the output directory is specified from the CLI using the xref:cli:index.adoc#to-dir[--to-dir <dir> option], it also overrides the first `fs` provider `path` (as well as `dir`) in a playbook.
 
 [#relative-path]
@@ -71,7 +71,7 @@ output:
 === clean key
 
 The `clean` key is optional and is deactivated (assigned the value `false`) by default.
-It can be applied as part of an `fs` provider configuration instead of xref:output-directory.adoc#clean-key[directly under the output key].
+It can be applied as part of an `fs` provider configuration instead of xref:output-dir.adoc#clean-key[directly under the output key].
 
 .antora-playbook.yml
 [source,yaml]
@@ -90,4 +90,4 @@ This key only applies to the `fs` provider.
 WARNING: Use this key with great care.
 For example, if you set `path` to your [.path]_home_ directory and `clean` to `true`, you'll delete ALL of the folders and files in [.path]_home_.
 
-include::page$output-archive-provider.adoc[tag=multiple]
+include::page$output-provider-archive.adoc[tag=multiple]

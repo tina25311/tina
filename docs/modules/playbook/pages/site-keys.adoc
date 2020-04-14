@@ -1,4 +1,4 @@
-= Account Keys
+= Account and API Keys
 
 The `keys` key accepts a list of key-value pairs that specify account identifiers that are used by global site services such as search tools and Google Analytics.
 

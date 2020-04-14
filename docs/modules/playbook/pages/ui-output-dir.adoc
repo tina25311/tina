@@ -3,7 +3,7 @@
 [#default]
 == Default UI output directory
 
-The UI files are published to a directory labeled with a single underscore, [.path]_++_++_ , located relative to the site's xref:output-directory.adoc[output directory].
+The UI files are published to a directory labeled with a single underscore, [.path]_++_++_ , located relative to the site's xref:output-dir.adoc[output directory].
 For instance, when the site is published to the default site output directory ([.path]_build/site_), and no UI `output_dir` is specified, the UI files are written to [.path]_++build/site/_++_.
 
 [#output-dir]

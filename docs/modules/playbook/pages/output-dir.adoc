@@ -20,7 +20,7 @@ It accepts a relative or absolute filesystem path.
 include::partial$relative-path-rules.adoc[]
 
 The `dir` key can be used in combination with the xref:configure-output.adoc#destinations-key[destinations key].
-If both an `fs` provider `path` and `dir` are specified, the value assigned to `dir` overrides xref:output-filesystem-provider.adoc#path[the first fs provider path].
+If both an `fs` provider `path` and `dir` are specified, the value assigned to `dir` overrides xref:output-provider-fs.adoc#path[the first fs provider path].
 When the output directory is specified from the CLI using the xref:cli:index.adoc#to-dir[--to-dir <dir> option], it also overrides the `dir` and first `fs` provider `path` in a playbook.
 
 [#relative-path]

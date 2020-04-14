@@ -1,6 +1,6 @@
 = Site Start Page
 
-When you assign a valid page ID to the `start_page` key in your playbook, site visitors will be redirected from the site's index page at the xref:site-base-url.adoc[base URL] to the URL of the start page.
+When you assign a valid page ID to the `start_page` key in your playbook, site visitors will be redirected from the site's index page at the xref:site-url.adoc[site URL] to the URL of the start page.
 
 [#start-page-key]
 == start_page key

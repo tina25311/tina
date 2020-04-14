@@ -25,7 +25,7 @@ In the example below, [.path]_antora-playbook.yml_ is copied and the new file is
  $ cp antora-playbook.yml local-antora-playbook.yml
 
 Next, open your new playbook file and configure it to use the cloned repository instead of the remote repository.
-You can specify the repository either as a xref:content-url.adoc#local-urls[path relative to the playbook file or as an absolute path].
+You can specify the repository either as a xref:content-source-url.adoc#local-urls[path relative to the playbook file or as an absolute path].
 
 .local-antora-playbook.yml
 [source,yaml]

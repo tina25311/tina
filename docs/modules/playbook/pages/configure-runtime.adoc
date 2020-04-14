@@ -28,11 +28,11 @@ When `runtime` isn't set in a playbook, Antora uses the default cache directory 
 |===
 |Runtime Keys |Description |Required
 
-|`cache_dir`
-|Specifies the directory where the xref:runtime-cache-directory.adoc#cache-dir[remote content sources git repositories and UI bundles] are cached.
+|xref:runtime-cache-dir.adoc[cache_dir]
+|Specifies the directory where the remote content sources git repositories and UI bundles are cached.
 |No
 
-|`fetch`
-|When set to `true`, the xref:runtime-fetch.adoc[fetch key] refreshes the files in the cache each time Antora runs.
+|xref:runtime-fetch.adoc[fetch]
+|When set to `true`, the `fetch` key refreshes the files in the cache each time Antora runs.
 |No
 |===

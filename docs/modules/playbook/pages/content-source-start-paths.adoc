@@ -22,7 +22,7 @@ The `start_path` key only lets you specify _a single path_ in your playbook for 
 In contrast, the `start_paths` key lets you specify _multiple paths_, which can be even further consolidated as patterns.
 Each pattern can be a fixed path or a https://en.wikipedia.org/wiki/Glob_(programming)[glob^] pattern that Antora resolves to one or more fixed paths.
 
-The `start_paths` key is mutually exclusive with the `start_path` (see the xref:content-start-path.adoc[Single start path] page for more information).
+The `start_paths` key is mutually exclusive with the `start_path` (see the xref:content-source-start-path.adoc[Single start path] page for more information).
 If you specify both the `start_paths` and `start_path` key in the content source, only the `start_paths` key is recognized.
 
 === Relationship to references
