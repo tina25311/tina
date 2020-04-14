@@ -56,22 +56,13 @@ describe('build UI model', () => {
         if (!component.versions) component = this.getComponent(component)
         return component.versions.find((candidate) => candidate.version === version)
       },
-      getComponentMapSortedBy: spy((property) =>
+      getComponentsSortedBy: spy((property) =>
         components
           .slice(0)
           .sort((a, b) => a[property].localeCompare(b[property]))
-          .reduce((accum, it) => {
-            accum[it.name] = it
-            return accum
-          }, {})
       ),
       getSiteStartPage: spy(() => undefined),
     }
-
-    contentCatalog.exportToModel = spy(() => ({
-      getComponent: contentCatalog.getComponent,
-      getComponentVersion: contentCatalog.getComponentVersion,
-    }))
 
     menu = []
 
@@ -119,7 +110,7 @@ describe('build UI model', () => {
 
     it('should set components property to map of components from content catalog sorted by title', () => {
       const model = buildSiteUiModel(playbook, contentCatalog)
-      expect(contentCatalog.getComponentMapSortedBy).to.have.been.called()
+      expect(contentCatalog.getComponentsSortedBy).to.have.been.called()
       expect(Object.keys(model.components)).to.have.lengthOf(3)
       const componentTitles = Object.values(model.components).map((component) => component.title)
       expect(componentTitles).to.eql(['Component B', 'Component C', 'The Component'])
@@ -1208,13 +1199,10 @@ describe('build UI model', () => {
       expect(model.env).to.equal(process.env)
     })
 
-    it('should expose proxy of content catalog', () => {
+    it('should expose exported content catalog', () => {
       const model = buildUiModel(site, file, contentCatalog)
-      expect(contentCatalog.exportToModel).to.have.been.called()
       expect(model.contentCatalog).to.exist()
-      expect(model.contentCatalog).not.to.equal(contentCatalog)
       expect(model.contentCatalog.getComponent('the-component').name).to.equal('the-component')
-      expect(contentCatalog.getComponent).to.have.been.called()
     })
 
     it('should compute and set page property', () => {

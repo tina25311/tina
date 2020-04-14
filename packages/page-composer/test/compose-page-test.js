@@ -150,9 +150,12 @@ describe('createPageComposer()', () => {
     ]
 
     contentCatalog = {
-      getComponentMapSortedBy: (property) => ({}),
+      getComponentsSortedBy: (property) => [],
       getSiteStartPage: () => undefined,
-      exportToModel: () => {},
+      exportToModel: spy(() => ({
+        getComponentsSortedBy: contentCatalog.getComponentsSortedBy,
+        getSiteStartPage: contentCatalog.getSiteStartPage,
+      })),
     }
 
     uiCatalog = {
@@ -167,6 +170,7 @@ describe('createPageComposer()', () => {
   it('should create a page composer function', () => {
     const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
     expect(composePage).to.be.instanceOf(Function)
+    expect(contentCatalog.exportToModel).to.have.been.called()
   })
 
   it('should operate on helper, partial, and layout files from UI catalog', () => {
@@ -256,14 +260,10 @@ describe('createPageComposer()', () => {
           if (!component.versions) component = this.getComponent(component)
           return component.versions.find((candidate) => candidate.version === version)
         },
-        getComponentMapSortedBy: (property) =>
+        getComponentsSortedBy: (property) =>
           components
             .slice(0)
-            .sort((a, b) => a[property].localeCompare(b[property]))
-            .reduce((accum, it) => {
-              accum[it.name] = it
-              return accum
-            }, {}),
+            .sort((a, b) => a[property].localeCompare(b[property])),
         getPages: () => files,
         getSiteStartPage: () => undefined,
         resolvePage: (spec, { component, version }) => {
@@ -281,7 +281,9 @@ describe('createPageComposer()', () => {
         getById: contentCatalog.getById,
         getComponent: contentCatalog.getComponent,
         getComponentVersion: contentCatalog.getComponentVersion,
+        getComponentsSortedBy: contentCatalog.getComponentsSortedBy,
         getPages: contentCatalog.getPages,
+        getSiteStartPage: contentCatalog.getSiteStartPage,
         resolvePage: contentCatalog.resolvePage,
       })
 

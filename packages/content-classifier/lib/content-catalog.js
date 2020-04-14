@@ -284,7 +284,9 @@ class ContentCatalog {
         this.getComponent,
         this.getComponentVersion,
         this.getComponents,
+        this.getComponentsSortedBy,
         this.getPages,
+        this.getSiteStartPage,
         this.resolvePage,
         this.resolveResource,
       ].reduce((accum, method) => (accum[method.name] = method.bind(this)) && accum, {})

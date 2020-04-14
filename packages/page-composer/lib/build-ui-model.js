@@ -29,7 +29,7 @@ function buildSiteUiModel (playbook, contentCatalog) {
   if (startPage) model.homeUrl = startPage.pub.url
 
   // QUESTION should components be pre-sorted? should we make this configurable?
-  model.components = contentCatalog.getComponentMapSortedBy('title')
+  model.components = contentCatalog.getComponentsSortedBy('title').reduce((map, it) => (map[it.name] = it) && map, {})
 
   model.keys = Object.entries(playbook.site.keys || {}).reduce((accum, [key, value]) => {
     if (value) accum[key] = value
@@ -49,7 +49,7 @@ function buildUiModel (siteModel, file, contentCatalog, navigationCatalog, env) 
   const siteRootPath = file.pub.rootPath || siteModel.path || ''
   return {
     antoraVersion: VERSION,
-    contentCatalog: contentCatalog && contentCatalog.exportToModel(),
+    contentCatalog,
     env,
     page: buildPageUiModel(siteModel, file, contentCatalog, navigationCatalog),
     site: siteModel,

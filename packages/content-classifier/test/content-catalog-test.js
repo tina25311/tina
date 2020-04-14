@@ -1438,9 +1438,11 @@ describe('ContentCatalog', () => {
         'getAll',
         'getById',
         'getComponent',
-        'getComponents',
         'getComponentVersion',
+        'getComponents',
+        'getComponentsSortedBy',
         'getPages',
+        'getSiteStartPage',
         'resolvePage',
         'resolveResource',
       ]

@@ -42,10 +42,11 @@ function createPageComposer (playbook, contentCatalog, uiCatalog, env = process.
         accum.set(stem, handlebars.compile(contents.toString(), { preventIndent: true, srcName })),
       new Map()
     )
-  return createPageComposerInternal(buildSiteUiModel(playbook, contentCatalog), env, layouts)
+  const contentCatalogModel = contentCatalog.exportToModel()
+  return createPageComposerInternal(buildSiteUiModel(playbook, contentCatalogModel), contentCatalogModel, env, layouts)
 }
 
-function createPageComposerInternal (siteModel, env, layouts) {
+function createPageComposerInternal (siteModel, contentCatalogModel, env, layouts) {
   /**
    * Wraps the embeddable HTML contents of the specified file in a page layout.
    *
@@ -66,7 +67,7 @@ function createPageComposerInternal (siteModel, env, layouts) {
    */
   return function composePage (file, contentCatalog, navigationCatalog) {
     // QUESTION should we pass the playbook to the uiModel?
-    const uiModel = buildUiModel(siteModel, file, contentCatalog, navigationCatalog, env)
+    const uiModel = buildUiModel(siteModel, file, contentCatalogModel, navigationCatalog, env)
 
     let layout = uiModel.page.layout
     if (!layouts.has(layout)) {
