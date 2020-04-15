@@ -6,8 +6,29 @@ const { URL } = require('url')
 const { DEFAULT_LAYOUT_NAME } = require('./constants')
 const { version: VERSION } = require('../package.json')
 
+function buildBaseUiModel (playbook, contentCatalog, env) {
+  const contentCatalogModel = contentCatalog.exportToModel()
+  return {
+    antoraVersion: VERSION,
+    contentCatalog: contentCatalogModel,
+    env,
+    site: buildSiteUiModel(playbook, contentCatalogModel),
+  }
+}
+
+function buildUiModel (baseUiModel, file, contentCatalog, navigationCatalog) {
+  const siteUiModel = baseUiModel.site
+  const siteRootPath = file.pub.rootPath || siteUiModel.path || ''
+  const uiRootPath = siteRootPath + siteUiModel.ui.url
+  return Object.assign({}, baseUiModel, {
+    page: buildPageUiModel(siteUiModel, file, contentCatalog, navigationCatalog),
+    siteRootPath,
+    uiRootPath,
+  })
+}
+
 function buildSiteUiModel (playbook, contentCatalog) {
-  const model = { title: playbook.site.title, contentCatalog: contentCatalog.exportToModel() }
+  const model = { title: playbook.site.title }
 
   let siteUrl = playbook.site.url
   if (siteUrl) {
@@ -28,13 +49,8 @@ function buildSiteUiModel (playbook, contentCatalog) {
   const startPage = contentCatalog.getSiteStartPage()
   if (startPage) model.homeUrl = startPage.pub.url
 
-  // QUESTION should components be pre-sorted? should we make this configurable?
-  model.components = contentCatalog.getComponentMapSortedBy('title')
-
-  model.keys = Object.entries(playbook.site.keys || {}).reduce((accum, [key, value]) => {
-    if (value) accum[key] = value
-    return accum
-  }, {})
+  model.components = contentCatalog.getComponentsSortedBy('title').reduce((map, it) => (map[it.name] = it) && map, {})
+  model.keys = Object.assign({}, playbook.site.keys)
 
   const uiConfig = playbook.ui
   model.ui = {
@@ -45,19 +61,7 @@ function buildSiteUiModel (playbook, contentCatalog) {
   return model
 }
 
-function buildUiModel (siteModel, file, contentCatalog, navigationCatalog, env) {
-  const siteRootPath = file.pub.rootPath || siteModel.path || ''
-  return {
-    antoraVersion: VERSION,
-    env,
-    page: buildPageUiModel(siteModel, file, contentCatalog, navigationCatalog),
-    site: siteModel,
-    siteRootPath,
-    uiRootPath: siteRootPath + siteModel.ui.url,
-  }
-}
-
-function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
+function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog) {
   const fileSrc = file.src
   if (fileSrc.stem === '404' && !fileSrc.component) return { layout: '404', title: file.title }
   const { component: componentName, version, module: module_, relative: srcPath, origin, editUrl, fileUri } = fileSrc
@@ -79,7 +83,7 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
 
   const model = {
     contents: file.contents,
-    layout: pageAttributes.layout || siteModel.ui.defaultLayout,
+    layout: pageAttributes.layout || siteUiModel.ui.defaultLayout,
     title,
     url,
     description: attributes.description,
@@ -95,7 +99,7 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
     versions,
     editUrl,
     fileUri,
-    home: url === siteModel.homeUrl,
+    home: url === siteUiModel.homeUrl,
   }
 
   if (navigationCatalog) {
@@ -111,7 +115,7 @@ function buildPageUiModel (siteModel, file, contentCatalog, navigationCatalog) {
   }
 
   // NOTE site URL has already been normalized at this point
-  const siteUrl = siteModel.url
+  const siteUrl = siteUiModel.url
   if (siteUrl && siteUrl.charAt() !== '/') {
     if (versions) {
       let latestReached
@@ -208,4 +212,4 @@ function getUrlWithoutHash (item) {
   return item.hash ? item.url.substr(0, item.url.length - item.hash.length) : item.url
 }
 
-module.exports = { buildSiteUiModel, buildPageUiModel, buildUiModel }
+module.exports = { buildBaseUiModel, buildSiteUiModel, buildPageUiModel, buildUiModel }

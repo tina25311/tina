@@ -7,6 +7,12 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *content-classifier*: Deprecate `getComponentMap` and `getComponentMapSortedBy` methods on content catalog (#614)
+* *page-composer*: Promote `contentCatalog` to top-level variable in UI model (#614)
+* *page-composer*: Use exported content catalog to build UI model (#614)
+
 === Fixed
 
 * *asciidoc-loader*: Declare the opal-runtime package as a direct dependency (#613)

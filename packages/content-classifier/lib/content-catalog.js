@@ -167,6 +167,9 @@ class ContentCatalog {
     )
   }
 
+  /**
+   * @deprecated scheduled to be removed in Antora 3
+   */
   getComponentMap () {
     const accum = {}
     for (const [name, component] of this[$components]) {
@@ -175,8 +178,15 @@ class ContentCatalog {
     return accum
   }
 
+  /**
+   * @deprecated scheduled to be removed in Antora 3
+   */
   getComponentMapSortedBy (property) {
-    return this.getComponentsSortedBy(property).reduce((accum, it) => (accum[it.name] = it) && accum, {})
+    const accum = {}
+    for (const component of this.getComponentsSortedBy(property)) {
+      accum[component.name] = component
+    }
+    return accum
   }
 
   getComponents () {
@@ -284,7 +294,9 @@ class ContentCatalog {
         this.getComponent,
         this.getComponentVersion,
         this.getComponents,
+        this.getComponentsSortedBy,
         this.getPages,
+        this.getSiteStartPage,
         this.resolvePage,
         this.resolveResource,
       ].reduce((accum, method) => (accum[method.name] = method.bind(this)) && accum, {})

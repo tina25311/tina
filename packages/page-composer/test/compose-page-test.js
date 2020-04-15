@@ -3,6 +3,7 @@
 
 const { expect, heredoc, spy } = require('../../../test/test-utils')
 const createPageComposer = require('@antora/page-composer')
+const { version: VERSION } = require('@antora/page-composer/package.json')
 
 describe('createPageComposer()', () => {
   let contentCatalog
@@ -60,7 +61,7 @@ describe('createPageComposer()', () => {
         stem: 'get-the-page',
         contents: Buffer.from(
           heredoc`
-          module.exports = function ({ data: { root } }) { return root.site.contentCatalog.getById({ version: '0.9' }) }
+          module.exports = function ({ data: { root } }) { return root.contentCatalog.getById({ version: '0.9' }) }
           ` + '\n'
         ),
       },
@@ -150,9 +151,12 @@ describe('createPageComposer()', () => {
     ]
 
     contentCatalog = {
-      getComponentMapSortedBy: (property) => ({}),
+      getComponentsSortedBy: (property) => [],
       getSiteStartPage: () => undefined,
-      exportToModel: () => {},
+      exportToModel: spy(() => ({
+        getComponentsSortedBy: contentCatalog.getComponentsSortedBy,
+        getSiteStartPage: contentCatalog.getSiteStartPage,
+      })),
     }
 
     uiCatalog = {
@@ -167,6 +171,11 @@ describe('createPageComposer()', () => {
   it('should create a page composer function', () => {
     const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
     expect(composePage).to.be.instanceOf(Function)
+  })
+
+  it('should use exported content catalog', () => {
+    createPageComposer(playbook, contentCatalog, uiCatalog)
+    expect(contentCatalog.exportToModel).to.have.been.called.once()
   })
 
   it('should operate on helper, partial, and layout files from UI catalog', () => {
@@ -256,14 +265,7 @@ describe('createPageComposer()', () => {
           if (!component.versions) component = this.getComponent(component)
           return component.versions.find((candidate) => candidate.version === version)
         },
-        getComponentMapSortedBy: (property) =>
-          components
-            .slice(0)
-            .sort((a, b) => a[property].localeCompare(b[property]))
-            .reduce((accum, it) => {
-              accum[it.name] = it
-              return accum
-            }, {}),
+        getComponentsSortedBy: (property) => components.slice(0).sort((a, b) => a[property].localeCompare(b[property])),
         getPages: () => files,
         getSiteStartPage: () => undefined,
         resolvePage: (spec, { component, version }) => {
@@ -281,7 +283,9 @@ describe('createPageComposer()', () => {
         getById: contentCatalog.getById,
         getComponent: contentCatalog.getComponent,
         getComponentVersion: contentCatalog.getComponentVersion,
+        getComponentsSortedBy: contentCatalog.getComponentsSortedBy,
         getPages: contentCatalog.getPages,
+        getSiteStartPage: contentCatalog.getSiteStartPage,
         resolvePage: contentCatalog.resolvePage,
       })
 
@@ -351,6 +355,13 @@ describe('createPageComposer()', () => {
       expect(file.contents.toString()).to.include('<p>No such thang.</p>')
     })
 
+    it('should be able to access the Antora version', () => {
+      replaceCallToBodyPartial('<body>{{antoraVersion}}</body>')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include(`<body>${VERSION}</body>`)
+    })
+
     it('should be able to reference the real environment variables using the env variable', () => {
       const oldEnv = process.env
       try {
@@ -369,6 +380,14 @@ describe('createPageComposer()', () => {
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog, { FOO: 'BAR' })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<body>BAR</body>')
+    })
+
+    it('should be able to reference properties of site', () => {
+      replaceCallToBodyPartial('<body>{{site.url}}</body>')
+      playbook.site.url = 'https://docs.example.org/site'
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include('<body>https://docs.example.org/site</body>')
     })
 
     it('should use default layout specified in playbook', () => {
