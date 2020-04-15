@@ -33,13 +33,18 @@ module.exports = {
       default: undefined,
     },
     keys: {
-      google_analytics: {
-        doc: 'The Google Analytics account key.',
-        format: String,
-        default: undefined,
-        arg: 'google-analytics-key',
-        env: 'GOOGLE_ANALYTICS_KEY',
-      },
+      doc: 'An API key (in the form name=value) to pass to the UI model. May be specified multiple times.',
+      format: 'primitive-map',
+      default: {},
+      arg: 'key',
+    },
+    // NOTE used to map arg and env for site.keys.google_analytics key
+    __private__google_analytics_key: {
+      doc: 'The Google Analytics account key.',
+      format: String,
+      default: undefined,
+      arg: 'google-analytics-key',
+      env: 'GOOGLE_ANALYTICS_KEY',
     },
   },
   content: {

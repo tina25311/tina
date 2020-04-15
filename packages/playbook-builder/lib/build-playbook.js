@@ -68,6 +68,15 @@ function exportModel (config) {
     if (runtime.pull != null) runtime.fetch = runtime.pull
     delete runtime.pull
   }
+  if (
+    'site' in schemaProperties &&
+    'keys' in schemaProperties.site.properties &&
+    '__private__google_analytics_key' in schemaProperties.site.properties
+  ) {
+    const site = data.site
+    if (site.__private__google_analytics_key != null) site.keys.google_analytics = site.__private__google_analytics_key
+    delete site.__private__google_analytics_key
+  }
   const playbook = camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
   playbook.dir = playbook.playbook ? ospath.dirname((playbook.file = playbook.playbook)) : process.cwd()
   delete playbook.playbook

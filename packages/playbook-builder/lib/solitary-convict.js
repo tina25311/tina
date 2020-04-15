@@ -7,6 +7,7 @@ const yaml = require('js-yaml')
 const { URL } = require('url')
 
 const ARGS_SCANNER_RX = /(?:([^=,]+)|(?==))(?:,|$|=(|("|').*?\3|[^,]+)(?:,|$))/g
+const PRIMITIVE_TYPES = [Boolean, Number, String]
 
 /**
  * A convict function wrapper that registers custom formats and parsers and
@@ -46,6 +47,39 @@ function registerFormats (convict) {
       while ((match = ARGS_SCANNER_RX.exec(val))) {
         const [, k, v] = match
         if (k) accum[k] = v ? (v === '-' ? '-' : yaml.safeLoad(v)) : ''
+      }
+      return accum
+    },
+  })
+  convict.addFormat({
+    name: 'primitive-map',
+    validate: (val) => {
+      if (val == null) return
+      if (
+        !(
+          val.constructor === Object &&
+          Object.entries(val).every(([k, v]) => k && (!v || ~PRIMITIVE_TYPES.indexOf(v.constructor)))
+        )
+      ) {
+        throw new Error('must be a primitive map (i.e., key/value pairs, primitive values only)')
+      }
+    },
+    coerce: (val, config, name) => {
+      const accum = config.has(name) ? config.get(name) : {}
+      let match
+      ARGS_SCANNER_RX.lastIndex = 0
+      while ((match = ARGS_SCANNER_RX.exec(val))) {
+        const [, k, v] = match
+        if (k) {
+          let parsed
+          if (v && v !== '-') {
+            parsed = yaml.safeLoad(v)
+            if (parsed && !~PRIMITIVE_TYPES.indexOf(parsed.constructor)) parsed = v
+          } else {
+            parsed = v || ''
+          }
+          accum[~k.indexOf('-') ? k.replace(/-/g, '_') : k] = parsed
+        }
       }
       return accum
     },

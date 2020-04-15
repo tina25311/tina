@@ -3,8 +3,9 @@ one:
 two: 42
 three: false
 four: John
-stuff:
+keyvals:
   key: 'val'
+  key_only: ''
   foo: bar
   nada: ~
   yep: true

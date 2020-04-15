@@ -6,4 +6,8 @@ four:
 - a
 - b
 - c
-keyvals: 99
+keyvals:
+  seq:
+  - 1
+  - 3
+  - 2
