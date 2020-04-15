@@ -13,6 +13,10 @@ describe('createPageComposer()', () => {
   let playbook
   let uiCatalog
 
+  const defineLayout = (stem, contents) => {
+    layouts.push({ stem, contents: Buffer.from(contents + '\n') })
+  }
+
   const definePartial = (stem, contents) => {
     partials.push({ stem, contents: Buffer.from(contents + '\n') })
   }
@@ -711,6 +715,34 @@ describe('createPageComposer()', () => {
       expect(file.contents.toString()).to.include('<p>../../to.html#fragment</p>')
     })
 
-    // QUESTION what should we do with a template execution error? (e.g., missing partial or helper)
+    it('should include template name of layout in error message', () => {
+      defineLayout(
+        'broken-layout',
+        heredoc`
+        {{#each site.components}}
+        <p>{{./name}}</p>
+        {{/each}}}
+        `
+      )
+      playbook.ui.defaultLayout = 'broken-layout'
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const expectedMessage = "Expecting 'CLOSE', got 'CLOSE_UNESCAPED' in UI template layouts/broken-layout.hbs"
+      expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(expectedMessage)
+    })
+
+    it('should include template name of partial in error message', () => {
+      definePartial(
+        'broken-partial',
+        heredoc`
+        {{#each site.components}}
+        <p>{{./name}}</p>
+        {{/if}}
+        `
+      )
+      replaceCallToBodyPartial('{{> broken-partial}}')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const expectedMessage = "each doesn't match if - 1:3 in UI template partials/broken-partial.hbs"
+      expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(expectedMessage)
+    })
   })
 })

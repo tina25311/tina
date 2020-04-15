@@ -67,7 +67,6 @@ function createPageComposerInternal (baseUiModel, layouts) {
   return function composePage (file, _contentCatalog, navigationCatalog) {
     // QUESTION should we pass the playbook to the uiModel?
     const uiModel = buildUiModel(baseUiModel, file, baseUiModel.contentCatalog, navigationCatalog)
-
     let layout = uiModel.page.layout
     if (!layouts.has(layout)) {
       if (layout === '404') throw new Error('404 layout not found')
@@ -80,11 +79,22 @@ function createPageComposerInternal (baseUiModel, layouts) {
       // TODO log a warning that the default template is being used; perhaps on file?
       layout = defaultLayout
     }
-
     // QUESTION should we call trim() on result?
-    file.contents = Buffer.from(layouts.get(layout)(uiModel))
+    try {
+      file.contents = Buffer.from(layouts.get(layout)(uiModel))
+    } catch (e) {
+      throw transformHandlebarsError(e, layout)
+    }
     return file
   }
+}
+
+function transformHandlebarsError (err, layout) {
+  const stack = err.stack
+  const m = stack.match(/^ *at Object\.ret \[as (.+?)\]/m)
+  err = new Error(`${err.message} in UI template ${m ? 'partials/' + m[1] : 'layouts/' + layout}.hbs`)
+  if (stack) err.stack += `\nCaused by: ${stack}`
+  return err
 }
 
 module.exports = createPageComposer
