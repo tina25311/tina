@@ -9,7 +9,7 @@ Antora caches two types of resources:
 * downloaded UI bundles
 
 Antora stores these resources in the cache directory, which are further organized under the [.path]_content_ and [.path]_ui_ folders, respectively.
-The xref:playbook:runtime-cache-dir.adoc#default-cache[default cache directory] varies by operating system.
+The xref:playbook:runtime-cache-dir.adoc#default[default cache directory] varies by operating system.
 
 == Override the default cache location
 

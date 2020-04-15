@@ -25,12 +25,12 @@ Separate each value with a comma (`,`).
 <2> Exact tag names and glob patterns can be assigned to a `tags` key.
 <3> Disable the default branches filter by setting `branches` and assigning it the tilde (`~`) value.
 
-WARNING: Setting the `tags` key does not automatically disable the xref:content-branches.adoc#default-branch[default branches filter]!
+WARNING: Setting the `tags` key does not automatically disable the xref:content-branches.adoc#default[default branches filter]!
 
 These value patterns are case insensitive (i.e., the characters are matched regardless of case).
 The values can be specified in a comma-separated list or as xref:content-branches.adoc#ex-value-list[single items on individual lines].
 
-[#default-tag]
+[#add-default-tags-filter]
 == Add a default tags filter
 
 The `tags` key isn't used by default (unlike the `branches` key and its default filter).

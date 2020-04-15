@@ -1,6 +1,6 @@
 = Default Layout for Pages
 
-[#default-layout]
+[#default]
 == Default page layout
 
 Unless the `default_layout` key is specified in the playbook, Antora applies the `default` layout to any page where the `page-layout` attribute isn't set.
@@ -28,4 +28,4 @@ ui:
   default_layout: article
 ----
 
-The layout `article` will be applied to every page in the site, except for any page that has the `page-layout` attribute defined in its header.
+The layout `article` will be applied to every page in the site, except for any page that has the xref:page:page-layout.adoc[page-layout attribute defined in its header].

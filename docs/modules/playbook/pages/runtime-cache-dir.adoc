@@ -3,7 +3,7 @@
 The first time Antora runs, it caches any remote content sources git repositories and UI bundles.
 On subsequent runs, Antora resolves these resources from the cache folder, effectively running offline.
 
-[#default-cache]
+[#default]
 == Default cache directory
 
 The remote resources are stored in Antora's default cache location unless an alternate location is configured in the playbook using the `cache_dir` key.
@@ -18,7 +18,7 @@ If you want to update the cache, configure Antora to xref:runtime-fetch.adoc[fet
 Another option is to locate the Antora cache directory on your system and manually delete it.
 
 [#cache-dir-key]
-== Specify a cache directory
+== cache_dir key
 
 The optional `cache_dir` key is configured under the xref:configure-runtime.adoc[runtime key] in a playbook.
 `cache_dir` specifies the directory where the remote repositories should be cloned and the remote UI bundle should be downloaded.

@@ -1,16 +1,37 @@
 = Assign Attributes to a Site
 
-You can apply AsciiDoc and `page-` attributes to all of the pages in a site by declaring them in its playbook file.
+You can apply AsciiDoc and Antora page attributes to all of the pages in a site by declaring them in a site's playbook file.
 
 == Site attributes
 
 Attributes that are declared in a playbook are referred to as [.term]*site attributes*.
-They can be xref:page:attributes.adoc[built-in and custom AsciiDoc and Antora page- attributes].
-These attributes are applied and available to all of a site's pages according to the attribute precedence rules.
+Site attributes can be built-in AsciiDoc and Antora page attributes as well as custom page attributes that you name and define.
+When declared in a playbook, these attributes are applied and available to all of a site's pages according to the attribute precedence rules.
+
+[#attributes-key]
+== attributes key
+
+Site attributes are mapped under the `attributes` key in a playbook.
+The attributes key must be set under the `asciidoc` key.
+
+.antora-playbook.yml
+[source,yaml]
+----
+asciidoc:
+  attributes:
+    hide-uri-scheme: ''
+    page-team: Coco B
+    table-caption: ~
+----
+
+Site attributes are applied and available to all of a site's pages according to the <<assign-precedence,attribute precedence rules>>.
+
+TIP: Attributes can be xref:ROOT:component-attributes.adoc[declared per component version] in an [.path]_antora.yml_ file or xref:page:attributes.adoc[directly on a page in the page's header].
+Depending on assigned precedence, site attributes may override component version and page attributes or vice versa.
 
 == Set and unset attributes in the playbook
 
-Each site attribute is entered on its own line under the playbook's `asciidoc` and `attributes` category keys.
+Each site attribute is entered on its own line as a key-value pair under the `attributes` key.
 
 .Declaring site attributes in the playbook
 [source,yaml]
@@ -45,7 +66,7 @@ Press kbd:[space] once after the colon, then enter the value of the attribute.
 See the <<assign-precedence,next section>> to learn more about hard and soft setting rules.
 
 Site attributes are applied and available to every page in your site.
-The values of user-defined attributes, such as `page-team` and `db` can be displayed in a page using the attribute reference syntax (e.g., `+{db}+`).
+The values of custom attributes, such as `page-team` and `db` can be displayed in a page using the attribute reference syntax (e.g., `+{db}+`).
 
 include::ROOT:partial$dont-use-these-attributes.adoc[]
 

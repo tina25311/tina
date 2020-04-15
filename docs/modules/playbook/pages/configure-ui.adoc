@@ -30,7 +30,7 @@ The `ui`, `bundle`, and `url` keys are required.
 The other keys are optional; Antora will use their default values if they're not specified.
 
 [#ui-reference]
-== Available ui keys
+== Available UI keys
 
 [cols="3,6,1"]
 |===

@@ -17,7 +17,7 @@ Specifically, a playbook tells Antora:
 * [x] What information should be applied to the xref:configure-site.adoc[site globally], such as its title, base URL, and service integrations.
 * [x] The page that sits at the root of the site (i.e., xref:site-start-page.adoc[home or landing page content]).
 * [x] Which xref:configure-content-sources.adoc[content repositories, branches, and tags] to feed into Antora.
-* [x] What xref:configure-asciidoc.adoc#attrs[AsciiDoc document attributes] and xref:configure-asciidoc.adoc#extensions[Asciidoctor extensions] should be applied site wide.
+* [x] What xref:asciidoc-attributes.adoc[AsciiDoc and Antora page attributes] and xref:asciidoc-extensions.adoc[Asciidoctor extensions] should be applied site wide.
 * [x] Which xref:configure-ui.adoc[UI bundle] to use to control the visual layout, style, and behavior of the pages.
 * [x] Where the site should be xref:configure-output.adoc[published and in what format].
 * [x] How and when Antora should handle xref:configure-runtime.adoc[source repository updates, artifact updates, and its cache].

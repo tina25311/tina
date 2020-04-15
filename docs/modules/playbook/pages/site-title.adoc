@@ -16,7 +16,7 @@ site:
 
 The `title` key accepts a string that's displayed wherever the UI calls the site's title.
 
-[#add-a-site-title]
+[#add-site-title]
 == Add a site title
 
 Use the `title` key to add a title to your site.

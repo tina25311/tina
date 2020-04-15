@@ -18,8 +18,8 @@ The `url` key defines the base URL of the published site.
 The value must be an absolute URL (e.g., _\https://docs.example.com_) or a root-relative pathname (e.g., _/docs_).
 The value *shouldn't end with a trailing slash.*
 
-[#configure-url]
-== Configure absolute base URL
+[#absolute-site-url]
+== Configure absolute site URL
 
 An absolute `url` value must start with a valid URL scheme directly followed by a colon and two slashes (`://`).
 Common schemes include `https://` and `file://`.
@@ -36,7 +36,7 @@ site:
 The site URL is used in the generated site when either an absolute URL is required or a pathname.
 It also implicitly activates any features that require an absolute URL or a pathname.
 
-=== Absolute base URL features
+=== Absolute URL features
 
 The canonical URL property gets included in the head of each published page.
 The component, version, module, and page segments are then appended to the site URL to produce the complete URL.

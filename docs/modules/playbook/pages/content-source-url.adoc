@@ -70,6 +70,7 @@ include::partial$relative-path-rules.adoc[]
 IMPORTANT: In order to use a local content repository with Antora, even when using the worktree (`HEAD`), the repository *must have at least one commit*.
 If you're not ready to commit other files, simply create an empty [.path]_.gitignore_ file and commit it.
 
+[#git-worktree]
 == Use the git worktree
 
 When using a local, non-bare repository, Antora reads files from the worktree (i.e., the working directory) when the current branch is matched by the xref:content-branches.adoc[branches filter].

@@ -2,7 +2,7 @@
 
 Use the `fetch` key whenever you want to retrieve updates from the remote content sources repositories and UI bundle snapshots.
 
-== fetch
+== Fetch operations
 
 Activating the `fetch` key from a playbook or the CLI causes Antora to perform both of the following actions each time it runs:
 

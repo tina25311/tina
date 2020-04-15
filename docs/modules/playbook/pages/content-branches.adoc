@@ -1,7 +1,7 @@
 = Branches
 
 The `branches` key accepts a list of exact branch names and shell glob patterns.
-When the `branches` key isn't specified globally or on a `url`, Antora will apply the <<default-branches,default branches filter>>.
+When the `branches` key isn't specified globally or on a `url`, Antora will apply the <<default,default branches filter>>.
 
 [#branches-key]
 == branches key
@@ -47,7 +47,7 @@ content:
 <2> Value that start with number should be enclosed in single quotation marks (`'`).
 <3> Negated values, i.e., values that start with the bang symbol (`!`), should be enclosed single quotation marks (`'`).
 
-[#default-branches]
+[#default]
 == Default branches filter
 
 When the `branches` key isn't set on a `url` key (or globally), Antora will use the [.term]*default branches filter*.

@@ -18,16 +18,16 @@ ui: # <1>
   bundle: # <2>
     url: https://repo.org/path/to/a-ui-bundle.zip # <3>
 ----
-<1> Enter the parent key `ui`, followed by a colon (`:`), then press kbd:[Enter].
-<2> Press the space bar twice so the `bundle` key is a child of `ui`.
-Enter the key `bundle`, followed by a colon (`:`), then press kbd:[Enter].
-<3> The `url` key must be nested under `bundle`.
-Enter `url`, followed by a colon and a blank space (`: `), then enter the URL or filesystem path value.
+<1> Enter the parent key `ui`, followed by a colon (`:`), and then press kbd:[Enter].
+<2> The `bundle` key is a child of `ui`.
+Enter the key's name, `bundle`, followed by a colon (`:`), and then press kbd:[Enter].
+<3> The `url` key is a child of `bundle`.
+Enter `url`, followed by a colon and a blank space (`++: ++`), and then enter a URL or filesystem path value.
 
 Remember that the UI bundle must be a ZIP archive.
 
 [#remote-bundle]
-== Fetch and load a remote bundle
+== Load a remote bundle
 
 When the value of `url` is a remote URL, Antora downloads and caches the ZIP archive the first time it runs.
 
@@ -90,8 +90,8 @@ ui:
     url: /home/user/projects/docs-ui/build/ui-bundle.zip
 ----
 
-[#start-path]
-== Specify a start path
+[#start-path-key]
+== start_path key
 
 The `start_path` key is mapped to the `bundle` key.
 It accepts a the relative path inside the UI bundle from where Antora should start reading files.

@@ -5,6 +5,7 @@
 The `start_path` key identifies where the [.path]_antora.yml_ file is located in a repository or local worktree relative to the root of the repository.
 This key doesn't need to be set on a `url` if the content source root and root of the repository are the same.
 
+[#default]
 == Default start path
 
 By default, Antora assumes that the root of a content source repository  or local worktree (i.e., the value of a `url` key) is also the xref:ROOT:content-source-repositories.adoc#content-source-root[content source root].
@@ -14,8 +15,7 @@ When [.path]_antora.yml_ is stored at the root of a content source repository, *
 == start_path key
 
 If [.path]_antora.yml_ isn't stored at the root of a content source repository assigned to a `url` key, then use the `start_path` key to tell Antora where to find the xref:ROOT:content-source-repositories.adoc#content-source-root[content source root].
-The `start_path` key can be configured under the xref:configure-content-sources.adoc[content key] and applied to all of the `url` keys specified under `sources`.
-It can also be configured per `url` key.
+A `start_path` key can only be configured per `url` key (it can't be set directly on `content`).
 
 .antora-playbook.yml
 [source,yaml]
@@ -30,8 +30,8 @@ content:
 The `start_path` key accepts a repository root relative path.
 *Don't add leading or trailing slashes to the path.*
 
-[#start-path-for-a-url]
-== Specify a start path for a url
+[#start-path-for-url]
+== Specify start_path for a url key
 
 The value of the `start_path` key is the repository relative path to a content source root.
 Let's define a `start_path` value for the repository shown in <<ex-root>>.

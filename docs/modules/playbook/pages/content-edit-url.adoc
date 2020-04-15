@@ -11,13 +11,14 @@ On this page, you'll learn:
 * [x] How to customize the edit URL.
 * [x] How to disable the edit URL.
 
-[#default-edit-url]
+[#default]
 == Antora's default edit URL behavior
 
 Antora automatically provides edit URLs for pages that are sourced from the hosted GitLab, GitHub, Bitbucket, and Pagure services.
 In the default UI, the *Edit this Page* link in the upper right corner of the page uses the edit URL Antora computes to link a visitor to the edit interface provided by the hosted git service.
 For example, if you click the *Edit this Page* link on this page, your browser will go to GitLab's file editing interface and load this page's AsciiDoc source file.
 
+[#edit-url-key]
 == Customize the edit URL
 
 The `edit_url` key is useful when you're using an unrecognized git solution, or you want <<source-view,Edit this Page to link to an alternate view>>, such as the raw or rendered display, of a page's source file.
@@ -167,6 +168,7 @@ Using the inputs in <<ex-view>>, the *Edit this Page* link on each page sourced 
 
 NOTE: To change the link text of *Edit this Page* or replace it with an image, you'll need to update your UI.
 
+[#disable-edit-url]
 == Disable the edit URL
 
 The `edit_url` key can turn off the edit URL feature on all of your content sources or per individual content source.

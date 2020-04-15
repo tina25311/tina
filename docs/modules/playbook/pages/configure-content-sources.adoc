@@ -31,7 +31,7 @@ content: # <1>
 
 The `content`, `sources`, and `url` keys are required.
 The other keys are optional.
-The xref:content-branches.adoc#default-branches[branches] and xref:content-edit-url.adoc#default-edit-url[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly set in the playbook.
+The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly set in the playbook.
 
 Keys-value pairs that are specified directly under `content` are applied to all of the `url` key entries under `sources`, unless the key is also specified on a specific `url`.
 
@@ -68,14 +68,14 @@ content: # <1>
 
 The `content`, `sources`, and `url` keys are required.
 The other keys are optional.
-The xref:content-branches.adoc#default-branches[branches] and xref:content-edit-url.adoc#default-edit-url[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly defined in the playbook.
+The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly defined in the playbook.
 
 [#sources-reference]
-== Available content and sources keys
+== Available content keys
 
 [cols="3,6,1"]
 |===
-|Content and Sources Keys |Description |Required
+|Content Keys |Description |Required
 
 |xref:content-branches.adoc[branches]
 |Accepts a list of branch name patterns, either as exact names or shell glob patterns.
