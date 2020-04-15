@@ -2012,7 +2012,9 @@ describe('aggregateContent()', function () {
             startPath: '',
           },
         }
-        if (repoBuilder.remote) expectedFileSrc.origin.url = repoBuilder.url
+        if (repoBuilder.remote) {
+          expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
+        }
         if (repoBuilder.bare || repoBuilder.remote) {
           expectedFileSrc.origin.refhash = refhash
         } else {
@@ -2064,7 +2066,9 @@ describe('aggregateContent()', function () {
             startPath: 'docs',
           },
         }
-        if (repoBuilder.remote) expectedFileSrc.origin.url = repoBuilder.url
+        if (repoBuilder.remote) {
+          expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
+        }
         if (repoBuilder.bare || repoBuilder.remote) {
           expectedFileSrc.origin.refhash = refhash
         } else {
@@ -2116,7 +2120,9 @@ describe('aggregateContent()', function () {
             startPath: '',
           },
         }
-        if (repoBuilder.remote) expectedFileSrc.origin.url = repoBuilder.url
+        if (repoBuilder.remote) {
+          expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
+        }
         if (repoBuilder.bare || repoBuilder.remote) {
           expectedFileSrc.origin.refhash = refhash
         } else {
