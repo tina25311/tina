@@ -1,6 +1,6 @@
-.Configure a Site
+.Configure Your Site
 * xref:index.adoc[Antora Playbook]
-** xref:playbook-schema.adoc[Configuration Schema]
+* xref:set-up-playbook.adoc[Set Up a Playbook]
 * xref:configure-site.adoc[Site Keys]
 ** xref:site-url.adoc[Site URL]
 ** xref:site-title.adoc[Site Title]
@@ -16,11 +16,13 @@
 ** xref:content-source-start-paths.adoc[Multiple Start Paths]
 ** xref:content-edit-url.adoc[Edit URL]
 * xref:configure-asciidoc.adoc[AsciiDoc Keys]
-** xref:site-attributes.adoc[Assign Attributes to a Site]
+** xref:asciidoc-attributes.adoc[Assign Attributes to a Site]
+** xref:asciidoc-extensions.adoc[Asciidoctor Extensions]
 * xref:configure-ui.adoc[UI Keys]
 ** xref:ui-bundle-url.adoc[UI Bundle URL]
 ** xref:ui-output-dir.adoc[UI Output Directory]
 ** xref:ui-default-layout.adoc[Default Layout for Pages]
+* xref:configure-redirect-facility.adoc[Redirect Facility Key]
 * xref:configure-output.adoc[Output Keys]
 ** xref:output-dir.adoc[Output Directory]
 ** xref:output-provider-archive.adoc[Archive Provider and Path]
@@ -29,8 +31,5 @@
 * xref:configure-runtime.adoc[Runtime Keys]
 ** xref:runtime-fetch.adoc[Fetch Updates]
 ** xref:runtime-cache-dir.adoc[Cache Directory]
-* xref:configure-redirect-facility.adoc[Redirect Facility Key]
-// ** Create a Playbook
 * xref:author-mode.adoc[Create an Author Workspace]
-//** xref:playbook-project.adoc[Playbook Projects]
 * xref:use-an-existing-playbook-project.adoc[Use an Existing Project]
