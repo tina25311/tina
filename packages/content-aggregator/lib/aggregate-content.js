@@ -38,7 +38,7 @@ const ANY_SEPARATOR_RX = /[:/]/
 const CSV_RX = /\s*,\s*/
 const VENTILATED_CSV_RX = /\s*,\s+/
 const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name)|path)\}/g
-const GIT_EXTENSION_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
+const GIT_SUFFIX_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
 const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
 const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
@@ -553,7 +553,7 @@ function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefine
       path: () => (startPath ? path.join(startPath, '%s') : '%s'),
       refhash: () => refhash,
       refname: () => refname,
-      web_url: () => (url ? url.replace(GIT_EXTENSION_RX, '') : ''),
+      web_url: () => (url ? url.replace(GIT_SUFFIX_RX, '') : ''),
     }
     origin.editUrlPattern = editUrl.replace(EDIT_URL_TEMPLATE_VAR_RX, (_, name) => vars[name]())
   }
@@ -675,7 +675,7 @@ function onGitComplete (progressBar, err) {
 function generateCloneFolderName (url) {
   let normalizedUrl = url.toLowerCase()
   if (posixify) normalizedUrl = posixify(normalizedUrl)
-  normalizedUrl = normalizedUrl.replace(GIT_EXTENSION_RX, '')
+  normalizedUrl = normalizedUrl.replace(GIT_SUFFIX_RX, '')
   const basename = normalizedUrl.split(ANY_SEPARATOR_RX).pop()
   const hash = createHash('sha1')
   hash.update(normalizedUrl)
