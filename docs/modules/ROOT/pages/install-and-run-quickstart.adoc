@@ -1,6 +1,6 @@
 = Install and Run Antora Quickstart
 :version-node-major: 12
-:version-node: {version-node-major}.16.1
+:version-node: {version-node-major}.16.2
 :url-node-releases: https://nodejs.org/en/about/releases/
 :url-demo: https://gitlab.com/antora/demo
 
