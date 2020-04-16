@@ -3,7 +3,7 @@
 :listing-caption: Example
 
 You can create a redirect using Antora's built-in `page-aliases` attribute.
-This xref:antora-page-attributes.adoc[page attribute] is useful when you delete a page, rename a page's file, or move a page to a different module or component.
+This xref:page-attributes.adoc[page attribute] is useful when you delete a page, rename a page's file, or move a page to a different module or component.
 
 [IMPORTANT]
 .Bulk URL Redirects

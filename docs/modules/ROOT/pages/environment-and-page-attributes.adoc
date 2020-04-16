@@ -7,7 +7,7 @@ Antora uses these attributes to pass data from a page to any pipeline extensions
 
 NOTE: There are a few `page-` attributes, such as `page-aliases`, that accept user-defined values.
 You can also create custom `page-` attributes using an attribute entry.
-See the xref:page:antora-page-attributes.adoc[Antora page- attributes] to learn more.
+See the xref:page:page-attributes.adoc[page attributes] to learn more.
 
 [#page-attributes]
 == Read-only page- attributes

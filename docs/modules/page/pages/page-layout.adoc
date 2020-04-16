@@ -1,6 +1,6 @@
 = Assign UI Templates with page-layout
 
-Antora provides a xref:antora-page-attributes.adoc[page attribute] named `page-layout`.
+Antora provides a xref:page-attributes.adoc[page attribute] named `page-layout`.
 This attribute applies an alternate UI layout to the contents of a page.
 
 == page-layout attribute
