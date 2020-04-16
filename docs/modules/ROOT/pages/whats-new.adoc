@@ -18,33 +18,88 @@ _**Release date:** 2020.xx.xx | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
 
 === Added
 
+Allow COLUMNS environment variable to control CLI help information width when output is not a TTY.
+
+Issue {url-issues}/121[#121^]:: Don't sort component version entries in the content aggregate, leave them in the order they're discovered.
 Issue {url-issues}/192[#192^]:: Add Apache `httpd` redirect facility.
 ({url-gitlab}/djencks[@djencks^])
-Issue {url-issues}/251[#251^]:: Allow AsciiDoc, `page-`, and user attributes to be scoped per component version.
+Issue {url-issues}/251[#251^]:: Allow AsciiDoc and Antora page attributes to be scoped per component version.
 Add support for attributes to be set and defined in the component version descriptor ([.path]_antora.yml_).
+Add `addNavigation` function to `NavigationCatalog` for registering all trees for a component version at once.
+Issue {url-issues}/310[#310^]:: Add function for extracting metadata from the AsciiDoc header.
+Use automatic reference text (i.e., `xreftext`) if contents of page xref is empty in a page or resource file.
+Use automatic reference text (i.e., `navtitle` attribute or `xreftext`) if contents of page xref in navigation file is empty.
 Issue {url-issues}/328[#328^]:: Expose the content catalog's public API to the UI model as `site.contentCatalog`.
 Add the built-in helpers `resolvePage` and `resolvePageUrl` to resolve pages and their publish URLs in UI templates.
-Issue {url-issues}/494[#494^]:: Add trailing newline to all generated files.
+Issue {url-issues}/330[#330^]:: Add support for xref attribute on image macros to reference internal anchor or page.
+Issue {url-issues}/379[#379^]:: Register alias to start page from index page of component version if index page is missing.
+Issue {url-issues}/486[#486^]:: Add `--key` option to `generate` command to define entries for `site.keys`.
+The option can be specified multiple times.
+Issue {url-issues}/494[#494^]:: Add trailing newline to all generated redirect files.
 ({url-gitlab}/djencks[@djencks^])
-Issue {url-issues}/495[#495^]:: Allow a single content source to contain numerous component versions`' source directories in a single git repository branch with the `start_paths` playbook key.
-({url-gitlab}/djencks[@djencks^])
-Issue {url-issues}/495[#495^]:: Add support for glob patterns (wildcards and brace expressions) to value of `start_paths` key.
+Issue {url-issues}/495[#495^]:: Add the `start_paths` playbook key that allows a content source (url + branch/tag) to map to more than one content source root.
+Allow `start_paths` key to support glob patterns (wildcards and brace expressions).
 Implement scan + filter logic for glob patterns specified in `start_paths` key for both git tree and filesystem worktree.
-Issue {url-issues}/517[#517^]:: Verify downloaded UI bundle is a valid zip file before caching and throw an error if invalid.
-//* *page-composer*: Add `relativize` as built-in UI helper (#555)
+({url-gitlab}/djencks[@djencks^])
+Issue {url-issues}/517[#517^]:: Verify downloaded UI bundle is a valid zip file before caching.
+Throw an error if invalid.
+Issue {url-issues}/537[#537^]:: Add `getPages()` method to content catalog to retrieve all pages.
+Issue {url-issues}/543[#543^]:: Map `asciidoc` property on component to `asciidoc` property on latest version of component.
+Issue {url-issues}/555[#555^]:: Add `relativize` as built-in UI helper.
+Issue {url-issues}/568[#568^]:: Assign value of family-relative path of page to `page-src-path` attribute on document.
+Issue {url-issues}/578[#578^]:: Assign the SHA-1 commit hash for the content source ref (branch or tag) to the `page-origin-refhash` attribute on document unless page is taken from worktree.
+Assign the SHA-1 commit hash for the content source ref (branch or tag) to the `src.origin.refhash` property on the virtual file unless file is taken from worktree.
+Make `refhash` available as a template variable in the edit URL pattern.
+Issue {url-issues}/586[#586^]:: Allow the target page ID of an xref to be a page alias.
+Load the AsciiDoc header for all pages before any page is converted so xref can reference page alias.
+If `ContentCatalog#resolvePage` cannot locate page, look for an alias and dereference if found.
+//Add `getComponentVersion` method to exported API?
+Issue {url-issues}/593[#593^]:: Map `title` property on file to AsciiDoc doctitle.
+Issue {url-issues}/594[#594^]:: Use target page ID as fallback content for unresolved or invalid xref.
 
 === Fixed
 
+Issue {url-issues}/524[#524^]:: Restrict `start_page` value to a page that belongs to that component version.
+Issue {url-issues}/556[#556^]:: Use state file to verify repository in cache is valid; reclone repository if file is missing (i.e., corrupt).
 Issue {url-issues}/565[#565^]:: Latest page version should never be newer than latest component version.
+Issue {url-issues}/583[#583^]:: Brace pattern in `start_paths` value should match whole filename segment, even if pattern contains a wildcard.
+Issue {url-issues}/584[#584^]:: Brace pattern in `start_paths` value should match fixed entries if wildcard entry is also present.
+Issue {url-issues}/607[#607^]:: Always consult media type when looking for AsciiDoc pages in document converter.
+Issue {url-issues}/613[#613^]:: Declare the opal-runtime package as a direct dependency.
 
 === Changed
 
+Issue {url-issues}/251[#251^]:: Apply camelCase transformation to keys in the component version descriptor file, excluding the `asciidoc` key.
+Pass the site-wide AsciiDoc config to the `classifyContent` function.
+Issue {url-issues}/486[#486^]:: Make `site.keys` map in playbook schemaless and ensure the values are primitive.
+The option can be specified multiple times.
+Issue {url-issues}/494[#494^]:: Add trailing newline to all generated sitemap files.
+({url-gitlab}/djencks[@djencks^])
+Issue {url-issues}/495[#495^]:: Condense repeating slashes in `start_path` value(s).
 Issue {url-issues}/516[#516^]:: Preserve stack from got (HTTP client) error when downloading UI.
 Issue {url-issues}/517[#517^]:: Report clearer error when local or cached UI bundle is not valid or cannot otherwise be read.
 Issue {url-issues}/531[#531^]:: Add start path to error message thrown while aggregating files.
 Consistently enclose details in error message in round brackets.
+Issue {url-issues}/532[#532^]:: Report clearer error if component version descriptor file cannot be parsed
 Issue {url-issues}/538[#538^]:: Rename `getFiles()` method on content catalog and UI catalog to `getAll()`; retain `getFiles()` as deprecated method.
+Call `getAll()` method on catalog if available, otherwise `getFiles()`.
+Issue {url-issues}/541[#541^]:: Update `resolvePage` helper to return page model instead of virtual file object; can be disabled using `model=false` argument.
+Issue {url-issues}/542[#542^]:: Rename `asciidocConfig` property on component version object to `asciidoc`.
 Issue {url-issues}/551[#551^]:: Upgrade Handlebars to fix performance regression.
+Issue {url-issues}/554[#554^]:: Fix `resolvePage` and `resolvePageUrl` helpers to retrieve content catalog independent of template context.
+Make `resolvePage` and `resolvePageUrl` helpers resilient against falsy page spec.
+Issue {url-issues}/561[#561^]:: Modify `ContentCatalog#registerComponentVersion` to return component version added.
+Issue {url-issues}/562[#562^]:: Modify `ContentCatalog#addFile` to return file added.
+Issue {url-issues}/563[#563^]:: Don't assign `out` property when adding a file to the content catalog if `out` property has falsy value.
+Issue {url-issues}/564[#564^]:: Don't relativize absolute `pub` URL.
+Don't prepend site URL to absolute canonical URL.
+Issue {url-issues}/568[#568^]:: Assign value of family-relative path of page to `srcPath` property on page UI model.
+Issue {url-issues}/581[#581^]:: Ignore dot (hidden) folders when matching start paths unless pattern itself begins with a dot.
+Issue {url-issues}/589[#589^]:: Rename `resolvePageUrl` UI helper to `resolvePageURL`.
+Issue {url-issues}/595[#595^]:: Modify netlify redirects to be forced as recommended by Netlify.
+Issue {url-issues}/597[#597^]:: Change `ContentCatalog#resolvePage` to delegate to `ContentCatalog#resolveResource`.
+Issue {url-issues}/614[#614^]:: Promote `contentCatalog` to top-level variable in the UI model.
+Use the exported content catalog to build the UI model.
 
 == Declare component version attributes in antora.yml
 
@@ -63,28 +118,36 @@ Antonio ({url-gitlab}/bandantonio[@bandantonio^]):: For writing the xref:install
 Rob Donnelly ({url-gitlab}/rfdonnelly[@rfdonnelly^]):: For fixing typos in the Run Antora in a Container page.
 {url-mr}/434[!434^]
 
-Guillaume Grossetie ({url-gitlab}/g.grossetie[@g.grossetie^]):: For fixing the xref:install:linux-requirements.adoc#install-nvm[nvm installation link] on the Linux and macOS Requirements pages.
-{url-mr}/405[!405^]
+Guillaume Grossetie ({url-gitlab}/g.grossetie[@g.grossetie^]):: For redoing the UI loader tests to dynamically construct UI bundles and test them ({url-issues}/553[#553^]), and for fixing the nvm installation link on the Linux and macOS Requirements pages ({url-mr}/405[!405^]).
 
 David Jencks ({url-gitlab}/djencks[@djencks^])::
 +
 --
 For making numerous improvements to Antora's documentation, including (but not limited to) clarifying component version sort order and distributed component versions, providing tips for the `start_path` key and component and version names, and adding filtering by line numbering information.
 
-For implementing trailing newlines on generated files {url-issues}/494[#494^], the `start_paths` playbook key {url-issues}/495[#495^], and the Apache `httpd` redirect facility {url-issues}/192[#192^].
+For implementing trailing newlines on generated files ({url-issues}/494[#494^]), the `start_paths` playbook key ({url-issues}/495[#495^]), and the Apache `httpd` redirect facility ({url-issues}/192[#192^]).
 
 For documenting the `page-aliases` attribute.
 {url-issues}/509[#509^]
 //{url-issues}/502[#502^], {url-issues}/521[#521^]
 --
 
+Jared Morgan ({url-gitlab}/jaredmorgs[@jaredmorgs^]):: For taking on the herculean task of documenting the `start_paths` feature.
+{url-issues}/576[#576^]
+
 Daniel Mulholland ({url-gitlab}/danyill[@danyill^]):: For adding documentation about https://gitlab.com/antora/antora/-/blob/master/contributing.adoc#user-content-develop-with-docker[developing Antora with Docker] and Gulp test errors to the contributing guide.
 {url-issues}/388[#388^]
+
+Andreas Offenhaeuser:: For documenting how to include navigation content.
+{url-mr}/325[!325^]
+
+Alexander Schwartz ({url-gitlab}/ahus1[@ahus1^]):: For fixing broken anchors in the documentation.
+{url-mr}/489[!489^]
 
 Matthew Setter:: For documenting the redirect facility and assisting Antonio with the Antora quickstart guide.
 {url-mr}/281[!281^]
 
-Ben Walding ({url-gitlab}/bwalding[@bwalding^]):: For documenting the `prerelease` key in the component version descriptor page.
+Ben Walding ({url-gitlab}/bwalding[@bwalding^]):: For documenting the component version descriptor `prerelease` key.
 https://gitlab.com/antora/antora/-/commit/ad7e039ede287605da345f7fa36350e2745cb84f[Commit ad7e039e^]
 
 Anthony Vanelverdinghe ({url-gitlab}/anthonyv.be[@anthonyv.be^]):: For editing the How Antora Can Help page.
@@ -98,3 +161,5 @@ Yoginth:: For fixing typos in the package comments, test cases, and releasing gu
 
 The ability to use parent references in the target of the AsciiDoc image macro (e.g., `image::../../../module-b/_images/image-filename.png[]`) will be deprecated in Antora 3.0.
 You should begin replacing any such image targets with resource IDs.
+
+//*content-classifier*: Deprecate `getComponentMap` and `getComponentMapSortedBy` methods on content catalog (#614)
