@@ -14,6 +14,29 @@ Antora {page-component-display-version} is available.
 
 _**Release date:** 2020.xx.xx | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
 
+== Default xref link text for pages and navigation files
+
+Antora now uses the xref:page:module-and-page-xrefs.adoc#default-link-text[target page's title or xreftext] when the link text in an xref macro isn't specified.
+For example, the following xref doesn't have any link text.
+
+----
+See xref:component-prerelease.adoc[].
+----
+
+Notice in the output below that Antora automatically filled in the link text, using the target page's title, when it generated the site.
+
+====
+See xref:component-prerelease.adoc[].
+====
+
+Xrefs in navigation files behave the same way with one additional feature.
+Navigation files use the `navtitle` value to populate missing link text.
+If `navtitle` isn't set, then they use the page's `xreftext` value.
+
+== Declare AsciiDoc and page attributes per component version
+
+See xref:component-attributes.adoc[] to learn more.
+
 == Resolved issues
 
 === Added
@@ -101,10 +124,6 @@ Issue {url-issues}/597[#597^]:: Change `ContentCatalog#resolvePage` to delegate 
 Issue {url-issues}/614[#614^]:: Promote `contentCatalog` to top-level variable in the UI model.
 Use the exported content catalog to build the UI model.
 
-== Declare component version attributes in antora.yml
-
-See xref:component-attributes.adoc[Assign attributes to a component version] to learn more.
-
 [#thank-you-2-3-0]
 == Thank you!
 
@@ -112,7 +131,7 @@ Most important of all, a huge *thank you!* to all the folks who helped make Anto
 
 We want to call out the following people for making contributions to this release:
 
-Antonio ({url-gitlab}/bandantonio[@bandantonio^]):: For writing the xref:install-and-run-quickstart.adoc[Install and Run Antora Quickstart] guide and assisting Matthew Setter with the redirect facility documentation.
+Antonio ({url-gitlab}/bandantonio[@bandantonio^]):: For writing the xref:install-and-run-quickstart.adoc[] guide and assisting Matthew Setter with the redirect facility documentation.
 {url-issues}/299[#299^]
 
 Rob Donnelly ({url-gitlab}/rfdonnelly[@rfdonnelly^]):: For fixing typos in the Run Antora in a Container page.

@@ -73,7 +73,7 @@ The target page's xref:page-id.adoc#id-module[module coordinate] and page coordi
 [#ex-across-modules-base]
 .current-page.adoc
 ----
-xref:module:target-page-filename.adoc[link text]
+xref:module:target-page-filename.adoc[optional link text]
 ----
 
 The following examples use the pages that belong to the component version <<ex-co,colorado 5.2>>.
@@ -98,6 +98,32 @@ The page [.path]_tour.adoc_ belongs to the `get-started` module, and [.path]_faq
 See the xref:ROOT:terms/faqs.adoc[FAQs].
 ----
 
+[#default-link-text]
+== Use the target page's default link text
+
+When an xref doesn't specify any link text, Antora uses the target page's `xreftext` value as the link text.
+Let's create an xref to the [.path]_page-aliases.adoc_ page in Antora's own documentation.
+
+----
+See xref:page-aliases.adoc[].
+----
+
+Notice the xref doesn't have any link text specified.
+As you can see in the output below, Antora automatically filled in the link text, using the target page's title, when it generated the site.
+
+====
+See xref:page-aliases.adoc[].
+====
+
+If you click on the link, you'll see that the clickable text and the title of the target page are the same.
+
+A page's title is assigned to the built-in AsciiDoc `xreftext` attribute by default.
+You can also set the `xreftext` attribute in a page's header and assign it custom text.
+
+TIP: Xrefs in a navigation file behave the same way with one additional feature.
+Navigation files use the `navtitle` value to populate missing link text.
+If `navtitle` isn't set, then they use the page's `xreftext` value.
+
 == Learn more
 
-To learn how to create xrefs to pages that belong to other components and component versions see xref:version-and-component-xrefs.adoc[Xref pages in other components and versions].
+To learn how to create xrefs to pages that belong to other components and component versions see xref:version-and-component-xrefs.adoc[].
