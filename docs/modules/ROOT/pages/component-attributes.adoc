@@ -75,7 +75,7 @@ Hard unset component version attributes can't be set by a page.
 <4> To soft unset an attribute, assign the value `false`.
 A page can override soft unset component version attributes.
 
-The example assumes that the declared attributes weren't previously xref:playbook:site-attributes.adoc[hard set or unset in the site's playbook], so the following precedence rules are applied to the attributes defined in the component version descriptor:
+The example assumes that the declared attributes weren't previously xref:playbook:asciidoc-attributes.adoc[hard set or unset in the site's playbook], so the following precedence rules are applied to the attributes defined in the component version descriptor:
 
 [#component-rules]
 .*Component version attribute precedence rules*

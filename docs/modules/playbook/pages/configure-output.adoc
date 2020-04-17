@@ -1,211 +1,74 @@
-= Output Configuration
-// URLs
-:url-zip-file-format: https://en.wikipedia.org/wiki/Zip_(file_format)
+= Output Keys
 
-On this page, you'll learn:
+The playbook keys configured under `output` define where the site files are written and control how they're processed.
 
-* [x] How to configure the output directory.
-* [x] How to configure multiple destinations and providers.
-* [x] How to specify a custom provider.
+[#output-key]
+== output key
 
-[#output-dir]
-== Directory
+The `output` key contains common output settings and a list of destination specifications.
 
-When you only need to output the site to a single directory, you can use the output dir key.
-This key is meant to provide a shorthand to the more formal destinations key.
-
-The output `dir` specifies the directory where the generated site will be published.
-The key accepts a relative or absolute filesystem path.
-
-A relative path will be expanded to an absolute path.
-
-* If the first path segment is `~`, the path is resolved relative to the user's home directory.
-* If the first path segment is `.`, the path is resolved relative to the location of the playbook file.
-* If the first path segment is `~+`, or does not begin with an aforementioned prefix, the path is resolved relative to the current working directory.
-
-IMPORTANT: The dir key overrides the path key of the first `fs` provider specified in the destinations key.
-This allows the output directory to be overridden from the xref:cli:index.adoc[CLI] using the `--to-dir=<dir>` option.
-
-=== Default output dir
-
-The default output directory is [.path]_build/site_.
-If no destinations are specified in the playbook, all site files will be written to this directory.
-To disable this default, either specify at least one destination under the destinations key or set the destinations key to an empty array (`[]`).
-
-[#add-dir]
-=== Explicit value
-
-In the relative `dir` example, the site will be published to a folder named [.path]_launch_ relative to the playbook file.
-
-.Relative dir value
+.antora-playbook.yml
 [source,yaml]
 ----
-output:
-  dir: ./launch
+output: # <1>
+  clean: true # <2>
+  dir: ./public # <3>
+  destinations: # <4>
+  - provider: archive # <5>
+    path: ./public/blue.zip # <6>
 ----
+<1> Optional `output` key
+<2> Optional `clean` key
+<3> Optional `dir` key
+<4> Optional `destinations` key
+<5> Optional `provider` key
+<6> Optional `path` key
 
-In the absolute `dir` example, the site will be published to [.path]_home/dev/docs-site/beta_ regardless of where the playbook is located.
+The `output` key and the key-value pairs it can accept are optional.
+When `output` isn't set in a playbook, Antora uses the `fs` provider and publishes the site to the output directory [.path]_build/site_ by default.
 
-.Absolute dir value
-[source,yaml]
-----
-output:
-  dir: /home/user/docs-site/beta
-----
+[#destinations-key]
+== destinations and provider keys
 
-[#output-destinations]
-== Destinations
+The `output` key accepts the `destinations` key and its nested list of key-value pairs.
+The `destinations` key is required when you want to xref:output-provider-archive.adoc[publish the site files as an archive], use a xref:output-provider-custom.adoc[custom provider], or publish a site to xref:output-provider-fs.adoc#publish-to-multiple-destinations[multiple destinations].
 
-When you need to publish to multiple destinations, you'll use the destinations key.
-The destinations key accepts a list of destination specifications.
-Each destination specification must include the provider key, which indicates which provider should be used to publish the site and which type of publication it will be.
+The `destinations` key accepts a list of specifications that tell Antora which provider(s) to use to publish the site and where the generated files should be saved.
+When `destinations` is set, one or more `provider` keys must be defined under it.
 
-[#output-providers]
-=== Providers
+A [.term]*provider* determines which transport protocol (local, SSH, HTTP, etc.) Antora should use when publishing the site and manages the low-level details of publication.
+Antora has two built-in providers, `fs` (filesytem) and `archive` (ZIP archive).
+`provider` is also an extension point that can be used to delegate to a custom provider, such as SSH, S3, etc.
 
-Antora offers two built-in providers.
+[#disable-publishing]
+=== Disable site publishing
 
-Filesystem (`fs`)::
-Publishes the output files to a directory.
-Archive (`archive`)::
-Publishes the output files to a {url-zip-file-format}[ZIP] archive file.
+To disable publishing the site files entirely, including to the default output directory, set `destinations` to an empty array (`[]`).
 
-You can also create custom providers for SSH, S3, etc.
+[#output-reference]
+== Available output keys
 
-[#fs-provider]
-==== Filesystem provider
+[cols="3,6,1"]
+|===
+|Output Keys |Description |Required
 
-The `fs` provider publishes the site to a directory.
-It's the formal equivalent to specifying the dir key on output.
+|xref:output-dir.adoc#clean-key[clean], xref:output-provider-fs.adoc#clean-key[destinations++[n]++.clean]
+|When set to `true`, the `clean` key removes the output directory or filesystem provider path recursively before generating the site.
+|No
 
-.Filesystem provider
-[source,yaml]
-----
-output:
-  destinations:
-  - provider: fs
-----
+|destinations[n].path
+|Designates the target location where the output file(s) are written.
+See xref:output-provider-fs.adoc[Filesystem provider and path] and xref:output-provider-archive.adoc[Archive provider and path].
+|No
 
-In this example, the site is published to [.path]_build/site_.
+|destinations[n].provider
+|Specifies the transport protocol Antora uses to publish the site.
+Accepts the built-in xref:output-provider-fs.adoc[fs] or xref:output-provider-archive.adoc[archive] values.
+xref:output-provider-custom.adoc[Custom providers] can also be specified.
+Multiple providers can be specified under `destinations`.
+|No
 
-[#archive-provider]
-==== Archive provider
-
-The `archive` provider publishes a site to a {url-zip-file-format}[ZIP] file.
-
-.Archive provider
-[source,yaml]
-----
-output:
-  destinations:
-  - provider: archive
-----
-
-In this example, the site is generated as a ZIP file and published to [.path]_build/site.zip_.
-
-[#output-path]
-=== Path
-
-The path key on a destination allows you to specify an output location per provider.
-It accepts a relative or absolute filesystem path.
-The provider will create any interim directories as needed.
-
-A relative path will be expanded to an absolute path.
-
-* If the first path segment is `~`, the path is resolved relative to the user's home directory.
-* If the first path segment is `.`, the path is resolved relative to the location of the playbook file.
-* If the first path segment is `~+`, or does not begin with an aforementioned prefix, the path is resolved relative to the current working directory.
-
-IMPORTANT: If you set the dir key in a playbook or via the CLI, its value will override the `path` value of the first `fs` provider specified in the destinations key.
-
-==== Default paths
-
-The default `fs` path is [.path]_build/site_.
-
-The default `archive` path is [.path]_build/site.zip_.
-
-[#archive-path]
-==== Explicit path
-
-In the relative path example, we're running Antora on a playbook located in a directory named [.path]_docs-site_.
-
-.Relative archive provider path
-[source,yaml]
-----
-output:
-  destinations:
-  - provider: archive
-    path: ./blue.zip
-----
-
-Once generation is complete, the site will be published to [.path]_docs-site/blue.zip_.
-
-In the absolute path example, we can run Antora on a playbook located anywhere on our computer.
-
-.Absolute archive provider path
-[source,yaml]
-----
-output:
-  destinations:
-  - provider: archive
-    path: /home/user/projects/launch/blue.zip
-----
-
-Once generation is complete, the site will be published to [.path]_/home/user/projects/launch/blue.zip_.
-
-////
-When a value is assigned to the output directory key, the archive path is appended to the `dir` path.
-
-.Dir and archive provider path
-[source,yaml]
-----
-output:
- dir: ./launch/sites
- destinations:
- - provider: archive
-   path: ./blue.zip
-----
-
-In this example, the archived site will be located at [.path]_launch/sites/blue.zip_.
-////
-
-=== Multiple destinations
-
-In this example, we're running Antora on a playbook file in the directory named [.path]_tmp_ and publishing the site to two locations, one relative and one absolute.
-
-.Relative fs path and absolute archive path
-[source,yaml]
-----
-output:
-  destinations:
-  - provider: fs
-    path: ./releases/red
-    clean: true
-  - provider: archive
-    path: /home/user/projects/docs-site/blue.zip
-----
-
-The site published using the `fs` provider to the directory [.path]_tmp/releases/red_.
-This directory will be removed prior to publishing since we've turned the clean key on.
-The site is also published as an archive to [.path]_/home/user/projects/docs-site/blue.zip_ by the `archive` provider.
-
-=== Custom provider
-
-If the provider key does not contain a recognized built-in provider, Antora will attempt to require it as a Node module.
-This allows you to supply a custom provider.
-
-If the value begins with a dot (`.`), Antora will require the path relative to the playbook file.
-Otherwise, Antora will require the value as a Node module installed in the playbook project.
-
-The custom provider is a JavaScript function that matches the following signature:
-
-[source,js]
-----
-async function publish (destConfig, files, playbook)
-----
-
-The `destConfig` argument is an object containing key/value pairs that correspond to the properties of the destination specification.
-The files argument is a `ReadableStream` of virtual files.
-The `playbook` argument is the object containing key/value pairs from the playbook as a whole.
-
-WARNING: The custom provider is an alpha API and subject to change.
+|xref:output-dir.adoc[dir]
+|Specifies an output directory when the site is published using the default provider or first `fs` provider specified under `destinations`.
+|No
+|===

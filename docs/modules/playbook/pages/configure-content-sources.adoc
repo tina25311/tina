@@ -1,360 +1,118 @@
-= Content Configuration
+= Content Keys
 
-On this page, you'll learn:
+The playbook keys configured under `content` and `sources` define the locations of the content source repositories and how they're processed.
 
-* [x] How to configure the content source URL key.
-* [x] How to configure the branches key.
-* [x] How to configure the tags key.
-* [x] How to mix local and remote repositories and branches.
-* [x] When and how to configure the start path key.
+[#content-key]
+== content key
 
-The keys documented on this page are organized under the `content` and `sources` categories in the xref:playbook-schema.adoc[playbook schema].
-These keys define the location of the documentation component repositories (`url` and `start_path`) and control which branches (`branches`) should be processed.
-
-== URL key
-
-The sources URL key (`url`) tells Antora where to find a documentation component's repository.
-You must provide a value for each documentation component repository you want added to your site.
-The key accepts any URI that git supports, including a local filesystem path.
-
-[#local-urls]
-=== Use local content repositories
-
-Antora permits the value of `url` to be a relative or absolute filesystem path.
-
-.Local git repositories
-[source,yaml]
-----
-content:
-  sources:
-  - url: /home/user/docs-site/demo-component-a # <1>
-  - url: ./demo-component-b # <2>
-----
-<1> Absolute path to git repository
-<2> Relative path to git repository (starting from the directory of the playbook)
-
-A relative path is expanded to an absolute path using the following rules:
-
-* If the first path segment is a tilde (`~`), the path is resolved relative to the user's home directory.
-* If the first path segment is a dot (`.`), the path is resolved relative to the location of the playbook file.
-* If the first path segment is tilde plus (`~+`), or does not begin with an aforementioned prefix, the path is resolved relative to the current working directory.
-
-Like with git, Antora differentiates between a local filesystem path and a remote URI based on certain characters in the value.
-Consider the following two rules:
-
-* The value contains a colon that's not followed by a forward slash or backslash (e.g., `host:repo`).
-* The value contains a colon that's followed by two forward slashes (i.e., `://`).
-
-If the value matches either of these rules, the value is handled as a remote URI, _not_ a local filesystem path.
-Note that a colon is permitted when it's part of a Windows drive letter (e.g., `c:/`).
-Look for these rules in the sections that follow.
-
-IMPORTANT: In order to use a local content repository with Antora, even when using the worktree (i.e., HEAD), the repository _must_ have at least one commit.
-If you're not ready to commit other files, simply create an empty [.path]_.gitignore_ file and commit it.
-
-=== Use the git worktree
-
-When using a local, non-bare repository, Antora reads files from the worktree (i.e., the working directory) when the current branch is matched by the <<branches,branches filter>>.
-(You can use the value `HEAD` in the branches filter as a shorthand for the current branch).
-
-.Use files from the worktree
-[source,yaml]
-----
-content:
-  sources:
-  - url: ./demo-component-b
-    branches: HEAD, some-other-branch
-----
-
-This behavior is central to xref:author-mode.adoc[author mode].
-It means you *don't have to commit files locally* for Antora to use them.
-
-CAUTION: If the current branch is matched by the branches filter, and the worktree contains the same files with the same component version as another branch matched by the branches filter, Antora will fail to run because it disallows duplicate files.
-
-To ensure Antora *doesn't* use files from the worktree for a local URL, change the URL to point directly to the [.path]_.git_ directory.
-That way, the worktree is out of Antora's purview.
-
-.Refers directly to the .git folder to bypass the worktree
-[source,yaml]
-----
-content:
-  sources:
-  - url: ./demo-component-b/.git
-----
-
-[#remote-urls]
-=== Fetch and use remote content repositories
-
-Remote repositories can be fetched via URLs (http, https), SSH URIs, and git URIs.
-
-.Remote git repositories
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-a.git
-  - url: git@gitlab.com:antora/demo/demo-component-b.git
-  - url: git://github.com/org/content-repo.git
-  - url: https://%GITHUB_TOKEN%:x-oauth-basic@github.com:org-name/project-docs.git
-----
-
-Whether or not the `.git` extension is required depends on the settings of the git host.
-It's usually best to include it.
-
-See xref:private-repository-auth.adoc[Private repository authentication] to learn how to use Antora to connect to private repositories over HTTP/HTTPS using a username+password or OAuth token.
-
-[#mixing-urls]
-=== Configure local and remote URLs in the same playbook
-
-You can build your documentation site using a combination of local and remote content repositories, even when the local repositories have uncommitted changes.
+The content sources git references and other source location properties are defined under the required `content` key.
+The `branches`, `tags`, and `edit_url` keys can be specified directly on `content`.
+They can also be listed under `sources` or under both `content` and `sources` in a playbook.
 
 [source,yaml]
 ----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-a.git
-  - url: ./demo-component-b
+content: # <1>
+  branches: [v2.0, v2.5, v3.0] # <2>
+  tags: [release/*, '!release/*-patch'] # <3>
+  edit_url: '{web_url}/blob/{refname}/{path}' # <4>
+  sources: # <5>
+  - url: https://git-service.com/org/repo-z.git # <6>
+    start_path: path-to/content-source-root # <7>
+  - url: https://git-service.com/org/repo-y.git # <8>
 ----
+<1> Required `content` key
+<2> Optional `branches` key
+<3> Optional `tags` key
+<4> Optional `edit_url` key
+<5> Required `sources` key
+<6> Required `url` key
+<7> Optional `start_path` key
+<8> Another `url` key
 
-[#branches]
-== Branches key
+The `content`, `sources`, and `url` keys are required.
+The other keys are optional.
+The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly set in the playbook.
 
-The branches key accepts a list of branch name patterns.
-The names can be specified in a comma-separated list or as single items on individual lines.
-The values can be the exact name of a branch, a shell glob pattern such as `v3.*`, or a combination of exact and glob names.
-These patterns are case insensitive (i.e., the characters are matched regardless of case).
+Keys-value pairs that are specified directly under `content` are applied to all of the `url` key entries under `sources`, unless the key is also specified on a specific `url`.
 
-Let's look at some examples of each of these name declaration methods.
+[#sources-key]
+== sources key
 
-[#default-branch]
-=== Default branch filter
+The `sources` key is required and nested under the `content` key.
+The `sources` key contains the list of git repository locations, branch and tag name patterns, and other repository properties that Antora uses when aggregating the site content.
+The `sources` key must contain at least one `url` key with an assigned value.
 
-When no branches are specified for a source, Antora will use the [.term]*default branch filter*.
-By default, Antora will select branches from the repository that begin with the letter `v` as well as the branch named `master`.
-
-.Use default branch filter
 [source,yaml]
 ----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-a.git
+content: # <1>
+  sources: # <2>
+  - url: https://git-service.com/org/repo-z.git # <3>
+    branches: [v1.*, v2.*, !v1.2] # <4>
+    start_paths: path-to/content-source-root-{item..item} # <5>
+  - url: https://git-service.com/org/repo-y.git # <6>
+    branches: [] # <7>
+    tags: [release/*, '!release/*-patch'] # <8>
+    start_path: path-to/content-source-root # <9>
+    edit_url: '{web_url}/blob/{refname}/{path}' # <10>
+----
+<1> Required `content` key
+<2> Required `sources` key
+<3> Required `url` key
+<4> Optional `branches` key
+<5> Optional `start_paths` key
+<6> Another `url` key
+<7> Optional `branches` key
+<8> Optional `tags` key
+<9> Optional `start_path` key
+<10> Optional `edit_url` key
+
+The `content`, `sources`, and `url` keys are required.
+The other keys are optional.
+The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly defined in the playbook.
+
+[#sources-reference]
+== Available content keys
+
+[cols="3,6,1"]
+|===
+|Content Keys |Description |Required
+
+|xref:content-branches.adoc[branches]
+|Accepts a list of branch name patterns, either as exact names or shell glob patterns.
+|No
+
+|xref:content-edit-url.adoc[edit_url]
+|Accepts a URL pattern that contains the URL segments of the git solution or source file view plus three placeholder segments, `+{web_url}+`, `+{refname}+`, and `+{path}+`.
+|No
+
+|xref:content-source-url.adoc[sources++[n]++.url]
+|Accepts any URI that git supports, including a local filesystem path.
+|Yes
+
+|xref:content-source-start-path.adoc[sources++[n]++.start_path]
+|Specifies the repository relative path to a content source root's location.
+|No
+
+|xref:content-source-start-paths.adoc[sources++[n]++.start_paths]
+|Accepts a list of repository relative path patterns to content source root locations, either as exact paths or shell glob patterns.
+|No
+
+|xref:content-tags.adoc[tags]
+|Accepts a list of tag name patterns, either as exact names or shell glob patterns.
+|No
+|===
+
+////
+[source,yaml]
+----
+content: # <1>
+  sources: # <2>
+  - url: https://gitlab.com/antora/demo/demo-component-b.git # <3>
+    branches: [v1.0, v2.0] # <4>
+    start_paths: ? # <5>
   - url: https://gitlab.com/antora/demo/demo-component-b.git
+    tags: v3.* # <6>
+    start_path: docs # <7>
+    edit_url: '{web_url}/blob/{refname}/{path}' # <8>
 ----
-
-The result of the example above is the same as if you specified the master branch and all of the version branches explicitly, `branches: [master, v*]`.
-
-If you want to modify the default branch filter, simply assign a value to the `branches` key directly on the `content` category.
-
-.Modifying the default branch filter
-[source,yaml]
-----
-content:
-  branches: v*
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-a.git
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-----
-
-The new default branch filter will be applied to all entries that do not themselves have a value defined for the `branches` key.
-
-[#separate-branch-names]
-=== Separate branches values using commas or markers
-
-Branch names can be separated by commas (`,`) and listed on the same line as `branches` as long as the values are inside a set of square brackets (`[]`) per YAML rules.
-If there is only one branches value, it doesn't need to be enclosed in square brackets (`branches: v1.0`).
-
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches: [v1.0, v2.0] # <1>
-  - url: https://gitlab.com/antora/demo/demo-component-a.git
-    branches: master # <2>
-
-----
-<1> Comma-separated branches values
-<2> A single branches value doesn't need to be enclosed in square brackets
-
-Alternatively, each branch name can be specified on its own line, using a hyphen (`-`) list marker (per YAML rules), and listed beneath the branches key.
-
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches:
-    - v1.* # <1>
-    - v2.0.0
-    - v2.1.*
-----
-<1> Marker-separated branches values
-
-[#exact-branch]
-=== Specify branches by name
-
-Branches can be specified by their exact name.
-
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches:
-    - issue-27-sneaky-chinchilla
-    - master
-    - '1.0'
-    - v2.0
-----
-
-A branch name that begins with a number, like `1.0`, must be enclosed in single quotes (`'`), per YAML rules.
-
-[#current-branch]
-=== Using the current branch
-
-When working with a local repository, you may find yourself switching between branches often.
-To save you from having to remember to update the playbook file to point to the current branch, you can use a special keyword, `HEAD`.
-
-[source,yaml]
-----
-content:
-  sources:
-  - url: ./workspace/project-a
-    branches: HEAD
-----
-
-Using the value `HEAD` is equivalent to using the name of the current branch.
-All the same rules apply.
-
-[#glob-branch]
-=== Specify branches by glob pattern
-
-Branches can be specified by shell glob patterns such as as `v3.4.*`.
-If the pattern starts with a `!` character, then it is negated (i.e., the matches are excluded).
-This is how you can deselect branches that were matched by a previous glob.
-
-For example, let's say you want to include all `1.x` versions of the Component B except for `1.7`.
-You'd enter the following branches values into the playbook:
-
-.Glob branch patterns
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches:
-    - v1.*
-    - '!v1.7'
-----
-
-*A negated value must be enclosed in single quotes, per YAML rules.*
-
-Here's how you'd exclude all branches that end in `-beta`.
-
-.Exclude branches ending in -beta
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches:
-    - v*
-    - '!v*-beta'
-----
-
-== Tags key
-
-The tags key (`tags`) accepts match patterns just like the <<branches,branches key>>.
-
-NOTE: Setting the `tags` key does not disable the <<default-branch,default branches>>.
-If you want to disable all branches, you must set the `branches` key to an empty array (e.g., `[]`).
-
-[#default-tag]
-=== Add a default sources tag filter
-
-Tags are not used by default.
-If you want to apply the same tag filter to all source entries that don't declare the `tags` key explicitly (i.e., a default tag filter), assign a value to the `tags` key directly on the `content` category.
-
-.Assign a default tag filter to content sources
-[source,yaml]
-----
-content:
-  tags: v*
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-a.git
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-----
-
-Antora will now discover and use tags that begin with the letter `v` for all content sources that don't declare the `tags` key.
-
-[#mix-branches-and-tags]
-=== Use tags and branches from the same content repository
-
-In this example, we'll fetch the `master` branch from a content repository.
-From the same repository, we'll also fetch all of the tags starting with the letter `v`.
-
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/org/project-docs.git
-    branches: master
-    tags: v*
-----
-
-If you only want to use tags, you must explicitly disable branches.
-
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/org/project-docs.git
-    branches: ~
-    tags: v*
-----
-
-[#mix-local-remote-branches]
-=== Mix local and remote repositories and branches
-
-You can generate your site using remote branches and a local branch of a component.
-In this example, we'll fetch all of the `v1.x` and `v2.x` branches from Component B's remote content repository.
-We'll also load the branch `v3.0.0-beta` from a local repository.
-
-.Use remote and local repositories and branches
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches: [v1.*, v2.*]
-  - url: ./docs-site/demo-component-b
-    branches: v3.0.0-beta
-----
-
-== Start path key
-
-Antora automatically looks for a xref:ROOT:component-version-descriptor.adoc[component version descriptor] file ([.path]_antora.yml_) at the root of a source repository.
-*When this default repository structure is used, the start path key doesn't need to be set or assigned in the playbook.*
-If the [.path]_antora.yml_ isn't stored at the root of a repository, then you need to use the `start_path` key to tell Antora where to find it.
-
-[#add-start-path]
-=== Specify a start path
-
-The value of the `start_path` key is the repository relative path to a component version descriptor file.
-Let's define the `start_path` value for a repository with the structure shown below.
-
-image::start-path-dir.png[,176]
-
-In order for Antora to locate the documentation component in this repository, the start path value needs to point Antora to the directory where [.path]_antora.yml_ is located.
-
-.Set start_path
-[source,yaml]
-----
-content:
-  sources:
-  - url: https://github.com/org/repo
-    branches: [master, v2.6]
-    start_path: packages/docs
-----
-
-With `start_path` specified, Antora won't collect any files outside of \https://github.com/org/repo/packages/docs.
+////

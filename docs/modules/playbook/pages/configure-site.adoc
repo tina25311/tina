@@ -1,167 +1,59 @@
-= Site Configuration
-:url-robots-standard: https://en.wikipedia.org/wiki/Robots_exclusion_standard
+= Site Keys
 
-On this page, you'll learn:
+The playbook keys configured under `site` manage the site's published identity and how it interacts with certain applications once it's published.
 
-* [x] How to add a title to the site.
-* [x] How to configure the site's base URL.
-* [x] How to assign a site start page.
-* [x] How to associate the site with a Google Analytics account.
+[#site-key]
+== site key
 
-[#configure-title]
-== Add a site title
-
-Use the title key (`title`) to add a title to your site.
+Global generated site files, service accounts, and other common properties are defined under the `site` key in a playbook file.
+These settings are applied to the entire site when it's generated.
 
 [source,yaml]
 ----
-site:
-  title: Demo Docs Site
+site: # <1>
+  title: Docs Site # <2>
+  url: https://docs.example.org # <3>
+  start_page: component-b::index.adoc # <4>
+  robots: allow # <5>
+  keys: # <6>
+    google_analytics: XX-123456 # <7>
 ----
+<1> Required `site` key
+<2> Required `title` key
+<3> Required `url` key
+<4> Optional `start_page` key
+<5> Optional `robots` key
+<6> Optional `keys` key
+<7> Optional `google_analytics` key
 
-The title is displayed wherever the site's UI calls this key.
-Antora's default UI displays the site title in the navigation bar at the top of the site.
+The `site`, `title`, and `url` keys are required.
+The other keys are optional; Antora will use their default values if they're not specified.
 
-[#configure-url]
-== Configure the base URL
+[#site-reference]
+== Available site keys
 
-The site URL key (`url`) defines the optional base URL of the published site.
-The URL must be an absolute URL (e.g., _\https://docs.example.com_) or a root-relative pathname (e.g., _/docs_).
-The value *should not contain a trailing slash.*
+[cols="3,6,1"]
+|===
+|Site Keys |Description |Required
 
-If the `url` value is an absolute URL, it must start with a valid URL scheme directly followed by a colon and two slashes (`://`).
-Common schemes include `https://`, `http://`, and `file://`.
-Absolute URLs may include a pathname segment (e.g., _\https://example.com/docs_).
+|xref:site-keys.adoc#google-analytics-key[keys.google_analytics]
+|Associates a Google Analytics account with the site.
+|No
 
-[source,yaml]
-----
-site:
-  url: https://demo.antora.org
-----
+|xref:site-robots.adoc[robots]
+|Specifies whether Antora generates a _robots.txt_ file.
+Accepts the values `allow`, `disallow`, and a custom, multi-line string.
+|No
 
-The site URL is only used in the generated site when either an absolute URL is required or a pathname.
-It also implicitly activates any features that require an absolute URL or a pathname.
+|xref:site-start-page.adoc[start_page]
+|Accepts a page ID that specifies the start page of a site.
+|No
 
-Features that require an absolute URL are the sitemap files and the canonical URL property in the UI model (which gets included in the head of each page).
-In those instances, the component, version, module, and page segments are appended to the site URL to produce the complete URL.
-For example,  _\https://docs.example.org/component/version/page.html_.
-Features that require a pathname (which can be derived from the absolute URL) are the 404 page and the URL prefix on redirect rules.
+|xref:site-title.adoc[title]
+|Specifies the title of a site.
+|Yes
 
-[#configure-start-page]
-== Configure the site start page
-
-You can use a page from a documentation component as the index page for your site.
-When a start page is specified, visitors are redirected from the site's index page at the base URL to the URL of the start page.
-The start page key (`start_page`) accepts a xref:page:page-id.adoc[page ID] as a value.
-
-=== Use a specific version
-
-If you want the site's start page to be a specific version of the designated page, include the xref:page:page-id.adoc#id-version[version in the page ID].
-
-[source,yaml]
-----
-site:
-  title: Demo Docs Site
-  url: https://demo.antora.org
-  start_page: 1.0@component-b::index.adoc
-----
-
-In this example, _\https://demo.antora.org/index.html_ will redirect to _\https://demo.antora.org/component-b/1.0/index.html_.
-
-=== Use the latest version
-
-If you want the start page to always point to the last version of the page you designate, don't include a version in the page ID.
-
-[source,yaml]
-----
-site:
-  title: Demo Docs Site
-  url: https://demo.antora.org
-  start_page: component-b::index.adoc
-----
-
-For this example, let's say that version 2.0 is the latest version of Component B.
-In this case, _\https://demo.antora.org/index.html_ will redirect to _\https://demo.antora.org/component-b/2.0/index.html_.
-
-[#configure-ga]
-== Add a Google analytics account
-
-Account keys for services can be passed to Antora using the `keys` subcategory.
-The `google_analytics` key assigns a Google Analytics account to the site.
-
-[source,yaml]
-----
-site:
-  title: Demo Docs Site
-  url: https://demo.antora.org
-  keys:
-    google_analytics: 'XX-123456'
-----
-
-The account key must be enclosed in single quotation marks (`'`).
-
-[#configure-robots]
-== Generate a robots.txt file
-
-Antora can generate a {url-robots-standard}[robots.txt file] to control which paths in the site crawlers can visit.
-If the `site.robots` key in the playbook is both set and non-empty, and the `site.url` is also defined, Antora will generate a [.path]_robots.txt_ file at the root of the site.
-The allowed values of this key are as follows:
-
-* `allow`
-* `disallow`
-* arbitrary, multi-line string
-
-The values `allow` and `disallow` are shorthand for allowing or disallowing all user agents access to all paths.
-Let's assume the `url` and `robots` keys are defined as follows:
-
-[source,yaml]
-----
-site:
-  url: https://example.org
-  robots: allow
-----
-
-This will generate a [.path]_robots.txt_ file that allows crawlers access to all of the site's paths.
-
-.robots.txt
-....
-User-agent: *
-Allow: /
-....
-
-Similarly, if the `url` and `robots` keys are defined as follows:
-
-[source,yaml]
-----
-site:
-  url: https://example.org
-  robots: disallow
-----
-
-This will generate a [.path]_robots.txt_ file that disallows access to all paths.
-
-.robots.txt
-....
-User-agent: *
-Disallow: /
-....
-
-Any other non-empty value will be used as the contents of the [.path]_robots.txt_ file.
-For example, let's assume the `robots` key is declared as follows:
-
-[source,yaml]
-----
-site:
-  url: https://example.org
-  robots: |
-    User-agent: *
-    Disallow: /private/
-----
-
-This will result in the following [.path]_robots.txt_ file being generated.
-
-.robots.txt
-....
-User-agent: *
-Disallow: /private/
-....
+|xref:site-url.adoc[url]
+|Specifies the base URL of a site.
+|Yes
+|===

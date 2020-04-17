@@ -1,16 +1,16 @@
 = Page and Environment Attribute Reference
 :page-aliases: page:page-and-site-attributes.adoc
 
-Antora automatically sets the following `page-` and environment attributes at runtime.
+Antora automatically sets the following page and environment attributes at runtime.
 Antora uses these attributes to pass data from a page to any pipeline extensions, integrations, and the site UI.
 *These attributes should be treated as read-only!*
 
-NOTE: There are a few `page-` attributes, such as `page-aliases`, that accept user-defined values.
-You can also create custom `page-` attributes using an attribute entry.
+NOTE: There are a few page attributes, such as `page-aliases`, that accept user-defined values.
+You can also create custom page attributes using an attribute entry.
 See the xref:page:page-attributes.adoc[page attributes] to learn more.
 
 [#page-attributes]
-== Read-only page- attributes
+== Read-only page attributes
 
 Antora automatically sets the following attributes for each page when it runs:
 
@@ -79,7 +79,7 @@ Antora automatically sets the following attributes for each page when it runs:
 |7.1
 |===
 
-The output of these `page-` attributes can be displayed in a page using the AsciiDoc attribute reference syntax (e.g., `+{page-version}+`).
+The output of these page attributes can be displayed in a page using the AsciiDoc attribute reference syntax (e.g., `+{page-version}+`).
 
 .Reference the current page's module name, component title, and version
 ----

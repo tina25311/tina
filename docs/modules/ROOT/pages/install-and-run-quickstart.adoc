@@ -114,7 +114,7 @@ ui: # <3>
 <2> The `sources` category contains the list of git repository locations, branch name patterns, and other repository properties that Antora uses when aggregating the site content.
 <3> The `ui` category contains keys that specify the location of the UI bundle and how it should be processed.
 
-TIP: See the xref:playbook:playbook-schema.adoc[Playbook configuration schema] for more detailed information about the Antora playbook file.
+TIP: See the xref:playbook:index.adoc[Antora playbook] for more detailed information about the playbook file.
 
 == Run Antora
 

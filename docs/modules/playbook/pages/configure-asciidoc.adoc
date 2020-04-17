@@ -1,146 +1,41 @@
 = AsciiDoc Configuration
-:keywords: AsciiDoc attrs, page header attributes
-// Filters
-:page-tags: playbook keys, AsciiDoc
 
-On this page, you'll learn:
+The playbook keys configured under `asciidoc` apply page attributes, Asciidoctor extensions, and additional behavior to the AsciiDoc processor.
 
-* [x] Where to declare site-scoped AsciiDoc attributes and Asciidoctor extensions.
-* [x] How to register an Asciidoctor extension globally.
-* [x] How to register an Asciidoctor extension that's scoped to each page.
-* [x] How to preload modules into the Antora runtime.
+[#asciidoc-key]
+== asciidoc key
 
-[#attrs]
-== AsciiDoc attributes
+The `asciidoc` key specifies AsciiDoc and Antora page attributes that are assigned and made available to all of the site's pages.
+It also registers global and scoped Asciidoctor extensions.
 
-Built-in AsciiDoc attributes, user-defined AsciiDoc attributes, and `page-` attributes can be declared in a site's playbook file and are referred to as [.term]*site attributes*.
-These attributes are nested under the `asciidoc` and `attributes` category keys in the playbook.
-
-.Declaring site attributes
+.antora-playbook.yml
 [source,yaml]
 ----
-asciidoc:
-  attributes:
-    hide-uri-scheme: ''
-    page-team: Coco B
-    table-caption: ~
+asciidoc: # <1>
+  attributes: # <2>
+    table-caption: ~ # <3>
+  extensions: # <4>
+  - ./lib/custom-block.js # <5>
 ----
+<1> Optional `asciidoc` key
+<2> Optional `attributes` key
+<3> Defined built-in AsciiDoc attribute
+<4> Optional `extensions` key
+<5> Path to a local extension script
 
-Site attributes are applied and available to all of a site's pages according to the xref:site-attributes.adoc#assign-precedence[attribute precedence rules].
-See xref:site-attributes.adoc[Site attributes] to learn how to set, assign, and unset attributes in the playbook in more detail.
-Also, attributes can be xref:ROOT:component-attributes.adoc[declared by component version] and may override site attributes depending on the the attribute's assigned precedence.
+[#asciidoc-reference]
+== Available AsciiDoc keys
 
-[#extensions]
-== Asciidoctor extensions
+[cols="3,6,1"]
+|===
+|AsciiDoc Keys |Description |Required
 
-The `asciidoc` category can also used for registering Asciidoctor extensions.
-First, you need to install the extension code, which you can either do by installing it globally, declaring it as a dependency of the project, or adding the extension script to the playbook project.
-Then, you can register the extension using the `extensions` key.
-The `extensions` key accepts a list of node module names (i.e., npm package names) and/or paths.
+|xref:asciidoc-attributes.adoc[attributes]
+|Accepts a map of AsciiDoc and Antora page attributes that are applied to and made available to all of the site's pages.
+|No
 
-[#global-extensions]
-=== Global Asciidoctor extensions
-
-Global extensions are registered once, before any pages are converted.
-These extensions are shared by all documents Antora converts using Asciidoctor (including navigation files).
-A global extension is a node module or script that exports a function when required.
-Antora passes this function directly to the `register` method of Asciidoctor's static extension registry.
-
-To register a global extension, all you need to do is reference its name (if it's a node module on the require path) or path (if it's a local script) in the `extensions` key.
-
-.Register a global extension provided by a node module
-[source,yaml]
-----
-asciidoc:
-  extensions:
-  - asciidoctor-emoji-macro
-----
-
-In this case, `asciidoctor-emoji-macro` is the name of an installed node module and is thus available on the require path (either in the [.path]__node_modules__ directory in the playbook project or in the global [.path]__node_modules__ directory).
-
-.Register a global extension from a local script
-[source,yaml]
-----
-asciidoc:
-  extensions:
-  - ./lib/shout-block
-----
-
-In this case, the extension is a script located at the path [.path]_lib/shout-block.js_ relative to the playbook file.
-
-Here's an example that shows how to register multiple global extensions:
-
-.Register multiple global extensions
-[source,yaml]
-----
-asciidoc:
-  extensions:
-  - asciidoctor-emoji-macro
-  - ./lib/shout-block
-----
-
-[#scoped-extensions]
-=== Scoped Asciidoctor extensions
-
-Rather than requiring an extension globally, you may want to register an extension per instance of the AsciiDoc processor.
-The benefit of this approach is that it allows the extension to hook into the Antora lifecycle.
-The other difference is that scoped extensions are only registered and used for pages, not for navigation files.
-
-In order to register a scoped extension, the extension must support this mode of usage.
-Specifically, the extension must export a `register` function that accepts an extension registry on which it self registers.
-The function is called with a scoped (per-processor) extension registry and a context object.
-The context object includes the current file, the content catalog, and the AsciiDoc configuration object from the playbook.
-
-Here's an example of a `register` function for a scoped extension:
-
-.Scoped Asciidoctor extension register function
-[source,js]
-----
-module.exports.register = function (registry, context) {
-  registry.block('shout', createShoutBlock(context))
-}
-----
-
-A scoped extension is registered in the playbook in exactly the same way as a global extension.
-
-.Register a scoped extension from the require path
-[source,yaml]
-----
-asciidoc:
-  extensions:
-  - asciidoctor-plantuml
-----
-
-.Register a scoped extension from a local script
-[source,yaml]
-----
-asciidoc:
-  extensions:
-  - ./lib/equation-macro
-----
-
-The main difference is that if the extension exports the `register` function, it gets scoped to the processor instance instead of being registered globally.
-
-//Perhaps we should require #register at the end of the extension; hmmm
-
-=== Preloading modules
-
-Instead of registering extensions using the playbook, you can preload extensions using the `-r` (or `--require`) CLI option.
-The value of this option may be either a path to a file (relative to the current directory), or a node module name.
-The `-r` option may be specified multiple times.
-
-This option gives site authors the ability to load additional code into the runtime before Antora begins executing.
-The option follows the module resolution rules of the `require()` function in Node.
-A common use case for this option is to register Asciidoctor extensions globally.
-
-If the node module or script is an Asciidoctor extension, it must self-register with Asciidoctor's static extension registry when required in order for the extension to be used.
-(Antora merely requires the script.
-It does not invoke its exported function).
-
-Here's an example showing how to use the Antora CLI to preload multiple Asciidoctor extensions:
-
- $ antora -r ./lib/shout-block -r asciidoctor-emoji-macro antora-playbook.yml
-
-The `-r` option can also be used for other purposes, such as to alter global state or override Antora components.
-
-For more information about the CLI, see the xref:cli:index.adoc[CLI commands and options] page.
+|xref:asciidoc-extensions.adoc[extensions]
+|Accepts a list of Asciidoctor extensions.
+Depending on the capabilities of the extension, the extension will either be registered globally or be scoped to the AsciiDoc processor instance for a page.
+|No
+|===

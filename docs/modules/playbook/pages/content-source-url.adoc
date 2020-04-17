@@ -1,0 +1,105 @@
+= URLs for Content Sources
+
+The `url` key tells Antora where to find a content source repository.
+
+[#url-key]
+== url key
+
+Antora can connect to public and private git repositories that are defined be a `url` key in a playbook.
+At least one `url` key must be specified under the `sources` key.
+You can add as many `url` keys as you need.
+Each `url` key tells Antora where to find a git repository that contains content source files.
+
+.antora-playbook.yml
+[source,yaml]
+----
+content:
+  sources:
+  - url: https://git-service.com/org/repo.git
+  - url: /absolute/path/to/local-repo
+----
+
+The `url` key accepts any URI that git supports, including a local filesystem path.
+
+Like with git, Antora differentiates between a local filesystem path and a remote URI based on certain characters in the value.
+If the value matches either of the two rules listed below, the value will always be handled as a remote URI, *not* a local filesystem path.
+
+* The value contains a colon that's not followed by a forward slash or backslash (`host:repo`).
+* The value contains a colon that's followed by two forward slashes (`://`).
+
+//A colon is permitted when it's part of a Windows drive letter (e.g., `c:/`).
+
+[#remote-urls]
+== Use remote content repositories
+
+Remote content repositories can be fetched via URLs (http, https), SSH URIs, and git URIs.
+
+[source,yaml]
+----
+content:
+  sources:
+  - url: https://git-service.com/org/repo-z.git
+  - url: git@git-service.com:org/repo-y.git
+  - url: git://git-service.com/org/repo-x.git
+----
+
+Whether the `.git` extension is required depends on the settings of the git host.
+It's usually best to include it.
+
+Antora can connect to private git repositories as long as a xref:private-repository-auth.adoc[supported authentication method] is specified for the private content source repositories.
+//See  to learn how to use Antora to connect to private repositories over HTTP/HTTPS using a username+password or OAuth token.
+
+[#local-urls]
+== Use local content repositories
+
+Antora permits the value of `url` to be a relative or absolute filesystem path.
+
+[source,yaml]
+----
+content:
+  sources:
+  - url: /absolute/path/to/local-repo # <1>
+  - url: https://git-service.com/org/repo-z.git
+  - url: ./another-local-repo # <2>
+----
+<1> Absolute path to git repository
+<2> Relative path to git repository (starting from the directory of the playbook)
+
+include::partial$relative-path-rules.adoc[]
+
+IMPORTANT: In order to use a local content repository with Antora, even when using the worktree (`HEAD`), the repository *must have at least one commit*.
+If you're not ready to commit other files, simply create an empty [.path]_.gitignore_ file and commit it.
+
+[#git-worktree]
+== Use the git worktree
+
+When using a local, non-bare repository, Antora reads files from the worktree (i.e., the working directory) when the current branch is matched by the xref:content-branches.adoc[branches filter].
+(You can use the value `HEAD` in the `branches` filter as a shorthand for the current branch).
+
+.Use files from the worktree
+[source,yaml]
+----
+content:
+  sources:
+  - url: ./demo-component-b
+    branches: HEAD
+  - url: https://gitlab.com/antora/demo/demo-component-b.git
+  - url: https://git-service.com/org/repo.git
+----
+
+This behavior is central to xref:author-mode.adoc[author mode].
+It means you *don't have to commit files locally* for Antora to use them.
+
+CAUTION: If the current branch is matched by the branches filter, and the worktree contains the same files with the same component version as another branch matched by the branches filter, Antora will fail to run because it disallows duplicate files.
+
+To ensure Antora *doesn't* use files from the worktree for a local URL, change the URL to point directly to the [.path]_.git_ directory.
+That way, the worktree is out of Antora's purview.
+
+.Refers directly to the .git folder to bypass the worktree
+[source,yaml]
+----
+content:
+  sources:
+  - url: ./demo-component-b/.git
+  - url: https://git-service.com/org/repo.git
+----
