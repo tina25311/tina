@@ -6,7 +6,7 @@
 == URLs for ROOT module pages
 
 When a ROOT module's xref:pages-directory.adoc[pages] are published to a site, they become the top-level pages of their assigned xref:component-version.adoc[component version].
-That means the xref:root-module-directory.adoc[module name], _ROOT_, is never appears in the page's URL.
+That means the xref:root-module-directory.adoc[module name], _ROOT_, never appears in the page's URL.
 
 To demonstrate this concept, let's compare the URLs of two pages, one assigned to a ROOT module and one assigned to a named module.
 The xref:standard-directories.adoc[set of standard directories] illustrated in <<ex-modules>> contains content source files for a project named _Hyper Lemur_.

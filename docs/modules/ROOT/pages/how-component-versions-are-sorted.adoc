@@ -10,7 +10,7 @@ Understanding how Antora sorts xref:component-version.adoc[component versions] i
 [#sort-docs-components]
 == Docs component sort order
 
-First, Antora sorts component versions into xref:component-version.adoc#component[components] according to the xref:component-title.adoc[title key] defined in each component version's [.path]_antora.yml_ file.
+First, Antora sorts component versions into xref:component-version.adoc#docs-component[components] according to the xref:component-title.adoc[title key] defined in each component version's [.path]_antora.yml_ file.
 If the title key isn't set, it falls back to the xref:component-name-and-version.adoc#name-key[name key].
 
 Docs components are sorted in alphabetical order.
