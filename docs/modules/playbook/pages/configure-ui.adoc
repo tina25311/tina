@@ -40,7 +40,7 @@ The other keys are optional; Antora will use their default values if they're not
 |Indicates whether the URL points to a snapshot.
 |No
 
-|xref:ui-bundle-url.adoc#start-path[bundle.start_path]
+|xref:ui-bundle-url.adoc#start-path-key[bundle.start_path]
 |Accepts a path inside the UI bundle from which files should be selected.
 |No
 

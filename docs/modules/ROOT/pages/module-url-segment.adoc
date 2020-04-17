@@ -34,7 +34,7 @@ When Antora generates a site for Hyper Lemur, the URL for the page created from 
 
 image::root-page-url.svg[ROOT module page URL,role=grow-x]
 
-The base URL, _\https://my-company.com_, xref:playbook:configure-site.adoc#configure-url[is set in the playbook] that Antora used to generate the site.
+The base URL, _\https://my-company.com_, xref:playbook:site-url.adoc[is set in the playbook] that Antora used to generate the site.
 The component name segment, _hyperlemur_, and version segment, _1.0_, are set in the xref:component-version-descriptor.adoc[component version descriptor].
 The page segment, _deploy_, is the family-relative path of the AsciiDoc source file [.path]_deploy.adoc_.
 The name of the module, _ROOT_, isn't used in the URL.
