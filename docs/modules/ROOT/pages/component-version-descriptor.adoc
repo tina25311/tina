@@ -3,8 +3,8 @@
 
 [.path]_antora.yml_ is a configuration file that serves two crucial functions.
 
-. The presence of an [.path]_antora.yml_ file at a content source root signals to Antora that it should find a sibling [.path]_modules_ directory that contains the source files of a component version.
-. The [.path]_antora.yml_ file at a content source root provides the required and optional component version metadata that Antora assigns to the source files it collects for that component version (located under the [.path]_modules_ directory).
+. The presence of an [.path]_antora.yml_ file at a content source root signals to Antora that it should find a sibling [.path]_modules_ directory that contains source files that belong to a component version.
+. The [.path]_antora.yml_ file at a content source root provides the required and optional component version metadata that Antora assigns to the source files it collects from the standard directories located in the [.path]_modules_ folder.
 
 [#locate-content-source-root-with-antora-yml]
 == Why is antora.yml stored at a content source root?
