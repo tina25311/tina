@@ -43,4 +43,4 @@ Here's an example of a page that defines two page attributes.
 :page-team: SecOps
 ----
 
-These attributes can be access from the UI model via the expression `page.attributes.level` and `page.attribues.team`.
+These attributes can be accessed from the UI model via the expression `page.attributes.level` and `page.attributes.team`.
