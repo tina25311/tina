@@ -70,7 +70,7 @@ Antora automatically sets the following attributes for each page when it runs:
 |Set if the file was taken from the git worktree.
 |_Boolean attribute, no output is returned_
 
-|`page-relative`
+|`page-src-path` (or `page-relative`)
 |The family-relative path (e.g., pages) and file name of the page's source file.
 |whats-new-in-spiky.adoc
 

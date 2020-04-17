@@ -95,13 +95,13 @@ Discussion TODO: While this use case would work, we don't recommend using the bu
 To make the redirects concrete, assume the original page coordinates are v2@component1::topic/topic.adoc.
 
 ----
-:page-aliases: master@{page-component-name}:{page-module}:{page-relative}
+:page-aliases: master@{page-component-name}:{page-module}:{page-src-path}
 ----
 
 For clarity, this is expressed as case 8, everything specified.
 Since the component and module are the same as the target, it could equivalently be expressed as case 4:
 ----
-:page-aliases: master@:{page-relative}
+:page-aliases: master@:{page-src-path}
 ----
 
 * static redirect:
@@ -135,7 +135,7 @@ Suppose your files are now at v3 in new-module, and you want  to redirect from v
 In new-module/partials/alias.adoc, include
 
 ----
-:page-aliases: v2@{page-component-name}:old-module:{page-relative}
+:page-aliases: v2@{page-component-name}:old-module:{page-src-path}
 ----
 
 and in each redirect target file add in the headers:
