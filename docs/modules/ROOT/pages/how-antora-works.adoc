@@ -48,7 +48,7 @@ This allows the files to be decoupled from the repository in which they live and
 Antora assigns the descriptor information and other source metadata to the virtual files.
 Then it sorts each file into a virtual collection based on the assigned component version data.
 +
-A xref:component-version.adoc[component version] typically represents a discreet and unique version of the documentation for a project, library, service, or training course.
+A xref:component-version.adoc[component version] typically represents a discrete and unique version of the documentation for a project, library, service, or training course.
 
 Compute additional metadata::
 Using xref:playbook:configure-site.adoc[site properties] from the playbook and information assigned to the files in the previous step, Antora adds module, family, family-relative path, and other metadata values to each file.

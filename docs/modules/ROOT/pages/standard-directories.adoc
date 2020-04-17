@@ -6,14 +6,14 @@
 //Antora also uses this structure to assign preset behavior to the files stored in each directory.
 
 Antora collects and processes content source files that are stored in a required set of directories.
-These directories, as well as the required [.path]_antora.yml_ file and optional navigation files, are recognized by their locations in the hierarchy and because they use reserved names.
-Antora uses this [.term]*standard file and directory set* to assign custom metadata and preset behavior to the files stored in each directory.
+These directories, as well as the required [.path]_antora.yml_ file and optional navigation file(s), are recognized by their locations in the hierarchy and because they use reserved names.
+Antora uses this [.term]*standard file and directory set* to derive metadata and preset behavior to the files stored in each directory.
 
 == Hierarchy and reserved names
 
 <<ex-standard-dirs>> shows the hierarchy of the standard file and directory set if all of the possible standard directories are used.
-The content source root in <<ex-standard-dirs>> is a repository.
-However, a content source root can also be a directory in a repository, which you can see in <<ex-image>>.
+The content source root in <<ex-standard-dirs>> is at the root of the repository.
+However, a content source root can also be a subdirectory in the repository, which you can see in <<ex-image>>.
 
 [#ex-standard-dirs]
 .All required and optional standard files and directories
@@ -43,7 +43,7 @@ This directory contains xref:module-directories.adoc[one or more module director
 <8> Optional xref:pages-directory.adoc[_pages_ family directory].
 <9> Optional xref:partials-directory.adoc[_partials_ family directory].
 <10> Optional navigation file named [.path]_nav.adoc_.
-<11> Optional xref:named-module-directory.adoc[named module directory].
+<11> Optional xref:named-module-directory.adoc[named module directory], which can have any of the same folders shown in the ROOT module.
 
 As you can see in the descriptions above, navigation files and many of the directories are optional.
 For instance, if you aren't inserting any images into the content stored in a module directory, then you don't need to create an [.path]_images_ directory.
