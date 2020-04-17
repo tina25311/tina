@@ -18,7 +18,7 @@ Using this information, each page can be cross referenced using a sequence of pa
 
 The coordinates are organized into the standard sequence shown below.
 
-image::page-id-anatomy-diagram.svg[Page ID anatomy,600]
+image::page-id-diagram.svg[Diagram of an Antora page ID,400]
 
 include::partial$antora-id.adoc[tags=*;!resource]
 
@@ -44,23 +44,23 @@ How many page ID coordinates you need to specify depends on the component versio
 
 First, let's review the AsciiDoc xref macro syntax.
 
-image::xref-macro-anatomy-diagram.svg[Page reference anatomy,role=grow-x]
+image::xref-macro-diagram.svg[Diagram of an AsciiDoc xref macro with an Antora page ID,600]
 
+//role=grow-x
 xref{colon}::
 The prefix of the AsciiDoc xref macro.
 
 page ID:: The page ID coordinates of the target page relative to the current page.
 
 #fragment::
-A section, block, or inline ID that deep links to an element in the target page.
+The element ID that links to a section, block, or inline location within the target page.
 A fragment is always optional.
-The fragment ID starts with the hash symbol (`#`).
+The fragment starts with the hash symbol (`#`).
 
 [link text]::
-The text that's displayed on the site.
-When a visitor clicks on the link text, they're directed to the target page.
-The text is entered inside a set of square brackets (`[]`) at the end of the macro.
-If no text is specified, the generated URL of the target page is displayed.
+When a visitor clicks on the link text that's displayed on the current page in the published site, they're directed to the target page.
+The link text is optional.
+If no link text is specified in the xref macro's square brackets (`[]`), the title of the target page is displayed.
 
 Here's how an xref macro with a fully qualified page ID looks in practice:
 
@@ -73,8 +73,8 @@ Specifying the version, component name, and even module every time seems verbose
 Don't worry, the more related the current and target pages are, the less coordinates you need to enter in the page ID.
 For instance, if the target and current pages belong to the same component version and module, you only need to specify the page coordinate of the target page.
 
-xref:module-and-page-xrefs.adoc[Xref pages in the same component version] has several examples showing how to create xrefs to pages that belong to the same module or component version.
-For xref examples where the target and current pages belong to different components or different versions of the same component, see xref:version-and-component-xrefs.adoc[Xref pages in other components and versions].
+xref:module-and-page-xrefs.adoc[] has several examples showing how to create xrefs to pages that belong to the same module or component version.
+For xref examples where the target and current pages belong to different components or different versions of the same component, see xref:version-and-component-xrefs.adoc[].
 
 [#important]
 == Why are page IDs important?
