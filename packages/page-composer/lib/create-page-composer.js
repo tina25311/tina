@@ -89,11 +89,11 @@ function createPageComposerInternal (baseUiModel, layouts) {
   }
 }
 
-function transformHandlebarsError (err, layout) {
-  const stack = err.stack
+function transformHandlebarsError ({ message, stack }, layout) {
   const m = stack.match(/^ *at Object\.ret \[as (.+?)\]/m)
-  err = new Error(`${err.message} in UI template ${m ? 'partials/' + m[1] : 'layouts/' + layout}.hbs`)
-  if (stack) err.stack += `\nCaused by: ${stack}`
+  const templatePath = `${m ? 'partials/' + m[1] : 'layouts/' + layout}.hbs`
+  const err = new Error(`${message}${~message.indexOf('\n') ? '\n^ ' : ' '}in UI template ${templatePath}`)
+  err.stack = [err.toString()].concat(stack.substr(message.length + 8)).join('\n')
   return err
 }
 

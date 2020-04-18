@@ -726,7 +726,7 @@ describe('createPageComposer()', () => {
       )
       playbook.ui.defaultLayout = 'broken-layout'
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
-      const expectedMessage = "Expecting 'CLOSE', got 'CLOSE_UNESCAPED' in UI template layouts/broken-layout.hbs"
+      const expectedMessage = "Expecting 'CLOSE', got 'CLOSE_UNESCAPED'\n^ in UI template layouts/broken-layout.hbs"
       expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(expectedMessage)
     })
 
