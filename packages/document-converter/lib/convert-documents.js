@@ -66,7 +66,9 @@ function registerPageAliases (aliases, targetFile, contentCatalog) {
   if (!aliases) return
   return aliases
     .split(COMMA_DELIMITER_RX)
-    .forEach((aliasSpec) => aliasSpec && contentCatalog.registerPageAlias(aliasSpec, targetFile))
+    .forEach(
+      (spec) => spec && contentCatalog.registerPageAlias(spec.endsWith('.adoc') ? spec : spec + '.adoc', targetFile)
+    )
 }
 
 module.exports = Object.assign(convertDocuments, { convertDocuments, convertDocument })
