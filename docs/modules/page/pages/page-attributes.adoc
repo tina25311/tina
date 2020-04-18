@@ -2,7 +2,7 @@
 
 Certain AsciiDoc document attributes provide metadata for the Antora page or control how Antora processes the page.
 We refer to these as [.term]_page attributes_.
-There are three types of page attributes: custom, predefined, and implicit.
+There are three types of page attributes: custom, predefined, and intrinsic.
 This page explains the purpose of each type of page attribute, how they are defined, and how they can be accessed from the UI template using the UI model.
 
 == Purpose and anatomy
@@ -26,7 +26,7 @@ Main text.
 ----
 
 The `page-` prefix is meant to provide a hint to Antora and the author as to which attributes comprise the metadata for the page.
-By standardizing on the `page-` prefix, Antora is able to isolate page attributes from the plethora of built-in and implicit attributes in AsciiDoc or defined by the AsciiDoc processor.
+By standardizing on the `page-` prefix, Antora is able to isolate page attributes from the plethora of built-in and intrinsic attributes in AsciiDoc or defined by the AsciiDoc processor.
 The prefix also isolates the page attributes from internal attributes that are used to store reusable content within the page or site (aka content attributes).
 
 [#custom-attribute]
@@ -73,7 +73,7 @@ The attribute reference is resolved immediately, so the page attribute named `pr
 
 Some page attributes receive special treatment in Antora.
 These are page attributes have reserved names, but accept user-defined values for communicating information about the page to Antora.
-Examples include `page-aliases` and `page-layout`.
+Examples include `page-aliases`, `page-layout`, and `page-partial`.
 
 The `page-aliases` attribute allows you to configure alternate page IDs for the current page.
 For example, to claim the old name of a page, you'd use:
@@ -101,12 +101,12 @@ See xref:page-layout.adoc[page layout] to learn about the `page-layout` attribut
 
 Additional predefined page attributes may be added in the future to allow similar kinds of functionality to be configured.
 
-== Implicit page attributes
+== Intrinsic page attributes
 
-Antora automatically sets a number of inbound, implicit page attributes at runtime that derive from existing metadata about the current page.
+Antora automatically sets a number of read-only, intrinsic page attributes at runtime that derive from existing metadata about the current page.
 For example, the name of the current component can be read from the `page-component-name` attribute.
 
-One way to use the implicit page attributes is to construct references to a page in another product that shares the same version, as shown here:
+One way to use the intrinsic page attributes is to construct references to a page in another product that shares the same version, as shown here:
 
 [source,asciidoc]
 ----
@@ -115,12 +115,12 @@ You might also be interested in xref:{page-version}@other-product::index.adoc[ot
 
 Implicit page attributes also come in handy when constructing xref:page-aliases.adoc[page aliases].
 
-The implicit page attributes are listed on the xref:ROOT:environment-and-page-attributes.adoc[page and environment attribute reference] page.
+The intrinsic page attributes are listed on the xref:intrinsic-attributes.adoc[intrinsic attribute] page.
 These attributes are _read-only_, so you should not attempt to override their values in the document header.
 
 == Accessing page attributes from the UI template
 
-One of the primary roles of page attributes is to pass metadata about the page to the UI template.
+One of the primary roles of page attributes is to pass metadata about the page to the UI template via the xref:antora-ui-default::templates.adoc#template-variables[UI model].
 The UI template can use the information provided by page attributes in a variety of ways, from populating metadata in the published page to toggling or configuring behavior in the UI.
 
 As an example, the default UI allows you do configure the depth of the sidebar TOC using the page attribute named `toclevels`.

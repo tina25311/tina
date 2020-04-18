@@ -5,6 +5,7 @@
 * xref:attributes.adoc[Configure Attributes]
 ** xref:asciidoc-attributes.adoc[AsciiDoc Attributes]
 ** xref:page-attributes.adoc[Page Attributes]
+** xref:intrinsic-attributes.adoc[Intrinsic Attributes]
 * xref:start-page.adoc[Create a Start Page]
 * xref:page-id.adoc[Page IDs and Cross References]
 ** xref:module-and-page-xrefs.adoc[Xref Pages in a Component Version]
