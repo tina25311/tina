@@ -36,7 +36,7 @@ To define a page attribute, you add an attribute entry to the document header an
 It's important to define the attribute entry in the document header.
 Otherwise, the page attribute will not be found.
 
-TIP: Since page attributes are just special AsciiDoc document attributes, they can also be defined xref:playbook:site-attributes.adoc[site-wide] in the Antora playbook or xref:ROOT:component-attributes.adoc[per component version] in the component version descriptor.
+TIP: Since page attributes are just special AsciiDoc document attributes, they can also be defined xref:playbook:asciidoc-attributes.adoc[site-wide] in the Antora playbook or xref:ROOT:component-attributes.adoc[per component version] in the component version descriptor.
 
 Like all AsciiDoc document attributes, the name cannot contain dots (`.`) or blank spaces.
 The value can be left blank or it can be a string value.

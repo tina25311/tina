@@ -14,7 +14,7 @@ On this page, you'll learn:
 
 == Set the experimental attribute
 
-The attribute `experimental` must be set as a xref:page:define-and-modify-attributes.adoc[page attribute], xref:ROOT:component-attributes.adoc[component version attribute], or xref:playbook:site-attributes.adoc[site attribute] to enable the UI macros styles in the reference UI.
+The attribute `experimental` must be set as a xref:page:define-and-modify-attributes.adoc[page attribute], xref:ROOT:component-attributes.adoc[component version attribute], or xref:playbook:asciidoc-attributes.adoc[site attribute] to enable the UI macros styles in the reference UI.
 
 [#button]
 == Button syntax

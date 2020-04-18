@@ -63,23 +63,23 @@ These attributes are reassigned for each page (as well as each navigation file).
 |Attribute |Description |Example Output
 
 |`page-component-display-version`
-|The xref:component-display-version.adoc[display version] of the component version as specified in _antora.yml_.
+|The xref:ROOT:component-display-version.adoc[display version] of the component version as specified in _antora.yml_.
 |7.1 Beta
 
 |`page-component-name`
-|The xref:component-name-and-version.adoc#name-key[component name] of the component version as specified in _antora.yml_.
+|The xref:ROOT:component-name-and-version.adoc#name-key[component name] of the component version as specified in _antora.yml_.
 |silver-leaf
 
 |`page-component-title`
-|The xref:component-title.adoc[component title] of the component version as specified in  _antora.yml_.
+|The xref:ROOT:component-title.adoc[component title] of the component version as specified in  _antora.yml_.
 |Silver Leaf
 
 |`page-component-version`
-|The xref:component-name-and-version.adoc#version-key[version] of the component version as specified in _antora.yml_.
+|The xref:ROOT:component-name-and-version.adoc#version-key[version] of the component version as specified in _antora.yml_.
 |7.1
 
 |`page-module`
-|The xref:module-directories.adoc#module[name of the page's module].
+|The xref:ROOT:module-directories.adoc#module[name of the page's module].
 |ROOT
 
 |`page-origin-branch`
