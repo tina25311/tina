@@ -1,7 +1,7 @@
 = Page Attributes
 
 Certain AsciiDoc document attributes provide metadata for the Antora page or control how Antora processes the page.
-We refer to these as [.term]_page attributes_.
+We refer to these as [.term]*page attributes*.
 There are three types of page attributes: custom, predefined, and intrinsic.
 This page explains the purpose of each type of page attribute, how they are defined, and how they can be accessed from the UI template using the UI model.
 

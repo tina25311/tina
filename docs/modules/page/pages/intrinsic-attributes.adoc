@@ -2,7 +2,7 @@
 :page-aliases: page:page-and-site-attributes.adoc,ROOT:environment-and-page-attributes.adoc
 
 Antora automatically assigns information about the runtime environment, site configuration, and current page to various document and page attributes.
-We refer to these as [.term]_intrinsic attributes_.
+We refer to these as [.term]*intrinsic attributes*.
 Antora uses these AsciiDoc document attributes to communication information the site and current page to the AsciiDoc content, extensions, and UI templates.
 
 Intrinsic attributes differ from predefined page attributes, such as xref:page-aliases.adoc[`page-aliases`], in that predefined page attributes are meant to be a conduit to pass information to Antora from the page.
