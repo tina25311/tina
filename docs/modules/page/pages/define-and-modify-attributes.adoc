@@ -1,4 +1,4 @@
-= AsciiDoc Attributes
+= Define and Modify Attributes
 :xrefstyle: short
 :listing-caption: Example
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual

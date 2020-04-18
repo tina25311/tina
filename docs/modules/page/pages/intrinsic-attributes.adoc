@@ -1,12 +1,12 @@
 = Intrinsic Attributes
-:page-aliases: page:page-and-site-attributes.adoc,ROOT:environment-and-page-attributes.adoc
+:page-aliases: page-and-site-attributes.adoc
 
 Antora automatically assigns information about the runtime environment, site configuration, and current page to various document and page attributes.
 We refer to these as [.term]*intrinsic attributes*.
 Antora uses these AsciiDoc document attributes to communication information the site and current page to the AsciiDoc content, extensions, and UI templates.
 
-Intrinsic attributes differ from predefined page attributes, such as xref:page-aliases.adoc[`page-aliases`], in that predefined page attributes are meant to be a conduit to pass information to Antora from the page.
-*Intrinsic attributes are intended to be read only and should therefore not be reassigned.*
+Unlike other built-in attributes, such as xref:page-aliases.adoc[`page-aliases`], intrinsic attributes are meant to be a conduit to pass information from Antora to the page.
+Therefore, *intrinsic attributes are intended to be read only and should not be reassigned.*
 
 [#environment-attributes]
 == Intrinsic environment attributes
@@ -42,9 +42,10 @@ Antora sets various attributes to configure the AsciiDoc processor.
 * `source-highlighter=highlight.js`
 
 These attributes are intended to be reasonable defaults.
-They can be reconfigured using the playbook.
+Unlike other intrinsic attributes, they *can* be reconfigured using the CLI or playbook.
+They can also be redefined in such a way that they can be overridden by the component descriptor or page.
 
-Antora also passed down some information about the site using document attributes.
+Antora also passes down general site information using document attributes.
 
 * `site-title`
 * `site-url`
@@ -125,7 +126,7 @@ If the file was taken from a local directory (i.e., git worktree), the value is 
 
 Keep in mind that the AsciiDoc processor also assigns numerous intrinsic attributes to communicate information about the current document (e.g., `docname` and `docfilesuffix`), though these are not page attributes (meaning they are not prefixed with `page-`).
 
-=== Putting intrinsic page attributes to work
+=== Put intrinsic page attributes to work
 
 The value of these page attributes can be accessed in the AsciiDoc content using the attribute reference syntax (e.g., `\{page-component-name}`) or via the page UI model using a template variable (e.g., `page.attributes.component-name`).
 

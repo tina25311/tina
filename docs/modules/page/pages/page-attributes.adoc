@@ -1,18 +1,18 @@
 = Page Attributes
 
-Certain AsciiDoc document attributes provide metadata for the Antora page or control how Antora processes the page.
+Certain AsciiDoc document attributes provide metadata to the Antora page or control how Antora processes the page.
 We refer to these as [.term]*page attributes*.
 There are three types of page attributes: custom, predefined, and intrinsic.
 This page explains the purpose of each type of page attribute, how they are defined, and how they can be accessed from the UI template using the UI model.
 
 == Purpose and anatomy
 
-Page attributes are all about providing metadata, whether that metadata is for Antora, for the UI template, for the user, or for a search index.
+Page attributes are all about providing metadata, whether that metadata is for Antora itself, for the UI template, for the user, or for a search index.
 By defining page attributes, you can store additional information about the page, which can then be accessed and used throughout the site.
 
-A page attribute is defined just like any other AsciiDoc document attribute, typically using an attribute entry in the document entry.
-The difference is that the name of a page attribute _must_ begin with `page-` (e.g., `page-category`).
-The presence of the `page-` prefix allow Antora to identify it as a page attribute.
+A page attribute is defined just like any other AsciiDoc document attribute, typically using an attribute entry in the document header.
+Where a page attribute differs is that the name of the attribute _must_ begin with `page-` (e.g., `page-category`).
+The presence of the `page-` prefix allows Antora to identify it as a page attribute.
 
 Here's an example of page that defines two page attributes:
 
@@ -22,12 +22,12 @@ Here's an example of page that defines two page attributes:
 :page-category: DevOps
 :page-edition: Enterprise
 
-Main text.
+Main content.
 ----
 
-The `page-` prefix is meant to provide a hint to Antora and the author as to which attributes comprise the metadata for the page.
+The `page-` prefix is meant to provide a hint to both Antora and the author as to which attributes comprise the metadata for the page.
 By standardizing on the `page-` prefix, Antora is able to isolate page attributes from the plethora of built-in and intrinsic attributes in AsciiDoc or defined by the AsciiDoc processor.
-The prefix also isolates the page attributes from internal attributes that are used to store reusable content within the page or site (aka content attributes).
+The prefix also isolates the page attributes from internal attributes used to store reusable content within the page or site (aka content attributes).
 
 [#custom-attribute]
 == Define a custom page attribute

@@ -1,20 +1,19 @@
-= Configure Attributes
+= AsciiDoc Attributes in Antora
 
 Like the AsciiDoc processor, Antora uses AsciiDoc document attributes (herein _attributes_) to circulate information in and out of pages.
 These attributes are used to toggle or configure processing settings, control behavior and styles of the output, pass metadata from the source to the output, and pass down information about the page to the content, among a variety of other uses.
 
 In general, there are two categories of attributes: built-in and custom.
 Built-in attributes are those that have a reserved name and predefined purpose.
-Some built-in attributes are intended to be set, while others are read-only.
+Some built-in attributes are designed to be set, while others are intended to be read-only.
 You can also define custom attributes that work in a similar way.
 
-This page introduces these two catagories of attributes, explains how attributes are defined, and refers you to pages where you can find the reference of built-in attributes.
+This page introduces these two catagories of attributes, explains how attributes are defined in a page, and refers you to pages that cover the built-in attributes in more depth.
 
 == Built-in attributes
 
-[.term]*Built-in attributes* are xref:asciidoc-attributes.adoc[AsciiDoc document attributes] that either pass information to the page or provide a way for the author to toggle or configure behavior.
+[.term]*Built-in attributes* are xref:define-and-modify-attributes.adoc[AsciiDoc document attributes] that either pass information to the page or provide a way for the author to toggle or configure behavior.
 Some built-in attributes are read-only, while others are meant to be modified.
-The AsciiDoc processor already defines a plethora of built-in attributes.
 These built-in attributes have reserved names and serve a special, predefined purpose.
 
 Attributes designed to be modified may be set from the CLI, in the playbook, in the componen version descriptor, or in the page.
@@ -24,6 +23,9 @@ Many modifiable built-in attributes have a restricted set of accepted values.
 These attributes usually do two things; they toggle a behavior on or off, and they further accept information that alters how the output is generated.
 For example, the `xrefstyle` attribute controls the style of the linked text of internal xrefs (e.g., basic, short, or full).
 
+include::ROOT:partial$dont-use-these-attributes.adoc[]
+
+The AsciiDoc processor already defines a plethora of built-in attributes.
 Antora introduces xref:intrinsic-attributes.adoc[additional built-in attributes] that are only relevant in the Antora environment.
 Several of these configure the AsciiDoc processor to work in the Antora environment.
 But most of them are xref:page-attributes.adoc[page attributes], which are attributes prefixed with `page-`.
@@ -33,21 +35,21 @@ Page attributes open up the door of passing metadata to the UI template using cu
 
 == Custom attributes
 
-[.term]*Custom attributes* are xref:asciidoc-attributes.adoc[AsciiDoc document attributes] defined by the author.
+[.term]*Custom attributes* are xref:define-and-modify-attributes.adoc[AsciiDoc document attributes] defined by the author.
 You may be familiar with using custom attributes in AsciiDoc to store reusable content, such as a URL or product name.
-The value of a custom attribute can then be used within the page (or across pages, depending on where they are defined) using an attribute reference.
+The value of a custom attribute can then be used within the page (or across pages, depending on where it's defined) using an attribute reference.
 Custom attributes work the same way in Antora.
 
 Where things get interesting is when a custom attribute is defined as a xref:page-attributes.adoc[page attribute].
-A custom page attribute allows the author to pass additional information about a page to the UI templates (so not just in the page itself).
+A custom page attribute allows the author to pass additional information about a page to the UI templates (thus not limited to the page itself).
 
 Custom attributes can be defined from the CLI, in the playbook, in the component version descriptor, or in header of a page using an <<attribute-entry,attribute entry>>.
-See xref:asciidoc-attributes.adoc#custom-attribute[Define a custom AsciiDoc attribute] and xref:page-attributes.adoc#custom-attribute[Define a custom page attribute] to learn how to create custom attributes.
+See xref:define-and-modify-attributes.adoc#custom-attribute[Define a custom AsciiDoc attribute] and xref:page-attributes.adoc#custom-attribute[Define a custom page attribute] to learn how to define your own custom attributes.
 
 [#attribute-entry]
 == What's an attribute entry?
 
-Before you can use a built-in or custom page attribute, you have to declare it.
+Before you can use a modifiable built-in attribute or custom attribute, you have to declare it.
 An [.term]*attribute entry* is the primary mechanism for activating the attribute and assigning it a value in a page.
 It's like a global variable assignment for AsciiDoc.
 
@@ -88,6 +90,4 @@ The values of built-in boolean attributes are always blank because their only ac
 Other built-in attributes may have a default value.
 If you set a built-in attribute and leave its value blank, Antora assigns the default value (if it has one) to the attribute at processing time.
 
-TIP: AsciiDoc and `page-` attributes can also be xref:ROOT:component-attributes.adoc[scoped to a component version] or xref:playbook:asciidoc-attributes.adoc[scoped to a whole site].
-
-include::ROOT:partial$dont-use-these-attributes.adoc[]
+TIP: AsciiDoc document and page attributes can also be xref:ROOT:component-attributes.adoc[scoped to a component version] or xref:playbook:site-attributes.adoc[scoped to a whole site].

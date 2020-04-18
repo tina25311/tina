@@ -91,7 +91,7 @@ There are two ways to solve this situation.
 [#create-custom-attribute]
 === Create an attribute for a URL
 
-Let's make an xref:page:asciidoc-attributes.adoc#custom-attribute[attribute] for a complex URL.
+Let's make an xref:page:define-and-modify-attributes.adoc#custom-attribute[attribute] for a complex URL.
 Creating an attribute for a URL is also a good strategy when the URL is long; it keeps the source text clean for writers and editors.
 
 .Custom AsciiDoc attribute syntax
