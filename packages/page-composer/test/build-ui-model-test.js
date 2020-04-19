@@ -121,7 +121,7 @@ describe('build UI model', () => {
       const model = buildBaseUiModel(playbook, contentCatalog)
       expect(contentCatalog.exportToModel).to.have.been.called.once()
       expect(model.contentCatalog).to.exist()
-      expect(model.contentCatalog).not.to.equal(contentCatalog)
+      expect(model.contentCatalog).to.not.equal(contentCatalog)
       expect(model.contentCatalog.getComponent('the-component').name).to.equal('the-component')
     })
 
@@ -213,7 +213,7 @@ describe('build UI model', () => {
 
     it('should not set path property if site.url property is not set in playbook', () => {
       const model = buildSiteUiModel(playbook, contentCatalogModel)
-      expect(model).not.to.have.property('path')
+      expect(model).to.not.have.property('path')
     })
 
     it('should set path property to empty if site.url property set in playbook has no subpath', () => {
@@ -1159,7 +1159,7 @@ describe('build UI model', () => {
       contentCatalog.getById = spy((filter) => files[filter.version])
       contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
-      expect(model.canonicalUrl).not.to.exist()
+      expect(model.canonicalUrl).to.not.exist()
     })
 
     it('should not prepend site url to canonicalUrl property if page url is absolute', () => {

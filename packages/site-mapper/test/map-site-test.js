@@ -178,7 +178,7 @@ describe('mapSite()', () => {
     const sitemaps = mapSite(playbook, contentCatalog.getPages())
     expect(sitemaps).to.have.lengthOf(2)
     const robotstxt = sitemaps.find((sitemap) => sitemap.out.path === 'robots.txt')
-    expect(robotstxt).not.to.be.undefined()
+    expect(robotstxt).to.not.be.undefined()
     expect(robotstxt.contents.toString()).to.equal(`User-agent: *
 Allow: /
 `)
@@ -190,7 +190,7 @@ Allow: /
     const sitemaps = mapSite(playbook, contentCatalog.getPages())
     expect(sitemaps).to.have.lengthOf(2)
     const robotstxt = sitemaps.find((sitemap) => sitemap.out.path === 'robots.txt')
-    expect(robotstxt).not.to.be.undefined()
+    expect(robotstxt).to.not.be.undefined()
     expect(robotstxt.contents.toString()).to.equal(`User-agent: *
 Disallow: /
 `)
@@ -202,7 +202,7 @@ Disallow: /secret-component/`
     const contentCatalog = mockContentCatalog({ family: 'page', relative: 'index.adoc' })
     const sitemaps = mapSite(playbook, contentCatalog.getPages())
     const robotstxt = sitemaps.find((sitemap) => sitemap.out.path === 'robots.txt')
-    expect(robotstxt).not.to.be.undefined()
+    expect(robotstxt).to.not.be.undefined()
     expect(robotstxt.contents.toString()).to.equal(`User-agent: *
 Disallow: /secret-component/
 `)

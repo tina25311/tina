@@ -88,11 +88,11 @@ describe('convertDocuments()', () => {
         mediaType: 'text/asciidoc',
       },
     ])
-    expect(asciidocConfig).not.to.have.nested.property('attributes.page-partial')
+    expect(asciidocConfig).to.not.have.nested.property('attributes.page-partial')
     const pages = convertDocuments(contentCatalog, asciidocConfig)
     expect(pages).to.have.lengthOf(2)
     pages.forEach((page) => {
-      expect(page.src).not.to.have.property('contents')
+      expect(page.src).to.not.have.property('contents')
     })
   })
 
@@ -128,9 +128,9 @@ describe('convertDocuments()', () => {
     expect(topicPage).to.have.nested.property('asciidoc.xreftext', 'Topic')
     expect(topicPage).to.have.nested.property('asciidoc.navtitle', 'About Topic')
     const untitledPage = pages.find((it) => it.src.relative === 'untitled.adoc')
-    expect(untitledPage).not.to.have.nested.property('asciidoc.doctitle')
-    expect(untitledPage).not.to.have.nested.property('asciidoc.xreftext')
-    expect(untitledPage).not.to.have.nested.property('asciidoc.navtitle')
+    expect(untitledPage).to.not.have.nested.property('asciidoc.doctitle')
+    expect(untitledPage).to.not.have.nested.property('asciidoc.xreftext')
+    expect(untitledPage).to.not.have.nested.property('asciidoc.navtitle')
   })
 
   it('should assign value of doctitle to title property on file', () => {
@@ -180,7 +180,7 @@ describe('convertDocuments()', () => {
     componentVersion.asciidoc = resolveAsciiDocConfig({
       asciidoc: { attributes: { experimental: '' } },
     })
-    expect(asciidocConfig.attributes).not.to.have.property('experimental')
+    expect(asciidocConfig.attributes).to.not.have.property('experimental')
     const pages = convertDocuments(contentCatalog, asciidocConfig)
     expect(pages).to.have.lengthOf(1)
     pages.forEach((page) => {

@@ -41,7 +41,7 @@ describe('ContentCatalog', () => {
       contentCatalog.registerComponentVersion('yin', '1.0', { title: 'Yin' })
       contentCatalog.registerComponentVersion('yang', '1.0', { title: 'Yang' })
       const componentMap = contentCatalog.getComponentMap()
-      expect(componentMap).not.to.be.instanceOf(Map)
+      expect(componentMap).to.not.be.instanceOf(Map)
       expect(Object.keys(componentMap)).to.eql(['foo', 'bar', 'yin', 'yang'])
       expect(Object.values(componentMap).map((v) => v.title)).to.eql(['Foo', 'Bar', 'Yin', 'Yang'])
     })
@@ -164,7 +164,7 @@ describe('ContentCatalog', () => {
       expect(() => {
         contentCatalog.registerComponentVersion('the-component', 'r.y')
         contentCatalog.registerComponentVersion('the-component', 'r.x')
-      }).not.to.throw()
+      }).to.not.throw()
       const component = contentCatalog.getComponent('the-component')
       const versions = component.versions
       expect(versions).to.have.lengthOf(2)
@@ -1229,7 +1229,7 @@ describe('ContentCatalog', () => {
     it('should return undefined if file not resolved from qualified page spec', () => {
       const pageSpec = 'v1.2.3@the-component:ROOT:no-such-page.adoc'
       const page = classifyContent(playbook, aggregate).resolvePage(pageSpec)
-      expect(page).not.to.exist()
+      expect(page).to.not.exist()
     })
 
     it('should find file by contextual page spec', () => {
@@ -1243,7 +1243,7 @@ describe('ContentCatalog', () => {
       const pageSpec = 'ROOT:page-one.adoc'
       const context = {}
       const page = classifyContent(playbook, aggregate).resolvePage(pageSpec, context)
-      expect(page).not.to.exist()
+      expect(page).to.not.exist()
     })
 
     it('should dereference alias in order to resolve page', () => {
@@ -1306,7 +1306,7 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'unknown-page.adoc',
       })
-      expect(page).not.to.exist()
+      expect(page).to.not.exist()
     })
   })
 
@@ -1343,7 +1343,7 @@ describe('ContentCatalog', () => {
         version: 'v1.2.3',
         path: 'modules/ROOT/pages/_partials/does-not-exist.adoc',
       })
-      expect(page).not.to.exist()
+      expect(page).to.not.exist()
     })
   })
 

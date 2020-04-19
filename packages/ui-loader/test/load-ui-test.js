@@ -252,7 +252,7 @@ describe('loadUi()', () => {
         const uiCatalog = await loadUi(playbook)
         const paths = uiCatalog.getAll().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
-        expect(paths).not.to.include('the-ui-bundle.txt')
+        expect(paths).to.not.include('the-ui-bundle.txt')
       })
     })
 
@@ -262,7 +262,7 @@ describe('loadUi()', () => {
         const uiCatalog = await loadUi(playbook)
         const paths = uiCatalog.getAll().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
-        expect(paths).not.to.include('the-ui-bundle.txt')
+        expect(paths).to.not.include('the-ui-bundle.txt')
       })
     })
 
@@ -272,7 +272,7 @@ describe('loadUi()', () => {
         const uiCatalog = await loadUi(playbook)
         const paths = uiCatalog.getAll().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
-        expect(paths).not.to.include('the-ui-bundle.txt')
+        expect(paths).to.not.include('the-ui-bundle.txt')
       })
     })
   })
@@ -548,7 +548,7 @@ describe('loadUi()', () => {
       testAll('the-ui-bundle-with-static-files.zip', async (playbook) => {
         const uiCatalog = await loadUi(playbook)
         const filepaths = uiCatalog.getAll().map((file) => file.path)
-        expect(filepaths).not.to.include('ui.yml')
+        expect(filepaths).to.not.include('ui.yml')
         const uiAssets = uiCatalog.findByType('asset')
         uiAssets.forEach(({ type }) => expect(type).to.equal('asset'))
         const uiAssetPaths = uiAssets.map((file) => file.path)
@@ -573,7 +573,7 @@ describe('loadUi()', () => {
       testAll('the-ui-bundle-with-static-files-single-glob.zip', async (playbook) => {
         const uiCatalog = await loadUi(playbook)
         const filepaths = uiCatalog.getAll().map((file) => file.path)
-        expect(filepaths).not.to.include('ui.yml')
+        expect(filepaths).to.not.include('ui.yml')
         const staticFiles = uiCatalog.findByType('static')
         staticFiles.forEach(({ type }) => expect(type).to.equal('static'))
         const staticFilePaths = staticFiles.map((file) => file.path)
@@ -587,7 +587,7 @@ describe('loadUi()', () => {
       const uiCatalog = await loadUi(playbook)
       const helpers = uiCatalog.findByType('helper')
       helpers.forEach((file) => {
-        expect(file).not.to.have.property('out')
+        expect(file).to.not.have.property('out')
       })
     })
   })
@@ -597,7 +597,7 @@ describe('loadUi()', () => {
       const uiCatalog = await loadUi(playbook)
       const layouts = uiCatalog.findByType('layout')
       layouts.forEach((file) => {
-        expect(file).not.to.have.property('out')
+        expect(file).to.not.have.property('out')
       })
     })
   })
@@ -607,7 +607,7 @@ describe('loadUi()', () => {
       const uiCatalog = await loadUi(playbook)
       const partials = uiCatalog.findByType('partial')
       partials.forEach((file) => {
-        expect(file).not.to.have.property('out')
+        expect(file).to.not.have.property('out')
       })
     })
   })

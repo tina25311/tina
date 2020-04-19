@@ -51,7 +51,7 @@ describe('commander', () => {
         const command = createCli('cli', 'sync')
         command.outputHelp = () => (helpShown = true)
         command.parse(['node', 'cli'])
-        expect(() => command.parse(['node', 'cli'])).not.to.throw(ProcessExit)
+        expect(() => command.parse(['node', 'cli'])).to.not.throw(ProcessExit)
         expect(lastCommand).to.equal('sync')
         expect(helpShown).to.be.undefined()
       })

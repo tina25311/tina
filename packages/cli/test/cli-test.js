@@ -485,7 +485,7 @@ describe('cli', function () {
       (exitCode) => {
         expect(exitCode).to.equal(0)
         expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file()
-        expect(residualFile).not.to.be.a.path()
+        expect(residualFile).to.not.be.a.path()
       }
     )
   }).timeout(timeoutOverride)

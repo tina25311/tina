@@ -244,7 +244,7 @@ describe('convertDocument()', () => {
     expect(inputFile.asciidoc.doctitle).to.equal('Document Title')
     expect(inputFile.asciidoc.attributes).to.exist()
     expect(inputFile.asciidoc.attributes).to.have.property('yin', 'yang')
-    expect(inputFile.asciidoc.attributes).not.to.have.property('foo')
+    expect(inputFile.asciidoc.attributes).to.not.have.property('foo')
   })
 
   it('should pass custom attributes to processor', () => {

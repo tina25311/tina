@@ -425,7 +425,7 @@ describe('loadAsciiDoc()', () => {
         },
       }
       const doc = loadAsciiDoc(inputFile, undefined, config)
-      expect(doc.getAttributes()).not.to.include(config.attributes)
+      expect(doc.getAttributes()).to.not.include(config.attributes)
       expect(doc.getAttributes()).to.include({ docfile: 'modules/module-a/pages/page-a.adoc' })
     })
   })
@@ -502,7 +502,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('page-a.adoc: line 1: include target not found: partial$/does-not-exist.adoc')
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       const expectedSource = [
         'Unresolved include directive in modules/module-a/pages/page-a.adoc',
@@ -528,7 +528,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('page-a.adoc: line 1: include target not found: partial$does-not-exist.adoc')
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       const expectedSource = [
         'Unresolved include directive in modules/module-a/pages/page-a.adoc',
@@ -554,7 +554,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('page-a.adoc: line 2: include target not found: partial$does-not-exist.adoc')
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       const expectedSource = [
         'Unresolved include directive in modules/module-a/pages/page-a.adoc',
@@ -585,7 +585,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'undefined-contents.adoc',
         })
       const para = doc.getBlocks()[0]
-      expect(para).not.to.be.undefined()
+      expect(para).to.not.be.undefined()
       expect(para.getContext()).to.equal('paragraph')
       expect(para.getSourceLines()).to.eql(['before', 'after'])
     })
@@ -609,7 +609,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'greeting.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
     })
@@ -633,7 +633,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'greeting.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
     })
@@ -662,7 +662,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'ruby/hello.rb',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getStyle()).to.equal('source')
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
@@ -692,7 +692,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'ruby/hello.rb',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getStyle()).to.equal('source')
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
@@ -718,7 +718,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'greeting.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
     })
@@ -745,7 +745,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'greeting.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
     })
@@ -766,7 +766,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('line 1: include target not found: 1.1@another-component::greeting.adoc')
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       const expectedSource = [
         'Unresolved include directive in modules/module-a/pages/page-a.adoc',
@@ -789,7 +789,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('line 1: include target not found: 1.1@greeting.adoc')
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       const expectedSource = [
         'Unresolved include directive in modules/module-a/pages/page-a.adoc',
@@ -832,7 +832,7 @@ describe('loadAsciiDoc()', () => {
           path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
     })
@@ -865,7 +865,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include('outer.adoc: line 1: include target not found: deeply/nested.adoc')
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       const expectedSource = [
         'Unresolved include directive in modules/module-a/pages/_partials/outer.adoc',
@@ -910,7 +910,7 @@ describe('loadAsciiDoc()', () => {
           path: 'modules/other-module/pages/_partials/deeply/nested.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
     })
@@ -954,7 +954,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'outer.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
     })
@@ -997,7 +997,7 @@ describe('loadAsciiDoc()', () => {
           path: 'modules/ROOT/pages/_partials/deeply/nested.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
     })
@@ -1043,7 +1043,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'outer.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
     })
@@ -1087,7 +1087,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'outer.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
     })
@@ -1218,7 +1218,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n'))
     })
@@ -1242,7 +1242,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n'))
     })
@@ -1267,7 +1267,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1292,7 +1292,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1319,7 +1319,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1345,7 +1345,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1370,7 +1370,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1395,7 +1395,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1420,7 +1420,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.be.empty()
     })
@@ -1444,7 +1444,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n'))
     })
@@ -1468,7 +1468,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n'))
     })
@@ -1492,7 +1492,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n'))
     })
@@ -1517,7 +1517,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1575,7 +1575,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.be.empty()
     })
@@ -1602,7 +1602,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1629,7 +1629,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1656,7 +1656,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
     })
@@ -1683,7 +1683,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"'])
     })
@@ -1715,7 +1715,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql([
         'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
@@ -1745,7 +1745,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"'])
     })
@@ -1772,7 +1772,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql([])
     })
@@ -1805,7 +1805,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include(expectedMessage)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"', 'puts "Goodbye, World!"'])
     })
@@ -1836,7 +1836,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include(expectedMessage)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"'])
     })
@@ -1865,7 +1865,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include(expectedMessage)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"'])
     })
@@ -1892,7 +1892,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include(expectedMessage)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql([])
     })
@@ -1920,7 +1920,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql([
         'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
@@ -1952,7 +1952,7 @@ describe('loadAsciiDoc()', () => {
       `)
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql([
         'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
@@ -1977,7 +1977,7 @@ describe('loadAsciiDoc()', () => {
           path: 'modules/module-a/pages/changelog.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
-      expect(firstBlock).not.to.be.undefined()
+      expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
     })

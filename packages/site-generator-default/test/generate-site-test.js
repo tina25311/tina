@@ -423,7 +423,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.checkoutBranch('v2.0'))
       .then(() => repoBuilder.close())
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
-    expect(env).not.to.have.property('CI')
+    expect(env).to.not.have.property('CI')
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')

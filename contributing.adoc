@@ -375,6 +375,11 @@ You'll find the documentation for their APIs here:
 * {uri-chai-cheerio}[chai-cheerio] to assert HTML structures
 * {uri-dirty-chai}[dirty-chai] (more like clean chai) to allow all terminal assertions to end with ()
 
+Here are a few rules when writing assertions:
+
+* Use BDD-style assertions (e.g., `expect(object).to.have.property('foo')`)
+* When creating a negated assertion, please write it as `.to.not` instead of `.not.to` (e.g., `expect(object).to.not.have.property('bar')`)
+
 You can run the whole <<run-tests,test suite>> manually or continuously.
 You can also select individual tests to run.
 

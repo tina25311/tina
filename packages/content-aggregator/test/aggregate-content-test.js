@@ -1529,8 +1529,8 @@ describe('aggregateContent()', function () {
           files.forEach((file) => expect(file.stat.mtime).to.be.undefined())
         } else {
           files.forEach((file) => {
-            expect(file.stat.mtime).not.to.be.undefined()
-            expect(file.stat.mtime.getTime()).not.to.be.NaN()
+            expect(file.stat.mtime).to.not.be.undefined()
+            expect(file.stat.mtime.getTime()).to.not.be.NaN()
           })
         }
       })
@@ -2104,7 +2104,7 @@ describe('aggregateContent()', function () {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
-        expect(page).not.to.be.undefined()
+        expect(page).to.not.be.undefined()
         expect(page.src.origin.url).to.equal(remoteUrl)
       })
 
@@ -2117,7 +2117,7 @@ describe('aggregateContent()', function () {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
-        expect(page).not.to.be.undefined()
+        expect(page).to.not.be.undefined()
         expect(page.src.origin.url).to.equal(remoteUrl)
       })
 
@@ -2130,7 +2130,7 @@ describe('aggregateContent()', function () {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
-        expect(page).not.to.be.undefined()
+        expect(page).to.not.be.undefined()
         expect(page.src.origin.url).to.equal('https://gitlab.com/antora/demo/demo-component-a.git')
       })
 
@@ -2144,7 +2144,7 @@ describe('aggregateContent()', function () {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
-        expect(page).not.to.be.undefined()
+        expect(page).to.not.be.undefined()
         expect(page.src.origin.url).to.equal(remoteUrlWithoutAuth)
       })
 
@@ -2155,7 +2155,7 @@ describe('aggregateContent()', function () {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
-        expect(page).not.to.be.undefined()
+        expect(page).to.not.be.undefined()
         expect(page.src.origin.url).to.undefined()
       })
 
@@ -2180,7 +2180,7 @@ describe('aggregateContent()', function () {
                 const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/${action[type]}/${shortname}/%s`
                 expect(origin.editUrlPattern).to.equal(expectedEditUrlPattern)
               } else {
-                expect(origin).not.to.have.property('editUrlPattern')
+                expect(origin).to.not.have.property('editUrlPattern')
               }
             })
           })
@@ -2208,7 +2208,7 @@ describe('aggregateContent()', function () {
                 const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/${action[type]}/${shortname}/%s`
                 expect(origin.editUrlPattern).to.equal(expectedEditUrlPattern)
               } else {
-                expect(origin).not.to.have.property('editUrlPattern')
+                expect(origin).to.not.have.property('editUrlPattern')
               }
             })
           })
@@ -2235,7 +2235,7 @@ describe('aggregateContent()', function () {
                 const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/src/${shortname}/%s`
                 expect(origin.editUrlPattern).to.equal(expectedEditUrlPattern)
               } else {
-                expect(origin).not.to.have.property('editUrlPattern')
+                expect(origin).to.not.have.property('editUrlPattern')
               }
             })
           })
@@ -2262,7 +2262,7 @@ describe('aggregateContent()', function () {
                 const expectedEditUrlPattern = `https://${hostname}/group-name/repo-name/blob/${shortname}/f/%s`
                 expect(origin.editUrlPattern).to.equal(expectedEditUrlPattern)
               } else {
-                expect(origin).not.to.have.property('editUrlPattern')
+                expect(origin).to.not.have.property('editUrlPattern')
               }
             })
           })
@@ -2295,7 +2295,7 @@ describe('aggregateContent()', function () {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const file = aggregate[0].files[0]
-        expect(file.src).not.to.have.property('editUrl')
+        expect(file.src).to.not.have.property('editUrl')
       }).timeout(this.timeout() * 2)
 
       it('should use editUrl pattern to generate editUrl', async () => {
@@ -3408,7 +3408,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:').toString('base64'))
-      expect(credentialsSent).not.to.be.undefined()
+      expect(credentialsSent).to.not.be.undefined()
       expect(credentialsSent.username).to.equal('u')
       expect(credentialsSent.password).to.equal('')
       expect(aggregate).to.have.lengthOf(1)
@@ -3596,7 +3596,7 @@ describe('aggregateContent()', function () {
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
-      expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).not.to.equal(credentialManager)
+      expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.not.equal(credentialManager)
       expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE).fulfilledUrl).to.equal(repoBuilder.url)
     })
 
@@ -3876,7 +3876,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url })
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
-        expect(lines[0]).not.to.include('0123456789@')
+        expect(lines[0]).to.not.include('0123456789@')
       }, GIT_OPERATION_LABEL_LENGTH + 1 + url.length * 2)
     })
 
