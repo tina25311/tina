@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Added
+
+* *page-composer*: Map `page.role` in UI model to value of role on document (#437)
+
 == 2.3.0-rc.1 (2020-04-15)
 
 === Added
