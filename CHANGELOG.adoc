@@ -33,6 +33,10 @@ This project utilizes semantic versioning.
 * *content-classifier*: Extract logic to register site start page to `ContentCatalog#registerSiteStartPage()`
 * *content-classifier*: Assign component name to read-only name property on component version object (#606)
 
+=== Changed
+
+* *content-classifier*: Don't append `.adoc` file extension to page or alias without a file extension when parsing resource ID
+
 === Fixed
 
 * *asciidoc-loader*: Don't allow path document attribute to interfere with internal xref
