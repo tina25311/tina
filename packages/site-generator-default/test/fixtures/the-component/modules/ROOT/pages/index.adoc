@@ -3,6 +3,8 @@
 
 Content.
 
-See xref:the-page.adoc[the page].
+See xref:the-page.adoc[the page], which you can also access via xref:the-alias.adoc[its alias].
+
+Also check out xref:the-freshness#[the new page].
 
 include::{partialsdir}/diagrams.adoc[]

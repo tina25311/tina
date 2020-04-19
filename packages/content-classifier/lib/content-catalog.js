@@ -27,7 +27,7 @@ class ContentCatalog {
     let startPage
     const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
     if (startPageSpec) {
-      const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : `${startPageSpec}.adoc`
+      const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : startPageSpec + '.adoc'
       const { src: startPageSrc } = (startPage = this.resolvePage(formalStartPageSpec, indexPageId)) || {}
       if (startPageSrc && startPageSrc.component === name && startPageSrc.version === version) {
         if (!(startPageSrc.module === 'ROOT' && startPageSrc.relative === 'index.adoc')) {
@@ -222,7 +222,7 @@ class ContentCatalog {
 
   registerSiteStartPage (startPageSpec) {
     if (!startPageSpec) return
-    const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : `${startPageSpec}.adoc`
+    const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : startPageSpec + '.adoc'
     const rel = this.resolvePage(formalStartPageSpec)
     if (rel) {
       return this.addFile({ mediaType: 'text/html', src: inflateSrc(Object.assign({}, START_ALIAS_ID), 'alias'), rel })
@@ -268,8 +268,7 @@ class ContentCatalog {
    * the function returns undefined. If the spec does not match the page ID syntax, this function
    * throws an error.
    *
-   * @param {String} spec - The contextual page ID spec (e.g.,
-   *   version@component:module:topic/page followed by optional .adoc extension).
+   * @param {String} spec - The contextual page ID spec (e.g., version@component:module:topic/page.adoc).
    * @param {ContentCatalog} catalog - The content catalog in which to resolve the page file.
    * @param {Object} [ctx={}] - The context to use to qualified the contextual page ID.
    *

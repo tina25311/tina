@@ -243,7 +243,7 @@ describe('convertDocuments()', () => {
   it('should register aliases defined by page-aliases document attribute', () => {
     const contents = Buffer.from(heredoc`
       = Page Title
-      :page-aliases: the-alias.adoc,topic/the-alias, 1.0.0@page-a.adoc ,another-alias.adoc
+      :page-aliases: the-alias.adoc,topic/the-alias.adoc, 1.0.0@page-a.adoc ,another-alias.adoc
 
       Page content.
     `)
@@ -259,7 +259,7 @@ describe('convertDocuments()', () => {
     convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
     expect(contentCatalog.registerPageAlias).first.be.called.with('the-alias.adoc', inputFile)
-    expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias', inputFile)
+    expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias.adoc', inputFile)
     expect(contentCatalog.registerPageAlias).third.be.called.with('1.0.0@page-a.adoc', inputFile)
     expect(contentCatalog.registerPageAlias)
       .nth(4)
@@ -288,11 +288,33 @@ describe('convertDocuments()', () => {
     convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
     expect(contentCatalog.registerPageAlias).first.called.with('the-alias.adoc', inputFile)
-    expect(contentCatalog.registerPageAlias).second.called.with('topic/the-alias', inputFile)
+    expect(contentCatalog.registerPageAlias).second.called.with('topic/the-alias.adoc', inputFile)
     expect(contentCatalog.registerPageAlias).third.called.with('1.0.0@page-a.adoc', inputFile)
     expect(contentCatalog.registerPageAlias)
       .nth(4)
       .called.with('another-alias.adoc', inputFile)
+  })
+
+  it('should append .adoc extension to page aliases if missing', () => {
+    const contents = Buffer.from(heredoc`
+      = Page Title
+      :page-aliases: the-alias,topic/the-alias
+
+      Page content.
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'page-a.adoc',
+        contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const inputFile = contentCatalog.getFiles()[0]
+    contentCatalog.registerPageAlias = spy(() => {})
+    convertDocuments(contentCatalog, asciidocConfig)
+    expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(2)
+    expect(contentCatalog.registerPageAlias).first.be.called.with('the-alias.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias.adoc', inputFile)
   })
 
   it('should not register aliases if page-aliases document attribute is empty', () => {
