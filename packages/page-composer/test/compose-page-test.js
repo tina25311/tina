@@ -276,9 +276,9 @@ describe('createPageComposer()', () => {
           if (!spec) {
             throw new Error('invalid page ID')
           } else if (spec === 'the-component::the-page.adoc') {
-            return file
-          } else if (spec === 'the-page.adoc' && component === 'the-component' && version === '0.9') {
-            return files['0.9']
+            return files['1.0']
+          } else if (spec === 'the-page.adoc' && component === 'the-component') {
+            return version === '0.9' ? files['0.9'] : files['1.0']
           }
         },
       }
@@ -623,7 +623,7 @@ describe('createPageComposer()', () => {
       definePartial(
         'body-resolve-page-from-context',
         heredoc`
-        {{#with (resolvePage 'the-page.adoc' component=page.component.name version='0.9')}}
+        {{#with (resolvePage 'the-page.adoc' version='0.9')}}
         <p>{{./url}} is older than {{./latest.url}}</p>
         {{/with}}
         `
@@ -636,17 +636,51 @@ describe('createPageComposer()', () => {
       )
     })
 
+    // NOTE undefined doesn't work since Handlebars never sets the property
+    it('should be able to call built-in helper with null version to resolve latest version of page', () => {
+      file = files['0.9']
+      definePartial(
+        'body-resolve-page-from-context',
+        heredoc`
+        {{#with (resolvePage 'the-page.adoc' version=null)}}
+        <p>{{./url}} is {{./latest.url}}</p>
+        {{/with}}
+        `
+      )
+      replaceCallToBodyPartial('{{> body-resolve-page-from-context}}')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include(
+        '<p>/the-component/1.0/the-page.html is /the-component/1.0/the-page.html</p>'
+      )
+    })
+
     it('should be able to call built-in helper with context to resolve URL of page', () => {
       definePartial(
         'body-resolve-page-url-from-context',
         heredoc`
-        <p>{{resolvePageURL 'the-page.adoc' component=page.component.name version='0.9'}}</p>
+        <p>{{resolvePageURL page.srcPath version='0.9'}}</p>
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-from-context}}')
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/the-component/0.9/the-page.html</p>')
+    })
+
+    // NOTE undefined doesn't work since Handlebars never sets the property
+    it('should be able to call built-in helper with null version to resolve URL of latest version of page', () => {
+      file = files['0.9']
+      definePartial(
+        'body-resolve-page-url-from-context',
+        heredoc`
+        <p>{{resolvePageURL page.srcPath version=null}}</p>
+        `
+      )
+      replaceCallToBodyPartial('{{> body-resolve-page-url-from-context}}')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include('<p>/the-component/1.0/the-page.html</p>')
     })
 
     it('should be able to call built-in helper to relativize URL', () => {
