@@ -116,7 +116,7 @@ Issue {url-issues}/562[#562^]:: Modify `ContentCatalog#addFile` to return file a
 Issue {url-issues}/563[#563^]:: Don't assign `out` property when adding a file to the content catalog if `out` property has falsy value.
 Issue {url-issues}/564[#564^]:: Don't relativize absolute `pub` URL.
 Don't prepend site URL to absolute canonical URL.
-Issue {url-issues}/568[#568^]:: Assign value of family-relative path of page to `srcPath` property on page UI model.
+Issue {url-issues}/568[#568^]:: Assign value of family-relative path of page to `relativeSrcPath` property on page UI model and `page-relative-src-path` attribute on AsciiDoc document.
 Issue {url-issues}/581[#581^]:: Ignore dot (hidden) folders when matching start paths unless pattern itself begins with a dot.
 Issue {url-issues}/589[#589^]:: Rename `resolvePageUrl` UI helper to `resolvePageURL`.
 Issue {url-issues}/595[#595^]:: Modify netlify redirects to be forced as recommended by Netlify.

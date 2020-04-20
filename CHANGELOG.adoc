@@ -13,6 +13,8 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *asciidoc-loader*: Rename intrinsic `page-src-path` page attribute to `page-relative-src-path` (#568)
+* *page-composer*: Rename `srcPath` on page UI model to `relativeSrcPath` (#568)
 * *page-composer*: Modify `resolvePage` and `resolvePageURL` UI helpers to inherit context (i.e., page ID) from current page (#541)
 
 == 2.3.0-rc.1 (2020-04-15)
@@ -68,7 +70,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: Add `getComponentVersion` method to exported API
 * *content-classifier*: Map `asciidoc` property on component to `asciidoc` property on latest version of component (#543)
 * *asciidoc-loader*: Allow target of xref to be a page alias (#586)
-* *asciidoc-loader*: Assign value of family-relative path of page to page-src-path attribute on document (#568)
+* *asciidoc-loader*: Assign value of family-relative path of page to `page-src-path` page attribute (#568)
 * *asciidoc-loader*: Assign the SHA-1 commit hash for the content source ref (branch or tag) to the `page-origin-refhash` attribute on document unless page is taken from worktree (#578)
 * *asciidoc-loader*: Add function for extracting metadata from the AsciiDoc header (#310)
 * *asciidoc-loader*: Use automatic reference text (i.e., xreftext) if contents of page xref is empty (#310)

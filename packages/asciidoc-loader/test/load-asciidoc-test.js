@@ -186,7 +186,7 @@ describe('loadAsciiDoc()', () => {
         'page-version': 'master',
         'page-module': 'module-a',
         'page-relative': 'page-a.adoc',
-        'page-src-path': 'page-a.adoc',
+        'page-relative-src-path': 'page-a.adoc',
         // computed
         doctitle: 'Document Title',
         docrole: 'docrole',
@@ -225,7 +225,7 @@ describe('loadAsciiDoc()', () => {
         'page-version',
         'page-module',
         'page-relative',
-        'page-src-path'
+        'page-relative-src-path'
       )
     })
 

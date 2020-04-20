@@ -99,7 +99,7 @@ function computePageAttrs ({ component: componentName, version, module: module_,
     attrs['page-component-title'] = component.title
   }
   attrs['page-module'] = module_
-  attrs['page-relative'] = attrs['page-src-path'] = relative
+  attrs['page-relative'] = attrs['page-relative-src-path'] = relative
   if (origin) {
     attrs['page-origin-type'] = origin.type
     attrs['page-origin-url'] = origin.url
