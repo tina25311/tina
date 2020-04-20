@@ -48,7 +48,7 @@ for package in packages/*; do
   echo "access=public" > $package/.npmrc
   echo "//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" >> $package/.npmrc
   mkdir -p $package/scripts
-  for script in preversion.js prepublish.js postpublish.js; do
+  for script in prepublish.js postpublish.js; do
     cat << EOF > $package/scripts/$script
 require('child_process').execSync('node ../../scripts/$script', { cwd: require('path').resolve(__dirname, '..') })
 EOF
@@ -72,7 +72,6 @@ git status -s -b
 # nuke npm settings
 #for package in packages/*; do
 #  unlink $package/.npmrc
-#  unlink $package/scripts/preversion.js
 #  unlink $package/scripts/prepublish.js
 #  unlink $package/scripts/postpublish.js
 #  rmdir $package/scripts
