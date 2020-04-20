@@ -11,6 +11,10 @@ This project utilizes semantic versioning.
 
 * *page-composer*: Map `page.role` in UI model to value of role on document (#437)
 
+=== Changed
+
+* *page-composer*: Modify `resolvePage` and `resolvePageURL` UI helpers to inherit context (i.e., page ID) from current page (#541)
+
 == 2.3.0-rc.1 (2020-04-15)
 
 === Added
