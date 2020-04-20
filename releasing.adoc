@@ -100,8 +100,11 @@ Thanks to lerna lifecycle hooks, this is possible.
 The release script places two lifecycle scripts into the scripts folder of each package folder during the release process.
 These scripts are wrappers that turn around and invoke the following two scripts:
 
+* https://gitlab.com/antora/antora/blob/master/scripts/preversion.js[preversion.js]
 * https://gitlab.com/antora/antora/blob/master/scripts/prepublish.js[prepublish.js]
 * https://gitlab.com/antora/antora/blob/master/scripts/postpublish.js[postpublish.js]
+
+In the *preversion* script, the copyright year is updated in the [.path]_README.adoc_.
 
 In the *prepublish* script, the [.path]_README.adoc_ file is moved out of the way, its contents are transformed to Markdown and saved as [.path]_README.md_.
 The packaging script then picks up the generated [.path]_README.md_ file and bundles it with the package (ignoring the hidden README.adoc).
