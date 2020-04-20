@@ -702,7 +702,7 @@ By committing your code first, then running prettier and committing those change
 Both the linter and the test suite are run in a continuous integration (CI) environment on every commit to master and on every merge request.
 A merge request cannot be merged unless the CI pipeline succeeds.
 
-The CI pipeline is run in the https://docs.gitlab.com/ce/ci/[GitLab CI] environment using the https://store.docker.com/images/node[node:8] docker image.
+The CI pipeline is run in the https://docs.gitlab.com/ce/ci/[GitLab CI] environment using the https://store.docker.com/images/node[node:10] docker image.
 The pipeline consists of the following stages:
 
 * setup
