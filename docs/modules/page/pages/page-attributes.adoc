@@ -123,7 +123,7 @@ These attributes are _read-only_, so you should not attempt to override their va
 One of the primary roles of page attributes is to pass metadata about the page to the UI template via the xref:antora-ui-default::templates.adoc#template-variables[UI model].
 The UI template can use the information provided by page attributes in a variety of ways, from populating metadata in the published page to toggling or configuring behavior in the UI.
 
-As an example, the default UI allows you do configure the depth of the sidebar TOC using the page attribute named `toclevels`.
+As an example, the default UI allows you do configure the depth of the sidebar TOC using the page attribute named `toclevels` (i.e., `page-toclevels` when defined).
 For example:
 
 [source,asciidoc]
@@ -135,7 +135,7 @@ For example:
 The page attributes are accessible in the UI model via the `page.attributes` property.
 The value of this property is a map of attributes.
 
-For example, to access the page attribute named `toclevels`, you'd use:
+For example, to access the page attribute named `toclevels` in a UI template, you'd use:
 
 [source,hbs]
 ----

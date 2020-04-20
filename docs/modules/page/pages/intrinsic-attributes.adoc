@@ -3,10 +3,10 @@
 
 Antora automatically assigns information about the runtime environment, site configuration, and current page to various document and page attributes.
 We refer to these as [.term]*intrinsic attributes*.
-Antora uses these AsciiDoc document attributes to communication information the site and current page to the AsciiDoc content, extensions, and UI templates.
+Antora uses these AsciiDoc document attributes to propogate information about the site and current page to the AsciiDoc content, extensions, and UI templates.
 
-Unlike other built-in attributes, such as xref:page-aliases.adoc[`page-aliases`], intrinsic attributes are meant to be a conduit to pass information from Antora to the page.
-Therefore, *intrinsic attributes are intended to be read only and should not be reassigned.*
+Unlike other built-in attributes, such as xref:page-aliases.adoc[page-aliases], intrinsic attributes are meant to be a conduit to pass information from Antora to the page.
+Therefore, *intrinsic attributes are intended to be read only and should not be reassigned*.
 
 [#environment-attributes]
 == Intrinsic environment attributes
@@ -22,7 +22,7 @@ These attributes are set on every page in the site.
 You might use these attributes in an preprocessor conditional to include or exclude content based on whether the document is being process by Antora.
 For example:
 
-[source,asciidoc]
+[source]
 ----
 \ifndef::site-gen-antora[]
 \include::local-preview-settings.adoc[]
@@ -112,7 +112,7 @@ If the file was taken from a local directory (i.e., git worktree), the value is 
 |\https://gitlab.com/forest-co/silver-leaf.git
 
 |`page-origin-worktree`
-|Set (with no value) only if the file was taken from a local direcotry (i.e., a git worktree).
+|Set (with no value) only if the file was taken from a local directory (i.e., a git worktree).
 |_Boolean attribute, no output is returned_
 
 |`page-relative-src-path`
