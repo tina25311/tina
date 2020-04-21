@@ -62,9 +62,9 @@ function buildSiteUiModel (playbook, contentCatalog) {
 }
 
 function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog) {
-  const fileSrc = file.src
-  if (fileSrc.stem === '404' && !fileSrc.component) return { layout: '404', title: file.title }
-  const { component: componentName, version, module: module_, relative: srcPath, origin, editUrl, fileUri } = fileSrc
+  const src = file.src
+  if (src.stem === '404' && !src.component) return { layout: '404', title: file.title }
+  const { component: component_, version, module: module_, relative: relativeSrcPath, origin, editUrl, fileUri } = src
 
   // QUESTION should attributes be scoped to AsciiDoc, or should this work regardless of markup language? file.data?
   const asciidoc = file.asciidoc || {}
@@ -75,10 +75,10 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
   }, {})
 
   const url = file.pub.url
-  const component = contentCatalog.getComponent(componentName)
+  const component = contentCatalog.getComponent(component_)
   const componentVersion = contentCatalog.getComponentVersion(component, version)
   // QUESTION can we cache versions on file.rel so only computed once per page version lineage?
-  const versions = component.versions.length > 1 ? getPageVersions(fileSrc, component, contentCatalog) : undefined
+  const versions = component.versions.length > 1 ? getPageVersions(src, component, contentCatalog) : undefined
   const title = file.title || asciidoc.doctitle
 
   const model = {
@@ -95,7 +95,7 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
     displayVersion: componentVersion.displayVersion,
     componentVersion,
     module: module_,
-    srcPath,
+    relativeSrcPath,
     origin,
     versions,
     editUrl,
@@ -104,7 +104,7 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
   }
 
   if (navigationCatalog) {
-    attachNavProperties(model, url, title, navigationCatalog.getNavigation(componentName, version))
+    attachNavProperties(model, url, title, navigationCatalog.getNavigation(component_, version))
   }
 
   if (versions) {

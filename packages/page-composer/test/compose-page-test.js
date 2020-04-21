@@ -659,7 +659,7 @@ describe('createPageComposer()', () => {
       definePartial(
         'body-resolve-page-url-from-context',
         heredoc`
-        <p>{{resolvePageURL page.srcPath version='0.9'}}</p>
+        <p>{{resolvePageURL page.relativeSrcPath version='0.9'}}</p>
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-from-context}}')
@@ -674,7 +674,7 @@ describe('createPageComposer()', () => {
       definePartial(
         'body-resolve-page-url-from-context',
         heredoc`
-        <p>{{resolvePageURL page.srcPath version=null}}</p>
+        <p>{{resolvePageURL page.relativeSrcPath version=null}}</p>
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-from-context}}')

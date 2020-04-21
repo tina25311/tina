@@ -306,15 +306,15 @@ describe('build UI model', () => {
       expect(model.componentVersion).to.equal(component.versions[0])
     })
 
-    it('should set the module, version, and srcPath properties using values from file src object', () => {
+    it('should set the module, version, and relativeSrcPath properties using values from file src object', () => {
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
       expect(model.module).to.exist()
       expect(model.module).to.equal('ROOT')
       expect(model.version).to.exist()
       expect(model.version).to.equal('1.0')
       expect(model.displayVersion).to.equal(model.componentVersion.displayVersion)
-      expect(model.srcPath).to.exist()
-      expect(model.srcPath).to.equal('the-page.adoc')
+      expect(model.relativeSrcPath).to.exist()
+      expect(model.relativeSrcPath).to.equal('the-page.adoc')
     })
 
     it('should set origin property to value from file src object', () => {
