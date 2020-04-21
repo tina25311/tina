@@ -50,23 +50,26 @@ image::xref-macro-diagram.svg[Diagram of an AsciiDoc xref macro with an Antora p
 xref{colon}::
 The prefix of the AsciiDoc xref macro.
 
-page ID:: The page ID coordinates of the target page relative to the current page.
+target page ID:: The <<id-coordinates,page ID coordinates>> of the target page relative to the current page.
 
+[#id-fragment]
 #fragment::
 The element ID that links to a section, block, or inline location within the target page.
 A fragment is always optional.
 The fragment starts with the hash symbol (`#`).
+A page's `reftext` (and `navtitle`) isn't used as <<link-text,the default link text>> when a fragment is specified.
 
+[#link-text]
 [link text]::
 When a visitor clicks on the link text that's displayed on the current page in the published site, they're directed to the target page.
 The link text is optional.
-If no link text is specified in the xref macro's square brackets (`[]`), the title of the target page is displayed.
+If no link text is specified in the xref macro's square brackets (`[]`), the xref:reftext-and-navtitle.adoc[reftext or navtitle of the target page is displayed].
 
 Here's how an xref macro with a fully qualified page ID looks in practice:
 
 [subs=attributes+]
 ----
-See xref:{page-component-version}@antora:ROOT:how-antora-works.adoc[how Antora works].
+See xref:{page-component-version}@antora:ROOT:how-antora-works.adoc[].
 ----
 
 Specifying the version, component name, and even module every time seems verbose, right?

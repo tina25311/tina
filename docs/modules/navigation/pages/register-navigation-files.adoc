@@ -5,17 +5,12 @@
 // Filters
 :page-tags: UI menu, antora.yml, component keys
 
-On this page, you'll learn:
-
-* [x] How to register navigation files in a component version descriptor.
-* [x] How registration order affects the component version page menu.
-
 == nav key
 
-The `nav` key is set in the xref:ROOT:component-version-descriptor.adoc[component descriptor file] ([.path]_antora.yml_) of a xref:ROOT:component-version.adoc[component version].
-It accepts a list of xref:filenames-and-locations.adoc[navigation files] as values.
+The `nav` key is set in a xref:ROOT:component-version-descriptor.adoc[component version descriptor file] ([.path]_antora.yml_).
+It accepts a list of navigation files as values.
 Each value specifies the path to an individual navigation file.
-If you aren't familiar with how to set the `nav` key and assign it values, review xref:ROOT:component-navigation.adoc[Assign navigation files to a component version] first.
+If you aren't familiar with how to set the `nav` key and assign it values, review xref:ROOT:component-navigation.adoc[].
 
 == Register navigation files
 
@@ -41,16 +36,7 @@ nav:
 The navigation lists in the two registered files will be published into a single component version page menu for _Component B 1.0_.
 
 [#registration-order]
-=== How registration order affects the component version page menu
+=== Registration order
 
 The order of the `nav` key's values dictates the order the contents of the registered navigation files are assembled in the published component version page menu.
 In <<ex-register>>, the contents of the ROOT module's navigation file will be at the top of the component version page menu and the contents of Module One's navigation file will be appended to the end of the ROOT navigation list.
-
-////
-== What's next?
-
-Learn all about creating navigation lists and navigation items:
-
-* xref:list-structures.adoc[Navigation lists: list title and item hierarchy, single list file, multi-list file]
-* xref:link-syntax-and-content.adoc[Navigation link syntax and content formatting: xrefs, URLs, text styles, images, and more]
-////
