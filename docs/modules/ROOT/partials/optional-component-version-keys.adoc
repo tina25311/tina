@@ -4,7 +4,7 @@
 
 |xref:component-attributes.adoc[asciidoc.attributes]
 |The `asciidoc` key accepts the `attributes` key and its nested list of key-value pairs.
-The key-value pairs listed under `attributes` represent built-in and user-defined xref:page:asciidoc-attributes.adoc[AsciiDoc attributes] (e.g., `idseparator: '-'`) and xref:page:page-attributes.adoc[page attributes].
+The key-value pairs listed under `attributes` represent built-in and user-defined xref:page:define-and-modify-attributes.adoc[AsciiDoc attributes] (e.g., `idseparator: '-'`) and xref:page:page-attributes.adoc[page attributes].
 Attributes in [.path]_antora.yml_ are applied to all of the xref:page:index.adoc[pages] and xref:page:resource-id.adoc[resources] (where applicable) that belong to a component version.
 
 |xref:component-display-version.adoc[display_version]

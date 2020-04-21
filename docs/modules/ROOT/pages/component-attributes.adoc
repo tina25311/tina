@@ -1,11 +1,10 @@
 = Assign Attributes to a Component Version
 
-You can apply AsciiDoc and `page-` attributes to all of the pages in a component version by declaring them in its [.path]_antora.yml_ file.
+You can assign AsciiDoc document attributes for all pages in a component version by declaring the attribute in the [.path]_antora.yml_ file for that component version.
 
 == Component version attributes
 
 Attributes that are defined in a component version descriptor are referred to as [.term]*component version attributes*.
-They can be xref:page:attributes.adoc[built-in and custom AsciiDoc and Antora page- attributes].
 These attributes are applied and available to all of a component version's pages according to the attribute precedence rules.
 
 [#set-and-unset]
@@ -42,11 +41,11 @@ Press kbd:[space] once after the colon, then type the value of the attribute.
 <6> To assign the default value, or in the case of a boolean AsciiDoc attribute, the _empty string_ value, type two consecutive single quotation marks (`''`) in the value field.
 <7> The value `false` <<assign-precedence,soft unsets>> this attribute.
 
-The values of user-defined attributes, such as `page-level`, and built-in `page-` attributes can be displayed in a page using the AsciiDoc attribute reference syntax (e.g., `+{page-level}+` or `+{page-version}+`).
+The values of user-defined page attributes, such as `page-level`, as well as built-in page attributes can be displayed in a page using the AsciiDoc attribute reference syntax (e.g., `+{page-level}+` or `+{page-version}+`).
 
-TIP: Antora declares `page-` attributes for most of the keys in the component version descriptor file.
+TIP: Antora declares page attributes for most of the keys in the component version descriptor file.
 For instance, Antora automatically sets the built-in attribute `page-component-title` and assigns it the value specified by the `title` key.
-Check out the xref:environment-and-page-attributes.adoc[Page and environment attribute reference] for a complete list of the `page-` attributes Antora automatically declares.
+Check out the xref:page:intrinsic-attributes.adoc#page-attributes[intrinsic attribute reference] for a complete list of the page attributes Antora automatically declares.
 
 [#assign-precedence]
 == Assign precedence to component version attributes
