@@ -101,7 +101,7 @@ See the xref:ROOT:terms/faqs.adoc[FAQs].
 [#default-link-text]
 == Use the target page's default link text
 
-When an xref doesn't specify any link text, Antora uses the target page's `xreftext` value as the link text.
+When an xref doesn't specify any link text, Antora uses the target page's `reftext` value as the link text.
 Let's create an xref to the [.path]_page-aliases.adoc_ page in Antora's own documentation.
 
 ----
@@ -116,13 +116,12 @@ See xref:page-aliases.adoc[].
 ====
 
 If you click on the link, you'll see that the clickable text and the title of the target page are the same.
-
-A page's title is assigned to the built-in AsciiDoc `xreftext` attribute by default.
-You can also set the `xreftext` attribute in a page's header and assign it custom text.
+A page's title is assigned to the built-in AsciiDoc `reftext` attribute by default.
+You can also xref:reftext-and-navtitle.adoc[assign a custom value to the reftext attribute].
 
 TIP: Xrefs in a navigation file behave the same way with one additional feature.
-Navigation files use the `navtitle` value to populate missing link text.
-If `navtitle` isn't set, then they use the page's `xreftext` value.
+Navigation files use the xref:reftext-and-navtitle.adoc#navtitle[navtitle value] to populate missing link text.
+If `navtitle` isn't set, then they use the page's `reftext` value.
 
 == Learn more
 

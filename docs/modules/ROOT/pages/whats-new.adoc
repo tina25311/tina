@@ -16,22 +16,30 @@ _**Release date:** 2020.xx.xx | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
 
 == Default xref link text for pages and navigation files
 
-Antora now uses the xref:page:module-and-page-xrefs.adoc#default-link-text[target page's title or xreftext] when the link text in an xref macro isn't specified.
-For example, the following xref doesn't have any link text.
+Antora now uses the xref:page:reftext-and-navtitle.adoc[target page's reftext] when the link text in an xref macro isn't specified.
+For instance, the following xref example doesn't have any link text specified.
 
+[source]
 ----
 See xref:component-prerelease.adoc[].
 ----
 
-Notice in the output below that Antora automatically filled in the link text, using the target page's title, when it generated the site.
+But notice in the output below that Antora automatically used the target page's title to fill in the link text when it generated the site.
 
 ====
 See xref:component-prerelease.adoc[].
 ====
+
+By default, the `reftext` attribute is assigned the page's title as its value.
+You can also assign a page a xref:page:reftext-and-navtitle.adoc[custom reftext value] using an attribute entry.
 
 Xrefs in navigation files behave the same way with one additional feature.
-Navigation files use the `navtitle` value to populate missing link text.
-If `navtitle` isn't set, then they use the page's `xreftext` value.
+Navigation files use the xref:page:reftext-and-navtitle.adoc#navtitle[navtitle value to populate the link text].
+If `navtitle` isn't set, then the page's `reftext` value is used.
+You never have to explicitly set `reftext` or `navtitle` unless you want to customize the default xref link text used in a page or navigation file.
+
+NOTE: Antora doesn't populate an xref's link text when a xref:page:page-id.adoc#id-fragment[fragment is appended to the page ID].
+In such cases, you'll still need to explicitly specify the link text.
 
 == Declare AsciiDoc and page attributes per component version
 
@@ -50,8 +58,8 @@ Issue {url-issues}/251[#251^]:: Allow AsciiDoc and Antora page attributes to be 
 Add support for attributes to be set and defined in the component version descriptor ([.path]_antora.yml_).
 Add `addNavigation` function to `NavigationCatalog` for registering all trees for a component version at once.
 Issue {url-issues}/310[#310^]:: Add function for extracting metadata from the AsciiDoc header.
-Use automatic reference text (i.e., `xreftext`) if contents of page xref is empty in a page or resource file.
-Use automatic reference text (i.e., `navtitle` attribute or `xreftext`) if contents of page xref in navigation file is empty.
+Use automatic reference text (i.e., `reftext`) if contents of page xref is empty in a page or resource file.
+Use automatic reference text (i.e., `navtitle` attribute or `reftext`) if contents of page xref in navigation file is empty.
 Issue {url-issues}/328[#328^]:: Expose the content catalog's public API to the UI model as `site.contentCatalog`.
 Add the built-in helpers `resolvePage` and `resolvePageUrl` to resolve pages and their publish URLs in UI templates.
 Issue {url-issues}/330[#330^]:: Add support for xref attribute on image macros to reference internal anchor or page.
