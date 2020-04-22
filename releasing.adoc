@@ -290,10 +290,9 @@ Confirm this is set up correctly by doing an empty push:
 === Perform a Local Release
 
 Now you are ready to perform a local release.
-Switch to the [.path]_test-release-from_ repository and run:
+Switch to the [.path]_test-release-from_ repository and run the following command, adjusting the npm_config_registry and version bump value as needed:
 
- $ npm_config_registry=http://localhost:4873 \
-   lerna publish --cd-version=prerelease --exact --force-publish=*
+ $ npm_config_registry=http://localhost:4873 ./scripts/local-release.sh prerelease
 
 If you've set up everything correctly, this will not affect the official repository and won't publish anything to npmjs.com.
 
@@ -302,8 +301,11 @@ Verify that the packages have been published to the private npm registry by visi
 === Reverting a Release
 
 The beauty of testing locally is that you can revert a release.
-Here's how to do it.
+The quickest way to do it is to run the provided script from the [.path]_test-release-from_ repository:
 
+ $ npm_config_registry=http://localhost:4873 ./scripts/revert-local-release.sh ../test-release-to
+
+Or you can do it manually.
 Start by purging the packages from the private npm repository:
 
  $ for package in `find packages -mindepth 1 -maxdepth 1 -printf "%f\n"`; do

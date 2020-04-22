@@ -55,27 +55,30 @@ EOF
   done
 done
 
+# lerna isn't happy about the scripts being untracked
+echo echo '/packages/*/scripts/' >> .gitignore
+
 # release!
 npm -v
 if case $RELEASE_VERSION in major|minor|patch) ;; *) false;; esac; then
-  lerna publish --cd-version=$RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=latest} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=latest} --yes
 elif case $RELEASE_VERSION in pre*) ;; *) false;; esac; then
-  lerna publish --cd-version=$RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=testing} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=testing} --yes
 elif [ -z $RELEASE_NPM_TAG ] && [ "$RELEASE_VERSION" != "${RELEASE_VERSION/-/}" ]; then
-  lerna publish --repo-version=$RELEASE_VERSION --exact --force-publish=* --npm-tag=testing --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --npm-tag=testing --yes
 else
-  lerna publish --repo-version=$RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=latest} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=latest} --yes
 fi
 
-git status -s -b
-
 # nuke npm settings
-#for package in packages/*; do
-#  unlink $package/.npmrc
-#  unlink $package/scripts/prepublish.js
-#  unlink $package/scripts/postpublish.js
-#  rmdir $package/scripts
-#done
+for package in packages/*; do
+  unlink $package/.npmrc
+  rm -rf $package/scripts
+done
+
+git restore .gitignore
+
+git status -s -b
 
 # nuke clone
 cd -
