@@ -562,16 +562,9 @@ function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefine
 
 function assignFileProperties (file, origin) {
   const extname = file.extname
-  file.mediaType = mimeTypes.lookup(extname)
   if (!file.src) file.src = {}
-  Object.assign(file.src, {
-    path: file.path,
-    basename: file.basename,
-    stem: file.stem,
-    extname,
-    mediaType: file.mediaType,
-    origin,
-  })
+  Object.assign(file.src, { path: file.path, basename: file.basename, stem: file.stem, extname, origin })
+  file.mediaType = file.src.mediaType = mimeTypes.lookup(extname)
   if (origin.fileUriPattern) {
     const fileUri = origin.fileUriPattern.replace('%s', file.src.path)
     file.src.fileUri = ~fileUri.indexOf(' ') ? fileUri.replace(SPACE_RX, '%20') : fileUri
