@@ -111,6 +111,12 @@ The packaging script then picks up the generated [.path]_README.md_ file and bun
 The *postpublish* script restores the original state by removing the [.path]_README.md_ file and moving [.path]_README.adoc_ back into place.
 As a result, the npm registry displays the Markdown version of the README, but we get to maintain the content in AsciiDoc format.
 
+In addition to these two package-scope scripts, the https://gitlab.com/antora/antora/blob/master/scripts/postpublish.js[version.js] script runs once at the start of the Lerna lifecycle to apply the following changes before the files are committed and tagged for the release:
+
+* Replace the Unreleased section title in [.path]_CHANGELOG.adoc_ with the release version and date.
+* Update the docs version in [.path]_docs/antora.yml_.
+* Update the copyright year in all README files.
+
 === Version Selection
 
 By default, Lerna is configured to select the next prerelease version in the sequence when selecting the version number.
