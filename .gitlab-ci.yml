@@ -57,6 +57,7 @@ release:
   environment: releases
   before_script:
   - yarn global add lerna@$(node -p 'require("./lerna.json").lerna') > /dev/null
+  - NODE_PATH=$(yarn global dir)/node_modules node scripts/patch-libnpmpublish.js
   script:
   - scripts/release.sh
   # triggers release of Docker image
