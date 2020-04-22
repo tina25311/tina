@@ -1,14 +1,10 @@
 = AsciiDoc Attributes in Antora
 
-Like the AsciiDoc processor, Antora uses AsciiDoc document attributes (herein _attributes_) to circulate information in and out of pages.
+Like the AsciiDoc processor, Antora uses AsciiDoc document attributes (herein [.term]*attributes*) to circulate information in and out of pages.
 These attributes are used to toggle or configure processing settings, control behavior and styles of the output, pass metadata from the source to the output, and pass down information about the page to the content, among a variety of other uses.
 
 In general, there are two categories of attributes: built-in and custom.
-Built-in attributes are those that have a reserved name and predefined purpose.
-Some built-in attributes are designed to be set, while others are intended to be read-only.
-You can also define custom attributes that work in a similar way.
-
-This page introduces these two catagories of attributes, explains how attributes are defined in a page, and refers you to pages that cover the built-in attributes in more depth.
+This page introduces these two categories of attributes, explains how attributes are defined in a page, and refers you to the pages that cover each category in more depth.
 
 == Built-in attributes
 
@@ -16,21 +12,18 @@ This page introduces these two catagories of attributes, explains how attributes
 Some built-in attributes are read-only, while others are meant to be modified.
 These built-in attributes have reserved names and serve a special, predefined purpose.
 
-Attributes designed to be modified may be set from the CLI, in the playbook, in the componen version descriptor, or in the page.
+Attributes designed to be modified may be set from the CLI, in the playbook, in the component version descriptor, or in the page.
 If the attribute is set in the page, it must be defined in the page header using an <<attribute-entry,attribute entry>>.
 
 Many modifiable built-in attributes have a restricted set of accepted values.
 These attributes usually do two things; they toggle a behavior on or off, and they further accept information that alters how the output is generated.
 For example, the `xrefstyle` attribute controls the style of the linked text of internal xrefs (e.g., basic, short, or full).
 
-include::ROOT:partial$dont-use-these-attributes.adoc[]
-
-The AsciiDoc processor already defines a plethora of built-in attributes.
+The AsciiDoc processor defines numerous built-in attributes.
 Antora introduces xref:intrinsic-attributes.adoc[additional built-in attributes] that are only relevant in the Antora environment.
-Several of these configure the AsciiDoc processor to work in the Antora environment.
-But most of them are xref:page-attributes.adoc[page attributes], which are attributes prefixed with `page-`.
-Page attributes are special in that they get promoted to the page UI model so they can be accessed from the xref:antora-ui-default::templates.adoc#template-variables[UI templates].
-
+Several of these attributes configure the AsciiDoc processor to work in the Antora environment, but most of them are xref:page-attributes.adoc[page attributes].
+[.term]*Page attributes* are attributes prefixed with `page-`.
+They're special in that they get promoted to the page UI model so they can be accessed from the xref:antora-ui-default::templates.adoc#template-variables[UI templates].
 Page attributes open up the door of passing metadata to the UI template using custom attributes.
 
 == Custom attributes
@@ -90,4 +83,10 @@ The values of built-in boolean attributes are always blank because their only ac
 Other built-in attributes may have a default value.
 If you set a built-in attribute and leave its value blank, Antora assigns the default value (if it has one) to the attribute at processing time.
 
-TIP: Attributes can also be xref:ROOT:component-attributes.adoc[scoped to a component version] or xref:playbook:asciidoc-attributes.adoc[scoped to a whole site].
+== Attribute precedence rules
+
+Attributes can be xref:playbook:asciidoc-attributes.adoc[scoped to a whole site] by declaring them in a site's playbook file.
+You can apply attributes to xref:ROOT:component-attributes.adoc[all of the pages in a component version] by declaring them in its [.path]_antora.yml_ file.
+Hard set and hard unset site and component version attributes take precedence over attributes defined on a page.
+
+See the precedence rules for xref:playbook:asciidoc-attributes.adoc#precedence-rules[site attributes] and xref:ROOT:component-attributes.adoc#precedence-rules[component version attributes] for more information.

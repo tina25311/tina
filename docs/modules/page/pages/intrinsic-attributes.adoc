@@ -3,10 +3,10 @@
 
 Antora automatically assigns information about the runtime environment, site configuration, and current page to various document and page attributes.
 We refer to these as [.term]*intrinsic attributes*.
-Antora uses these AsciiDoc document attributes to propogate information about the site and current page to the AsciiDoc content, extensions, and UI templates.
+Antora uses these attributes to propagate information about the site and current page to the AsciiDoc content, extensions, and UI templates.
 
 Unlike other built-in attributes, such as xref:page-aliases.adoc[page-aliases], intrinsic attributes are meant to be a conduit to pass information from Antora to the page.
-Therefore, *intrinsic attributes are intended to be read only and should not be reassigned*.
+Therefore, *intrinsic attributes are intended to be read-only and should not be reassigned*.
 
 [#environment-attributes]
 == Intrinsic environment attributes
@@ -31,6 +31,7 @@ For example:
 
 You can define additional environment attributes in the playbook.
 
+[#site-and-configuration-attributes]
 == Site and configuration attributes
 
 Antora sets various attributes to configure the AsciiDoc processor.
@@ -45,7 +46,7 @@ These attributes are intended to be reasonable defaults.
 Unlike other intrinsic attributes, they *can* be reconfigured using the CLI or playbook.
 They can also be redefined in such a way that they can be overridden by the component descriptor or page.
 
-Antora also passes down general site information using document attributes.
+Antora also passes general site information using attributes.
 
 * `site-title`
 * `site-url`
@@ -55,8 +56,8 @@ The values of these attributes match the values defined in the playbook.
 [#page-attributes]
 == Intrinsic page attributes
 
-Antora passes down various information about the current page through page attributes.
-These attributes are reassigned for each page (as well as each navigation file).
+Antora passes various information about the current page through page attributes.
+These attributes are reassigned for each page as well as each xref:navigation:files-and-lists.adoc[navigation file].
 
 [cols="1,2,1"]
 |===
@@ -144,4 +145,4 @@ This page belongs to the *{page-module}* module in the *{page-component-title} {
 Since these are page attributes, they are promoted to the `page.attributes` map in the page UI model with all other page attributes.
 They can be accessed in a UI template using a property expression (e.g., `page.attributes.component-name`).
 
-To learn more about how page attributes work, see the page about xref:page-attributes.adoc[page attributes].
+To learn more about how page attributes work, see xref:page-attributes.adoc[].

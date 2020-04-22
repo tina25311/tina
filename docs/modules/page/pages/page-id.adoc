@@ -23,7 +23,7 @@ image::page-id-diagram.svg[Diagram of an Antora page ID,400]
 include::partial$antora-id.adoc[tags=*;!resource]
 
 A page ID is used in an <<xref-macro,AsciiDoc xref macro>> to create a link from one page to another page.
-They're also used to create the links in a xref:navigation:link-syntax-and-content.adoc[component version's navigation files].
+They're also used to create the links in a xref:navigation:xrefs-and-link-text.adoc[component version's navigation files].
 
 [#whats-a-cross-reference]
 == What's a cross reference?

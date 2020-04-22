@@ -1,15 +1,6 @@
 = Define and Modify Attributes
 :xrefstyle: short
 :listing-caption: Example
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-attrs: {url-adoc-manual}/#attributes
-:url-builtin-attrs: {url-adoc-manual}/#builtin-attributes
-
-On this page, you'll learn:
-
-* [x] How to set and define built-in AsciiDoc attributes.
-* [x] How to set and define custom AsciiDoc attributes.
-* [x] How to unset AsciiDoc attributes.
 
 [#set-attribute]
 == Set a built-in attribute
@@ -48,7 +39,7 @@ include::ROOT:partial$dont-use-these-attributes.adoc[]
 [#custom-attribute]
 == Define a custom attribute
 
-Custom attributes are often used to promote frequently used text and URLs to the top of a page.
+Custom attributes often store frequently used text and URLs.
 They're then referenced throughout the page by simply entering their name (instead of repeatedly typing the text or URLs).
 Before they can be referenced, custom attributes must have a user-defined name and be assigned a value.
 
@@ -93,9 +84,3 @@ Built-in and custom attributes can be [.term]*unset*, that is, turned off, with 
 ----
 
 Once unset, an attribute's behavior and value are no longer available to the page.
-
-== Learn more
-
-.*Asciidoctor resources*
-* {url-builtin-attrs}[Built-in page attributes^]
-* {url-attrs}[AsciiDoc attribute restrictions or operations precedence^]
