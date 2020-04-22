@@ -47,7 +47,7 @@ Now, you can apply attributes to all of the pages in a component version by decl
 Component version attributes can be xref:page:attributes.adoc[built-in, custom, and page attributes].
 These attributes are applied and available (or made unavailable if unset) to all of a component version's pages according to the xref:component-attributes.adoc#precedence-rules[attribute precedence rules].
 
-.Declare attributes in antora.yml
+.antora.yml
 [source,yaml]
 ----
 name: light
@@ -70,6 +70,11 @@ The UI template can xref:page:page-attributes.adoc#access-attributes-from-ui-tem
 
 See xref:component-attributes.adoc[], xref:playbook:asciidoc-attributes.adoc[], and
 xref:page:page-attributes.adoc[] to learn more.
+
+== Aliased page IDs work in xrefs
+
+Page IDs that are assigned to a `page-aliases` attribute now work in xrefs.
+See xref:page:page-aliases.adoc[] to learn more.
 
 == Resolved issues
 
