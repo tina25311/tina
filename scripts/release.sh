@@ -61,13 +61,13 @@ echo echo '/packages/*/scripts/' >> .gitignore
 # release!
 npm -v
 if case $RELEASE_VERSION in major|minor|patch) ;; *) false;; esac; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=latest} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --yes
 elif case $RELEASE_VERSION in pre*) ;; *) false;; esac; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=testing} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=testing} --yes
 elif [ -z $RELEASE_NPM_TAG ] && [ "$RELEASE_VERSION" != "${RELEASE_VERSION/-/}" ]; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --npm-tag=testing --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=testing --yes
 else
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --npm-tag=${RELEASE_NPM_TAG:=latest} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --yes
 fi
 
 # nuke npm settings
