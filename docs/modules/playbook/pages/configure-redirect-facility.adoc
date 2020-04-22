@@ -50,14 +50,14 @@ How your site's URL redirects should be configured depends on the web server or 
 
 === Generated redirect configuration for Netlify
 
-{url-netlify-redirects}[Redirect rules for sites served by Netlify] are configured in a plain text file named [.path]_+++_redirects+++_.
-When the assigned redirect facility value is `netlify`, Antora generates [.path]_+++_redirects+++_ and places it at the root of the generated site.
+{url-netlify-redirects}[Redirect rules for sites served by Netlify] are configured in a plain text file named [.path]_++_redirects++_.
+When the assigned redirect facility value is `netlify`, Antora generates [.path]_++_redirects++_ and places it at the root of the generated site.
 Each redirect rule is automatically calculated by Antora from the `page-aliases` attributes, and then the 301 HTTP status code is applied to each rule.
 This means that each redirect is considered permanent.
 
 .Antora generated _redirects file
 ....
-/component/version/module/old-name.html /component/version/module/new-name.html 301
+/component/version/module/old-name.html /component/version/module/new-name.html 301!
 ....
 
 The example output above shows a redirect rule that routes the URL for a renamed page to it's target page URL and the applied 301 HTTP status code.
