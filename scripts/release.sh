@@ -43,10 +43,12 @@ git remote set-url origin "git@gitlab.com:$CI_PROJECT_PATH.git"
 git config user.email "$RELEASE_GIT_EMAIL"
 git config user.name "$RELEASE_GIT_NAME"
 
-# configure npm settings to publish packages
+# configure npm client for publishing
+echo "access=public
+//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" > .npmrc
+
+# add lifecycle scripts to publish command for each package
 for package in packages/*; do
-  echo "access=public" > $package/.npmrc
-  echo "//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" >> $package/.npmrc
   mkdir -p $package/scripts
   for script in prepublish.js postpublish.js; do
     cat << EOF > $package/scripts/$script
@@ -54,9 +56,6 @@ require('child_process').execSync('node ../../scripts/$script', { cwd: require('
 EOF
   done
 done
-
-# lerna isn't happy about the scripts being untracked
-echo echo '/packages/*/scripts/' >> .gitignore
 
 # release!
 npm -v
@@ -71,12 +70,11 @@ else
 fi
 
 # nuke npm settings
+unlink .npmrc
+
 for package in packages/*; do
-  unlink $package/.npmrc
   rm -rf $package/scripts
 done
-
-git checkout -- .gitignore
 
 git status -s -b
 
