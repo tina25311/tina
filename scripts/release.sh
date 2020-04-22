@@ -76,7 +76,7 @@ for package in packages/*; do
   rm -rf $package/scripts
 done
 
-git restore .gitignore
+git checkout -- .gitignore
 
 git status -s -b
 
