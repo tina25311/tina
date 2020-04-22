@@ -1,11 +1,11 @@
 = AsciiDoc Configuration
 
-The playbook keys configured under `asciidoc` apply page attributes, Asciidoctor extensions, and additional behavior to the AsciiDoc processor.
+The playbook keys configured under `asciidoc` apply attributes, Asciidoctor extensions, and additional behavior to the AsciiDoc processor.
 
 [#asciidoc-key]
 == asciidoc key
 
-The `asciidoc` key specifies AsciiDoc and Antora page attributes that are assigned and made available to all of the site's pages.
+The `asciidoc` key specifies the attributes that are assigned and made available to all of the site's pages.
 It also registers global and scoped Asciidoctor extensions.
 
 .antora-playbook.yml
@@ -31,7 +31,7 @@ asciidoc: # <1>
 |AsciiDoc Keys |Description |Required
 
 |xref:asciidoc-attributes.adoc[attributes]
-|Accepts a map of AsciiDoc and Antora page attributes that are applied to and made available to all of the site's pages.
+|Accepts a map of built-in, custom, and page attributes that are applied to and made available to all of the site's pages.
 |No
 
 |xref:asciidoc-extensions.adoc[extensions]

@@ -41,9 +41,35 @@ You never have to explicitly set `reftext` or `navtitle` unless you want to cust
 NOTE: Antora doesn't populate an xref's link text when a xref:page:page-id.adoc#id-fragment[fragment is appended to the page ID].
 In such cases, you'll still need to explicitly specify the link text.
 
-== Declare AsciiDoc and page attributes per component version
+== Declare attributes per component version
 
-See xref:component-attributes.adoc[] to learn more.
+Now, you can apply attributes to all of the pages in a component version by declaring them in the [.path]_antora.yml_ file for that component version.
+Component version attributes can be xref:page:attributes.adoc[built-in, custom, and page attributes].
+These attributes are applied and available (or made unavailable if unset) to all of a component version's pages according to the xref:component-attributes.adoc#precedence-rules[attribute precedence rules].
+
+.Declare attributes in antora.yml
+[source,yaml]
+----
+name: light
+title: Data Light
+version: '2.3'
+asciidoc:
+  attributes:
+    listing-caption: false
+    table-caption: Data Set@
+    hide-uri-scheme: ''
+    page-level: Advanced
+    page-category: Statistics; Cloud Infrastructure
+----
+
+Since attributes can now be managed per component version, Antora 2.3 also adds the ability to xref:playbook:asciidoc-attributes.adoc[soft set and unset site attributes] as well as  xref:component-attributes.adoc[component version attributes].
+
+With this improved scoping and tuning, page attributes are now more versatile.
+One of the primary roles of page attributes is to pass metadata about the page to the UI template via the UI model.
+The UI template can xref:page:page-attributes.adoc#access-attributes-from-ui-template[use the information provided by the page attributes] in a variety of ways, from populating metadata in the published page to toggling or configuring behavior in the UI.
+
+See xref:component-attributes.adoc[], xref:playbook:asciidoc-attributes.adoc[], and
+xref:page:page-attributes.adoc[] to learn more.
 
 == Resolved issues
 
