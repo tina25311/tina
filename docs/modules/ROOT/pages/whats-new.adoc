@@ -10,36 +10,7 @@
 
 = Antora 2.3.0
 
-Antora {page-component-display-version} is available.
-
 _**Release date:** 2020.xx.xx | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
-
-== Default xref link text for pages and navigation files
-
-Antora now uses the xref:page:reftext-and-navtitle.adoc[target page's reftext] when the link text in an xref macro isn't specified.
-For instance, the following xref example doesn't have any link text specified.
-
-[source]
-----
-See xref:component-prerelease.adoc[].
-----
-
-But notice in the output below that Antora automatically used the target page's title to fill in the link text when it generated the site.
-
-====
-See xref:component-prerelease.adoc[].
-====
-
-By default, the `reftext` attribute is assigned the page's title as its value.
-You can also assign a page a xref:page:reftext-and-navtitle.adoc[custom reftext value] using an attribute entry.
-
-Xrefs in navigation files behave the same way with one additional feature.
-Navigation files use the xref:page:reftext-and-navtitle.adoc#navtitle[navtitle value to populate the link text].
-If `navtitle` isn't set, then the page's `reftext` value is used.
-You never have to explicitly set `reftext` or `navtitle` unless you want to customize the default xref link text used in a page or navigation file.
-
-NOTE: Antora doesn't populate an xref's link text when a xref:page:page-id.adoc#id-fragment[fragment is appended to the page ID].
-In such cases, you'll still need to explicitly specify the link text.
 
 == Declare attributes per component version
 
@@ -71,16 +42,47 @@ The UI template can xref:page:page-attributes.adoc#access-attributes-from-ui-tem
 See xref:component-attributes.adoc[], xref:playbook:asciidoc-attributes.adoc[], and
 xref:page:page-attributes.adoc[] to learn more.
 
+== The new start_paths playbook key
+
+The new `start_paths` key allows you to specify multiple content source roots per branch of a content source.
+In other words, you can put multiple components or component versions--each with its own [.path]_antora.yml_ file--in a single branch of a repository.
+You can then refer to all of these content source roots using a single content source entry.
+
+The `start_paths` key accepts exact paths and xref:playbook:content-source-start-paths.adoc#path-globbing[glob patterns], including wildcards, braces, and negated patterns.
+See xref:playbook:content-source-start-paths.adoc[] to learn more.
+
 == Aliased page IDs work in xrefs
 
 Page IDs that are assigned to a `page-aliases` attribute now work in xrefs.
 See xref:page:page-aliases.adoc[] to learn more.
 
+== Default xref link text for pages and navigation files
+
+Antora now uses the xref:page:reftext-and-navtitle.adoc[target page's reftext] when the link text in an xref macro isn't specified.
+For instance, the following xref example doesn't have any link text specified.
+
+[source]
+----
+See xref:component-prerelease.adoc[].
+----
+
+But notice in the output below that Antora automatically used the target page's title to fill in the link text when it generated the site.
+
+====
+See xref:component-prerelease.adoc[].
+====
+
+By default, the `reftext` attribute is assigned the page's title as its value.
+You can also assign a page a xref:page:reftext-and-navtitle.adoc[custom reftext value] using an attribute entry.
+
+Xrefs in navigation files behave the same way with one additional feature.
+Navigation files use the xref:page:reftext-and-navtitle.adoc#navtitle[navtitle value to populate the link text].
+If `navtitle` isn't set, then the page's `reftext` value is used.
+You never have to explicitly set `reftext` or `navtitle` unless you want to customize the default xref link text used in a page or navigation file.
+
 == Resolved issues
 
 === Added
-
-Allow COLUMNS environment variable to control CLI help information width when output is not a TTY.
 
 Issue {url-issues}/121[#121^]:: Don't sort component version entries in the content aggregate, leave them in the order they're discovered.
 Issue {url-issues}/192[#192^]:: Add Apache `httpd` redirect facility.
