@@ -69,6 +69,8 @@ else
   lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --yes
 fi
 
+exit_code=$?
+
 # nuke npm settings
 unlink .npmrc
 
@@ -90,4 +92,4 @@ echo "RELEASE_VERSION=$RELEASE_VERSION
 RELEASE_BRANCH=$RELEASE_BRANCH
 RELEASE_NPM_TAG=$RELEASE_NPM_TAG" > releaserc
 
-exit 0
+exit $exit_code

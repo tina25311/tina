@@ -19,8 +19,12 @@ done
 
 npm_config_registry=$npm_config_registry lerna publish ${1:-prerelease} --exact --force-publish=*
 
+exit_code=$?
+
 unlink .npmrc
 
 for package in packages/*; do
   rm -rf $package/scripts
 done
+
+exit $exit_code
