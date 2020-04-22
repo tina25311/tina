@@ -42,9 +42,7 @@ video::rPQoq7ThGAU[youtube]
 
 TIP: Insert animated GIFs with the xref:page:images.adoc[image macro].
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-hosted-video}[The AsciiDoc video macro^]
 * {url-shared-video}[Embed Youtube and Vimeo videos^]
 * {url-video-attrs}[Video macro options and attributes^]

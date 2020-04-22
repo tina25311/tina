@@ -1,9 +1,9 @@
 .Generate Your Site
-* xref:run-antora.adoc[Run Antora]
-* xref:preview-a-site.adoc[Preview a Site]
-* xref:antora-container.adoc[Run Antora in a Container]
-* xref:cache.adoc[Configure Antora's Cache]
-* xref:cli:index.adoc[CLI Reference]
+* xref:run-antora.adoc[]
+* xref:preview-a-site.adoc[]
+* xref:antora-container.adoc[]
+* xref:cache.adoc[]
+* xref:cli:index.adoc[]
 
 .Publish Your Site
-* xref:publish-to-github-pages.adoc[Publish to GitHub Pages]
+* xref:publish-to-github-pages.adoc[]

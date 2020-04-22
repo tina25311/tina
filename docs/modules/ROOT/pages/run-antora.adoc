@@ -1,4 +1,6 @@
 = Run Antora to Generate Your Site
+:navtitle: Run Antora
+:listing-caption!:
 :url-demo: https://gitlab.com/antora/demo
 :url-demo-project: {url-demo}/docs-site
 :url-demo-playbook: {url-demo-project}/raw/master/antora-playbook.yml

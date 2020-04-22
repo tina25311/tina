@@ -1,7 +1,4 @@
 = Comments
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-comments: {url-adoc-manual}/#comments
 
 On this page, you'll learn:
 
@@ -14,7 +11,7 @@ You can use a comment line or comment block when you want to add text to an Asci
 A comment line is denoted by two consecutive forward slashes (`//`).
 
 .Comment line syntax
-[source,asciidoc]
+[source]
 ----
 // This is a line that is commented out.
 ----
@@ -22,7 +19,7 @@ A comment line is denoted by two consecutive forward slashes (`//`).
 A comment block is delimited by a set of four consecutive forward slashes (`////`).
 
 .Comment block syntax
-[source,asciidoc]
+[source]
 ----
 ////
 This is a comment block.
@@ -30,8 +27,3 @@ This is a comment block.
 All of the text, including any AsciiDoc syntax, won't be visible when the file is converted to HTML.
 ////
 ----
-
-[discrete]
-==== Asciidoctor resources
-
-* {url-comments}[Comment lines and blocks^]

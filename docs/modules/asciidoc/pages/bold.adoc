@@ -23,7 +23,7 @@ Bounded characters are characters that are:
 * directly followed by a non-whitespace character.
 
 .Bold inline formatting
-[source,asciidoc]
+[source]
 ----
 A bold *word*, and a bold *phrase of text*.
 
@@ -44,7 +44,7 @@ Bold c**hara**cter**s** within a word.
 You can add multiple emphasis styles to bold text as long as the syntax is placed in the correct order.
 
 .Order of inline formatting syntax
-[source,asciidoc]
+[source]
 ----
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----
@@ -62,7 +62,5 @@ xref:italic.adoc[Italic syntax] (`+_+`) is always the innermost formatting set.
 How bold text appears on your site depends on the fonts loaded by your UI and any CSS styles applied to the `<strong>` HTML tag.
 You can learn more about customizing xref:antora-ui-default::inline-text-styles.adoc#bold[how bold text appears in your site] in the UI documentation.
 
-[discrete]
-=== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-bold}[Bold text formatting^]

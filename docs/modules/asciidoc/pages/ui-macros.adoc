@@ -1,5 +1,4 @@
 = User Interface Macros
-:example-caption!:
 // URLs
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual
 :url-button: {url-adoc-manual}/#ui-buttons
@@ -22,7 +21,7 @@ The attribute `experimental` must be set as a xref:page:define-and-modify-attrib
 Communicate that a user should press a button with the button macro.
 
 .Button UI macro
-[source,asciidoc]
+[source]
 ----
 Press the btn:[Submit] button when you are finished the survey.
 
@@ -36,9 +35,7 @@ Press the btn:[Submit] button when you are finished the survey.
 Select a file in the file navigator and click btn:[Open].
 ====
 
-[discrete]
-=== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-button}[UI buttons^]
 
 [#keybinding]
@@ -47,7 +44,7 @@ Select a file in the file navigator and click btn:[Open].
 Create keyboard shortcuts with the keybinding macro.
 
 .Keybinding UI macro
-[source,asciidoc]
+[source]
 ----
 Press kbd:[esc] to exit insert mode.
 
@@ -65,9 +62,7 @@ Use the shortcut kbd:[Ctrl+T] to open a new tab in your browser.
 kbd:[Ctrl+Shift+N] will open a new incognito window.
 ====
 
-[discrete]
-=== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-keyboard}[Keyboard shortcuts^]
 
 [#menu]
@@ -76,7 +71,7 @@ kbd:[Ctrl+Shift+N] will open a new incognito window.
 Show readers how to select a menu item with the menu macro.
 
 .Menu UI macro
-[source,asciidoc]
+[source]
 ----
 To save the file, select menu:File[Save].
 
@@ -90,7 +85,5 @@ To save the file, select menu:File[Save].
 Select menu:View[Zoom > Reset] to reset the zoom level to the default setting.
 ====
 
-[discrete]
-=== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-menu}[Menu selections^]

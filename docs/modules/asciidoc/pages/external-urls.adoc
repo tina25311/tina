@@ -1,5 +1,4 @@
 = URLs
-:example-caption!:
 :underscore: _
 // URLs
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual
@@ -53,9 +52,7 @@ Looking for help?
 Visit the https://gitter.im/antora/users[Antora chat room^].
 ====
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-url}[URL syntax and attributes^]
 
 == Escape a URL
@@ -73,9 +70,7 @@ This URL is displayed, \https://gitlab.com, but isn't clickable.
 This URL is displayed, \https://gitlab.com, but isn't clickable.
 ====
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-prevent-subs}[Preventing substitutions^]
 
 == Troubleshooting URLs
@@ -135,7 +130,5 @@ Anyone want to climb this 13er with me? (pass:macros[https://www.14ers.com/13ers
 Anyone want to climb this 13er with me? (pass:macros[https://www.14ers.com/13ers/peak.php?peakkey=4740])
 ====
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-inline-pass}[Inline pass macro and explicit substitutions^]

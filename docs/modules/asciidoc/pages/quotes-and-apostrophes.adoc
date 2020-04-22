@@ -1,5 +1,4 @@
 = Quotation Marks and Apostrophes
-:example-caption!:
 
 On this page, you'll learn:
 
@@ -15,7 +14,7 @@ quotation marks.
 If you want to output curved quotation marks, you need to add a set of backticks (`{backtick}`) contained within a set of single quotes (`'`) or double quotes (`"`).
 
 .Single and double curved quotation marks
-[source,asciidoc]
+[source]
 ----
 '`This should be enclosed in curved single quotes when published.`'
 
@@ -38,7 +37,7 @@ However, an apostrophe directly followed by white space, such as the possessive 
 To output an apostrophe as curved when it is not bound by two characters, mark it as you would a single curved quote.
 
 .Curved apostrophes
-[source,asciidoc]
+[source]
 ----
 The `'80s.
 
@@ -61,7 +60,7 @@ I can't find Joey's house.
 If you don't want an apostrophe that is bound by two characters to be curved, escape it by preceding it with a backslash (`{backslash}`).
 
 .Escaped curved apostrophe syntax
-[source,asciidoc]
+[source]
 ----
 I can't find Joey\'s house.
 ----

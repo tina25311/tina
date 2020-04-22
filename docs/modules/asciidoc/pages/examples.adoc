@@ -1,5 +1,4 @@
 = Examples
-:example-caption!:
 // URLs
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual
 :url-block: {url-adoc-manual}/#blocks
@@ -21,6 +20,7 @@ Normal substitutions are applied to example content.
 If the example content is contiguous, i.e., not interrupted by blank lines, the block name `example` can be placed directly on top of the text in an attribute list (`[]`).
 
 .Example paragraph syntax
+[source]
 ----
 .Optional title
 [example]
@@ -39,6 +39,7 @@ If the example content includes elements separated by blank lines, place the con
 You don't need to set the block name when you use a delimited block.
 
 .Delimited example block syntax
+[source]
 ----
 .Onomatopoeia
 ====
@@ -57,8 +58,6 @@ He could hear doves *cooing* in the pine trees`' branches.
 
 TIP: xref:admonitions.adoc[Complex admonitions] use the delimited example block syntax.
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-block}[Block titles and attributes^]
 * {url-block-subs}[Substitutions by block type^]

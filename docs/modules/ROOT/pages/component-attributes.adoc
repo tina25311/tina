@@ -1,6 +1,4 @@
 = Assign Attributes to a Component Version
-:listing-caption: Example
-:xrefstyle: short
 
 You can apply attributes to all of the pages in a component version by declaring them in the [.path]_antora.yml_ file for that component version.
 

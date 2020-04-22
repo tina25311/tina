@@ -87,7 +87,7 @@ You never have to explicitly set `reftext` or `navtitle` unless you want to cust
 Issue {url-issues}/121[#121^]:: Don't sort component version entries in the content aggregate, leave them in the order they're discovered.
 Issue {url-issues}/192[#192^]:: Add Apache `httpd` redirect facility.
 ({url-gitlab}/djencks[@djencks^])
-Issue {url-issues}/251[#251^]:: Allow AsciiDoc and Antora page attributes to be scoped per component version.
+Issue {url-issues}/251[#251^]:: Allow attributes to be scoped per component version.
 Add support for attributes to be set and defined in the component version descriptor ([.path]_antora.yml_).
 Add `addNavigation` function to `NavigationCatalog` for registering all trees for a component version at once.
 Issue {url-issues}/310[#310^]:: Add function for extracting metadata from the AsciiDoc header.

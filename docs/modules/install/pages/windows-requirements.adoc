@@ -1,4 +1,4 @@
-= Windows Installation Requirements
+= Windows Requirements
 :url-choco: https://chocolatey.org
 :url-node-releases: https://nodejs.org/en/about/releases/
 :url-nvm-windows: https://github.com/coreybutler/nvm-windows

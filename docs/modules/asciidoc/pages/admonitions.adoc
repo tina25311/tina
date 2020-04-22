@@ -26,7 +26,7 @@ If the admonition content is not interrupted by blank lines, start the first lin
 The label must be all uppercase and followed by a colon (`:`) and a single blank space.
 
 .Basic admonition syntax
-[source,asciidoc]
+[source]
 ----
 CAUTION: Don't stick forks in electric sockets.
 
@@ -56,7 +56,7 @@ This behavior is referred to as masquerading.
 Place the appropriate label, in all uppercase, on the block in an attribute list (`[]`).
 
 .Complex admonition syntax
-[source,asciidoc]
+[source]
 ----
 [IMPORTANT]
 .Optional Title
@@ -81,7 +81,5 @@ Use an example block to create an admonition that contains complex content, such
 * Images
 ====
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-admonition}[Admonition paragraphs and blocks^]

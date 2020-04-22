@@ -1,5 +1,6 @@
 = Set Up a Standard Page
 :page-aliases: create-standard-page.adoc
+:listing-caption!:
 
 A standard page has two parts, a header and a body.
 

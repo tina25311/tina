@@ -1,5 +1,4 @@
 = Subscript and Superscript
-:example-caption!:
 // URLs
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual
 :url-sub-sup: {url-adoc-manual}/#subscript-and-superscript
@@ -15,7 +14,7 @@ On this page, you'll learn:
 Text is subscripted when enclosed in a set of tildes (`{tilde}`).
 
 .Subscript
-[source,asciidoc]
+[source]
 ----
 The chemical formula for water is H~2~O.
 ----
@@ -30,7 +29,7 @@ The chemical formula for water is H~2~O.
 Text is superscripted when enclosed in a set of carets (`{caret}`).
 
 .Superscript
-[source,asciidoc]
+[source]
 ----
 What is the answer to E=mc^2^?
 ----
@@ -40,8 +39,6 @@ What is the answer to E=mc^2^?
 What is the answer to E=mc^2^?
 ====
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-sub-sup}[Subscript and superscript formatting^]
 * {url-stem}[Using Asciidoctor's stem attribute for equations and formulas^]

@@ -2,6 +2,12 @@ name: antora
 version: '2.3'
 prerelease: '-rc.4'
 title: Antora
+asciidoc:
+  attributes:
+    source-language: asciidoc@
+    xrefstyle: short@
+    listing-caption: Example@
+    example-caption: false
 nav:
 - modules/ROOT/nav.adoc
 - modules/page/nav.adoc

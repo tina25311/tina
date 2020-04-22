@@ -13,7 +13,7 @@ Sections partition a page into a content hierarchy.
 In AsciiDoc, sections are defined using section titles.
 
 .Section title syntax
-[source,asciidoc]
+[source]
 ----
 == Level 1 Section Title
 
@@ -31,7 +31,5 @@ In AsciiDoc, sections are defined using section titles.
 When a page is converted to HTML, each section title becomes a heading element where the heading level matches the number of equals signs.
 For example, a level 1 section (`==`) maps to an `<h2>` HTML tag.
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-sections}[Section titles^]

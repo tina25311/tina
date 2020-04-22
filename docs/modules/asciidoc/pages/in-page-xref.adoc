@@ -13,7 +13,7 @@ However, the title must begin with an uppercase letter (in basic Latin) without 
 To link to the beginning of a section in the same page, use the in-page cross reference which is designated by a set of double angled brackets (`<< >>`).
 
 .Link to section title in the same page
-[source,asciidoc]
+[source]
 ----
 This is an in-page cross reference: <<Reference a section in the same page>>. //<1>
 
@@ -28,7 +28,7 @@ This is an in-page cross reference:
 To link to a block or line in the same page, you must define an ID at that location.
 
 .Create an ID
-[source,asciidoc]
+[source]
 ----
 [#playbook] //<1>
 Here's an example of a playbook.
@@ -43,12 +43,10 @@ There are some exceptions, see the {url-anchor}[defining an anchor section in th
 To link to that ID, use the same in-page xref syntax you use for section headings.
 
 .Link to an ID
-[source,asciidoc]
+[source]
 ----
 We'll walk through a <<playbook,detailed example>> of a playbook in this tutorial.
 ----
 
-[discrete]
-==== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-anchor}[Define an anchor^]

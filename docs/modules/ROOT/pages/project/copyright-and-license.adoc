@@ -1,4 +1,5 @@
 = Antora Copyright and License
+:navtitle: Copyright and License
 
 == Copyright
 

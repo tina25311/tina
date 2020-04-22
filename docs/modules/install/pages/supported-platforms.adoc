@@ -1,4 +1,5 @@
 = Supported Platforms and System Requirements
+:navtitle: Supported Platforms
 :test-count: over 1235
 :test-coverage: 99%
 // URLs

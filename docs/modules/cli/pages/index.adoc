@@ -1,4 +1,5 @@
 = Command Line Interface (CLI) Reference
+:navtitle: CLI Reference
 :table-caption!:
 
 Antora provides a command line interface (CLI) so you can interact with Antora using your terminal.

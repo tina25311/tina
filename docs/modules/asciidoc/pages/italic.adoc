@@ -1,5 +1,4 @@
 = Italic
-:example-caption!:
 :underscore: _
 // URLs
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual
@@ -25,7 +24,7 @@ Bounded characters are characters that are:
 * directly followed by a non-whitespace character.
 
 .Italic inline formatting
-[source,asciidoc]
+[source]
 ----
 An italic _word_, and an italic _phrase of text_.
 
@@ -46,7 +45,7 @@ Italic c__hara__cter__s__ within a word.
 You can add multiple emphasis styles to italic text as long as the syntax is placed in the correct order.
 
 .Order of inline formatting syntax
-[source,asciidoc]
+[source]
 ----
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----
@@ -65,7 +64,5 @@ Italic syntax is always the innermost formatting set.
 How italic text appears on your site depends on the fonts loaded by your UI and any CSS styles applied to the `<em>` HTML tag.
 You can learn more about customizing xref:antora-ui-default::inline-text-styles.adoc#italic[how italic text appears in your site] in the UI documentation.
 
-[discrete]
-=== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-italic}[Italic text formatting^]

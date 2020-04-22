@@ -1,4 +1,4 @@
-= Antora's Site Generation Process
+= How Antora Works
 //The playbook is a configuration file that contains an inventory of documentation component names, branches, and addresses.
 
 Antora's default site generator handles all aspects of creating a documentation site, from fetching and aggregating to converting and arranging the content to publishing the files of the generated site.
@@ -9,7 +9,7 @@ But understand that Antora features a modular, open architecture.
 That means this architecture can accommodate specialized use cases by allowing custom Antora components, such as a validators, to be inserted into the pipeline at strategic points as needed.
 This page focuses on the core, built-in Antora components and capabilities in Antora.
 
-== Steps in the Default Generator Pipeline
+== Steps in the default generator pipeline
 
 The steps listed in this section describe the operations the default site generator performs.
 Certain operations are executed asynchronously, so some of the steps below may occur in a different order or happen simultaneously.

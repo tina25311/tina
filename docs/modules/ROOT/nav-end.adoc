@@ -1,5 +1,5 @@
-* xref:project/get-help.adoc[Get Help]
-* xref:security-bulletins.adoc[Security Bulletins]
+* xref:project/get-help.adoc[]
+* xref:security-bulletins.adoc[]
 * Project Governance
-** xref:project/release-schedule.adoc[Release Schedule]
-** xref:project/copyright-and-license.adoc[Copyright and License]
+** xref:project/release-schedule.adoc[]
+** xref:project/copyright-and-license.adoc[]

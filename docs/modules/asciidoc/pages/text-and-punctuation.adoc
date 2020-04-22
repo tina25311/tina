@@ -1,7 +1,7 @@
 = Text Emphasis, Punctuation, and Typography
 :keywords: oblique, boldface, typeface
 
-== Visual Emphasis
+== Visual emphasis
 
 AsciiDoc provides multiple ways to visually emphasize inline text (words, phrases, and characters).
 
@@ -38,7 +38,7 @@ Quotation marks and apostrophes can be explicitly marked as straight or curved.
 // Break up special character and symbols table into punctuation, intellectual property, etc.
 // Add category for equations, formulas, sub/superscript
 
-== Symbols, Signs, and Marks
+== Symbols, signs, and marks
 
 Special character and symbol replacement is built right into AsciiDoc.
 

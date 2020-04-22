@@ -1,5 +1,4 @@
 = Description Lists
-:example-caption!:
 :keywords: definition list, association list, labeled list, dl, dt, dd
 // URLs
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual
@@ -24,7 +23,7 @@ Each item in a description list consists of a term or phrase followed by:
 
 Here's an example of a description list with two terms and their content.
 
-[source,asciidoc]
+[source]
 ----
 Keyboard::
 Used to enter text or control items on the screen. // <1>
@@ -48,7 +47,7 @@ It can even contain other list types.
 Let's look at an example that includes content other than a single paragraph.
 
 .A description list including complex content
-[source,asciidoc]
+[source]
 ----
 term 1::
 This description needs two paragraphs.
@@ -87,7 +86,5 @@ term 3::
 
 Additional xref:ordered-and-unordered-lists.adoc#complex[complex list examples and information about attaching multiple blocks to a list item] are on the ordered and unordered lists page.
 
-[discrete]
-=== Asciidoctor resources
-
+.*Asciidoctor resources*
 * {url-labeled}[Basic and complex description lists^]
