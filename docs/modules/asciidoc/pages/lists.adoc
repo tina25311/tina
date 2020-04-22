@@ -23,4 +23,4 @@ A list of enumerated items preceded by a number or letter in a sequence.
 
 xref:ordered-and-unordered-lists.adoc#unordered[Unordered list]::
 A list of items typically preceded by a bullet (&#8226;), and therefore also known as bullet points or bulleted lists.
-xref:navigation:list-structures.adoc[Component navigation menus] are constructed from unordered AsciiDoc lists.
+xref:navigation:files-and-lists.adoc[Navigation files] also contain unordered AsciiDoc lists.

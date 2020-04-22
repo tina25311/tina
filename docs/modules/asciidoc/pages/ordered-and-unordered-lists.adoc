@@ -89,7 +89,7 @@ Unordered lists use a bullet or other illustrative marker before each list item 
 ** Item B2
 * Item C
 
-You'll use AsciiDoc's unordered list syntax to xref:navigation:list-structures.adoc[structure your site's navigation] as well.
+You'll use AsciiDoc's unordered list syntax to xref:navigation:files-and-lists.adoc[structure your site's navigation] as well.
 
 [#complex]
 == Complex ordered and unordered lists
