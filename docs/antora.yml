@@ -1,6 +1,6 @@
 name: antora
 version: '2.3'
-prerelease: '-rc.4'
+prerelease: false
 title: Antora
 asciidoc:
   attributes:
