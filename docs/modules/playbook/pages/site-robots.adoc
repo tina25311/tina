@@ -1,4 +1,4 @@
-= Robots File
+= Robots
 :url-robots-standard: https://en.wikipedia.org/wiki/Robots_exclusion_standard
 
 Antora can generate a {url-robots-standard}[robots.txt file] to control which paths site crawlers can visit.
