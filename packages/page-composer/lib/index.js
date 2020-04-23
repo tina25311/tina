@@ -3,7 +3,7 @@
 /**
  * Page Composer component for Antora
  *
- * Wraps the embeddable HTML contents of a page file in the content catalog in
+ * Wraps the embedded HTML contents of a page file in the content catalog in
  * a standalone page layout.
  *
  * @namespace page-composer

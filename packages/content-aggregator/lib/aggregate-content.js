@@ -48,14 +48,14 @@ const URL_AUTH_CLEANER_RX = /^(https?:\/\/)[^/@]*@/
 const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)/
 
 /**
- * Aggregates files from the specified content sources so they can
- * be loaded into a virtual file catalog.
+ * Aggregates files from the specified content sources so they can be loaded
+ * into Antora's virtual file catalog.
  *
  * Currently assumes each source points to a local or remote git repository.
- * Clones the repository, if necessary, then walks the git tree (or worktree)
- * of the specified branches and tags. Creates a virtual file containing the
- * source location and contents for each file matched. The files are then
- * organized by component version.
+ * Clones the repository, if necessary, then walks the git tree (or worktree) of
+ * the specified branches and tags, starting from the specified start path(s).
+ * Creates a virtual file containing the contents and location metadata for each
+ * file matched. The files are then roughly organized by component version.
  *
  * @memberof content-aggregator
  *
@@ -63,6 +63,15 @@ const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)
  * @param {Object} playbook.dir - The working directory of the playbook.
  * @param {Object} playbook.runtime - The runtime configuration object for Antora.
  * @param {String} [playbook.runtime.cacheDir=undefined] - The base cache directory.
+ * @param {Boolean} [playbook.runtime.fetch=undefined] - Whether to fetch
+ * updates from managed git repositories.
+ * @param {Boolean} [playbook.runtime.silent=false] - Whether to be silent
+ * (suppresses progress bars and warnings).
+ * @param {Boolean} [playbook.runtime.quiet=false] - Whether to be quiet
+ * (suppresses progress bars).
+ * @param {Array} playbook.git - The git configuration object for Antora.
+ * @param {Boolean} [playbook.git.ensureGitSuffix=true] - Whether the .git
+ * suffix is automatically appended to each repository URL, if missing.
  * @param {Array} playbook.content - An array of content sources.
  *
  * @returns {Promise<Object>} A map of files organized by component version.

@@ -16,7 +16,7 @@ const computeRelativeUrlPath = require('../util/compute-relative-url-path')
  * @param {String} refSpec - The target of a page xref macro, which is a page ID spec with an optional
  * fragment identifier.
  * @param {String} content - The content (i.e., formatted text) of the link (undefined if not specified).
- * @param {File} currentPage - The virtual file for the current page.
+ * @param {File} currentPage - The virtual file for the current page, which serves as the context.
  * @param {ContentCatalog} contentCatalog - The content catalog that contains the virtual files in the site.
  * @param {Boolean} [relativize=true] - Compute the target relative to the current page.
  * @returns {Object} A map ({ content, target, internal, unresolved }) containing the resolved

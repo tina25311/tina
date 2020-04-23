@@ -39,12 +39,19 @@ const EXT_RX = /\.[a-z]{2,3}$/
  * @param {Object} playbook.dir - The working directory of the playbook.
  * @param {Object} playbook.runtime - The runtime configuration object for Antora.
  * @param {String} [playbook.runtime.cacheDir=undefined] - The base cache directory.
+ * @param {Boolean} [playbook.runtime.fetch=false] - Forces the bundle to be
+ * retrieved if configured as a snapshot.
  * @param {Object} playbook.ui - The UI configuration object for Antora.
  * @param {String} playbook.ui.bundle - The UI bundle configuration.
  * @param {String} playbook.ui.bundle.url - The path (relative or absolute) or URI
  * of the UI bundle to use.
  * @param {String} [playbook.ui.bundle.startPath=''] - The path inside the bundle from
  * which to start reading files.
+ * @param {Boolean} [playbook.ui.bundle.snapshot=false] - Whether to treat the
+ * bundle URL as a snapshot (i.e., retrieve again if playbook.runtime.fetch is
+ * true).
+ * @param {Array} [playbook.ui.supplementalFiles=undefined] - An array of
+ * additional files to overlay onto the files from the UI bundle.
  * @param {String} [playbook.ui.outputDir='_'] - The path relative to the site root
  * where the UI files should be published.
  *

@@ -13,9 +13,10 @@ const RESOURCE_ID_RX_GROUP = { version: 1, component: 2, module: 3, family: 4, r
  * object is provided, it will be used to qualify the identifier, populating the component, version,
  * and/or module properties, as necessary.
  *
- * * If a component is specified, but not a version, the version remains undefined.
- * * If a component is specified, but not a module, the module defaults to "ROOT".
+ * * If a component is specified, but a version is not, the version remains undefined.
+ * * If a component is specified, but a module is not, the module defaults to "ROOT".
  * * If the family is not specified, the default family is used.
+ * * If the family is specified, it is validated against the permitted families.
  *
  * @memberof content-classifier
  *

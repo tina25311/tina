@@ -6,19 +6,26 @@ const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-load
 const COMMA_DELIMITER_RX = /\s*,\s*/
 
 /**
- * Converts the contents of AsciiDoc files in the content catalog to embeddable HTML.
+ * Converts the contents of publishable pages with the media type text/asciidoc
+ * in the content catalog to embedded HTML.
  *
- * Finds all AsciiDoc files in the page family in the content catalog and converts the contents of
- * those files to embeddable HTML by delegating to the convertDocument function. The function then
- * returns all the files in the page family.  All the files returned from this function are expected
- * be composed (i.e., wrapped in an HTML layout) by the page composer.
+ * First finds all publishable AsciiDoc files (identified by the media type
+ * text/asciidoc) in the page family in the content catalog. Then runs through
+ * all those files and loads the document header into the asciidoc property on
+ * the file and registers any page aliases. If the page-partial attribute is
+ * set, it backs up the AsciiDoc source to the src.contents property. It then
+ * runs through all the pages again and converts the contents to embedded HTML
+ * by delegating to the convertDocument function. The function then returns all
+ * the files in the page family (even those which don't have the media type
+ * text/asciidoc). All the files returned from this function are intended to be
+ * composed (i.e., wrapped in an HTML layout) by the page composer.
  *
  * @memberof document-converter
  *
  * @param {ContentCatalog} contentCatalog - The catalog of all virtual content files in the site.
  * @param {Object} [siteAsciiDocConfig={}] - Site-wide AsciiDoc processor configuration options.
  *
- * @returns {Array<File>} The virtual files in the page family taken from the content catalog.
+ * @returns {Array<File>} The publishable virtual files in the page family taken from the content catalog.
  */
 function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
   const mainAsciiDocConfigs = new Map()

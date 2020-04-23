@@ -23,7 +23,8 @@ const ospath = require('path')
  * @param {Object} [schema=undefined] - A convict configuration schema.
  *
  * @returns {Object} A playbook object containing a hierarchical structure that
- *   mirrors the configuration schema. Keys in the playbook are camelCased.
+ *   mirrors the configuration schema. With the exception of the top-level asciidoc
+ *   key and its descendants, all keys in the playbook are camelCased.
  */
 function buildPlaybook (args = [], env = {}, schema = undefined) {
   const config = loadConvictConfig(args, env, schema)

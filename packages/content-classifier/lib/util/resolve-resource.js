@@ -8,8 +8,9 @@ const parseResourceId = require('./parse-resource-id')
  * Parses the specified contextual resource ID spec into a resource ID object using parseResourceId,
  * then attempts to locate a file with this resource the catalog. If a component is specified, but
  * not a version, the latest version of the component is used from the catalog. If a file cannot be
- * resolved, the function returns undefined. If the spec does not match the resource ID syntax, this
- * function throws an error.
+ * resolved, and the family is "page", then the search is attempted again for an 'alias'. If a file
+ * still cannot be found, the function returns undefined. If the spec does not match the resource ID
+ * syntax, this function throws an error.
  *
  * @memberof content-classifier
  *

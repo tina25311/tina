@@ -58,7 +58,7 @@ function createPageComposerInternal (baseUiModel, layouts) {
    *
    * @param {File} file - The virtual file the contains embeddable HTML
    *   contents to wrap in a layout.
-   * @param {ContentCatalog} contentCatalog - The content catalog
+   * @param {ContentCatalog} _contentCatalog - The content catalog
    *   that provides access to the virtual files in the site (ignored).
    * @param {NavigationCatalog} navigationCatalog - The navigation catalog
    *   that provides access to the navigation for each component version.
