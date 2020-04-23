@@ -13,10 +13,9 @@ On this page, you'll learn:
 [#start-paths-key]
 == start_paths key
 
-The `start_paths` key allows you to specify multiple content source roots per branch of a single content source.
-In other words, you can put multiple component versions, components, or distributed components--each with its own [.path]_antora.yml_ file--in a single branch of a repository.
-You can then refer to all of these content source roots using a single content source entry.
-This feature provides the benefit of reducing the verbosity of the content sources in your playbook.
+The `start_paths` key allows you to specify multiple content source roots for a single reference of a repository.
+In other words, you can put multiple component versions, components, or distributed components--each having its own [.path]_antora.yml_ file--in a single branch of a repository, then refer to all those content source roots using the same content source entry.
+When you organize content this way, this feature has the potential of drastically reducing the verbosity of the content sources in your playbook.
 
 === Relationship to the start_path key
 
