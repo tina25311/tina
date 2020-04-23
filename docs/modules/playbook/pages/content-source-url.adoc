@@ -73,8 +73,23 @@ If you're not ready to commit other files, simply create an empty [.path]_.gitig
 [#git-worktree]
 == Use the git worktree
 
-When using a local, non-bare repository, Antora reads files from the worktree (i.e., the working directory) when the current branch is matched by the xref:content-branches.adoc[branches filter].
-(You can use the value `HEAD` in the `branches` filter as a shorthand for the current branch).
+When the URL for a content source is a local repository, and the xref:content-branches.adoc[branches filter] matches the branch that's currently checked out (aka the worktree branch), Antora reads files from the worktree (i.e., the working directory on the local filesystem) *instead of* from the git index.
+This behavior is central to the xref:author-mode.adoc[author mode] in Antora.
+It means you *don't have to commit files locally* before Antora can use them.
+
+.Use files from the worktree
+[source,yaml]
+----
+content:
+  sources:
+  - url: ./demo-component-b
+    branches: master
+  - url: https://gitlab.com/antora/demo/demo-component-b.git
+    branches: v1.0, v2.0
+----
+
+Instead of specifying the name of the current branch explicitly, you can use the symbolic name `HEAD` as an alias for the current branch name.
+This saves you the trouble of having to update your playbook when you switch branches.
 
 .Use files from the worktree
 [source,yaml]
@@ -84,22 +99,25 @@ content:
   - url: ./demo-component-b
     branches: HEAD
   - url: https://gitlab.com/antora/demo/demo-component-b.git
-  - url: https://git-service.com/org/repo.git
+    branches: v1.0, v2.0
 ----
 
-This behavior is central to xref:author-mode.adoc[author mode].
-It means you *don't have to commit files locally* for Antora to use them.
+CAUTION: If the branches filter matches both the worktree branch and another branch that contains the same files for the same component version, Antora will fail to run because it does not permit duplicate files.
 
-CAUTION: If the current branch is matched by the branches filter, and the worktree contains the same files with the same component version as another branch matched by the branches filter, Antora will fail to run because it disallows duplicate files.
+== Bypassing the git worktree
 
-To ensure Antora *doesn't* use files from the worktree for a local URL, change the URL to point directly to the [.path]_.git_ directory.
-That way, the worktree is out of Antora's purview.
+To ensure Antora *doesn't* use files from the worktree, even if the branch filter matches the worktree branch, you can point the URL directly at the [.path]_.git_ directory.
+This effectively hides the worktree from Antora so it won't get used.
 
-.Refers directly to the .git folder to bypass the worktree
+.Refers directly at the .git folder to bypass files in the worktree
 [source,yaml]
 ----
 content:
   sources:
   - url: ./demo-component-b/.git
-  - url: https://git-service.com/org/repo.git
+    branches: master
+  - url: https://gitlab.com/antora/demo/demo-component-b.git
+    branches: v1.0, v2.0
 ----
+
+Keep in mind that, in this case, *all files must be committed locally* in order for Antora to use them.
