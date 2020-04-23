@@ -7,7 +7,7 @@ This project utilizes semantic versioning.
 
 == 2.3.0 (2020-04-22)
 
-_See notes from previous prereleases._
+_Refer to the entries in the prereleases._
 
 == 2.3.0-rc.4 (2020-04-22)
 
