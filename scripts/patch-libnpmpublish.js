@@ -10,6 +10,7 @@ function patchSource (source) {
 
 ;(async () => {
   const sourceFile = require.resolve('@evocateur/libnpmpublish/publish.js')
-  await promisify(fs.readFile)(sourceFile, 'utf8')
-    .then((source) => promisify(fs.writeFile)(sourceFile, patchSource(source)))
+  await promisify(fs.readFile)(sourceFile, 'utf8').then((source) =>
+    promisify(fs.writeFile)(sourceFile, patchSource(source))
+  )
 })()
