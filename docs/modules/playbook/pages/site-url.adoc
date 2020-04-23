@@ -3,39 +3,85 @@
 [#url-key]
 == url key
 
-The `url` key is required.
-It's configured under the xref:configure-site.adoc[site key] in a playbook.
+The `url` key is recommended.
+It's value is configured under the xref:configure-site.adoc[site key] in the playbook.
+If this key is not set, certain features of the site that relate to publishing will be disabled.
 
 .antora-playbook.yml
 [source,yaml]
 ----
 site:
   title: Site Title
-  url: https://example.org
+  url: https://docs.example.com
 ----
 
 The `url` key defines the base URL of the published site.
-The value must be an absolute URL (e.g., _\https://docs.example.com_) or a root-relative pathname (e.g., _/docs_).
-The value *shouldn't end with a trailing slash.*
+The value may be an absolute URL (e.g., _\https://docs.example.com_) with an optional pathname (e.g., _\https://example.org/docs_) or a root-relative pathname (e.g., _/docs_).
+*The value should not include a trailing forward slash* (unless the value contains only a forward slash).
 
 [#absolute-site-url]
-== Configure absolute site URL
+== Configure an absolute site URL
 
-An absolute `url` value must start with a valid URL scheme directly followed by a colon and two slashes (`://`).
-Common schemes include `https://` and `file://`.
-Absolute URLs can include a pathname segment (e.g., _\https://example.com/docs_).
+An absolute `url` value must start with a valid URL scheme directly followed by a colon and two forward slashes (e.g., `https://`).
+Common schemes include *https* and *file*.
+Absolute URLs may include a pathname segment (e.g., _\https://example.com/docs_).
 
 .antora-playbook.yml
 [source,yaml]
 ----
 site:
-  title: Demo Docs Site
-  url: https://demo.antora.org
+  title: Docs for Example Site
+  url: https://example.com/docs
 ----
 
-The site URL is used in the generated site when either an absolute URL is required or a pathname.
-It also implicitly activates any features that require an absolute URL or a pathname.
+The site URL appears in the generated site wherever an absolute URL or pathname is required.
+The pathname is extracted from the absolute URL, if present.
 
+[#root-relative-site-url]
+== Configure a root-relative site URL
+
+A root-relative `url` value must start with a forward slash (e.g., _/docs_).
+If no pathname segment is required, the root-relative `url` value should be set to a bare forward slash (e.g., _/_).
+
+.antora-playbook.yml
+[source,yaml]
+----
+site:
+  title: Docs Hosted Somewhere
+  url: /docs
+----
+
+You might use a root-relative pathname instead of an absolute URL if the same content must be published to or accessible via multiple domains.
+By using a root-relative value, you're still able to take advantage of most of the benefits of assigning a site URL without coupling your site to a specific domain.
+However, any feature that depends on absolute URLs, such as the sitemap and canonical URL, must be implicitly disabled.
+
+== When should the site URL be set?
+
+An Antora site is designed to be viewable offline and from a local filesystem.
+For this reason, the site URL is not required to build the site.
+
+However, there are certain features related to publishing that require a URL, and in some cases an absolute URL.
+When the site URL is not set, these features are automatically and silently disabled.
+
+=== Features that depend on the site URL
+
+When the site URL is set to any allowable value, the following features are enabled:
+
+* The `site-url` attribute is set on every AsciiDoc document
+* The `site.url` property is set in the UI model
+* The 404 page is generated
+* The redirects include the pathname segment of the site URL (which would otherwise be empty)
+* The link in the top-left corner of the navbar points to the site URL (behavior specific to the default UI)
+
+When the site URL is set to an absolue URL, the following additional features are enabled:
+
+* The sitemaps are generated
+* The robots.txt file is generated if `site.robots` is also defined in the playbook
+* The `page.canonicalUrl` is set in the UI model, which gets used by the default UI to define the canonical link tag in the head.
+
+If the site URL is not set, all the aforementioned features are disabled.
+
+////
 === Absolute URL features
 
 The canonical URL property gets included in the head of each published page.
@@ -44,3 +90,4 @@ For example, _\https://docs.example.org/component/version/page.html_.
 
 The generated sitemap and xref:site-robots.adoc[robots.txt files] require an absolute URL are the sitemap files.
 The 404 page and URL prefix on redirect rules require a pathname, which can be derived from the absolute URL.
+////
