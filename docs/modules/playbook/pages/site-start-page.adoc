@@ -52,3 +52,5 @@ site:
 ----
 
 In this example, _\https://demo.antora.org/index.html_ will redirect to _\https://demo.antora.org/component-b/1.0/index.html_.
+
+NOTE: To configure a start page for a component version, see xref:ROOT:component-start-page.adoc[].

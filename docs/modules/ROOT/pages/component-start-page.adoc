@@ -1,11 +1,17 @@
-= Select a Start Page
-:listing-caption: Example
-:xrefstyle: short
+= Choose a Start Page
+
+Each component version needs a start page.
+This page can either be the default start page or a page identified by the component version descriptor.
+Visitors land on a component version's start page when they click on its entry in the xref:navigation:index.adoc#component-dropdown[component version selector] and when they click on its name at the xref:navigation:index.adoc#component-menu[top of the page menu].
+
+The start page for a component version is separate from the start page for a site.
+The start page for a site is where the visitor is directed when they go to the site's main URL.
+To configure your site's start page, see xref:playbook:site-start-page.adoc[].
 
 == Default start page
 
-By default, Antora looks for a page named [.path]_index.adoc_ in the xref:root-module-directory.adoc#root-module[ROOT module] of a component version and uses it as the component version's start page (e.g., _\https://site-url.org/component-name/version/index.html_).
-If Antora doesn't find this page, site visitors are directed to a 404 page every time they click on that component version from the xref:navigation:index.adoc#component-dropdown[component version selector].
+By default, Antora looks for a xref:page:start-page.adoc[page named _index.adoc_] in the ROOT module of a component version and uses it as the component version's start page (e.g., _\https://site-url.org/component-name/version/index.html_).
+If Antora doesn't find this page, visitors are directed to a 404 page every time they click on the component version from the xref:navigation:index.adoc#component-dropdown[component version selector] or xref:navigation:index.adoc#component-menu[page menu].
 
 Antora won't look for [.path]_index.adoc_ in the ROOT module when the <<start-page-key,start_page key>> is set in a component version's [.path]_antora.yml_.
 Instead, the page assigned to `start_page` will be used as the component version's start page.
