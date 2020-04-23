@@ -10,7 +10,7 @@
 
 = Antora 2.3.0
 
-_**Release date:** 2020.xx.xx | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
+_**Release date:** 2020.04.23 | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
 
 == Declare attributes per component version
 
@@ -96,7 +96,7 @@ Issue {url-issues}/495[#495^]:: Add the `start_paths` playbook key that allows a
 Allow `start_paths` key to support glob patterns (wildcards and brace expressions).
 Implement scan + filter logic for glob patterns specified in `start_paths` key for both git tree and filesystem worktree.
 ({url-gitlab}/djencks[@djencks^])
-Issue {url-issues}/330[#330^]:: Add support for `xref` attribute on image macros to reference internal anchor or page.
+Issue {url-issues}/330[#330^]:: Add support for `xref` attribute on image macros to reference an internal anchor or page.
 Issue {url-issues}/379[#379^]:: Register alias to start page from index page of component version if index page is missing.
 Issue {url-issues}/486[#486^]:: Add `--key` option to `generate` command to define entries for the schemaless `site.keys`.
 The option can be specified multiple times.
@@ -178,7 +178,6 @@ For implementing trailing newlines on generated files ({url-issues}/494[#494^]),
 +
 For documenting the `page-aliases` attribute.
 {url-issues}/509[#509^]
-//{url-issues}/502[#502^], {url-issues}/521[#521^]
 
 Jared Morgan ({url-gitlab}/jaredmorgs[@jaredmorgs^]):: For taking on the herculean task of documenting the `start_paths` feature.
 {url-issues}/576[#576^]
@@ -207,15 +206,15 @@ Yoginth:: For fixing typos in the package comments, test cases, and releasing gu
 [#deprecation]
 == Deprecations scheduled for Antora 3.0
 
-Per the normal supported platforms policy, support for Node 8 will be dropped, and likely Node 10 as well.
+Per the normal xref:install:supported-platforms.adoc[supported platforms policy], support for Node 8, and likely Node 10 as well, will be dropped.
 
 The ability to use parent references in the target of the AsciiDoc image macro (e.g., `image::../../../module-b/_images/image-filename.png[]`) will be removed in Antora 3.0.
 You should begin replacing any such image targets with resource IDs.
 
-The .adoc extension will no longer be appended to the page or alias ID, if missing (e.g., `component::page`).
-This makes way for using the xref facility for non-AsciiDoc pages.
-You should begin adding the .adoc extension to all your page and IDs.
+Antora has added the _.adoc_ file extension to a xref:page:page-id.adoc#id-coordinates[page coordinate] in page aliases and xrefs whenever it wasn't specified by the writer.
+This fallback mechanism will be deprecated in Antora 3.0 to make way for using non-AsciiDoc pages in the xref facility.
+You should review the page IDs in your xrefs and `page-aliases` attributes to ensure the _.adoc_ extension is specified.
 
 The `classifyContent` function will expect the site-wide AsciiDoc config as the third argument.
 
-The following deprecated methods will be removed from the `ContentCatalog`: getComponentMap, getComponentMapSortedBy, and getFiles.
+The following deprecated methods will be removed from the `ContentCatalog`: `getComponentMap`, `getComponentMapSortedBy`, and `getFiles`.

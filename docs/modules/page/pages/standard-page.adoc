@@ -62,7 +62,9 @@ The first line of the page body can be any valid AsciiDoc content, such as a sec
 == Page filename
 
 A page is stored in a [.path]_pages_ family directory.
-The name you use when saving the file will be used to compute the page's URL.
+The page's filename is used to compute its URL.
+If the filename begins with a dot (.) or ends without a file extension, xref:ROOT:standard-directories.adoc#hidden-files[Antora will ignore it].
+If the filename starts with an underscore (`+_+`), it will be added to the content catalog, but xref:ROOT:standard-directories.adoc#hidden-files[Antora won't publish it].
 
 == Create a new standard page
 

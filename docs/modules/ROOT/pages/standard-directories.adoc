@@ -1,7 +1,5 @@
 = Standard File and Directory Set
 :page-aliases: component-structure.adoc
-:xrefstyle: short
-:listing-caption: Example
 //Antora extracts the metadata that defines a documentation component from its component version descriptor ([.path]_antora.yml_) and the standard set of directories structure used to store the component version's source files.
 //Antora also uses this structure to assign preset behavior to the files stored in each directory.
 
@@ -105,3 +103,28 @@ In <<ex-image>>, the content source root is located at the directory [.path]_ops
 <6> Source file for an image
 
 The standard directory and file set in <<ex-image>> is also valid.
+
+[#hidden-files]
+== Hidden and unpublished files
+
+Antora ignores any files stored in the standard directory set that begin with a dot (`.`) or that don't have a file extension.
+These hidden files aren't loaded into Antora's content catalog and cannot be referenced.
+If the filename begins with an underscore (`+_+`), it's loaded into the content catalog but isn't automatically published, even if it's stored in a publishable family folder (like [.path]_pages_).
+
+[#ex-hide]
+.Standard directory set containing hidden and unpublished files
+----
+📒 repository
+  📄 antora.yml
+  📂 modules
+    📂 ROOT
+      📂 pages
+        📄 .a-hidden-file.adoc <1>
+        📄 a-hidden-file <2>
+        📄 _an-unpublished-file.adoc <3>
+----
+<1> Antora won't load this file into the content catalog or publish it because its filename begins with a dot (`.`).
+<2> Antora won't load this file into the content catalog or publish it because it's missing a file extension.
+<3> A filename that begins with an underscore (`+_+`) is loaded into the content catalog and can be referenced by an include directive, but it won't be published automatically even when stored in the folder of a publishable family.
+
+NOTE: Support for loading files without extensions into the content catalog and publishing them is being considered for a future Antora version.
