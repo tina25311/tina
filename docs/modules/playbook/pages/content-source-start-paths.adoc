@@ -20,25 +20,26 @@ When you organize content this way, this feature has the potential of drasticall
 === Relationship to the start_path key
 
 The xref:content-source-start-path.adoc[start_path key] only lets you specify _a single path_ in your playbook for a given content source.
-In contrast, the `start_paths` key lets you specify _multiple paths_, which can be even further consolidated as https://en.wikipedia.org/wiki/Glob_(programming)[glob patterns^] that Antora resolves to one or more fixed paths.
+In contrast, the `start_paths` key lets you specify _multiple paths_.
+The multiple paths can be even further consolidated using https://en.wikipedia.org/wiki/Glob_(programming)[glob patterns^], which Antora resolves to one or more fixed paths.
 
 The `start_paths` key is mutually exclusive with the `start_path` key.
-If you specify both the `start_paths` and `start_path` keys in a content source, only the `start_paths` key is recognized.
+If both the `start_path` and `start_paths` keys are present on a content source, only the `start_paths` key is used.
 
 === Relationship to git references
 
-Like with the singular start path, the start paths are searched in each reference (branch or tag).
+Like with the singular start path, the start paths are searched per reference (i.e., branch or tag).
 That means a xref:ROOT:component-version-descriptor.adoc[component version descriptor] must be found at each start path for each reference.
 
-Often times, however, when using multiple start paths, you'll only be using a single reference (e.g., `master`).
-Or, if you are using multiple references, the folder structure in each reference is the same.
+Typically, when using multiple start paths, you'll only be using a single reference anyway (e.g., `master`).
+If you do use multiple references in this scenario, the assumption is that each reference shares the same layout.
 
 == Use cases
 
 Multiple start paths are designed primarily to accommodate two use cases:
 
-* Documentation that's versioned using folders instead of branches
-* Documentation for multiple products in a single repository branch (e.g., a monorepo)
+* Documentation that's versioned using folders instead of branches.
+* Documentation for multiple products in a single repository branch (e.g., a monorepo).
 
 === Component versions as folders
 
