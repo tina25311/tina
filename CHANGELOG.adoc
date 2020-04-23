@@ -5,6 +5,18 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== 2.3.0 (2020-04-22)
+
+_See notes from previous prereleases._
+
+== 2.3.0-rc.4 (2020-04-22)
+
+_No changes since the last release._
+
+== 2.3.0-rc.3 (2020-04-22)
+
+_No changes since the last release._
+
 == 2.3.0-rc.2 (2020-04-21)
 
 === Added
