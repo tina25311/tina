@@ -15,7 +15,7 @@ Antora will automatically set this page as the start page of the component versi
 [#specify-start-page]
 == Specify a start page for a component version
 
-You can assign a specific page, regardless of its filename, to be a component version's start page.
+You can designate a specific page, regardless of its filename, to be a component version's start page.
 *The source file must belong to the component version it will be the starting page for*, and it must be in the `pages` family.
 Once you've created the page, assign it as the component version's start page using the xref:ROOT:component-start-page.adoc[start_page key] in [.path]_antora.yml_.
 
