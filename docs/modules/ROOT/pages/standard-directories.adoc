@@ -3,9 +3,11 @@
 //Antora extracts the metadata that defines a documentation component from its component version descriptor ([.path]_antora.yml_) and the standard set of directories structure used to store the component version's source files.
 //Antora also uses this structure to assign preset behavior to the files stored in each directory.
 
-Antora collects and processes content source files that are stored in a required set of directories.
-These directories, as well as the required [.path]_antora.yml_ file and optional navigation file(s), are recognized by their locations in the hierarchy and because they use reserved names.
-Antora uses this [.term]*standard file and directory set* to derive metadata and preset behavior to the files stored in each directory.
+Antora collects and processes content source files that are organized in a standard hierarchy under a content source root.
+This hierarchy (i.e., directory structure) and its reserved names helps Antora understand which files to collect, the role of each of those files and how they should classified, and which files to ignore.
+The required [.path]_antora.yml_ file and the optional navigation file(s) also give Antora information about how to classify the files and what metadata to apply to them.
+
+This page introduces this hierarchy, the reserved names it employs, and the rules about which files get collected or ignored.
 
 == Hierarchy and reserved names
 
@@ -107,9 +109,9 @@ The standard directory and file set in <<ex-image>> is also valid.
 [#hidden-files]
 == Hidden and unpublished files
 
-Antora ignores any files stored in the standard directory set that begin with a dot (`.`) or that don't have a file extension.
-These hidden files aren't loaded into Antora's content catalog and cannot be referenced.
-If the filename begins with an underscore (`+_+`), it's loaded into the content catalog but isn't automatically published, even if it's stored in a publishable family folder (like [.path]_pages_).
+Antora ignores any files stored in hierarchy that begin with a dot (`.`) or which don't have a file extension.
+These hidden files *do not* get added to Antora's content catalog and thus cannot be referenced or published.
+If the filename begins with an underscore (`+_+`), it's added to the content catalog, but isn't automatically published, even if it's stored in a folder of a publishable family (like [.path]_pages_).
 
 [#ex-hide]
 .Standard directory set containing hidden and unpublished files
@@ -128,3 +130,4 @@ If the filename begins with an underscore (`+_+`), it's loaded into the content 
 <3> A filename that begins with an underscore (`+_+`) is loaded into the content catalog and can be referenced by an include directive, but it won't be published automatically even when stored in the folder of a publishable family.
 
 NOTE: Support for loading files without extensions into the content catalog and publishing them is being considered for a future Antora version.
+See https://gitlab.com/antora/antora/-/issues/368[issue #368^].
