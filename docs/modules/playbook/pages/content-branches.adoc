@@ -1,14 +1,16 @@
 = Branches
 
-The `branches` key accepts a list of exact branch names and shell glob patterns.
-When the `branches` key isn't specified globally or on a `url`, Antora will apply the <<default,default branches filter>>.
+The `branches` key accepts a list of exact branch names and glob patterns.
+When the `branches` key isn't specified globally or on a content source, Antora will apply the <<default,default branches filter>>.
 
 [#branches-key]
 == branches key
 
-The `branches` key is optional and can be specified directly on the `content` key or on a `url` key.
-The `branches` key accepts a list of branch name patterns.
-The values can be the exact names of branches, shell glob patterns such as `v3.*`, or a combination of exact names and glob patterns.
+The `branches` key is optional.
+It can be specified directly on the `content` key (which changes the default value for all content sources) or on a content source (which overrides the default value).
+The `branches` key accepts a list of branch name patterns to use from the specified `url`.
+Each value can be an exact branch name (e.g., `v2.3`) or a glob pattern (e.g., `v2.*`).
+The list of branches can also have a combination of these value types.
 
 .antora-playbook.yml
 [source,yaml]
@@ -50,7 +52,7 @@ content:
 [#default]
 == Default branches filter
 
-When the `branches` key isn't set on a `url` key (or globally), Antora will use the [.term]*default branches filter*.
+When the `branches` key isn't set on the `content` key or a content source, Antora will use the [.term]*default branches filter*.
 By default, Antora will select all of the branches from the repository that begin with the letter `v` as well as the branch named `master`.
 
 .antora-playbook.yml
@@ -60,14 +62,13 @@ content:
   sources:
   - url: https://git-service.com/org/repo-z.git
     branches: [rawhide, 90.0, 93.0, dev] # <1>
-  - url: https://git-service.com/org/repo-y.git
-    branches: master # <2>
+  - url: https://git-service.com/org/repo-y.git # <2>
   - url: https://git-service.com/org/repo-x.git
     branches: [edge, v*, !v1.*] # <3>
 ----
-<1> This `url` will use the default branches filter, i.e., `branches: [master, v*]`.
-<2> This `url` will use the default branches filter.
-<3> The value assigned to this `branches` key, will be applied to the `url` it's specified on and override the default branches filter.
+<1> This content source will use the exact branch names specified.
+<2> This content source will use the default branches filter.
+<3> This content source will use the `edge` branch name as well as the branch names that begin with `v` that are matched by the glob patterns.
 
 === Modify the default branches filter
 
@@ -85,9 +86,9 @@ content:
   - url: https://git-service.com/org/repo-y.git # <4>
 ----
 <1> Specify `branches` under the `content` key to change the default branches filter.
-<2> This `url` will use the new default branches filter, i.e., `branches: v*`.
-<3> The value assigned to this `branches` key, will be applied to the `url` it's specified on, overriding the new default branches filter.
-<4> This `url` will use the new default branches filter.
+<2> This content source will use the custom default branches filter, i.e., `branches: v*`.
+<3> This content source will use the specified branches filter instead of the default one.
+<4> This content source will also use the custom default branches filter.
 
 The new default branches filter will be applied to all of the `url` entries that don't have a `branches` key explicitly defined on them.
 
@@ -107,7 +108,7 @@ content:
 [#glob-pattern]
 == Specify branches by glob pattern
 
-Branches can be specified by shell glob patterns such as as `v3.4.*`.
+Branches can be specified by glob patterns such as as `v3.4.*`.
 
 .Glob branch patterns
 [source,yaml]
