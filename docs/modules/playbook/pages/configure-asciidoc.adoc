@@ -1,4 +1,4 @@
-= AsciiDoc Configuration
+= AsciiDoc Keys
 
 The playbook keys configured under `asciidoc` apply attributes, Asciidoctor extensions, and additional behavior to the AsciiDoc processor.
 

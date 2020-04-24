@@ -1,4 +1,4 @@
-= Archive Provider and Path
+= Archive Provider
 :xrefstyle: short
 :listing-caption: Example
 :url-zip-file-format: https://en.wikipedia.org/wiki/Zip_(file_format)

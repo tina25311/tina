@@ -1,4 +1,4 @@
-= Filesystem Provider and Path
+= Filesystem Provider
 :xrefstyle: short
 :listing-caption: Example
 
