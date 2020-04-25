@@ -57,7 +57,7 @@ When executed from the CLI, the options that are mapped to xref:playbook:index.a
 
 [#cli-options]
 .CLI Options
-[cols="3a,5,2,2"]
+[cols="3,5,2,2"]
 |===
 |Option |Purpose |Format |Default
 
