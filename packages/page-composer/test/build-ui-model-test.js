@@ -812,6 +812,67 @@ describe('build UI model', () => {
       expect(model.next).to.equal(next)
     })
 
+    it('should skip over external entries when computing related page references', () => {
+      let parent
+      let previous
+      let next
+      menu.push(
+        (parent = {
+          order: 0,
+          root: true,
+          content: 'Nav Title',
+          url: '/the-component/1.0/index.html',
+          urlType: 'internal',
+          items: [
+            {
+              content: 'Page A',
+              url: '/the-component/1.0/page-a.html',
+              urlType: 'internal',
+            },
+            {
+              content: 'External Link',
+              url: 'https://example.com',
+              urlType: 'external',
+              items: [
+                (previous = {
+                  content: 'Page C',
+                  url: '/the-component/1.0/page-c.html',
+                  urlType: 'internal',
+                }),
+                {
+                  content: 'Another External Link',
+                  url: 'https://docs.example.com/getting-started/',
+                  urlType: 'external',
+                },
+                {
+                  content: 'The Page',
+                  url: '/the-component/1.0/the-page.html',
+                  urlType: 'internal',
+                },
+                {
+                  content: 'Yet Another External Link',
+                  url: 'https://help.example.com',
+                  urlType: 'external',
+                },
+                (next = {
+                  content: 'Page D',
+                  url: '/the-component/1.0/page-d.html',
+                  urlType: 'internal',
+                }),
+              ],
+            },
+          ],
+        })
+      )
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.parent).to.exist()
+      expect(model.parent).to.equal(parent)
+      expect(model.previous).to.exist()
+      expect(model.previous).to.equal(previous)
+      expect(model.next).to.exist()
+      expect(model.next).to.equal(next)
+    })
+
     it('should seek upwards in hierarchy to find adjacent related pages if current page has no sibling links', () => {
       let next
       let previous
