@@ -7,7 +7,6 @@ const aggregateContent = require('@antora/content-aggregator')
 const computeOrigin = aggregateContent._computeOrigin
 const { createHash } = require('crypto')
 const { execFile } = require('child_process')
-const freeze = require('deep-freeze-node')
 const fs = require('fs-extra')
 const getCacheDir = require('cache-directory')
 const GitServer = require('node-git-server')
@@ -55,6 +54,13 @@ function testLocal (block) {
 function testRemote (block) {
   it('on remote repo', () =>
     block(new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })))
+}
+
+function freeze (o) {
+  let v
+  const { hasOwnProperty } = Object.prototype
+  for (const k in o) hasOwnProperty.call(o, k) && (Object.isFrozen((v = o[k])) || freeze(v))
+  return Object.freeze(o)
 }
 
 describe('aggregateContent()', function () {
