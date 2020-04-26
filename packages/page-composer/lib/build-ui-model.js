@@ -171,12 +171,12 @@ function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candida
   if (!(candidate = candidate || siblings[siblingIdx])) {
     return correlated
   } else if (correlated.current) {
-    if (candidate.urlType === 'internal') {
+    if (candidate.urlType === 'internal' && !matchesCurrentPage(candidate, correlated.url)) {
       correlated.next = candidate
       return correlated
     }
   } else if (candidate.urlType === 'internal') {
-    if (getUrlWithoutHash(candidate) === correlated.url) {
+    if (matchesCurrentPage(candidate, correlated.url)) {
       correlated.current = candidate
       /* istanbul ignore if */
       if (!correlated.seekNext) return correlated
@@ -207,8 +207,8 @@ function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candida
   return correlated
 }
 
-function getUrlWithoutHash (item) {
-  return item.hash ? item.url.substr(0, item.url.length - item.hash.length) : item.url
+function matchesCurrentPage (candidate, url) {
+  return candidate.url === url + (candidate.hash || '')
 }
 
 module.exports = { buildBaseUiModel, buildSiteUiModel, buildPageUiModel, buildUiModel }

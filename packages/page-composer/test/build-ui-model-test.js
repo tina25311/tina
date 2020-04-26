@@ -812,6 +812,63 @@ describe('build UI model', () => {
       expect(model.next).to.equal(next)
     })
 
+    it('should skip over internal entries to same page when computing next page reference', () => {
+      let parent
+      let previous
+      let next
+      menu.push({
+        order: 0,
+        root: true,
+        content: 'Nav Title',
+        url: '/the-component/1.0/index.html',
+        urlType: 'internal',
+        items: [
+          {
+            content: 'Page A',
+            url: '/the-component/1.0/page-a.html',
+            urlType: 'internal',
+          },
+          (parent = {
+            content: 'Category',
+            url: '/the-component/1.0/category.html',
+            urlType: 'internal',
+            items: [
+              (previous = {
+                content: 'Section in Page C',
+                url: '/the-component/1.0/page-c.html#section',
+                urlType: 'internal',
+                hash: '#section',
+              }),
+              {
+                content: 'The Page',
+                url: '/the-component/1.0/the-page.html#overview',
+                urlType: 'internal',
+                hash: '#overview',
+              },
+              {
+                content: 'Section in The Page',
+                url: '/the-component/1.0/the-page.html#section',
+                urlType: 'internal',
+                hash: '#section',
+              },
+              (next = {
+                content: 'Page D',
+                url: '/the-component/1.0/page-d.html',
+                urlType: 'internal',
+              }),
+            ],
+          }),
+        ],
+      })
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.parent).to.exist()
+      expect(model.parent).to.equal(parent)
+      expect(model.previous).to.exist()
+      expect(model.previous).to.equal(previous)
+      expect(model.next).to.exist()
+      expect(model.next).to.equal(next)
+    })
+
     it('should skip over external entries when computing related page references', () => {
       let parent
       let previous
