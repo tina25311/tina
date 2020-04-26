@@ -2,8 +2,8 @@
 
 const camelCaseKeys = require('camelcase-keys')
 const convict = require('./solitary-convict')
-const freeze = require('deep-freeze-node')
 const fs = require('fs')
+const { hasOwnProperty } = Object.prototype
 const ospath = require('path')
 
 /**
@@ -54,6 +54,12 @@ function buildPlaybook (args = [], env = {}, schema = undefined) {
 
 function loadConvictConfig (args, env, customSchema) {
   return convict(customSchema || require('./config/schema'), { args, env })
+}
+
+function freeze (o) {
+  let v
+  for (const k in o) hasOwnProperty.call(o, k) && (Object.isFrozen((v = o[k])) || freeze(v))
+  return Object.freeze(o)
 }
 
 function exportModel (config) {

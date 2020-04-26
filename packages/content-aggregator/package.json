@@ -32,9 +32,6 @@
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"
   },
-  "devDependencies": {
-    "deep-freeze-node": "~1.1"
-  },
   "engines": {
     "node": ">=8.11.0"
   },
