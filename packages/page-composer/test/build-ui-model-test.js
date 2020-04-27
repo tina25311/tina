@@ -835,21 +835,21 @@ describe('build UI model', () => {
             items: [
               (previous = {
                 content: 'Section in Page C',
+                hash: '#section',
                 url: '/the-component/1.0/page-c.html#section',
                 urlType: 'internal',
-                hash: '#section',
               }),
               {
                 content: 'The Page',
+                hash: '#overview',
                 url: '/the-component/1.0/the-page.html#overview',
                 urlType: 'internal',
-                hash: '#overview',
               },
               {
                 content: 'Section in The Page',
+                hash: '#section',
                 url: '/the-component/1.0/the-page.html#section',
                 urlType: 'internal',
-                hash: '#section',
               },
               (next = {
                 content: 'Page D',
@@ -975,6 +975,63 @@ describe('build UI model', () => {
       expect(model.next).to.equal(next)
       expect(model.previous).to.exist()
       expect(model.previous).to.equal(previous)
+    })
+
+    it('should set next property for start page if not found in navigation tree', () => {
+      file.path = file.src.path = 'modules/ROOT/pages/' + (file.relative = 'index.adoc')
+      file.pub.url = '/the-component/1.0/index.html'
+      let next
+      menu.push({
+        order: 0,
+        root: true,
+        items: [
+          {
+            content: 'Category',
+            items: [
+              (next = {
+                content: 'Page A',
+                url: '/the-component/1.0/page-a.html',
+                urlType: 'internal',
+              }),
+            ],
+          },
+        ],
+      })
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.next).to.exist()
+      expect(model.next).to.equal(next)
+      expect(model.previous).to.not.exist()
+      expect(model.parent).to.not.exist()
+    })
+
+    it('should not set next property for start page to current page', () => {
+      file.path = file.src.path = 'modules/ROOT/pages/' + (file.relative = 'index.adoc')
+      file.pub.url = '/the-component/1.0/index.html'
+      let next
+      menu.push({
+        order: 0,
+        root: true,
+        items: [
+          {
+            content: 'Section in Start Page',
+            hash: '#overview',
+            url: file.pub.url + '#overview',
+            urlType: 'internal',
+            items: [
+              (next = {
+                content: 'Page A',
+                url: '/the-component/1.0/page-a.html',
+                urlType: 'internal',
+              }),
+            ],
+          },
+        ],
+      })
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.next).to.exist()
+      expect(model.next).to.equal(next)
+      expect(model.previous).to.not.exist()
+      expect(model.parent).to.not.exist()
     })
 
     it('should not set versions property if component only has one version', () => {

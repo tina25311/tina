@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *page-composer*: Set `page.next` in UI model for component version start page if not found in navigation tree (#623)
+
 === Fixed
 
 * *playbook-builder*: Replace deep-freeze-node dependency with internal implementation
