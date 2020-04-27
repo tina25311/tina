@@ -103,9 +103,7 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
     home: url === siteUiModel.homeUrl,
   }
 
-  if (navigationCatalog) {
-    attachNavProperties(model, url, title, navigationCatalog.getNavigation(component_, version))
-  }
+  if (navigationCatalog) attachNavProperties(model, url, title, navigationCatalog.getNavigation(component_, version))
 
   if (versions) {
     Object.defineProperty(model, 'latest', {
