@@ -14,11 +14,12 @@ _**Release date:** 2020.04.23 | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
 
 == Declare attributes per component version
 
-You can now apply attributes to all of the pages in a single component version by declaring them in the [.path]_antora.yml_ file for that component version.
-Component version attributes can be xref:page:attributes.adoc[built-in, custom, and page attributes].
-These attributes are applied and available (or made unavailable if unset) to all of a component version's pages according to the xref:component-attributes.adoc#precedence-rules[attribute precedence rules].
+You can now set or unset attributes on all pages in a single component version by defining them in the [.path]_antora.yml_ file for that component version.
+Component version attributes can be xref:page:attributes.adoc[built-in, custom, or page attributes].
+These attributes are applied (either available or, if unset, unavailable) on all of a component version's pages according to the xref:component-attributes.adoc#precedence-rules[attribute precedence rules].
+Here's an example to give you an idea of how this looks:
 
-.antora.yml
+.antora.yml that defines AsciiDoc document attributes for a component version
 [source,yaml]
 ----
 name: light
@@ -29,11 +30,12 @@ asciidoc:
     listing-caption: false
     table-caption: Data Set@
     hide-uri-scheme: ''
+    toc: ~
     page-level: Advanced
     page-category: 'Statistics, Cloud Infrastructure'
 ----
 
-Since attributes can now be defined at multiple levels, Antora 2.3 adds the ability to soft set and unset xref:playbook:asciidoc-attributes.adoc[site attributes] and xref:component-attributes.adoc[component version attributes].
+Since attributes can now be defined at multiple levels, Antora 2.3 adds the ability to soft set and unset xref:playbook:asciidoc-attributes.adoc[site attributes] as well as xref:component-attributes.adoc[component version attributes].
 
 With this improved scoping and tuning, page attributes are now more versatile.
 One of the primary roles of page attributes is to pass metadata about the page to the UI template via the UI model.
