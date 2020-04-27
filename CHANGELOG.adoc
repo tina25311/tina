@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *playbook-builder*: Replace deep-freeze-node dependency with internal implementation
+* *page-composer*: `page.next` skips over reference to self (#622)
 
 == 2.3.0 (2020-04-22)
 
