@@ -150,28 +150,28 @@ function getPageVersions (pageSrc, component, contentCatalog) {
   })
 }
 
-function attachNavProperties (model, url, title, navigation = []) {
+function attachNavProperties (model, currentUrl, title, navigation = []) {
   if (!(model.navigation = navigation).length) return
   const startPageUrl = model.componentVersion.url
-  const { current, ancestors, previous, next } = findNavItem({ ancestors: [], seekNext: true, url }, navigation)
-  if (current) {
+  const { match, ancestors, previous, next } = findNavItem({ ancestors: [], seekNext: true, currentUrl }, navigation)
+  if (match) {
     // QUESTION should we filter out component start page from the breadcrumbs?
     const breadcrumbs = ancestors.filter((item) => 'content' in item)
     const parent = breadcrumbs.find((item) => item.urlType === 'internal')
-    breadcrumbs.reverse().push(current)
+    breadcrumbs.reverse().push(match)
     model.breadcrumbs = breadcrumbs
     if (parent) model.parent = parent
     if (previous) {
       model.previous = previous
-    } else if (url !== startPageUrl) {
+    } else if (currentUrl !== startPageUrl) {
       model.previous = { content: model.componentVersion.title, url: startPageUrl, urlType: 'internal', discrete: true }
     }
     if (next) model.next = next
   } else {
-    const orphan = { content: title, url, urlType: 'internal', discrete: true }
+    const orphan = { content: title, url: currentUrl, urlType: 'internal', discrete: true }
     if (title) model.breadcrumbs = [orphan]
-    if (url === startPageUrl) {
-      const { next: first } = findNavItem({ ancestors: [], current: orphan, seekNext: true, url }, navigation)
+    if (currentUrl === startPageUrl) {
+      const { next: first } = findNavItem({ ancestors: [], match: orphan, seekNext: true, currentUrl }, navigation)
       if (first) model.next = first
     }
   }
@@ -180,14 +180,14 @@ function attachNavProperties (model, url, title, navigation = []) {
 function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candidate = undefined) {
   if (!(candidate = candidate || siblings[siblingIdx])) {
     return correlated
-  } else if (correlated.current) {
-    if (candidate.urlType === 'internal' && !matchesCurrentPage(candidate, correlated.url)) {
+  } else if (correlated.match) {
+    if (candidate.urlType === 'internal' && !matchesCurrentPage(candidate, correlated.currentUrl)) {
       correlated.next = candidate
       return correlated
     }
   } else if (candidate.urlType === 'internal') {
-    if (matchesCurrentPage(candidate, correlated.url)) {
-      correlated.current = candidate
+    if (matchesCurrentPage(candidate, correlated.currentUrl)) {
+      correlated.match = candidate
       /* istanbul ignore if */
       if (!correlated.seekNext) return correlated
     } else {
@@ -198,11 +198,11 @@ function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candida
   if (children.length) {
     const ancestors = correlated.ancestors
     correlated = findNavItem(
-      correlated.current ? correlated : Object.assign({}, correlated, { ancestors: [candidate].concat(ancestors) }),
+      correlated.match ? correlated : Object.assign({}, correlated, { ancestors: [candidate].concat(ancestors) }),
       children,
       false
     )
-    if (correlated.current) {
+    if (correlated.match) {
       if (!correlated.seekNext || correlated.next) return correlated
     } else {
       correlated.ancestors = ancestors
@@ -210,8 +210,7 @@ function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candida
   }
   if (++siblingIdx < siblings.length) {
     correlated = findNavItem(correlated, siblings, root, siblingIdx)
-    //if (correlated.current && (!correlated.seekNext || correlated.next)) return correlated
-  } else if (root && !correlated.current) {
+  } else if (root && !correlated.match) {
     delete correlated.previous
   }
   return correlated
