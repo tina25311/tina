@@ -1004,6 +1004,29 @@ describe('build UI model', () => {
       expect(model.parent).to.not.exist()
     })
 
+    it('should set previous property to start page for first item in navigation tree', () => {
+      const prev = { content: component.title, url: component.url, urlType: 'internal', discrete: true }
+      menu.push({
+        order: 0,
+        root: true,
+        items: [
+          {
+            content: 'The Page',
+            url: '/the-component/1.0/the-page.html',
+            urlType: 'internal',
+          },
+          {
+            content: 'Page A',
+            url: '/the-component/1.0/page-a.html',
+            urlType: 'internal',
+          },
+        ],
+      })
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.previous).to.exist()
+      expect(model.previous).to.eql(prev)
+    })
+
     it('should not set next property for start page to current page', () => {
       file.path = file.src.path = 'modules/ROOT/pages/' + (file.relative = 'index.adoc')
       file.pub.url = '/the-component/1.0/index.html'
