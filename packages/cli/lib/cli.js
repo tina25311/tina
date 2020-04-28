@@ -77,7 +77,7 @@ cli
   })
   .options.sort((a, b) => a.long.localeCompare(b.long))
 
-cli.command('help [command]', { noHelp: true }).action((name, command) => {
+cli.command('help [command]', { hidden: true }).action((name, command) => {
   if (name) {
     const helpCommand = cli.commands.find((candidate) => candidate.name() === name)
     if (helpCommand) {
@@ -93,7 +93,7 @@ cli.command('help [command]', { noHelp: true }).action((name, command) => {
   }
 })
 
-cli.command('version', { noHelp: true }).action(() => cli.emit('option:version'))
+cli.command('version', { hidden: true }).action(() => cli.emit('option:version'))
 
 cli.on('--help', () => {
   console.log(
