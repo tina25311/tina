@@ -80,7 +80,7 @@ When the site URL is set to an absolue URL, the following additional features ar
 
 If the site URL is not set, all the aforementioned features are disabled.
 
-== When should the site URL include a path segment?
+=== When should the site URL include a path segment?
 
 The path segment of the site URL represents the location from the root of the domain where the site managed by Antora is located.
 In other words, the site URL takes the visitor to the URL where the redirect for the site start page is located.
