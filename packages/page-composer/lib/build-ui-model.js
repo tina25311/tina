@@ -152,6 +152,7 @@ function getPageVersions (pageSrc, component, contentCatalog) {
 
 function attachNavProperties (model, url, title, navigation = []) {
   if (!(model.navigation = navigation).length) return
+  const startPageUrl = model.componentVersion.url
   const { current, ancestors, previous, next } = findNavItem({ ancestors: [], seekNext: true, url }, navigation)
   if (current) {
     // QUESTION should we filter out component start page from the breadcrumbs?
@@ -160,13 +161,17 @@ function attachNavProperties (model, url, title, navigation = []) {
     breadcrumbs.reverse().push(current)
     model.breadcrumbs = breadcrumbs
     if (parent) model.parent = parent
-    if (previous) model.previous = previous
+    if (previous) {
+      model.previous = previous
+    } else if (url !== startPageUrl) {
+      model.previous = { content: model.componentVersion.title, url: startPageUrl, urlType: 'internal', discrete: true }
+    }
     if (next) model.next = next
   } else {
-    const self = { content: title, url, urlType: 'internal', discrete: true }
-    if (title) model.breadcrumbs = [self]
-    if (url === model.componentVersion.url) {
-      const { next: first } = findNavItem({ ancestors: [], current: self, seekNext: true, url }, navigation)
+    const orphan = { content: title, url, urlType: 'internal', discrete: true }
+    if (title) model.breadcrumbs = [orphan]
+    if (url === startPageUrl) {
+      const { next: first } = findNavItem({ ancestors: [], current: orphan, seekNext: true, url }, navigation)
       if (first) model.next = first
     }
   }

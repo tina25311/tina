@@ -22,7 +22,7 @@ In tandem with this release, a pager was added to pages in the default UI to nav
 While developing this functionality, we discovered two problems with the computation of the `page.next` property in the UI model.
 
 . If the next page in the navigation tree is a fragment of the same page, the pager would effectively get stuck on the current page (since the next property was self referencing).
-. The next page was not being set for the component version start page if that page is not found in the navigation tree.
+. The next page was not being set for the component version start page if the start page is not present in the navigation tree (and, conversely, the previous page was not being set to the component version start page for the first page in the navigation tree).
 
 Both of these issues have been resolved.
 
@@ -52,7 +52,8 @@ This change will avoid confusion by removing erroneous hyphens in the option nam
 
 === Changed
 
-Issue {url-issues}/623[#623^]:: Set `page.next` in UI model for component version start page if page not found in navigation tree.
+Issue {url-issues}/623[#623^]:: Set `page.next` in UI model for component version start page to first page in navigation tree if start page not found in navigation tree.
+Issue {url-issues}/623[#623^]:: Set `page.previous` in UI model for first page in navigation tree to component version start page.
 
 === Fixed
 
