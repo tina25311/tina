@@ -6,7 +6,57 @@
 :url-git-antora: {url-gitlab}/antora/antora
 :url-issues: {url-git-antora}/issues
 :url-milestone-2-3-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.0
+:url-milestone-2-3-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.1
 :url-mr: {url-git-antora}/merge_requests
+
+= Antora 2.3.1
+
+_**Release date:** 2020.04.28 | *Issue label:* {url-milestone-2-3-1}[2.3.1^]_
+
+== Highlights
+
+=== Navigation pager
+
+In tandem with this release, a pager was added to pages in the default UI to navigate between adjacent pages (i.e., previous and next navigation).
+While developing this functionality, we discovered two problems with the computation of the `page.next` property in the UI model.
+
+. If the next page in the navigation tree is a fragment of the same page, the pager would effectively get stuck on the current page (since the next property was self referencing).
+. The next page was not being set for the component version start page if that page is not found in the navigation tree.
+
+Both of these issues have been resolved.
+
+=== Better portability
+
+One of Antora's dependencies was limiting the platforms on which Antora could be installed.
+This dependency (deep-freeze-node) was removed and replaced with an internal implementation (which turned out to be 5 lines of code).
+It should now be possible to install Antora on any platform on which Node runs.
+
+The general policy of Antora is to avoid dependencies wherever possible.
+This change is not only consistent with that policy, but provides a concrete example for why we follow it.
+
+=== Documentation changes
+
+The site URL, which is defined by the playbook, implicitly controls whether or not certain functionality in Antora is enabled.
+The relationship between this setting and the functionality is now more clear.
+Specifically, the documentation explains what impact setting the site URL has and lists all the ways it's used.
+It also explains the difference between using an absolute URL and a pathname, which functionality requires the former, and when and how a pathname is required in either case.
+
+* xref:playbook:site-url.adoc[]
+
+Several updates have also been made to the default UI which impact the appearance of the documentation.
+In particular, hyphenation has been disabled for monospaced phrases.
+This change will avoid confusion by removing erroneous hyphens in the option names shown on the xref:cli:index.adoc[] page.
+
+== Resolved issues
+
+=== Changed
+
+Issue {url-issues}/623[#623^]:: Set `page.next` in UI model for component version start page if page not found in navigation tree.
+
+=== Fixed
+
+Issue {url-issues}/622[#622^]:: Skip over references to current page when computing `page.next` property for UI model.
+Issue {url-issues}/621[#621^]:: Remove deep-freeze-node dependency (which was limiting that platforms on which Antora could be installed) and replace with internal implemenation.
 
 = Antora 2.3.0
 
