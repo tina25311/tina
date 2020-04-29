@@ -181,16 +181,15 @@ function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candida
   if (!(candidate = candidate || siblings[siblingIdx])) {
     return correlated
   } else if (correlated.match) {
-    if (candidate.urlType === 'internal' && !matchesCurrentPage(candidate, correlated.currentUrl)) {
+    if (candidate.urlType === 'internal' && !matchesPage(candidate, correlated.currentUrl)) {
       correlated.next = candidate
       return correlated
     }
   } else if (candidate.urlType === 'internal') {
-    if (matchesCurrentPage(candidate, correlated.currentUrl)) {
+    if (matchesPage(candidate, correlated.currentUrl)) {
       correlated.match = candidate
-      /* istanbul ignore if */
       if (!correlated.seekNext) return correlated
-    } else {
+    } else if (!(correlated.previous && matchesPage(candidate, correlated.previous.url, correlated.previous.hash))) {
       correlated.previous = candidate
     }
   }
@@ -216,8 +215,8 @@ function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candida
   return correlated
 }
 
-function matchesCurrentPage (candidate, url) {
-  return candidate.url === url + (candidate.hash || '')
+function matchesPage (candidate, url, hash = undefined) {
+  return candidate.url === (hash ? url.substr(0, url.length - hash.length) : url) + (candidate.hash || '')
 }
 
 module.exports = { buildBaseUiModel, buildSiteUiModel, buildPageUiModel, buildUiModel }

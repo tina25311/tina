@@ -869,6 +869,44 @@ describe('build UI model', () => {
       expect(model.next).to.equal(next)
     })
 
+    it('should skip over internal entries to same page when computing previous page reference', () => {
+      let previous
+      menu.push({
+        order: 0,
+        root: true,
+        urlType: 'internal',
+        items: [
+          (previous = {
+            content: 'Quickstart',
+            url: '/the-component/1.0/quickstart.html',
+            urlType: 'internal',
+            items: [
+              {
+                content: 'Install A',
+                hash: '#install-a',
+                url: '/the-component/1.0/quickstart.html#install-a',
+                urlType: 'internal',
+              },
+              {
+                content: 'Install B',
+                hash: '#install-b',
+                url: '/the-component/1.0/quickstart.html#install-b',
+                urlType: 'internal',
+              },
+              {
+                content: 'The Page',
+                url: '/the-component/1.0/the-page.html',
+                urlType: 'internal',
+              },
+            ],
+          }),
+        ],
+      })
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.previous).to.exist()
+      expect(model.previous).to.equal(previous)
+    })
+
     it('should skip over external entries when computing related page references', () => {
       let parent
       let previous
