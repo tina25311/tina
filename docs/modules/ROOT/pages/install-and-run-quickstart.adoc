@@ -30,7 +30,7 @@ $ node --version
 v{version-node}
 ....
 
-If you have an active Node LTS version on your machine, you're ready to <<install,install Antora>>.
+If you have an active Node LTS version on your machine, you're ready to <<install-antora,install Antora>>.
 
 If *no version number is displayed in your terminal*, you need to install Node.
 
@@ -57,6 +57,7 @@ $ nvm alias default {version-node}
 
 Once you've installed Node, it's time to install Antora.
 
+[#install-antora]
 == Install Antora
 
 Before installing Antora, make a new directory for your site named [.path]_docs-site_ and switch to it.
