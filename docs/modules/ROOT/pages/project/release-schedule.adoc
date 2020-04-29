@@ -10,7 +10,7 @@ Each major release line of the Antora Core components is typically supported for
 |Release Line |Latest Release |Status |GA |Maintenance |EOL
 
 |Antora 3.x
-|NA
+|n/a
 |Pending
 |~ 2020/08
 |TBD

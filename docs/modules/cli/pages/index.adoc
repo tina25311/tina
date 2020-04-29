@@ -162,12 +162,12 @@ Overrides the xref:playbook:site-url.adoc[site url key] in a playbook.
 |`-v`, `--version`
 |Output the Antora version information.
 |Built-in
-|NA
+|n/a
 
 |`-h`, `--help`
 |Output the command usage information.
 |Built-in
-|NA
+|n/a
 |===
 
 == Get help with the CLI
