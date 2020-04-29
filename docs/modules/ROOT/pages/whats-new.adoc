@@ -11,7 +11,7 @@
 
 = Antora 2.3.1
 
-_**Release date:** 2020.04.28 | *Issue label:* {url-milestone-2-3-1}[2.3.1^]_
+_**Release date:** 2020.04.29 | *Issue label:* {url-milestone-2-3-1}[2.3.1^]_
 
 == Highlights
 
