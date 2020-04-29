@@ -25,10 +25,10 @@ To enable it, set the `page-pagination` attribute in your playbook (or anywhere 
 
 While developing this functionality, we discovered a few problems with how the `page.previous` and `page.next` properties in the UI model were being computed:
 
-. If the next item in the navigation tree is a fragment of the current page, the pagination widget gets stuck on the current page (since the next property referred back to the current page).
-. If the previous item in the navigation tree is a fragment of the previous page, the pagination widget jumps to the fragment on that page, but from there jumps to its previous page, skipping over all other fragments (which just isn't intuitive).
-. The next page for the component version start page is not set if the start page is not present in the navigation tree.
-. Conversely, the previous page for the first page in the navigation tree is not set to the component version start page.
+* If the next item in the navigation tree is a fragment of the current page, the pagination widget gets stuck on the current page (since the next property referred back to the current page).
+* If the previous item in the navigation tree is a fragment of the previous page, the pagination widget jumps to the fragment on that page, but from there jumps to its previous page, skipping over all other fragments (which just isn't intuitive).
+* The next page for the component version start page is not set if the start page is not present in the navigation tree.
+* Conversely, the previous page for the first page in the navigation tree is not set to the component version start page.
 
 All of these issues have been resolved.
 
