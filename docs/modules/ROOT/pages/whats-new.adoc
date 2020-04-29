@@ -44,6 +44,12 @@ It should now be possible to install Antora on any platform on which Node runs.
 The general policy of Antora is to avoid dependencies wherever possible.
 This change is not only consistent with that policy, but provides a concrete example for why we follow it.
 
+=== Generate robots.txt when site URL is a pathname
+
+If the site URL is a pathname (e.g., _/_) rather than an absolute URL (e.g., _\https://example.org_), the robots exclusion file (i.e., robots.txt) will still be generated.
+The robots.txt doesn't require an absolute URL.
+Thus, it's enough for the site URL to be set to any allowable value to serve as a hint that the file should be generated.
+
 === Documentation changes
 
 The site URL, which is defined by the playbook, implicitly controls whether or not certain functionality in Antora is enabled.
@@ -67,7 +73,8 @@ Issue {url-issues}/623[#623^]:: Set `page.previous` in UI model for first page i
 === Fixed
 
 Issue {url-issues}/622[#622^]:: Skip over references to current page when computing `page.next` property for UI model.
-Issue {url-issues}/622[#624^]:: Skip over references to fragments of previous page when computing `page.previous` property for UI model.
+Issue {url-issues}/624[#624^]:: Skip over references to fragments of previous page when computing `page.previous` property for UI model.
+Issue {url-issues}/625[#625^]:: Generate robots exclusion file (robots.txt) if site URL is set to any allowable value.
 Issue {url-issues}/621[#621^]:: Remove deep-freeze-node dependency (which was limiting that platforms on which Antora could be installed) and replace with internal implemenation.
 
 [#thanks-2-3-1]
