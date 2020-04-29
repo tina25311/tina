@@ -15,7 +15,7 @@ _**Release date:** 2020.04.28 | *Issue label:* {url-milestone-2-3-1}[2.3.1^]_
 
 == Highlights
 
-=== Smarter Pagination
+=== Smarter pagination
 
 In tandem with this release, a pagination widget has been added to all pages in the default UI to navigate between adjacent pages (i.e., previous and next page navigation).
 The corresponding next and prev SEO pagination links have also been added to the head of the HTML document.
@@ -156,6 +156,26 @@ Xrefs in navigation files behave the same way with one additional feature.
 Navigation files first look for the value of the xref:page:reftext-and-navtitle.adoc#navtitle[navtitle attribute] of the target page to populate the link text.
 If the `navtitle` attribute isn't set, then the page's `reftext` value is used instead.
 You never have to explicitly set `reftext` or `navtitle` unless you want to customize the default xref link text used in a page or navigation file.
+
+== On this page widget
+
+The default UI now offers an "`on this page`" widget (aka TOC).
+You can see it on this page.
+The TOC lists all the section titles on the page down to the specified level and features a scroll spy that shows which section is currently active.
+When the page is not wide enough (such as on a mobile screen), the TOC is shown below the page title instead of in the sidebar.
+
+The TOC is enabled by default.
+Here are ways you can configure the sidebar TOC:
+
+* Configure the text of the heading shown above the TOC using the page attribute named `page-toctitle` (default: "Contents")
+* Set the number of levels tracked by the TOC using the page attribue named `page-toclevels` (0 - 3) (default: 2)
+* Disable the TOC per page (or side-wide) by setting the page attribue named `page-toclevels` to -1
+* Alternately, disable the TOC by adding the `-toc` class to the `<body>` element in the HTML template
+
+You can also control where the embedded TOC is inserted by adding the class `is-before-toc` to an element after the doctitle (selector: `h1.page`).
+The embedded TOC is *not* added if an element is found with the ID `toc`.
+
+If you want to add the TOC to your own UI, feel free to grab the MPL-2.0-licensed https://gitlab.com/antora/antora-ui-default/-/blob/master/src/js/02-on-this-page.js[02-on-this-page.js] script and customize it to suit your needs pursuant to the license terms.
 
 == Resolved issues
 
