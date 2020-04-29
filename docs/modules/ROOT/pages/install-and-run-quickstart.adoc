@@ -14,6 +14,7 @@ On this page, you’ll learn:
 * [x] How to create your first Antora playbook.
 * [x] How to run Antora and generate a site using a playbook.
 
+[#install-nodejs]
 == Install Node.js
 
 Antora requires an active long term support (LTS) release of Node.js.
@@ -56,7 +57,6 @@ $ nvm alias default {version-node}
 
 Once you've installed Node, it's time to install Antora.
 
-[#install]
 == Install Antora
 
 Before installing Antora, make a new directory for your site named [.path]_docs-site_ and switch to it.
