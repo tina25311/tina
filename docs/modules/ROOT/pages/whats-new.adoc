@@ -9,24 +9,33 @@
 :url-milestone-2-3-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.1
 :url-mr: {url-git-antora}/merge_requests
 
-////
 = Antora 2.3.1
 
 _**Release date:** 2020.04.28 | *Issue label:* {url-milestone-2-3-1}[2.3.1^]_
 
 == Highlights
 
-=== Navigation pager
+=== Smarter Pagination
 
-In tandem with this release, a pager was added to pages in the default UI to navigate between adjacent pages (i.e., previous and next navigation).
-While developing this functionality, we discovered two problems with the computation of the `page.next` property in the UI model.
+In tandem with this release, a pagination widget has been added to all pages in the default UI to navigate between adjacent pages (i.e., previous and next page navigation).
+The corresponding next and prev SEO pagination links have also been added to the head of the HTML document.
 
-. If the next page in the navigation tree is a fragment of the same page, the pager would effectively get stuck on the current page (since the next property was self referencing).
-. The next page was not being set for the component version start page if the start page is not present in the navigation tree (and, conversely, the previous page was not being set to the component version start page for the first page in the navigation tree).
+This functionality is currently hidden behind a feature flag.
+To enable it, set the `page-pagination` attribute in your playbook (or anywhere an AsciiDoc attribute can be set).
 
-Both of these issues have been resolved.
+While developing this functionality, we discovered a few problems with how the `page.previous` and `page.next` properties in the UI model were being computed:
 
-=== Better portability
+. If the next item in the navigation tree is a fragment of the current page, the pagination widget gets stuck on the current page (since the next property referred back to the current page).
+. If the previous item in the navigation tree is a fragment of the previous page, the pagination widget jumps to the fragment on that page, but from there jumps to its previous page, skipping over all other fragments (which just isn't intuitive).
+. The next page for the component version start page is not set if the start page is not present in the navigation tree.
+. Conversely, the previous page for the first page in the navigation tree is not set to the component version start page.
+
+All of these issues have been resolved.
+
+As a general rule of thumb, we recommend avoiding the use of fragments in the site navigation since it mixes static and interactive models.
+It's best to rely on the sidebar TOC to provide navigation within the page.
+
+=== Greater portability
 
 One of Antora's dependencies was limiting the platforms on which Antora could be installed.
 This dependency (deep-freeze-node) was removed and replaced with an internal implementation (which turned out to be 5 lines of code).
@@ -58,8 +67,21 @@ Issue {url-issues}/623[#623^]:: Set `page.previous` in UI model for first page i
 === Fixed
 
 Issue {url-issues}/622[#622^]:: Skip over references to current page when computing `page.next` property for UI model.
+Issue {url-issues}/622[#624^]:: Skip over references to fragments of previous page when computing `page.previous` property for UI model.
 Issue {url-issues}/621[#621^]:: Remove deep-freeze-node dependency (which was limiting that platforms on which Antora could be installed) and replace with internal implemenation.
-////
+
+[#thanks-2-3-1]
+== Thanks
+
+Most important of all, a huge *thank you!* to all the folks who helped make Antora even better.
+
+We want to call out the following people for making contributions to this release:
+
+Ewan Edwards ({url-gitlab}/eedwards[@eedwards^]):: For submitting the MR for the SEO pagination links in the head and providing inspiration for the design of the pagination widget.
+
+Daniel Mulholland ({url-gitlab}/danyill[@danyill^]):: For providing feedback and critique about the previous and next values for pages and for testing the navigation widget.
+
+gotwf ({url-gitlab}/gotwf[@gotwf^]):: For rediscovering the compatiblity problem with deep-freeze-node and reminding us to replace it.
 
 = Antora 2.3.0
 
@@ -194,7 +216,7 @@ Issue {url-issues}/516[#516^]:: Preserve stack from got (HTTP client) error when
 Issue {url-issues}/517[#517^]:: Report clearer error when local or cached UI bundle is not valid or cannot otherwise be read.
 Issue {url-issues}/531[#531^]:: Add start path to error message thrown while aggregating files.
 Consistently enclose details in error message in round brackets.
-Issue {url-issues}/532[#532^]:: Report clearer error if component version descriptor file cannot be parsed
+Issue {url-issues}/532[#532^]:: Report clearer error if component version descriptor file cannot be parsed.
 Issue {url-issues}/538[#538^]:: Rename `getFiles()` method on content catalog and UI catalog to `getAll()`; retain `getFiles()` as deprecated method.
 Call `getAll()` method on catalog if available, otherwise `getFiles()`.
 Issue {url-issues}/551[#551^]:: Upgrade Handlebars to fix performance regression.
@@ -208,8 +230,8 @@ Issue {url-issues}/581[#581^]:: Ignore dot (hidden) folders when matching start 
 Issue {url-issues}/595[#595^]:: Modify netlify redirects to be forced as recommended by Netlify.
 Issue {url-issues}/597[#597^]:: Change `ContentCatalog#resolvePage` to delegate to `ContentCatalog#resolveResource`.
 
-[#thank-you-2-3-0]
-== Thank you!
+[#thanks-2-3-0]
+== Thanks
 
 Most important of all, a huge *thank you!* to all the folks who helped make Antora even better.
 
