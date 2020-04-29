@@ -43,6 +43,7 @@ The other keys are optional; Antora will use their default values if they're not
 |xref:site-robots.adoc[robots]
 |Specifies whether Antora generates a _robots.txt_ file.
 Accepts the values `allow`, `disallow`, and a custom, multi-line string.
+Ignored if the sibling `url` key is not set.
 |No
 
 |xref:site-start-page.adoc[start_page]
