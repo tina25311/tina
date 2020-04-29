@@ -43,9 +43,10 @@ const SITEMAP_PREFIX = 'sitemap-'
  * @returns {Array<File>} An array of File objects that represent the sitemaps.
  */
 function mapSite (playbook, pages) {
-  if (!pages.length) return []
   let siteUrl = playbook.site.url
-  if (!siteUrl || siteUrl.charAt() === '/') return []
+  if (!(siteUrl && pages.length)) return []
+  const robots = playbook.site.robots
+  if (siteUrl.charAt() === '/') return robots ? [createRobotsExclusionFile(robots)] : []
   if (siteUrl.charAt(siteUrl.length - 1) === '/') siteUrl = siteUrl.substr(0, siteUrl.length - 1)
   const lastmodISO = new Date().toISOString()
   let sitemaps = pages.reduce((accum, file) => {
@@ -59,7 +60,6 @@ function mapSite (playbook, pages) {
     componentSitemap.versions.add(version)
     return accum
   }, new Map())
-
   sitemaps = Array.from(sitemaps.keys())
     .sort((a, b) => a.localeCompare(b))
     .map((component) => {
@@ -73,7 +73,6 @@ function mapSite (playbook, pages) {
       sitemap.contents = Buffer.from(createSitemapDocument(sitemapEntries) + '\n')
       return sitemap
     })
-
   let sitemapIndex
   if (sitemaps.length > 1) {
     const sitemapIndexEntries = sitemaps.map(createSitemapElement.bind(null, siteUrl))
@@ -85,9 +84,7 @@ function mapSite (playbook, pages) {
   const basename = SITEMAP_STEM + '.xml'
   sitemapIndex.out = { path: basename }
   sitemapIndex.pub = { url: '/' + basename }
-  const robots = playbook.site.robots
-  if (robots) sitemaps.push(createRobotsExclusionFile(robots))
-  return sitemaps
+  return robots ? sitemaps.concat(createRobotsExclusionFile(robots)) : sitemaps
 }
 
 function getSitemapForComponent (siteUrl, sitemaps, component) {

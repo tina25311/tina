@@ -17,6 +17,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Replace deep-freeze-node dependency with internal implementation (#621)
 * *page-composer*: Skip over references to current page when computing `page.next` property for UI model (#622)
 * *page-composer*: Skip over references to fragments of previous page when computing `page.previous` property for UI model (#624)
+* *site-mapper*: Generate robots exclusion file (robots.txt) if site URL is set to any allowable value (#625)
 
 == 2.3.0 (2020-04-22)
 

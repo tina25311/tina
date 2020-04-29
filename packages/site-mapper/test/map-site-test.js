@@ -172,7 +172,7 @@ describe('mapSite()', () => {
     expect(sitemapXml).to.include('reverting-1&lt;2')
   })
 
-  it('should generate robots.txt that allows all if value of site.robots is "allow"', () => {
+  it('should generate robots.txt that allows all robots if value of site.robots is "allow"', () => {
     playbook.site.robots = 'allow'
     const contentCatalog = mockContentCatalog({ family: 'page', relative: 'index.adoc' })
     const sitemaps = mapSite(playbook, contentCatalog.getPages())
@@ -184,7 +184,20 @@ Allow: /
 `)
   })
 
-  it('should generate robots.txt that disallows all if value of site.robots is "disallow"', () => {
+  it('should generate robots.txt if site.robots is an allowable value and site URL is a pathname', () => {
+    playbook.site.url = '/docs'
+    playbook.site.robots = 'allow'
+    const contentCatalog = mockContentCatalog({ family: 'page', relative: 'index.adoc' })
+    const sitemaps = mapSite(playbook, contentCatalog.getPages())
+    expect(sitemaps).to.have.lengthOf(1)
+    const robotstxt = sitemaps.find((sitemap) => sitemap.out.path === 'robots.txt')
+    expect(robotstxt).to.not.be.undefined()
+    expect(robotstxt.contents.toString()).to.equal(`User-agent: *
+Allow: /
+`)
+  })
+
+  it('should generate robots.txt that disallows all robots if value of site.robots is "disallow"', () => {
     playbook.site.robots = 'disallow'
     const contentCatalog = mockContentCatalog({ family: 'page', relative: 'index.adoc' })
     const sitemaps = mapSite(playbook, contentCatalog.getPages())
@@ -216,5 +229,13 @@ Disallow: /secret-component/
       const robotstxt = sitemaps.find((sitemap) => sitemap.out.path === 'robots.txt')
       expect(robotstxt).to.be.undefined()
     })
+  })
+
+  it('should not generate robots.txt if site.robots is an allowable value but site URL is not set', () => {
+    delete playbook.site.url
+    playbook.site.robots = 'allow'
+    const contentCatalog = mockContentCatalog({ family: 'page', relative: 'index.adoc' })
+    const sitemaps = mapSite(playbook, contentCatalog.getPages())
+    expect(sitemaps).to.be.empty()
   })
 })

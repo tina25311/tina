@@ -25,8 +25,8 @@ site:
 
 Antora will generate the [.path]_robots.txt_ file at the root of the site.
 
-The `robots` key depends on the `url` key.
-If the `url` key isn't assigned an absolute URL value, Antora won't generate a [.path]_robots.txt_ file even if `robots` is set and assigned a non-empty value.
+The `robots` key depends on the sibling `url` key.
+If the `url` key isn't assigned a value, Antora won't generate a [.path]_robots.txt_ file even if `robots` is set to an allowable value.
 
 [#allow-or-disallow-robots]
 == Assign allow or disallow to robots
