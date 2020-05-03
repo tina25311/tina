@@ -44,7 +44,7 @@ It should now be possible to install Antora on any platform on which Node runs.
 The general policy of Antora is to avoid dependencies wherever possible.
 This change is not only consistent with that policy, but provides a concrete example for why we follow it.
 
-=== Generate robots.txt when site URL is a pathname
+=== robots.txt generated when site URL is a pathname
 
 If the site URL is a pathname (e.g., _/_) rather than an absolute URL (e.g., _\https://example.org_), the robots exclusion file (i.e., robots.txt) will still be generated.
 The robots.txt doesn't require an absolute URL.
@@ -136,10 +136,10 @@ In other words, you can put multiple components or component versions--each with
 In addition to exact paths, the `start_paths` supports discovery by accepting xref:playbook:content-source-start-paths.adoc#path-globbing[glob patterns], including wildcards, braces, and negated patterns.
 See xref:playbook:content-source-start-paths.adoc[] to learn more.
 
-=== Aliased page IDs work in xrefs
+=== Page aliases work in xrefs
 
-The target of an xref macro can now be an alias, which is then transparently resolved to its corresponding page.
-Page aliases are defined using the `page-aliases` attribute in the document header.
+The target of an xref macro can now be a page alias, which is then transparently resolved to its corresponding page.
+Page aliases, which are expressed using the same syntax as a page ID, are defined using the `page-aliases` attribute in the document header.
 See xref:page:page-aliases.adoc[] to learn more.
 
 === Default xref link text for pages and navigation files
@@ -165,6 +165,12 @@ Xrefs in navigation files behave the same way with one additional feature.
 Navigation files first look for the value of the xref:page:reftext-and-navtitle.adoc#navtitle[navtitle attribute] of the target page to populate the link text.
 If the `navtitle` attribute isn't set, then the page's `reftext` value is used instead.
 You never have to explicitly set `reftext` or `navtitle` unless you want to customize the default xref link text used in a page or navigation file.
+
+=== xrefs can target non-AsciiDoc-based pages
+
+If you're using a custom generator to register non-AsciiDoc page files (such as HTML files), you can now use the xref macro to link to these pages.
+The syntax looks just like an xref to an AsciiDoc-based page, except the target must end in `.html#` instead of `.adoc` (e.g., `\xref:the-page.html#[The Page]`).
+This feature is mostly forward looking for when Antora supports importing and processing prepared content, but can be useful to have now if you're building on top of Antora.
 
 === On this page widget
 
