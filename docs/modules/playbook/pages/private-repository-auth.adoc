@@ -132,7 +132,22 @@ Here's an example for a specific repository path:
 https://octocat:ilovegit@github.com/octocat/Hello-World
 ----
 
-To ensure this file is protected, immediately set its file permissions so it cannot be read by others.
+Here are examples for several popular git hosts (for which you'd substitute the placeholders in bold with the real values):
+
+[subs=+quotes]
+----
+https://**TOKEN**:@github.com:org/project-docs.git
+https://oauth2:**TOKEN**@gitlab.com:org/project-docs.git
+https://gitlab+deploy-token-**TOKEN_ID**:**TOKEN**@gitlab.com:org/project-docs.git
+https://x-oauth-token:**TOKEN**@bitbucket.org:org/project-docs.git
+https://**USERNAME**:**APP_PASSWORD**@bitbucket.org:org/project-docs.git
+----
+
+NOTE: Notice that the tokens are located in different locations in the URL depending on the git host.
+See {url-oauth2-formats}[OAuth2 formats^] for more details.
+If you're using a Bitbucket app password, notice you must include your own username (using the format `USERNAME:APP_PASSWORD`).
+
+To ensure the credentials file is protected, immediately set its file permissions so it cannot be read by others.
 
  $ chmod 600 $HOME/.git-credentials
 
@@ -186,22 +201,23 @@ WARNING: This strategy is not recommended unless you're using a placeholder to i
 
 Antora will extract the credentials that precede the hostname (i.e., `username:password@` or `token@`) and use them to perform authentication on your behalf if requested by the server.
 
-Here are several examples:
+Here are examples for several popular git hosts (for which you'd substitute the placeholders in bold with the real values):
 
 .antora-playbook.yml (fragment)
-[source,yaml]
+[source,yaml,subs=+quotes]
 ----
 content:
   sources:
-  - url: https://GITHUB_TOKEN:@github.com:org/project-docs.git
-  - url: https://oauth2:GITLAB_TOKEN@gitlab.com:org/project-docs.git
-  - url: https://x-oauth-token:BITBUCKET_TOKEN@bitbucket.org:org/project-docs.git
-  - url: https://USERNAME:BITBUCKET_APP_PASSWORD@bitbucket.org:org/project-docs.git
+  - url: https://**TOKEN**:@github.com:org/project-docs.git
+  - url: https://oauth2:**TOKEN**@gitlab.com:org/project-docs.git
+  - url: https://gitlab+deploy-token-**TOKEN_ID**:**TOKEN**@gitlab.com:org/project-docs.git
+  - url: https://x-oauth-token:**TOKEN**@bitbucket.org:org/project-docs.git
+  - url: https://**USERNAME**:**APP_PASSWORD**@bitbucket.org:org/project-docs.git
 ----
 
 NOTE: Notice that the tokens are located in different locations in the URL depending on the git host.
 See {url-oauth2-formats}[OAuth2 formats^] for more details.
-If you're using a Bitbucket app password, you'll also need to include your username (using the format `USERNAME:BITBUCKET_APP_PASSWORD`).
+If you're using a Bitbucket app password, notice you must include your own username (using the format `USERNAME:APP_PASSWORD`).
 
 The drawback of this approach is that it requires putting the credentials directly into the playbook file.
 Unfortunately, Antora does not yet support resolving environment variables located in the playbook file.
