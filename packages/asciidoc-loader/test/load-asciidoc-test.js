@@ -2146,6 +2146,24 @@ describe('loadAsciiDoc()', () => {
       )
     })
 
+    it('should skip page reference with double .adoc file extension', () => {
+      const contentCatalog = mockContentCatalog({
+        relative: 'the-page.adoc',
+      }).spyOn('getById')
+      setInputFileContents('xref:the-page.adoc.adoc[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc.adoc',
+        })
+      expectUnresolvedPageLink(html, '#the-page.adoc.adoc', 'The Page Title')
+    })
+
     it('should skip page reference to non-publishable file', () => {
       const contentCatalog = mockContentCatalog({ relative: '_hidden.adoc' }).spyOn('getById')
       delete contentCatalog.getPages()[0].pub
