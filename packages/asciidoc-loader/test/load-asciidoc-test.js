@@ -2648,6 +2648,29 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, '../the-page.html', 'The Page Title')
     })
 
+    it('should convert a page reference to a non-AsciiDoc page', () => {
+      const contentCatalog = mockContentCatalog({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'page',
+        relative: 'the-page.html',
+        mediaType: 'text/html',
+      }).spyOn('getById')
+      setInputFileContents('xref:the-page.html#[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.html',
+        })
+      expectPageLink(html, 'the-page.html', 'The Page Title')
+    })
+
     it('should pass on attributes defined in xref macro', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
