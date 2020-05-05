@@ -8,5 +8,5 @@
 * xref:external-links.adoc[]
 * xref:format-content.adoc[]
 * xref:organize-files.adoc[]
-** xref:include-lists.adoc[]
+* xref:include-lists.adoc[]
 * xref:register-navigation-files.adoc[]
