@@ -31,7 +31,7 @@ Containers not only isolate software from the host environment, they also make i
 And that's a perfect way to discover and explore Antora!
 
 The Antora project provides an official Docker (OCI) image named `antora/antora` for running Antora inside a container.
-This image is published to {url-docker-hub}[Docker Hub].
+This image is published to the {url-docker-hub}[antora/antora project^] on Docker Hub.
 
 This image is a drop-in replacement for the `antora` command.
 Rather than installing the `antora` command on your own computer or in a CI environment, you simply run the command by running the container.
