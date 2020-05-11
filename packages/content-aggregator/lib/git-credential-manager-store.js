@@ -30,12 +30,12 @@ class GitCredentialManagerStore {
         let credentialsPath = this.path || ospath.join(homedir(), '.git-credentials')
         contentsPromise = fs.pathExists(credentialsPath).then((exists) => {
           if (exists) {
-            return fs.readFile(credentialsPath, 'utf-8')
+            return fs.readFile(credentialsPath, 'utf8')
           } else {
             const xdgConfigHome = process.env.XDG_CONFIG_HOME || ospath.join(homedir(), '.config')
             return fs
               .pathExists((credentialsPath = ospath.join(xdgConfigHome, 'git', 'credentials')))
-              .then((fallbackExists) => (fallbackExists ? fs.readFile(credentialsPath, 'utf-8') : undefined))
+              .then((fallbackExists) => (fallbackExists ? fs.readFile(credentialsPath, 'utf8') : undefined))
           }
         })
       }
