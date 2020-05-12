@@ -51,7 +51,7 @@ Finally, the family-relative path is captured to uniquely identify a source file
 === File locations and URLs
 
 The location of a source file also doesn't dictate the location of the published file.
-One a source file is loaded into memory, its metadata gets manipulated, which includes computing the output location and URL by which it can be accessed.
+Once a source file is loaded into memory, its metadata gets manipulated, which includes computing the output location and URL by which it can be accessed.
 Each family of files has different rules for how these values are computed.
 This means the association between where the source file is found and where the published file gets placed in the site or how that file is accessed isn't hardwired.
 
