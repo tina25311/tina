@@ -6,4 +6,5 @@
 * xref:cli:index.adoc[]
 
 .Publish Your Site
+* xref:add-404-error-page.adoc[]
 * xref:publish-to-github-pages.adoc[]
