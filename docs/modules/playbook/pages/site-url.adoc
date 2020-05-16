@@ -67,7 +67,8 @@ When the site URL is not set, these features are automatically and silently disa
 When the site URL is set to any allowable value, the following features are enabled:
 
 * The `site-url` attribute is set on every AsciiDoc document.
-* The `site.url` property is set in the UI model.
+* The `site.url` property is set in the UI model (the value of the `site.url` key in the playbook).
+* The `site.path` property is set in the UI model (the path segment extracted from the value of the `site.url` key in the playbook; if the site URL does not have a path segment or the path segment is /, this value is empty)
 * The 404 page is generated.
 * The robots.txt file is generated if `site.robots` is also defined in the playbook.
 * The redirects include the path segment of the site URL (which would otherwise be empty).
