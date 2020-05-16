@@ -9,7 +9,7 @@
 ** xref:quotes-and-apostrophes.adoc[Quote Marks and Apostrophes]
 ** xref:special-characters-and-symbols.adoc[Special Characters and Symbols]
 ** xref:subscript-and-superscript.adoc[Subscript and Superscript]
-* xref:in-page-xref.adoc[Same Page Xrefs]
+* xref:in-page-xref.adoc[Internal Xrefs]
 * xref:external-urls.adoc[URLs]
 * xref:lists.adoc[Lists]
 ** xref:ordered-and-unordered-lists.adoc[Bullet and Numbered Lists]

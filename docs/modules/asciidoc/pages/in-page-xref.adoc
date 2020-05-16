@@ -1,7 +1,11 @@
-= Reference a Section, Block, Line or Word
+= Internal Xrefs
 // URLs
 :url-adoc-manual: https://asciidoctor.org/docs/user-manual
 :url-anchor: {url-adoc-manual}/#anchordef
+
+Internal xrefs are references to other elements within the same page.
+You can reference sections, blocks, or inline elements.
+These xrefs only require specifying the anchor (aka ID).
 
 //WARNING: Don't use the `link` macro for referencing sections and IDs in the same page.
 
@@ -23,9 +27,9 @@ This is an in-page cross reference:
 <1> In-page xref to a section using the section's title.
 <2> In-page xref to a section using the section's implicit ID.
 
-== Reference a block, line, or word in the same page
+== Reference a block or inline element in the same page
 
-To link to a block or line in the same page, you must define an ID at that location.
+To link to a block or inline element in the same page, you must define an ID at that location.
 
 .Create an ID
 [source]
