@@ -53,7 +53,12 @@ When a xref:multiple-lists.adoc[file contains multiple lists], each list must be
 ----
 
 If a navigation file only contains one list, a list title is optional.
-In a xref:single-list.adoc[single list navigation file], each item with a single asterisk marker (`+*+`) becomes a top-level item to any list items that are nested directly under it.
+In a xref:single-list.adoc[single list navigation file], each item with a single asterisk marker (`+*+`) effectively becomes a top-level item.
+
+You can compose your navigation by combining files using the include directive.
+Each included file must be located in a partials directory.
+If you want the navigation list in the included file to be added as a child of the current item, you should enclose the include directive in an open block.
+Refer to the xref:include-lists.adoc[] page to learn how to build the navigation from multiple files.
 
 == List titles and items
 

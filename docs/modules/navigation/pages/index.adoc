@@ -27,6 +27,7 @@ Creating a navigation file per module is a common organizational structure, but 
 
 A navigation file contains xref:files-and-lists.adoc#list-structure[one or more bulleted lists].
 Each item in a list can be the cross reference to a page, URL to a website that isn't part of the site, or unlinked text such as a category title that groups a nested set of list items.
+You can xref:include-lists.adoc[compose the navigation from multiple files].
 
 When you want the contents of a navigation file to be published to a component version's page menu, you need to register the file in the corresponding component version descriptor file.
 
