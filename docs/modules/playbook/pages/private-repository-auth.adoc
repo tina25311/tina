@@ -20,12 +20,13 @@ HTTP Basic authentication requires sending credentials to the server (over HTTPS
 Authentication credentials consist of either a username/password pair or an access (OAuth 2.0) token.
 
 The username/password pair is usually what you use to log in to the service (GitHub, GitLab, etc.) where the repository is hosted.
-Keep in mind that while some git hosts supports this means of authentication, others do not.
+Keep in mind that while some git hosts support this means of authentication, others do not.
 You may have better luck using an access token.
 
-If you have two-factor authentication (2FA) enabled on your account, you most certainly won't be able to use the username/password pair to authenticate with a private repository.
-(You'll receive the error _401 HTTP Basic: Access Denied_ when you try).
-Thus, if you have two-factor authentication enabled on your account, perhaps even if you don't, you'll need to use an access token.
+When two-factor authentication (2FA) is enabled on your account, you can't use the username/password pair to authenticate with a private repository.
+You'll receive the error _401 HTTP Basic: Access Denied_ when you try.
+
+Regardless of the reason, if the git host does not allow you to authenticate using a username/password pair, you'll need to use an acces token instead.
 
 There are two types of access tokens: personal access tokens and deploy tokens.
 
