@@ -179,9 +179,13 @@ Here's an example that demonstrates the concept:
  $ export GIT_CREDENTIALS='https://octocat:ilovegit@github.com'
  $ antora antora-playbook.yml
 
-You can even reduce this to a single line:
+You can even reduce this to a single line (which only defines the environment variable for the scope of the command):
 
  $ GIT_CREDENTIALS='https://octocat:ilovegit@github.com' antora antora-playbook.yml
+
+When using the Windows command prompt, you need to define the environment variable using the `set` command:
+
+ C:\> set "GIT_CREDENTIALS=https://octocat:ilovegit@github.com" && antora antora-playbook.yml
 
 This strategy is most useful in a CI environment where environment variables can be secured.
 It's also a quick and informal way of passing credentials to Antora when generating the site on your own machine.
