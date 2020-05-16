@@ -1,4 +1,4 @@
-= Preview a Site
+= Preview Your Site
 
 On this page, you'll learn:
 
@@ -18,41 +18,45 @@ You will be viewing the HTML pages through the file: protocol of the browser, wh
 == Run a local server (optional)
 
 Although the site is viewable without a web server, you may still need to view your site through a web server to test certain features, such as indexified URLs, caching, or scripts that don't work over the file: protocol.
-You can use the *node-srv* package for this purpose.
-https://yarnpkg.com/en/package/node-srv[node-srv] is a simple, static web server for Node.
+You can use the *http-server* package for this purpose.
+https://yarnpkg.com/en/package/http-server[http-server] is a simple, static web server for Node.
 
-Install the *node-srv* package globally using npm:
+Install the *http-server* package globally using npm:
 
- demo-site $ npm i -g node-srv
+ demo-site $ npm i -g http-server
 
 or Yarn:
 
- demo-site $ yarn global add node-srv
+ demo-site $ yarn global add http-server
 
 That puts a command by the same name on your PATH.
 
 Now launch the web server by pointing it at the location of the generated site.
-In the terminal, type the command name, `node-srv`, followed by the `-r` flag, then the location of the generated site (i.e., the output dir).
-After launching the command, the local address of the web server will be displayed in your terminal.
+In the terminal, type the command name, `http-server`, followed by the location of the generated site (i.e., the output dir).
+We also recommend adding the `-c-1` flag to disable caching.
 
- demo-site $ node-srv build/site
+ demo-site $ http-server build/site -c-1
 
+Upon launching the command, the local address of the web server will be displayed in your terminal.
 You should see the following output in your terminal:
 
 [.output]
 ....
-Server node-srv running at
- => http://localhost:8000
-
-Logs are off.
+Starting up http-server, serving build/site
+Available on:
+  http://127.0.0.1:8080
+  http://192.168.1.8:8080
+Hit CTRL-C to stop the server
 ....
 
-Paste the provided URL into the location bar of your browser to view your site through a local web server.
+Paste the first provided URL into the location bar of your browser to view your site through a local web server.
 
 Press kbd:[Ctrl,C] to stop the server.
 
 TIP: If you get a port conflict when starting the server (i.e., `listen EADDRINUSE: address already in use`), you can use the `-p <port>` option to change to another port.
-For example, use `-p 5000` to switch to port 5000.
+For example, append `-p 5000` to the command to switch to port 5000.
+
+ demo-site $ http-server build/site -c-1 -p 5000
 
 ////
 When generation is complete, you'll see a URL in the terminal that is specific to your machine.
