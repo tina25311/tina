@@ -379,6 +379,7 @@ Here are a few rules when writing assertions:
 
 * Use BDD-style assertions (e.g., `expect(object).to.have.property('foo')`)
 * When creating a negated assertion, please write it as `.to.not` instead of `.not.to` (e.g., `expect(object).to.not.have.property('bar')`)
+* Use `.equal` instead of `.eql` to compare strings (e.g., `expect(value).to.equal('foo')`)
 
 You can run the whole <<run-tests,test suite>> manually or continuously.
 You can also select individual tests to run.
