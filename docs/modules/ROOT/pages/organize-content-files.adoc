@@ -5,10 +5,10 @@ Before you begin setting up or migrating your repositories, let's review some ke
 
 == Storing your content source files
 
-Antora can retrieve content source files from numerous git repositories, which means searching for files in branches, tags, and/or the local worktree.
-The repositories Antora uses don't have to be reserved exclusively for storing documentation.
-Antora can retrieve files from repositories that also host application code, tests, and other materials.
-Antora relies on both convention and configuration to identify the documentation content.
+Antora can retrieve content source files from numerous git repositories, which means searching for files under a xref:playbook:content-source-start-path.adoc[start path] (or xref:playbook:content-source-start-paths.adoc[multiple start paths]) in branches, tags, and/or the local worktree.
+The repositories Antora uses don't have to be reserved exclusively for storing documentation (hence the start path).
+Antora relies on both xref:standard-directories.adoc[convention] and xref:playbook:configure-content-sources.adoc[configuration] to identify the documentation content.
+Antora can retrieve files from repositories that also host application code, tests, and other materials in sibling hierarchies.
 
 In order to fetch source files from multiple and multi-use repositories, Antora requires that the documentation files be:
 
