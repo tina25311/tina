@@ -98,5 +98,5 @@ Let's get started!
 
 When the site is generated, the value of `navtitle`, _Getting Started_, will populate the xref link text in the navigation file.
 
-CAUTION: When the target page ID includes a xref:page-id.adoc#id-fragment[fragment] (i.e., a deep link), the link text isn't automatically populated.
+CAUTION: When the target includes a xref:page-id.adoc#id-fragment[fragment] (aka a deep link) like `\xref:page.adoc#fragment[...]`, the link text (`...`) isn't automatically populated.
 You'll need to specify the xref's link text in this case.

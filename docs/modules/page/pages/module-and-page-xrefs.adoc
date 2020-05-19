@@ -119,7 +119,7 @@ If you click on the link, you'll see that the clickable text and the title of th
 A page's title is assigned to the built-in AsciiDoc `reftext` attribute by default.
 You can also xref:reftext-and-navtitle.adoc[assign a custom value to the reftext attribute].
 
-CAUTION: When the target page ID includes a xref:page-id.adoc#id-fragment[fragment] (i.e., a deep link), the link text isn't automatically populated.
+CAUTION: When the target includes a xref:page-id.adoc#id-fragment[fragment] (aka a deep link) like `\xref:page.adoc#fragment[...]`, the link text (`...`) isn't automatically populated.
 You'll need to specify the xref's link text in this case.
 
 TIP: Xrefs in a navigation file behave the same way with one additional feature.
