@@ -13,6 +13,17 @@
 
 _**Release date:** 2020.04.29 | *Issue label:* {url-milestone-2-3-1}[2.3.1^]_
 
+== Notices
+
+When Antora 2.3.1 was first released, there was a bug in one of the libraries (gulp-vinyl-zip) that caused Antora running on Windows to write files from the UI bundle to the published site with the ReadOnly attribute set.
+This bug, in turn, caused Antora to crash when generating the site a second time without using `--clean` flag.
+Adding the `--clean` flag to the `antora` command would circumvent the issue.
+Fortunately, this workaround is no longer required.
+This bug has been fixed in a patch release.
+
+To apply the fix, uninstall Antora (specifically @antora/site-genrator-default) and install it again.
+For details about this problem, and a reference to the upstream issue, refer to issue {url-issues}/631^[#631].
+
 == Highlights
 
 === Smarter pagination

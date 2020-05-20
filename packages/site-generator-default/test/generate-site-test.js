@@ -104,7 +104,12 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, '_'))
       .to.be.a.directory()
       .with.subDirs.with.members(['css', 'js', 'font', 'img'])
+    const absCssDir = ospath.join(absDestDir, '_', 'css')
     expect(ospath.join(absDestDir, '_/css/site.css')).to.be.a.file()
+    expect(absCssDir)
+      .to.be.a.directory()
+      .with.files
+      .that.satisfy((files) => files.every((file) => fs.statSync(ospath.join(absCssDir, file)).mode === 33206))
     expect(ospath.join(absDestDir, '_/js/site.js')).to.be.a.file()
     expect(ospath.join(absDestDir, '404.html')).to.not.be.a.path()
     expect(ospath.join(absDestDir, 'the-component'))
