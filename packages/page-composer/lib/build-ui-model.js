@@ -118,11 +118,10 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
   if (siteUrl && siteUrl.charAt() !== '/') {
     if (versions) {
       let latestReached
-      // NOTE latest could be older than the latest component version since the page might cease to exist
-      const latest = versions.find(
-        (candidate) => (latestReached || (latestReached = candidate.latest)) && !candidate.missing
-      )
-      if (latest && !latest.prerelease) {
+      // NOTE latest will at least match current page version, if not a newer version
+      // NOTE latest not guaranteed to match latest component version since the page may be missing in that version
+      const latest = versions.find((it) => (latestReached || (latestReached = it.latest)) && !it.missing)
+      if (!latest.prerelease) {
         let canonicalUrl = latest.url
         if (canonicalUrl === url || canonicalUrl.charAt() === '/') canonicalUrl = siteUrl + canonicalUrl
         model.canonicalUrl = file.pub.canonicalUrl = canonicalUrl
