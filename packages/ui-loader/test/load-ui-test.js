@@ -9,6 +9,7 @@ const http = require('http')
 const loadUi = require('@antora/ui-loader')
 const os = require('os')
 const ospath = require('path')
+const { Transform } = require('stream')
 const vfs = require('vinyl-fs')
 const zip = require('gulp-vinyl-zip')
 
@@ -46,6 +47,16 @@ describe('loadUi()', () => {
     new Promise((resolve, reject) =>
       vfs
         .src('**/*', { base: dir, cwd: dir })
+        // NOTE set stable file permissions
+        .pipe(new Transform({
+          objectMode: true,
+          transform (file, _, next) {
+            const stat = file.stat
+            if (stat.isFile()) stat.mode = 33188
+            else if (stat.isDirectory()) stat.mode = 16877
+            next(null, file)
+          },
+        }))
         .pipe(zip.dest(dir + '.zip'))
         .on('error', reject)
         .on('end', resolve)
@@ -150,6 +161,16 @@ describe('loadUi()', () => {
       expect(paths).to.have.members(expectedFilePaths)
       const relativePaths = files.map((file) => file.relative)
       expect(paths).to.eql(relativePaths)
+    })
+  })
+
+  describe('should assign correct file permissions to files extracted from UI bundle', () => {
+    testAll('the-ui-bundle.zip', async (playbook) => {
+      const uiCatalog = await loadUi(playbook)
+      const files = uiCatalog.getAll()
+      const modes = [...new Set(files.map(({ stat }) => stat.mode))]
+      expect(modes).to.have.lengthOf(1)
+      expect(modes[0]).to.equal(33188)
     })
   })
 
