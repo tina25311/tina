@@ -53,6 +53,29 @@ Next, execute the `docker run` command to invoke the entrypoint command (i.e., `
 This command spins up a new container from the image, mounts the current directory as the path [.path]_/antora_ inside the container, runs the `antora` command (as the current user), then stops and removes the container.
 It's exactly like running a locally installed `antora` command, only you're using container superpowers to do it!
 
+[#permission-denied-error]
+.Fix permission denied error accessing cache directory
+****
+If your local uid (i.e., `$(id -u)`) is not 1000, you may encounter the following error when running Antora in the container:
+
+[.output]
+....
+error: EACCES: permission denied, mkdir '/.cache'
+....
+
+This failure happens because the default cache dir is resolved relative to the user's home directory and the home directory of an unmapped user is [.path]_/_ (hence the path [.path]_/.cache_ in the message).
+
+You can fix this problem by setting the cache dir relative to the playbook when running Antora:
+
+ docs-site $ docker run -u $(id -u) -v $PWD:/antora:Z --rm -t antora/antora --cache-dir=.cache/antora antora-playbook.yml
+
+Or by overriding the HOME directory of the user:
+
+ docs-site $ docker run -u $(id -u) -e HOME=/antora -v $PWD:/antora:Z --rm -t antora/antora antora-playbook.yml
+
+This configuration also has the benefit that the cache will be preserved between runs, so it's not a bad idea to use it regardless.
+****
+
 Alternately, you can execute the `podman run` command to invoke the entrypoint command for this image using {url-podman}[podman]:
 
  docs-site $ podman run -v $PWD:/antora:Z --rm -t antora/antora antora-playbook.yml
