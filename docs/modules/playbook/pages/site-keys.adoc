@@ -1,13 +1,13 @@
 = Account and API Keys
 
-The `keys` key accepts a list of key-value pairs that specify account identifiers that are used by global site services such as search tools and Google Analytics.
+The `keys` key accepts a list of name-value pairs that specify account identifiers that are used by global site services such as search tools and Google Analytics.
 
 [#keys-key]
 == keys key
 
 The `keys` key is optional.
-It's configured under the xref:configure-site.adoc[site key] in a playbook.
-`keys` accepts a list of key-value pairs that specify account identifiers.
+You define the `keys` key under the xref:configure-site.adoc[site key] in a playbook.
+`keys` accepts a list of name-value pairs (aka subkeys) that specify account identifiers.
 
 .antora-playbook.yml
 [source,yaml]
@@ -19,6 +19,10 @@ site:
     name-of-account-key: 'identifier'
     google_analytics: 'XX-123456'
 ----
+
+The value of these keys can then be accessed by a UI template from the `site.keys` property in the UI model.
+When assigned to the UI model, the name is converted to camelCase (regardless of whether words in the name are separated using hyphens or underscores).
+For example, you can access the keys defined in the example above as `site.keys.nameOfAccountKey` and `site.keys.googleAnalytics`, respectively.
 
 [#google-analytics-key]
 == Add a Google analytics account
@@ -35,4 +39,4 @@ site:
     google_analytics: 'XX-123456'
 ----
 
-The value assigned to the `google_analytics` key must be enclosed in single quotation marks (`'`).
+We recommend enclosing the value in single quotation marks (`'`) to prevent it from being mangled by the YAML parser.
