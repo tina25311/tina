@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *content-classifier*: Fix cases when page ID with no file extension fails to resolve (#635)
+
 == 2.3.1 (2020-04-29)
 
 === Changed

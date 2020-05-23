@@ -3,8 +3,6 @@
 const convertDocument = require('./convert-document')
 const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-loader')
 
-const COMMA_DELIMITER_RX = /\s*,\s*/
-
 /**
  * Converts the contents of publishable pages with the media type text/asciidoc
  * in the content catalog to embedded HTML.
@@ -72,10 +70,8 @@ function buildCacheKey ({ component, version }) {
 function registerPageAliases (aliases, targetFile, contentCatalog) {
   if (!aliases) return
   return aliases
-    .split(COMMA_DELIMITER_RX)
-    .forEach(
-      (spec) => spec && contentCatalog.registerPageAlias(spec.endsWith('.adoc') ? spec : spec + '.adoc', targetFile)
-    )
+    .split(',')
+    .forEach((spec) => (spec = spec.trim()) && contentCatalog.registerPageAlias(spec, targetFile))
 }
 
 module.exports = Object.assign(convertDocuments, { convertDocuments, convertDocument })
