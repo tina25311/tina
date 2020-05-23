@@ -94,8 +94,8 @@ content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git
   - url: git@gitlab.com:antora/demo/demo-component-b.git
-  - url: git://github.com/org/content-repo.git
-  - url: https://%GITHUB_TOKEN%:x-oauth-basic@github.com:org-name/project-docs.git
+  - url: git://github.com/org/content-repo
+  - url: https://%GITHUB_TOKEN%:x-oauth-basic@github.com/org-name/project-docs.git
 ----
 
 Whether or not the `.git` extension is required depends on the settings of the git host.
