@@ -137,11 +137,11 @@ Here are examples for several popular git hosts (for which you'd substitute the 
 
 [subs=+quotes]
 ----
-https://**TOKEN**:@github.com:org/project-docs.git
-https://oauth2:**TOKEN**@gitlab.com:org/project-docs.git
-https://gitlab+deploy-token-**TOKEN_ID**:**TOKEN**@gitlab.com:org/project-docs.git
-https://x-oauth-token:**TOKEN**@bitbucket.org:org/project-docs.git
-https://**USERNAME**:**APP_PASSWORD**@bitbucket.org:org/project-docs.git
+https://**TOKEN**:@github.com/org/project-docs
+https://oauth2:**TOKEN**@gitlab.com/org/project-docs.git
+https://gitlab+deploy-token-**TOKEN_ID**:**TOKEN**@gitlab.com/org/project-docs.git
+https://x-oauth-token:**TOKEN**@bitbucket.org/org/project-docs.git
+https://**USERNAME**:**APP_PASSWORD**@bitbucket.org/org/project-docs.git
 ----
 
 NOTE: Notice that the tokens are located in different locations in the URL depending on the git host.
@@ -213,11 +213,11 @@ Here are examples for several popular git hosts (for which you'd substitute the 
 ----
 content:
   sources:
-  - url: https://**TOKEN**:@github.com:org/project-docs.git
-  - url: https://oauth2:**TOKEN**@gitlab.com:org/project-docs.git
-  - url: https://gitlab+deploy-token-**TOKEN_ID**:**TOKEN**@gitlab.com:org/project-docs.git
-  - url: https://x-oauth-token:**TOKEN**@bitbucket.org:org/project-docs.git
-  - url: https://**USERNAME**:**APP_PASSWORD**@bitbucket.org:org/project-docs.git
+  - url: https://**TOKEN**:@github.com/org/project-docs
+  - url: https://oauth2:**TOKEN**@gitlab.com/org/project-docs.git
+  - url: https://gitlab+deploy-token-**TOKEN_ID**:**TOKEN**@gitlab.com/org/project-docs.git
+  - url: https://x-oauth-token:**TOKEN**@bitbucket.org/org/project-docs.git
+  - url: https://**USERNAME**:**APP_PASSWORD**@bitbucket.org/org/project-docs.git
 ----
 
 NOTE: Notice that the tokens are located in different locations in the URL depending on the git host.
@@ -235,7 +235,7 @@ Let's assume you have the following source defined in your playbook file:
 ----
 content:
   sources:
-  - url: https://$GITHUB_TOKEN:@github.com:org-name/project-docs.git
+  - url: https://$GITHUB_TOKEN:@github.com/org-name/project-docs
 ----
 
 If you're using multiple private repositories that require the same credentials, you can instead define the credentials once under the `git` key as follows:
