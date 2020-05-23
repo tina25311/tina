@@ -52,13 +52,13 @@ This value is derived automatically from the repository URL (by converting the p
 \{refname}:: The name of the reference (i.e., branch or tag) in the git repository from which the file was taken.
 \{path}:: The path of the file from the root of the git repository (regardless of whether the content source defines a `start_path`).
 
-For example, to configure the edit URL to point to the view page of a file on GitHub, you'd use the following entry:
+For example, to configure the edit URL to point to the view page of a file on GitLab, you'd use the following entry:
 
 [source,yaml]
 ----
 content:
   sources:
-  - url: https://github.com/asciidoctor/asciidoctor.git
+  - url: https://gitlab.com/antora/antora.git
     edit_url: '{web_url}/blob/{refname}/{path}'
 ----
 
@@ -76,7 +76,7 @@ or
 ----
 content:
   sources:
-  - url: https://github.com/asciidoctor/asciidoctor.git
+  - url: https://gitlab.com/antora/antora.git
     edit_url: false
 ----
 

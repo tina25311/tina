@@ -176,7 +176,7 @@ Here are several examples:
 ----
 content:
   sources:
-  - url: https://GITHUB_TOKEN:@github.com/org/project-docs.git
+  - url: https://GITHUB_TOKEN:@github.com/org/project-docs
   - url: https://oauth2:GITLAB_TOKEN@gitlab.com/org/project-docs.git
   - url: https://x-oauth-token:BITBUCKET_TOKEN@bitbucket.org/org/project-docs.git
   - url: https://USERNAME:BITBUCKET_APP_PASSWORD@bitbucket.org/org/project-docs.git
