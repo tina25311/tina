@@ -197,7 +197,7 @@ Let's assume you have the following source defined in your playbook file:
 ----
 content:
   sources:
-  - url: https://$GITHUB_TOKEN:@github.com:org-name/project-docs.git
+  - url: https://$GITHUB_TOKEN:@github.com/org-name/project-docs
 ----
 
 If you're using multiple private repositories that require the same credentials, you can instead define the credentials once under the `git` key as follows:
