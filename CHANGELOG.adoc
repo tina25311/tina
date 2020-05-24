@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* Upgrade dependencies
+
 === Fixed
 
 * *content-classifier*: Fix cases when page ID with no file extension fails to resolve (#635)

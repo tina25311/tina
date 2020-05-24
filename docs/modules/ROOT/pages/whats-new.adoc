@@ -7,7 +7,41 @@
 :url-issues: {url-git-antora}/issues
 :url-milestone-2-3-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.0
 :url-milestone-2-3-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.1
+:url-milestone-2-3-2: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.2
 :url-mr: {url-git-antora}/merge_requests
+
+= Antora 2.3.2
+
+_**Release date:** 2020.05.24 | *Issue label:* {url-milestone-2-3-2}[2.3.2^]_
+
+== Highlights
+
+=== Fix regression when resolving page ID with version and no file extension
+
+If the page ID for an xref had a version but no file extension (e.g., `+2.0@page+`), the page ID would not resolve.
+This happened because the `.` in the version number was confused as that start of a file extension.
+Thus the automatic `.adoc` file extension was not added and the page ID would not match an existing page.
+
+Keep in mind that in Antora 3, all page IDs _must_ have a file extension.
+So while this regression has been corrected, this case will not resolve in the future.
+
+=== Support image xref to page ID with fragment
+
+Support for the xref attribute on images was added in Antora 2.3.
+However, if the page ID included a fragment identifier (e.g., `page.adoc#anchor`), the value would not be processed as a page ID.
+This has now been fixed.
+
+== Resolved issues
+
+=== Fixed
+
+Issue {url-issues}/635[#635^]:: Fix cases when page ID with no file extension fails to resolve.
+Issue {url-issues}/636[#636^]:: Process image xref that points to page ID with fragment.
+
+[#thanks-2-3-2]
+== Thanks
+
+Most important of all, a huge *thank you!* to all the folks who helped make Antora even better.
 
 = Antora 2.3.1
 
@@ -23,6 +57,8 @@ This bug has been fixed in a patch release.
 
 To apply the fix, uninstall Antora (specifically @antora/site-genrator-default) and install it again.
 For details about this problem, and a reference to the upstream issue, refer to issue {url-issues}/631^[#631].
+
+Thanks to Chris Jaquet ({url-gitlab}/chrisjaquet[@chrisjaquet]) for recognizing this issue and providing the necessary information to help us resolve it.
 
 == Highlights
 
