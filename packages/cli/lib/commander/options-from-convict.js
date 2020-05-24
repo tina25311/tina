@@ -12,15 +12,15 @@ Command.prototype.optionsFromConvict = function (convictConfig, opts = {}) {
 }
 
 function getOptions (config) {
-  //return collectOptions(config._schema.properties).sort((a, b) => a.name.localeCompare(b.name))
-  return collectOptions(config._schema.properties)
+  //return collectOptions(config._schema._cvtProperties).sort((a, b) => a.name.localeCompare(b.name))
+  return collectOptions(config._schema._cvtProperties)
 }
 
-function collectOptions (properties, options = [], context = undefined) {
-  return Object.entries(properties).reduce((accum, [key, value]) => {
+function collectOptions (props, options = [], context = undefined) {
+  return Object.entries(props).reduce((accum, [key, value]) => {
     const path = context ? `${context}.${key}` : key
-    if ('properties' in value) {
-      return collectOptions(value.properties, accum, path)
+    if ('_cvtProperties' in value) {
+      return collectOptions(value._cvtProperties, accum, path)
     } else if ('arg' in value) {
       const { arg, format, default: default_ } = value
       const option = { name: arg, form: `--${arg}`, description: value.doc, format: format }

@@ -18,7 +18,7 @@
   "dependencies": {
     "@iarna/toml": "~2.2",
     "camelcase-keys": "~6.2",
-    "convict": "~5.2",
+    "convict": "~6.0",
     "js-yaml": "~3.14",
     "json5": "~2.1"
   },
