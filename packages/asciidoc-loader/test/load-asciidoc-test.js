@@ -3428,6 +3428,35 @@ describe('loadAsciiDoc()', () => {
       expectImgLink(html, '#section-a', html.match(/<img[^>]*>/)[0])
     })
 
+    it('should resolve page with fragment referenced by xref attribute on block image macro and link to it', () => {
+      const contentCatalog = mockContentCatalog([
+        { module: 'module-b', family: 'page', relative: 'the-page.adoc' },
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('image::module-b:the-image.png[The Image,250,role=border,xref=module-b:the-page.adoc#anchor]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="imageblock link-page border"')
+      expectImgLink(html, '../module-b/the-page.html#anchor', html.match(/<img[^>]*>/)[0])
+    })
+
     it('should pass through unresolved xref on inline image macro as href of enclosing link', () => {
       const contentCatalog = mockContentCatalog({
         module: 'module-b',
