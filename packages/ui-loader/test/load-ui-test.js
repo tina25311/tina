@@ -48,15 +48,17 @@ describe('loadUi()', () => {
       vfs
         .src('**/*', { base: dir, cwd: dir })
         // NOTE set stable file permissions
-        .pipe(new Transform({
-          objectMode: true,
-          transform (file, _, next) {
-            const stat = file.stat
-            if (stat.isFile()) stat.mode = 33188
-            else if (stat.isDirectory()) stat.mode = 16877
-            next(null, file)
-          },
-        }))
+        .pipe(
+          new Transform({
+            objectMode: true,
+            transform (file, _, next) {
+              const stat = file.stat
+              if (stat.isFile()) stat.mode = 33188
+              else if (stat.isDirectory()) stat.mode = 16877
+              next(null, file)
+            },
+          })
+        )
         .pipe(zip.dest(dir + '.zip'))
         .on('error', reject)
         .on('end', resolve)
