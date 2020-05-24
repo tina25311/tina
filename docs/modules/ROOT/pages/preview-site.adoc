@@ -1,4 +1,5 @@
 = Preview Your Site
+:page-aliases: preview-a-site.adoc
 
 On this page, you'll learn:
 
