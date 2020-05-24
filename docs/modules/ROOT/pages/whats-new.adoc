@@ -18,9 +18,13 @@ _**Release date:** 2020.05.24 | *Issue label:* {url-milestone-2-3-2}[2.3.2^]_
 
 === Fix regression when resolving page ID with version and no file extension
 
-If the page ID for an xref had a version but no file extension (e.g., `+2.0@page+`), the page ID would not resolve.
+If the page ID for an xref had a version but no file extension (e.g., `2.0@page`), the page ID would not resolve.
 This happened because the `.` in the version number was confused as that start of a file extension.
 Thus the automatic `.adoc` file extension was not added and the page ID would not match an existing page.
+
+What this fix does not solve is when the page (i.e., relative path) part of the page ID has a `.` but no file extension (e.g., `something-2.0`).
+This is an ambiguous scenario.
+In this case, you will have to update the page ID to include the `.adoc` file extension manually (e.g., `something-2.0.adoc`).
 
 Keep in mind that in Antora 3, all page IDs _must_ have a file extension.
 So while this regression has been corrected, this case will not resolve in the future.
