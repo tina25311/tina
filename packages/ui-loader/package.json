@@ -23,7 +23,7 @@
     "fs-extra": "~8.1",
     "got": "~9.6",
     "gulp-vinyl-zip": "~2.2",
-    "js-yaml": "~3.13",
+    "js-yaml": "~3.14",
     "minimatch-all": "~1.1",
     "through2": "~3.0",
     "vinyl": "~2.2",
