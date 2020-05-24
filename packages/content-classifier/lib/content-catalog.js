@@ -27,15 +27,14 @@ class ContentCatalog {
     let startPage
     const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
     if (startPageSpec) {
-      const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : startPageSpec + '.adoc'
-      const { src: startPageSrc } = (startPage = this.resolvePage(formalStartPageSpec, indexPageId)) || {}
+      const { src: startPageSrc } = (startPage = this.resolvePage(startPageSpec, indexPageId)) || {}
       if (startPageSrc && startPageSrc.component === name && startPageSrc.version === version) {
         if (!(startPageSrc.module === 'ROOT' && startPageSrc.relative === 'index.adoc')) {
           this.addFile({ mediaType: 'text/html', src: inflateSrc(indexPageId, 'alias'), rel: startPage })
         }
       } else {
         startPage = this.getById(indexPageId)
-        console.warn(`Start page specified for ${version}@${name} not found: ${formalStartPageSpec}`)
+        console.warn(`Start page specified for ${version}@${name} not found: ${startPageSpec}`)
       }
     } else {
       startPage = this.getById(indexPageId)
@@ -222,12 +221,11 @@ class ContentCatalog {
 
   registerSiteStartPage (startPageSpec) {
     if (!startPageSpec) return
-    const formalStartPageSpec = startPageSpec.endsWith('.adoc') ? startPageSpec : startPageSpec + '.adoc'
-    const rel = this.resolvePage(formalStartPageSpec)
+    const rel = this.resolvePage(startPageSpec)
     if (rel) {
       return this.addFile({ mediaType: 'text/html', src: inflateSrc(Object.assign({}, START_ALIAS_ID), 'alias'), rel })
     } else {
-      console.warn(`Start page specified for site not found: ${formalStartPageSpec}`)
+      console.warn(`Start page specified for site not found: ${startPageSpec}`)
     }
   }
 

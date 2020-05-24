@@ -22,8 +22,6 @@ const Html5Converter = (() => {
       let callback
       let refSpec = node.getAttribute('path', undefined, false)
       if (refSpec && (callback = this[$pageRefCallback])) {
-        // NOTE handle deprecated case when extension code defines path with no file extension; remove in Antora 3.0
-        if (!~refSpec.indexOf('.')) refSpec += '.adoc'
         const attrs = node.getAttributes()
         const fragment = attrs.fragment
         if (fragment && fragment !== Opal.nil) refSpec += '#' + fragment

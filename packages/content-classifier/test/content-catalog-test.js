@@ -1106,7 +1106,7 @@ describe('ContentCatalog', () => {
       })
     })
 
-    it('should register alias with no file extension', () => {
+    it('should add .adoc file extension to alias when registering if no file extension specified', () => {
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('mod:topic/alias', targetPage)
       expect(result).to.exist()
@@ -1116,10 +1116,10 @@ describe('ContentCatalog', () => {
         version: '1.2.3',
         module: 'mod',
         family: 'alias',
-        relative: 'topic/alias',
-        basename: 'alias',
+        relative: 'topic/alias.adoc',
+        basename: 'alias.adoc',
         stem: 'alias',
-        extname: '',
+        extname: '.adoc',
       })
     })
 

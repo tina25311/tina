@@ -266,7 +266,7 @@ describe('convertDocuments()', () => {
       .be.called.with('another-alias.adoc', inputFile)
   })
 
-  it('should register aliases broken across lines using a line continuation', () => {
+  it('should register aliases split across lines using a line continuation', () => {
     const contents = Buffer.from(heredoc`
       = Page Title
       :page-aliases: the-alias.adoc, \
@@ -288,14 +288,14 @@ describe('convertDocuments()', () => {
     convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(4)
     expect(contentCatalog.registerPageAlias).first.called.with('the-alias.adoc', inputFile)
-    expect(contentCatalog.registerPageAlias).second.called.with('topic/the-alias.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).second.called.with('topic/the-alias', inputFile)
     expect(contentCatalog.registerPageAlias).third.called.with('1.0.0@page-a.adoc', inputFile)
     expect(contentCatalog.registerPageAlias)
       .nth(4)
       .called.with('another-alias.adoc', inputFile)
   })
 
-  it('should append .adoc extension to page aliases if missing', () => {
+  it('should register alias specified with no file extension', () => {
     const contents = Buffer.from(heredoc`
       = Page Title
       :page-aliases: the-alias,topic/the-alias
@@ -313,8 +313,8 @@ describe('convertDocuments()', () => {
     contentCatalog.registerPageAlias = spy(() => {})
     convertDocuments(contentCatalog, asciidocConfig)
     expect(contentCatalog.registerPageAlias).to.have.been.called.exactly(2)
-    expect(contentCatalog.registerPageAlias).first.be.called.with('the-alias.adoc', inputFile)
-    expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).first.be.called.with('the-alias', inputFile)
+    expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias', inputFile)
   })
 
   it('should not register aliases if page-aliases document attribute is empty', () => {

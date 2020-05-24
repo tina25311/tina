@@ -23,8 +23,8 @@ describe('parseResourceId()', () => {
     expect(result).to.eql(expected)
   })
 
-  it('should parse a qualified page ID with file extension', () => {
-    const input = '1.0@the-component:the-module:the-topic/the-page.adoc'
+  it('should parse a qualified page ID sans file extension', () => {
+    const input = '1.0@the-component:the-module:the-topic/the-page'
     const expected = {
       version: '1.0',
       component: 'the-component',

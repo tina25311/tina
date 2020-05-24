@@ -2648,6 +2648,43 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, '../the-page.html', 'The Page Title')
     })
 
+    it('should convert sibling page reference without a file extension', () => {
+      const contentCatalog = mockContentCatalog({
+        relative: 'the-page.adoc',
+      }).spyOn('getById')
+      setInputFileContents('xref:the-page#[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+      expectPageLink(html, 'the-page.html', 'The Page Title')
+    })
+
+    it('should convert page reference with a version but without a file extension', () => {
+      const contentCatalog = mockContentCatalog({
+        version: '2.0',
+        relative: 'the-page.adoc',
+      }).spyOn('getById')
+      setInputFileContents('xref:2.0@the-page#[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '2.0',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+      expectPageLink(html, '../2.0/module-a/the-page.html', 'The Page Title')
+    })
+
     it('should convert a page reference to a non-AsciiDoc page', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',

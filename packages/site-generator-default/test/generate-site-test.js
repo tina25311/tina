@@ -607,12 +607,14 @@ describe('generateSite()', function () {
     )
   }).timeout(timeoutOverride)
 
+  // NOTE this also tests xrefs that do not have the .adoc file extension
   it('should resolve xrefs that use an alias as the target', async () => {
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
     await generateSite(['--playbook', playbookFile], env)
     const contents = readFile('the-component/2.0/index.html', absDestDir)
     expect(contents).to.include('<a href="the-page.html" class="page">its alias</a>')
     expect(contents).to.include('<a href="new-page.html" class="page">the new page</a>')
+    expect(contents).to.include('<a href="new-page.html" class="page">2.0</a>')
   }).timeout(timeoutOverride)
 
   it('should generate static redirect files for aliases by default', async () => {

@@ -5,6 +5,6 @@ Content.
 
 See xref:the-page.adoc[the page], which you can also access via xref:the-alias.adoc[its alias].
 
-Also check out xref:the-freshness#[the new page].
+Also check out xref:the-freshness#[the new page], which is all about xref:2.0@the-freshness#[2.0].
 
 include::{partialsdir}/diagrams.adoc[]
