@@ -68,18 +68,19 @@ Thanks to Chris Jaquet ({url-gitlab}/chrisjaquet[@chrisjaquet]) for recognizing 
 
 === Smarter pagination
 
-In tandem with this release, a pagination widget has been added to all pages in the default UI to navigate between adjacent pages (i.e., previous and next page navigation).
-The corresponding next and prev SEO pagination links have also been added to the head of the HTML document.
+In tandem with this release, we added a pagination widget to all pages when using the default UI.
+This pagination widget allows readers to navigate between adjacent pages (i.e., previous and next page navigation).
+The change also includes adding the corresponding next and prev SEO pagination links to the head of the HTML document.
 
 This functionality is currently hidden behind a feature flag.
-To enable it, set the `page-pagination` attribute in your playbook (or anywhere an AsciiDoc attribute can be set).
+To enable it, set the `page-pagination` attribute in your playbook (or anywhere an AsciiDoc document attribute can be set).
 
 While developing this functionality, we discovered a few problems with how the `page.previous` and `page.next` properties in the UI model were being computed:
 
-* If the next item in the navigation tree is a fragment of the current page, the pagination widget gets stuck on the current page (since the next property referred back to the current page).
-* If the previous item in the navigation tree is a fragment of the previous page, the pagination widget jumps to the fragment on that page, but from there jumps to its previous page, skipping over all other fragments (which just isn't intuitive).
-* The next page for the component version start page is not set if the start page is not present in the navigation tree.
-* Conversely, the previous page for the first page in the navigation tree is not set to the component version start page.
+* If the next item in the navigation tree is a fragment of the current page, the pagination widget would get stuck on the current page (since the next property referred back to the current page).
+* If the previous item in the navigation tree is a fragment of the previous page, the pagination widget would jump to the fragment on that page, but from there jump to its previous page, skipping over all other fragments (which simply isn't intuitive).
+* The next page for the component version start page would not be set if the start page is not present in the navigation tree.
+* Conversely, the previous page for the first page in the navigation tree would not be set to the component version start page.
 
 All of these issues have been resolved.
 
