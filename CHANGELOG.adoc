@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *page-composer*: Fix crash computing canonical URL for page that only exists in prerelease version (#639)
+
 == 2.3.2 (2020-05-24)
 
 === Changed
