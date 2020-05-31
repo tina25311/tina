@@ -119,21 +119,24 @@ content:
 [#path-globbing]
 == Path globbing
 
-Along with the methods described in <<exact-paths>>, you can use many https://github.com/micromatch/picomatch#globbing-features[basic and advanced path globbing features^] to implement pattern matching.
-A combination of wildcards, braces, and negated patterns are supported.
-Antora uses these glob patterns to locate exact paths from which to read the content.
+Along with the methods described in <<exact-paths>>, you can use many (<<globbing-restrictions,but not all>>) https://github.com/micromatch/picomatch#globbing-features[basic and advanced path globbing features^] to implement pattern matching.
+A diverse combination of wildcards, braces, and negated patterns are supported.
+Antora uses these glob patterns to resolve exact paths from which to read the content.
 
+[#globbing-restrictions]
 === Globbing restrictions
 
 The following restrictions apply to how Antora implements path globbing against the full range of supported basic and advanced globbing rules:
 
 * Wildcards in expressions only match directories, not files.
 For example, an expression like `product-a/docs/*/index.adoc` is not supported.
-* A path segment after a segment containing a wildcard is optional to simplify directory matching logic.
-For example, `src/*/docs` would mean that [.path]_/src/product-a/docs_ could be missing but not result in any build errors.
-* Explicit or range brace expressions are not wildcard supported unless there are two entries in the pattern.
-For example, you cannot use patterns like `+docs/product-{a*}+`; however, a pattern such as `+docs/product-{a*,b}+` is supported.
-* Double globstar patterns such as `docs/product-{**}` are not supported in any path globbing pattern.
+* Brace expressions must have at least two entries, even if a wildcard is present.
+For example, `+docs/product-{a*,b}+` is recognized as a brace expression, but not `+docs/product-{a*}+`.
+* Single brace expressions that match multiple characters do not work when following a segment that contains a wildcard.
+For example, `+*/v{0..99}+` matches the start path [.path]_product-a/v2_ but not [.path]_product-a/v99_.
+Instead, use a nested brace expression for each length permutation, such as `+*/v{{1..9},{1..9}{0..9}}+`.
+* Double globstar patterns such as `**/docs` are not supported.
+A glob matches a single level in the hierarchy.
 
 === Wildcards
 
@@ -151,7 +154,7 @@ content:
     start_paths: docs/product-a, docs/product-b, docs/product-c
 ----
 
-Or, as shown in <<ex-wildcard>>, you could use a wildcard segment and reduce the number of values you need to register.
+Or, as shown in <<ex-wildcard>>, you could use a wildcard segment and reduce the number of values you need to declare.
 
 [#ex-wildcard]
 .antora-playbook.yml
@@ -164,12 +167,17 @@ content:
     start_paths: docs/product-*
 ----
 
-Wildcard matching will automatically register new content source roots as you add them, providing you keep the pattern consistent.
+Wildcard matching offers the possiblity of registering new content source roots as you add them, providing you keep the pattern consistent.
 
 === Braces
 
-Brace expressions can specify an explicit list of items to expand ([.path]_docs/product-{a,b,c,f}_) or specify a range of items to expand ([.path]_docs/product-{a..f}_)
-When you use braces in a `start_paths` value, all entries within the braces must exist when expanded.
+Brace expressions can specify an explicit list of items separated by commas to expand (`docs/product-{a,b,c,f}`) or a range of items to expand (`docs/product-{a..f}`).
+A brace expression *may not* consist of only a single item, even if that item contains a wildcard (e.g., `+docs/product-{a}+` and `docs/product-{a*}` are not brace expressions).
+
+Brace expressions may be nested (e.g., `+docs-*/v{{1..9},{1..9}{0..9}+` matches the subfolders v1 through v99 of root folders that match the name docs-*).
+In this case, each permutation for each nested brace expression is tested.
+
+When you use braces in a `start_paths` value, all entries within the braces must exist when expanded (unless the segment is preceded by a wildcard segment).
 
 If you specify `docs/product-{a,b}` as a `start_paths` value, the following paths must be present within the repository:
 
@@ -201,7 +209,7 @@ content:
     start_paths: docs/product-v{1*,2*}
 ----
 
-<<ex-wild-braces>> gives you the following `start_paths` expanded paths:
+The `start_paths` pattern in <<ex-wild-braces>> would match the following paths:
 
 * docs/product-v1.1
 * docs/product-v1.2
@@ -231,15 +239,18 @@ content:
 
 Hidden directories (i.e., directories that begin with `.`) are ignored by default.
 To include them in a `start_paths` path globbing pattern, use a `+.*+` in the pattern.
-For example [.path]_docs/.*-{a,b}_ to include all hidden directories with the suffix of `a` or `b`.
+For example, use `docs/.*-{a,b}` to include all hidden directories with the suffix of `-a` or `-b`.
 
-If a wildcarded segmented path contains a trailing directory segment, and no directory is matched, Antora ignores it.
+== Optional matches
 
-For example, [.path]_docs/product-*/client_ would still be valid if [.path]_product-a_ contains a [.path]_client_ folder and [.path]_product-b_ does not.
+A non-wildcard segment that follows a wildcard segment is considered optional.
+This exception is intended to simplify directory matching logic.
 
-Another valid example would be [.path]_docs/product/*/client_ where the `+*+` represents different version directories (v1.0, v1.1, etc) of client documentation.
+For example, `docs/product-*/client` would match [.path]_product-a/client_ but disregard [.path]_product-b_ if it does not contain a [.path]_client_ folder.
+
+Another valid example would be `docs/product/*/client` where the `+*+` represents different version directories (v1.0, v1.1, etc) of client documentation.
 If the [.path]_client_ folder does not exist in one of the version directories, Antora ignores it from a validation perspective.
 
-If the final segment of a file path pattern contains an unmatched braced directory pattern, Antora treats it as optional from a validation perspective.
+If the final segment of a file path pattern contains an unmatched brace pattern, Antora treats it as optional from a validation perspective.
 
-For example, [.path]_docs/product-*/{client,b2b}_ will not fail validation if [.path]_docs/product-a/b2b_ is not present.
+For example, `docs/product-*/{client,b2b}` will not fail validation if [.path]_docs/product-a/b2b_ is not present.
