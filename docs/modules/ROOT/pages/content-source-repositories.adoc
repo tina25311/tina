@@ -27,4 +27,4 @@ A repository can have many content source roots.
 You may have one content source root per branch or tag.
 Or you may have multiple content source roots per branch or tag defined using xref:playbook:content-source-start-paths.adoc[multiple start paths].
 You can also have a combination of both.
-Where you store the conten source roots is up to you.
+Where you store the content source roots is up to you.
