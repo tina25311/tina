@@ -56,10 +56,10 @@ This command is implicitly executed when no command is specified.
 When executed from the CLI, the options that are mapped to xref:playbook:index.adoc[playbook keys], such as `title`, will override any assigned values in the designated playbook.
 
 [#cli-options]
-.CLI Options
+.CLI Options and Environment Variables
 [cols="3,5,2,2"]
 |===
-|Option |Purpose |Format |Default
+|CLI Option |Purpose |Format |Default
 
 |`--attribute <attribute>`
 |A global document attribute to set on each AsciiDoc document.
@@ -72,6 +72,8 @@ Append `@` to the value to allow it to be overridden in a document.
 |[[cache-dir]]`--cache-dir <dir>`
 |Directory where remote content sources git repositories and UI bundles are cached.
 Overrides the xref:playbook:runtime-cache-dir.adoc[cache_dir key] in a playbook.
+
+Use environment variable `ANTORA_CACHE_DIR` as an alternative to the command line option.
 |String
 |[.path]_<user cache>/antora_
 
@@ -91,12 +93,18 @@ Effectively substitutes Antora's entire pipeline with a user-defined function._
 
 |`--git-credentials-path`
 |An alternate path to a file that contains credentials for git matching the format used by `git-credential-store`.
+
+The path can also be passed an an environment variable `GIT_CREDENTIALS_PATH` instead of the command line option.
+The contents of such a credentials file can also be passed as an environment variable named `GIT_CREDENTIALS`.
 |String
 |not set
 
 |`--google-analytics-key`
 |The API key for Google Analytics / Tag Manager.
 Setting this option implicitly enables the Google Analytics / Tag Manager embed code when using the default UI.
+Overrides the xref:playbook:site-keys.adoc[Google Analytics key] in a playbook.
+
+Use environment variable `GOOGLE_ANALYTICS_KEY` as an alternative to the command line option.
 |String
 |not set
 
@@ -156,6 +164,8 @@ Overrides the xref:playbook:ui-bundle-url.adoc[ui bundle url key] in a playbook.
 |Base URL of the published site.
 The URL should not include a trailing slash.
 Overrides the xref:playbook:site-url.adoc[site url key] in a playbook.
+
+Use environment variable `URL` as an alternative to the command line option.
 |String
 |not set
 
