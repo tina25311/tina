@@ -251,8 +251,8 @@ The TOC is enabled by default.
 Here are ways you can configure the sidebar TOC:
 
 * Configure the text of the heading shown above the TOC using the page attribute named `page-toctitle` (default: "Contents")
-* Set the number of levels tracked by the TOC using the page attribue named `page-toclevels` (0 - 3) (default: 2)
-* Disable the TOC per page (or side-wide) by setting the page attribue named `page-toclevels` to -1
+* Set the number of levels tracked by the TOC using the page attribute named `page-toclevels` (0 - 3) (default: 2)
+* Disable the TOC per page (or side-wide) by setting the page attribute named `page-toclevels` to -1
 * Alternately, disable the TOC by adding the `-toc` class to the `<body>` element in the HTML template
 
 You can also control where the embedded TOC is inserted by adding the class `is-before-toc` to an element after the doctitle (selector: `h1.page`).
