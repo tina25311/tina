@@ -92,7 +92,7 @@ A scoped extension is registered in the playbook in exactly the same way as a gl
 ----
 asciidoc:
   extensions:
-  - asciidoctor-plantuml
+  - asciidoctor-kroki
 ----
 
 .Register a scoped extension from a local script
