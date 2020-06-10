@@ -2,6 +2,9 @@
 
 The playbook keys configured under `site` manage the site's published identity and how it interacts with certain applications once it's published.
 
+When building the site, some of the attributes defined in the playbook can be overriden on the command line or with environment variables.
+See xref:cli:index.adoc[] for details.
+
 [#site-key]
 == site key
 

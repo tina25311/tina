@@ -28,6 +28,7 @@ For example, you can access the keys defined in the example above as `site.keys.
 == Add a Google analytics account
 
 The `google_analytics` key assigns a Google Analytics account to the site.
+Setting this option implicitly enables the Google Analytics / Tag Manager embed code when using the default UI.
 
 .antora-playbook.yml
 [source,yaml]
