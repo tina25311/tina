@@ -3,7 +3,7 @@
 :url-docs-job: https://gitlab.com/antora/docs.antora.org/blob/master/.gitlab-ci.yml
 :url-docker: https://docs.docker.com
 :url-docker-hub: https://hub.docker.com/r/antora/antora
-:url-plantuml-npm: https://www.npmjs.com/package/asciidoctor-plantuml
+:url-kroki-npm: https://www.npmjs.com/package/asciidoctor-kroki
 
 The Antora project provides a Docker image so you can run the `antora` command inside a container (a process known as [.term]_containerization_).
 The benefit of this approach is that you can bypass installing Antora and skip right to running it.
@@ -87,7 +87,7 @@ If the base Antora image doesn't include everything you need for your site, you 
 == Extend the Antora image
 
 You can use this image as a base for your own Docker image.
-The image comes preconfigured with Yarn so you can install additional extensions, such as {url-plantuml-npm}[Asciidoctor PlantUML] (`asciidoctor-plantuml`).
+The image comes preconfigured with Yarn so you can install additional extension libraries, such as {url-kroki-npm}[Asciidoctor Kroki] (`asciidoctor-kroki`) for adding diagram support to AsciiDoc.
 
 . Clone the docker-antora repository and switch to it:
 
@@ -101,7 +101,7 @@ The image comes preconfigured with Yarn so you can install additional extensions
 ----
 FROM antora/antora
 
-RUN yarn global add asciidoctor-plantuml # <1>
+RUN yarn global add asciidoctor-kroki # <1>
 ----
 <1> Adds a custom extension to the base image.
 
