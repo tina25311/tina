@@ -27,7 +27,7 @@ site: # <1>
 <4> Optional `start_page` key
 <5> Optional `robots` key
 <6> Optional `keys` key
-<7> Optional `google_analytics` key
+<7> Example `google_analytics` key
 
 The `site`, `title`, and `url` keys are required.
 The other keys are optional; Antora will use their default values if they're not specified.
@@ -39,8 +39,9 @@ The other keys are optional; Antora will use their default values if they're not
 |===
 |Site Keys |Description |Required
 
-|xref:site-keys.adoc#google-analytics-key[keys.google_analytics]
-|Associates a Google Analytics account with the site.
+|xref:site-keys.adoc[keys]
+|Account and API keys for reference by the UI templates or extensions.
+Accepts a map of name-value pairs that specify account identifiers for service integrations such as Google Analytics.
 |No
 
 |xref:site-robots.adoc[robots]

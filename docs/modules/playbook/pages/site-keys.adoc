@@ -1,6 +1,6 @@
 = Account and API Keys
 
-The `keys` key accepts a list of name-value pairs that specify account identifiers that are used by global site services such as search tools and Google Analytics.
+The `keys` key accepts a map of name-value pairs that specify account identifiers used for service integrations such as Google Analytics or search tools.
 
 [#keys-key]
 == keys key
