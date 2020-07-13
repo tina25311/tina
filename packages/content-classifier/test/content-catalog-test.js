@@ -776,6 +776,42 @@ describe('ContentCatalog', () => {
       expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html', rootPath: '../..' })
     })
 
+    it('should only change .adoc file extension to .html in out for pages, not attachments', () => {
+      const pageSrc = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        stem: 'the-page',
+        mediaType: 'text/asciidoc',
+      }
+      const attachmentSrc = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'attachment',
+        relative: 'the-attachment.adoc',
+        basename: 'the-attachment.adoc',
+        stem: 'the-attachment',
+        mediaType: 'text/asciidoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      const pageResult = contentCatalog.addFile(new File({ src: pageSrc }))
+      expect(pageResult).to.equal(contentCatalog.getById(pageSrc))
+      expect(pageResult).to.have.property('out')
+      expect(pageResult.out.path).to.equal('the-component/1.2.3/the-page.html')
+      expect(pageResult).to.have.property('pub')
+      expect(pageResult.pub).to.include({ url: '/the-component/1.2.3/the-page.html' })
+      const attachmentResult = contentCatalog.addFile(new File({ src: attachmentSrc }))
+      expect(attachmentResult).to.equal(contentCatalog.getById(attachmentSrc))
+      expect(attachmentResult).to.have.property('out')
+      expect(attachmentResult.out.path).to.equal('the-component/1.2.3/_attachments/the-attachment.adoc')
+      expect(attachmentResult).to.have.property('pub')
+      expect(attachmentResult.pub.url).to.equal('/the-component/1.2.3/_attachments/the-attachment.adoc')
+    })
+
     it('should not require stem and basename to be set on src object of AsciiDoc file', () => {
       const src = {
         component: 'the-component',
