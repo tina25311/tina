@@ -72,15 +72,110 @@ Resource ids will be written `language$version@component`.
 It should be easy to refer to the same page or a closely related page in another language.
 From `en$1.0@component-a:module-a:page$foo/bar.adoc` a spanish translation should be found with `es$foo/bar.adoc`.
 
-When omitted, the language identifier should default to the current language identifier when component and version are unspecified.
+When omitted, the language identifier must default to the current language identifier.
+This is required for consistency with existing resource ids, which all lack the language segment.
 
-TODO: more complete rules.
+Relative must always be specified.
 
-Note that another choice would be to default to the principal language identifier.
+Family is either implied by the use of the resource id or specified.
 
-==== Conclusion (provisional)
+In the context of `lang-a$version-a@component-a:module-a` a fully specified resource id would be `lang-b$version-b@component-b:module-b`.
 
-The language id will default to the language id of the context when component and version unspecified.
+This table shows what is inferred when segments are ommitted from the target resource id.
+[cols=4*,options=headers]
+|===
+| Language
+| Version
+| Component
+| Module
+
+4+^| *Single omission*
+
+| lang-a
+|
+|
+|
+
+|
+| latest in language-component
+|
+|
+
+|
+|
+| component-a
+|
+
+|
+|
+|
+| ROOT
+
+4+^| *Double omission*
+
+| lang-a
+| latest in lang-a-component
+|
+|
+
+| lang-a
+|
+| component-a
+|
+
+| lang-a
+|
+|
+| ROOT
+
+|
+| version-a
+| component-a
+|
+
+|
+| latest in language-component
+|
+| ROOT
+
+|
+|
+| component-a
+| module-a
+
+4+^| *Triple omission*
+
+| lang-a
+| version-a
+| component-a
+|
+
+| lang-a
+| latest in principal-language-component
+|
+| ROOT
+
+| lang-a
+|
+| component-a
+| module-a
+
+|
+| version-a
+| component-a
+| module-a
+
+4+^| *Total omission*
+
+| lang-a
+| version-a
+| component-a
+| module-a
+
+|===
+
+The choice to default to lang-a when language is not specified is required for compatibility with all existing language-free resource ids.
+All other entries in the table (i.e., the last 3 columns) reflect existing behavior.
 
 === Playbook
 
