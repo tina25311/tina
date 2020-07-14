@@ -65,7 +65,7 @@ Since the existing content familes ('page', 'example', etc) are not language ide
 
 ==== Convention for this document
 
-Resource ids will be written `language$version@component`.
+Resource ids will be written using the order `language$version@component`.
 
 ==== Defaults in partial resource ids
 
@@ -81,7 +81,9 @@ Family is either implied by the use of the resource id or specified.
 
 In the context of `lang-a$version-a@component-a:module-a` a fully specified resource id would be `lang-b$version-b@component-b:module-b`.
 
-This table shows what is inferred when segments are ommitted from the target resource id.
+This table shows what is inferred when segments are omitted from the target resource id.
+The assumption is that the target page exists.
+
 [cols=4*,options=headers]
 |===
 | Language
@@ -177,6 +179,40 @@ This table shows what is inferred when segments are ommitted from the target res
 The choice to default to lang-a when language is not specified is required for compatibility with all existing language-free resource ids.
 All other entries in the table (i.e., the last 3 columns) reflect existing behavior.
 
+==== Partial translations (for page links)
+
+Pages may exist in only some languages in a particular component-version.
+
+A report of which pages are present and which missing for each language could be very useful.
+
+It might be convenient for an xref that does not specify language, and references a page missing in the current language, be resolved to a different language, where the page exists, automatically.
+This would enable building up a component-version translation page by page, without having to modify previously translated pages to update links.
+Several possible schemes could support this.
+
+===== Single "backup language"
+
+Each language could have one "backup language". These would form a unbranched path from the current language that could be searched for an existing page.
+Of course, the path could be circular.
+
+===== List of "backup languages"
+
+Each language would have a list of backup languages, which would be searched for the page in order.
+This would seem to involve more configuration than the previous option, but would support scenarios like Apache TomEE:
+
+* All pages are present in English
+* Some pages are translated to Spanish, and some to Portugese.
+* Most likely pages missing in Spanish should have Portugese backup if it exists, otherwise English, and pages missing in Portugese should have Spanish backup if it exists, otherwise English.
+
+Another possibility would be to duplicate the existing 'backup language page' in the current language.
+This would have the big advantage of keeping the UI in the 'current language' and requiring no modification in the link calculations.
+Instead, the content catalog would be scanned for missing pages and duplicates made.
+Quite possibly the rendered asciidoc could be shared.
+
+===== Conclusion
+
+Needs more thought and experimentation.
+See also UI section.
+
 === Playbook
 
 The Antora playbook must be able to specify the principal language.
@@ -258,6 +294,28 @@ Questions:
 
 * is it possible to parameterize inclusion of template files, such as footer-<language-id>.hbs?
 * how often will different layouts for different languages be needed?
+
+==== Conclusion
+
+Needs further investigation.
+
+=== UI building
+
+Generally when you are looking at a page in one language, everything you see should assume you want to stay in that language.
+However, it should also be easy to switch languages.
+
+Two possibilities for switching languages are:
+
+* A language picker similar to the page version picker.
+* Showing all language-component-versions in the component explorer.
+
+The set of languages available for each component or component-version may vary.
+
+The version picker should be able to show all versions for which the page exists in some language.
+This would happen automatically if the proprosal to copy missing pages from a backup language were adopted.
+
+The component explorer should show all components, even if they don't exist in the current language.
+Note that this conflicts with the first point, that everything should keep you in the current language.
 
 ==== Conclusion
 
