@@ -332,16 +332,17 @@ function computeOut (src, family, htmlUrlExtensionStyle) {
 
   let basename = src.basename || path.basename(src.relative)
   const stem = src.stem || basename.substr(0, (basename.lastIndexOf('.') + 1 || basename.length + 1) - 1)
-  if (src.mediaType === 'text/asciidoc') basename = stem + '.html'
-
   let indexifyPathSegment = ''
-  if (family === 'page' && stem !== 'index' && htmlUrlExtensionStyle === 'indexify') {
-    basename = 'index.html'
-    indexifyPathSegment = stem
-  }
-
   let familyPathSegment = ''
-  if (family === 'image') {
+
+  if (family === 'page') {
+    if (stem !== 'index' && htmlUrlExtensionStyle === 'indexify') {
+      basename = 'index.html'
+      indexifyPathSegment = stem
+    } else if (src.mediaType === 'text/asciidoc') {
+      basename = stem + '.html'
+    }
+  } else if (family === 'image') {
     familyPathSegment = '_images'
   } else if (family === 'attachment') {
     familyPathSegment = '_attachments'

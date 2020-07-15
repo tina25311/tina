@@ -598,31 +598,6 @@ describe('classifyContent()', () => {
       })
     })
 
-    it('should classify an attachment under assets', () => {
-      aggregate[0].files.push(createFile('modules/ROOT/assets/attachments/example.zip'))
-      const files = classifyContent(playbook, aggregate).getAll()
-      expect(files).to.have.lengthOf(1)
-      const file = files[0]
-      expect(file.path).to.equal('modules/ROOT/assets/attachments/example.zip')
-      expect(file.src).to.include({
-        component: 'the-component',
-        version: 'v1.2.3',
-        module: 'ROOT',
-        family: 'attachment',
-        relative: 'example.zip',
-        basename: 'example.zip',
-        moduleRootPath: '../..',
-      })
-      expect(file.out).to.include({
-        path: 'the-component/v1.2.3/_attachments/example.zip',
-        dirname: 'the-component/v1.2.3/_attachments',
-        basename: 'example.zip',
-      })
-      expect(file.pub).to.include({
-        url: '/the-component/v1.2.3/_attachments/example.zip',
-      })
-    })
-
     it('should classify an attachment', () => {
       aggregate[0].files.push(createFile('modules/ROOT/attachments/example.zip'))
       const files = classifyContent(playbook, aggregate).getAll()
@@ -637,6 +612,56 @@ describe('classifyContent()', () => {
         relative: 'example.zip',
         basename: 'example.zip',
         moduleRootPath: '..',
+      })
+      expect(file.out).to.include({
+        path: 'the-component/v1.2.3/_attachments/example.zip',
+        dirname: 'the-component/v1.2.3/_attachments',
+        basename: 'example.zip',
+      })
+      expect(file.pub).to.include({
+        url: '/the-component/v1.2.3/_attachments/example.zip',
+      })
+    })
+
+    it('should not modify the file extension of an attachment with the file extension .adoc', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/attachments/example.adoc'))
+      const files = classifyContent(playbook, aggregate).getAll()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('modules/ROOT/attachments/example.adoc')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'attachment',
+        relative: 'example.adoc',
+        basename: 'example.adoc',
+        moduleRootPath: '..',
+      })
+      expect(file.out).to.include({
+        path: 'the-component/v1.2.3/_attachments/example.adoc',
+        dirname: 'the-component/v1.2.3/_attachments',
+        basename: 'example.adoc',
+      })
+      expect(file.pub).to.include({
+        url: '/the-component/v1.2.3/_attachments/example.adoc',
+      })
+    })
+
+    it('should classify an attachment under the assets folder', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/assets/attachments/example.zip'))
+      const files = classifyContent(playbook, aggregate).getAll()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('modules/ROOT/assets/attachments/example.zip')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'attachment',
+        relative: 'example.zip',
+        basename: 'example.zip',
+        moduleRootPath: '../..',
       })
       expect(file.out).to.include({
         path: 'the-component/v1.2.3/_attachments/example.zip',
