@@ -230,7 +230,7 @@ describe('cli', function () {
 
   it('should show error message if specified playbook file does not exist', () => {
     return runAntora('generate does-not-exist.json')
-      .assert(/playbook .* does not exist/)
+      .assert(/playbook file not found at /)
       .done()
   }).timeout(timeoutOverride)
 

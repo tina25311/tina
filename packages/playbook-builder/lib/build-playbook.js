@@ -33,7 +33,13 @@ function buildPlaybook (args = [], env = {}, schema = undefined) {
   if (relSpecFilePath) {
     let absSpecFilePath = ospath.resolve(relSpecFilePath)
     if (ospath.extname(absSpecFilePath)) {
-      if (!fs.existsSync(absSpecFilePath)) throw new Error('playbook file does not exist')
+      if (!fs.existsSync(absSpecFilePath)) {
+        let details = ''
+        if (relSpecFilePath !== absSpecFilePath) {
+          details = ` (path: ${relSpecFilePath}${ospath.isAbsolute(relSpecFilePath) ? '' : ', cwd: ' + process.cwd()})`
+        }
+        throw new Error(`playbook file not found at ${absSpecFilePath}${details}`)
+      }
     } else if (fs.existsSync(absSpecFilePath + '.yml')) {
       absSpecFilePath += '.yml'
     } else if (fs.existsSync(absSpecFilePath + '.json')) {
@@ -41,7 +47,11 @@ function buildPlaybook (args = [], env = {}, schema = undefined) {
     } else if (fs.existsSync(absSpecFilePath + '.toml')) {
       absSpecFilePath += '.toml'
     } else {
-      throw new Error('playbook file could not be resolved')
+      const details = `(path: ${relSpecFilePath}${ospath.isAbsolute(relSpecFilePath) ? '' : ', cwd: ' + process.cwd()})`
+      throw new Error(
+        `playbook file not found at ${absSpecFilePath}.yml, ${absSpecFilePath}.json, or ${absSpecFilePath}.toml ` +
+          details
+      )
     }
     config.loadFile(absSpecFilePath)
     if (relSpecFilePath !== absSpecFilePath) config.set('playbook', absSpecFilePath)
