@@ -1464,6 +1464,7 @@ describe('ContentCatalog', () => {
       expect(result.path).to.equal(targetPage.path)
       expect(result).to.have.property('rel')
       expect(result.rel).to.equal(targetPage)
+      expect(targetPage.rel).to.equal(result)
       expect(contentCatalog.getById(result.src)).to.equal(result)
     })
 
@@ -1518,6 +1519,8 @@ describe('ContentCatalog', () => {
       expect(result2).to.have.property('rel')
       expect(result2.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result2.src)).to.equal(result2)
+      // NOTE: rel on target page is reference to primary alias
+      expect(targetPage.rel).to.equal(result1)
     })
 
     it('should set version of alias to latest version of component if version not specified', () => {

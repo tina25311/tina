@@ -78,7 +78,7 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
   const component = contentCatalog.getComponent(component_)
   const componentVersion = contentCatalog.getComponentVersion(component, version)
   // QUESTION can we cache versions on file.rel so only computed once per page version lineage?
-  const versions = component.versions.length > 1 ? getPageVersions(src, component, contentCatalog) : undefined
+  const versions = component.versions.length > 1 ? getPageVersions(file, component, contentCatalog) : undefined
   const title = file.title || asciidoc.doctitle
 
   const model = {
@@ -135,18 +135,86 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
 }
 
 // QUESTION should this function go in ContentCatalog?
-// QUESTION should this function accept component, module, relative instead of pageSrc?
-function getPageVersions (pageSrc, component, contentCatalog) {
-  const basePageId = { component: component.name, module: pageSrc.module, family: 'page', relative: pageSrc.relative }
-  return component.versions.map((componentVersion) => {
-    const page = contentCatalog.getById(Object.assign({ version: componentVersion.version }, basePageId))
-    // QUESTION should title be title of component or page?
-    return Object.assign(
-      componentVersion === component.latest ? { latest: true } : {},
-      componentVersion,
-      page ? { url: page.pub.url } : { missing: true }
+function getPageVersions (page, component, contentCatalog) {
+  let basePageId = page.src
+  const componentVersions = component.versions
+  const pageVersion = basePageId.version
+  const thisVersionIdx = componentVersions.findIndex(({ version }) => version === pageVersion)
+  const thisVersion = componentVersions[thisVersionIdx]
+  const newerVersions = componentVersions.slice(0, thisVersionIdx)
+  const olderVersions = componentVersions.slice(thisVersionIdx + 1)
+  const latestVersion = component.latest
+  let pageVersions = newerVersions
+    .reverse()
+    .reduce((accum, componentVersion) => {
+      let relPage
+      const relPageId = Object.assign({}, basePageId, { version: componentVersion.version })
+      if (
+        !(relPage = contentCatalog.getById(relPageId)) &&
+        (relPage = (contentCatalog.getById((relPageId.family = 'alias') && relPageId) || {}).rel)
+      ) {
+        // NOTE: don't follow alias that falls outside of component version
+        if (relPage.src.version === relPageId.version && relPage.src.component === relPageId.component) {
+          // NOTE: keep searching from target of alias
+          basePageId = relPage.src
+        } else {
+          // QUESTION: should we mark the page as missing or link outside the component version?
+          //relPage = undefined
+        }
+      }
+      return accum.concat(
+        Object.assign(
+          componentVersion === latestVersion ? { latest: true } : {},
+          componentVersion,
+          relPage ? { url: relPage.pub.url } : { missing: true }
+        )
+      )
+    }, [])
+    .reverse()
+  pageVersions.push(
+    Object.assign(thisVersion === latestVersion ? { latest: true } : {}, thisVersion, { url: page.pub.url })
+  )
+  basePageId = page.src
+  let prevPage = page
+  pageVersions = olderVersions.reduce((accum, componentVersion) => {
+    let relPage
+    let primaryAliasSrc
+    const relPageId = Object.assign({}, basePageId, { version: componentVersion.version })
+    if ((relPage = contentCatalog.getById(relPageId))) {
+      prevPage = relPage
+    } else if (
+      prevPage &&
+      (primaryAliasSrc = (prevPage.rel || {}).src) &&
+      // NOTE: if alias is located in different component or version, it doesn't give us any useful information
+      primaryAliasSrc.version === prevPage.src.version &&
+      primaryAliasSrc.component === prevPage.src.component
+    ) {
+      Object.assign(relPageId, { module: primaryAliasSrc.module, relative: primaryAliasSrc.relative })
+      if ((relPage = contentCatalog.getById(relPageId))) {
+        // NOTE: keep searching from target of alias
+        basePageId = (prevPage = relPage).src
+      } else if ((relPage = (contentCatalog.getById((relPageId.family = 'alias') && relPageId) || {}).rel)) {
+        // NOTE: don't follow alias that falls outside of component version
+        if (relPage.src.version === relPageId.version && relPage.src.component === relPageId.component) {
+          // NOTE: keep searching from target of alias
+          basePageId = (prevPage = relPage).src
+        } else {
+          // QUESTION: should we update version on prevPage so older versions can continue to follow it?
+          prevPage = undefined
+          // QUESTION: should we mark the page as missing or link outside the component version?
+          //relPage = undefined
+        }
+      }
+    }
+    return accum.concat(
+      Object.assign(
+        componentVersion === latestVersion ? { latest: true } : {},
+        componentVersion,
+        relPage ? { url: relPage.pub.url } : { missing: true }
+      )
     )
-  })
+  }, pageVersions)
+  return pageVersions
 }
 
 function attachNavProperties (model, currentUrl, title, navigation = []) {
