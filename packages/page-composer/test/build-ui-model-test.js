@@ -90,6 +90,7 @@ describe('build UI model', () => {
       contents: Buffer.from('contents'),
       path: 'modules/ROOT/pages/the-page.adoc',
       src: {
+        family: 'page',
         path: 'modules/ROOT/pages/the-page.adoc',
         component: 'the-component',
         version: '1.0',
@@ -1116,6 +1117,7 @@ describe('build UI model', () => {
       const files = {
         '1.0-beta': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/the-page.adoc',
             component: 'the-component',
             version: '1.0-beta',
@@ -1128,6 +1130,7 @@ describe('build UI model', () => {
         '1.0': file,
         '2.0': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/the-page.adoc',
             component: 'the-component',
             version: '2.0',
@@ -1191,6 +1194,7 @@ describe('build UI model', () => {
         '1.0': file,
         '2.0': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/the-page.adoc',
             component: 'the-component',
             version: '2.0',
@@ -1259,6 +1263,7 @@ describe('build UI model', () => {
         '1.0': file,
         '2.0': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/the-page.adoc',
             component: 'the-component',
             version: '2.0',
@@ -1321,6 +1326,7 @@ describe('build UI model', () => {
         '1.0': file,
         '2.0': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/the-page.adoc',
             component: 'the-component',
             version: '2.0',
@@ -1350,6 +1356,7 @@ describe('build UI model', () => {
         '1.0': file,
         '2.0': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/the-page.adoc',
             component: 'the-component',
             version: '2.0',
@@ -1377,8 +1384,9 @@ describe('build UI model', () => {
       })
       component.latest = component.versions[1]
       const files = {
-        '2.0': {
+        '2.0': (file = {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/new-page.adoc',
             component: 'the-component',
             version: '2.0',
@@ -1387,7 +1395,7 @@ describe('build UI model', () => {
           pub: {
             url: '/the-component/2.0/new-page.html',
           },
-        },
+        }),
       }
       contentCatalog.getById = spy((filter) => files[filter.version])
       contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
@@ -1426,8 +1434,9 @@ describe('build UI model', () => {
       })
       component.latest = component.versions[1]
       const files = {
-        '1.0': {
+        '1.0': (file = {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/resurrected-page.adoc',
             component: 'the-component',
             version: '1.0',
@@ -1436,9 +1445,10 @@ describe('build UI model', () => {
           pub: {
             url: '/the-component/1.0/resurrected-page.html',
           },
-        },
+        }),
         '2.0': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/resurrected-page.adoc',
             component: 'the-component',
             version: '2.0',
@@ -1483,6 +1493,7 @@ describe('build UI model', () => {
         '1.0': file,
         '2.0': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/the-page.adoc',
             component: 'the-component',
             version: '2.0',
@@ -1514,6 +1525,7 @@ describe('build UI model', () => {
         '1.0': file,
         '2.0': {
           src: {
+            family: 'page',
             path: 'modules/ROOT/pages/the-page.adoc',
             component: 'the-component',
             version: '2.0',
