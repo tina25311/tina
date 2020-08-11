@@ -125,7 +125,7 @@ describe('convertDocument()', () => {
       ++++
       ++++
     `)
-    expect(() => convertDocument(inputFile, undefined, asciidocConfig)).to.throw('undefined method `include?\' for nil')
+    expect(() => convertDocument(inputFile, undefined, asciidocConfig)).to.throw("undefined method `include?' for nil")
   })
 
   it('should resolve attachment relative to module root', () => {
@@ -465,7 +465,6 @@ describe('convertDocument()', () => {
       </div>
     `)
   })
-
   ;['block', 'inline'].forEach((macroType) => {
     const macroDelim = macroType === 'block' ? '::' : ':'
 

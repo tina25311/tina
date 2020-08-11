@@ -3433,7 +3433,9 @@ describe('loadAsciiDoc()', () => {
         { module: 'module-b', family: 'page', relative: 'the-page.adoc' },
         { module: 'module-b', family: 'image', relative: 'the-image.png' },
       ]).spyOn('getById')
-      setInputFileContents('image::module-b:the-image.png[The Image,250,role=border,xref=module-b:the-page.adoc#anchor]')
+      setInputFileContents(
+        'image::module-b:the-image.png[The Image,250,role=border,xref=module-b:the-page.adoc#anchor]'
+      )
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
