@@ -116,6 +116,18 @@ describe('convertDocument()', () => {
     `)
   })
 
+  // TODO: reverse this test once Asciidoctor.js is upgraded
+  it('should throw an exception if contents of stem block is empty', () => {
+    inputFile.contents = Buffer.from(heredoc`
+      = Page Title
+
+      [stem]
+      ++++
+      ++++
+    `)
+    expect(() => convertDocument(inputFile, undefined, asciidocConfig)).to.throw('undefined method `include?\' for nil')
+  })
+
   it('should resolve attachment relative to module root', () => {
     inputFileInTopicFolder.contents = Buffer.from(heredoc`
       Grab the link:{attachmentsdir}/quickstart-project.zip[quickstart project].
@@ -453,6 +465,7 @@ describe('convertDocument()', () => {
       </div>
     `)
   })
+
   ;['block', 'inline'].forEach((macroType) => {
     const macroDelim = macroType === 'block' ? '::' : ':'
 
