@@ -1098,6 +1098,40 @@ describe('ContentCatalog', () => {
       expect(result.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result.src)).to.equal(result)
     })
+ 
+    it('should register different aliases for the same page', () => {
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
+      const result1 = contentCatalog.registerPageAlias('alias.adoc', targetPage)
+      const result2 = contentCatalog.registerPageAlias('old-module:folder/alias.adoc', targetPage)
+      expect(result1).to.exist()
+      expect(result1).to.have.property('src')
+      expect(result1.src).to.include({
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'alias',
+        relative: 'alias.adoc',
+      })
+      expect(result1.path).to.equal(targetPage.path)
+      expect(result1.mediaType).to.equal('text/html')
+      expect(result1).to.have.property('rel')
+      expect(result1.rel).to.equal(targetPage)
+      expect(contentCatalog.getById(result1.src)).to.equal(result1)
+      expect(result2).to.exist()
+      expect(result2).to.have.property('src')
+      expect(result2.src).to.include({
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'old-module',
+        family: 'alias',
+        relative: 'folder/alias.adoc',
+      })
+      expect(result2.path).to.equal(targetPage.path)
+      expect(result2.mediaType).to.equal('text/html')
+      expect(result2).to.have.property('rel')
+      expect(result2.rel).to.equal(targetPage)
+      expect(contentCatalog.getById(result2.src)).to.equal(result2)
+    })
 
     it('should set version of alias to latest version of component if version not specified', () => {
       contentCatalog.registerComponentVersion('other-component', '1.0', { title: 'Other Component' })
