@@ -1098,7 +1098,7 @@ describe('ContentCatalog', () => {
       expect(result.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result.src)).to.equal(result)
     })
- 
+
     it('should register different aliases for the same page', () => {
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result1 = contentCatalog.registerPageAlias('alias.adoc', targetPage)
