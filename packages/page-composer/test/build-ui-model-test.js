@@ -1102,7 +1102,6 @@ describe('build UI model', () => {
     })
 
     it('should set versions property based on versions of page from catalog', () => {
-      component.url = '/the-component/2.0/index.html'
       component.versions.unshift({
         version: '2.0',
         title: 'The Component',
@@ -1114,6 +1113,7 @@ describe('build UI model', () => {
         url: '/the-component/1.0-beta/index.html',
       })
       component.latest = component.versions[0]
+      component.url = component.latest.url
       const files = {
         '1.0-beta': {
           src: {
@@ -1190,6 +1190,7 @@ describe('build UI model', () => {
         url: '/the-component/2.0/index.html',
       })
       component.latest = component.versions[1]
+      component.url = component.latest.url
       const files = {
         '1.0': file,
         '2.0': {
@@ -1248,7 +1249,6 @@ describe('build UI model', () => {
     })
 
     it('should add sparse entry in value of versions property if page is missing for version', () => {
-      component.url = '/the-component/2.0/index.html'
       component.versions.unshift({
         version: '2.0',
         title: 'The Component',
@@ -1259,6 +1259,8 @@ describe('build UI model', () => {
         title: 'The Component',
         url: '/the-component/1.0-beta/index.html',
       })
+      component.latest = component.versions[0]
+      component.url = component.latest.url
       const files = {
         '1.0': file,
         '2.0': {
@@ -1307,7 +1309,7 @@ describe('build UI model', () => {
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(3)
       expect(model.versions).to.eql([
-        { version: '2.0', title: 'The Component', url: '/the-component/2.0/the-page.html' },
+        { latest: true, version: '2.0', title: 'The Component', url: '/the-component/2.0/the-page.html' },
         { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html' },
         { version: '1.0-beta', title: 'The Component', url: '/the-component/1.0-beta/index.html', missing: true },
       ])
