@@ -20,43 +20,26 @@ class ContentCatalog {
     this.urlRedirectFacility = (playbook.urls || {}).redirectFacility || 'static'
   }
 
+  /**
+   * Registers a new component version with the content catalog. Also registers the component if it does not yet exist.
+   *
+   * @param {String} name - The name of the component to which this component version belongs.
+   * @param {String} version - The version of the component to register.
+   * @param {Object} [descriptor={}] - The configuration data for the component version.
+   * @param {Object} [descriptor.asciidoc=undefined] - The AsciiDoc configuration for this component version.
+   * @param {String} [descriptor.displayVersion=version] - The display version for this component version.
+   * @param {Boolean|String} [descriptor.prerelease=undefined] - The prerelease flag for this version. If the value
+   * is a String, it implies true and is appended to the display version, separated if necessary by a space.
+   * @param {Boolean|String} [descriptor.startPage=undefined] - The page specifier for the start page. The start page
+   * is only registered if this property is truthy. A String value will be used to resolve a start page within this
+   * component version. A true value is a special case to tell this method to register the default start page and is
+   * intended for testing.
+   * @param {String} [descriptor.title=name] - The title for this component version.
+   */
   registerComponentVersion (name, version, descriptor = {}) {
-    const { asciidoc, displayVersion, prerelease, title, startPage: startPageSpec } = descriptor
+    const { asciidoc, displayVersion, prerelease, startPage: startPageSpec, title } = descriptor
     const componentVersion = { displayVersion: displayVersion || version, title: title || name, version }
     Object.defineProperty(componentVersion, 'name', { value: name, enumerable: true })
-    let startPage
-    let startPageSrc
-    const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
-    if (startPageSpec) {
-      if (
-        (startPage = this.resolvePage(startPageSpec, indexPageId)) &&
-        (startPageSrc = startPage.src).component === name &&
-        startPageSrc.version === version
-      ) {
-        if ((startPageSrc.module !== 'ROOT' || startPageSrc.relative !== 'index.adoc') && !this.getById(indexPageId)) {
-          this.addFile({ mediaType: 'text/html', src: inflateSrc(indexPageId, 'alias'), rel: startPage })
-        }
-      } else {
-        console.warn(
-          `Start page specified for ${version}@${name} ${startPage === false ? 'has invalid syntax' : 'not found'}: ` +
-            startPageSpec
-        )
-        startPage = this.getById(indexPageId)
-      }
-    } else {
-      startPage = this.getById(indexPageId)
-    }
-    if (startPage) {
-      componentVersion.url = startPage.pub.url
-    } else {
-      // QUESTION: should we warn if the default start page cannot be found?
-      componentVersion.url = computePub(
-        (startPageSrc = inflateSrc(indexPageId)),
-        computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle),
-        startPageSrc.family,
-        this.htmlUrlExtensionStyle
-      ).url
-    }
     if (prerelease) {
       componentVersion.prerelease = prerelease
       if (!displayVersion && (typeof prerelease === 'string' || prerelease instanceof String)) {
@@ -109,6 +92,9 @@ class ContentCatalog {
           }
         )
       )
+    }
+    if (startPageSpec) {
+      this.registerComponentVersionStartPage(name, componentVersion, startPageSpec === true ? undefined : startPageSpec)
     }
     return componentVersion
   }
@@ -233,6 +219,48 @@ class ContentCatalog {
   // TODO add `follow` argument to control whether alias is followed
   getSiteStartPage () {
     return this.getById(START_PAGE_ID) || (this.getById(START_ALIAS_ID) || {}).rel
+  }
+
+  registerComponentVersionStartPage (name, componentVersion, startPageSpec = undefined) {
+    let version = componentVersion.version
+    if (version == null) {
+      // QUESTION: should we warn or throw error if component version cannot be found?
+      if (!(componentVersion = this.getComponentVersion(name, componentVersion))) return
+      version = componentVersion.version
+    }
+    let startPage
+    let startPageSrc
+    const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
+    if (startPageSpec) {
+      if (
+        (startPage = this.resolvePage(startPageSpec, indexPageId)) &&
+        (startPageSrc = startPage.src).component === name &&
+        startPageSrc.version === version
+      ) {
+        if ((startPageSrc.module !== 'ROOT' || startPageSrc.relative !== 'index.adoc') && !this.getById(indexPageId)) {
+          this.addFile({ mediaType: 'text/html', src: inflateSrc(indexPageId, 'alias'), rel: startPage })
+        }
+      } else {
+        console.warn(
+          `Start page specified for ${version}@${name} ${startPage === false ? 'has invalid syntax' : 'not found'}: ` +
+            startPageSpec
+        )
+        startPage = this.getById(indexPageId)
+      }
+    } else {
+      startPage = this.getById(indexPageId)
+    }
+    if (startPage) {
+      componentVersion.url = startPage.pub.url
+    } else {
+      // QUESTION: should we warn if the default start page cannot be found?
+      componentVersion.url = computePub(
+        (startPageSrc = inflateSrc(indexPageId)),
+        computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle),
+        startPageSrc.family,
+        this.htmlUrlExtensionStyle
+      ).url
+    }
   }
 
   registerSiteStartPage (startPageSpec) {
