@@ -26,24 +26,24 @@ Good module names are short and descriptive.
 ----
 📒 repository
   📂 docs
-  📄 antora.yml
-  📂 modules
-    📂 gear <1>
-      📂 images
-        📄 a-source-file.jpg
-    📂 la-garita <2>
-      📂 pages
-        📄 a-source-file.adoc
-    📂 ROOT <3>
-      📂 pages
-        📄 a-source-file.adoc
-      📄 nav.adoc
-    📂 sdk <4>
-      📂 examples
-        📄 a-source-file.js
-      📂 pages
-        📄 a-source-file.adoc
-      📄 nav.adoc
+    📄 antora.yml
+    📂 modules
+      📂 gear <1>
+        📂 images
+          📄 a-source-file.jpg
+      📂 la-garita <2>
+        📂 pages
+          📄 a-source-file.adoc
+      📂 ROOT <3>
+        📂 pages
+          📄 a-source-file.adoc
+        📄 nav.adoc
+      📂 sdk <4>
+        📂 examples
+          📄 a-source-file.js
+        📂 pages
+          📄 a-source-file.adoc
+        📄 nav.adoc
 ----
 <1> Module directory named [.path]_gear_
 <2> Module directory named [.path]_la-garita_
