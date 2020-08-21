@@ -12,15 +12,15 @@ You can create as many named module directories as you need.
 ----
 📒 repository
   📂 docs <1>
-  📄 antora.yml <2>
-  📂 modules <3>
-    📂 a-named-module <4>
-      📂 pages <5>
-        📄 a-source-file.adoc <6>
-      📄 nav.adoc <7>
-    📂 get-started <8>
-      📂 pages
-        📄 a-source-file.adoc
+    📄 antora.yml <2>
+    📂 modules <3>
+      📂 a-named-module <4>
+        📂 pages <5>
+          📄 a-source-file.adoc <6>
+        📄 nav.adoc <7>
+      📂 get-started <8>
+        📂 pages
+          📄 a-source-file.adoc
 ----
 <1> Content source root
 <2> Required [.path]_antora.yml_ file

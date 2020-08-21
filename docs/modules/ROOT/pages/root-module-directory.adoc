@@ -10,12 +10,12 @@ A [.path]_ROOT_ directory stores content source files in one or more of the xref
 ----
 📒 repository
   📂 docs <1>
-  📄 antora.yml <2>
-  📂 modules <3>
-    📂 ROOT <4>
-      📂 pages <5>
-        📄 a-source-file.adoc <6>
-      📄 nav.adoc <7>
+    📄 antora.yml <2>
+    📂 modules <3>
+      📂 ROOT <4>
+        📂 pages <5>
+          📄 a-source-file.adoc <6>
+        📄 nav.adoc <7>
 ----
 <1> Content source root
 <2> Required [.path]_antora.yml_ file
