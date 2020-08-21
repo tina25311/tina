@@ -162,7 +162,7 @@ class ContentCatalog {
 
   getComponentVersion (component, version) {
     return (component.versions || (this.getComponent(component) || {}).versions || []).find(
-      (candidate) => candidate.version === version
+      ({ version: candidate }) => candidate === version
     )
   }
 
