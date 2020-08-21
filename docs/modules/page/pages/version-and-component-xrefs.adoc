@@ -24,7 +24,7 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
 .Standard directories assigned to the component versions colorado 5.2 and wyoming 1.0
 ----
 📒 repository
-  📄 antora.yml <- Declares files belong to colorado 5.2
+  📄 antora.yml <1> 
   📂 modules
     📂 get-started
       📂 pages
@@ -39,13 +39,15 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
 
 📒 repository
   📂 docs
-    📄 antora.yml <- Declares files belong to wyoming 1.0
+    📄 antora.yml <2>
     📂 modules
       📂 sierra-madre
         📂 pages
           📄 elevation.adoc
           📄 wilderness-areas.adoc
 ----
+<1> Declares files that belong to the colorado 5.2 component version
+<2> Declares files that belong to the wyoming 1.0 component version
 
 <<ex-across-components>> shows an xref in the page [.path]_index.adoc_ (current page) that links to the [.path]_elevation.adoc_ page (target page).
 [.path]_index.adoc_ belongs to version `5.2` of the component `colorado`.

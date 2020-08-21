@@ -79,7 +79,7 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
 .Standard directories assigned to the component versions colorado 5.2 and wyoming 1.0
 ----
 📒 repository
-  📄 antora.yml <- Declares files belong to colorado 5.2
+  📄 antora.yml <1>
   📂 modules
     📂 la-garita
       📂 pages
@@ -94,7 +94,7 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
 
 📒 repository
   📂 docs
-    📄 antora.yml <- Declares files belong to wyoming 1.0
+    📄 antora.yml <2>
     📂 modules
       📂 sierra-madre
         📂 images
@@ -102,6 +102,8 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
         📂 pages
           📄 wilderness-areas.adoc
 ----
+<1> Declares files that belong to the colorado 5.2 component version
+<2> Declares files that belong to the wyoming 1.0 component version
 
 <<ex-across-components-root>> shows an xref:inline-images.adoc[inline image macro].
 The image macro will embed the image [.path]_peak.svg_ (target resource), which belongs to the component version `colorado 5.2`, into the current page.
