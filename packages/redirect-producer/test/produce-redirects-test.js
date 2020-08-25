@@ -428,7 +428,7 @@ describe('produceRedirects()', () => {
       ])
     })
 
-    it('should accept paths ithat contain spaces', () => {
+    it('should accept paths that contain spaces', () => {
       contentCatalog = mockContentCatalog([
         { family: 'page', relative: 'target with spaces.adoc' },
         { family: 'alias', relative: 'alias with spaces.adoc' },
