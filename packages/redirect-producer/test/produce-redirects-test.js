@@ -406,20 +406,6 @@ describe('produceRedirects()', () => {
     })
   })
 
-  describe('disabled facility', () => {
-    beforeEach(() => {
-      playbook.urls.redirectFacility = 'disabled'
-    })
-
-    it('should remove out property from files in alias family', () => {
-      const result = produceRedirects(playbook, contentCatalog)
-      expect(result).to.have.lengthOf(0)
-      contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
-        expect(file).to.not.have.property('out')
-      })
-    })
-  })
-
   describe('httpd facility', () => {
     beforeEach(() => {
       playbook.urls.redirectFacility = 'httpd'
@@ -522,6 +508,20 @@ describe('produceRedirects()', () => {
 
     it('should remove the out property on alias files', () => {
       produceRedirects(playbook, contentCatalog)
+      contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
+        expect(file).to.not.have.property('out')
+      })
+    })
+  })
+
+  describe('disabled facility', () => {
+    beforeEach(() => {
+      playbook.urls.redirectFacility = 'disabled'
+    })
+
+    it('should remove out property from files in alias family', () => {
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(0)
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         expect(file).to.not.have.property('out')
       })
