@@ -71,7 +71,7 @@ describe('produceRedirects()', () => {
       })
     })
 
-    it('should populate contents of files in alias family with static redirect page', () => {
+    it('should encode spaces in URL of target page', () => {
       contentCatalog = mockContentCatalog([
         { family: 'page', relative: 'target with spaces.adoc' },
         { family: 'alias', relative: 'alias with spaces.adoc' },
