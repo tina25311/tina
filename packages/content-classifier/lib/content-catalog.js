@@ -224,9 +224,8 @@ class ContentCatalog {
     const rel = this.resolvePage(startPageSpec)
     if (rel) {
       return this.addFile({ mediaType: 'text/html', src: inflateSrc(Object.assign({}, START_ALIAS_ID), 'alias'), rel })
-    } else {
-      console.warn(`Start page specified for site not found: ${startPageSpec}`)
     }
+    console.warn(`Start page specified for site not found: ${startPageSpec}`)
   }
 
   // QUESTION should this be addPageAlias?
