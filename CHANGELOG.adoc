@@ -14,6 +14,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *content-classifier*: Don't modify the file extension of an AsciiDoc file in the attachments family (#644)
+* *content-classifier*: If an alias conflicts with an existing page, show the resource spec of the page that defines the alias in the error message (#648)
 
 == 2.3.3 (2020-05-30)
 

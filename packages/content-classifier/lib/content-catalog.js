@@ -239,11 +239,14 @@ class ContentCatalog {
       if (!src.version) src.version = component.latest.version
       const existingPage = this.getById(src)
       if (existingPage) {
-        // TODO we'll need some way to easily get a displayable page ID
-        let qualifiedSpec = generateKey(existingPage.src)
-        qualifiedSpec = qualifiedSpec.replace(':page$', ':')
-        const message = `Page alias cannot reference ${existingPage === target ? 'itself' : 'an existing page'}`
-        throw new Error(message + ': ' + qualifiedSpec)
+        // TODO we need a helper to get a displayable page ID (with the ROOT module and family hidden)
+        const aliasSpec = generateKey(src).replace(':page$', ':')
+        if (existingPage === target) {
+          throw new Error(`Page alias cannot reference itself: ${aliasSpec}`)
+        } else {
+          const targetSpec = generateKey(target.src).replace(':page$', ':')
+          throw new Error(`Page alias cannot reference an existing page: ${aliasSpec} (from: ${targetSpec})`)
+        }
       }
     } else if (!src.version) {
       // QUESTION should we skip registering alias in this case?

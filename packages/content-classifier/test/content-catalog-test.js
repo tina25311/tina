@@ -1230,7 +1230,7 @@ describe('ContentCatalog', () => {
       otherPageSrc.relative = otherPageSrc.basename = 'the-other-page.adoc'
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       contentCatalog.addFile(new File({ src: otherPageSrc }))
-      const expectedError = 'Page alias cannot reference an existing page: 1.2.3@the-component:ROOT:the-other-page.adoc'
+      const expectedError = 'Page alias cannot reference an existing page: 1.2.3@the-component:ROOT:the-other-page.adoc (from: 1.2.3@the-component:ROOT:the-page.adoc)'
       expect(() => contentCatalog.registerPageAlias(otherPageSrc.relative, targetPage)).to.throw(expectedError)
     })
 
