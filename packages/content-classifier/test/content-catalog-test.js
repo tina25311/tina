@@ -423,7 +423,7 @@ describe('ContentCatalog', () => {
       expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
     })
 
-    it('should register alias at index page if start page does not point to index page', () => {
+    it('should register alias at index page if start page differs from index page and index page does not exist', () => {
       const name = 'the-component'
       const version = '1.0'
       const title = 'The Component'
@@ -452,6 +452,39 @@ describe('ContentCatalog', () => {
         relative: 'index.adoc',
       })
       expect(indexPageAlias.rel).to.equal(startPage)
+    })
+
+    it('should not register alias at index page if start page differs from index page and index page exists', () => {
+      const name = 'the-component'
+      const version = '1.0'
+      const title = 'The Component'
+      const url = '/the-component/1.0/home.html'
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'index.adoc',
+          mediaType: 'text/asciidoc',
+        },
+      })
+      contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'home.adoc',
+          mediaType: 'text/asciidoc',
+        },
+      })
+      contentCatalog.registerComponentVersion(name, version, { title, startPage: 'home.adoc' })
+      const component = contentCatalog.getComponent(name)
+      expect(component.url).to.equal(url)
+      const aliases = contentCatalog.findBy({ family: 'alias' })
+      expect(aliases).to.be.empty()
     })
 
     it('should use url of index page in ROOT module if found', () => {
