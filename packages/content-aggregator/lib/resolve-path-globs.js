@@ -1,6 +1,5 @@
 'use strict'
 
-const escapeStringForRx = require('escape-string-regexp')
 const { expand: expandBraces } = require('braces')
 const flattenDeep = require('./flatten-deep')
 const fs = require('fs-extra')
@@ -8,7 +7,7 @@ const git = require('isomorphic-git')
 const invariably = { true: () => true, false: () => false, void: () => {}, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 
-const RX_ESCAPED_GLOB = /\\\*/g
+const RX_ESCAPE_EXCEPT_GLOB = /[.+?^${}()|[\]\\]/g
 const RX_MAGIC_DETECTOR = /[*{]/
 const RX_QUESTION_MARK = /\?/g
 const PICO_OPTS = { nobracket: true, noextglob: true, noglobstar: true, noquantifiers: true }
@@ -102,6 +101,11 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
   }
 }
 
+function regexpEscapeWithGlob (str) {
+  // we don't escape "-" since it's meaningless in a literal
+  return str.replace(RX_ESCAPE_EXCEPT_GLOB, '\\$&').replace('*', '.*')
+}
+
 function extractMagicBase (patternSegments, base) {
   let nextSegment
   if (patternSegments.length) {
@@ -144,7 +148,7 @@ function makeMatcherRx (pattern) {
 }
 
 function patternToRx (pattern) {
-  return (pattern.charAt() === '.' ? '' : '(?!\\.)') + escapeStringForRx(pattern).replace(RX_ESCAPED_GLOB, '.*')
+  return (pattern.charAt() === '.' ? '' : '(?!\\.)') + regexpEscapeWithGlob(pattern)
 }
 
 const readdirWithFileTypes = fs.Dirent

@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *content-aggregator*: Drop use of transitive escape-string-regexp dependency
+
 === Fixed
 
 * *content-classifier*: Don't modify the file extension of an AsciiDoc file in the attachments family (#644)
