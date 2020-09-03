@@ -11,8 +11,8 @@ On this page, you'll learn:
 
 == Highlight syntax
 
-To highlight (or mark) a word or phrase, place a hash (`#`) at the beginning and end of the text you wish to format (constrained formatting).
-To highlight one or more characters bounded by other characters, place two hashes (`##`) before and after the characters (unconstrained formatting).
+To highlight (or mark) a word or phrase, place a hash (`+#+`) at the beginning and end of the text you wish to format (constrained formatting).
+To highlight one or more characters bounded by other characters, place two hashes (`+##i+`) before and after the characters (unconstrained formatting).
 
 .Highlight inline formatting
 [source]
