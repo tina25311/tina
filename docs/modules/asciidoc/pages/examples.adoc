@@ -56,7 +56,7 @@ The book hit the floor with a *thud*.
 He could hear doves *cooing* in the pine trees`' branches.
 ====
 
-TIP: xref:admonitions.adoc[Complex admonitions] use the delimited example block syntax.
+TIP: xref:admonitions.adoc#complex[Complex admonitions] use the delimited example block syntax.
 
 .*Asciidoctor resources*
 * {url-block}[Block titles and attributes^]

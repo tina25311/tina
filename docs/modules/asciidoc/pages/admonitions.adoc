@@ -49,6 +49,7 @@ IMPORTANT: A monster lives in the basement.
 
 NOTE: If you go into the basement, see if you can find Kenny's parka.
 
+[#complex]
 == Complex admonition
 
 If the admonition content includes elements separated by blank lines, place the content in a xref:examples.adoc#delimited[delimited example block] (`pass:[====]`).
