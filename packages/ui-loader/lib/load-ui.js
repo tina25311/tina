@@ -303,9 +303,7 @@ function classifyFile (file, config) {
     file.out = resolveOut(file, '')
   } else {
     file.type = resolveType(file)
-    if (file.type === 'asset') {
-      file.out = resolveOut(file, config.outputDir)
-    }
+    if (file.type === 'asset') file.out = resolveOut(file, config.outputDir)
   }
   return file
 }
