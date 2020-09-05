@@ -325,13 +325,14 @@ describe('loadUi()', () => {
       return accum
     }, {})
 
-    const verifySupplementalFiles = (uiCatalog, compareBuffers = true) => {
+    const verifySupplementalFiles = (uiCatalog, compareBuffers = true, expectedBase = undefined) => {
       const files = uiCatalog.getAll()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePathsWithSupplemental)
       files.forEach((file) => {
         const path_ = file.path
         if (path_ in supplementalFileContents) {
+          if (expectedBase) expect(file.base).to.eql(expectedBase)
           if (compareBuffers) {
             expect(file.contents).to.eql(supplementalFileContents[path_])
           } else {
@@ -352,31 +353,28 @@ describe('loadUi()', () => {
     })
 
     it('from absolute directory', async () => {
-      playbook.ui.supplementalFiles = ospath.join(FIXTURES_DIR, 'supplemental-files')
-      verifySupplementalFiles(await loadUi(playbook))
+      const supplementalFilesAbsDir = ospath.join(FIXTURES_DIR, 'supplemental-files')
+      playbook.ui.supplementalFiles = supplementalFilesAbsDir
+      verifySupplementalFiles(await loadUi(playbook), true, supplementalFilesAbsDir)
     })
 
     it('from dot-relative directory', async () => {
-      playbook.ui.supplementalFiles = prefixPath(
-        '.',
-        ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'supplemental-files'))
-      )
-      verifySupplementalFiles(await loadUi(playbook))
+      const supplementalFilesAbsDir = ospath.join(FIXTURES_DIR, 'supplemental-files')
+      playbook.ui.supplementalFiles = prefixPath('.', ospath.relative(WORK_DIR, supplementalFilesAbsDir))
+      verifySupplementalFiles(await loadUi(playbook), true, supplementalFilesAbsDir)
     })
 
     it('from dot-relative directory when playbook dir does not match cwd', async () => {
+      const supplementalFilesAbsDir = ospath.join(FIXTURES_DIR, 'supplemental-files')
       playbook.dir = WORK_DIR
-      playbook.ui.supplementalFiles = prefixPath(
-        '.',
-        ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'supplemental-files'))
-      )
+      playbook.ui.supplementalFiles = prefixPath('.', ospath.relative(WORK_DIR, supplementalFilesAbsDir))
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
       fs.ensureDirSync(newWorkDir)
       process.chdir(newWorkDir)
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
       expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
-      verifySupplementalFiles(uiCatalog)
+      verifySupplementalFiles(uiCatalog, true, supplementalFilesAbsDir)
     })
 
     it('skips supplemental files when scan finds no files', async () => {

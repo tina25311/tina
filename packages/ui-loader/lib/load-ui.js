@@ -266,10 +266,8 @@ function relativizeFiles () {
     if (file.isNull()) {
       next()
     } else {
-      next(
-        null,
-        new File({ path: posixify ? posixify(file.relative) : file.relative, contents: file.contents, stat: file.stat })
-      )
+      const path_ = posixify ? posixify(file.relative) : file.relative
+      next(null, new File({ cwd: file.cwd, path: path_, contents: file.contents, stat: file.stat }))
     }
   })
 }
