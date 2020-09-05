@@ -176,7 +176,7 @@ describe('publishSite()', () => {
     verifyFsOutput(destDir)
   })
 
-  it('should publish site to fs at relative path resolved from pwd', async () => {
+  it('should publish site to fs at relative path resolved from cwd', async () => {
     const workingDir = ospath.join(WORK_DIR, 'some-other-folder')
     fs.ensureDirSync(workingDir)
     process.chdir(workingDir)
@@ -269,7 +269,7 @@ describe('publishSite()', () => {
     await verifyArchiveOutput(destFile)
   })
 
-  it('should publish site to archive at relative path resolved from pwd', async () => {
+  it('should publish site to archive at relative path resolved from cwd', async () => {
     const workingDir = ospath.join(WORK_DIR, 'some-other-folder')
     fs.ensureDirSync(workingDir)
     process.chdir(workingDir)
