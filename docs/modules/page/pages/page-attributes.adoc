@@ -116,6 +116,15 @@ For example:
 :page-toclevels: 3
 ----
 
+You could also set this attribute in your playbook (adding a trailing `@` so it still can be overridden per page):
+
+[source,yaml]
+----
+asciidoc:
+  attributes:
+    page-toclevels: 3@
+----
+
 The page attributes are accessible in the UI model via the `page.attributes` property.
 The value of this property is a map of attributes.
 
