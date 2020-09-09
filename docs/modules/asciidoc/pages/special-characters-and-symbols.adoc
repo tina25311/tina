@@ -20,11 +20,11 @@ The three special characters, `<`, `>`, and `&`, are always replaced first.
 
 HTML and XML character entities as well as decimal and hexadecimal Unicode code point references are also recognized and replaced.
 
-For example, to produce the `&sect;` symbol you can use `\&sect;`, `\&#x00A7;`, or `\&#167;`.
+For example, to produce the `&#167;` symbol you can use `\&sect;` (HTML output only), `\&#x00A7;`, or `\&#167;`.
 When the document is processed, the replacements substitution will replace the section symbol reference, regardless of whether it is a character entity reference or a numeric character reference, with `\&#167;`.
-In turn, `\&#167;` will display as `&sect;`.
+In turn, `\&#167;` will display as `&#167;`.
 
-[cols="2,^1l,1,1,2"]
+[#replacements,cols="2,^1l,1,1,2"]
 |===
 |Name |Syntax |Replacement |Rendered |Notes
 
