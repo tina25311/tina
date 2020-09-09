@@ -12,7 +12,7 @@ On this page, you'll learn:
 
 == Checklist syntax
 
-Task lists are xref:ordered-and-unordered-lists#unordered[unordered lists] that have list items marked as checked or not checked.
+Task lists are xref:ordered-and-unordered-lists.adoc#unordered[unordered lists] that have list items marked as checked or not checked.
 
 Here’s an example:
 
