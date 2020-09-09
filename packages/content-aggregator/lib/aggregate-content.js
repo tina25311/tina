@@ -261,27 +261,32 @@ async function selectReferences (source, repo, remote) {
         ? branchPatterns.map((pattern) => String(pattern))
         : branchPatternsString.split(CSV_RX)
       if (branchPatterns.length) {
-        let currentBranchIdx
+        let headBranchIdx
         // NOTE we can assume at least two entries if HEAD or . are present
-        if (~(currentBranchIdx = branchPatterns.indexOf('HEAD')) || ~(currentBranchIdx = branchPatterns.indexOf('.'))) {
+        if (~(headBranchIdx = branchPatterns.indexOf('HEAD')) || ~(headBranchIdx = branchPatterns.indexOf('.'))) {
           // NOTE current branch is undefined when HEAD is detached
           const currentBranch = await getCurrentBranchName(repo, remote)
           if (currentBranch) {
-            branchPatterns[currentBranchIdx] = currentBranch
+            // NOTE ignore if current branch is already in list
+            if (~branchPatterns.indexOf(currentBranch)) {
+              branchPatterns = branchPatterns.filter((_, idx) => idx !== headBranchIdx)
+            } else {
+              branchPatterns[headBranchIdx] = currentBranch
+            }
           } else {
             if (!isBare) refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', head: 'detached' })
-            branchPatterns.splice(currentBranchIdx, 1)
+            branchPatterns = branchPatterns.filter((_, idx) => idx !== headBranchIdx)
           }
         }
       } else {
         return Array.from(refs.values())
       }
     }
-    const remoteBranches = await git.listBranches(Object.assign({ remote }, repo))
+    let remoteBranches = await git.listBranches(Object.assign({ remote }, repo))
     if (remoteBranches.length) {
       // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
       const headIdx = remoteBranches.indexOf('HEAD')
-      if (~headIdx) remoteBranches.splice(headIdx, 1)
+      if (~headIdx) remoteBranches = remoteBranches.filter((_, idx) => idx !== headIdx)
       for (const shortname of remoteBranches.length ? matcher(remoteBranches, branchPatterns) : remoteBranches) {
         refs.set(shortname, { shortname, fullname: path.join('remotes', remote, shortname), type: 'branch', remote })
       }
