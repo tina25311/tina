@@ -100,6 +100,11 @@ describe('loadUi()', () => {
     server = http
       .createServer((request, response) => {
         serverRequests.push(request.url)
+        if (request.url.startsWith('/redirect?to=')) {
+          response.writeHead(301, { Location: `/${request.url.substr(13)}` })
+          response.end('<!DOCTYPE html><html><body>Moved.</body></html>', 'utf8')
+          return
+        }
         fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
           if (err) {
             response.writeHead(404, { 'Content-Type': 'text/html' })
@@ -807,6 +812,18 @@ describe('loadUi()', () => {
     expect(serverRequests).to.have.lengthOf(2)
     expect(serverRequests[1]).to.equal('/the-ui-bundle.zip')
     paths = uiCatalog.getAll().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
+  })
+
+  it('should follow redirect when fetching remote UI bundle', async () => {
+    const playbook = {
+      ui: { bundle: { url: 'http://localhost:1337/redirect?to=the-ui-bundle.zip', snapshot: true } },
+    }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(2)
+    expect(serverRequests[0]).to.equal('/redirect?to=the-ui-bundle.zip')
+    expect(serverRequests[1]).to.equal('/the-ui-bundle.zip')
+    const paths = uiCatalog.getAll().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
   })
 
