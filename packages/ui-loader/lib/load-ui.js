@@ -199,10 +199,12 @@ function bufferizeContents () {
         collectBuffer((err, data) => {
           if (err) return next(err)
           file.contents = data
+          file.stat.size = data.length
           next(null, file)
         })
       )
     } else {
+      file.stat.size = file.contents.length
       next(null, file)
     }
   })

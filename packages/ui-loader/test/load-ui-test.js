@@ -171,6 +171,18 @@ describe('loadUi()', () => {
     })
   })
 
+  describe('should set stat size on files extracted from UI bundle', () => {
+    testAll('the-ui-bundle.zip', async (playbook) => {
+      const uiCatalog = await loadUi(playbook)
+      const files = uiCatalog.getAll()
+      files.forEach((file) => {
+        const stat = file.stat
+        expect(stat.size).to.be.finite()
+        file.path === 'partials/head.hbs' ? expect(stat.size).to.equal(0) : expect(stat.size).to.be.above(0)
+      })
+    })
+  })
+
   describe('should assign correct file permissions to files extracted from UI bundle', () => {
     testAll('the-ui-bundle.zip', async (playbook) => {
       const uiCatalog = await loadUi(playbook)
