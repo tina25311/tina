@@ -110,7 +110,7 @@ class ContentCatalog {
   addFile (file) {
     const key = generateKey(file.src)
     if (this[$files].has(key)) {
-      throw new Error(`Duplicate ${file.src.family}: ${key.replace(':' + file.src.family + '$', ':')}`)
+      throw new Error(`Duplicate ${file.src.family}: ${generateResourceSpec(file.src)}`)
     }
     if (!File.isVinyl(file)) file = new File(file)
     const family = file.src.family
@@ -239,13 +239,13 @@ class ContentCatalog {
       if (!src.version) src.version = component.latest.version
       const existingPage = this.getById(src)
       if (existingPage) {
-        // TODO we need a helper to get a displayable page ID (with the ROOT module and family hidden)
-        const aliasSpec = generateKey(src).replace(':page$', ':')
         if (existingPage === target) {
-          throw new Error(`Page alias cannot reference itself: ${aliasSpec}`)
+          throw new Error(`Page alias cannot reference itself: ${generateResourceSpec(src)}`)
         } else {
-          const targetSpec = generateKey(target.src).replace(':page$', ':')
-          throw new Error(`Page alias cannot reference an existing page: ${aliasSpec} (from: ${targetSpec})`)
+          throw new Error(
+            `Page alias cannot reference an existing page: ${generateResourceSpec(src)} ` +
+              `(from: ${generateResourceSpec(target.src)})`
+          )
         }
       }
     } else if (!src.version) {
@@ -310,6 +310,14 @@ ContentCatalog.prototype.getFiles = ContentCatalog.prototype.getAll
 
 function generateKey ({ component, version, module: module_, family, relative }) {
   return `${version}@${component}:${module_}:${family}$${relative}`
+}
+
+function generateResourceSpec ({ component, version, module: module_, family, relative }, shorthand = true) {
+  return (
+    `${version}@${component}:${shorthand && module_ === 'ROOT' ? '' : module_}:` +
+    (family === 'page' || family === 'alias' ? '' : `${family}$`) +
+    relative
+  )
 }
 
 function inflateSrc (src, family = 'page', mediaType = 'text/asciidoc') {
