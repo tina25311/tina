@@ -78,6 +78,9 @@ function createHttpdHtaccess (files, urlPath) {
   return [new File({ contents: Buffer.from(rules.join('\n') + '\n'), out: { path: '.htaccess' } })]
 }
 
+// NOTE: a trailing slash on the pathname will be ignored
+// see https://docs.netlify.com/routing/redirects/redirect-options/#trailing-slash
+// however, we keep it when generating the rules for clarity
 function createNetlifyRedirects (files, urlPath, includeDirectoryRedirects = false) {
   const rules = files.reduce((accum, file) => {
     delete file.out
