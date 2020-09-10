@@ -41,6 +41,7 @@ function registerFormats (convict) {
       if (!(val == null || val.constructor === Object)) throw new Error('must be a map (i.e., key/value pairs)')
     },
     coerce: (val, config, name) => {
+      if (config == null) return val
       const accum = config.has(name) ? config.get(name) : {}
       let match
       ARGS_SCANNER_RX.lastIndex = 0
@@ -65,6 +66,7 @@ function registerFormats (convict) {
       }
     },
     coerce: (val, config, name) => {
+      if (config == null) return val
       const accum = config.has(name) ? config.get(name) : {}
       let match
       ARGS_SCANNER_RX.lastIndex = 0

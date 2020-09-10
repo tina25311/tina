@@ -57,6 +57,10 @@ describe('buildPlaybook()', () => {
         arg: 'keyval',
         env: 'KEYVALS',
       },
+      keyvals2: {
+        format: String,
+        default: undefined,
+      },
     }
 
     expectedPlaybook = {
@@ -71,6 +75,7 @@ describe('buildPlaybook()', () => {
         { lastname: 'McCartney', name: 'Paul' },
       ],
       keyvals: {},
+      keyvals2: undefined,
     }
   })
 
@@ -257,10 +262,17 @@ describe('buildPlaybook()', () => {
     expect(playbook.three).to.be.true()
   })
 
-  it('should coerce primitive map value in playbook file', () => {
+  it('should coerce primitive map value in playbook file from Object', () => {
     schema.keyvals.format = 'primitive-map'
     const playbook = buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
     expect(playbook.keyvals).to.eql({ key: 'val', keyOnly: '', foo: 'bar', nada: null, yep: true, nope: false })
+  })
+
+  it('should throw error if value of primitive map key is a String', () => {
+    schema.keyvals2.format = 'primitive-map'
+    expect(() => buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)).to.throw(
+      'must be a primitive map (i.e., key/value pairs, primitive values only)'
+    )
   })
 
   it('should coerce primitive map value in env', () => {
@@ -351,9 +363,16 @@ describe('buildPlaybook()', () => {
     expect(playbook.keyvals).to.be.null()
   })
 
-  it('should coerce map value in playbook file', () => {
+  it('should coerce map value in playbook file from Object', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)
     expect(playbook.keyvals).to.eql({ key: 'val', keyOnly: '', foo: 'bar', nada: null, yep: true, nope: false })
+  })
+
+  it('should throw error if value of map key is a String', () => {
+    schema.keyvals2.format = 'map'
+    expect(() => buildPlaybook([], { PLAYBOOK: coerceValueSpec }, schema)).to.throw(
+      'must be a map (i.e., key/value pairs)'
+    )
   })
 
   it('should coerce map value in env', () => {

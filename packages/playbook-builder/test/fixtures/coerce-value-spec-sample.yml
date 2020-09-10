@@ -10,3 +10,4 @@ keyvals:
   nada: ~
   yep: true
   nope: false
+keyvals2: key=val,key_only,foo=bar,nada=~,yep=true,nope=false
