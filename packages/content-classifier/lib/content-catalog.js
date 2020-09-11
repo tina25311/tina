@@ -29,7 +29,7 @@ class ContentCatalog {
     if (startPageSpec) {
       const { src: startPageSrc } = (startPage = this.resolvePage(startPageSpec, indexPageId)) || {}
       if (startPageSrc && startPageSrc.component === name && startPageSrc.version === version) {
-        if (!(startPageSrc.module === 'ROOT' && startPageSrc.relative === 'index.adoc')) {
+        if ((startPageSrc.module !== 'ROOT' || startPageSrc.relative !== 'index.adoc') && !this.getById(indexPageId)) {
           this.addFile({ mediaType: 'text/html', src: inflateSrc(indexPageId, 'alias'), rel: startPage })
         }
       } else {
