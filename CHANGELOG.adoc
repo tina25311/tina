@@ -12,6 +12,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Show path to playbook file in error message if file not found (#650)
 * *content-aggregator*: Drop use of transitive escape-string-regexp dependency
 * *content-classifier*: Show more informative message if component name is missing in start page for site (#665)
+* *ui-loader*: Retain the cwd property (and thus base property) for supplemental UI files read from the local filesystem (#627)
 * *ui-loader*: Set stat.size on files extracted from UI bundle
 
 === Fixed
@@ -20,6 +21,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: Don't modify the file extension of an AsciiDoc file in the attachments family (#644)
 * *content-classifier*: Don't register alias that shadows index page when start page points to a different page (#653)
 * *content-classifier*: If an alias conflicts with an existing page, show the resource spec of the page that defines the alias in the error message (#648)
+* *ui-loader*: Allow dot file (aka hidden file) in supplemental UI directory to be used as static file (#627)
 
 == 2.3.3 (2020-05-30)
 

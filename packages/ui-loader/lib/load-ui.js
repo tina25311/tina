@@ -106,7 +106,7 @@ async function loadUi (playbook) {
   const config = loadConfig(files, outputDir)
 
   const catalog = new UiCatalog()
-  files.forEach((file) => catalog.addFile(classifyFile(file, config)))
+  files.forEach((file) => classifyFile(file, config) && catalog.addFile(file))
   return catalog
 }
 
@@ -248,7 +248,7 @@ function srcSupplementalFiles (filesSpec, startDir) {
         () =>
           new Promise((resolve, reject) =>
             vfs
-              .src(SUPPLEMENTAL_FILES_GLOB, { cwd, removeBOM: false })
+              .src(SUPPLEMENTAL_FILES_GLOB, { cwd, dot: true, removeBOM: false })
               .on('error', reject)
               .pipe(relativizeFiles())
               .pipe(collectFiles(resolve))
@@ -266,10 +266,8 @@ function relativizeFiles () {
     if (file.isNull()) {
       next()
     } else {
-      next(
-        null,
-        new File({ path: posixify ? posixify(file.relative) : file.relative, contents: file.contents, stat: file.stat })
-      )
+      const path_ = posixify ? posixify(file.relative) : file.relative
+      next(null, new File({ cwd: file.cwd, path: path_, contents: file.contents, stat: file.stat, local: true }))
     }
   })
 }
@@ -303,6 +301,8 @@ function classifyFile (file, config) {
   if (config.staticFiles && isStaticFile(file, config.staticFiles)) {
     file.type = 'static'
     file.out = resolveOut(file, '')
+  } else if (file.local && ~('/' + file.relative).indexOf('/.')) {
+    file = undefined
   } else {
     file.type = resolveType(file)
     if (file.type === 'asset') file.out = resolveOut(file, config.outputDir)
