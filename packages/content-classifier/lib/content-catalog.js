@@ -317,6 +317,7 @@ function generateKey ({ component, version, module: module_, family, relative })
 }
 
 function generateResourceSpec ({ component, version, module: module_, family, relative }, shorthand = true) {
+  if (module_ == null && family === 'nav') return `${version}@${component}:nav$${relative}`
   return (
     `${version}@${component}:${shorthand && module_ === 'ROOT' ? '' : module_}:` +
     (family === 'page' || family === 'alias' ? '' : `${family}$`) +

@@ -357,6 +357,13 @@ describe('classifyContent()', () => {
   })
 
   describe('classify files', () => {
+    it('should throw when attempting to add a duplicate page', () => {
+      const file = createFile('modules/ROOT/pages/page-one.adoc')
+      aggregate[0].files.push(file)
+      aggregate[0].files.push(file)
+      expect(() => classifyContent(playbook, aggregate)).to.throw('Duplicate page: v1.2.3@the-component::page-one.adoc')
+    })
+
     it('should classify a page', () => {
       aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       const files = classifyContent(playbook, aggregate).getAll()
@@ -548,29 +555,11 @@ describe('classifyContent()', () => {
       expect(file.pub).to.not.exist()
     })
 
-    it('should classify an image under assets', () => {
-      aggregate[0].files.push(createFile('modules/ROOT/assets/images/foo.png'))
-      const files = classifyContent(playbook, aggregate).getAll()
-      expect(files).to.have.lengthOf(1)
-      const file = files[0]
-      expect(file.path).to.equal('modules/ROOT/assets/images/foo.png')
-      expect(file.src).to.include({
-        component: 'the-component',
-        version: 'v1.2.3',
-        module: 'ROOT',
-        family: 'image',
-        relative: 'foo.png',
-        basename: 'foo.png',
-        moduleRootPath: '../..',
-      })
-      expect(file.out).to.include({
-        path: 'the-component/v1.2.3/_images/foo.png',
-        dirname: 'the-component/v1.2.3/_images',
-        basename: 'foo.png',
-      })
-      expect(file.pub).to.include({
-        url: '/the-component/v1.2.3/_images/foo.png',
-      })
+    it('should throw when attempting to add a duplicate image', () => {
+      const file = createFile('modules/ROOT/images/foo.png')
+      aggregate[0].files.push(file)
+      aggregate[0].files.push(file)
+      expect(() => classifyContent(playbook, aggregate)).to.throw('Duplicate image: v1.2.3@the-component::image$foo.png')
     })
 
     it('should classify an image', () => {
@@ -587,6 +576,31 @@ describe('classifyContent()', () => {
         relative: 'foo.png',
         basename: 'foo.png',
         moduleRootPath: '..',
+      })
+      expect(file.out).to.include({
+        path: 'the-component/v1.2.3/_images/foo.png',
+        dirname: 'the-component/v1.2.3/_images',
+        basename: 'foo.png',
+      })
+      expect(file.pub).to.include({
+        url: '/the-component/v1.2.3/_images/foo.png',
+      })
+    })
+
+    it('should classify an image under assets', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/assets/images/foo.png'))
+      const files = classifyContent(playbook, aggregate).getAll()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('modules/ROOT/assets/images/foo.png')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'image',
+        relative: 'foo.png',
+        basename: 'foo.png',
+        moduleRootPath: '../..',
       })
       expect(file.out).to.include({
         path: 'the-component/v1.2.3/_images/foo.png',
@@ -690,6 +704,22 @@ describe('classifyContent()', () => {
       })
       expect(file.out).to.not.exist()
       expect(file.pub).to.not.exist()
+    })
+
+    it('should throw when attempting to add a duplicate nav outside of module', () => {
+      const file = createFile('modules/nav.adoc')
+      aggregate[0].files.push(file)
+      aggregate[0].files.push(file)
+      aggregate[0].nav = ['modules/nav.adoc']
+      expect(() => classifyContent(playbook, aggregate)).to.throw('Duplicate nav: v1.2.3@the-component:nav$modules/nav.adoc')
+    })
+
+    it('should throw when attempting to add a duplicate nav inside of module', () => {
+      const file = createFile('modules/ROOT/nav.adoc')
+      aggregate[0].files.push(file)
+      aggregate[0].files.push(file)
+      aggregate[0].nav = ['modules/ROOT/nav.adoc']
+      expect(() => classifyContent(playbook, aggregate)).to.throw('Duplicate nav: v1.2.3@the-component::nav$nav.adoc')
     })
 
     it('should classify a navigation file in module', () => {
