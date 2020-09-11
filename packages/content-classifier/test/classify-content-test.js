@@ -895,12 +895,23 @@ describe('classifyContent()', () => {
     })
 
     it('should warn if site start page not found', () => {
-      playbook.site.startPage = 'no-such-page.adoc'
+      playbook.site.startPage = 'the-component::no-such-page.adoc'
       aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
-      //expect(() => classifyContent(playbook, aggregate)).to.throw(/Start page specified for site not found/)
+      const expectedMessage = /Start page specified for site not found: the-component::no-such-page\.adoc/
+      //expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
       const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
       expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0]).to.match(/Start page specified for site not found/)
+      expect(stdErrMessages[0]).to.match(expectedMessage)
+    })
+
+    it('should warn if site start page spec does not specify a component', () => {
+      playbook.site.startPage = 'no-such-page.adoc'
+      aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
+      const expectedMessage = /Missing component name in start page for site: no-such-page\.adoc/
+      //expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
+      const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0]).to.match(expectedMessage)
     })
   })
 
