@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *playbook-builder*: Show path to playbook file in error message if file not found (#650)
+* *playbook-builder*: Disallow file URI as value of `site.url` in playbook (#675)
 * *content-aggregator*: Drop use of transitive escape-string-regexp dependency
 * *content-classifier*: Show more informative message if component name is missing in start page for site (#665)
 * *ui-loader*: Retain the cwd property (and thus base property) for supplemental UI files read from the local filesystem (#627)

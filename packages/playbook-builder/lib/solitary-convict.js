@@ -108,13 +108,16 @@ function registerFormats (convict) {
       if (val == null) return
       if (val.constructor === String) {
         if (val.charAt() === '/') val = 'https://example.org' + val
-        let parsed
+        let protocol
+        let pathname
         try {
-          parsed = new URL(val)
+          ;({ protocol, pathname } = new URL(val))
         } catch (e) {
           throw new Error('must be an absolute URL or a pathname (i.e., root-relative path)')
         }
-        if (~parsed.pathname.indexOf('%20')) {
+        if (protocol !== 'https:' && protocol !== 'http:') {
+          throw new Error('must be an absolute URL or a pathname (i.e., root-relative path)')
+        } else if (~pathname.indexOf('%20')) {
           throw new Error('must not contain spaces')
         }
       } else {
