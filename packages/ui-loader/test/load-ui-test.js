@@ -46,7 +46,7 @@ describe('loadUi()', () => {
   const zipDir = (dir) =>
     new Promise((resolve, reject) =>
       vfs
-        .src('**/*', { base: dir, cwd: dir })
+        .src('**/*', { cwd: dir })
         // NOTE set stable file permissions
         .pipe(
           new Transform({
@@ -59,7 +59,7 @@ describe('loadUi()', () => {
             },
           })
         )
-        .pipe(zip.dest(dir + '.zip'))
+        .pipe(zip.dest(`${dir}.zip`))
         .on('error', reject)
         .on('end', resolve)
     )

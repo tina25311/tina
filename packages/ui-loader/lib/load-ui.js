@@ -241,14 +241,14 @@ function srcSupplementalFiles (filesSpec, startDir) {
       }, [])
     ).then((files) => files.reduce((accum, file) => accum.set(file.path, file) && accum, new Map()))
   } else {
-    const base = expandPath(filesSpec, '~+', startDir)
+    const cwd = expandPath(filesSpec, '~+', startDir)
     return fs
-      .access(base)
+      .access(cwd)
       .then(
         () =>
           new Promise((resolve, reject) =>
             vfs
-              .src(SUPPLEMENTAL_FILES_GLOB, { base, cwd: base, removeBOM: false })
+              .src(SUPPLEMENTAL_FILES_GLOB, { cwd, removeBOM: false })
               .on('error', reject)
               .pipe(relativizeFiles())
               .pipe(collectFiles(resolve))

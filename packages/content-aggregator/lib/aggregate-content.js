@@ -382,9 +382,9 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
 }
 
 function readFilesFromWorktree (worktreePath, startPath) {
-  const base = path.join(worktreePath, startPath)
+  const cwd = path.join(worktreePath, startPath)
   return fs
-    .stat(base)
+    .stat(cwd)
     .catch(() => {
       throw new Error(`the start path '${startPath}' does not exist`)
     })
@@ -392,7 +392,7 @@ function readFilesFromWorktree (worktreePath, startPath) {
       if (!stat.isDirectory()) throw new Error(`the start path '${startPath}' is not a directory`)
       return new Promise((resolve, reject) =>
         vfs
-          .src(CONTENT_GLOB, { base, cwd: base, removeBOM: false })
+          .src(CONTENT_GLOB, { cwd, removeBOM: false })
           .on('error', reject)
           .pipe(relativizeFiles())
           .pipe(collectFiles(resolve))
