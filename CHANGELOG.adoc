@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *playbook-builder*: Show path to playbook file in error message if file not found (#650)
 * *content-aggregator*: Drop use of transitive escape-string-regexp dependency
 
 === Fixed
