@@ -490,6 +490,8 @@ function walkGitTree (repo, root, filter) {
 
 /**
  * Returns true if the entry should be processed or false if it should be skipped.
+ * Ignores files that begin with dot ('.') (entry.path is a basename) or that do
+ * not have a file extension.
  */
 function filterGitEntry (entry) {
   return entry.path.charAt() !== '.' && (entry.type !== 'blob' || ~entry.path.indexOf('.'))
