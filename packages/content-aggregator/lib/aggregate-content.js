@@ -220,9 +220,10 @@ function extractCredentials (url) {
   }
 }
 
-function collectFilesFromSource (source, repo, remoteName, authStatus) {
+async function collectFilesFromSource (source, repo, remoteName, authStatus) {
+  const originUrl = repo.url || (await resolveRemoteUrl(repo, remoteName))
   return selectReferences(source, repo, remoteName).then((refs) =>
-    Promise.all(refs.map((ref) => collectFilesFromReference(source, repo, remoteName, authStatus, ref)))
+    Promise.all(refs.map((ref) => collectFilesFromReference(source, repo, remoteName, authStatus, ref, originUrl)))
   )
 }
 
@@ -329,10 +330,9 @@ function getCurrentBranchName (repo, remote) {
   return refPromise.then((ref) => (ref.startsWith('refs/') ? ref.replace(SHORTEN_REF_RX, '') : undefined))
 }
 
-async function collectFilesFromReference (source, repo, remoteName, authStatus, ref) {
+async function collectFilesFromReference (source, repo, remoteName, authStatus, ref, originUrl) {
   const url = repo.url
   const displayUrl = url || repo.dir
-  const originUrl = url || (await resolveRemoteUrl(repo, remoteName))
   const editUrl = source.editUrl
   let worktreePath
   if (ref.head && !(url || repo.noCheckout)) {
