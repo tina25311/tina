@@ -564,6 +564,18 @@ describe('buildPlaybook()', () => {
     expect(playbook.site.url).to.equal('/docs')
   })
 
+  it('should throw error if site.url is a relative path', () => {
+    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'docs'], {})).to.throw(
+      'must be an absolute URL or a pathname (i.e., root-relative path)'
+    )
+  })
+
+  it('should throw error if site.url is a file URI', () => {
+    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'file:///path/to/docs'], {})).to.throw(
+      'must be an absolute URL or a pathname (i.e., root-relative path)'
+    )
+  })
+
   it('should throw error if site.url is an invalid URL', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', ':/foo'], {})).to.throw(
       'must be an absolute URL or a pathname (i.e., root-relative path)'
