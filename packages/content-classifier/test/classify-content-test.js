@@ -17,9 +17,10 @@ describe('classifyContent()', () => {
     const basename = path.basename(path_)
     const extname = path.extname(path_)
     const stem = path.basename(path_, extname)
+    const origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
     return {
       path: path_,
-      src: { basename, mediaType: mimeTypes.lookup(extname), stem, extname },
+      src: { basename, mediaType: mimeTypes.lookup(extname), stem, extname, origin },
     }
   }
 
@@ -358,10 +359,16 @@ describe('classifyContent()', () => {
 
   describe('classify files', () => {
     it('should throw when attempting to add a duplicate page', () => {
-      const file = createFile('modules/ROOT/pages/page-one.adoc')
-      aggregate[0].files.push(file)
-      aggregate[0].files.push(file)
-      expect(() => classifyContent(playbook, aggregate)).to.throw('Duplicate page: v1.2.3@the-component::page-one.adoc')
+      const file1 = createFile('modules/ROOT/pages/page-one.adoc')
+      const file2 = createFile('modules/ROOT/pages/page-one.adoc')
+      file2.src.origin.branch = 'v1.2.x'
+      aggregate[0].files.push(file1)
+      aggregate[0].files.push(file2)
+      const expectedMessage =
+        'Duplicate page: v1.2.3@the-component::page-one.adoc\n' +
+        '  1: modules/ROOT/pages/page-one.adoc in https://githost/repo.git (ref: v1.2.3)\n' +
+        '  2: modules/ROOT/pages/page-one.adoc in https://githost/repo.git (ref: v1.2.x)'
+      expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
     it('should classify a page', () => {
@@ -556,10 +563,16 @@ describe('classifyContent()', () => {
     })
 
     it('should throw when attempting to add a duplicate image', () => {
-      const file = createFile('modules/ROOT/images/foo.png')
-      aggregate[0].files.push(file)
-      aggregate[0].files.push(file)
-      expect(() => classifyContent(playbook, aggregate)).to.throw('Duplicate image: v1.2.3@the-component::image$foo.png')
+      const file1 = createFile('modules/admin/images/foo.png')
+      const file2 = createFile('modules/admin/images/foo.png')
+      file2.src.origin.branch = 'v1.2.x'
+      aggregate[0].files.push(file1)
+      aggregate[0].files.push(file2)
+      const expectedMessage =
+        'Duplicate image: v1.2.3@the-component:admin:image$foo.png\n' +
+        '  1: modules/admin/images/foo.png in https://githost/repo.git (ref: v1.2.3)\n' +
+        '  2: modules/admin/images/foo.png in https://githost/repo.git (ref: v1.2.x)'
+      expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
     it('should classify an image', () => {
@@ -707,19 +720,35 @@ describe('classifyContent()', () => {
     })
 
     it('should throw when attempting to add a duplicate nav outside of module', () => {
-      const file = createFile('modules/nav.adoc')
-      aggregate[0].files.push(file)
-      aggregate[0].files.push(file)
+      const file1 = createFile('modules/nav.adoc')
+      file1.src.origin.startPath = 'docs'
+      const file2 = createFile('modules/nav.adoc')
+      file2.src.origin.branch = 'v1.2.x'
+      file2.src.origin.startPath = 'docs'
+      aggregate[0].files.push(file1)
+      aggregate[0].files.push(file2)
       aggregate[0].nav = ['modules/nav.adoc']
-      expect(() => classifyContent(playbook, aggregate)).to.throw('Duplicate nav: v1.2.3@the-component:nav$modules/nav.adoc')
+      const expectedMessage =
+        'Duplicate nav in v1.2.3@the-component: modules/nav.adoc\n' +
+        '  1: docs/modules/nav.adoc in https://githost/repo.git (ref: v1.2.3)\n' +
+        '  2: docs/modules/nav.adoc in https://githost/repo.git (ref: v1.2.x)'
+      expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
     it('should throw when attempting to add a duplicate nav inside of module', () => {
-      const file = createFile('modules/ROOT/nav.adoc')
-      aggregate[0].files.push(file)
-      aggregate[0].files.push(file)
-      aggregate[0].nav = ['modules/ROOT/nav.adoc']
-      expect(() => classifyContent(playbook, aggregate)).to.throw('Duplicate nav: v1.2.3@the-component::nav$nav.adoc')
+      const file1 = createFile('modules/install/nav.adoc')
+      const file2 = createFile('modules/install/nav.adoc')
+      file1.src.origin.branch = 'v1.2.x'
+      file2.src.origin.tag = 'v1.2.3'
+      delete file2.src.origin.branch
+      aggregate[0].files.push(file1)
+      aggregate[0].files.push(file2)
+      aggregate[0].nav = ['modules/install/nav.adoc']
+      const expectedMessage =
+        'Duplicate nav in v1.2.3@the-component: modules/install/nav.adoc\n' +
+        '  1: modules/install/nav.adoc in https://githost/repo.git (ref: v1.2.x)\n' +
+        '  2: modules/install/nav.adoc in https://githost/repo.git (ref: v1.2.3)'
+      expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
     it('should classify a navigation file in module', () => {

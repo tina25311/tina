@@ -111,7 +111,21 @@ class ContentCatalog {
     const src = file.src
     const key = generateKey(src)
     if (this[$files].has(key)) {
-      throw new Error(`Duplicate ${src.family}: ${generateResourceSpec(src)}`)
+      const details = [this[$files].get(key), file]
+        .map(({ path: path_, src: { abspath, origin } }, idx) => {
+          const pathInfo =
+            abspath ||
+            (origin
+              ? `${path.join(origin.startPath, path_)} in ${origin.url} (ref: ${origin.branch || origin.tag})`
+              : path_)
+          return `  ${idx + 1}: ${pathInfo}`
+        })
+        .join('\n')
+      if (src.family === 'nav') {
+        throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}\n${details}`)
+      } else {
+        throw new Error(`Duplicate ${src.family}: ${generateResourceSpec(src)}\n${details}`)
+      }
     }
     if (!File.isVinyl(file)) file = new File(file)
     const actingFamily = src.family === 'alias' ? file.rel.src.family : src.family
@@ -317,7 +331,7 @@ function generateKey ({ component, version, module: module_, family, relative })
 }
 
 function generateResourceSpec ({ component, version, module: module_, family, relative }, shorthand = true) {
-  if (module_ == null && family === 'nav') return `${version}@${component}:nav$${relative}`
+  //if (module_ == null && family === 'nav') return `${version}@${component}:nav$${relative}`
   return (
     `${version}@${component}:${shorthand && module_ === 'ROOT' ? '' : module_}:` +
     (family === 'page' || family === 'alias' ? '' : `${family}$`) +
