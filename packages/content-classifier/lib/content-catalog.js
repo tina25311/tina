@@ -108,13 +108,13 @@ class ContentCatalog {
   }
 
   addFile (file) {
-    const key = generateKey(file.src)
+    const src = file.src
+    const key = generateKey(src)
     if (this[$files].has(key)) {
-      throw new Error(`Duplicate ${file.src.family}: ${generateResourceSpec(file.src)}`)
+      throw new Error(`Duplicate ${src.family}: ${generateResourceSpec(src)}`)
     }
     if (!File.isVinyl(file)) file = new File(file)
-    const family = file.src.family
-    const actingFamily = family === 'alias' ? file.rel.src.family : family
+    const actingFamily = src.family === 'alias' ? file.rel.src.family : src.family
     let publishable
     if (file.out) {
       publishable = true
@@ -122,13 +122,13 @@ class ContentCatalog {
       delete file.out
     } else if (
       (actingFamily === 'page' || actingFamily === 'image' || actingFamily === 'attachment') &&
-      !~('/' + file.src.relative).indexOf('/_')
+      !~('/' + src.relative).indexOf('/_')
     ) {
       publishable = true
-      file.out = computeOut(file.src, actingFamily, this.htmlUrlExtensionStyle)
+      file.out = computeOut(src, actingFamily, this.htmlUrlExtensionStyle)
     }
     if (!file.pub && (publishable || actingFamily === 'nav')) {
-      file.pub = computePub(file.src, file.out, actingFamily, this.htmlUrlExtensionStyle)
+      file.pub = computePub(src, file.out, actingFamily, this.htmlUrlExtensionStyle)
     }
     this[$files].set(key, file)
     return file
