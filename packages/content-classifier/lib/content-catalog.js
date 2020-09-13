@@ -25,10 +25,14 @@ class ContentCatalog {
     const componentVersion = { displayVersion: displayVersion || version, title: title || name, version }
     Object.defineProperty(componentVersion, 'name', { value: name, enumerable: true })
     let startPage
+    let startPageSrc
     const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
     if (startPageSpec) {
-      const { src: startPageSrc } = (startPage = this.resolvePage(startPageSpec, indexPageId)) || {}
-      if (startPageSrc && startPageSrc.component === name && startPageSrc.version === version) {
+      if (
+        (startPage = this.resolvePage(startPageSpec, indexPageId)) &&
+        (startPageSrc = startPage.src).component === name &&
+        startPageSrc.version === version
+      ) {
         if ((startPageSrc.module !== 'ROOT' || startPageSrc.relative !== 'index.adoc') && !this.getById(indexPageId)) {
           this.addFile({ mediaType: 'text/html', src: inflateSrc(indexPageId, 'alias'), rel: startPage })
         }
@@ -43,9 +47,8 @@ class ContentCatalog {
       componentVersion.url = startPage.pub.url
     } else {
       // QUESTION: should we warn if the default start page cannot be found?
-      const startPageSrc = inflateSrc(indexPageId)
       componentVersion.url = computePub(
-        startPageSrc,
+        (startPageSrc = inflateSrc(indexPageId)),
         computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle),
         startPageSrc.family,
         this.htmlUrlExtensionStyle
