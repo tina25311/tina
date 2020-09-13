@@ -35,13 +35,8 @@ function convertPageRef (refSpec, content, currentPage, contentCatalog, relativi
     pageSpec = refSpec
     hash = ''
   }
-  try {
-    if (!((targetPage = contentCatalog.resolvePage(pageSpec, currentPage.src)) && targetPage.pub)) {
-      // TODO log "Unresolved page ID"
-      return { content: content || refSpec, target: '#' + refSpec, unresolved: true }
-    }
-  } catch (e) {
-    // TODO log "Invalid page ID syntax" (or e.message)
+  if (!((targetPage = contentCatalog.resolvePage(pageSpec, currentPage.src)) && targetPage.pub)) {
+    // TODO log "Unresolved page ID" if undefined or "Invalid page ID syntax" if false
     return { content: content || refSpec, target: '#' + refSpec, unresolved: true }
   }
   if (relativize) {

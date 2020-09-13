@@ -537,6 +537,24 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock.getSourceLines()).to.eql([expectedSource])
     })
 
+    it('should skip include directive if target resource ID has invalid syntax', () => {
+      const contentCatalog = mockContentCatalog().spyOn('getById')
+      const inputContents = 'include::module-a:partial$$[]'
+      setInputFileContents(inputContents)
+      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      expect(contentCatalog.getById).to.not.have.been.called()
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include('page-a.adoc: line 1: include target not found: module-a:partial$$')
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('paragraph')
+      const expectedSource = [
+        'Unresolved include directive in modules/module-a/pages/page-a.adoc',
+        'include::module-a:partial$$[]',
+      ].join(' - ')
+      expect(firstBlock.getSourceLines()).to.eql([expectedSource])
+    })
+
     it('should not clobber surrounding lines when include target cannot be resolved', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       const inputContents = 'before\ninclude::partial$does-not-exist.adoc[]\nafter'
@@ -3232,6 +3250,15 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:no-such-image.png')
     })
 
+    it('should pass through target of block image with invalid resource ID', () => {
+      const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
+      setInputFileContents('image::module-b:image$$[The Image,250]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).to.not.have.been.called()
+      //expect(html).to.include(' class="imageblock unresolved"')
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
+    })
+
     it('should resolve target of image block if matches resource ID', () => {
       const contentCatalog = mockContentCatalog([
         inputFile.src,
@@ -3266,6 +3293,15 @@ describe('loadAsciiDoc()', () => {
         })
       //expect(html).to.include(' class="image unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:no-such-image.png')
+    })
+
+    it('should pass through target of inline image with invalid resource ID', () => {
+      const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
+      setInputFileContents('Look for image:module-b:image$$[The Image,16]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).to.not.have.been.called()
+      //expect(html).to.include(' class="imageblock unresolved"')
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
     it('should resolve target of image block if matches resource ID', () => {

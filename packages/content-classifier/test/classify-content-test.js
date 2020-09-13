@@ -491,6 +491,14 @@ describe('classifyContent()', () => {
       expect(stdErrMessages[0]).to.match(/Start page .* not found/)
     })
 
+    it('should warn if start page specified for component version has invalid syntax', () => {
+      aggregate[0].startPage = 'the-component::'
+      //expect(() => classifyContent(playbook, aggregate)).to.throw(/Start page .* not found/)
+      const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0]).to.match(/Start page .* has invalid syntax/)
+    })
+
     it('should set url to index page in ROOT module if found', () => {
       aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
       const expectedUrl = '/the-component/v1.2.3/index.html'
@@ -957,6 +965,15 @@ describe('classifyContent()', () => {
       playbook.site.startPage = 'the-component::no-such-page.adoc'
       aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
       const expectedMessage = /Start page specified for site not found: the-component::no-such-page\.adoc/
+      //expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
+      const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0]).to.match(expectedMessage)
+    })
+
+    it('should warn if site start page has invalid syntax', () => {
+      playbook.site.startPage = 'the-component::'
+      const expectedMessage = /Start page specified for site has invalid syntax: the-component::/
       //expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
       const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
       expect(stdErrMessages).to.have.lengthOf(1)

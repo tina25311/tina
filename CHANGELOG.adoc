@@ -13,6 +13,8 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Disallow file URI as value of `site.url` in playbook (#675)
 * *content-aggregator*: Drop use of transitive escape-string-regexp dependency
 * *content-classifier*: Show more informative message if component name is missing in start page for site (#665)
+* *content-classifier*: Change ContentCatalog#resolveResource to return false instead of throw error when resource ID spec has invalid syntax (#676)
+* *content-classifier*: Warn instead of crash when start page specified for site or component version has invalid syntax (#676)
 * *ui-loader*: Retain the cwd property (and thus base property) for supplemental UI files read from the local filesystem (#627)
 * *ui-loader*: Set stat.size on files extracted from UI bundle
 
