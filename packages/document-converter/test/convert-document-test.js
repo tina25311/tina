@@ -564,9 +564,7 @@ describe('convertDocument()', () => {
     it(`should use ${macroType} image target if target matches resource ID spec and syntax is invalid`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}component-b::[]`)
       const contentCatalog = {
-        resolveResource: spy(() => {
-          throw new Error()
-        }),
+        resolveResource: spy(() => false),
         getComponent: () => {},
       }
       convertDocument(inputFile, contentCatalog, asciidocConfig)
