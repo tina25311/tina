@@ -37,8 +37,11 @@ class ContentCatalog {
           this.addFile({ mediaType: 'text/html', src: inflateSrc(indexPageId, 'alias'), rel: startPage })
         }
       } else {
+        console.warn(
+          `Start page specified for ${version}@${name} ${startPage === false ? 'has invalid syntax' : 'not found'}: ` +
+            startPageSpec
+        )
         startPage = this.getById(indexPageId)
-        console.warn(`Start page specified for ${version}@${name} not found: ${startPageSpec}`)
       }
     } else {
       startPage = this.getById(indexPageId)
@@ -241,8 +244,9 @@ class ContentCatalog {
     const rel = this.resolvePage(startPageSpec)
     if (rel) {
       return this.addFile({ mediaType: 'text/html', src: inflateSrc(Object.assign({}, START_ALIAS_ID), 'alias'), rel })
-    }
-    if (~startPageSpec.indexOf(':')) {
+    } else if (rel === false) {
+      console.warn(`Start page specified for site has invalid syntax: ${startPageSpec}`)
+    } else if (~startPageSpec.indexOf(':')) {
       console.warn(`Start page specified for site not found: ${startPageSpec}`)
     } else {
       console.warn(`Missing component name in start page for site: ${startPageSpec}`)
