@@ -43,15 +43,14 @@ Custom attributes often store frequently used text and URLs.
 They're then referenced throughout the page by simply entering their name (instead of repeatedly typing the text or URLs).
 Before they can be referenced, custom attributes must have a user-defined name and be assigned a value.
 
+[#naming-rules]
 The attribute's name must:
 
 * be at least one character long,
 * begin with a word character (A-Z, a-z, 0-9, or _), and
-* only contain word characters and hyphens.
+* only contain word characters and hyphens, meaning the name cannot contain a dot (`.`) or a space.
 
-The name cannot contain dots (`.`) or blank spaces.
-
-Although uppercase characters are permitted in an attribute name, the name is converted to lowercase before being stored.
+Although uppercase characters are permitted in an attribute name, the name is automatically converted to lowercase before being stored.
 A best practice is to only use lowercase letters in the name and avoid starting the name with a number.
 
 Attribute values can:

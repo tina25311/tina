@@ -39,9 +39,10 @@ name: colorado
 ----
 
 The value can contain letters, numbers, underscores (`+_+`), hyphens (`-`), and periods (`.`).
-The value *cannot* contain blank spaces or forward slashes (`/`).
+The value *cannot* contain a space, a forward slash (`/`), or HTML special characters (`&`, `<`, or `>`).
+The value *cannot* be empty.
 
-TIP: To minimize the likelihood of portability issues between web servers, letters used in the `name` key's value should be lowercase.
+TIP: To ensure portability between host platforms, letters used in the `name` value should be lowercase.
 
 Antora uses the `name` key when interpreting page and resource IDs and generating the URLs for the component version's pages.
 Unless the xref:component-title.adoc[title key is set], it uses `name` for sorting components in the component version selector and where ever the component's name is displayed in the reference UI, which includes the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector], and
@@ -71,9 +72,10 @@ version: '5.6' # <1>
 <1> Values that start with a number should be enclosed in a set of single quote marks (`'`).
 
 The value can contain letters, numbers, periods (`.`), underscores (`+_+`), and hyphens (`-`).
-It *cannot* contain blank spaces or forward slashes (`/`).
+The value *cannot* contain a space, a forward slash (`/`), or HTML special characters (`&`, `<`, or `>`).
+The value *cannot* be empty.
 
-TIP: To minimize the likelihood of portability issues between web servers, letters used in the `version` value should be lowercase.
+TIP: To ensure portability between host platforms, letters used in the `version` value should be lowercase.
 
 If a component version is a prerelease, you may want to set the xref:component-prerelease.adoc[optional prerelease key] in addition to `version`.
 xref:component-with-no-version.adoc[Unversioned or version-less component versions] can be defined using the reserved value `master`.

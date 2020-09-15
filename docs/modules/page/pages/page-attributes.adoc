@@ -47,7 +47,7 @@ Here's an example of an xref:attributes.adoc#attribute-entry[attribute entry] th
 The name of this page attribute is `name-goes-here` (the `page-` prefix plus the custom name, `name-goes-here`).
 Its value is `value goes here`.
 
-Like all AsciiDoc document attributes, the name cannot contain dots (`.`) or blank spaces.
+The name of the page attribute must adhere to the xref:define-and-modify-attributes.adoc#naming-rules[naming rules] for a document attribute.
 The value can be left blank or it can be a string value.
 If the value is not blank, it must be offset from the closing colon (`:`) by at least one space.
 
