@@ -41,6 +41,7 @@
 :uri-gitter-antora-dev: https://gitter.im/antora/dev
 :uri-gulp: https://gulpjs.com
 :uri-istanbul: https://istanbul.js.org/
+:uri-lerna: https://lerna.js.org
 :uri-mocha: https://mochajs.org/
 :uri-node: https://nodejs.org
 :uri-nvm: https://github.com/creationix/nvm
@@ -444,6 +445,7 @@ In order to obtain the source code, run the test suite, and launch Antora, you'l
 * Node / npm
 * Yarn
 * Gulp (CLI only)
+* Lerna
 * Development libraries (e.g., a C compiler)
 
 The following sections describe the prerequisites in detail and provide resources with additional instructions about how to install them.
@@ -543,6 +545,23 @@ You can verify this command is on your path using:
 
 If you see a version, you're all set.
 
+==== Lerna
+
+This project uses {uri-lerna}[Lerna] (command: `lerna`) to manage and release multiple packages in this repository.
+The packages are located under the [.path]_packages/_ folder (which you can list using `lerna list`).
+The main task we need Lerna for is to clean the installed dependencies.
+
+To use Lerna, you need to install it globally using:
+
+ $ npm install -g lerna
+
+The lerna module provides the `lerna` command.
+You can verify this command is on your path using:
+
+ $ lerna --version
+
+If you see a version, you're all set.
+
 ==== Development Libraries
 
 Some Node packages require development libraries, such as a C compiler, to be available on your machine.
@@ -589,6 +608,14 @@ In your terminal, execute the following command from the root folder of the proj
 
 The default command in Yarn is `install`, so running `yarn` by itself is the equivalent of running `yarn install`.
 The install command uses dependency information defined in [.path]_package.json_ and [.path]_yarn.lock_ to resolve dependencies, which Yarn then installs inside the project under the [.path]_node_modules/_ folder.
+
+After pulling the latest source, you may need to update the dependencies.
+It's best to start with a fresh slate by removing the previously install dependencies, then installing them again.
+To do so, run the following commands in sequence:
+
+ $ lerna clean --yes
+   rm -rf node_modules
+   yarn
 
 NOTE: If you run into problems while installing dependencies, return to <<Development Libraries>>.
 
