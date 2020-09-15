@@ -46,6 +46,10 @@ These attributes are intended to be reasonable defaults.
 Unlike other intrinsic attributes, they *can* be reconfigured using the CLI or playbook.
 They can also be redefined in such a way that they can be overridden by the component descriptor or page.
 
+CAUTION: The only syntax highlighter that Antora currently supports for source blocks is highlight.js.
+Therefore, it doesn't make sense to change the `source-highlighter` attribute to any other value.
+If you'd like to disable syntax highlighting on source blocks, you can disable this attribute.
+
 Antora also passes general site information using attributes.
 
 * `site-title`
