@@ -15,11 +15,11 @@ On this page, you'll learn:
 You can use any currently supported Node LTS release with Antora, but we recommend using the most recent LTS version so that you benefit from the latest performance and security enhancements.
 The https://nodejs.org/en/about/releases/[Node release schedule^] shows which Node LTS versions are active.
 
-To check which Node version you have installed, open a terminal and type:
+To check which Node version you have installed, open a terminal and run:
 
  $ node --version
 
-If you need to upgrade to the latest Node LTS version, type:
+If you need to upgrade to the latest Node LTS version, run:
 
 .Linux and macOS
  $ nvm install --lts
@@ -28,7 +28,7 @@ If you need to upgrade to the latest Node LTS version, type:
 [subs=attributes+]
  $ nvm install {version-node}
 
-Next, to set the latest version of Node as the default for any new terminal, type:
+Next, to set the latest version of Node as the default for any new terminal, run:
 
 .Linux and macOS
 [subs=attributes+]
@@ -44,10 +44,10 @@ Now you're ready to upgrade to the latest version of Antora.
 
 If you installed the Antora CLI and default site generator globally, you can upgrade them at the same time.
 
-In a terminal, type:
+In a terminal, run:
 
 [subs=attributes+]
- $ npm install -g @antora/cli@{page-component-version} @antora/site-generator-default@{page-component-version}
+ $ npm i -g @antora/cli@{page-component-version} @antora/site-generator-default@{page-component-version}
 
 npm will automatically install the latest version of Antora.
 
@@ -75,12 +75,12 @@ In this case, you'll need to upgrade the Antora CLI and site generator as descri
 
 == Upgrade the Antora CLI and site generator separately
 
-If you didn't install a previous version of Antora site generator globally, you'll need to upgrade the Antora CLI and default site generator separately.
+If you have installed the Antora CLI globally, but the Antora site generator in the project, you'll need to upgrade them separately.
 
 . Upgrade the CLI globally by typing:
 +
 [subs=attributes+]
- $ npm install -g @antora/cli@{page-component-version}
+ $ npm i -g @antora/cli@{page-component-version}
 
 . Change to your local project directory.
 This is typically where your Antora playbook file, [.path]_antora-playbook.yml_, is stored.
@@ -101,10 +101,13 @@ We recommend specifying a partial version number (major.minor) so that you recei
 
 . Save the file.
 
-. Upgrade the site generator by running the `npm install` command.
+. Remove the [.path]_node_modules_ folder and [.path]_package-lock.json_ file.
+Although removing the [.path]_node_modules_ folder is not always required, doing so ensure you get the result that you want.
+
+. Upgrade the site generator by running the `npm i` command.
 +
 --
- $ npm install
+ $ npm i
 
 TIP: If you're using yarn instead of npm, run the `yarn` command after updating  [.path]_package.json_.
 It may be necessary to pass the `--force` flag to force an update.

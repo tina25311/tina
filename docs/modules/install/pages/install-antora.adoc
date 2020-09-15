@@ -19,7 +19,7 @@ However, you can also install Antora in a project directory if you prefer.
 
 == Install Antora globally using npm
 
-To install the Antora CLI and site generator packages globally, open a terminal and type:
+To install the Antora CLI and site generator packages globally, open a terminal and run:
 
 [subs=attributes+]
  $ npm i -g @antora/cli@{page-component-version} @antora/site-generator-default@{page-component-version}
@@ -63,12 +63,12 @@ You can opt to install Antora in a project directory, such as the directory wher
 When possible, we recommend installing the Antora CLI globally so that the `antora` command is available on your PATH.
 You can then install the site generator packages in a project directory.
 
-To install *only* the CLI globally, type:
+To install *only* the CLI globally, run:
 
 [subs=attributes+]
  $ npm i -g @antora/cli@{page-component-version}
 
-Or, to install the CLI in a project directory, change into your project directory, and type:
+Or, to install the CLI in a project directory, change into your project directory, and run:
 
 [subs=attributes+]
  $ npm i @antora/cli@{page-component-version}
@@ -91,10 +91,14 @@ The command should report the Antora CLI version in the terminal (where `.x` rep
 
 If you installed the CLI globally, change into the project directory before installing the site generator.
 
-Next, install the site generator package.
+Next, run the following command to install the site generator package:
 
 [subs=attributes+]
  $ npm i @antora/site-generator-default@{page-component-version}
+
+TIP: If you're reinstalling Antora, it's best to first remove the [.path]_node_modules_ folder.
+If you also want to get the latest version of each dependency, remove the [.path]_package-lock.json_ file as well.
+If you do remove the [.path]_node_modules_ folder, be sure to install the CLI package again (unless you've installed it globally).
 
 The `@antora/site-generator-default` and its dependent packages will be installed into the [.path]_node_modules_ folder inside your project.
 The `antora` command will look for these packages there first before looking in the global installation folder.
