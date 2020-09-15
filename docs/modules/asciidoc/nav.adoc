@@ -18,6 +18,7 @@
 * xref:embed-video.adoc[Embed a Video]
 * xref:ui-macros.adoc[UI Macros]
 // Paragraphs and Blocks
+* xref:source.adoc[Source Blocks]
 * xref:admonitions.adoc[Admonitions]
 * xref:examples.adoc[Examples]
 * xref:sidebar.adoc[Sidebars]
