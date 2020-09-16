@@ -1,4 +1,4 @@
-= What's New in Antora
+= What's New in Antora {page-component-version}
 :doctype: book
 :url-releases-asciidoctor: https://github.com/asciidoctor/asciidoctor/releases
 :url-releases-asciidoctorjs: https://github.com/asciidoctor/asciidoctor.js/releases
