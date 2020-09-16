@@ -20,22 +20,24 @@ _**Release date:** 2020.09.15 | *Issue label:* {url-milestone-2-3-4}[2.3.4^]_
 
 === Changed
 
-Issue {url-issues}/627[#627^]:: Retain the `cwd` property, and thus the `base` property, for supplemental UI files read from the local filesystem.
 Issue {url-issues}/650[#650^]:: If the playbook file isn't found, display the invalid file path in the error message.
 Issue {url-issues}/665[#665^]:: Show a more informative error message if the page ID specifying the site start page (`site.start_page`) is missing a component name.
+Issue {url-issues}/676[#676^]:: Instead of crashing, display a warning when the page ID specifying the start page for a site or component version contains invalid syntax.
+Also change `ContentCatalog#resolveResource` (and thus `ContentCatalog#resolvePage`) to return `false` instead of throwing an error when a resource ID has invalid syntax.
+This change makes the `resolvePage` and `resolvePageURL` UI helper functions more resilient.
 Issue {url-issues}/675[#675^]:: Disallow a file URI as the value of `site.url` in the playbook.
-Issue {url-issues}/676[#676^]:: Instead of crashing, issue a warning when the page ID specifying the start page for a site or component version contains invalid syntax.
-Change `ContentCatalog#resolveResource` to return `false` instead of throwing an error when a resource ID has invalid syntax.
+Issue {url-issues}/627[#627^]:: Retain the `cwd` property, and thus the `base` property, for supplemental UI files read from the local filesystem.
 
 === Fixed
 
-Issue {url-issues}/587[#587^]::
-Show a more detailed error message when attempting to add a duplicate file.
-_Also known as the infamous "`Duplicate nav`" conundrum_.
-Issue {url-issues}/627[#627^]:: Allow dot files (i.e., hidden files) in a supplemental UI directory to be used as static files.
 Issue {url-issues}/644[#644^]:: Don't modify the file extension of an AsciiDoc file in the attachments family.
+Issue {url-issues}/587[#587^]:: Show a more detailed error message when attempting to add a duplicate file.
+_Also known as the infamous "`Duplicate nav`" conundrum_.
+This error message will serve as a template for more informative messages to be added in the future once a logging facility is integrated into Antora.
 Issue {url-issues}/648[#648^]:: If a page alias conflicts with an existing page, show the page ID of the page that defines the alias in the error message.
+Issue {url-issues}/627[#627^]:: Allow dot files (i.e., hidden files) in a supplemental UI directory to be used as static files.
 Issue {url-issues}/653[#653^]:: Don't register a page alias for the default component version index page (i.e., `ROOT:index.adoc`) when the `start_page` key in a component version's [.path]_antora.yml_ file specifies a different page.
+This prevents a concrete index page from being overwritten (i.e., shadowed).
 Issue {url-issues}/673[#673^]:: Show an informative error message if the value of a map or primitive-map key in the playbook file is a String.
 
 [#thanks-2-3-4]
