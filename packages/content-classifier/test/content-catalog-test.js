@@ -1240,39 +1240,68 @@ describe('ContentCatalog', () => {
       })
     })
 
-    it('should not allow alias to be registered that matches target page', () => {
+    it('should not permit alias to be registered that matches target page', () => {
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const expectedError = 'Page alias cannot reference itself: 1.2.3@the-component::the-page.adoc'
-      expect(() => contentCatalog.registerPageAlias(targetPageSrc.relative, targetPage)).to.throw(expectedError)
+      targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
+      const aliasSpec = targetPageSrc.relative
+      const expectedError =
+        'Page cannot define alias that references itself: 1.2.3@the-component::the-page.adoc' +
+        ` (specified as: ${aliasSpec})\n` +
+        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+      expect(() => contentCatalog.registerPageAlias(aliasSpec, targetPage)).to.throw(expectedError)
     })
 
     it('should not allow self reference to be used in page alias', () => {
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const expectedError = 'Page alias cannot reference itself: 1.2.3@the-component::the-page.adoc'
-      expect(() => contentCatalog.registerPageAlias('./' + targetPageSrc.relative, targetPage)).to.throw(expectedError)
+      targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
+      const aliasSpec = './' + targetPageSrc.relative
+      const expectedError =
+        'Page cannot define alias that references itself: 1.2.3@the-component::the-page.adoc' +
+        ` (specified as: ${aliasSpec})\n` +
+        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+      expect(() => contentCatalog.registerPageAlias(aliasSpec, targetPage)).to.throw(expectedError)
     })
 
     it('should not allow parent reference to be used in page alias', () => {
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const expectedError = 'Page alias cannot reference itself: 1.2.3@the-component::the-page.adoc'
-      expect(() => contentCatalog.registerPageAlias('../' + targetPageSrc.relative, targetPage)).to.throw(expectedError)
+      targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
+      const aliasSpec = '../' + targetPageSrc.relative
+      const expectedError =
+        'Page cannot define alias that references itself: 1.2.3@the-component::the-page.adoc' +
+        ` (specified as: ${aliasSpec})\n` +
+        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+      expect(() => contentCatalog.registerPageAlias(aliasSpec, targetPage)).to.throw(expectedError)
     })
 
     it('should not allow alias to be registered that matches existing page', () => {
-      const otherPageSrc = Object.assign({}, targetPageSrc)
-      otherPageSrc.relative = otherPageSrc.basename = 'the-other-page.adoc'
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
-      contentCatalog.addFile(new File({ src: otherPageSrc }))
+      targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
+      const existingPageSrc = Object.assign({}, targetPageSrc)
+      existingPageSrc.relative = existingPageSrc.basename = 'the-existing-page.adoc'
+      const existingPage = contentCatalog.addFile(new File({ src: existingPageSrc }))
+      existingPage.path = `modules/${existingPageSrc.module}/pages/${existingPageSrc.relative}`
+      const aliasSpec = existingPageSrc.relative
       const expectedError =
-        'Page alias cannot reference an existing page: 1.2.3@the-component::the-other-page.adoc (from: 1.2.3@the-component::the-page.adoc)'
-      expect(() => contentCatalog.registerPageAlias(otherPageSrc.relative, targetPage)).to.throw(expectedError)
+        'Page alias cannot reference an existing page: 1.2.3@the-component::the-existing-page.adoc' +
+        ` (specified as: ${aliasSpec})\n` +
+        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)\n' +
+        '  existing page: modules/ROOT/pages/the-existing-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+      expect(() => contentCatalog.registerPageAlias(aliasSpec, targetPage)).to.throw(expectedError)
     })
 
     it('should not allow alias to be registered multiple times', () => {
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const expectedError = 'Duplicate alias: 1.2.3@the-component::alias.adoc'
+      targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
+      const expectedError =
+        'Duplicate alias: 1.2.3@the-component::alias.adoc (specified as: ROOT:alias.adoc)\n' +
+        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
       expect(() => contentCatalog.registerPageAlias('alias.adoc', targetPage)).to.not.throw()
-      expect(() => contentCatalog.registerPageAlias('alias.adoc', targetPage)).to.throw(expectedError)
+      expect(() => contentCatalog.registerPageAlias('ROOT:alias.adoc', targetPage)).to.throw(expectedError)
     })
 
     it('should register an alias correctly when the HTML URL extension style is indexify', () => {
