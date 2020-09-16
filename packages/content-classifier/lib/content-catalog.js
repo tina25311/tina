@@ -117,11 +117,16 @@ class ContentCatalog {
     const src = file.src
     const key = generateKey(src)
     if (this[$files].has(key)) {
-      const details = [this[$files].get(key), file].map((it, idx) => `  ${idx + 1}: ${getFileLocation(it)}`).join('\n')
-      if (src.family === 'nav') {
-        throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}\n${details}`)
+      const family = src.family
+      if (family === 'alias') {
+        throw new Error(`Duplicate alias: ${generateResourceSpec(src)}`)
       } else {
-        throw new Error(`Duplicate ${src.family}: ${generateResourceSpec(src)}\n${details}`)
+        const details = [this.getById(src), file].map((it, idx) => `  ${idx + 1}: ${getFileLocation(it)}`).join('\n')
+        if (family === 'nav') {
+          throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}\n${details}`)
+        } else {
+          throw new Error(`Duplicate ${family}: ${generateResourceSpec(src)}\n${details}`)
+        }
       }
     }
     if (!File.isVinyl(file)) file = new File(file)
@@ -253,15 +258,22 @@ class ContentCatalog {
     if (component) {
       // NOTE version is not set when alias specifies a component, but not a version
       if (!src.version) src.version = component.latest.version
-      const existing = this.getById(src)
-      if (existing) {
+      const existingPage = this.getById(src)
+      if (existingPage) {
         throw new Error(
-          existing === target
+          existingPage === target
             ? `Page cannot define alias that references itself: ${generateResourceSpec(src)}` +
-              ` (specified as: ${spec})\n  source: ${getFileLocation(existing)}`
+              ` (specified as: ${spec})\n  source: ${getFileLocation(existingPage)}`
             : `Page alias cannot reference an existing page: ${generateResourceSpec(src)} (specified as: ${spec})\n` +
               `  source: ${getFileLocation(target)}\n` +
-              `  existing page: ${getFileLocation(existing)}`
+              `  existing page: ${getFileLocation(existingPage)}`
+        )
+      }
+      const existingAlias = this.getById(Object.assign({}, src, { family: 'alias' }))
+      if (existingAlias) {
+        throw new Error(
+          `Duplicate alias: ${generateResourceSpec(src)} (specified as: ${spec})\n` +
+            `  source: ${getFileLocation(target)}`
         )
       }
     } else if (!src.version) {

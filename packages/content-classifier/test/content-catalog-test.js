@@ -1294,10 +1294,14 @@ describe('ContentCatalog', () => {
     })
 
     it('should not allow alias to be registered multiple times', () => {
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
-      const expectedError = 'Duplicate alias: 1.2.3@the-component::alias.adoc'
+      targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
+      const expectedError =
+        'Duplicate alias: 1.2.3@the-component::alias.adoc (specified as: ROOT:alias.adoc)\n' +
+        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
       expect(() => contentCatalog.registerPageAlias('alias.adoc', targetPage)).to.not.throw()
-      expect(() => contentCatalog.registerPageAlias('alias.adoc', targetPage)).to.throw(expectedError)
+      expect(() => contentCatalog.registerPageAlias('ROOT:alias.adoc', targetPage)).to.throw(expectedError)
     })
 
     it('should register an alias correctly when the HTML URL extension style is indexify', () => {
