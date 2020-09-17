@@ -58,7 +58,7 @@ If you set a built-in attribute and leave its value blank, Antora assigns the de
 == Set a built-in attribute
 
 Let's activate the AsciiDoc attribute named `sectanchors`.
-The attribute is set by entering its name in an xref:attributes.adoc#attribute-entry[attribute entry] in the header of the page.
+The attribute is set by entering its name in an <<attribute-entry,attribute entry>> in the header of the page.
 
 .Set a built-in attribute
 [source]
@@ -69,7 +69,7 @@ The attribute is set by entering its name in an xref:attributes.adoc#attribute-e
 <1> The attribute is set in page header by directly preceding its name, `sectanchors`, with an opening colon (`:`) and directly following it with a closing colon (`:`).
 
 When set, `sectanchors` adds an anchor to the left of each xref:asciidoc:section-headings.adoc[section title].
-`sectanchors` is a xref:attributes.adoc#boolean[boolean attribute], so its value is an _empty string_.
+`sectanchors` is a <<boolean,boolean attribute>>, so its value is an _empty string_.
 
 == Assign a value to a built-in attribute
 
@@ -110,7 +110,7 @@ Attribute values can:
 * be any inline content, and
 * contain line breaks, but only if an explicit line continuation (`+`) is used.
 
-In <<ex-custom>>, a custom attribute's name and value are defined using an xref:attributes.adoc#attribute-entry[attribute entry].
+In <<ex-custom>>, a custom attribute's name and value are defined using an <<attribute-entry,attribute entry>>.
 
 [#ex-custom]
 .Define a custom attribute using an attribute entry
