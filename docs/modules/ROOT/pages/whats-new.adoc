@@ -9,7 +9,55 @@
 :url-milestone-2-3-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.1
 :url-milestone-2-3-2: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.2
 :url-milestone-2-3-3: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.3
+:url-milestone-2-3-4: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.4
 :url-mr: {url-git-antora}/merge_requests
+
+= Antora 2.3.4
+
+_**Release date:** 2020.09.15 | *Issue label:* {url-milestone-2-3-4}[2.3.4^]_
+
+== Resolved issues
+
+=== Changed
+
+Issue {url-issues}/650[#650^]:: If the playbook file isn't found, display the invalid file path in the error message.
+Issue {url-issues}/665[#665^]:: Show a more informative error message if the page ID specifying the site start page (`site.start_page`) is missing a component name.
+Issue {url-issues}/676[#676^]:: Instead of crashing, display a warning when the page ID specifying the start page for a site or component version contains invalid syntax.
+Also change `ContentCatalog#resolveResource` (and thus `ContentCatalog#resolvePage`) to return `false` instead of throwing an error when a resource ID has invalid syntax.
+This change makes the `resolvePage` and `resolvePageURL` UI helper functions more resilient.
+Issue {url-issues}/675[#675^]:: Disallow a file URI as the value of `site.url` in the playbook.
+Issue {url-issues}/627[#627^]:: Retain the `cwd` property, and thus the `base` property, for supplemental UI files read from the local filesystem.
+
+=== Fixed
+
+Issue {url-issues}/644[#644^]:: Don't modify the file extension of an AsciiDoc file in the attachments family.
+Issue {url-issues}/587[#587^]:: Show a more detailed error message when attempting to add a duplicate file.
+_Also known as the infamous "`Duplicate nav`" conundrum_.
+This error message will serve as a template for more informative messages to be added in the future once a logging facility is integrated into Antora.
+Issue {url-issues}/648[#648^]:: If a page alias conflicts with an existing page, show the page ID of the page that defines the alias in the error message.
+Issue {url-issues}/627[#627^]:: Allow dot files (i.e., hidden files) in a supplemental UI directory to be used as static files.
+Issue {url-issues}/653[#653^]:: Don't register a page alias for the default component version index page (i.e., `ROOT:index.adoc`) when the `start_page` key in a component version's [.path]_antora.yml_ file specifies a different page.
+This prevents a concrete index page from being overwritten (i.e., shadowed).
+Issue {url-issues}/673[#673^]:: Show an informative error message if the value of a map or primitive-map key in the playbook file is a String.
+
+[#thanks-2-3-4]
+== Thanks
+
+A big *thank you!* to all the folks who helped make Antora even better.
+
+Karl Dangerfield ({url-gitlab}/obayozo[@obayozo^]):: For fixing the errors in the content source directory examples.
+
+David Jencks ({url-gitlab}/djencks[@djencks^]):: For fixing typos in the documentation.
+
+Alexander Schwartz ({url-gitlab}/ahus1[@ahus1^]):: For documenting the environment variables alongside the command line options.
+
+Coley Woyak ({url-gitlab}/coley.woyak.saagie[@coley.woyak.saagie^]):: For fixing typos in the documentation.
+
+== Caution! Coming soon
+
+This is a friendly reminder that Antora 3 will include breaking changes and deprecations.
+You can get a head start by correcting any invalid resource IDs, page IDs, and page aliases right now.
+See <<deprecation>> for more information.
 
 = Antora 2.3.3
 
@@ -142,8 +190,8 @@ Issue {url-issues}/623[#623^]:: Set `page.previous` in UI model for first page i
 
 Issue {url-issues}/622[#622^]:: Skip over references to current page when computing `page.next` property for UI model.
 Issue {url-issues}/624[#624^]:: Skip over references to fragments of previous page when computing `page.previous` property for UI model.
-Issue {url-issues}/625[#625^]:: Generate robots exclusion file (robots.txt) if site URL is set to any allowable value.
-Issue {url-issues}/621[#621^]:: Remove deep-freeze-node dependency (which was limiting that platforms on which Antora could be installed) and replace with internal implemenation.
+Issue {url-issues}/625[#625^]:: Generate robots exclusion file ([.path]_robots.txt_) if site URL is set to any allowable value.
+Issue {url-issues}/621[#621^]:: Remove deep-freeze-node dependency (which was limiting that platforms on which Antora could be installed) and replace with internal implementation.
 
 [#thanks-2-3-1]
 == Thanks
@@ -156,7 +204,7 @@ Ewan Edwards ({url-gitlab}/eedwards[@eedwards^]):: For submitting the MR for the
 
 Daniel Mulholland ({url-gitlab}/danyill[@danyill^]):: For providing feedback and critique about the previous and next values for pages and for testing the navigation widget.
 
-gotwf ({url-gitlab}/gotwf[@gotwf^]):: For rediscovering the compatiblity problem with deep-freeze-node and reminding us to replace it.
+gotwf ({url-gitlab}/gotwf[@gotwf^]):: For rediscovering the compatibility problem with deep-freeze-node and reminding us to replace it.
 
 = Antora 2.3.0
 
