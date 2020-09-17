@@ -12,7 +12,7 @@ We strongly recommended that you use the router provided by your web server or s
 
 == page-aliases attribute
 
-The `page-aliases` attribute is set in the xref:standard-page.adoc#page-header[page header] of a target page using an xref:attributes.adoc#attribute-entry[attribute entry].
+The `page-aliases` attribute is set in the xref:standard-page.adoc#page-header[page header] of a target page using an xref:define-and-modify-attributes.adoc#attribute-entry[attribute entry].
 [[target-page]]The [.term]*target page* refers to the page you're redirecting a source page to.
 [[source-page]]The [.term]*source page* refers to the deleted, renamed, or moved page that you're redirecting from.
 A source page's page ID--its xref:page-id.adoc[page ID] before it was deleted, renamed, or moved--is assigned to the `page-aliases` attribute in a target page.

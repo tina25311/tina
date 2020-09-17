@@ -6,7 +6,7 @@ This attribute applies an alternate UI layout to the contents of a page.
 == page-layout attribute
 
 The `page-layout` attribute is optional.
-It's defined in the header of a page using an xref:attributes.adoc#attribute-entry[AsciiDoc attribute entry].
+It's defined in the header of a page using an xref:define-and-modify-attributes.adoc#attribute-entry[AsciiDoc attribute entry].
 
 [source]
 ----
