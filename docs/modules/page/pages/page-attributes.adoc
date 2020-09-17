@@ -14,6 +14,10 @@ A page attribute is defined just like any other AsciiDoc document attribute, typ
 Where a page attribute differs is that the name of the attribute must begin with `page-` (e.g., `page-category`).
 The presence of the `page-` prefix allows Antora to identify it as a page attribute.
 
+TIP: If you're wondering whether you need to add the `page-` prefix, ask yourself if you need to access the attribute from the UI template.
+If the answer is yes, then you need the prefix.
+Otherwise, the prefix is not required.
+
 Here's an example of page that defines two page attributes:
 
 [source,asciidoc]
