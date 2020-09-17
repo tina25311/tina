@@ -36,7 +36,7 @@ To define a page attribute, you add an attribute entry to the page header and st
 It's important to define the attribute entry in the header.
 Otherwise, the page attribute will not be found.
 
-Here's an example of an xref:attributes.adoc#attribute-entry[attribute entry] that defines a page attribute:
+Here's an example of an xref:define-and-modify-attributes.adoc#attribute-entry[attribute entry] that defines a page attribute:
 
 [source,asciidoc]
 ----

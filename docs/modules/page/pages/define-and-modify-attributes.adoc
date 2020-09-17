@@ -2,6 +2,58 @@
 :xrefstyle: short
 :listing-caption: Example
 
+With the exception of certain intrinsic attributes, which are read-only, any AsciiDoc document attribute (herein [.term]*attributes*) may be defined from the CLI, in the playbook, in the component descriptor, or in the header of a page using an attribute entry.
+The precedence matches that order (higher to lower) unless the precedence has been altered for a given attribute using a modifier.
+These different scopes give you the ability to define attributes at the level of granularity you need and to be able to override their values for different environments or situations.
+
+This page explains how to define and modify an attribute at the page level using an attribute entry.
+Alternately, these attributes can be set at a higher level using the CLI, playbook, or component descriptor.
+The result of defining or modifying an attribute is the same (meaning the processor doesn't care how it's defined).
+
+[#attribute-entry]
+== What's an attribute entry?
+
+//Before you can use a modifiable built-in attribute or custom attribute, you have to declare it.
+An [.term]*attribute entry* is the primary mechanism for defining an attribute for a page and, if applicable, assigning a value to it.
+You can think of an attribute entry like a global variable assignment in AsciiDoc.
+
+An attribute entry consists of two parts: a *name* and a *value*.
+Each attribute entry must be entered on its own line in a page header.
+An attribute entry starts with an opening colon (`:`), directly followed by the attribute's name, and then a closing colon (`:`).
+This activates, or [.term]*sets*, the attribute so you can use it in your page.
+
+[source]
+----
+= Page Title
+:name-of-an-attribute: <1>
+----
+<1> The attribute's name is directly preceded with a opening colon (`:`) and directly followed by a closing colon (`:`).
+
+In many cases, you explicitly assign a value to an attribute by entering information after its name in the attribute entry.
+The value must be offset from the closing colon (`:`) by at least one space.
+
+[source]
+----
+= Page Title
+:name-of-an-attribute: value of the attribute <1>
+----
+<1> An explicitly assigned value is offset from the closing colon (`:`) by at least one blank space.
+At the end of the value, press kbd:[Enter].
+
+[#boolean]
+Some built-in AsciiDoc attributes don't require a value to be explicitly assigned in an attribute entry because they're a boolean attribute or have a default value.
+
+[source]
+----
+= Page Title
+:name-of-an-attribute: <1>
+----
+<1> If you don't want to explicitly assign a value to the attribute, press kbd:[Enter] after the closing colon (`:`).
+
+The values of built-in boolean attributes are always blank because their only accepted value is an _empty string_.
+Other built-in attributes may have a default value.
+If you set a built-in attribute and leave its value blank, Antora assigns the default value (if it has one) to the attribute at processing time.
+
 [#set-attribute]
 == Set a built-in attribute
 
@@ -83,3 +135,14 @@ Built-in and custom attributes can be [.term]*unset*, that is, turned off, with 
 ----
 
 Once unset, an attribute's behavior and value are no longer available to the page.
+
+== Precedence rules
+
+Attributes can be xref:playbook:asciidoc-attributes.adoc[scoped to a whole site] by declaring them in a site's playbook file.
+You can apply attributes to xref:ROOT:component-attributes.adoc[a single component version] by declaring them in a component descriptor file (i.e., [.path]_antora.yml_).
+Attributes which are hard set or hard unset in the playbook or component descriptor take precedence over attributes defined in a page.
+This precendence order can be inverted using the xref:playbook:asciidoc-attributes.adoc#precedence-rules[precedence modifier].
+
+xref:intrinsic-attributes.adoc[Intrinsic attributes] can never be modified and are thus considered read-only.
+
+See the precedence rules for xref:playbook:asciidoc-attributes.adoc#precedence-rules[site attributes] and xref:ROOT:component-attributes.adoc#precedence-rules[component version attributes] for more information.
