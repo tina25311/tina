@@ -13,6 +13,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *content-classifier*: Register all component versions before adding files to content catalog (#314)
 * *content-classifier*: Only register start page for component version in `ContentCatalog#registerComponentVersion` if value of `startPage` property in descriptor is truthy (#605)
 * *content-classifier*: Call `ContentCatalog#registerComponentVersionStartPage` in content classifier to register start page after adding files (instead of before) (#605)
 
