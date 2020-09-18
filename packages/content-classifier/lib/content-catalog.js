@@ -16,8 +16,9 @@ class ContentCatalog {
   constructor (playbook = {}) {
     this[$components] = new Map()
     this[$files] = new Map()
-    this.htmlUrlExtensionStyle = (playbook.urls || {}).htmlExtensionStyle || 'default'
-    this.urlRedirectFacility = (playbook.urls || {}).redirectFacility || 'static'
+    const urls = playbook.urls || {}
+    this.htmlUrlExtensionStyle = urls.htmlExtensionStyle || 'default'
+    this.urlRedirectFacility = urls.redirectFacility || 'static'
   }
 
   /**
