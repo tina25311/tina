@@ -103,6 +103,7 @@ describe('ContentCatalog', () => {
         versions: [{ name, version, displayVersion: version, title, url }],
       })
       expect(components[0].latest).to.eql({ name, version, displayVersion: version, title, url })
+      expect(components[0].latestPrerelease).to.be.undefined()
       // NOTE verify latestVersion alias
       expect(components[0].latestVersion).to.equal(components[0].latest)
       expect(components[0].latestVersion).to.equal(componentVersion)
@@ -222,6 +223,14 @@ describe('ContentCatalog', () => {
         title: title1,
         url: url1,
       })
+      expect(component.latestPrerelease).to.eql({
+        name: componentName,
+        version: version2,
+        prerelease: true,
+        displayVersion: version2,
+        title: title2,
+        url: url2,
+      })
       expect(component.name).to.equal(componentName)
       expect(component.title).to.equal(title1)
       expect(component.url).to.equal(url1)
@@ -280,6 +289,7 @@ describe('ContentCatalog', () => {
         url: url2,
         prerelease: prerelease2,
       })
+      expect(component.latestPrerelease).to.be.undefined()
       expect(component.name).to.equal(componentName)
       expect(component.title).to.equal(title2)
       expect(component.url).to.equal(url2)

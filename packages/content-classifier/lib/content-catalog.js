@@ -76,7 +76,11 @@ class ContentCatalog {
       } else {
         componentVersions.push(componentVersion)
       }
-      component.latest = componentVersions.find((candidate) => !candidate.prerelease) || componentVersions[0]
+      if ((component.latest = componentVersions.find((candidate) => !candidate.prerelease))) {
+        if (componentVersions[0] !== component.latest) component.latestPrerelease = componentVersions[0]
+      } else {
+        component.latest = componentVersions[0]
+      }
     } else {
       this[$components].set(
         name,
@@ -502,7 +506,7 @@ function computeVersionSegment (name, version, mode) {
       const segment =
         componentVersion === component.latest
           ? this.latestVersionUrlSegment
-          : componentVersion.prerelease && componentVersion === component.versions[0]
+          : componentVersion === component.latestPrerelease
             ? this.latestPrereleaseVersionUrlSegment
             : undefined
       return segment == null ? version : segment
