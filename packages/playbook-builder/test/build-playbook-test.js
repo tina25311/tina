@@ -553,6 +553,8 @@ describe('buildPlaybook()', () => {
     expect(playbook.git.credentials.path).to.equal('./.git-credentials')
     expect(playbook.urls.htmlExtensionStyle).to.equal('indexify')
     expect(playbook.urls.redirectFacility).to.equal('nginx')
+    expect(playbook.urls.latestVersionSegment).to.equal('current')
+    expect(playbook.urls.latestPrereleaseVersionSegment).to.equal('next')
     expect(playbook.output.destinations).to.have.lengthOf(1)
     expect(playbook.output.dir).to.equal('./_site')
     expect(playbook.output.destinations[0].provider).to.equal('archive')

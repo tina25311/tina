@@ -1027,6 +1027,67 @@ describe('ContentCatalog', () => {
       expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page/', rootPath: '../../..' })
     })
 
+    it('should replace latest version in pub.url and out.path with symbolic name if specified', () => {
+      const contentCatalog = new ContentCatalog({ urls: { latestVersionSegment: 'current' } })
+      contentCatalog.registerComponentVersion('the-component', '1.2.3', { title: 'The Component' })
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        stem: 'the-page',
+        mediaType: 'text/asciidoc',
+      }
+      const result = contentCatalog.addFile(new File({ src }))
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({ path: 'the-component/current/the-page.html', rootPath: '../..' })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({ url: '/the-component/current/the-page.html', rootPath: '../..' })
+    })
+
+    it('should replace latest prerelease in pub.url and out.path with symbolic name if specified', () => {
+      const contentCatalog = new ContentCatalog({ urls: { latestPrereleaseVersionSegment: 'next' } })
+      contentCatalog.registerComponentVersion('the-component', '1.0.0', { title: 'The Component' })
+      contentCatalog.registerComponentVersion('the-component', '2.0.0', { title: 'The Component', prerelease: true })
+      const src = {
+        component: 'the-component',
+        version: '2.0.0',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        stem: 'the-page',
+        mediaType: 'text/asciidoc',
+      }
+      const result = contentCatalog.addFile(new File({ src }))
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({ path: 'the-component/next/the-page.html', rootPath: '../..' })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({ url: '/the-component/next/the-page.html', rootPath: '../..' })
+    })
+
+    it('should not introduce version segment in pub.url and out.path when symbolic name is specified if version is master', () => {
+      const contentCatalog = new ContentCatalog({ urls: { latestVersionSegment: 'current' } })
+      contentCatalog.registerComponentVersion('the-component', 'master', { title: 'The Component' })
+      const src = {
+        component: 'the-component',
+        version: 'master',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        stem: 'the-page',
+        mediaType: 'text/asciidoc',
+      }
+      const result = contentCatalog.addFile(new File({ src }))
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({ path: 'the-component/the-page.html', rootPath: '..' })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({ url: '/the-component/the-page.html', rootPath: '..' })
+    })
+
     it('should not set out and pub properties if defined on input', () => {
       const src = {
         component: 'the-component',

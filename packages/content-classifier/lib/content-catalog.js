@@ -19,6 +19,8 @@ class ContentCatalog {
     const urls = playbook.urls || {}
     this.htmlUrlExtensionStyle = urls.htmlExtensionStyle || 'default'
     this.urlRedirectFacility = urls.redirectFacility || 'static'
+    this.latestVersionUrlSegment = urls.latestVersionSegment
+    this.latestPrereleaseVersionUrlSegment = urls.latestPrereleaseVersionSegment
   }
 
   /**
@@ -129,11 +131,11 @@ class ContentCatalog {
       !~('/' + src.relative).indexOf('/_')
     ) {
       publishable = true
-      versionSegment = computeVersionSegment(src.component, src.version)
+      versionSegment = computeVersionSegment.bind(this)(src.component, src.version)
       file.out = computeOut(src, family, versionSegment, this.htmlUrlExtensionStyle)
     }
     if (!file.pub && (publishable || family === 'nav')) {
-      if (versionSegment == null) versionSegment = computeVersionSegment(src.component, src.version)
+      if (versionSegment == null) versionSegment = computeVersionSegment.bind(this)(src.component, src.version)
       file.pub = computePub(src, file.out, family, versionSegment, this.htmlUrlExtensionStyle)
     }
     this[$files].set(key, file)
@@ -258,7 +260,7 @@ class ContentCatalog {
       componentVersion.url = startPage.pub.url
     } else {
       // QUESTION: should we warn if the default start page cannot be found?
-      const versionSegment = computeVersionSegment(name, version)
+      const versionSegment = computeVersionSegment.bind(this)(name, version)
       componentVersion.url = computePub(
         (startPageSrc = inflateSrc(indexPageId)),
         computeOut(startPageSrc, startPageSrc.family, versionSegment, this.htmlUrlExtensionStyle),
@@ -465,7 +467,18 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
 }
 
 function computeVersionSegment (name, version) {
-  return version === 'master' ? '' : version
+  // NOTE: special exception; revisit in Antora 3
+  if (version === 'master') return ''
+  if (this.latestVersionUrlSegment == null && this.latestPrereleaseVersionUrlSegment == null) return version
+  const component = this.getComponent(name)
+  const componentVersion = component && this.getComponentVersion(component, version)
+  if (!componentVersion) return version
+  const segment = componentVersion === component.latest
+    ? this.latestVersionUrlSegment
+    : componentVersion.prerelease && componentVersion === component.versions[0]
+      ? this.latestPrereleaseVersionUrlSegment
+      : undefined
+  return segment == null ? version : segment
 }
 
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {

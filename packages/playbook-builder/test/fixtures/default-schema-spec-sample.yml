@@ -24,6 +24,8 @@ ui:
     contents: <link rel="stylesheet" href="https://example.org/shared.css">
 urls:
   html_extension_style: indexify
+  latest_version_segment: current
+  latest_prerelease_version_segment: next
   redirect_facility: nginx
 asciidoc:
   attributes:
