@@ -102,9 +102,9 @@ class ContentCatalog {
 
   addFile (file) {
     const src = file.src
+    let family = src.family
     const key = generateKey(src)
     if (this[$files].has(key)) {
-      const family = src.family
       if (family === 'alias') {
         throw new Error(`Duplicate alias: ${generateResourceSpec(src)}`)
       } else {
@@ -117,21 +117,21 @@ class ContentCatalog {
       }
     }
     if (!File.isVinyl(file)) file = new File(file)
-    const actingFamily = src.family === 'alias' ? file.rel.src.family : src.family
+    if (family === 'alias') family = file.rel.src.family
     let publishable
     if (file.out) {
       publishable = true
     } else if ('out' in file) {
       delete file.out
     } else if (
-      (actingFamily === 'page' || actingFamily === 'image' || actingFamily === 'attachment') &&
+      (family === 'page' || family === 'image' || family === 'attachment') &&
       !~('/' + src.relative).indexOf('/_')
     ) {
       publishable = true
-      file.out = computeOut(src, actingFamily, this.htmlUrlExtensionStyle)
+      file.out = computeOut(src, family, this.htmlUrlExtensionStyle)
     }
-    if (!file.pub && (publishable || actingFamily === 'nav')) {
-      file.pub = computePub(src, file.out, actingFamily, this.htmlUrlExtensionStyle)
+    if (!file.pub && (publishable || family === 'nav')) {
+      file.pub = computePub(src, file.out, family, this.htmlUrlExtensionStyle)
     }
     this[$files].set(key, file)
     return file
