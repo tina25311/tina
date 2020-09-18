@@ -30,8 +30,8 @@ describe('produceRedirects()', () => {
       { family: 'alias', relative: 'old-target/index.adoc' },
       { family: 'alias', component: '', version: '', module: '', relative: 'index.adoc' },
     ])
-    const targetFile = contentCatalog.getPages()[0]
-    contentCatalog.findBy({ family: 'alias' }).forEach((file) => (file.rel = targetFile))
+    const targetPage = contentCatalog.getPages()[0]
+    contentCatalog.findBy({ family: 'alias' }).forEach((file) => (file.rel = targetPage))
   })
 
   it('should run on all files in the alias family', () => {
@@ -68,6 +68,43 @@ describe('produceRedirects()', () => {
         expect(html).to.include(`<meta http-equiv="refresh" content="0; url=${expectedRelativeUrl}">`)
         expect(html).to.include(`<a href="${expectedRelativeUrl}">${expectedQualifiedUrl}</a>`)
         expect(html).to.endWith('\n')
+      })
+    })
+
+    it('should not populate contents for splat aliases', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'page', relative: 'the-target.adoc' },
+        { family: 'alias', relative: 'alias-a.adoc' },
+        { family: 'alias', component: 'component-b', version: 'current', module: 'ROOT', relative: '' },
+      ])
+      const targetPage = contentCatalog.getPages()[0]
+      contentCatalog.findBy({ family: 'alias' }).forEach((file) => (file.rel = targetPage))
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[1]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/component-b/current'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
+      }
+      const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/the-target.html'
+      const expectedRelativeUrls = { 'alias-a.adoc': 'the-target.html' }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(0)
+      contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
+        if (file.src.relative) {
+          const expectedRelativeUrl = expectedRelativeUrls[file.src.relative]
+          expect(file).to.have.property('contents')
+          const html = file.contents.toString()
+          expect(html).to.include(`<link rel="canonical" href="${expectedQualifiedUrl}">`)
+          expect(html).to.include(`<script>location="${expectedRelativeUrl}"</script>`)
+          expect(html).to.include(`<meta http-equiv="refresh" content="0; url=${expectedRelativeUrl}">`)
+          expect(html).to.include(`<a href="${expectedRelativeUrl}">${expectedQualifiedUrl}</a>`)
+          expect(html).to.endWith('\n')
+        } else {
+          expect(file).to.not.have.property('out')
+          expect(file.contents.toString()).to.be.empty()
+        }
       })
     })
 
@@ -164,6 +201,28 @@ describe('produceRedirects()', () => {
         '/component-b/1.0/alias-c.html /component-a/module-a/the-target.html 301!',
         '/index.html /component-a/module-a/the-target.html 301!',
       ])
+    })
+
+    it('should generate temporary redirect for splat aliases', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'component-b', version: 'current', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/component-b/current'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0]).to.have.property('contents')
+      expect(result[0]).to.have.property('out')
+      expect(result[0].out.path).to.equal('_redirects')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['/component-b/current/* /component-b/1.0/:splat 302!'])
     })
 
     it('should encode spaces in paths of redirect rule', () => {
@@ -320,6 +379,30 @@ describe('produceRedirects()', () => {
       ])
     })
 
+    it('should generate temporary redirect for splat aliases', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'component-c++', version: 'current', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/component-c++/current'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        src: { component: 'component-c++', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-c++/1.0', moduleRootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0]).to.have.property('contents')
+      expect(result[0]).to.have.property('out')
+      expect(result[0].out.path).to.equal('.etc/nginx/rewrite.conf')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        'location ^~ /component-c++/current/ { rewrite ^/component-c\\+\\+/current/(.*)$ /component-c\\+\\+/1\\.0/$1; }',
+      ])
+    })
+
     it('should enclose paths in quotes that contain spaces', () => {
       contentCatalog = mockContentCatalog([
         { family: 'page', relative: 'target with spaces.adoc' },
@@ -426,6 +509,28 @@ describe('produceRedirects()', () => {
         'Redirect 301 /component-b/1.0/alias-c.html /component-a/module-a/the-target.html',
         'Redirect 301 /index.html /component-a/module-a/the-target.html',
       ])
+    })
+
+    it('should generate temporary redirect for splat aliases', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'component-b', version: 'current', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/component-b/current'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0]).to.have.property('contents')
+      expect(result[0]).to.have.property('out')
+      expect(result[0].out.path).to.equal('.htaccess')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['Redirect 302 /component-b/current /component-b/1.0'])
     })
 
     it('should accept paths that contain spaces', () => {

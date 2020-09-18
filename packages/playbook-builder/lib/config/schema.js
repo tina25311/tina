@@ -186,6 +186,11 @@ module.exports = {
       default: 'default',
       arg: 'html-url-extension-style',
     },
+    latest_version_segment_strategy: {
+      doc: 'The strategy to use for cloaking the latest version or prerelease version segment in the URL.',
+      format: ['replace', 'redirect:to', 'redirect:from'],
+      default: undefined,
+    },
     latest_prerelease_version_segment: {
       doc: 'The value to use instead of the latest prerelease version segment in the URL.',
       format: String,

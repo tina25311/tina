@@ -9,10 +9,12 @@ This project utilizes semantic versioning.
 
 === Added
 
+* *playbook-builder*: Add urls.latest_version_segment_strategy key to playbook schema (#314)
 * *playbook-builder*: Add urls.latest_version_segment key to playbook schema (#314)
 * *playbook-builder*: Add urls.latest_prerelease_version_segment key to playbook schema (#314)
 * *content-classifier*: Extract method to register start page for component version (`ContentCatalog#registerComponentVersionStartPage`) (#605)
 * *content-classifier*: Replace latest version and/or prerelease version segment in out path and pub URL (unless version is master) with symbolic name, if specified (#314)
+* *redirect-facility*: Use redirect facility to implement redirect:to and redirect:from strategies for version segment in out path / pub URL of latest and latest prerelease versions (#314)
 
 === Changed
 
