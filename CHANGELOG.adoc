@@ -5,6 +5,17 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Added
+
+* *content-classifier*: Extract method to register start page for component version (`ContentCatalog#registerComponentVersionStartPage`) (#605)
+
+=== Changed
+
+* *content-classifier*: Only register start page for component version in `ContentCatalog#registerComponentVersion` if value of `startPage` property in descriptor is truthy (#605)
+* *content-classifier*: Call `ContentCatalog#registerComponentVersionStartPage` in content classifier to register start page after adding files (instead of before) (#605)
+
 == 2.3.4 (2020-09-17)
 
 === Changed

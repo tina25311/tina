@@ -20,11 +20,13 @@ function classifyContent (playbook, aggregate, siteAsciiDocConfig = undefined) {
   // deprecated; remove fallback in Antora 3.x
   if (!siteAsciiDocConfig) siteAsciiDocConfig = require('@antora/asciidoc-loader').resolveConfig(playbook)
   const contentCatalog = aggregate.reduce((catalog, descriptor) => {
-    const { name, version, nav, files } = descriptor
-    delete descriptor.files
-    descriptor.asciidoc = resolveAsciiDocConfig(siteAsciiDocConfig, descriptor)
+    const { name, version, startPage, nav, files } = descriptor
+    delete descriptor.files // clean up memory
+    descriptor = Object.assign({}, descriptor, { asciidoc: resolveAsciiDocConfig(siteAsciiDocConfig, descriptor) })
+    delete descriptor.startPage
+    const componentVersion = catalog.registerComponentVersion(name, version, descriptor)
     files.forEach((file) => allocateSrc(file, name, version, nav) && catalog.addFile(file))
-    catalog.registerComponentVersion(name, version, descriptor)
+    catalog.registerComponentVersionStartPage(name, componentVersion, startPage)
     return catalog
   }, new ContentCatalog(playbook))
   contentCatalog.registerSiteStartPage(playbook.site.startPage)

@@ -79,7 +79,7 @@ describe('ContentCatalog', () => {
       const title = 'The Component'
       const url = '/the-component/1.0.0/index.html'
       const contentCatalog = new ContentCatalog()
-      const descriptor = { title }
+      const descriptor = { title, startPage: true }
       expect(contentCatalog.getComponents()).to.have.lengthOf(0)
       contentCatalog.addFile({
         src: {
@@ -112,11 +112,11 @@ describe('ContentCatalog', () => {
       const name = 'the-component'
       const version1 = '1.0.0'
       const title1 = 'The Component (1.0.0)'
-      const descriptor1 = { title: title1 }
+      const descriptor1 = { title: title1, startPage: true }
       const url1 = '/the-component/1.0.0/index.html'
       const version2 = '2.0.0'
       const title2 = 'The Component (2.0.0)'
-      const descriptor2 = { title: title2 }
+      const descriptor2 = { title: title2, startPage: true }
       const url2 = '/the-component/2.0.0/index.html'
       const indexPageT = { family: 'page', relative: 'index.adoc', stem: 'index', mediaType: 'text/asciidoc' }
       const contentCatalog = new ContentCatalog()
@@ -178,13 +178,13 @@ describe('ContentCatalog', () => {
       const version1 = '1.0.0'
       const title1 = 'The Component (1.0.0)'
       const url1 = '/the-component/1.0.0/index.html'
-      const descriptor1 = { title: title1 }
+      const descriptor1 = { title: title1, startPage: true }
       const src1 = Object.assign({}, srcTemplate, { component: componentName, version: version1, module: 'ROOT' })
       const version2 = '2.0.0'
       const title2 = 'The Component (2.0.0)'
       const url2 = '/the-component/2.0.0/index.html'
       const prerelease2 = true
-      const descriptor2 = { title: title2, prerelease: prerelease2 }
+      const descriptor2 = { title: title2, prerelease: prerelease2, startPage: true }
       const src2 = Object.assign({}, srcTemplate, { component: componentName, version: version2, module: 'ROOT' })
       const contentCatalog = new ContentCatalog()
 
@@ -234,13 +234,13 @@ describe('ContentCatalog', () => {
       const title1 = 'The Component (1.0.0)'
       const url1 = '/the-component/1.0.0/index.html'
       const prerelease1 = true
-      const descriptor1 = { title: title1, prerelease: prerelease1 }
+      const descriptor1 = { title: title1, prerelease: prerelease1, startPage: true }
       const src1 = Object.assign({}, srcTemplate, { component: componentName, version: version1, module: 'ROOT' })
       const version2 = '2.0.0'
       const title2 = 'The Component (2.0.0)'
       const url2 = '/the-component/2.0.0/index.html'
       const prerelease2 = true
-      const descriptor2 = { title: title2, prerelease: prerelease2 }
+      const descriptor2 = { title: title2, prerelease: prerelease2, startPage: true }
       const src2 = Object.assign({}, srcTemplate, { component: componentName, version: version2, module: 'ROOT' })
       const contentCatalog = new ContentCatalog()
 
@@ -362,65 +362,40 @@ describe('ContentCatalog', () => {
       expect(components[0].latest).to.eql({ name, version, displayVersion: version, title, url })
     })
 
-    it('should warn if specified start page not found', () => {
-      const stdErrMessages = captureStdErrSync(() =>
-        new ContentCatalog().registerComponentVersion('the-component', '1.0', {
-          title: 'The Component',
-          startPage: 'home.adoc',
-        })
-      )
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home.adoc')
+    it('should not register start page if startPage property in descriptor is absent', () => {
+      const name = 'the-component'
+      const version = '1.0.0'
+      const title = 'The Component'
+      const descriptor = { title }
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.registerComponentVersion(name, version, descriptor)
+      const components = contentCatalog.getComponents()
+      expect(components).to.have.lengthOf(1)
+      expect(components[0].url).to.be.undefined()
+      expect(components[0].latest).to.not.have.property('url')
+      expect(components[0]).to.deep.include({
+        name,
+        title,
+        versions: [{ name, version, displayVersion: version, title }],
+      })
     })
 
-    it('should warn if specified start page refers to a different component', () => {
+    it('should not register start page if value of startPage property in descriptor is undefined', () => {
+      const name = 'the-component'
+      const version = '1.0.0'
+      const title = 'The Component'
+      const descriptor = { title, startPage: undefined }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile({
-        src: {
-          component: 'other-component',
-          version: '2.0',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'start.adoc',
-          stem: 'start',
-          mediaType: 'text/asciidoc',
-        },
+      contentCatalog.registerComponentVersion(name, version, descriptor)
+      const components = contentCatalog.getComponents()
+      expect(components).to.have.lengthOf(1)
+      expect(components[0].url).to.be.undefined()
+      expect(components[0].latest).to.not.have.property('url')
+      expect(components[0]).to.deep.include({
+        name,
+        title,
+        versions: [{ name, version, displayVersion: version, title }],
       })
-      contentCatalog.registerComponentVersion('other-component', '2.0')
-      const stdErrMessages = captureStdErrSync(() =>
-        contentCatalog.registerComponentVersion('the-component', '1.0', {
-          title: 'The Component',
-          startPage: 'other-component::start.adoc',
-        })
-      )
-      const expectedMessage = 'Start page specified for 1.0@the-component not found: other-component::start.adoc'
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
-    })
-
-    it('should warn if specified start page refers to a different component version', () => {
-      const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile({
-        src: {
-          component: 'the-component',
-          version: '2.0',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'start.adoc',
-          stem: 'start',
-          mediaType: 'text/asciidoc',
-        },
-      })
-      contentCatalog.registerComponentVersion('the-component', '2.0')
-      const stdErrMessages = captureStdErrSync(() =>
-        contentCatalog.registerComponentVersion('the-component', '1.0', {
-          title: 'The Component',
-          startPage: '2.0@start.adoc',
-        })
-      )
-      const expectedMessage = 'Start page specified for 1.0@the-component not found: 2.0@start.adoc'
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
     })
 
     it('should register alias at index page if start page differs from index page and index page does not exist', () => {
@@ -515,7 +490,7 @@ describe('ContentCatalog', () => {
           mediaType: 'text/asciidoc',
         },
       })
-      contentCatalog.registerComponentVersion(name, version, { title })
+      contentCatalog.registerComponentVersion(name, version, { title, startPage: true })
       const component = contentCatalog.getComponent(name)
       expect(component.url).to.equal(url)
       expect(contentCatalog.findBy({ family: 'alias' })).to.be.empty()
@@ -527,7 +502,7 @@ describe('ContentCatalog', () => {
       const title = 'The Component'
       const url = '/the-component/1.0.0/index.html'
       const contentCatalog = new ContentCatalog()
-      contentCatalog.registerComponentVersion(name, version, { title })
+      contentCatalog.registerComponentVersion(name, version, { title, startPage: true })
       const component = contentCatalog.getComponent(name)
       expect(component.url).to.equal(url)
     })
@@ -545,6 +520,102 @@ describe('ContentCatalog', () => {
       expect(component).to.exist()
       expect(component.versions[0]).to.exist()
       expect(component.versions[0].asciidoc).to.eql(asciidocConfig)
+    })
+  })
+
+  describe('#registerComponentVersionStartPage()', () => {
+    it('should use url from specified start page', () => {
+      const name = 'the-component'
+      const version = '1.0.0'
+      const title = 'The Component'
+      const url = '/the-component/1.0.0/home.html'
+      const contentCatalog = new ContentCatalog()
+      const componentVersion = contentCatalog.registerComponentVersion(name, version, { title })
+      contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'home.adoc',
+          stem: 'home',
+          mediaType: 'text/asciidoc',
+        },
+      })
+      contentCatalog.registerComponentVersionStartPage(name, componentVersion, 'home.adoc')
+      const components = contentCatalog.getComponents()
+      expect(components).to.have.lengthOf(1)
+      expect(components[0]).to.deep.include({
+        name,
+        title,
+        url,
+        versions: [{ name, version, displayVersion: version, title, url }],
+      })
+      expect(components[0].latest).to.eql({ name, version, displayVersion: version, title, url })
+    })
+
+    it('should respect htmlUrlExtensionStyle setting when computing default start page', () => {
+      const contentCatalog = new ContentCatalog({ urls: { htmlExtensionStyle: 'indexify' } })
+      const descriptor = { title: 'The Component' }
+      const componentVersion = contentCatalog.registerComponentVersion('the-component', '1.0', descriptor)
+      contentCatalog.registerComponentVersionStartPage('the-component', '1.0')
+      expect(componentVersion.url).to.equal('/the-component/1.0/')
+    })
+
+    it('should warn if specified start page not found', () => {
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
+      const stdErrMessages = captureStdErrSync(() =>
+        contentCatalog.registerComponentVersionStartPage('the-component', '1.0', 'home.adoc')
+      )
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home.adoc')
+    })
+
+    it('should warn if specified start page refers to a different component', () => {
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.addFile({
+        src: {
+          component: 'other-component',
+          version: '2.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'start.adoc',
+          stem: 'start',
+          mediaType: 'text/asciidoc',
+        },
+      })
+      contentCatalog.registerComponentVersion('other-component', '2.0', { title: 'Other Component', startPage: true })
+      contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
+      const stdErrMessages = captureStdErrSync(() =>
+        contentCatalog.registerComponentVersionStartPage('the-component', '1.0', 'other-component::start.adoc')
+      )
+      const expectedMessage = 'Start page specified for 1.0@the-component not found: other-component::start.adoc'
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
+    })
+
+    it('should warn if specified start page refers to a different component version', () => {
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.addFile({
+        src: {
+          component: 'the-component',
+          version: '2.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'start.adoc',
+          stem: 'start',
+          mediaType: 'text/asciidoc',
+        },
+      })
+      contentCatalog.registerComponentVersion('the-component', '2.0', { title: 'The Component', startPage: true })
+      contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
+      const stdErrMessages = captureStdErrSync(() =>
+        contentCatalog.registerComponentVersionStartPage('the-component', '1.0', '2.0@start.adoc')
+      )
+      const expectedMessage = 'Start page specified for 1.0@the-component not found: 2.0@start.adoc'
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
     })
   })
 
