@@ -487,6 +487,21 @@ describe('loadAsciiDoc()', () => {
   })
 
   describe('include directive', () => {
+    it('should honor optional option on include directive', () => {
+      const contents = heredoc`
+        = Document Title
+
+        include::does-not-exist.adoc[opts=optional]
+
+        after
+      `
+      const [html, messages] = captureStderr(() => Asciidoctor.convert(contents, { safe: 'safe' }))
+      expect(html).to.not.include('Unresolved directive')
+      expect(html).to.not.include('include::does-not-exist.adoc')
+      expect(html).to.include('<p>after</p>')
+      expect(messages).to.be.empty()
+    })
+
     it('should skip include directive if target prefixed with {partialsdir} cannot be resolved', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       const inputContents = 'include::{partialsdir}/does-not-exist.adoc[]'
