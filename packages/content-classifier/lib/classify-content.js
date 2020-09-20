@@ -19,16 +19,27 @@ const ContentCatalog = require('./content-catalog')
 function classifyContent (playbook, aggregate, siteAsciiDocConfig = undefined) {
   // deprecated; remove fallback in Antora 3.x
   if (!siteAsciiDocConfig) siteAsciiDocConfig = require('@antora/asciidoc-loader').resolveConfig(playbook)
-  const contentCatalog = aggregate.reduce((catalog, descriptor) => {
-    const { name, version, startPage, nav, files } = descriptor
-    delete descriptor.files // clean up memory
-    descriptor = Object.assign({}, descriptor, { asciidoc: resolveAsciiDocConfig(siteAsciiDocConfig, descriptor) })
-    delete descriptor.startPage
-    const componentVersion = catalog.registerComponentVersion(name, version, descriptor)
-    files.forEach((file) => allocateSrc(file, name, version, nav) && catalog.addFile(file))
-    catalog.registerComponentVersionStartPage(name, componentVersion, startPage)
-    return catalog
-  }, new ContentCatalog(playbook))
+  const contentCatalog = new ContentCatalog(playbook)
+  aggregate
+    .reduce((accum, componentVersionData) => {
+      const { name, version } = componentVersionData
+      // drop startPage to defer registration of start page
+      // drop files since they aren't needed to register component version
+      const { files, startPage, ...descriptor } = Object.assign({}, componentVersionData, {
+        asciidoc: resolveAsciiDocConfig(siteAsciiDocConfig, componentVersionData),
+      })
+      return new Map(accum).set(
+        contentCatalog.registerComponentVersion(name, version, descriptor),
+        componentVersionData
+      )
+    }, new Map())
+    .forEach((componentVersionData, componentVersion) => {
+      const { name, version } = componentVersion
+      const { files, nav, startPage } = componentVersionData
+      delete componentVersionData.files // clean up memory
+      files.forEach((file) => allocateSrc(file, name, version, nav) && contentCatalog.addFile(file))
+      contentCatalog.registerComponentVersionStartPage(name, componentVersion, startPage)
+    })
   contentCatalog.registerSiteStartPage(playbook.site.startPage)
   return contentCatalog
 }

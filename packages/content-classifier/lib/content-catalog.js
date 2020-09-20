@@ -19,6 +19,20 @@ class ContentCatalog {
     const urls = playbook.urls || {}
     this.htmlUrlExtensionStyle = urls.htmlExtensionStyle || 'default'
     this.urlRedirectFacility = urls.redirectFacility || 'static'
+    this.latestVersionUrlSegment = urls.latestVersionSegment
+    this.latestPrereleaseVersionUrlSegment = urls.latestPrereleaseVersionSegment
+    if (this.latestVersionUrlSegment == null && this.latestPrereleaseVersionUrlSegment == null) {
+      this.latestVersionUrlSegmentStrategy = undefined
+    } else {
+      this.latestVersionUrlSegmentStrategy = urls.latestVersionSegmentStrategy || 'replace'
+      if (this.latestVersionUrlSegmentStrategy === 'redirect:from') {
+        if (!this.latestVersionUrlSegment) this.latestVersionUrlSegment = undefined
+        if (!this.latestPrereleaseVersionUrlSegment) {
+          this.latestPrereleaseVersionUrlSegment = undefined
+          if (!this.latestVersionUrlSegment) this.latestVersionUrlSegmentStrategy = undefined
+        }
+      }
+    }
   }
 
   /**
@@ -62,7 +76,11 @@ class ContentCatalog {
       } else {
         componentVersions.push(componentVersion)
       }
-      component.latest = componentVersions.find((candidate) => !candidate.prerelease) || componentVersions[0]
+      if ((component.latest = componentVersions.find((candidate) => !candidate.prerelease))) {
+        if (componentVersions[0] !== component.latest) component.latestPrerelease = componentVersions[0]
+      } else {
+        component.latest = componentVersions[0]
+      }
     } else {
       this[$components].set(
         name,
@@ -119,6 +137,7 @@ class ContentCatalog {
     if (!File.isVinyl(file)) file = new File(file)
     if (family === 'alias') family = file.rel.src.family
     let publishable
+    let versionSegment
     if (file.out) {
       publishable = true
     } else if ('out' in file) {
@@ -128,10 +147,12 @@ class ContentCatalog {
       !~('/' + src.relative).indexOf('/_')
     ) {
       publishable = true
-      file.out = computeOut(src, family, this.htmlUrlExtensionStyle)
+      versionSegment = computeVersionSegment.bind(this)(src.component, src.version)
+      file.out = computeOut(src, family, versionSegment, this.htmlUrlExtensionStyle)
     }
     if (!file.pub && (publishable || family === 'nav')) {
-      file.pub = computePub(src, file.out, family, this.htmlUrlExtensionStyle)
+      if (versionSegment == null) versionSegment = computeVersionSegment.bind(this)(src.component, src.version)
+      file.pub = computePub(src, file.out, family, versionSegment, this.htmlUrlExtensionStyle)
     }
     this[$files].set(key, file)
     return file
@@ -255,13 +276,23 @@ class ContentCatalog {
       componentVersion.url = startPage.pub.url
     } else {
       // QUESTION: should we warn if the default start page cannot be found?
+      const versionSegment = computeVersionSegment.bind(this)(name, version)
       componentVersion.url = computePub(
         (startPageSrc = inflateSrc(indexPageId)),
-        computeOut(startPageSrc, startPageSrc.family, this.htmlUrlExtensionStyle),
+        computeOut(startPageSrc, startPageSrc.family, versionSegment, this.htmlUrlExtensionStyle),
         startPageSrc.family,
+        versionSegment,
         this.htmlUrlExtensionStyle
       ).url
     }
+
+    const symbolicVersionAlias = createSymbolicVersionAlias(
+      name,
+      version,
+      computeVersionSegment.bind(this)(name, version, 'alias'),
+      this.latestVersionUrlSegmentStrategy
+    )
+    if (symbolicVersionAlias) this.addFile(symbolicVersionAlias)
   }
 
   registerSiteStartPage (startPageSpec) {
@@ -393,9 +424,8 @@ function inflateSrc (src, family = 'page', mediaType = 'text/asciidoc') {
   return src
 }
 
-function computeOut (src, family, htmlUrlExtensionStyle) {
+function computeOut (src, family, version, htmlUrlExtensionStyle) {
   const component = src.component
-  const version = src.version === 'master' ? '' : src.version
   const module_ = src.module === 'ROOT' ? '' : src.module
 
   let basename = src.basename || path.basename(src.relative)
@@ -425,12 +455,11 @@ function computeOut (src, family, htmlUrlExtensionStyle) {
   return { dirname, basename, path: path_, moduleRootPath, rootPath }
 }
 
-function computePub (src, out, family, htmlUrlExtensionStyle) {
+function computePub (src, out, family, version, htmlUrlExtensionStyle) {
   const pub = {}
   let url
   if (family === 'nav') {
-    const urlSegments = [src.component]
-    if (src.version !== 'master') urlSegments.push(src.version)
+    const urlSegments = version ? [src.component, version] : [src.component]
     if (src.module && src.module !== 'ROOT') urlSegments.push(src.module)
     // an artificial URL used for resolving page references in navigation model
     url = '/' + urlSegments.join('/') + '/'
@@ -449,6 +478,7 @@ function computePub (src, out, family, htmlUrlExtensionStyle) {
     url = '/' + urlSegments.join('/')
   } else {
     url = '/' + out.path
+    if (family === 'alias' && !src.relative.length) pub.splat = true
   }
 
   pub.url = ~url.indexOf(' ') ? url.replace(SPACE_RX, '%20') : url
@@ -459,6 +489,66 @@ function computePub (src, out, family, htmlUrlExtensionStyle) {
   }
 
   return pub
+}
+
+function computeVersionSegment (name, version, mode) {
+  if (mode === 'original') return version === 'master' ? '' : version
+  const strategy = this.latestVersionUrlSegmentStrategy
+  // NOTE: special exception; revisit in Antora 3
+  if (version === 'master') {
+    if (mode !== 'alias') return ''
+    if (strategy === 'redirect:to') return
+  }
+  if (strategy === 'redirect:to' || strategy === (mode === 'alias' ? 'redirect:from' : 'replace')) {
+    const component = this.getComponent(name)
+    const componentVersion = component && this.getComponentVersion(component, version)
+    if (componentVersion) {
+      const segment =
+        componentVersion === component.latest
+          ? this.latestVersionUrlSegment
+          : componentVersion === component.latestPrerelease
+            ? this.latestPrereleaseVersionUrlSegment
+            : undefined
+      return segment == null ? version : segment
+    }
+  }
+  return version
+}
+
+function createSymbolicVersionAlias (name, version, symbolicVersionSegment, strategy) {
+  if (symbolicVersionSegment == null || symbolicVersionSegment === version) return
+  const versionAliasFamily = 'alias'
+  const baseVersionAliasSrc = { component: name, module: 'ROOT', family: versionAliasFamily, relative: '' }
+  const symbolicVersionAliasSrc = Object.assign({}, baseVersionAliasSrc, { version: symbolicVersionSegment })
+  const symbolicVersionAlias = {
+    mediaType: 'text/html',
+    src: symbolicVersionAliasSrc,
+    pub: computePub(
+      symbolicVersionAliasSrc,
+      computeOut(symbolicVersionAliasSrc, versionAliasFamily, symbolicVersionSegment),
+      versionAliasFamily
+    ),
+  }
+  const originalVersionAliasSrc = Object.assign({}, baseVersionAliasSrc, { version })
+  const originalVersionSegment = computeVersionSegment(name, version, 'original')
+  const originalVersionAlias = {
+    mediaType: 'text/html',
+    src: originalVersionAliasSrc,
+    pub: computePub(
+      originalVersionAliasSrc,
+      computeOut(originalVersionAliasSrc, versionAliasFamily, originalVersionSegment),
+      versionAliasFamily
+    ),
+  }
+  if (strategy === 'redirect:to') {
+    originalVersionAlias.out = undefined
+    originalVersionAlias.rel = symbolicVersionAlias
+    return originalVersionAlias
+  } else {
+    symbolicVersionAlias.out = undefined
+    symbolicVersionAlias.rel = originalVersionAlias
+    return symbolicVersionAlias
+  }
 }
 
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {
