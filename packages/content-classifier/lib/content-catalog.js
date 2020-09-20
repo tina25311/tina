@@ -341,7 +341,10 @@ class ContentCatalog {
       src.version = 'master'
     }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
-    return this.addFile({ mediaType: 'text/html', src: inflateSrc(src, 'alias'), rel: target })
+    const alias = this.addFile({ mediaType: 'text/html', src: inflateSrc(src, 'alias'), rel: target })
+    // NOTE record the first alias this target claims as the preferred one
+    if (!target.rel) target.rel = alias
+    return alias
   }
 
   /**

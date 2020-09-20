@@ -348,7 +348,7 @@ describe('build UI model', () => {
       expect(model.contents).to.equal(file.contents)
     })
 
-    it('should set canonicalUrl property based on pub url of file if file has no versions', () => {
+    it('should set canonicalUrl property based on pub url of file has no other versions', () => {
       site.url = 'http://example.com'
       component.latest = component.versions[0]
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
@@ -1147,6 +1147,7 @@ describe('build UI model', () => {
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
+          path: 'modules/ROOT/pages/the-page.adoc',
           component: 'the-component',
           module: 'ROOT',
           family: 'page',
@@ -1156,15 +1157,7 @@ describe('build UI model', () => {
       expect(contentCatalog.getById)
         .nth(2)
         .called.with({
-          component: 'the-component',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'the-page.adoc',
-          version: '1.0',
-        })
-      expect(contentCatalog.getById)
-        .nth(3)
-        .called.with({
+          path: 'modules/ROOT/pages/the-page.adoc',
           component: 'the-component',
           module: 'ROOT',
           family: 'page',
@@ -1177,6 +1170,422 @@ describe('build UI model', () => {
         { latest: true, version: '2.0', title: 'The Component', url: '/the-component/2.0/the-page.html' },
         { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html' },
         { version: '1.0-beta', title: 'The Component', url: '/the-component/1.0-beta/the-page.html' },
+      ])
+      expect(model.latest).to.eql(model.versions[0])
+    })
+
+    it('should follow alias when looking for newer versions of page', () => {
+      component.versions.unshift({
+        version: '2.0',
+        title: 'The Component',
+        url: '/the-component/2.0/index.html',
+      })
+      component.versions.unshift({
+        version: '3.0',
+        title: 'The Component',
+        url: '/the-component/3.0/index.html',
+      })
+      component.latest = component.versions[0]
+      component.url = component.latest.url
+      let rel
+      const files = {
+        '1.0': [file],
+        '2.0': [
+          (rel = {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-component/2.0/the-new-page.html',
+            },
+          }),
+          {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-page.adoc',
+            },
+            rel,
+          },
+        ],
+        '3.0': [
+          {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '3.0',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-component/3.0/the-new-page.html',
+            },
+          },
+        ],
+      }
+      contentCatalog.getById = (filter) =>
+        files[filter.version].find(({ src }) => filter.family === src.family && filter.relative === src.relative)
+      contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.versions).to.exist()
+      expect(model.versions).to.have.lengthOf(3)
+      expect(model.versions).to.eql([
+        { latest: true, version: '3.0', title: 'The Component', url: '/the-component/3.0/the-new-page.html' },
+        { version: '2.0', title: 'The Component', url: '/the-component/2.0/the-new-page.html' },
+        { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html' },
+      ])
+      expect(model.latest).to.eql(model.versions[0])
+    })
+
+    it('should not follow alias outside component version when looking for new versions of page', () => {
+      component.versions.unshift({
+        version: '2.0',
+        title: 'The Component',
+        url: '/the-component/2.0/index.html',
+      })
+      component.versions.unshift({
+        version: '3.0',
+        title: 'The Component',
+        url: '/the-component/3.0/index.html',
+      })
+      component.latest = component.versions[0]
+      component.url = component.latest.url
+      const rel = {
+        src: {
+          family: 'page',
+          component: 'other-component',
+          version: '1.5',
+          module: 'ROOT',
+          relative: 'somewhere.adoc',
+        },
+        pub: {
+          url: '/other-component/1.5/somewhere.html',
+        },
+      }
+      const files = {
+        '1.0': [file],
+        '2.0': [
+          {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-page.adoc',
+            },
+            rel,
+          },
+        ],
+        '3.0': [],
+      }
+      contentCatalog.getById = (filter) =>
+        files[filter.version].find(({ src }) => filter.family === src.family && filter.relative === src.relative)
+      contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.versions).to.exist()
+      expect(model.versions).to.have.lengthOf(3)
+      expect(model.versions).to.eql([
+        { latest: true, missing: true, version: '3.0', title: 'The Component', url: '/the-component/3.0/index.html' },
+        { version: '2.0', title: 'The Component', url: '/other-component/1.5/somewhere.html' },
+        { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html' },
+      ])
+      expect(model.latest).to.eql(model.versions[0])
+    })
+
+    it('should trace back primary alias when looking for older versions of page', () => {
+      component.versions.unshift({
+        version: '2.0',
+        title: 'The Component',
+        url: '/the-component/2.0/index.html',
+      })
+      component.versions.unshift({
+        version: '3.0',
+        title: 'The Component',
+        url: '/the-component/3.0/index.html',
+      })
+      component.latest = component.versions[0]
+      component.url = component.latest.url
+      let rel
+      let alias
+      const files = {
+        '1.0': [file],
+        '2.0': [
+          (rel = {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-component/2.0/the-new-page.html',
+            },
+          }),
+          (alias = {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-page.adoc',
+            },
+            rel,
+          }),
+        ],
+        '3.0': [
+          {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '3.0',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-component/3.0/the-new-page.html',
+            },
+          },
+        ],
+      }
+      // rel is set on the alias target by ContentCatalog#registerPageAlias
+      rel.rel = alias
+      file = files['3.0'][0]
+      contentCatalog.getById = (filter) =>
+        files[filter.version].find(({ src }) => filter.family === src.family && filter.relative === src.relative)
+      contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.versions).to.exist()
+      expect(model.versions).to.have.lengthOf(3)
+      expect(model.versions).to.eql([
+        { latest: true, version: '3.0', title: 'The Component', url: '/the-component/3.0/the-new-page.html' },
+        { version: '2.0', title: 'The Component', url: '/the-component/2.0/the-new-page.html' },
+        { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html' },
+      ])
+      expect(model.latest).to.eql(model.versions[0])
+    })
+
+    it('should not resolve primary alias if it falls outside component version when looking for older versions of page', () => {
+      component.versions.unshift({
+        version: '2.0',
+        title: 'The Component',
+        url: '/the-component/2.0/index.html',
+      })
+      component.versions.unshift({
+        version: '3.0',
+        title: 'The Component',
+        url: '/the-component/3.0/index.html',
+      })
+      component.latest = component.versions[0]
+      component.url = component.latest.url
+      let rel
+      let alias
+      const files = {
+        '1.0': [file],
+        '2.0': [
+          (rel = {
+            src: {
+              family: 'page',
+              component: 'the-other-component',
+              version: 'master',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-other-component/the-new-page.html',
+            },
+          }),
+          (alias = {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-page.adoc',
+            },
+            rel,
+          }),
+        ],
+        '3.0': [
+          {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '3.0',
+              module: 'ROOT',
+              relative: 'the-page.adoc',
+            },
+            pub: {
+              url: '/the-component/3.0/the-page.html',
+            },
+          },
+        ],
+      }
+      // rel is set on the alias target by ContentCatalog#registerPageAlias
+      rel.rel = alias
+      file = files['3.0'][0]
+      contentCatalog.getById = (filter) =>
+        files[filter.version].find(({ src }) => filter.family === src.family && filter.relative === src.relative)
+      contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.versions).to.exist()
+      expect(model.versions).to.have.lengthOf(3)
+      expect(model.versions).to.eql([
+        { latest: true, version: '3.0', title: 'The Component', url: '/the-component/3.0/the-page.html' },
+        { missing: true, version: '2.0', title: 'The Component', url: '/the-component/2.0/index.html' },
+        // notice how it finds the 1.0 version again (after not tracing the alias in 2.0)
+        { version: '1.0', displayVersion: 'Io', title: 'The Component', url: '/the-component/1.0/the-page.html' },
+      ])
+      expect(model.latest).to.eql(model.versions[0])
+    })
+
+    it('should stop tracing primary alias if it falls outside component version when looking for older versions of page', () => {
+      component.versions.unshift({
+        version: '2.0',
+        title: 'The Component',
+        url: '/the-component/2.0/index.html',
+      })
+      component.versions.unshift({
+        version: '2.1',
+        title: 'The Component',
+        url: '/the-component/2.1/index.html',
+      })
+      component.versions.unshift({
+        version: '3.0',
+        title: 'The Component',
+        url: '/the-component/3.0/index.html',
+      })
+      component.latest = component.versions[0]
+      component.url = component.latest.url
+      let rel1
+      let alias1
+      let rel2
+      let alias2
+      let alias3
+      const files = {
+        '1.0': [
+          file,
+          (alias3 = {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '1.0',
+              module: 'ROOT',
+              relative: 'the-paje.adoc',
+            },
+            rel: file,
+          }),
+        ],
+        '2.0': [
+          {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-interim-page.adoc',
+            },
+            rel: {
+              src: {
+                family: 'page',
+                component: 'other-component',
+                version: '1.0',
+                module: 'ROOT',
+                relative: 'prospector.adoc',
+              },
+              pub: {
+                url: '/other-component/1.0/prospector.html',
+              },
+            },
+          },
+        ],
+        2.1: [
+          (rel2 = {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '2.1',
+              module: 'ROOT',
+              relative: 'the-paje.adoc',
+            },
+            pub: {
+              url: '/the-component/2.1/the-paje.html',
+            },
+          }),
+          (alias2 = {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '2.1',
+              module: 'ROOT',
+              relative: 'the-interim-page.adoc',
+            },
+            rel: rel2,
+          }),
+        ],
+        '3.0': [
+          (rel1 = {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '3.0',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-component/3.0/the-new-page.html',
+            },
+          }),
+          (alias1 = {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '3.0',
+              module: 'ROOT',
+              relative: 'the-interim-page.adoc',
+            },
+            rel: rel1,
+          }),
+          {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '3.0',
+              module: 'other',
+              relative: 'another-has-been.adoc',
+            },
+          },
+        ],
+      }
+      // rel is set on the alias target by ContentCatalog#registerPageAlias
+      rel1.rel = alias1
+      rel2.rel = alias2
+      file.rel = alias3
+      file = files['3.0'][0]
+      contentCatalog.getById = (filter) =>
+        files[filter.version].find(({ src }) => filter.family === src.family && filter.relative === src.relative)
+      contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.versions).to.exist()
+      expect(model.versions).to.have.lengthOf(4)
+      expect(model.versions).to.eql([
+        { latest: true, version: '3.0', title: 'The Component', url: '/the-component/3.0/the-new-page.html' },
+        { version: '2.1', title: 'The Component', url: '/the-component/2.1/the-paje.html' },
+        { version: '2.0', title: 'The Component', url: '/other-component/1.0/prospector.html' },
+        // it does not find the last concrete alias because that information is not maintained
+        {
+          missing: true,
+          version: '1.0',
+          displayVersion: 'Io',
+          title: 'The Component',
+          url: '/the-component/1.0/index.html',
+        },
       ])
       expect(model.latest).to.eql(model.versions[0])
     })
@@ -1212,20 +1621,12 @@ describe('build UI model', () => {
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
+          path: 'modules/ROOT/pages/the-page.adoc',
           component: 'the-component',
           module: 'ROOT',
           family: 'page',
           relative: 'the-page.adoc',
           version: '2.0',
-        })
-      expect(contentCatalog.getById)
-        .nth(2)
-        .called.with({
-          component: 'the-component',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'the-page.adoc',
-          version: '1.0',
         })
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(2)
@@ -1282,6 +1683,7 @@ describe('build UI model', () => {
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
+          path: 'modules/ROOT/pages/the-page.adoc',
           component: 'the-component',
           module: 'ROOT',
           family: 'page',
@@ -1291,15 +1693,7 @@ describe('build UI model', () => {
       expect(contentCatalog.getById)
         .nth(2)
         .called.with({
-          component: 'the-component',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'the-page.adoc',
-          version: '1.0',
-        })
-      expect(contentCatalog.getById)
-        .nth(3)
-        .called.with({
+          path: 'modules/ROOT/pages/the-page.adoc',
           component: 'the-component',
           module: 'ROOT',
           family: 'page',
@@ -1344,6 +1738,134 @@ describe('build UI model', () => {
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
       expect(model.canonicalUrl).to.exist()
       expect(model.canonicalUrl).to.equal('http://example.com/the-component/1.0/the-page.html')
+    })
+
+    it('should follow alias through to latest version when resolving canonicalUrl property', () => {
+      site.url = 'http://example.com'
+      component.versions.unshift({
+        version: '2.0',
+        title: 'The Component',
+        url: '/the-component/2.0/index.html',
+      })
+      component.versions.unshift({
+        version: '3.0',
+        title: 'The Component',
+        url: '/the-component/3.0/index.html',
+      })
+      component.latest = component.versions[0]
+      component.url = component.latest.url
+      let rel
+      const files = {
+        '1.0': [file],
+        '2.0': [
+          (rel = {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-component/2.0/the-new-page.html',
+            },
+          }),
+          {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-page.adoc',
+            },
+            rel,
+          },
+        ],
+        '3.0': [
+          {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '3.0',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-component/3.0/the-new-page.html',
+            },
+          },
+        ],
+      }
+      contentCatalog.getById = (filter) =>
+        files[filter.version].find(({ src }) => filter.family === src.family && filter.relative === src.relative)
+      contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.canonicalUrl).to.exist()
+      expect(model.canonicalUrl).to.equal('http://example.com/the-component/3.0/the-new-page.html')
+    })
+
+    it('should follow alias in latest version when resolving canonicalUrl property', () => {
+      site.url = 'http://example.com'
+      component.versions.unshift({
+        version: '2.0',
+        title: 'The Component',
+        url: '/the-component/2.0/index.html',
+      })
+      component.versions.unshift({
+        version: '3.0',
+        title: 'The Component',
+        url: '/the-component/3.0/index.html',
+      })
+      component.latest = component.versions[0]
+      component.url = component.latest.url
+      let rel
+      const files = {
+        '1.0': [file],
+        '2.0': [
+          {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '2.0',
+              module: 'ROOT',
+              relative: 'the-page.adoc',
+            },
+            pub: {
+              url: '/the-component/2.0/the-page.html',
+            },
+          },
+        ],
+        '3.0': [
+          (rel = {
+            src: {
+              family: 'page',
+              component: 'the-component',
+              version: '3.0',
+              module: 'ROOT',
+              relative: 'the-new-page.adoc',
+            },
+            pub: {
+              url: '/the-component/3.0/the-new-page.html',
+            },
+          }),
+          {
+            src: {
+              family: 'alias',
+              component: 'the-component',
+              version: '3.0',
+              module: 'ROOT',
+              relative: 'the-page.adoc',
+            },
+            rel,
+          },
+        ],
+      }
+      contentCatalog.getById = (filter) =>
+        files[filter.version].find(({ src }) => filter.family === src.family && filter.relative === src.relative)
+      contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.canonicalUrl).to.exist()
+      expect(model.canonicalUrl).to.equal('http://example.com/the-component/3.0/the-new-page.html')
     })
 
     it('should not set canonicalUrl property to url newer than latest version', () => {
