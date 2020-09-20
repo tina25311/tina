@@ -63,7 +63,7 @@ TIP: If you just installed Chocolatey using the instructions in the proceeding s
 
 . Close the terminal.
 
-. Open an new, regular PowerShell terminal, and install Node using nvm.
+. Open a new, regular PowerShell terminal, and install Node using nvm.
 +
 --
 [subs=attributes+]
