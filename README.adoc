@@ -28,7 +28,8 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 :url-opendevise: https://opendevise.com
 :url-git-credential-store: https://git-scm.com/docs/git-credential-store
 // Versions:
-:version-node: 12.13.0
+:version-node-major: 12
+:version-node: {version-node-major}.18.4
 
 ifdef::badges[]
 image:{img-ci-status}[CI Status (GitLab CI), link={url-ci-pipelines}]
@@ -49,7 +50,7 @@ More comprehensive installation instructions are in the {url-docs}[Antora docume
 
 === Prerequisites
 
-Antora is built on Node.js and is verified to work on Linux, macOS, and Windows.
+Antora is built on Node.js (herein: Node) and is verified to work on Linux, macOS, and Windows.
 To install Antora, you'll need Node (including npm, which is bundled with Node) on your system.
 You may also find the base build tools for your OS helpful (which includes `git`), though they're not required.
 We recommend using the latest long term support (LTS) release of Node.
@@ -80,13 +81,15 @@ Once you've installed nvm, open a *new* terminal and install the latest Node LTS
 IMPORTANT: If you're using nvm for Windows, you must enter the full version of Node when running commands (e.g., `nvm install {version-node}`, `nvm use {version-node}`).
 Run `nvm list available` to see a list of available Node versions.
 
-To make Node 12 the default in new terminals (Linux and macOS only), type:
+To make Node {version-node-major} the default in new terminals (Linux and macOS only), type:
 
- $ nvm alias default 12
+[subs=attributes+]
+ $ nvm alias default {version-node-major}
 
 Switch to this version of Node using the following command:
 
- $ nvm use 12
+[subs=attributes+]
+ $ nvm use {version-node-major}
 
 Now that you have Node installed, you can install Antora.
 
