@@ -31,6 +31,9 @@
     "vinyl-fs": "~3.0",
     "yargs-parser": "~18.1"
   },
+  "engines": {
+    "node": ">=8.11.0"
+  },
   "nyc": {
     "cache": true,
     "cacheDir": "node_modules/.cache/nyc",
