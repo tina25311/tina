@@ -8,11 +8,12 @@ const { File, MemoryFile, ReadableFile } = require('./file')
 const fs = require('fs-extra')
 const get = require('got')
 const getCacheDir = require('cache-directory')
-const { obj: map } = require('through2')
 const minimatchAll = require('minimatch-all')
 const ospath = require('path')
 const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
+const { Transform } = require('stream')
+const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
 const UiCatalog = require('./ui-catalog')
 const yaml = require('js-yaml')
 const vfs = require('vinyl-fs')
@@ -212,7 +213,13 @@ function bufferizeContents () {
 
 function collectFiles (done) {
   const files = new Map()
-  return map((file, _, next) => files.set(file.path, file) && next(), () => done(files)) // prettier-ignore
+  return map(
+    (file, _, next) => {
+      files.set(file.path, file)
+      next()
+    },
+    () => done(files)
+  )
 }
 
 function srcSupplementalFiles (filesSpec, startDir) {

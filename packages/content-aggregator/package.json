@@ -28,7 +28,6 @@
     "mime-types": "~2.1",
     "multi-progress": "~2.0",
     "picomatch": "~2.2",
-    "through2": "~4.0",
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"
   },

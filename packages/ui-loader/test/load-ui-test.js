@@ -10,6 +10,7 @@ const loadUi = require('@antora/ui-loader')
 const os = require('os')
 const ospath = require('path')
 const { Transform } = require('stream')
+const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
 const vfs = require('vinyl-fs')
 const zip = require('gulp-vinyl-zip')
 
@@ -49,14 +50,11 @@ describe('loadUi()', () => {
         .src('**/*', { cwd: dir })
         // NOTE set stable file permissions
         .pipe(
-          new Transform({
-            objectMode: true,
-            transform (file, _, next) {
-              const stat = file.stat
-              if (stat.isFile()) stat.mode = 33188
-              else if (stat.isDirectory()) stat.mode = 16877
-              next(null, file)
-            },
+          map((file, _, next) => {
+            const stat = file.stat
+            if (stat.isFile()) stat.mode = 33188
+            else if (stat.isDirectory()) stat.mode = 16877
+            next(null, file)
           })
         )
         .pipe(zip.dest(`${dir}.zip`))

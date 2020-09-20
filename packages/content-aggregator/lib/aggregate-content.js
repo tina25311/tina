@@ -11,7 +11,6 @@ const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('isomorphic-git')
 const invariably = { false: () => false, void: () => {} }
-const { obj: map } = require('through2')
 const matcher = require('matcher')
 const mimeTypes = require('./mime-types-with-asciidoc')
 const MultiProgress = require('multi-progress')
@@ -20,6 +19,8 @@ const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const promiseFinally = require('./promise-finally')
 const { fs: resolvePathGlobsFs, git: resolvePathGlobsGit } = require('./resolve-path-globs')
+const { Transform } = require('stream')
+const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
 const vfs = require('vinyl-fs')
 const yaml = require('js-yaml')
 
@@ -428,7 +429,13 @@ function relativizeFiles () {
 
 function collectFiles (done) {
   const accum = []
-  return map((file, enc, next) => accum.push(file) && next(), () => done(accum)) // prettier-ignore
+  return map(
+    (file, enc, next) => {
+      accum.push(file)
+      next()
+    },
+    () => done(accum)
+  )
 }
 
 function readFilesFromGitTree (repo, oid, startPath) {
