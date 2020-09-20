@@ -340,10 +340,7 @@ class ContentCatalog {
       // QUESTION should we skip registering alias in this case?
       src.version = 'master'
     }
-    // QUESTION should we use src.origin instead of rel with type='link'?
-    //src.origin = { type: 'link', target }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
-    //const path_ = path.join(targetPage.path.slice(0, -targetPage.src.relative.length), src.relative)
     return this.addFile({ mediaType: 'text/html', src: inflateSrc(src, 'alias'), rel: target })
   }
 
@@ -401,7 +398,6 @@ function generateKey ({ component, version, module: module_, family, relative })
 }
 
 function generateResourceSpec ({ component, version, module: module_, family, relative }, shorthand = true) {
-  //if (module_ == null && family === 'nav') return `${version}@${component}:nav$${relative}`
   return (
     `${version}@${component}:${shorthand && module_ === 'ROOT' ? '' : module_}:` +
     (family === 'page' || family === 'alias' ? '' : `${family}$`) +
