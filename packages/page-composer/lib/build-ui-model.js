@@ -1,7 +1,6 @@
 'use strict'
 
 const { posix: path } = require('path')
-const { URL } = require('url')
 
 const { DEFAULT_LAYOUT_NAME } = require('./constants')
 const { version: VERSION } = require('../package.json')

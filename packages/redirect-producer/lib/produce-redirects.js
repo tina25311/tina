@@ -2,7 +2,6 @@
 
 const computeRelativeUrlPath = require('@antora/asciidoc-loader/lib/util/compute-relative-url-path')
 const File = require('vinyl')
-const { URL } = require('url')
 
 const ENCODED_SPACE_RX = /%20/g
 

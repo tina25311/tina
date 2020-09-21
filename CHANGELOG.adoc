@@ -20,6 +20,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* Drop support for Node.js 8 and set minimum required version to 10 (#679)
 * *content-aggregator*: Don't use global git credentials path if custom git credentials path is specified, but does not exist (#681)
 * *content-aggregator*: Show sensible error message if cache directory cannot be created (#680)
 * *content-classifier*: Register all component versions before adding files to content catalog (#314)

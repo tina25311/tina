@@ -4,7 +4,6 @@ const { homedir } = require('os')
 const expandPath = require('@antora/expand-path-helper')
 const fs = require('fs-extra')
 const ospath = require('path')
-const { URL } = require('url')
 
 class GitCredentialManagerStore {
   configure ({ config, startDir }) {

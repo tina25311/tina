@@ -338,7 +338,6 @@ Let's start by creating a helper function that interfaces with the system git vi
 ----
 const git = require('isomorphic-git')
 const { spawn } = require('child_process')
-const { URL } = require('url')
 
 function gitCredentialFill (url) {
   const { protocol, host } = new URL(url)

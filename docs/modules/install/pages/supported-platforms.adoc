@@ -60,8 +60,9 @@ Windows Server 2019
 
 |Node.js
 |[%hardbreaks]
+10 (>=10.17.0)
 12
-10
+14
 |===
 
 .About the Antora Test Suite
@@ -108,9 +109,6 @@ On subsequent runs, Antora only reconnects to the remote repositories if the xre
 * Try the official xref:ROOT:antora-container.adoc[Antora Docker container].
 
 ////
-Node 10 EOL 2020-05-19
-Node 12 EOL 2020-10-20
-
 OS Release schedule links
 
 Alpine: https://wiki.alpinelinux.org/wiki/Alpine_Linux:Releases
