@@ -773,7 +773,13 @@ function ensureCacheDir (preferredCacheDir, startDir) {
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
       : expandPath(preferredCacheDir, '~+', startDir)
   const cacheDir = ospath.join(baseCacheDir, CONTENT_CACHE_FOLDER)
-  return fs.ensureDir(cacheDir).then(() => cacheDir)
+  return fs
+    .ensureDir(cacheDir)
+    .then(() => cacheDir)
+    .catch((e) => {
+      e.message = `Failed to create content cache directory: ${cacheDir}; ${e.message}`
+      throw e
+    })
 }
 
 function transformGitCloneError (err, displayUrl) {

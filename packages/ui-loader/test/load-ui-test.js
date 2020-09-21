@@ -961,6 +961,10 @@ describe('loadUi()', () => {
       expect(paths).to.have.members(expectedFilePaths)
     }
 
+    it('should use custom cache dir with absolute path', async () => {
+      await testCacheDir(ospath.join(WORK_DIR, '.antora-cache'))
+    })
+
     it('should use custom cache dir relative to cwd (implicit)', async () => {
       await testCacheDir('.antora-cache')
     })
@@ -977,6 +981,19 @@ describe('loadUi()', () => {
     it('should use custom cache dir relative to user home', async () => {
       process.chdir(os.tmpdir())
       await testCacheDir('~' + ospath.sep + ospath.relative(os.homedir(), ospath.join(WORK_DIR, '.antora-cache')))
+    })
+
+    it('should show sensible error message if catch dir cannot be created', async () => {
+      const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+      await fs.createFile(customCacheDir)
+      const customUiCacheDir = ospath.join(customCacheDir, UI_CACHE_FOLDER)
+      const playbook = {
+        runtime: { cacheDir: customCacheDir },
+        ui: { bundle: { url: 'http://localhost:1337/the-ui-bundle.zip' } },
+      }
+      const expectedMessage = `Failed to create UI cache directory: ${customUiCacheDir};`
+      const loadUiDeferred = await deferExceptions(loadUi, playbook)
+      expect(loadUiDeferred).to.throw(expectedMessage)
     })
   })
 })
