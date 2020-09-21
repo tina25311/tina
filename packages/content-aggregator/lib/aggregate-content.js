@@ -17,7 +17,6 @@ const MultiProgress = require('multi-progress')
 const ospath = require('path')
 const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
-const promiseFinally = require('./promise-finally')
 const { fs: resolvePathGlobsFs, git: resolvePathGlobsGit } = require('./resolve-path-globs')
 const { Transform } = require('stream')
 const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
@@ -88,8 +87,8 @@ function aggregateContent (playbook) {
   const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
   const { ensureGitSuffix, credentials } = Object.assign({ ensureGitSuffix: true }, playbook.git)
   const credentialManager = registerGitPlugins(credentials, startDir).get('credentialManager')
-  return promiseFinally(
-    ensureCacheDir(cacheDir, startDir).then((resolvedCacheDir) =>
+  return ensureCacheDir(cacheDir, startDir)
+    .then((resolvedCacheDir) =>
       Promise.all(
         Array.from(sourcesByUrl, ([url, sources]) =>
           loadRepository(url, {
@@ -118,9 +117,8 @@ function aggregateContent (playbook) {
           progress && progress.terminate()
           throw err
         })
-    ),
-    unregisterGitPlugins
-  )
+    )
+    .finally(unregisterGitPlugins)
 }
 
 function buildAggregate (componentVersionBuckets) {
