@@ -1,7 +1,7 @@
 'use strict'
 
 const expandPath = require('@antora/expand-path-helper')
-const fs = require('fs-extra')
+const { promises: fsp } = require('fs')
 const ospath = require('path')
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const publishStream = require('./common/publish-stream')
@@ -19,11 +19,29 @@ function publishToFs (config, files, playbook) {
     fileUri: 'file://' + (posixify ? '/' + posixify(absDestDir) : absDestDir),
   }
   return config.clean
-    ? fs
-      .remove(absDestDir)
+    ? rmdir(absDestDir)
       .then(() => publishStream(vfsDest(absDestDir), files))
       .then(() => report)
     : publishStream(vfsDest(absDestDir), files).then(() => report)
+}
+
+/**
+ * Removes the specified directory, including all of its contents.
+ * Equivalent to fs.promises.rmdir(dir, { recursive: true }) in Node 12.
+ */
+function rmdir (dir) {
+  return fsp
+    .readdir(dir, { withFileTypes: true })
+    .then((its) =>
+      Promise.all(
+        its.map((it) => (it.isDirectory() ? rmdir(ospath.join(dir, it.name)) : fsp.unlink(ospath.join(dir, it.name))))
+      )
+    )
+    .then(() => fsp.rmdir(dir))
+    .catch((e) => {
+      if (e.code === 'ENOTDIR') return fsp.unlink(dir)
+      if (e.code !== 'ENOENT') throw e
+    })
 }
 
 module.exports = publishToFs

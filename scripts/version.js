@@ -1,7 +1,7 @@
 'use strict'
 
 const { exec } = require('child_process')
-const fs = require('fs')
+const { promises: fsp } = require('fs')
 const path = require('path')
 const { promisify } = require('util')
 const { version: VERSION } = require('../lerna.json')
@@ -18,7 +18,8 @@ function getCurrentDate () {
 }
 
 function updateReadmes (now) {
-  return promisify(fs.readdir)(PACKAGES_DIR, { withFileTypes: true })
+  return fsp
+    .readdir(PACKAGES_DIR, { withFileTypes: true })
     .then((dirents) =>
       Promise.all(
         dirents
@@ -28,12 +29,14 @@ function updateReadmes (now) {
             [PROJECT_README_FILE]
           )
           .map((readmeFile) =>
-            promisify(fs.readFile)(readmeFile, 'utf8').then((contents) =>
-              promisify(fs.writeFile)(
-                readmeFile,
-                contents.replace(/^Copyright \(C\) (\d{4})-\d{4}/m, `Copyright (C) $1-${now.getFullYear()}`)
+            fsp
+              .readFile(readmeFile, 'utf8')
+              .then((contents) =>
+                fsp.writeFile(
+                  readmeFile,
+                  contents.replace(/^Copyright \(C\) (\d{4})-\d{4}/m, `Copyright (C) $1-${now.getFullYear()}`)
+                )
               )
-            )
           )
       )
     )
@@ -47,9 +50,10 @@ function updateDocsConfig () {
   const prereleaseSuffix = VERSION.split('-')
     .slice(1)
     .join('-')
-  return promisify(fs.readFile)(COMPONENT_VERSION_DESC, 'utf8')
+  return fsp
+    .readFile(COMPONENT_VERSION_DESC, 'utf8')
     .then((desc) =>
-      promisify(fs.writeFile)(
+      fsp.writeFile(
         COMPONENT_VERSION_DESC,
         desc
           .replace(/^version: \S+$/m, `version: ${q(minorVersion)}`)
@@ -62,9 +66,10 @@ function updateDocsConfig () {
 
 function updateChangelog (now) {
   const releaseDate = now.toISOString().split('T')[0]
-  return promisify(fs.readFile)(CHANGELOG_FILE, 'utf8')
+  return fsp
+    .readFile(CHANGELOG_FILE, 'utf8')
     .then((changelog) =>
-      promisify(fs.writeFile)(CHANGELOG_FILE, changelog.replace(/^== Unreleased$/m, `== ${VERSION} (${releaseDate})`))
+      fsp.writeFile(CHANGELOG_FILE, changelog.replace(/^== Unreleased$/m, `== ${VERSION} (${releaseDate})`))
     )
     .then(() => promisify(exec)('git add CHANGELOG.adoc', { cwd: PROJECT_ROOT_DIR }))
 }

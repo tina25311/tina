@@ -22,6 +22,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * Upgrade dependencies (#598)
+* Replace the fs-extra dependency with calls to the promise-based fs API provided by Node (#682)
 * *content-aggregator*: Don't use global git credentials path if custom git credentials path is specified, but does not exist (#681)
 * *content-classifier*: Register all component versions before adding files to content catalog (#314)
 * *content-classifier*: Only register start page for component version in `ContentCatalog#registerComponentVersion` if value of `startPage` property in descriptor is truthy (#605)

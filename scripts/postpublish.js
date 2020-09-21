@@ -1,7 +1,6 @@
 'use strict'
 
-const fs = require('fs')
-const { promisify } = require('util')
+const { promises: fsp } = require('fs')
 const README_SRC = 'README.adoc'
 const README_HIDDEN = '.' + README_SRC
 const README_DEST = 'README.md'
@@ -11,11 +10,11 @@ const README_DEST = 'README.md'
  * and restores the hidden AsciiDoc README (.README.adoc -> README.adoc).
  */
 ;(async () => {
-  const nukeP = promisify(fs.stat)(README_DEST).then((stat) => {
-    if (stat.isFile()) return promisify(fs.unlink)(README_DEST)
+  const nukeP = fsp.stat(README_DEST).then((stat) => {
+    if (stat.isFile()) return fsp.unlink(README_DEST)
   })
-  const restoreP = promisify(fs.stat)(README_HIDDEN).then((stat) => {
-    if (stat.isFile()) return promisify(fs.rename)(README_HIDDEN, README_SRC)
+  const restoreP = fsp.stat(README_HIDDEN).then((stat) => {
+    if (stat.isFile()) return fsp.rename(README_HIDDEN, README_SRC)
   })
   await Promise.all([nukeP, restoreP])
 })()

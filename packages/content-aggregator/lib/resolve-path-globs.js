@@ -2,7 +2,7 @@
 
 const { expand: expandBraces } = require('braces')
 const flattenDeep = require('./flatten-deep')
-const fs = require('fs-extra')
+const { promises: fsp } = require('fs')
 const git = require('isomorphic-git')
 const invariably = { true: () => true, false: () => false, void: () => {}, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
@@ -145,11 +145,11 @@ function patternToRx (pattern) {
 }
 
 function readdirWithFileTypes (dir) {
-  return fs.readdir(dir, { withFileTypes: true }).catch(invariably.emptyArray)
+  return fsp.readdir(dir, { withFileTypes: true }).catch(invariably.emptyArray)
 }
 
 function retrievePathFs (base, { path }, subpath) {
-  return fs
+  return fsp
     .access(base + '/' + joinPath(path, subpath))
     .then(invariably.true)
     .catch(invariably.false)

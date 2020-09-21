@@ -5,7 +5,7 @@ const collectBuffer = require('bl')
 const { createHash } = require('crypto')
 const expandPath = require('@antora/expand-path-helper')
 const { File, MemoryFile, ReadableFile } = require('./file')
-const fs = require('fs-extra')
+const { promises: fsp } = require('fs')
 const get = require('got')
 const getCacheDir = require('cache-directory')
 const minimatchAll = require('minimatch-all')
@@ -69,17 +69,19 @@ async function loadUi (playbook) {
       const cachePath = ospath.join(absCacheDir, `${sha1(bundleUrl)}.zip`)
       return fetch && bundle.snapshot
         ? downloadBundle(bundleUrl, cachePath)
-        : fs.pathExists(cachePath).then((cached) => (cached ? cachePath : downloadBundle(bundleUrl, cachePath)))
+        : fsp
+          .access(cachePath)
+          .then(() => cachePath)
+          .catch(() => downloadBundle(bundleUrl, cachePath))
     })
   } else {
     const localPath = expandPath(bundleUrl, '~+', startDir)
-    resolveBundle = fs.pathExists(localPath).then((exists) => {
-      if (exists) {
-        return localPath
-      } else {
+    resolveBundle = fsp
+      .access(localPath)
+      .then(() => localPath)
+      .catch(() => {
         throw new Error('Specified UI bundle does not exist: ' + bundleUrl)
-      }
-    })
+      })
   }
 
   const files = await Promise.all([
@@ -137,13 +139,21 @@ function ensureCacheDir (customCacheDir, startDir) {
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
       : expandPath(customCacheDir, '~+', startDir)
   const cacheDir = ospath.join(baseCacheDir, UI_CACHE_FOLDER)
-  return fs
-    .ensureDir(cacheDir)
-    .then(() => cacheDir)
-    .catch((err) => {
-      err.message = `Failed to create UI cache directory: ${cacheDir}; ${err.message}`
-      throw err
-    })
+  return fsp
+    .stat(cacheDir)
+    .then((stat) => stat.isDirectory())
+    .catch(() => false)
+    .then((dirExists) =>
+      dirExists
+        ? cacheDir
+        : fsp
+          .mkdir(cacheDir, { recursive: true })
+          .then(() => cacheDir)
+          .catch((err) => {
+            err.message = `Failed to create UI cache directory: ${cacheDir}; ${err.message}`
+            throw err
+          })
+    )
 }
 
 function downloadBundle (url, to) {
@@ -158,7 +168,12 @@ function downloadBundle (url, to) {
               err.summary = 'Invalid UI bundle'
               reject(err)
             })
-            .on('finish', () => fs.outputFile(to, body).then(() => resolve(to)))
+            .on('finish', () =>
+              fsp
+                .mkdir(ospath.dirname(to), { recursive: true })
+                .then(() => fsp.writeFile(to, body))
+                .then(() => resolve(to))
+            )
         )
     )
     .catch((err) => {
@@ -242,9 +257,9 @@ function srcSupplementalFiles (filesSpec, startDir) {
           } else {
             contents_ = expandPath(contents_, '~+', startDir)
             accum.push(
-              fs
+              fsp
                 .stat(contents_)
-                .then((stat) => fs.readFile(contents_).then((contents) => new File({ path: path_, contents, stat })))
+                .then((stat) => fsp.readFile(contents_).then((contents) => new File({ path: path_, contents, stat })))
             )
           }
         } else {
@@ -255,7 +270,7 @@ function srcSupplementalFiles (filesSpec, startDir) {
     ).then((files) => files.reduce((accum, file) => accum.set(file.path, file) && accum, new Map()))
   } else {
     const cwd = expandPath(filesSpec, '~+', startDir)
-    return fs
+    return fsp
       .access(cwd)
       .then(
         () =>
