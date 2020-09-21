@@ -3552,6 +3552,20 @@ describe('aggregateContent()', function () {
       expect(aggregate).to.have.lengthOf(1)
     })
 
+    it('should not read credentials from git credential store (XDG) if specified credentials path does not exist', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const credentials = repoBuilder.url.replace('//', '//u:p@') + '\n'
+      await fs.mkdirp(ospath.join(process.env.XDG_CONFIG_HOME, 'git'))
+      await fs.writeFile(ospath.join(process.env.XDG_CONFIG_HOME, 'git', 'credentials'), credentials)
+      const customGitCredentialsPath = ospath.join(WORK_DIR, '.custom-git-credentials')
+      playbookSpec.git = { credentials: { path: customGitCredentialsPath } }
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const expectedMessage = 'Content repository not found or requires credentials (url: ' + repoBuilder.url + ')'
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      expect(aggregateContentDeferred).to.throw(expectedMessage)
+    })
+
     it('should read credentials from specified path if auth is required', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
