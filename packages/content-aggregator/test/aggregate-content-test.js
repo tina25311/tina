@@ -1768,6 +1768,27 @@ describe('aggregateContent()', function () {
       )
     })
 
+    describe('should use custom cache dir with absolute path', () => {
+      testAll(async (repoBuilder) => {
+        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.runtime.cacheDir = customCacheDir
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        await aggregateContent(playbookSpec)
+        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
+        if (repoBuilder.remote) {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.not.be.empty()
+        } else {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.be.empty()
+        }
+      })
+    })
+
     describe('should use custom cache dir relative to cwd', () => {
       testAll(async (repoBuilder) => {
         const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
@@ -1834,6 +1855,20 @@ describe('aggregateContent()', function () {
             .to.be.a.directory()
             .and.be.empty()
         }
+      })
+    })
+
+    describe('should show sensible error message if cache directory cannot be created', () => {
+      testAll(async (repoBuilder) => {
+        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
+        await fs.createFile(customCacheDir)
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.runtime.cacheDir = customCacheDir
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const expectedMessage = `Failed to create content cache directory: ${customContentCacheDir};`
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
 

@@ -137,7 +137,13 @@ function ensureCacheDir (customCacheDir, startDir) {
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
       : expandPath(customCacheDir, '~+', startDir)
   const cacheDir = ospath.join(baseCacheDir, UI_CACHE_FOLDER)
-  return fs.ensureDir(cacheDir).then(() => cacheDir)
+  return fs
+    .ensureDir(cacheDir)
+    .then(() => cacheDir)
+    .catch((e) => {
+      e.message = `Failed to create UI cache directory: ${cacheDir}; ${e.message}`
+      throw e
+    })
 }
 
 function downloadBundle (url, to) {
