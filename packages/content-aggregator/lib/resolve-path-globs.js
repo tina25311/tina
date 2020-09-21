@@ -117,13 +117,6 @@ function extractMagicBase (patternSegments, base) {
   return [base, nextSegment]
 }
 
-function isDirectory (path) {
-  return fs
-    .stat(path)
-    .then((stat) => stat.isDirectory())
-    .catch(invariably.false)
-}
-
 function listDirentsFs (base, path) {
   return readdirWithFileTypes(base + '/' + path)
 }
@@ -151,19 +144,9 @@ function patternToRx (pattern) {
   return (pattern.charAt() === '.' ? '' : '(?!\\.)') + regexpEscapeWithGlob(pattern)
 }
 
-const readdirWithFileTypes = fs.Dirent
-  ? (dir) => fs.readdir(dir, { withFileTypes: true }).catch(invariably.emptyArray)
-  : (dir) =>
-    fs
-      .readdir(dir)
-      .catch(invariably.emptyArray)
-      .then((names) =>
-        Promise.all(
-          names.map((name) =>
-            isDirectory(dir + '/' + name).then((result) => ({ name, isDirectory: invariably[result] }))
-          )
-        )
-      )
+function readdirWithFileTypes (dir) {
+  return fs.readdir(dir, { withFileTypes: true }).catch(invariably.emptyArray)
+}
 
 function retrievePathFs (base, { path }, subpath) {
   return fs
