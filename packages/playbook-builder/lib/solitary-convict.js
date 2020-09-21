@@ -4,7 +4,6 @@ const convict = require('convict')
 const json = require('json5')
 const toml = require('@iarna/toml')
 const yaml = require('js-yaml')
-const { URL } = require('url')
 
 const ARGS_SCANNER_RX = /(?:([^=,]+)|(?==))(?:,|$|=(|("|').*?\3|[^,]+)(?:,|$))/g
 const PRIMITIVE_TYPES = [Boolean, Number, String]
