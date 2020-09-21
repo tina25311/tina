@@ -12,8 +12,10 @@ class GitCredentialManagerStore {
     this.urls = {}
     if ((this.contents = (config = config || {}).contents)) {
       this.path = undefined
+    } else if (config.path) {
+      this.path = expandPath(config.path, '~+', startDir)
     } else {
-      this.path = config.path ? expandPath(config.path, '~+', startDir) : undefined
+      this.path = undefined
     }
     return this
   }
@@ -21,23 +23,31 @@ class GitCredentialManagerStore {
   async load () {
     if (this.entries) return this.entries
     return (this.entries = new Promise((resolve) => {
-      let contentsPromise, delimiter
+      let contentsPromise
+      let delimiter = '\n'
       if (this.contents) {
-        delimiter = /[,\n]/
         contentsPromise = Promise.resolve(this.contents)
+        delimiter = /[,\n]/
+      } else if (this.path) {
+        contentsPromise = fs
+          .pathExists(this.path)
+          .then((exists) => (exists ? fs.readFile(this.path, 'utf8') : undefined))
       } else {
-        delimiter = '\n'
-        let credentialsPath = this.path || ospath.join(homedir(), '.git-credentials')
-        contentsPromise = fs.pathExists(credentialsPath).then((exists) => {
-          if (exists) {
-            return fs.readFile(credentialsPath, 'utf8')
-          } else {
-            const xdgConfigHome = process.env.XDG_CONFIG_HOME || ospath.join(homedir(), '.config')
-            return fs
-              .pathExists((credentialsPath = ospath.join(xdgConfigHome, 'git', 'credentials')))
-              .then((fallbackExists) => (fallbackExists ? fs.readFile(credentialsPath, 'utf8') : undefined))
-          }
-        })
+        const homeGitCredentialsPath = ospath.join(homedir(), '.git-credentials')
+        const xdgConfigGitCredentialsPath = ospath.join(
+          process.env.XDG_CONFIG_HOME || ospath.join(homedir(), '.config'),
+          'git',
+          'credentials'
+        )
+        contentsPromise = fs
+          .pathExists(homeGitCredentialsPath)
+          .then((exists) =>
+            exists
+              ? fs.readFile(homeGitCredentialsPath, 'utf8')
+              : fs
+                .pathExists(xdgConfigGitCredentialsPath)
+                .then((altExists) => (altExists ? fs.readFile(xdgConfigGitCredentialsPath, 'utf8') : undefined))
+          )
       }
       contentsPromise.then((contents) => {
         if (contents) {

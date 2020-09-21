@@ -20,6 +20,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *content-aggregator*: Don't use global git credentials path if custom git credentials path is specified, but does not exist (#681)
 * *content-aggregator*: Show sensible error message if cache directory cannot be created (#680)
 * *content-classifier*: Register all component versions before adding files to content catalog (#314)
 * *content-classifier*: Only register start page for component version in `ContentCatalog#registerComponentVersion` if value of `startPage` property in descriptor is truthy (#605)
