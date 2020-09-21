@@ -1,15 +1,15 @@
 = Private Repository Authentication
-:url-create-personal-token-github: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
-:url-create-deploy-token-github: https://developer.github.com/v3/guides/managing-deploy-keys
+:url-create-personal-token-github: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+:url-create-deploy-token-github: https://docs.github.com/en/developers/overview/managing-deploy-keys
 :url-create-personal-token-gitlab: https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html
 :url-create-deploy-token-gitlab: https://docs.gitlab.com/ee/user/project/deploy_tokens/
-:url-create-app-pass-bitbucket: https://confluence.atlassian.com/bitbucket/app-passwords-828781300.html
+:url-create-app-pass-bitbucket: https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/
 :url-credential-store: https://git-scm.com/docs/git-credential-store
-:url-credential-manager-plugin: https://isomorphic-git.org/docs/en/plugin_credentialManager
+:url-credential-manager-plugin: https://github.com/isomorphic-git/isomorphic-git/blob/v0.78.5/docs/plugin_credentialManager.md
 :url-oauth2-formats: https://isomorphic-git.org/docs/en/authentication
 
 In order for Antora to access private repositories, you need to supply it with authentication credentials for any private repository URL you want to use.
-These credentials can be externalized so they don't have to hard-coded into the playbook.
+These credentials can be externalized so they don't have to be hard-coded into the playbook.
 This page covers various ways you can pass the credentials to Antora, including the built-in git credential store, a custom credential store, or even your own credential manager.
 
 Let's start by looking at the authentication credential types Antora accepts by default, then move on to how to set them up and put them to use.
@@ -27,7 +27,7 @@ You may have better luck using an access token.
 When two-factor authentication (2FA) is enabled on your account, you can't use the username/password pair to authenticate with a private repository.
 You'll receive the error _401 HTTP Basic: Access Denied_ when you try.
 
-Regardless of the reason, if the git host does not allow you to authenticate using a username/password pair, you'll need to use an acces token instead.
+Regardless of the reason, if the git host does not allow you to authenticate using a username/password pair, you'll need to use an access token instead.
 
 There are two types of access tokens: personal access tokens and deploy tokens.
 
@@ -322,7 +322,7 @@ Either you'll encounter the error `Cannot find module 'isomorphic-git'` or your 
 To fix this problem, set the `NODE_PATH` environment variable to tell Node where to look for Antora's dependencies:
 
  $ NODE_PATH=$(npm -g list --parseable=true @antora/site-generator-default)/node_modules \
-   antora -r ./system-git-credential-manager.js antora-playbook.yml 
+   antora -r ./system-git-credential-manager.js antora-playbook.yml
 
 The alternate solution is to install Antora locally (i.e., add the Antora packages to the dependencies in [.path]_package.json_ file and run `npm i`).
 
