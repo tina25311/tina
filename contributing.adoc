@@ -551,9 +551,9 @@ This project uses {url-lerna}[Lerna] (command: `lerna`) to manage and release mu
 The packages are located under the [.path]_packages/_ folder (which you can list using `lerna list`).
 The main task we need Lerna for is to clean the installed dependencies.
 
-To use Lerna, you need to install it globally using:
+To use the version of Lerna required by this project, you need to install it globally using:
 
- $ npm install -g lerna
+ $ npm install -g lerna@$(node -p 'require("./lerna.json").lerna')
 
 The lerna module provides the `lerna` command.
 You can verify this command is on your path using:
