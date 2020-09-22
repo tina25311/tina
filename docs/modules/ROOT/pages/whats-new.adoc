@@ -5,436 +5,21 @@
 :url-gitlab: https://gitlab.com
 :url-git-antora: {url-gitlab}/antora/antora
 :url-issues: {url-git-antora}/issues
-:url-milestone-2-3-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.0
-:url-milestone-2-3-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.1
-:url-milestone-2-3-2: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.2
-:url-milestone-2-3-3: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.3
-:url-milestone-2-3-4: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%202.3.4
+:url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-git-antora}/merge_requests
 
-= Antora 2.3.4
+IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
 
-_**Release date:** 2020.09.15 | *Issue label:* {url-milestone-2-3-4}[2.3.4^]_
+= Antora 3.0.0-dev
 
-== Resolved issues
-
-=== Changed
-
-Issue {url-issues}/650[#650^]:: If the playbook file isn't found, display the invalid file path in the error message.
-Issue {url-issues}/665[#665^]:: Show a more informative error message if the page ID specifying the site start page (`site.start_page`) is missing a component name.
-Issue {url-issues}/676[#676^]:: Instead of crashing, display a warning when the page ID specifying the start page for a site or component version contains invalid syntax.
-Also change `ContentCatalog#resolveResource` (and thus `ContentCatalog#resolvePage`) to return `false` instead of throwing an error when a resource ID has invalid syntax.
-This change makes the `resolvePage` and `resolvePageURL` UI helper functions more resilient.
-Issue {url-issues}/675[#675^]:: Disallow a file URI as the value of `site.url` in the playbook.
-Issue {url-issues}/627[#627^]:: Retain the `cwd` property, and thus the `base` property, for supplemental UI files read from the local filesystem.
-
-=== Fixed
-
-Issue {url-issues}/644[#644^]:: Don't modify the file extension of an AsciiDoc file in the attachments family.
-Issue {url-issues}/587[#587^]:: Show a more detailed error message when attempting to add a duplicate file.
-_Also known as the infamous "`Duplicate nav`" conundrum_.
-This error message will serve as a template for more informative messages to be added in the future once a logging facility is integrated into Antora.
-Issue {url-issues}/648[#648^]:: If a page alias conflicts with an existing page, show the page ID of the page that defines the alias in the error message.
-Issue {url-issues}/627[#627^]:: Allow dot files (i.e., hidden files) in a supplemental UI directory to be used as static files.
-Issue {url-issues}/653[#653^]:: Don't register a page alias for the default component version index page (i.e., `ROOT:index.adoc`) when the `start_page` key in a component version's [.path]_antora.yml_ file specifies a different page.
-This prevents a concrete index page from being overwritten (i.e., shadowed).
-Issue {url-issues}/673[#673^]:: Show an informative error message if the value of a map or primitive-map key in the playbook file is a String.
-
-[#thanks-2-3-4]
-== Thanks
-
-A big *thank you!* to all the folks who helped make Antora even better.
-
-Karl Dangerfield ({url-gitlab}/obayozo[@obayozo^]):: For fixing the errors in the content source directory examples.
-
-David Jencks ({url-gitlab}/djencks[@djencks^]):: For fixing typos in the documentation.
-
-Alexander Schwartz ({url-gitlab}/ahus1[@ahus1^]):: For documenting the environment variables alongside the command line options.
-
-Coley Woyak ({url-gitlab}/coley.woyak.saagie[@coley.woyak.saagie^]):: For fixing typos in the documentation.
-
-== Caution! Coming soon
-
-This is a friendly reminder that Antora 3 will include breaking changes and deprecations.
-You can get a head start by correcting any invalid resource IDs, page IDs, and page aliases right now.
-See <<deprecation>> for more information.
-
-= Antora 2.3.3
-
-_**Release date:** 2020.05.30 | *Issue label:* {url-milestone-2-3-3}[2.3.3^]_
-
-== Resolved issues
-
-=== Fixed
-
-Issue {url-issues}/639[#639^]:: Fix crash computing canonical URL for page that only exists in prerelease version.
-
-[#thanks-2-3-3]
-== Thanks
-
-A huge thanks to James Elliott ({url-gitlab}/DeepSymmetry[@DeepSymmetry^]) for suffering through this bug and helping us solve the case of the missing scenario in the test suite.
-
-= Antora 2.3.2
-
-_**Release date:** 2020.05.24 | *Issue label:* {url-milestone-2-3-2}[2.3.2^]_
-
-== Highlights
-
-=== Fix regression when resolving page ID with version and no file extension
-
-If the page ID for an xref had a version but no file extension (e.g., `2.0@page`), the page ID would not resolve.
-This happened because the `.` in the version number was confused as that start of a file extension.
-Thus the automatic `.adoc` file extension was not added and the page ID would not match an existing page.
-
-What this fix does not solve is when the page (i.e., relative path) part of the page ID has a `.` but no file extension (e.g., `something-2.0`).
-This is an ambiguous scenario.
-In this case, you will have to update the page ID to include the `.adoc` file extension manually (e.g., `something-2.0.adoc`).
-
-Keep in mind that in Antora 3, all page IDs _must_ have a file extension.
-So while this regression has been corrected, this case will not resolve in the future.
-
-=== Support image xref to page ID with fragment
-
-Support for the xref attribute on images was added in Antora 2.3.
-However, if the page ID included a fragment identifier (e.g., `page.adoc#anchor`), the value would not be processed as a page ID.
-This has now been fixed.
-
-== Resolved issues
-
-=== Fixed
-
-Issue {url-issues}/635[#635^]:: Fix cases when page ID with no file extension fails to resolve.
-Issue {url-issues}/636[#636^]:: Process image xref that points to page ID with fragment.
-
-[#thanks-2-3-2]
-== Thanks
-
-Most important of all, a huge *thank you!* to all the folks who helped make Antora even better.
-
-= Antora 2.3.1
-
-_**Release date:** 2020.04.29 | *Issue label:* {url-milestone-2-3-1}[2.3.1^]_
-
-== Notices
-
-When Antora 2.3.1 was first released, there was a bug in one of the libraries (gulp-vinyl-zip) that caused Antora running on Windows to write files from the UI bundle to the published site with the ReadOnly attribute set.
-This bug, in turn, caused Antora to crash when generating the site a second time without using `--clean` flag.
-Adding the `--clean` flag to the `antora` command would circumvent the issue.
-Fortunately, this workaround is no longer required.
-This bug has been fixed in a patch release.
-
-To apply the fix, uninstall Antora (specifically @antora/site-genrator-default) and install it again.
-For details about this problem, and a reference to the upstream issue, refer to issue {url-issues}/631^[#631].
-
-Thanks to Chris Jaquet ({url-gitlab}/chrisjaquet[@chrisjaquet]) for recognizing this issue and providing the necessary information to help us resolve it.
-
-== Highlights
-
-=== Smarter pagination
-
-In tandem with this release, we added a pagination widget to all pages when using the default UI.
-This pagination widget allows readers to navigate between adjacent pages (i.e., previous and next page navigation).
-The change also includes adding the corresponding next and prev SEO pagination links to the head of the HTML document.
-
-This functionality is currently hidden behind a feature flag.
-To enable it, set the `page-pagination` attribute in your playbook (or anywhere an AsciiDoc document attribute can be set).
-
-While developing this functionality, we discovered a few problems with how the `page.previous` and `page.next` properties in the UI model were being computed:
-
-* If the next item in the navigation tree is a fragment of the current page, the pagination widget would get stuck on the current page (since the next property referred back to the current page).
-* If the previous item in the navigation tree is a fragment of the previous page, the pagination widget would jump to the fragment on that page, but from there jump to its previous page, skipping over all other fragments (which simply isn't intuitive).
-* The next page for the component version start page would not be set if the start page is not present in the navigation tree.
-* Conversely, the previous page for the first page in the navigation tree would not be set to the component version start page.
-
-All of these issues have been resolved.
-
-As a general rule of thumb, we recommend avoiding the use of fragments in the site navigation since it mixes static and interactive models.
-It's best to rely on the sidebar TOC to provide navigation within the page.
-
-=== Greater portability
-
-One of Antora's dependencies was limiting the platforms on which Antora could be installed.
-This dependency (deep-freeze-node) was removed and replaced with an internal implementation (which turned out to be 5 lines of code).
-It should now be possible to install Antora on any platform on which Node runs.
-
-The general policy of Antora is to avoid dependencies wherever possible.
-This change is not only consistent with that policy, but provides a concrete example for why we follow it.
-
-=== robots.txt generated when site URL is a pathname
-
-If the xref:playbook:site-url.adoc[site URL] is a pathname (e.g., _/_) rather than an absolute URL (e.g., _\https://example.org_), the xref:playbook:site-robots.adoc[robots exclusion file] (i.e., [.path]_robots.txt_) will still be generated.
-The [.path]_robots.txt_ doesn't require an absolute URL.
-Thus, it's enough for the site URL to be set to any allowable value to serve as a hint that the file should be generated.
-
-=== Documentation changes
-
-The site URL, which is defined by the playbook, implicitly controls whether or not certain functionality in Antora is enabled.
-The relationship between this setting and the functionality is now more clear.
-Specifically, the documentation explains what impact setting the site URL has and lists all the ways it's used.
-It also explains the difference between using an absolute URL and a pathname, which functionality requires the former, and when and how a pathname is required in either case.
-
-* xref:playbook:site-url.adoc[]
-
-Several updates have also been made to the default UI which impact the appearance of the documentation.
-In particular, hyphenation has been disabled for monospaced phrases.
-This change will avoid confusion by removing erroneous hyphens in the option names shown on the xref:cli:index.adoc[] page.
-
-== Resolved issues
-
-=== Changed
-
-Issue {url-issues}/623[#623^]:: Set `page.next` in UI model for component version start page to first page in navigation tree if start page not found in navigation tree.
-Issue {url-issues}/623[#623^]:: Set `page.previous` in UI model for first page in navigation tree to component version start page.
-
-=== Fixed
-
-Issue {url-issues}/622[#622^]:: Skip over references to current page when computing `page.next` property for UI model.
-Issue {url-issues}/624[#624^]:: Skip over references to fragments of previous page when computing `page.previous` property for UI model.
-Issue {url-issues}/625[#625^]:: Generate robots exclusion file ([.path]_robots.txt_) if site URL is set to any allowable value.
-Issue {url-issues}/621[#621^]:: Remove deep-freeze-node dependency (which was limiting that platforms on which Antora could be installed) and replace with internal implementation.
-
-[#thanks-2-3-1]
-== Thanks
-
-Most important of all, a huge *thank you!* to all the folks who helped make Antora even better.
-
-We want to call out the following people for making contributions to this release:
-
-Ewan Edwards ({url-gitlab}/eedwards[@eedwards^]):: For submitting the MR for the SEO pagination links in the head and providing inspiration for the design of the pagination widget.
-
-Daniel Mulholland ({url-gitlab}/danyill[@danyill^]):: For providing feedback and critique about the previous and next values for pages and for testing the navigation widget.
-
-gotwf ({url-gitlab}/gotwf[@gotwf^]):: For rediscovering the compatibility problem with deep-freeze-node and reminding us to replace it.
-
-= Antora 2.3.0
-
-_**Release date:** 2020.04.23 | *Issue label:* {url-milestone-2-3-0}[2.3.0^]_
-
-== Highlights
-
-=== Declare attributes per component version
-
-You can now set or unset attributes on all pages in a single component version by defining them in the [.path]_antora.yml_ file for that component version.
-Component version attributes can be xref:page:attributes.adoc[built-in, custom, or page attributes].
-These attributes are applied (either available or, if unset, unavailable) on all of a component version's pages according to the xref:component-attributes.adoc#precedence-rules[attribute precedence rules].
-Here's an example to give you an idea of how this looks:
-
-.antora.yml that defines AsciiDoc document attributes for a component version
-[source,yaml]
-----
-name: light
-title: Data Light
-version: '2.3'
-asciidoc:
-  attributes:
-    listing-caption: false
-    table-caption: Data Set@
-    hide-uri-scheme: ''
-    toc: ~
-    page-level: Advanced
-    page-category: 'Statistics, Cloud Infrastructure'
-----
-
-Since attributes can now be defined at multiple levels, Antora 2.3 adds the ability to soft set and unset xref:playbook:asciidoc-attributes.adoc[site attributes] as well as xref:component-attributes.adoc[component version attributes].
-
-With this improved scoping and tuning, page attributes are now more versatile.
-One of the primary roles of page attributes is to pass metadata about the page to the UI template via the UI model.
-The UI template can xref:page:page-attributes.adoc#access-attributes-from-ui-template[use the information provided by the page attributes] in a variety of ways, from populating metadata in the published page to toggling or configuring behavior in the UI.
-
-See xref:component-attributes.adoc[], xref:playbook:asciidoc-attributes.adoc[], and
-xref:page:page-attributes.adoc[] to learn more.
-
-=== The new start_paths playbook key for content sources
-
-The new `start_paths` key allows you to specify multiple content source roots per reference (branch or tag) of a content source.
-In other words, you can put multiple components or component versions--each with its own [.path]_antora.yml_ file--in a single branch or tag of a repository, and define them using a single content source entry in your playbook.
-
-In addition to exact paths, the `start_paths` supports discovery by accepting xref:playbook:content-source-start-paths.adoc#path-globbing[glob patterns], including wildcards, braces, and negated patterns.
-See xref:playbook:content-source-start-paths.adoc[] to learn more.
-
-=== Page aliases work in xrefs
-
-The target of an xref macro can now be a page alias, which is then transparently resolved to its corresponding page.
-Page aliases, which are expressed using the same syntax as a page ID, are defined using the `page-aliases` attribute in the document header.
-See xref:page:page-aliases.adoc[] to learn more.
-
-=== Default xref link text for pages and navigation files
-
-Antora now uses the xref:page:reftext-and-navtitle.adoc[target page's reftext] when the link text in an xref macro isn't specified.
-For instance, the following xref example doesn't have any link text specified.
-
-[source]
-----
-See xref:component-prerelease.adoc[].
-----
-
-But notice in the output below that Antora automatically used the target page's title to fill in the link text when it generated the site.
-
-====
-See xref:component-prerelease.adoc[].
-====
-
-By default, the `reftext` attribute is assigned the page's title as its value.
-You can also assign a page a xref:page:reftext-and-navtitle.adoc[custom reftext value] using an attribute entry.
-
-Xrefs in navigation files behave the same way with one additional feature.
-Navigation files first look for the value of the xref:page:reftext-and-navtitle.adoc#navtitle[navtitle attribute] of the target page to populate the link text.
-If the `navtitle` attribute isn't set, then the page's `reftext` value is used instead.
-You never have to explicitly set `reftext` or `navtitle` unless you want to customize the default xref link text used in a page or navigation file.
-
-=== xrefs can target non-AsciiDoc-based pages
-
-If you're using a custom generator to register non-AsciiDoc page files (such as HTML files), you can now use the xref macro to link to these pages.
-The syntax looks just like an xref to an AsciiDoc-based page, except the target must end in `.html#` instead of `.adoc` (e.g., `\xref:the-page.html#[The Page]`).
-This feature is mostly forward looking for when Antora supports importing and processing prepared content, but can be useful to have now if you're building on top of Antora.
-
-=== On this page widget
-
-The default UI now offers an "`on this page`" widget (aka TOC).
-You can see it on this page.
-The TOC lists all the section titles on the page down to the specified level and features a scroll spy that shows which section is currently active.
-When the page is not wide enough (such as on a mobile screen), the TOC is shown below the page title instead of in the sidebar.
-
-The TOC is enabled by default.
-Here are ways you can configure the sidebar TOC:
-
-* Configure the text of the heading shown above the TOC using the page attribute named `page-toctitle` (default: "Contents")
-* Set the number of levels tracked by the TOC using the page attribute named `page-toclevels` (0 - 3) (default: 2)
-* Disable the TOC per page (or side-wide) by setting the page attribute named `page-toclevels` to -1
-* Alternately, disable the TOC by adding the `-toc` class to the `<body>` element in the HTML template
-
-You can also control where the embedded TOC is inserted by adding the class `is-before-toc` to an element after the doctitle (selector: `h1.page`).
-The embedded TOC is *not* added if an element is found with the ID `toc`.
-
-If you want to add the TOC to your own UI, feel free to grab the MPL-2.0-licensed https://gitlab.com/antora/antora-ui-default/-/blob/master/src/js/02-on-this-page.js[02-on-this-page.js] script and customize it to suit your needs pursuant to the license terms.
-
-== Resolved issues
-
-=== Added
-
-Issue {url-issues}/251[#251^]:: Allow attributes to be scoped per component version.
-Add support for attributes to be set and defined in the component version descriptor ([.path]_antora.yml_).
-Issue {url-issues}/310[#310^]:: Add function for extracting metadata from the AsciiDoc header.
-Use automatic reference text (i.e., `reftext`) if contents of page xref is empty in a page or resource file.
-Use automatic reference text (i.e., `navtitle` attribute or `reftext`) if contents of page xref in navigation file is empty.
-Issue {url-issues}/328[#328^]:: Expose the content catalog's public API to the UI model as the `contentCatalog` template variable.
-Add the built-in helpers `resolvePage` and `resolvePageUrl` to resolve pages and their publish URLs in UI templates.
-`resolvePage` can resolve virtual file by setting `model=false`.
-Issue {url-issues}/495[#495^]:: Add the `start_paths` playbook key that allows a content source (url + branch/tag) to map to more than one content source root.
-Allow `start_paths` key to support glob patterns (wildcards and brace expressions).
-Implement scan + filter logic for glob patterns specified in `start_paths` key for both git tree and filesystem worktree.
-({url-gitlab}/djencks[@djencks^])
-Issue {url-issues}/330[#330^]:: Add support for `xref` attribute on image macros to reference an internal anchor or page.
-Issue {url-issues}/379[#379^]:: Register alias to start page from index page of component version if index page is missing.
-Issue {url-issues}/486[#486^]:: Add `--key` option to `generate` command to define entries for the schemaless `site.keys`.
-The option can be specified multiple times.
-Issue {url-issues}/537[#537^]:: Add `getPages()` method to content catalog to retrieve all pages, which accepts an optional filter function.
-Issue {url-issues}/543[#543^]:: Map `asciidoc` property on component to `asciidoc` property on latest version of component.
-Issue {url-issues}/555[#555^]:: Add `relativize` as built-in UI helper.
-Issue {url-issues}/568[#568^]:: Assign value of family-relative path of page to `relativeSrcPath` property on page UI model and `page-relative-src-path` attribute on AsciiDoc document.
-Issue {url-issues}/578[#578^]:: Assign the SHA-1 commit hash for the content source ref (branch or tag) to the `page-origin-refhash` attribute on document unless page is taken from worktree.
-Assign the SHA-1 commit hash for the content source ref (branch or tag) to the `src.origin.refhash` property on the virtual file unless file is taken from worktree.
-Make `refhash` available as a template variable in the edit URL pattern.
-Issue {url-issues}/586[#586^]:: Allow the target of an xref to be a page alias.
-Load the AsciiDoc header for all pages before any page is converted so xref can reference page alias.
-If `ContentCatalog#resolvePage` cannot locate page, look for an alias and dereference if found.
-Issue {url-issues}/593[#593^]:: Map `title` property on file to AsciiDoc doctitle.
-Issue {url-issues}/594[#594^]:: Use target page ID as fallback content for unresolved or invalid xref.
-Issue {url-issues}/192[#192^]:: Add Apache `httpd` redirect facility.
-({url-gitlab}/djencks[@djencks^])
-Issue {url-issues}/437[#437^]:: Map role on AsciiDoc document to `page.role` in UI model.
-
-=== Fixed
-
-Issue {url-issues}/524[#524^]:: Restrict `start_page` value to a page that belongs to that component version.
-Issue {url-issues}/556[#556^]:: Use state file to verify repository in cache is valid; reclone repository if file is missing (i.e., corrupt).
-Issue {url-issues}/517[#517^]:: Verify downloaded UI bundle is a valid zip file before caching.
-Throw an error if invalid.
-Issue {url-issues}/565[#565^]:: Prevent latest page version from being newer than latest component version in UI model.
-Issue {url-issues}/613[#613^]:: Declare the opal-runtime package as a direct dependency (to satisfy Yarn 2).
-
-=== Changed
-
-Issue {url-issues}/121[#121^]:: Don't sort component version entries in the content aggregate; leave them in the order they're discovered.
-Issue {url-issues}/494[#494^]:: Add trailing newline to all generated files.
-({url-gitlab}/djencks[@djencks^])
-Issue {url-issues}/251[#251^]:: Apply camelCase transformation to keys in the component version descriptor file, excluding the `asciidoc` key.
-Pass the site-wide AsciiDoc config to the `classifyContent` function.
-Issue {url-issues}/486[#486^]:: Make `site.keys` map in playbook schemaless and ensure the values are primitive.
-The option can be specified multiple times.
-Issue {url-issues}/495[#495^]:: Condense repeating slashes in `start_path` value(s).
-Issue {url-issues}/516[#516^]:: Preserve stack from got (HTTP client) error when downloading UI.
-Issue {url-issues}/517[#517^]:: Report clearer error when local or cached UI bundle is not valid or cannot otherwise be read.
-Issue {url-issues}/531[#531^]:: Add start path to error message thrown while aggregating files.
-Consistently enclose details in error message in round brackets.
-Issue {url-issues}/532[#532^]:: Report clearer error if component version descriptor file cannot be parsed.
-Issue {url-issues}/538[#538^]:: Rename `getFiles()` method on content catalog and UI catalog to `getAll()`; retain `getFiles()` as deprecated method.
-Call `getAll()` method on catalog if available, otherwise `getFiles()`.
-Issue {url-issues}/551[#551^]:: Upgrade Handlebars to fix performance regression.
-Issue {url-issues}/616[#616^]:: Add template path and cause to Handlebars error.
-Issue {url-issues}/561[#561^]:: Modify `ContentCatalog#registerComponentVersion` to return component version added.
-Issue {url-issues}/562[#562^]:: Modify `ContentCatalog#addFile` to return file added.
-Issue {url-issues}/563[#563^]:: Don't assign `out` property when adding a file to the content catalog if `out` property has falsy value.
-Issue {url-issues}/564[#564^]:: Don't relativize absolute `pub` URL.
-Don't prepend site URL to absolute canonical URL.
-Issue {url-issues}/581[#581^]:: Ignore dot (hidden) folders when matching start paths unless pattern itself begins with a dot.
-Issue {url-issues}/595[#595^]:: Modify netlify redirects to be forced as recommended by Netlify.
-Issue {url-issues}/597[#597^]:: Change `ContentCatalog#resolvePage` to delegate to `ContentCatalog#resolveResource`.
-
-[#thanks-2-3-0]
-== Thanks
-
-Most important of all, a huge *thank you!* to all the folks who helped make Antora even better.
-
-We want to call out the following people for making contributions to this release:
-
-Antonio ({url-gitlab}/bandantonio[@bandantonio^]):: For writing the xref:install-and-run-quickstart.adoc[] guide and assisting Matthew Setter with the redirect facility documentation.
-{url-issues}/299[#299^]
-
-Rob Donnelly ({url-gitlab}/rfdonnelly[@rfdonnelly^]):: For fixing typos in the Run Antora in a Container page.
-{url-mr}/434[!434^]
-
-James Elliott ({url-gitlab}/DeepSymmetry[@DeepSymmetry^]):: For reviewing the new attributes pages and fixing typos.
-{url-mr}/513[!513^]
-
-Guillaume Grossetie ({url-gitlab}/g.grossetie[@g.grossetie^]):: For redoing the UI loader tests to dynamically construct UI bundles and test them ({url-issues}/553[#553^]), and for fixing the nvm installation link on the Linux and macOS Requirements pages ({url-mr}/405[!405^]).
-
-David Jencks ({url-gitlab}/djencks[@djencks^])::
-For making numerous improvements to Antora's documentation, including (but not limited to) clarifying component version sort order and distributed component versions, providing tips for the `start_path` key and component and version names, and adding filtering by line numbering information.
-+
-For implementing trailing newlines on generated files ({url-issues}/494[#494^]), the `start_paths` playbook key ({url-issues}/495[#495^]), and the Apache `httpd` redirect facility ({url-issues}/192[#192^]).
-+
-For documenting the `page-aliases` attribute.
-{url-issues}/509[#509^]
-
-Jared Morgan ({url-gitlab}/jaredmorgs[@jaredmorgs^]):: For taking on the herculean task of documenting the `start_paths` feature.
-{url-issues}/576[#576^]
-
-Daniel Mulholland ({url-gitlab}/danyill[@danyill^]):: For adding documentation about https://gitlab.com/antora/antora/-/blob/master/contributing.adoc#user-content-develop-with-docker[developing Antora with Docker] and Gulp test errors to the contributing guide.
-{url-issues}/388[#388^]
-
-Andreas Offenhaeuser:: For documenting how to include navigation content.
-{url-mr}/325[!325^]
-
-Alexander Schwartz ({url-gitlab}/ahus1[@ahus1^]):: For fixing broken anchors in the documentation.
-{url-mr}/489[!489^]
-
-Matthew Setter:: For documenting the redirect facility and assisting Antonio with the Antora quickstart guide.
-{url-mr}/281[!281^]
-
-Ben Walding ({url-gitlab}/bwalding[@bwalding^]):: For documenting the component version descriptor `prerelease` key.
-https://gitlab.com/antora/antora/-/commit/ad7e039ede287605da345f7fa36350e2745cb84f[Commit ad7e039e^]
-
-Anthony Vanelverdinghe ({url-gitlab}/anthonyv.be[@anthonyv.be^]):: For editing the How Antora Can Help page.
-{url-issues}/518[#518^]
-
-Yoginth:: For fixing typos in the package comments, test cases, and releasing guide.
-{url-mr}/433[!433^]
+_**Release date:** Pending | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 [#deprecation]
-== Deprecations scheduled for Antora 3.0
+== Antora 3.0 deprecations and breaking changes
 
-Per the normal xref:install:supported-platforms.adoc[supported platforms policy], support for Node 8, and likely Node 10 as well, will be dropped.
+The following deprecations and breaking changes will be final with the release of Antora 3.0.0.
+
+=== Syntax
 
 The ability to use parent references in the target of the AsciiDoc image macro (e.g., `image::../../../module-b/_images/image-filename.png[]`) will be removed in Antora 3.0.
 You should begin replacing any such image targets with resource IDs.
@@ -443,6 +28,77 @@ Antora has added the _.adoc_ file extension to a xref:page:page-id.adoc#id-coord
 This fallback mechanism will be deprecated in Antora 3.0 to make way for using non-AsciiDoc pages in the xref facility.
 You should review the page IDs in your xrefs and `page-aliases` attributes to ensure the _.adoc_ extension is specified.
 
+=== Supported Platforms
+
+Support for Node 8 has been dropped.
+
+=== API
+
 The `classifyContent` function will expect the site-wide AsciiDoc config as the third argument.
 
 The following deprecated methods will be removed from the `ContentCatalog`: `getComponentMap`, `getComponentMapSortedBy`, and `getFiles`.
+
+//== Highlights
+
+== Resolved issues
+
+IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+
+=== Added
+//as of 9/22
+// Issue {url-issues}/613[#613^]::
+
+Issue {url-issues}/605[#605^]:: Extract method to register start page for component version (`ContentCatalog#registerComponentVersionStartPage`).
+Issue {url-issues}/425[#425^]:: Assign primary alias to `rel` property on target page.
+Issue {url-issues}/314[#314^]:: Add `urls.latest_version_segment_strategy`, `urls.latest_version_segment`, and `urls.latest_prerelease_version_segment` keys to playbook schema.
+Replace latest version and/or prerelease version segment in out path and pub URL (unless version is master) with symbolic name, if specified.
+Define `latestPrerelease` property on component version (if applicable) and use when computing latest version segment.
+Use redirect facility to implement redirect:to and redirect:from strategies for version segment in out path / pub URL of latest and latest prerelease versions.
+
+=== Changed
+//as of 9/22
+//Issue {url-issues}/597[#597^]::
+
+Issue {url-issues}/681[#681^]:: Don't use global git credentials path if custom git credentials path is specified, but does not exist.
+Issue {url-issues}/680[#680^]:: Show sensible error message if cache directory cannot be created.
+Issue {url-issues}/679[#679^]:: Drop support for Node.js 8 and set minimum required version to 10.
+Issue {url-issues}/605[#605^]:: Only register start page for component version in `ContentCatalog#registerComponentVersion` if value of `startPage` property in descriptor is truthy.
+Call `ContentCatalog#registerComponentVersionStartPage` in content classifier to register start page after adding files (instead of before).
+Issue {url-issues}/598[#598^]:: Upgrade dependencies.
+Issue {url-issues}/425[#425^]:: Follow aliases when computing version lineage for page and canonical URL in UI model.
+Issue {url-issues}/314[#314^]:: Register all component versions before adding files to content catalog.
+
+=== Fixed
+//as of 9/22
+// Issue {url-issues}/613[#613^]::
+
+////
+[#thanks-3-0-0]
+== Thanks
+
+Most important of all, a huge *thank you!* to all the folks who helped make Antora even better.
+
+We want to call out the following people for making contributions to this release:
+////
+
+// Contributors
+////
+({url-issues}/553[#553^])
+({url-mr}/405[!405^])
+
+Antonio ({url-gitlab}/bandantonio[@bandantonio^])::
+Karl Dangerfield ({url-gitlab}/obayozo[@obayozo^])::
+Rob Donnelly ({url-gitlab}/rfdonnelly[@rfdonnelly^])::
+Ewan Edwards ({url-gitlab}/eedwards[@eedwards^])::
+James Elliott ({url-gitlab}/DeepSymmetry[@DeepSymmetry^])::
+gotwf ({url-gitlab}/gotwf[@gotwf^])::
+Guillaume Grossetie ({url-gitlab}/g.grossetie[@g.grossetie^])::
+Chris Jaquet ({url-gitlab}/chrisjaquet[@chrisjaquet])::
+David Jencks ({url-gitlab}/djencks[@djencks^])::
+Jared Morgan ({url-gitlab}/jaredmorgs[@jaredmorgs^])::
+Daniel Mulholland ({url-gitlab}/danyill[@danyill^])::
+Alexander Schwartz ({url-gitlab}/ahus1[@ahus1^])::
+Ben Walding ({url-gitlab}/bwalding[@bwalding^])::
+Coley Woyak ({url-gitlab}/coley.woyak.saagie[@coley.woyak.saagie^])::
+Anthony Vanelverdinghe ({url-gitlab}/anthonyv.be[@anthonyv.be^])::
+////
