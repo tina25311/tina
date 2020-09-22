@@ -1,0 +1,61 @@
+= Command Line Primer
+
+If you aren't familiar with command line interfaces, the following sections provide a basic overview of command line functions and the terminal concepts used in this documentation.
+
+[#function-inputs]
+== Function inputs and structure
+
+The Antora CLI accepts function inputs in the form of commands, options, environment variables, and positional arguments.
+Once entered in a terminal, the function is executed using the specified inputs.
+
+ $ antora <command> [options and environment variables] <arguments>
+
+antora:: All functions start with the xref:index.adoc#cli-commands[base command antora].
+This required command calls and runs Antora.
+
+command:: A xref:index.adoc#cli-commands[command] tells Antora what operation to perform.
+A function can include more than one command.
+
+option:: One or more xref:options.adoc[options] can be specified after a command.
+The full name of an option is prefixed with two hyphens (`--`); a shorthand name is prefixed with one hyphen (`-`).
++
+Some options toggle behavior on or off and others accept values.
+Options that accept values can be written using a single space between the option's name and value (`--option value`) or using an equals sign between the name and value (`--option=value`).
+
+environment variable:: xref:playbook:environment-variables.adoc[Environment variables] are read from your terminal's state unless a variable is explicitly specified in a function.
+
+argument:: An argument, such as the name of the xref:index.adoc#specify-playbook[required playbook file], is entered last in the function.
+
+[#terminal-conventions]
+== Terminal conventions
+
+If you're new to terminal applications, here are the common conventions used in this documentation that represent a terminal and describe how you'll interact with it.
+
+Prompt (`$`)::
+The terminal command prompt is shown as a dollar sign (`$`) in the examples throughout this documentation.
+The prompt you see when you open your terminal depends on the terminal application you use.
+Don't include the `$` prompt when you type or copy functions.
+
+[[working-directory]]Working directory::
+Every command is run from a directory, known as the working directory.
+You may be asked to change the working directory of your terminal before running a command.
+You can navigate to your working directory from the command line using the `cd` command (e.g., `$ cd <path/to/directory>`).
+A few examples in this documentation show the name of the working directory in front of the prompt as a helpful hint.
++
+--
+----
+name-of-working-directory $
+----
+
+Don't include this text or the prompt when copying the functions.
+--
+
+Replaceable input::
+Many options are defined according to your content, environment, and site requirements.
+Some command line examples in this documentation call out the input you define with a set of angle brackets (`< >`).
+The text inside the brackets describes the input or represents a common input format, e.g., `--require <path/to/library-script>`, `--title '<Title of Your Site>'`.
+When composing the function in your terminal, replace the representative text with your input and don't enclose it in angle brackets (`< >`).
+
+Command output::
+If a command returns information, the output is displayed in your terminal on the lines beneath the executed command.
+The command prompt (`$`) is not displayed on the output lines.
