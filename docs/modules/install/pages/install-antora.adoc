@@ -32,12 +32,12 @@ Only the major and minor segments are specified to ensure you receive the latest
 
 Verify the `antora` command is available on your PATH by running:
 
- $ antora version
+ $ antora -v
 
 If installation was successful, the command should report the version of Antora (where `.x` represents the latest patch number).
 
 [subs=attributes+]
- $ antora version
+ $ antora -v
  {page-component-version}.x
 
 CAUTION: If you're using a system-wide Node installation managed by your operating system's package manager, you may run into permission problems when installing packages globally.
@@ -79,10 +79,10 @@ Verify the `antora` command is available on your PATH by running `antora -v`.
 If you installed the package without the `-g` flag, you'll need to prefix the command with `$(npm bin)/`.
 
 .If installed globally
- $ antora version
+ $ antora -v
 
 .If installed in a project directory
- $ $(npm bin)/antora version
+ $ $(npm bin)/antora -v
 
 The command should report the Antora CLI version in the terminal (where `.x` represents the latest patch number).
 

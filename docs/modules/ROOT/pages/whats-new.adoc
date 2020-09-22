@@ -162,8 +162,8 @@ This change is not only consistent with that policy, but provides a concrete exa
 
 === robots.txt generated when site URL is a pathname
 
-If the site URL is a pathname (e.g., _/_) rather than an absolute URL (e.g., _\https://example.org_), the robots exclusion file (i.e., robots.txt) will still be generated.
-The robots.txt doesn't require an absolute URL.
+If the xref:playbook:site-url.adoc[site URL] is a pathname (e.g., _/_) rather than an absolute URL (e.g., _\https://example.org_), the xref:playbook:site-robots.adoc[robots exclusion file] (i.e., [.path]_robots.txt_) will still be generated.
+The [.path]_robots.txt_ doesn't require an absolute URL.
 Thus, it's enough for the site URL to be set to any allowable value to serve as a hint that the file should be generated.
 
 === Documentation changes
