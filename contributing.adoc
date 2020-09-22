@@ -106,6 +106,8 @@ If an issue already exists, we welcome you to join the conversation.
 If an issue doesn't exist, please don't hesitate to create a new one.
 
 If you want to help complete an issue by contributing code, documentation, or other enhancements, review our <<contribution-workflow,contribution workflow>>, then submit a merge request (MR) for review.
+However, please wait until we have agreed on what change to make before submitting an MR.
+This avoids the discussion of the change getting lost and saves maintainers from having to address MRs that aren't relevant.
 
 ////
 A merge request (MR) must close an issue!
@@ -119,13 +121,15 @@ Issues move across the board from left (Backlog) to right (Done).
 [#contribution-workflow]
 == Contribution Workflow
 
-*Since Antora is an issue-driven project, a merge request (MR) should always complete an open issue.*
+*Since Antora is an issue-driven project, a merge request (MR) should always be linked to an open issue.*
 
 NOTE: One exception to this rule is if you're submitting copy edits to the documentation.
-If you're fixing grammar or typos that don't otherwise change the meaning of the content, you can submit an MR directly.
+If you're fixing grammar or typos that don't otherwise change the focus of the content, you can submit an MR directly.
 
 . Review the issue tracker to see if we're already discussing your idea or problem.
- ** If you don't see an issue that fits your scenario, then create a new one.
+ ** If you don't see an issue that fits your scenario, then you may create a new one.
+. Discuss what change to make to resolve the issue in the issue comments.
+ ** Please don't submit an MR before there is an agreement on what change should be made.
 . If you'd like to submit code, documentation or other enhancements for an issue, review the following information first.
 .. Antora's <<project-rq,fork-branch-commit-MR rules>>
 .. <<code-workflow,Code workflow and requirements>>
@@ -868,6 +872,7 @@ The reviewer is responsible for making sure the MR meets the project and issue c
 
 *The MR should not be approved if*:
 
+* there was no agreement about what change to make in the linked issue
 * it fails the CI pipeline
 * it doesn't meet the project's workflow, code, test or documentation requirements
 * it doesn't meet the acceptance criteria of its associated issue
