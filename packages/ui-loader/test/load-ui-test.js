@@ -10,7 +10,7 @@ const loadUi = require('@antora/ui-loader')
 const os = require('os')
 const ospath = require('path')
 const { Transform } = require('stream')
-const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
+const map = (transform) => new Transform({ objectMode: true, transform })
 const vfs = require('vinyl-fs')
 const zip = require('gulp-vinyl-zip')
 
