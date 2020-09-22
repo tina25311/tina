@@ -19,8 +19,9 @@ site:
 
 You can use any page that belongs to a component version as the index page for your site.
 The `start_page` key accepts a xref:page:page-id.adoc[page ID] as a value.
-The page ID must include the component, module, and page coordinates.
+*The page ID must include the component, module, and page coordinates*.
 The version coordinate can be specified if you want to use a specific version of a page instead of the latest version.
+Alternatively, `start_page` can be assigned from the xref:cli:options.adoc#start-page[CLI].
 
 == Use a page's latest version
 

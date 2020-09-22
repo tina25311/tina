@@ -21,7 +21,7 @@ include::partial$relative-path-rules.adoc[]
 
 The `dir` key can be used in combination with the xref:configure-output.adoc#destinations-key[destinations key].
 If both an `fs` provider `path` and `dir` are specified, the value assigned to `dir` overrides xref:output-provider-fs.adoc#path-key[the first fs provider path].
-When the output directory is specified from the CLI using the xref:cli:index.adoc#to-dir[--to-dir <dir> option], it also overrides the `dir` and first `fs` provider `path` in a playbook.
+When the output directory is specified from the CLI using the xref:cli:options.adoc#to-dir[--to-dir option], it also overrides the `dir` and first `fs` provider `path` in a playbook.
 
 [#relative-path]
 === Specify a relative path
@@ -66,7 +66,8 @@ output:
 
 This key only applies to the filesystem provider.
 
+[#clean-warning]
 WARNING: Use this key with great care.
 For example, if you set `dir` to your [.path]_home_ directory and `clean` to `true`, you'll delete ALL of the folders and files in [.path]_home_.
 
-The `clean` key can also be activated via the CLI using the xref:cli:index.adoc#clean[--clean option].
+The `clean` key can also be activated via the CLI using the xref:cli:options.adoc#clean[--clean option].

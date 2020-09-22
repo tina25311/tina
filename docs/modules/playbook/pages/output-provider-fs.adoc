@@ -35,7 +35,7 @@ include::partial$relative-path-rules.adoc[]
 
 If `path` isn't specified, it gets populated with the default value, [.path]_build/site_, or, in the case of the first `fs` provider, the value of `dir`.
 When the xref:output-dir.adoc[dir key] is specified, its value is assigned to (or overrides) the first `fs` provider `path`.
-When the output directory is specified from the CLI using the xref:cli:index.adoc#to-dir[--to-dir <dir> option], it also overrides the first `fs` provider `path` (as well as `dir`) in a playbook.
+When the output directory is specified from the CLI using the xref:cli:options.adoc#to-dir[--to-dir option], it also overrides the first `fs` provider `path` (as well as `dir`) in a playbook.
 
 [#relative-path]
 === Specify a relative path
@@ -87,6 +87,7 @@ output:
 When `clean` is assigned the value `true`, it removes the destination `path` recursively before generating the site.
 This key only applies to the `fs` provider.
 
+[#clean-warning]
 WARNING: Use this key with great care.
 For example, if you set `path` to your [.path]_home_ directory and `clean` to `true`, you'll delete ALL of the folders and files in [.path]_home_.
 

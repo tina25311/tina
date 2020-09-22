@@ -1,226 +1,94 @@
-= Command Line Interface (CLI) Reference
-:navtitle: CLI Reference
-:table-caption!:
+= Antora CLI
 
-Antora provides a command line interface (CLI) so you can interact with Antora using your terminal.
-When installed, the CLI adds the `antora` command to your terminal's PATH.
-This page covers the commands and options the `antora` command accepts and shows several examples.
+== What's the Antora CLI?
 
-== Terminal conventions
+The Antora command line interface (Antora CLI) helps you configure and run Antora, its software components, and any applicable libraries and extensions.
+When the Antora CLI is installed, you can interact with Antora from the command prompt of your terminal application.
 
-If you're new to using a terminal, these are the conventions we use when showing terminal examples.
+TIP: If you aren't familiar with CLIs, the xref:primer.adoc[] provides a basic overview of command line functions and terminal application concepts.
 
-Prompt (`$`)::
-The terminal's command prompt is indicated by a dollar sign (`$`).
-Don't include the prompt when you type commands.
-Only type what immediately follows it.
+[#cli-commands]
+== Base and generate commands
 
-Working Directory::
-Every command is run from a directory, known as the working directory.
-You may be asked to change the working directory of your terminal before running a command.
-You can change your working directory using the `cd` command (e.g., `cd directory`).
+The Antora CLI provides access to two commands.
 
-Command Output::
-If Antora returns information after a command is executed, the output is displayed in the terminal underneath the command.
-The command prompt (`$`) is not displayed in the command output.
-
-== Command structure
-
-The `antora` command accepts user inputs in the form of options, positional arguments, and environment variables.
-
- $ antora <command> [option] <arguments>
-
-. All functions start with a base call to Antora (`antora`).
-. The command tells Antora what operation to perform.
-. Additional options can be specified after a command.
-Options are prefixed with two hyphens (`--`).
-. Positional arguments, such as the name of the playbook file, are specified last.
-. Environment variables are read from the terminal's state.
-
-== Commands and options
-
-.CLI Commands
-[cols="1,2" width=65%]
+[cols="1,2",width=80%]
 |===
 |Command |Purpose
 
-|antora
-|Required base command.
+|`antora`
+|Required base command that calls Antora.
 
-|generate
-|Generate the documentation site specified by the <playbook>.
-This command is implicitly executed when no command is specified.
-<<cli-run-ex,See examples>>.
+|`generate`
+|The command generates a site using the specified playbook file.
+A playbook file is required in the function's argument.
+`generate` executes by default.
 |===
 
-When executed from the CLI, the options that are mapped to xref:playbook:index.adoc[playbook keys], such as `title`, will override any assigned values in the designated playbook.
+[#run-cli-commands]
+== Run the antora and generate commands
 
-[#cli-options]
-.CLI Options and Environment Variables
-[cols="3,5,2,2"]
-|===
-|CLI Option |Purpose |Format |Default
+At its simplest, a command line function explicitly specifies the required `antora` command and required playbook argument.
+If the function in <<ex-simple>> is executed from the Antora CLI, Antora will generate a site using a playbook file named [.path]_antora-playbook.yml_.
 
-|`--attribute <attribute>`
-|A global document attribute to set on each AsciiDoc document.
-May be specified multiple times.
-The value must adhere to the form `name` or `name=value`.
-Append `@` to the value to allow it to be overridden in a document.
-|String, String=String
-|not set
+[#ex-simple]
+.antora base command and playbook argument
+----
+$ antora antora-playbook.yml
+----
 
-|[[cache-dir]]`--cache-dir <dir>`
-|Directory where remote content sources git repositories and UI bundles are cached.
-Overrides the xref:playbook:runtime-cache-dir.adoc[cache_dir key] in a playbook.
+Let's break down the function in <<ex-simple>>.
 
-Use environment variable `ANTORA_CACHE_DIR` as an alternative to the command line option.
-|String
-|[.path]_<user cache>/antora_
+The function starts with the `antora` command.
+This calls Antora to run the remaining command and argument.
+The remaining command is `generate`.
+You don't need to explicitly specify it because it's run by default.
+But it does require an explicit argument that specifies the filesystem path of a xref:playbook:index.adoc[playbook file] relative to the xref:primer.adoc#working-directory[working directory].
+In <<ex-simple>>, the relative filesystem path to the playbook file is [.path]_antora-playbook.yml_.
 
-|[[clean]]`--clean`
-|Removes the output directory before generating the site.
-Overrides the xref:playbook:output-dir.adoc#clean-key[clean key] in a playbook.
-|Boolean
-|false
+If you wanted to explicitly specify the `generate` command the function would look like <<ex-explicit>>.
 
-|`--generator`
-|The site generator library (package name) or script (path) to use.
-Must export a function with the signature `generateSite(args, env)`.
-_Intended for advanced users comfortable with the inner workings of Antora.
-Effectively substitutes Antora's entire pipeline with a user-defined function._
-|String
-|`@antora/site-generator-default`
+[#ex-explicit]
+.Explicitly run the generate command
+----
+$ antora generate antora-playbook.yml
+----
 
-|`--git-credentials-path`
-|An alternate path to a file that contains credentials for git matching the format used by `git-credential-store`.
+The commands and argument shown in <<ex-explicit>> are equivalent to those in <<ex-simple>>.
+You can see more examples of the `antora` and `generate` commands in xref:ROOT:run-antora.adoc#run-antora[Run Antora].
 
-The path can also be passed an an environment variable `GIT_CREDENTIALS_PATH` instead of the command line option.
-The contents of such a credentials file can also be passed as an environment variable named `GIT_CREDENTIALS`.
-|String
-|not set
+[#specify-playbook]
+== Specify a playbook
 
-|`--google-analytics-key`
-|The API key for Google Analytics / Tag Manager.
-Setting this option implicitly enables the Google Analytics / Tag Manager embed code when using the default UI.
-Overrides the xref:playbook:site-keys.adoc[Google Analytics key] in a playbook.
+The file extension of the playbook doesn't need to be specified.
+Antora auto-detects the file extension as long as the playbook argument is a file's stem (e.g., [.path]_local-antora-playbook_, [.path]_antora-playbook_, etc.)
+The playbook argument in <<ex-detect>> doesn't have a file extension, so Antora will look for a file matching the playbook's file stem name.
 
-Use environment variable `GOOGLE_ANALYTICS_KEY` as an alternative to the command line option.
-|String
-|not set
+[#ex-detect]
+.Auto-detection of the playbook file extension
+----
+$ antora local-antora-playbook
+----
 
-|[[fetch]]`--fetch`
-|Updates the cache by downloading updates from remote content sources git repositories and UI bundles (if xref:playbook:ui-bundle-url.adoc#snapshot[snapshot] is `true`).
-Overrides the xref:playbook:runtime-fetch.adoc[fetch key] in a playbook.
-|Boolean
-|false
+Antora's search order for unspecified playbook file formats is YAML, then JSON, and then TOML.
 
-|`--quiet`
-|Do not write any messages to stdout.
-|Boolean
-|false
+[#cli-help]
+== Display the Antora CLI help
 
-|[[redirect-facility]]`--redirect-facility <facility>`
-|Facility for handling URL redirects calculated from xref:page:page-aliases.adoc[page-aliases].
-The supported facilities are `disabled`, `netlify`, `nginx`, and `static`.
-Overrides the xref:playbook:urls-redirect-facility.adoc#redirect-facility-key[redirect_facility key] in a playbook.
-|String
-|`static`
+The `antora` and `generate` commands xref:options.adoc[accept options].
+The option that both of these commands share is `-h` or `--help` which displays help in your terminal for the Antora CLI commands and their options.
 
-|`-r`, `--require <name>`
-|Preload the specified library or script.
-May be specified multiple times.
-|String
-|not set
+The function in <<ex-base-help>> will display help for the `antora` command.
 
-|`--silent`
-|Suppress all messages, including warnings and errors.
-|Boolean
-|false
-
-|`--stacktrace`
-|Print the stacktrace to the console if the application fails.
-|Boolean
-|false
-
-|[[title]]`--title <title>`
-|Specify the title of the site.
-Overrides the xref:playbook:site-title.adoc[site title key] in a playbook.
-|String
-|not set
-
-|[[to-dir]]`--to-dir <dir>`
-|Directory where the site files are published.
-Overrides the xref:playbook:output-dir.adoc[output dir key] in a playbook.
-|String
-|[.path]_build/site_
-
-|[[ui-bundle]]`--ui-bundle-url <bundle>`
-|Specifies the URL or filesystem path to a UI bundle.
-Overrides the xref:playbook:ui-bundle-url.adoc[ui bundle url key] in a playbook.
-|String
-|not set
-
-|[[site-url]]`--url <url>`
-|Base URL of the published site.
-The URL should not include a trailing slash.
-Overrides the xref:playbook:site-url.adoc[site url key] in a playbook.
-
-Use environment variable `URL` as an alternative to the command line option.
-|String
-|not set
-
-|`-v`, `--version`
-|Output the Antora version information.
-|Built-in
-|n/a
-
-|`-h`, `--help`
-|Output the command usage information.
-|Built-in
-|n/a
-|===
-
-== Get help with the CLI
-
-When you're using the Antora CLI and need help, type `-h` or `--help` after the command.
-
+[#ex-base-help]
 .Display help for the antora command
- $ antora --help
+----
+$ antora -h
+----
+
+Help can also be displayed for the `generate` command.
 
 .Display help for the generate command
- $ antora generate -h
-
-[#cli-run-ex]
-== Run the generate command
-
-You can run the generate command implicitly or explicitly.
-
-.Example 1: Run the generate command (implicit)
- $ antora antora-playbook.yml
-
-In Example 1, Antora generates a documentation site using the playbook [.path]_antora-playbook.yml_.
-
-.Example 2: Run the generate command (explicit)
- $ antora generate test-antora-playbook
-
-In Example 2, Antora generates a documentation site using the auto-detected playbook [.path]_test-antora-playbook.yml_.
-When the playbook argument doesn't have a file extension, Antora will look for a YAML, JSON, or TOML file matching the playbook name (in that order).
-
-.Example 3: Run the generate command with --to-dir option (implicit)
- $ antora --to-dir prod antora-playbook.toml
-
-In Example 3, Antora generates a documentation site using the playbook [.path]_antora-playbook.toml_.
-A directory named [.path]_prod_ will be created (relative to the current working directory) and the site files written to it.
-
-.Example 4: Run the generate command with --to-dir and --title options (explicit)
- $ antora --to-dir site --title "My Awesome Docs" beta-playbook.json
-
-In Example 4, Antora generates a documentation site using the playbook [.path]_beta-playbook.json_.
-The site title will be _My Awesome Docs_.
-A directory named [.path]_site_ will be created (relative to the current working directory) and the site files written to it.
-
-.Example 5: Have the generate command download updates
- $ antora --fetch antora-playbook.yml
-
-After running the generate command the first time, subsequent runs will use cached copies of remote resources by default (effectively running offline).
-Example 5 shows how to run the generate command so it will download (fetch) updates to remote content sources and download a remote UI bundle again.
+----
+$ antora generate --help
+----

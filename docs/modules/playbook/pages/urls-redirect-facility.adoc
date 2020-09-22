@@ -14,7 +14,7 @@ The xref:page:page-aliases.adoc#target-page[target page] refers to the page you'
 == redirect_facility key and its values
 
 The playbook key `redirect_facility` is optional.
-It can be configured in the playbook or via the CLI and accepts one of the following built-in values:
+It can be configured in the playbook or via the xref:cli:options.adoc#redirect-facility[CLI] and accepts one of the following built-in values:
 
 disabled::
 Redirects aren't generated.
@@ -26,7 +26,7 @@ static::
 (default) A static HTML file with the `http-equiv` meta element set to `refresh` is generated at the source page's URL.
 The file provides a redirect notice and routes the source page URL to the target page URL.
 
-Antora automatically assigns the value `static` to the `redirect_facility` key unless you explicitly configure it in the playbook or CLI.
+Antora automatically assigns the value `static` to the `redirect_facility` key unless you explicitly configure it.
 
 === Configure the redirect facility from the playbook
 
@@ -41,7 +41,7 @@ urls:
 
 === Configure the redirect facility from the CLI
 
-The `redirect_facility` key can also be configured from the xref:cli:index.adoc[CLI].
+The `redirect_facility` key can also be configured from the xref:cli:options.adoc[CLI].
 
  $ antora --redirect-facility netlify antora-playbook.yml
 

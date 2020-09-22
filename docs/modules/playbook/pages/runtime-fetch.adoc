@@ -24,8 +24,10 @@ runtime:
   fetch: true
 ----
 
+== Fetch option
+
 You don't have to modify the playbook file directly to set this key.
-You can use the `--fetch` option from the CLI.
+You can use the `--fetch` option from the xref:cli:options.adoc#fetch[CLI].
 
  $ antora --fetch antora-playbook.yml
 

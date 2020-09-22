@@ -1,0 +1,233 @@
+= CLI Options
+
+You can configure Antora and numerous playbook and component version descriptor keys directly from your terminal using the command line options.
+
+[#option-precedence]
+== Option precedence
+
+The CLI options will override any corresponding keys and values defined in the playbook file and the [.path]_antora.yml_ files.
+
+== antora command options
+
+The options in the table below apply to the xref:index.adoc#cli-commands[antora base command].
+
+[cols="2,2,2,4"]
+|===
+|Option |Default Value |Values |Notes
+
+|`-h`, `--help`
+|_Not applicable_
+|_Not applicable_
+|Displays information about the command usage and its options and arguments.
+See xref:index.adoc#cli-help[Display Antora CLI help].
+
+|[[require]]`-r`, `--require`
+|Not set
+|Node package name or filesystem path to a script
+|Can specify multiple times.
+See xref:playbook:asciidoc-extensions.adoc#preload-extensions[Preload Asciidoctor extensions].
+
+|`--stacktrace`
+|`false`
+|Boolean
+|Prints the stacktrace to the console if the application fails.
+
+|`-v`, `--version`
+|_Not applicable_
+|_Not applicable_
+|Displays the current Antora version.
+|===
+
+[#generate-options]
+== generate command options
+
+The options in the table below apply to the `generate` command.
+
+[cols="2,2,2,4"]
+|===
+|Option |Default Value |Values |Notes
+
+|[[attribute]]`--attribute`
+|Not set
+|AsciiDoc attribute in the form `<name>` or `<name=value>`
+|Can specify multiple times.
+See xref:playbook:asciidoc-attributes.adoc[].
+
+|[[cache-dir]]`--cache-dir`
+|xref:playbook:runtime-cache-dir.adoc#default[Varies by operating system]
+|xref:playbook:runtime-cache-dir.adoc#resolution-rules[Filesystem path]
+|See xref:playbook:runtime-cache-dir.adoc[] and
+xref:playbook:environment-variables.adoc[ANTORA_CACHE_DIR environment variable].
+
+|[[clean]]`--clean`
+|`false`
+|Boolean
+|This option xref:playbook:output-dir.adoc#clean-warning[erases entire folders and their files] so use it with great care!
+See xref:playbook:output-dir.adoc#clean-key[clean key].
+
+|[[fetch]]`--fetch`
+|`false`
+|Boolean
+|See xref:playbook:runtime-fetch.adoc[].
+
+|`--generator`
+|`@antora/site-generator-default`
+|Node package name or filesystem path to a script
+|Intended for advanced users comfortable with the inner workings of Antora.
+Effectively substitutes Antora's entire pipeline with a user-defined function.
+
+|[[git-credentials-path]]`--git-credentials-path`
+|_$HOME/.git-credentials_ or +
+_$XDG_CONFIG_HOME/git/credentials_
+|Filesystem path
+|See xref:playbook:private-repository-auth.adoc#custom-credential-path[git credentials file path] and xref:playbook:environment-variables.adoc[GIT_CREDENTIALS_PATH environment variable].
+
+|[[google-key]]`--google-analytics-key`
+|Not set
+|Google Analytics API key
+|See xref:playbook:site-keys.adoc#google-analytics-key[Google Analytics key] and xref:playbook:environment-variables.adoc[GOOGLE_ANALYTICS_KEY environment variable].
+
+|`-h`, `--help`
+|_Not applicable_
+|_Not applicable_
+|Displays information about the command usage and its options and arguments.
+See xref:index.adoc#cli-help[Display Antora CLI help].
+
+|`--html-url-extension-style`
+|`default`
+|`default`, `drop`,`indexify`
+|The user-facing URL extension to use for HTML pages.
+
+|[[key]]`--key`
+|Not set
+|API key in the form `<name=value>`
+|Can specify multiple times.
+See xref:playbook:site-keys.adoc[].
+
+|`--quiet`
+|`false`
+|Boolean
+|Messages aren't written to stdout.
+
+|[[redirect-facility]]`--redirect-facility`
+|`static`
+|`disabled`, `httpd`, `netlify`, `nginx`, `static`
+|See xref:playbook:configure-redirect-facility.adoc[].
+
+|`--silent`
+|`false`
+|Boolean
+|Suppresses all messages, including warnings and errors.
+
+|[[start-page]]`--start-page`
+|Not set
+|Antora page ID
+|See xref:playbook:site-start-page.adoc[].
+
+|[[title]]`--title`
+|Not set
+|Title of the site
+|See xref:playbook:site-title.adoc[].
+
+|[[to-dir]]`--to-dir`
+|[.path]_build/site_
+|Filesystem path
+|Be careful specifying this option in combination with the `--clean` option.
+See xref:playbook:output-dir.adoc[].
+
+|[[ui-bundle]]`--ui-bundle-url`
+|Not set
+|URL or filesystem path
+|See xref:playbook:ui-bundle-url.adoc[].
+
+|[[site-url]]`--url`
+|Not set
+|Absolute or pathname base URL of site
+|See xref:playbook:site-url.adoc[] and xref:playbook:environment-variables.adoc[URL environment variable].
+|===
+
+== Pass options to the CLI
+
+You can enter multiple options in a command line function.
+A function must start with the xref:index.adoc#run-cli-commands[antora base command] and end with the playbook file argument.
+The xref:index.adoc#run-cli-commands[generate command] executes by default and therefore doesn't have to be specified.
+
+[#ex-multiple-options]
+.Pass multiple options to the CLI
+----
+$ antora --ui-bundle-url ./../ui-bundle.zip --redirect-facility nginx --clean antora-playbook
+----
+
+In <<ex-multiple-options>>, the option `--ui-bundle-url` is assigned a value that specifies a local filesystem path relative to the current working directory.
+The `--redirect-facility` is assigned the built-in value `nginx`.
+The <<boolean-values,boolean option>>, `--clean`, is activated simply by entering its name in the function.
+
+Some options can be specified multiple times in the same function.
+Each value is preceded by the option flag.
+
+[#ex-multiple-values]
+.Specify an option multiple times
+----
+$ antora --key support=587tyr999 --key tracer=ID-${spawn} antora-playbook
+----
+
+In <<ex-multiple-values>>, the `--key` option has been assigned two values in <<name-value,the form name=value>>.
+
+[#option-values]
+== Option values
+
+Many of the options accept values in one of two ways.
+The option flag and its value can be written with a single space between them: `--option value`.
+Or, it can be written using an equals sign (`=`) between the option flag and the value: `--option=value`.
+
+In <<ex-option-value>>, the option `--to-dir` is assigned the value `prod`.
+When Antora runs, a folder named [.path]_prod_ will be created relative to the working directory and the site files written to it.
+
+[#ex-option-value]
+.Assign a value to an option
+----
+$ antora --to-dir prod antora-playbook
+----
+
+Additionally, values that contain white space must be surrounded by quotation marks: `--option 'Value with Spaces'` or `--option='Value with Spaces'`.
+In <<ex-option-quotes>>, the option `title` is assigned the value `My Docs`.
+The generated site's title will be _My Docs_.
+
+[#ex-option-quotes]
+.Assign a value containing white spaces to an option
+----
+$ antora --title 'My Docs' antora-playbook
+----
+
+[#name-value]
+=== Name=value values
+
+The `--attribute` and `--key` options accept values in the form `name=value`, where `name` represents the name of the AsciiDoc attribute or API key, respectively.
+In <<ex-name-value-pair>>, the attribute `page-team` is assigned the value `Coco B`.
+The `@` at the end of the value indicates that it is soft set.
+
+[#ex-name-value-pair]
+.Assign a name=value value to an option
+----
+$ antora --attribute page-team='Coco B@' antora-playbook
+----
+
+[#boolean-values]
+=== Boolean values
+
+Boolean options turn a behavior on or off.
+To activate a boolean option, type it on the command line.
+
+[#ex-boolean-true]
+.Activate a boolean option
+----
+$ antora --stacktrace antora-playbook
+----
+
+When a boolean option is activated in a playbook file, it can be overridden from the command line and deactivated with the `false` value.
+
+[#ex-boolean-false]
+.Deactivate a boolean option
+----
+$ antora --clean false antora-playbook
+----
