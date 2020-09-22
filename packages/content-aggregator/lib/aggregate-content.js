@@ -781,29 +781,33 @@ function ensureCacheDir (preferredCacheDir, startDir) {
 }
 
 function transformGitCloneError (err, displayUrl) {
-  let msg
-  const { code, data, message } = err
+  const { code, data, message, name, stack } = err
+  let wrappedMsg
+  let trimMessage
   if (code === git.E.HTTPError) {
     if (data.statusCode === 401) {
-      if (err.rejected) {
-        msg = 'Content repository not found or credentials were rejected'
-      } else {
-        msg = 'Content repository not found or requires credentials'
-      }
+      wrappedMsg = err.rejected
+        ? 'Content repository not found or credentials were rejected'
+        : 'Content repository not found or requires credentials'
     } else if (data.statusCode === 404) {
-      msg = 'Content repository not found'
+      wrappedMsg = 'Content repository not found'
     } else {
-      msg = message.trimRight()
+      wrappedMsg = message
+      trimMessage = true
     }
   } else if (code === git.E.RemoteUrlParseError || code === git.E.UnknownTransportError) {
-    msg = 'Content source uses an unsupported transport protocol'
-  } else if (code && data) {
-    msg = (~message.indexOf('. ') ? message : message.replace(/\.$/, '')).trimRight()
+    wrappedMsg = 'Content source uses an unsupported transport protocol'
+  } else if (code === 'ENOTFOUND') {
+    wrappedMsg = 'Content repository host could not be resolved: ' + err.host + ':' + err.port
   } else {
-    msg = 'Unknown ' + err.name + ': See cause'
+    wrappedMsg = name + ': ' + message
+    trimMessage = true
   }
-  const wrappedErr = new Error(msg + ' (url: ' + displayUrl + ')')
-  wrappedErr.stack += '\nCaused by: ' + (err.stack || 'unknown')
+  if (trimMessage) {
+    wrappedMsg = ~(wrappedMsg = wrappedMsg.trimRight()).indexOf('. ') ? wrappedMsg : wrappedMsg.replace(/\.$/, '')
+  }
+  const wrappedErr = new Error(wrappedMsg + ' (url: ' + displayUrl + ')')
+  wrappedErr.stack += '\nCaused by: ' + (stack || 'unknown')
   return wrappedErr
 }
 

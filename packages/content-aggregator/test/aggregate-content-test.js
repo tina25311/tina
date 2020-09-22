@@ -3941,5 +3941,17 @@ describe('aggregateContent()', function () {
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
+
+    // NOTE Windows CI can get stuck resolving an unknown host
+    if (process.platform !== 'win32') {
+      it('should throw meaningful error if git host cannot be resolved', async () => {
+        const url = `https://gitlab.info/org/repository.git`
+        playbookSpec.content.sources.push({ url })
+        const commonErrorMessage = ''
+        const expectedErrorMessage = `Content repository host could not be resolved: gitlab.info:443 (url: ${url})`
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      })
+    }
   })
 })
