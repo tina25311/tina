@@ -1,0 +1,39 @@
+= Environment Variables
+
+Antora provides environment variables that map to a few select playbook keys.
+
+== Execution precedence
+
+When executed from the xref:cli:index.adoc[Antora CLI], these variables will override any corresponding keys and values defined in the designated playbook file.
+
+== Environment variables and value formats
+
+[cols="4,2,2,4"]
+|===
+|Environment Variable |Format |Default |Learn More
+
+|[[cache-dir]]`ANTORA_CACHE_DIR`
+|String
+|[.path]_<user cache>/antora_
+|See xref:runtime-cache-dir.adoc[cache_dir key] and xref:cli:options.adoc#cache-dir[--cache-dir option]
+
+|`GIT_CREDENTIALS`
+|String
+|not set
+|See xref:playbook:private-repository-auth.adoc[]
+
+|`GIT_CREDENTIALS_PATH`
+|String
+|not set
+|See xref:playbook:private-repository-auth.adoc#custom-credential-path[git credentials file path] and xref:cli:options.adoc#git-credentials-path[--git-credentials-path option]
+
+|`GOOGLE_ANALYTICS_KEY`
+|String
+|not set
+|See xref:playbook:site-keys.adoc#google-analytics-key[Google Analytics key] and xref:cli:options.adoc#google-key[--google-analytics-key option]
+
+|[[site-url]]`URL`
+|String
+|not set
+|See xref:site-url.adoc[site url key] and xref:cli:options.adoc#site-url[--url option]
+|===
