@@ -27,7 +27,7 @@ When a platform version reaches the end of active support by its maintainers or 
 |&#8805; 9.12
 
 |Fedora
-|&#8805; 30
+|&#8805; 31
 
 |Ubuntu
 |[%hardbreaks]
@@ -123,7 +123,7 @@ Arch Linux releases once a month, with only the 3 most recent distros being offi
 Debian: https://www.debian.org/releases/stable/
 
 Fedora: https://fedoraproject.org/wiki/Releases
-estimated EOL of 30 is 5-19-2020
+estimated EOL of 31 is 11-17-2020
 Ubuntu Linux: https://wiki.ubuntu.com/Releases
 
 openSUSE: https://en.opensuse.org/Portal:42.3
