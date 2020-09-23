@@ -44,8 +44,12 @@ const IncludeProcessor = (() => {
       reader.pushInclude(includeContents, resolvedFile.file, resolvedFile.path, startLineNum, attrs)
       ;(reader.file = new String(reader.file)).context = resolvedFile.context // eslint-disable-line no-new-wrappers
     } else {
-      log('error', `include target not found: ${target}`, reader)
-      reader.$unshift(`Unresolved include directive in ${reader.$cursor_at_prev_line().file} - include::${target}[]`)
+      if (attrs['$key?']('optional-option')) {
+        log('info', `optional include dropped because include file not found: ${target}`, reader)
+      } else {
+        log('error', `include target not found: ${target}`, reader)
+        reader.$unshift(`Unresolved include directive in ${reader.$cursor_at_prev_line().file} - include::${target}[]`)
+      }
     }
   })
 

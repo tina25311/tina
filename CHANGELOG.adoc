@@ -16,6 +16,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: Replace latest version and/or prerelease version segment in out path and pub URL (unless version is master) with symbolic name, if specified (#314)
 * *content-classifier*: Define latestPrerelease property on component version (if applicable) and use when computing latest version segment (#314)
 * *content-classifier*: Assign primary alias to `rel` property on target page (#425)
+* *asciidoc-loader*: Add support for optional option on include directive to silence warning if target is missing (#678)
 * *redirect-facility*: Use redirect facility to implement redirect:to and redirect:from strategies for version segment in out path / pub URL of latest and latest prerelease versions (#314)
 
 === Changed
