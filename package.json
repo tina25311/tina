@@ -11,7 +11,7 @@
     "chai-spies": "~1.0",
     "cheerio": "1.0.0-rc.3",
     "dirty-chai": "~2.0",
-    "eslint": "~6.8",
+    "eslint": "~7.9",
     "eslint-config-standard": "~14.1",
     "eslint-plugin-import": "~2.22",
     "eslint-plugin-node": "~11.1",
@@ -20,7 +20,7 @@
     "gulp": "~4.0",
     "isomorphic-git": "0.78.5",
     "js-yaml": "~3.14",
-    "mocha": "~7.2",
+    "mocha": "~8.1",
     "node-git-server": "~0.6",
     "npm-which": "~3.0",
     "nyc": "~15.1",
@@ -29,7 +29,7 @@
     "stream-to-array": "~2.3",
     "through2": "~4.0",
     "vinyl-fs": "~3.0",
-    "yargs-parser": "~18.1"
+    "yargs-parser": "~20.2"
   },
   "engines": {
     "node": ">=10.17.0"

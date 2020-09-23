@@ -24,7 +24,7 @@
   "devDependencies": {
     "@antora/site-publisher": "2.3.4",
     "convict": "~6.0",
-    "fs-extra": "~8.1",
+    "fs-extra": "~9.0",
     "kapok-js": "~0.10"
   },
   "engines": {

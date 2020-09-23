@@ -13,7 +13,7 @@ const git = require('isomorphic-git')
 const invariably = { false: () => false, void: () => {} }
 const matcher = require('matcher')
 const mimeTypes = require('./mime-types-with-asciidoc')
-const MultiProgress = require('multi-progress')
+const MultiProgress = require('multi-progress')(require('progress'))
 const ospath = require('path')
 const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
@@ -628,9 +628,10 @@ function createProgress (urls, term) {
 
 function createProgressEmitter (progress, progressLabel, operation) {
   const progressBar = progress.newBar(formatProgressBar(progressLabel, progress.maxLabelWidth, operation), {
-    total: 100,
     complete: '#',
     incomplete: '-',
+    renderThrottle: 25,
+    total: 100,
   })
   const ticks = progressBar.stream.columns - progressBar.fmt.replace(':bar', '').length
   // NOTE leave room for indeterminate progress at end of bar; this isn't strictly needed for a bare clone
@@ -660,14 +661,14 @@ function onGitProgress (progressBar, { phase, loaded, total }) {
     const scaleFactor = progressBar.scaleFactor
     let ratio = ((loaded / total) * scaleFactor) / GIT_PROGRESS_PHASES.length
     if (phaseIdx) ratio += (phaseIdx * scaleFactor) / GIT_PROGRESS_PHASES.length
-    // TODO if we upgrade to progress >= 2.0.0, UI updates are automatically throttled (set via renderThrottle option)
-    //setTimeout(() => progressBar.update(ratio > scaleFactor ? scaleFactor : ratio), 0)
+    // NOTE: updates are automatically throttled based on renderThrottle option
     progressBar.update(ratio > scaleFactor ? scaleFactor : ratio)
   }
 }
 
 function onGitComplete (progressBar, err) {
   if (err) {
+    // TODO: could use progressBar.interrupt() to replace bar with message instead
     progressBar.chars.incomplete = '?'
     progressBar.update(0)
   } else {

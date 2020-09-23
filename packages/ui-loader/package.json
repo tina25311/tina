@@ -20,7 +20,7 @@
     "bl": "~4.0",
     "cache-directory": "~2.0",
     "camelcase-keys": "~6.2",
-    "fs-extra": "~8.1",
+    "fs-extra": "~9.0",
     "got": "~11.7",
     "gulp-vinyl-zip": "~2.2",
     "js-yaml": "~3.14",
