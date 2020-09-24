@@ -1,0 +1,5 @@
+git:
+  ensureGitSuffix: true
+ui:
+  bundle:
+    url: ./ui-bundle.zip

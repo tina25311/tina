@@ -37,6 +37,8 @@ This project utilizes semantic versioning.
 === Removed
 
 * Drop support for Node.js 8 and set minimum required version to 10 (#679)
+* *playbook-builder*: Remove `pull` key from `runtime` category in playbook; superceded by `fetch` key (#689)
+* *playbook-builder*: Remove `ensureGitSuffix` key from `git` category in playbook file (but not playbook model); renamed to `ensure_git_suffix` (#689)
 
 == 2.3.4 (2020-09-17)
 

@@ -40,6 +40,7 @@ asciidoc:
 git:
   credentials:
     path: ./.git-credentials
+  ensure_git_suffix: true
 output:
   dir: ./_site
   destinations:

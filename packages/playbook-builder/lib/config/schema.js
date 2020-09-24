@@ -138,13 +138,6 @@ module.exports = {
       format: Boolean,
       default: true,
     },
-    ensureGitSuffix: {
-      doc:
-        '(Deprecated; to be removed in Antora 3) ' +
-        'Instructs the git client to automatically append .git to the repository URL if absent.',
-      format: Boolean,
-      default: undefined,
-    },
   },
   runtime: {
     cache_dir: {
@@ -159,12 +152,6 @@ module.exports = {
       format: Boolean,
       default: false,
       arg: 'fetch',
-    },
-    pull: {
-      doc: '(Deprecated; to be removed in Antora 3) Download updates from remote resources. Use --fetch instead.',
-      format: Boolean,
-      default: undefined,
-      arg: 'pull',
     },
     quiet: {
       doc: 'Do not write any messages to stdout.',
