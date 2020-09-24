@@ -33,20 +33,6 @@ describe('ContentCatalog', () => {
     }
   })
 
-  describe('#getComponentMap()', () => {
-    it('should return components as a map ordered by insertion order', () => {
-      const contentCatalog = new ContentCatalog()
-      contentCatalog.registerComponentVersion('foo', '1.0', { title: 'Foo' })
-      contentCatalog.registerComponentVersion('bar', '1.0', { title: 'Bar' })
-      contentCatalog.registerComponentVersion('yin', '1.0', { title: 'Yin' })
-      contentCatalog.registerComponentVersion('yang', '1.0', { title: 'Yang' })
-      const componentMap = contentCatalog.getComponentMap()
-      expect(componentMap).to.not.be.instanceOf(Map)
-      expect(Object.keys(componentMap)).to.eql(['foo', 'bar', 'yin', 'yang'])
-      expect(Object.values(componentMap).map((v) => v.title)).to.eql(['Foo', 'Bar', 'Yin', 'Yang'])
-    })
-  })
-
   describe('#getComponentsSortedBy()', () => {
     it('should return components sorted by title', () => {
       const contentCatalog = new ContentCatalog()
@@ -56,19 +42,6 @@ describe('ContentCatalog', () => {
       contentCatalog.registerComponentVersion('yang', '1.0', { title: 'Yang' })
       const components = contentCatalog.getComponentsSortedBy('title')
       expect(components.map((v) => v.title)).to.eql(['Bar', 'Foo', 'Yang', 'Yin'])
-    })
-  })
-
-  describe('#getComponentMapSortedBy()', () => {
-    it('should return components as map sorted by title', () => {
-      const contentCatalog = new ContentCatalog()
-      contentCatalog.registerComponentVersion('foo', '1.0', { title: 'Foo' })
-      contentCatalog.registerComponentVersion('bar', '1.0', { title: 'Bar' })
-      contentCatalog.registerComponentVersion('yin', '1.0', { title: 'Yin' })
-      contentCatalog.registerComponentVersion('yang', '1.0', { title: 'Yang' })
-      const componentMap = contentCatalog.getComponentMapSortedBy('title')
-      expect(Object.keys(componentMap)).to.eql(['bar', 'foo', 'yang', 'yin'])
-      expect(Object.values(componentMap).map((v) => v.title)).to.eql(['Bar', 'Foo', 'Yang', 'Yin'])
     })
   })
 

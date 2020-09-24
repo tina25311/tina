@@ -45,6 +45,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Remove `ensureGitSuffix` key from `git` category in playbook file (but not playbook model); renamed to `ensure_git_suffix` (#689)
 * *content-classifier*: Remove fallback to resolve site-wide AsciiDoc config in `classifyContent` function (#689)
 * *content-classifier*: Drop `latestVersion` property on component version object; superceded by `latest` property (#689)
+* *content-classifier*: Remove deprecated getComponentMap and getComponentMapSortedBy methods on ContentCatalog (#689)
 
 == 2.3.4 (2020-09-17)
 

@@ -184,28 +184,6 @@ class ContentCatalog {
     )
   }
 
-  /**
-   * @deprecated scheduled to be removed in Antora 3
-   */
-  getComponentMap () {
-    const accum = {}
-    for (const [name, component] of this[$components]) {
-      accum[name] = component
-    }
-    return accum
-  }
-
-  /**
-   * @deprecated scheduled to be removed in Antora 3
-   */
-  getComponentMapSortedBy (property) {
-    const accum = {}
-    for (const component of this.getComponentsSortedBy(property)) {
-      accum[component.name] = component
-    }
-    return accum
-  }
-
   getComponents () {
     return [...this[$components].values()]
   }
