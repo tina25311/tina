@@ -317,6 +317,18 @@ describe('classifyContent()', () => {
       expect(() => classifyContent(playbook, aggregate)).to.throw('version')
     })
 
+    it('should attach AsciiDoc config to component version if site AsciiDoc config is not specified', () => {
+      const componentVersionAsciiDocConfig = { attributes: { foo: 'bar' } }
+      aggregate[0].asciidoc = componentVersionAsciiDocConfig
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const component = contentCatalog.getComponent('the-component')
+      expect(component).to.exist()
+      const componentVersions = component.versions
+      expect(componentVersions).to.have.lengthOf(1)
+      expect(component.asciidoc).to.deep.equal(componentVersionAsciiDocConfig)
+      expect(componentVersions[0].asciidoc).to.deep.equal(componentVersionAsciiDocConfig)
+    })
+
     it('should attach site AsciiDoc config to component version if component version has no AsciiDoc config', () => {
       const siteAsciiDocConfig = {
         attributes: { foo: 'bar' },
