@@ -671,6 +671,8 @@ function onGitComplete (progressBar, err) {
     // TODO: could use progressBar.interrupt() to replace bar with message instead
     progressBar.chars.incomplete = '?'
     progressBar.update(0)
+    // NOTE: force progress bar to update regardless of throttle setting
+    progressBar.render(undefined, true)
   } else {
     progressBar.update(1)
   }
