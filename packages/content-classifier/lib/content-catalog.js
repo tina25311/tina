@@ -92,12 +92,6 @@ class ContentCatalog {
                 return this.latest.asciidoc
               },
             },
-            // NOTE deprecated; alias latestVersion to latest for backwards compatibility; remove in Antora 3
-            latestVersion: {
-              get () {
-                return this.latest
-              },
-            },
             title: {
               get () {
                 return this.latest.title

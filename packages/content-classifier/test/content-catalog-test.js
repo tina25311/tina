@@ -103,10 +103,8 @@ describe('ContentCatalog', () => {
         versions: [{ name, version, displayVersion: version, title, url }],
       })
       expect(components[0].latest).to.eql({ name, version, displayVersion: version, title, url })
+      expect(components[0]).to.not.have.property('latestVersion')
       expect(components[0].latestPrerelease).to.be.undefined()
-      // NOTE verify latestVersion alias
-      expect(components[0].latestVersion).to.equal(components[0].latest)
-      expect(components[0].latestVersion).to.equal(componentVersion)
     })
 
     it('should add new version to existing component and return it if component is already present', () => {
