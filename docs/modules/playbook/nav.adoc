@@ -15,6 +15,8 @@
 ** xref:content-source-start-path.adoc[]
 ** xref:content-source-start-paths.adoc[]
 ** xref:content-edit-url.adoc[]
+* xref:configure-git.adoc[]
+** xref:git-suffix.adoc[]
 * xref:configure-asciidoc.adoc[]
 ** xref:asciidoc-attributes.adoc[]
 ** xref:asciidoc-extensions.adoc[]
