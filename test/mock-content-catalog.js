@@ -58,16 +58,15 @@ function mockContentCatalog (seed = []) {
     const pubModule = module_ === 'ROOT' ? '' : module_
     if (family === 'page' || family === 'alias' || family === 'image') {
       if (('/' + relative).indexOf('/_') < 0) {
-        const relativeOut = family === 'image' ? relative : relative.slice(0, -5) + (indexify ? '/' : '.html')
+        const relativeOut =
+          family === 'image' ? path.join('_images/', relative) : relative.slice(0, -5) + (indexify ? '/' : '.html')
         entry.out = {
           path: path.join(component, pubVersion, pubModule, relativeOut),
-          moduleRootPath: relative.includes('/')
-            ? Array(relative.split('/').length - (indexify ? 0 : 1))
+          moduleRootPath: ~relativeOut.indexOf('/')
+            ? Array(relativeOut.split('/').length - 1)
               .fill('..')
               .join('/')
-            : indexify
-              ? '..'
-              : '.',
+            : '.',
         }
         let url = '/' + entry.out.path
         if (~url.indexOf(' ')) url = url.replace(SPACE_RX, '%20')

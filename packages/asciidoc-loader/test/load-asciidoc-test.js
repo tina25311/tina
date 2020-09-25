@@ -3290,7 +3290,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
-      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/the-image.png"')
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/_images/the-image.png"')
     })
 
     it('should pass through unresolved target of inline image that matches resource ID', () => {
@@ -3335,7 +3335,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
-      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/the-image.png"')
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/_images/the-image.png"')
     })
 
     it('should resolve internal anchor referenced by xref attribute on block image macro and link to it', () => {
