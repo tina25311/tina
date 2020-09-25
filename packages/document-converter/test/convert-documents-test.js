@@ -4,7 +4,7 @@
 const { expect, heredoc, spy } = require('../../../test/test-utils')
 
 const convertDocuments = require('@antora/document-converter')
-const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
+const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 const mockContentCatalog = require('../../../test/mock-content-catalog')
 
 describe('convertDocuments()', () => {

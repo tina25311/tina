@@ -154,7 +154,7 @@ function extractAsciiDocMetadata (doc) {
  *
  * @returns {Object} A resolved configuration object to be used by the loadAsciiDoc function.
  */
-function resolveConfig (playbook = {}) {
+function resolveAsciiDocConfig (playbook = {}) {
   const attributes = {
     env: 'site',
     'env-site': '',
@@ -211,4 +211,10 @@ function freeExtensions () {
   EXTENSION_DSL_TYPES.forEach((type) => (Opal.const_get_local(Extensions, type).$$iclasses.length = 0))
 }
 
-module.exports = Object.assign(loadAsciiDoc, { loadAsciiDoc, extractAsciiDocMetadata, resolveConfig })
+module.exports = Object.assign(loadAsciiDoc, {
+  loadAsciiDoc,
+  extractAsciiDocMetadata,
+  resolveAsciiDocConfig,
+  // @deprecated scheduled to be removed in Antora 4
+  resolveConfig: resolveAsciiDocConfig,
+})

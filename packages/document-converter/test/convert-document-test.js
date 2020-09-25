@@ -4,7 +4,7 @@
 const { expect, heredoc, spy } = require('../../../test/test-utils')
 
 const { convertDocument } = require('@antora/document-converter')
-const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
+const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 
 describe('convertDocument()', () => {
   let inputFile

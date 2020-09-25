@@ -10,7 +10,7 @@ const loadUi = require('@antora/ui-loader')
 const mapSite = require('@antora/site-mapper')
 const produceRedirects = require('@antora/redirect-producer')
 const publishSite = require('@antora/site-publisher')
-const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
+const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 
 async function generateSite (args, env) {
   const playbook = buildPlaybook(args, env)

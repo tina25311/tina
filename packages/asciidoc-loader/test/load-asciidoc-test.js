@@ -3,7 +3,8 @@
 
 const { expect, heredoc } = require('../../../test/test-utils')
 
-const { loadAsciiDoc, resolveConfig } = require('@antora/asciidoc-loader')
+const loadAsciiDoc = require('@antora/asciidoc-loader')
+const { extractAsciiDocMetadata, resolveAsciiDocConfig } = loadAsciiDoc
 const mockContentCatalog = require('../../../test/mock-content-catalog')
 const ospath = require('path')
 
@@ -56,7 +57,7 @@ describe('loadAsciiDoc()', () => {
   })
 
   it('should export loadAsciiDoc as default function', () => {
-    expect(require('@antora/asciidoc-loader')).to.equal(loadAsciiDoc)
+    expect(loadAsciiDoc.loadAsciiDoc).to.equal(loadAsciiDoc)
   })
 
   it('should load document model from AsciiDoc contents', () => {
@@ -157,7 +158,7 @@ describe('loadAsciiDoc()', () => {
       = Document Title
       `
       setInputFileContents(contents)
-      const doc = loadAsciiDoc(inputFile, undefined, resolveConfig())
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig())
       expect(doc.getBaseDir()).to.equal('modules/module-a/pages')
       expect(doc.getId()).to.equal('docid')
       expect(doc.getAttributes()).to.include({
@@ -204,7 +205,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'topic-a/page-a.adoc',
         contents: '= Document Title',
       }).getFiles()[0]
-      const doc = loadAsciiDoc(inputFile, undefined, resolveConfig())
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig())
       expect(doc.getAttributes()).to.include({
         imagesdir: '../_images',
         attachmentsdir: '../_attachments',
@@ -386,7 +387,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const doc = loadAsciiDoc(inputFile, undefined, resolveConfig(playbook))
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig(playbook))
       const expectedAttributes = { ...playbook.asciidoc.attributes, 'site-url': 'https://docs.example.org' }
       expect(doc.getAttributes()).to.include(expectedAttributes)
     })
@@ -406,7 +407,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const doc = loadAsciiDoc(inputFile, undefined, resolveConfig(playbook))
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig(playbook))
       const expectedAttributes = { ...playbook.asciidoc.attributes, 'site-title': 'Docs' }
       expect(doc.getAttributes()).to.include(expectedAttributes)
     })
@@ -3606,9 +3607,17 @@ describe('loadAsciiDoc()', () => {
     })
   })
 
-  describe('resolveConfig()', () => {
+  describe('resolveAsciiDocConfig()', () => {
+    it('should export resolveAsciiDocConfig function', () => {
+      expect(resolveAsciiDocConfig).to.be.a('function')
+    })
+
+    it('should export deprecated resolveConfig function as alias of resolveAsciiDocConfig', () => {
+      expect(loadAsciiDoc.resolveConfig).to.equal(resolveAsciiDocConfig)
+    })
+
     it('should return config with built-in attributes if site and asciidoc categories not set in playbook', () => {
-      const config = resolveConfig()
+      const config = resolveAsciiDocConfig()
       expect(config.attributes).to.exist()
       expect(config.attributes).to.include({
         env: 'site',
@@ -3622,7 +3631,7 @@ describe('loadAsciiDoc()', () => {
 
     it('should return config with attributes for site title and url if set in playbook', () => {
       const playbook = { site: { url: 'https://docs.example.org', title: 'Docs' }, ui: {} }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.attributes).to.exist()
       expect(config.attributes).to.include({
         'site-title': 'Docs',
@@ -3639,7 +3648,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config).to.not.equal(playbook.asciidoc)
       expect(config.attributes).to.not.equal(playbook.asciidoc.attributes)
       expect(config.attributes).to.include(playbook.asciidoc.attributes)
@@ -3647,19 +3656,19 @@ describe('loadAsciiDoc()', () => {
 
     it('should not load extensions if extensions are not defined', () => {
       const playbook = { asciidoc: {} }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.not.exist()
     })
 
     it('should not load extensions if extensions are empty', () => {
       const playbook = { asciidoc: { extensions: [] } }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.not.exist()
     })
 
     it('should load scoped extension into config but not register it globally', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/scoped-shout-block.js')] } }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3670,7 +3679,7 @@ describe('loadAsciiDoc()', () => {
 
     it('should load global extension and register it globally', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.not.exist()
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
@@ -3680,8 +3689,8 @@ describe('loadAsciiDoc()', () => {
 
     it('should only register a global extension once', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
-      resolveConfig(playbook)
-      resolveConfig(playbook)
+      resolveAsciiDocConfig(playbook)
+      resolveAsciiDocConfig(playbook)
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(1)
@@ -3695,7 +3704,7 @@ describe('loadAsciiDoc()', () => {
           extensions: ['./ext/scoped-shout-block.js'],
         },
       }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3708,7 +3717,7 @@ describe('loadAsciiDoc()', () => {
           extensions: ['lorem-block-macro'],
         },
       }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3725,7 +3734,7 @@ describe('loadAsciiDoc()', () => {
           ],
         },
       }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(2)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3734,6 +3743,50 @@ describe('loadAsciiDoc()', () => {
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(1)
       Extensions.unregisterAll()
+    })
+  })
+
+  describe('extractAsciiDocMetadata()', () => {
+    it('should export extractAsciiDocMetadata function', () => {
+      expect(extractAsciiDocMetadata).to.be.a('function')
+    })
+
+    it('should only extract attributes if document has no header', () => {
+      const contents = heredoc`
+        :foo: bar
+
+        content
+      `
+      setInputFileContents(contents)
+      const doc = loadAsciiDoc(inputFile)
+      const metadata = extractAsciiDocMetadata(doc)
+      expect(metadata).to.have.property('attributes')
+      expect(metadata.attributes).to.eql(doc.getAttributes())
+      expect(metadata.attributes.foo).to.eql('bar')
+      expect(metadata).to.not.have.property('doctitle')
+      expect(metadata).to.not.have.property('xreftext')
+      expect(metadata).to.not.have.property('navtitle')
+    })
+
+    it('should only extract doctitle, xreftext, and navtitle attributes if document has header', () => {
+      const contents = heredoc`
+        = Let's Go!
+        :navtitle: Get Started
+        :foo: bar
+
+        content
+      `
+      setInputFileContents(contents)
+      const doc = loadAsciiDoc(inputFile)
+      const metadata = extractAsciiDocMetadata(doc)
+      expect(metadata).to.have.property('attributes')
+      expect(metadata.attributes).to.eql(doc.getAttributes())
+      expect(metadata).to.have.property('doctitle')
+      expect(metadata.doctitle).to.equal('Let&#8217;s Go!')
+      expect(metadata).to.have.property('xreftext')
+      expect(metadata.navtitle).to.equal('Get Started')
+      expect(metadata).to.have.property('navtitle')
+      expect(metadata.xreftext).to.equal(metadata.doctitle)
     })
   })
 })
