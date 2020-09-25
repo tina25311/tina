@@ -34,6 +34,10 @@ This project utilizes semantic versioning.
 * *ui-loader*: Show sensible error message if cache directory cannot be created (#680)
 * *asciidoc-loader*: Add support for optional option on include directive to silence warning if target is missing (#678)
 
+=== Deprecated
+
+* *cli*: Deprecate the `--google-analytics-key` CLI option; superceded by the `--key` option (#689)
+
 === Removed
 
 * Drop support for Node.js 8 and set minimum required version to 10 (#679)

@@ -40,7 +40,10 @@ module.exports = {
     },
     // NOTE used to map arg and env for site.keys.google_analytics key
     __private__google_analytics_key: {
-      doc: 'The Google Analytics account key.',
+      doc: [
+        'The Google Analytics account key.',
+        '(Deprecated; will be removed in Antora 4; define using --key google-analytics=<key> instead)',
+      ].join('\n'),
       format: String,
       default: undefined,
       arg: 'google-analytics-key',
