@@ -3356,6 +3356,24 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/_images/the-image.png"')
     })
 
+    it('should allow default converter to handle target of inline image if target is a URL', () => {
+      const contentCatalog = mockContentCatalog().spyOn('resolveResource')
+      const target = 'https://example.org/the-image.png'
+      setInputFileContents(`Look for image:${target}[The Image,16].`)
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(html.match(/<img[^>]*>/)[0]).to.include(` src="${target}"`)
+      expect(contentCatalog.resolveResource).to.not.have.been.called()
+    })
+
+    it('should allow default converter to handle target of inline image if target is a data URI', () => {
+      const contentCatalog = mockContentCatalog().spyOn('resolveResource')
+      const target = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+      setInputFileContents(`Count each image:${target}[Dot,16].`)
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(html.match(/<img[^>]*>/)[0]).to.include(` src="${target}"`)
+      expect(contentCatalog.resolveResource).to.not.have.been.called()
+    })
+
     it('should resolve internal anchor referenced by xref attribute on block image macro and link to it', () => {
       const contents = heredoc`
       image::module-b:the-image.png[The Image,250,xref=section-a]
