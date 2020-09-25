@@ -3274,7 +3274,7 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
-    it('should resolve target of image block if matches resource ID', () => {
+    it('should resolve target of block image if it matches resource ID', () => {
       const contentCatalog = mockContentCatalog([
         inputFile.src,
         { module: 'module-b', family: 'image', relative: 'the-image.png' },
@@ -3319,7 +3319,7 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
-    it('should resolve target of image block if matches resource ID', () => {
+    it('should resolve target of inline image if it matches resource ID', () => {
       const contentCatalog = mockContentCatalog([
         inputFile.src,
         { module: 'module-b', family: 'image', relative: 'the-image.png' },
