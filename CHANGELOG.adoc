@@ -29,6 +29,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: Require page ID spec for start page to include the .adoc file extension (#689)
 * *asciidoc-loader*: Require page ID spec target in xref to include the .adoc file extension (#689)
 * *asciidoc-loader*: Rename exported `resolveConfig` function in AsciiDoc loader to `resolveAsciiDocConfig`; retain `resolveConfig` as deprecated alias (#689)
+* *asciidoc-loader*: Make check for .adoc extension in value of xref attribute on image more accurate (#689)
 * *page-composer*: Follow aliases when computing version lineage for page and canonical URL in UI model (#425)
 
 === Fixed

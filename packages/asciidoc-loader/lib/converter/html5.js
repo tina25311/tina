@@ -69,7 +69,7 @@ function transformImageNode (converter, node, imageTarget) {
     const refSpec = node.getAttribute('xref', '', false)
     if (refSpec.charAt() === '#') {
       node.setAttribute('link', refSpec)
-    } else if (~refSpec.indexOf('.adoc')) {
+    } else if (refSpec.endsWith('.adoc') || ~refSpec.indexOf('.adoc#')) {
       const pageRefCallback = converter[$pageRefCallback]
       if (pageRefCallback) {
         const { target, unresolved } = pageRefCallback(refSpec, '[image]')
