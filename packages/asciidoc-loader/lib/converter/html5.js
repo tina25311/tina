@@ -85,9 +85,7 @@ function transformImageNode (converter, node, imageTarget) {
 }
 
 function matchesResourceSpec (target) {
-  return ~target.indexOf(':')
-    ? !(~target.indexOf('://') || (target.startsWith('data:') && ~target.indexOf(',')))
-    : target.indexOf('@') > 0
+  return !(~target.indexOf(':') && (~target.indexOf('://') || (target.startsWith('data:') && ~target.indexOf(','))))
 }
 
 module.exports = Html5Converter

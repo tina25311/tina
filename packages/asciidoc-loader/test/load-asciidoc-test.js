@@ -3276,7 +3276,26 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
-    it('should resolve target of block image if it matches resource ID', () => {
+    it('should resolve target of block image if it matches resource ID in same module', () => {
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-a', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('image::the-image.png[The Image,250]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="_images/the-image.png"')
+    })
+
+    it('should resolve target of block image if it matches resource ID in different module', () => {
       const contentCatalog = mockContentCatalog([
         inputFile.src,
         { module: 'module-b', family: 'image', relative: 'the-image.png' },
@@ -3339,7 +3358,26 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
-    it('should resolve target of inline image if it matches resource ID', () => {
+    it('should resolve target of inline image if it matches resource ID in same module', () => {
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-a', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('Look for image:the-image.png[The Image,16].')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="_images/the-image.png"')
+    })
+
+    it('should resolve target of inline image if it matches resource ID in different module', () => {
       const contentCatalog = mockContentCatalog([
         inputFile.src,
         { module: 'module-b', family: 'image', relative: 'the-image.png' },
