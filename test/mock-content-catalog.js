@@ -57,7 +57,7 @@ function mockContentCatalog (seed = []) {
     const pubVersion = version === 'master' ? '' : version
     const pubModule = module_ === 'ROOT' ? '' : module_
     if (family === 'page' || family === 'alias' || family === 'image') {
-      if (!~('/' + relative).indexOf('/_')) {
+      if (('/' + relative).indexOf('/_') < 0) {
         const relativeOut = family === 'image' ? relative : relative.slice(0, -5) + (indexify ? '/' : '.html')
         entry.out = {
           path: path.join(component, pubVersion, pubModule, relativeOut),
