@@ -3293,6 +3293,22 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/_images/the-image.png"')
     })
 
+    it('should allow default converter to handle target of block image if target is a URL', () => {
+      const contentCatalog = mockContentCatalog()
+      const target = 'https://example.org/the-image.png'
+      setInputFileContents(`image::${target}[The Image,250]`)
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(html.match(/<img[^>]*>/)[0]).to.include(` src="${target}"`)
+    })
+
+    it('should allow default converter to handle target of block image if target is a data URI', () => {
+      const contentCatalog = mockContentCatalog()
+      const target = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+      setInputFileContents(`image::${target}[Dot,16]`)
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(html.match(/<img[^>]*>/)[0]).to.include(` src="${target}"`)
+    })
+
     it('should pass through unresolved target of inline image that matches resource ID', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
       setInputFileContents('Look for image:module-b:no-such-image.png[The Image,16].')
