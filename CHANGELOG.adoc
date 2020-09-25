@@ -45,6 +45,7 @@ This project utilizes semantic versioning.
 * *ui-loader*: Deprecate `getAll` method on UiCatalog; superceded by `getFiles` (#689)
 * *asciidoc-loader*: Deprecate exported `resolveConfig` function in AsciiDoc loader (#689)
 * *asciidoc-loader*: Deprecate use of page ID spec without .adoc file for page alias (#689)
+* *asciidoc-loader*: Deprecate use of non-resource ID spec (e.g., parent path) as target of include directive (#689)
 * *site-generator-default*: Deprecate `getAll` method on site catalog; superceded by `getFiles` (#689)
 * *cli*: Deprecate the `--google-analytics-key` CLI option; superceded by the `--key` option (#689)
 
