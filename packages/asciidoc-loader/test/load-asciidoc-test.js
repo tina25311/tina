@@ -142,6 +142,42 @@ describe('loadAsciiDoc()', () => {
     expect(messages[0]).to.include('line 5: include file not found')
   })
 
+  it('should not apply Antora enhancements if content catalog is not specified', () => {
+    setInputFileContents(heredoc`
+      = Page Title
+
+      == Section Title
+
+      // include will always be unresolved since Asciidoctor is not allowed to access filesystem
+      include::partial$intro.adoc[]
+
+      image::module-b:screenshot.png[]
+
+      xref:more.adoc[Read more].
+    `)
+    const [html, messages] = captureStderr(() => loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig()).convert())
+    expect(html).to.equal(heredoc`
+      <div class="sect1">
+      <h2 id="_section_title"><a class="anchor" href="#_section_title"></a>Section Title</h2>
+      <div class="sectionbody">
+      <div class="paragraph">
+      <p>Unresolved include directive in modules/module-a/pages/page-a.adoc - include::partial$intro.adoc[]</p>
+      </div>
+      <div class="imageblock">
+      <div class="content">
+      <img src="module-b:screenshot.png" alt="module b:screenshot">
+      </div>
+      </div>
+      <div class="paragraph">
+      <p><a href="more.html">Read more</a>.</p>
+      </div>
+      </div>
+      </div>
+    `)
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.include('line 6: include target not found: partial$intro.adoc')
+  })
+
   it('should use UTF-8 as the default String encoding', () => {
     expect(String('foo'.encoding)).to.equal('UTF-8')
   })
