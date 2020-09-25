@@ -7,4 +7,4 @@ See xref:the-page.adoc[the page], which you can also access via xref:the-alias.a
 
 Also check out xref:the-freshness.adoc#[the new page], which is all about xref:2.0@the-freshness.adoc#[2.0].
 
-include::{partialsdir}/diagrams.adoc[]
+include::partial$diagrams.adoc[]

@@ -304,14 +304,14 @@ describe('convertDocument()', () => {
   })
 
   it('should resolve target of include directive to file in content catalog', () => {
-    inputFile.contents = Buffer.from('include::{partialsdir}/definitions.adoc[]')
+    inputFile.contents = Buffer.from('include::partial$definitions.adoc[]')
     const partialFile = {
-      path: 'modules/module-a/pages/_partials/definitions.adoc',
-      dirname: 'modules/module-a/pages/_partials',
+      path: 'modules/module-a/partials/definitions.adoc',
+      dirname: 'modules/module-a/partials',
       contents: Buffer.from("cloud: someone else's computer"),
       src: {
-        path: 'modules/module-a/pages/_partials/definitions.adoc',
-        dirname: 'modules/module-a/pages/_partials',
+        path: 'modules/module-a/partials/definitions.adoc',
+        dirname: 'modules/module-a/partials',
         component: 'component-a',
         version: '1.2.3',
         module: 'module-a',
