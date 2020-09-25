@@ -2700,7 +2700,7 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, 'the-page.html', 'The Page Title')
     })
 
-    it('should convert page reference with a version but without a file extension', () => {
+    it('should not convert page reference with a version but without a file extension', () => {
       const contentCatalog = mockContentCatalog({
         version: '2.0',
         relative: 'the-page.adoc',
@@ -2714,9 +2714,9 @@ describe('loadAsciiDoc()', () => {
           version: '2.0',
           module: 'module-a',
           family: 'page',
-          relative: 'the-page.adoc',
+          relative: 'the-page',
         })
-      expectPageLink(html, '../2.0/module-a/the-page.html', 'The Page Title')
+      expectUnresolvedPageLink(html, '#2.0@the-page', 'The Page Title')
     })
 
     it('should convert a page reference to a non-AsciiDoc page', () => {
@@ -3171,6 +3171,7 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, '../module-b/the-topic/the-page.html#frag', 'module-b:the-topic/the-page.adoc#frag')
     })
 
+    // NOTE: the .adoc file extension is required, however
     it('should not fail to process page reference if fragment attribute is not set', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
@@ -3184,8 +3185,8 @@ describe('loadAsciiDoc()', () => {
         this.process((parent, target, attrs) =>
           this.createInline(parent, 'anchor', target, {
             type: 'xref',
-            target,
-            attributes: global.Opal.hash({ refid: target, path: target }),
+            target: target + '.adoc',
+            attributes: global.Opal.hash({ refid: target, path: target + '.adoc' }),
           })
         )
       }

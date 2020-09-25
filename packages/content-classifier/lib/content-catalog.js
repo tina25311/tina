@@ -283,9 +283,11 @@ class ContentCatalog {
 
   // QUESTION should this be addPageAlias?
   registerPageAlias (spec, target) {
-    const src = parseResourceId(spec, target.src, 'page', ['page'])
+    // .adoc file extension will be required on ID spec for page alias starting in Antora 4 (possibly in Antora 3)
+    const inferredSpec = spec.endsWith('.adoc') ? spec : spec + '.adoc'
+    const src = parseResourceId(inferredSpec, target.src, 'page', ['page'])
     // QUESTION should we throw an error if alias is invalid?
-    if (!src) return
+    if (!src || (src.relative === '.adoc' && spec !== inferredSpec)) return
     const component = this.getComponent(src.component)
     if (component) {
       // NOTE version is not set when alias specifies a component, but not a version

@@ -26,6 +26,8 @@ This project utilizes semantic versioning.
 * *content-classifier*: Register all component versions before adding files to content catalog (#314)
 * *content-classifier*: Only register start page for component version in `ContentCatalog#registerComponentVersion` if value of `startPage` property in descriptor is truthy (#605)
 * *content-classifier*: Call `ContentCatalog#registerComponentVersionStartPage` in content classifier to register start page after adding files (instead of before) (#605)
+* *content-classifier*: Require page ID spec for start page to include the .adoc file extension (#689)
+* *asciidoc-loader*: Require page ID spec target in xref to include the .adoc file extension (#689)
 * *asciidoc-loader*: Rename exported `resolveConfig` function in AsciiDoc loader to `resolveAsciiDocConfig`; retain `resolveConfig` as deprecated alias (#689)
 * *page-composer*: Follow aliases when computing version lineage for page and canonical URL in UI model (#425)
 
@@ -40,6 +42,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: Deprecate `getAll` method on ContentCatalog; superceded by `getFiles` (#689)
 * *ui-loader*: Deprecate `getAll` method on UiCatalog; superceded by `getFiles` (#689)
 * *asciidoc-loader*: Deprecate exported `resolveConfig` function in AsciiDoc loader (#689)
+* *asciidoc-loader*: Deprecate use of page ID spec without .adoc file for page alias (#689)
 * *site-generator-default*: Deprecate `getAll` method on site catalog; superceded by `getFiles` (#689)
 * *cli*: Deprecate the `--google-analytics-key` CLI option; superceded by the `--key` option (#689)
 

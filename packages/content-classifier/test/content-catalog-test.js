@@ -553,6 +553,16 @@ describe('ContentCatalog', () => {
       expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home.adoc')
     })
 
+    it('should warn if specified start page does not have the .adoc file extension', () => {
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
+      const stdErrMessages = captureStdErrSync(() =>
+        contentCatalog.registerComponentVersionStartPage('the-component', '1.0', 'home')
+      )
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home')
+    })
+
     it('should warn if specified start page refers to a different component', () => {
       const contentCatalog = new ContentCatalog()
       contentCatalog.addFile({
@@ -1413,7 +1423,8 @@ describe('ContentCatalog', () => {
 
     // QUESTION should this case throw an error or warning?
     it('should not register alias if page spec is invalid', () => {
-      expect(contentCatalog.registerPageAlias('the-component::', {})).to.be.undefined()
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
+      expect(contentCatalog.registerPageAlias('the-component::', targetPage)).to.be.undefined()
     })
 
     it('should register an alias for target file given a valid qualified page spec', () => {
@@ -1457,6 +1468,14 @@ describe('ContentCatalog', () => {
       expect(result).to.have.property('rel')
       expect(result.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result.src)).to.equal(result)
+    })
+
+    it('should register alias if relative path in page spec is only a file extension', () => {
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
+      const result = contentCatalog.registerPageAlias('ROOT:.adoc', targetPage)
+      expect(result).to.exist()
+      expect(result).to.have.property('src')
+      expect(result.src.relative).to.equal('.adoc')
     })
 
     it('should register different aliases for the same page', () => {
