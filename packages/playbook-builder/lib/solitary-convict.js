@@ -75,7 +75,7 @@ function registerFormats (convict) {
           let parsed
           if (v && v !== '-') {
             parsed = yaml.safeLoad(v)
-            if (parsed && !~PRIMITIVE_TYPES.indexOf(parsed.constructor)) parsed = v
+            if (parsed && PRIMITIVE_TYPES.indexOf(parsed.constructor) < 0) parsed = v
           } else {
             parsed = v || ''
           }

@@ -144,7 +144,7 @@ class ContentCatalog {
       delete file.out
     } else if (
       (family === 'page' || family === 'image' || family === 'attachment') &&
-      !~('/' + src.relative).indexOf('/_')
+      ('/' + src.relative).indexOf('/_') < 0
     ) {
       publishable = true
       versionSegment = computeVersionSegment.bind(this)(src.component, src.version)
