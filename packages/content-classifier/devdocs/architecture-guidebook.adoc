@@ -78,7 +78,7 @@ const pages = catalog.getPages()
 ----
 
 .Content catalog API
-* `getAll()` - gets all files in the catalog; replaces deprecated `getFiles()` method
+* `getFiles()` - gets all files in the catalog; replaces deprecated `getAll()` method
 * `addFile()` - add a file to the catalog; stored by ID (see `getById`)
 * `getById({ component, version, module, family, relative })`
 * `getByPath({ component, version, path })`

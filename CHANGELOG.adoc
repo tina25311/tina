@@ -36,6 +36,9 @@ This project utilizes semantic versioning.
 
 === Deprecated
 
+* *content-classifier*: Deprecate `getAll` method on ContentCatalog; superceded by `getFiles` (#689)
+* *ui-loader*: Deprecate `getAll` method on UiCatalog; superceded by `getFiles` (#689)
+* *site-generator-default*: Deprecate `getAll` method on site catalog; superceded by `getFiles` (#689)
 * *cli*: Deprecate the `--google-analytics-key` CLI option; superceded by the `--key` option (#689)
 
 === Removed

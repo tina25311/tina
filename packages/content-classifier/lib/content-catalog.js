@@ -192,7 +192,7 @@ class ContentCatalog {
     return this.getComponents().sort((a, b) => a[property].localeCompare(b[property]))
   }
 
-  getAll () {
+  getFiles () {
     return [...this[$files].values()]
   }
 
@@ -346,12 +346,13 @@ class ContentCatalog {
   exportToModel () {
     return [
       this.findBy,
-      this.getAll,
+      { name: 'getAll', bind: (to) => this.getAll.bind(to) },
       this.getById,
       this.getComponent,
       this.getComponentVersion,
       this.getComponents,
       this.getComponentsSortedBy,
+      this.getFiles,
       this.getPages,
       this.getSiteStartPage,
       this.resolvePage,
@@ -361,9 +362,9 @@ class ContentCatalog {
 }
 
 /**
- * @deprecated superceded by getAll()
+ * @deprecated superceded by getFiles(); scheduled to be removed in Antora 4
  */
-ContentCatalog.prototype.getFiles = ContentCatalog.prototype.getAll
+ContentCatalog.prototype.getAll = ContentCatalog.prototype.getFiles
 
 function generateKey ({ component, version, module: module_, family, relative }) {
   return `${version}@${component}:${module_}:${family}$${relative}`

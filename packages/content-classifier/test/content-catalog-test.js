@@ -825,7 +825,7 @@ describe('ContentCatalog', () => {
     })
   })
 
-  describe('#getAll()', () => {
+  describe('#getFiles()', () => {
     beforeEach(() => {
       aggregate = [
         {
@@ -850,7 +850,7 @@ describe('ContentCatalog', () => {
 
     it('should return all files in catalog', () => {
       const contentCatalog = classifyContent(playbook, aggregate)
-      const files = contentCatalog.getAll()
+      const files = contentCatalog.getFiles()
       expect(files).to.have.lengthOf(5)
       const pages = files.filter((it) => it.src.family === 'page')
       expect(pages).to.have.lengthOf(3)
@@ -858,9 +858,10 @@ describe('ContentCatalog', () => {
       expect(partials).to.have.lengthOf(1)
     })
 
-    it('should map getFiles as alias', () => {
+    it('should map getAll as alias for getFiles', () => {
       const contentCatalog = classifyContent(playbook, aggregate)
-      const files = contentCatalog.getFiles()
+      expect(contentCatalog.getAll).to.equal(contentCatalog.getFiles)
+      const files = contentCatalog.getAll()
       expect(files).to.have.lengthOf(5)
       const pages = files.filter((it) => it.src.family === 'page')
       expect(pages).to.have.lengthOf(3)
@@ -1889,12 +1890,13 @@ describe('ContentCatalog', () => {
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
       const expectedMethods = [
         'findBy',
-        'getAll',
+        'getAll', // remove in Antora 4
         'getById',
         'getComponent',
         'getComponentVersion',
         'getComponents',
         'getComponentsSortedBy',
+        'getFiles',
         'getPages',
         'getSiteStartPage',
         'resolvePage',

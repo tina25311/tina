@@ -117,7 +117,7 @@ describe('publishSite()', () => {
       },
     }
     const contentCatalog = {
-      getAll: () => [
+      getFiles: () => [
         createFile('the-component/1.0/index.html', generateHtml('Index (ROOT)', 'index')),
         createFile('the-component/1.0/the-page.html', generateHtml('The Page (ROOT)', 'the page')),
         createFile('the-component/1.0/the-module/index.html', generateHtml('Index (the-module)', 'index')),
@@ -125,14 +125,12 @@ describe('publishSite()', () => {
         createFile(undefined, 'included content'),
       ],
     }
-    contentCatalog.getFiles = contentCatalog.getAll
     const uiCatalog = {
-      getAll: () => [
+      getFiles: () => [
         createFile('_/css/site.css', 'body { color: red; }'),
         createFile('_/js/site.js', ';(function () {})()'),
       ],
     }
-    uiCatalog.getFiles = uiCatalog.getAll
     catalogs = [contentCatalog, uiCatalog]
     // this sets process.cwd() to a known location, but not otherwise used
     process.chdir(__dirname)
@@ -155,6 +153,16 @@ describe('publishSite()', () => {
     playbook.output.destinations.push({ provider: 'fs' })
     await publishSite(playbook, catalogs)
     expect(playbook.output.destinations[0].path).to.be.undefined()
+    verifyFsOutput(DEFAULT_DEST_FS)
+  })
+
+  it('should use deprecate getAll method on catalogs if getFile method is not found', async () => {
+    playbook.output.destinations = undefined
+    catalogs.forEach((catalog) => {
+      catalog.getAll = catalog.getFiles
+      delete catalog.getFiles
+    })
+    await publishSite(playbook, catalogs)
     verifyFsOutput(DEFAULT_DEST_FS)
   })
 
@@ -228,13 +236,12 @@ describe('publishSite()', () => {
 
   it('should publish a large number of files', async () => {
     const contentCatalog = catalogs[0]
-    const files = contentCatalog.getAll()
+    const files = contentCatalog.getFiles()
     const numPages = 350
     for (let i = 1; i <= numPages; i++) {
       const contents = `<span>page ${i}</span>\n`.repeat(i)
       files.push(createFile('the-component/1.0/page-' + i + '.html', generateHtml('Page ' + i, contents)))
     }
-    contentCatalog.getAll = () => files
     contentCatalog.getFiles = () => files
     playbook.output.destinations.push({ provider: 'fs' })
     await publishSite(playbook, catalogs)

@@ -203,7 +203,7 @@ describe('loadAsciiDoc()', () => {
         family: 'page',
         relative: 'topic-a/page-a.adoc',
         contents: '= Document Title',
-      }).getAll()[0]
+      }).getFiles()[0]
       const doc = loadAsciiDoc(inputFile, undefined, resolveConfig())
       expect(doc.getAttributes()).to.include({
         imagesdir: '../_images',
@@ -217,7 +217,7 @@ describe('loadAsciiDoc()', () => {
         family: 'nav',
         relative: 'nav.adoc',
         contents: '* xref:module-a:index.adoc[Module A]',
-      }).getAll()[0]
+      }).getFiles()[0]
       const doc = loadAsciiDoc(inputFile)
       expect(doc.getAttributes()).to.include.keys(
         'page-component-name',
@@ -237,7 +237,7 @@ describe('loadAsciiDoc()', () => {
         contents: '= Document Title',
       })
       contentCatalog.getComponent('component-a').title = 'Component A'
-      const inputFile = contentCatalog.getAll()[0]
+      const inputFile = contentCatalog.getFiles()[0]
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(doc.getAttributes()).to.include({
         'page-component-name': 'component-a',
@@ -253,7 +253,7 @@ describe('loadAsciiDoc()', () => {
         contents: '= Document Title',
       })
       contentCatalog.getComponent('component-a').latest.displayVersion = '4.5 LTS'
-      const inputFile = contentCatalog.getAll()[0]
+      const inputFile = contentCatalog.getFiles()[0]
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(doc.getAttributes()).to.include({
         'page-component-name': 'component-a',
@@ -268,7 +268,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'page-a.adoc',
         contents: '= Document Title',
       })
-      const inputFileFromBranch = contentCatalog.getAll()[0]
+      const inputFileFromBranch = contentCatalog.getFiles()[0]
       inputFileFromBranch.src.origin = {
         type: 'git',
         url: 'https://example.org/component-a.git',
@@ -297,7 +297,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'page-a.adoc',
         contents: '= Document Title',
       })
-      const inputFileFromBranch = contentCatalog.getAll()[0]
+      const inputFileFromBranch = contentCatalog.getFiles()[0]
       inputFileFromBranch.src.origin = {
         type: 'git',
         url: 'https://example.org/component-a.git',
@@ -326,7 +326,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'page-a.adoc',
         contents: '= Document Title',
       })
-      const inputFileFromTag = contentCatalog.getAll()[0]
+      const inputFileFromTag = contentCatalog.getFiles()[0]
       inputFileFromTag.src.origin = {
         type: 'git',
         url: 'https://example.org/component-a.git',
@@ -2667,7 +2667,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'the-page.adoc',
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2797,7 +2797,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'topic-b/the-page.adoc',
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2817,7 +2817,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc[Link to Self]',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2837,7 +2837,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc#[Link to Self]',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2857,7 +2857,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]\n\n[#the-fragment]\n== Target Section',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2877,7 +2877,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc#the-fragment[]\n\n[#the-fragment]\n== Target Section',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2897,7 +2897,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:this-page.adoc#the-fragment[Deep Link to Self]',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById).to.not.have.been.called()
       expectLink(html, '#the-fragment', 'Deep Link to Self')
@@ -2915,7 +2915,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'that-page.adoc',
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog, { relativizePageRefs: false }).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2944,7 +2944,7 @@ describe('loadAsciiDoc()', () => {
           indexify: true,
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       expect(inputFile.pub.moduleRootPath).to.equal('..')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
@@ -2973,7 +2973,7 @@ describe('loadAsciiDoc()', () => {
           indexify: true,
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3001,7 +3001,7 @@ describe('loadAsciiDoc()', () => {
           indexify: true,
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       expect(inputFile.pub.moduleRootPath).to.equal('../..')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
@@ -3023,7 +3023,7 @@ describe('loadAsciiDoc()', () => {
         contents: 'xref:module-a:this-page.adoc[Link to Self]',
         indexify: true,
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3044,7 +3044,7 @@ describe('loadAsciiDoc()', () => {
         contents: 'xref:module-a:this-page.adoc#[Link to Self]',
         indexify: true,
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3065,7 +3065,7 @@ describe('loadAsciiDoc()', () => {
         contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
         indexify: true,
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3086,7 +3086,7 @@ describe('loadAsciiDoc()', () => {
         contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
         indexify: true,
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
