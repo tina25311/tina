@@ -465,6 +465,7 @@ describe('convertDocument()', () => {
       </div>
     `)
   })
+
   ;['block', 'inline'].forEach((macroType) => {
     const macroDelim = macroType === 'block' ? '::' : ':'
 
@@ -527,6 +528,9 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../module-b/_images/image-filename.png" alt="image filename">')
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with('module-b:image-filename.png', inputFile.src)
     })
 
     it(`should resolve non-URL target of ${macroType} image as resource spec if target contains an at sign`, () => {
@@ -551,6 +555,9 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../../2.0.0/module-b/_images/image-filename.png" alt="image filename">')
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with('2.0.0@image-filename.png', inputFile.src)
     })
 
     it(`should use ${macroType} image target if target matches resource ID spec and image cannot be resolved`, () => {
@@ -559,6 +566,9 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="no-such-module:image-filename.png" alt="image filename">')
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with('no-such-module:image-filename.png', inputFile.src)
     })
 
     it(`should use ${macroType} image target if target matches resource ID spec and syntax is invalid`, () => {
@@ -570,6 +580,9 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="component-b::" alt="">')
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with('component-b::', inputFile.src)
     })
   })
 })
