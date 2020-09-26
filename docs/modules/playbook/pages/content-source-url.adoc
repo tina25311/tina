@@ -49,7 +49,6 @@ By default, Antora automatically appends [.path]_.git_ to remote repository URLs
 You can control this behavior with the xref:git-suffix.adoc[ensure_git_suffix key].
 
 Antora can connect to private git repositories as long as a xref:private-repository-auth.adoc[supported authentication method] is specified for the private content source repositories.
-//See  to learn how to use Antora to connect to private repositories over HTTP/HTTPS using a username+password or OAuth token.
 
 [#local-urls]
 == Use local content repositories

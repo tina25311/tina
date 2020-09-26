@@ -5,31 +5,24 @@ The playbook keys configured under `git` control the behavior of the git client.
 [#git-key]
 == git key
 
-The `git` key specifies the fallback URL suffix for git repositories and the contents or filesystem location of the git credentials file.
+The `git` key specifies the fallback URL suffix for git repositories and the contents or filesystem location of a git credentials file.
 
-.antora-playbook.yml with credentials and path keys
+.antora-playbook.yml
 [source,yaml]
 ----
 git: # <1>
-  credentials: # <2>
-    path: ./.git-credentials # <3>
-  ensure_git_suffix: false # <4>
+  ensure_git_suffix: false # <2>
+  credentials: # <3>
+    path: ./.git-credentials # <4>
+
 ----
 <1> Optional `git` key
-<2> Optional `credentials` key
-<3> Optional `path` key
-<4> Optional `ensure_git_suffix` key
+<2> Optional `ensure_git_suffix` key
+<3> Optional `credentials` key
+<4> Optional `path` key
 
 The `git` key and the key-value pairs it accepts are optional.
-When `git` isn't set in the playbook, Antora uses the default git credentials store and repository URL suffix behavior.
-
-[#credentials-key]
-== credentials key
-
-The `git` key accepts the `credentials` key.
-The `credentials` key is required when you need to specify a custom git credentials file (`contents`) or an alternate filesystem path (`path`) to a git credentials file.
-The `contents` key and the `path` key are mutually exclusive.
-That is, you can only set and assign one of them in your playbook.
+When `git` isn't set in the playbook, Antora uses its default git credential store configuration and repository suffix behavior.
 
 [#git-reference]
 == Available git keys
@@ -38,11 +31,11 @@ That is, you can only set and assign one of them in your playbook.
 |===
 |Git Keys |Description |Required
 
-|xref:git-credentials-contents.adoc[credentials.contents]
+|xref:git-credentials-path-and-contents.adoc[credentials.contents]
 |Accepts git credentials data matching the format used by the git credential store.
 |No
 
-|xref:git-credentials-path.adoc[credentials.path]
+|xref:git-credentials-path-and-contents.adoc[credentials.path]
 |Accepts a filesystem path to a git credentials file matching the format used by the git credentials store.
 |No
 
