@@ -465,7 +465,6 @@ describe('convertDocument()', () => {
       </div>
     `)
   })
-
   ;['block', 'inline'].forEach((macroType) => {
     const macroDelim = macroType === 'block' ? '::' : ':'
 

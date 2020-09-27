@@ -60,7 +60,7 @@ function mapSite (playbook, pages) {
     componentSitemap.versions.add(version)
     return accum
   }, new Map())
-  sitemaps = Array.from(sitemaps.keys())
+  sitemaps = [...sitemaps.keys()]
     .sort((a, b) => a.localeCompare(b))
     .map((component) => {
       const sitemap = sitemaps.get(component)

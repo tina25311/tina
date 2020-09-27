@@ -34,11 +34,11 @@ let gitServerPort
 
 function testAll (testBlock, numRepoBuilders = 1, remoteBare = undefined) {
   const makeTest = (repoBuilderOpts) => {
-    const repoBuilders = Array.from(
-      { length: numRepoBuilders },
-      () => new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, repoBuilderOpts)
+    return testBlock(
+      ...Array(numRepoBuilders)
+        .fill(undefined)
+        .map(() => new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, repoBuilderOpts))
     )
-    return testBlock(...repoBuilders)
   }
 
   it('on local repo', () => makeTest())

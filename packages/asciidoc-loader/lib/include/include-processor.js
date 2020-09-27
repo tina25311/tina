@@ -73,7 +73,7 @@ function getLines (attrs) {
             let to = linedef.substr(delim + 2)
             if ((to = parseInt(to) || -1) > 0) {
               if ((from = parseInt(from) || -1) > 0) {
-                linenums.push(...Array.from({ length: to - from + 1 }, (_, i) => i + from))
+                for (let i = from; i <= to; i++) linenums.push(i)
               }
             } else if (to === -1 && (from = parseInt(from) || -1) > 0) {
               linenums.push(from, Infinity)
@@ -144,7 +144,14 @@ function filterLinesByTags (reader, target, file, tags) {
     }
     tags.delete('**')
   } else {
-    selectingDefault = selecting = !Array.from(tags.values()).includes(true)
+    selecting = true
+    for (const v of tags.values()) {
+      if (v === selecting) {
+        selecting = false
+        break
+      }
+    }
+    selectingDefault = selecting
     if (tags.has('*')) {
       wildcard = tags.get('*')
       tags.delete('*')
@@ -210,10 +217,9 @@ function filterLinesByTags (reader, target, file, tags) {
   }
   if (foundTags.length) foundTags.forEach((name) => tags.delete(name))
   if (tags.size) {
-    const missingTagNames = Array.from(tags.keys())
     log(
       'warn',
-      `tag${tags.size > 1 ? 's' : ''} '${missingTagNames.join(', ')}' not found in include file: ${file.file}`,
+      `tag${tags.size > 1 ? 's' : ''} '${[...tags.keys()].join(', ')}' not found in include file: ${file.file}`,
       reader
     )
   }
