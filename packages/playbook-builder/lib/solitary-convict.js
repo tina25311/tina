@@ -111,7 +111,7 @@ function registerFormats (convict) {
         let pathname
         try {
           ;({ protocol, pathname } = new URL(val))
-        } catch (e) {
+        } catch {
           throw new Error('must be an absolute URL or a pathname (i.e., root-relative path)')
         }
         if (protocol !== 'https:' && protocol !== 'http:') {

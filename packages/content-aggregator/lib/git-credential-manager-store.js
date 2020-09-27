@@ -71,7 +71,7 @@ class GitCredentialManagerStore {
                     accum[hostname + pathname] = credentials
                     if (!pathname.endsWith('.git')) accum[hostname + pathname + '.git'] = credentials
                   }
-                } catch (e) {}
+                } catch {}
                 return accum
               }, {})
           )
