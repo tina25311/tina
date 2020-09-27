@@ -189,7 +189,8 @@ function getPageVersions (page, component, contentCatalog) {
       primaryAliasSrc.version === prevPage.src.version &&
       primaryAliasSrc.component === prevPage.src.component
     ) {
-      Object.assign(relPageId, { module: primaryAliasSrc.module, relative: primaryAliasSrc.relative })
+      relPageId.module = primaryAliasSrc.module
+      relPageId.relative = primaryAliasSrc.relative
       if ((relPage = contentCatalog.getById(relPageId))) {
         // NOTE: keep searching from target of alias
         basePageId = (prevPage = relPage).src
