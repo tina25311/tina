@@ -185,7 +185,7 @@ describe('loadUi()', () => {
     testAll('the-ui-bundle.zip', async (playbook) => {
       const uiCatalog = await loadUi(playbook)
       const files = uiCatalog.getAll()
-      const modes = [...new Set(files.map(({ stat }) => stat.mode))]
+      const modes = [...new Set(files.map(({ stat: { mode } }) => mode))]
       expect(modes).to.have.lengthOf(1)
       expect(modes[0]).to.equal(33188)
     })
