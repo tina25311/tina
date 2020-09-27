@@ -27,10 +27,10 @@ function resolvePathGlobs (base, patterns, listDirents, retrievePath, tree = { p
       })
     } else if (RX_MAGIC_DETECTOR.test(pattern)) {
       return glob(base, pattern.split('/'), listDirents, retrievePath, tree).then((nestedPaths) =>
-        paths.then((resolvedPaths) => resolvedPaths.concat(nestedPaths))
+        paths.then((resolvedPaths) => [...resolvedPaths, ...nestedPaths])
       )
     }
-    return paths.then((resolvedPaths) => resolvedPaths.concat(pattern))
+    return paths.then((resolvedPaths) => [...resolvedPaths, pattern])
   }, Promise.resolve([]))
 }
 
@@ -49,7 +49,7 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
         isMatch = (isMatch = makePicomatchRx(patternSegment, PICO_OPTS)).test.bind(isMatch)
       } else if (~patternSegment.indexOf('*')) {
         const [wildPatterns, literals] = expandBraces(patternSegment).reduce(
-          ([wild, literal], it) => (~it.indexOf('*') ? [wild.concat(it), literal] : [wild, literal.concat(it)]),
+          ([wild, literal], it) => (~it.indexOf('*') ? [[...wild, it], literal] : [wild, [...literal, it]]),
           [[], []]
         )
         isMatch = (isMatch = makeAlternationMatcherRx(wildPatterns)).test.bind(isMatch)
@@ -77,7 +77,7 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
         )
       )
     )
-    return explicit ? [...explicit].map((it) => joinPath(path, it)).concat(discovered) : discovered
+    return explicit ? [...[...explicit].map((it) => joinPath(path, it)), ...discovered] : discovered
   } else {
     const [magicBase, nextSegment] = extractMagicBase(patternSegments, patternSegment)
     patternSegment = magicBase

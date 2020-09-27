@@ -317,7 +317,7 @@ describe('loadUi()', () => {
 
   describe('should load supplemental files', () => {
     let playbook
-    const expectedFilePathsWithSupplemental = expectedFilePaths.concat('css/extra.css', 'img/icon.png')
+    const expectedFilePathsWithSupplemental = [...expectedFilePaths, 'css/extra.css', 'img/icon.png']
     const supplementalFileContents = ['partials/head.hbs', 'css/extra.css', 'img/icon.png'].reduce((accum, path_) => {
       accum[path_] = fs.readFileSync(ospath.join(FIXTURES_DIR, 'supplemental-files', path_))
       return accum

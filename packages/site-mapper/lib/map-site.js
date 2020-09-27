@@ -84,7 +84,7 @@ function mapSite (playbook, pages) {
   const basename = SITEMAP_STEM + '.xml'
   sitemapIndex.out = { path: basename }
   sitemapIndex.pub = { url: '/' + basename }
-  return robots ? sitemaps.concat(createRobotsExclusionFile(robots)) : sitemaps
+  return robots ? [...sitemaps, createRobotsExclusionFile(robots)] : sitemaps
 }
 
 function getSitemapForComponent (siteUrl, sitemaps, component) {
