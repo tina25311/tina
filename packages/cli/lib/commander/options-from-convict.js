@@ -4,7 +4,7 @@ const { Command } = require('commander')
 
 Command.prototype.optionsFromConvict = function (convictConfig, opts = {}) {
   let exclude = opts.exclude
-  if (exclude && !Array.isArray(exclude)) exclude = Array(exclude)
+  if (exclude && !Array.isArray(exclude)) exclude = [exclude]
   getOptions(convictConfig).forEach((option) => {
     if (!(exclude && exclude.includes(option.name))) this.option(option.form, option.description, option.default)
   })
