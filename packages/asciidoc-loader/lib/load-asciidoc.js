@@ -173,11 +173,9 @@ function resolveConfig (playbook = {}) {
   }
   if (!playbook.asciidoc) return { attributes }
   // TODO process !name attributes
-  const { extensions, ...config } = Object.assign(
-    { attributes },
-    playbook.asciidoc,
-    { attributes: Object.assign(attributes, playbook.asciidoc.attributes) }
-  )
+  const { extensions, ...config } = Object.assign({ attributes }, playbook.asciidoc, {
+    attributes: Object.assign(attributes, playbook.asciidoc.attributes),
+  })
   if (extensions && extensions.length) {
     const scopedExtensions = extensions.reduce((accum, extensionPath) => {
       if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
