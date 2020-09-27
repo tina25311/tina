@@ -522,9 +522,9 @@ function loadComponentDescriptor (files) {
   let data
   try {
     data = yaml.safeLoad(descriptorFile.contents.toString())
-  } catch (e) {
-    e.message = `${COMPONENT_DESC_FILENAME} has invalid syntax; ${e.message}`
-    throw e
+  } catch (err) {
+    err.message = `${COMPONENT_DESC_FILENAME} has invalid syntax; ${err.message}`
+    throw err
   }
   if (data.name == null) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a name`)
   const name = String(data.name)
@@ -779,9 +779,9 @@ function ensureCacheDir (preferredCacheDir, startDir) {
   return fs
     .ensureDir(cacheDir)
     .then(() => cacheDir)
-    .catch((e) => {
-      e.message = `Failed to create content cache directory: ${cacheDir}; ${e.message}`
-      throw e
+    .catch((err) => {
+      err.message = `Failed to create content cache directory: ${cacheDir}; ${err.message}`
+      throw err
     })
 }
 

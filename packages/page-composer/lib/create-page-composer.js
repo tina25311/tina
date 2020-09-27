@@ -82,8 +82,8 @@ function createPageComposerInternal (baseUiModel, layouts) {
     // QUESTION should we call trim() on result?
     try {
       file.contents = Buffer.from(layouts.get(layout)(uiModel))
-    } catch (e) {
-      throw transformHandlebarsError(e, layout)
+    } catch (err) {
+      throw transformHandlebarsError(err, layout)
     }
     return file
   }

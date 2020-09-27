@@ -95,9 +95,9 @@ async function loadUi (playbook) {
           .pipe(bufferizeContents())
           .on('error', reject)
           .pipe(collectFiles(resolve))
-      ).catch((e) => {
+      ).catch((err) => {
         const wrapped = new Error(`Failed to read UI bundle: ${bundlePath} (resolved from url: ${bundleUrl})`)
-        wrapped.stack += '\nCaused by: ' + (e.stack || 'unknown')
+        wrapped.stack += '\nCaused by: ' + (err.stack || 'unknown')
         throw wrapped
       })
     ),
@@ -140,9 +140,9 @@ function ensureCacheDir (customCacheDir, startDir) {
   return fs
     .ensureDir(cacheDir)
     .then(() => cacheDir)
-    .catch((e) => {
-      e.message = `Failed to create UI cache directory: ${cacheDir}; ${e.message}`
-      throw e
+    .catch((err) => {
+      err.message = `Failed to create UI cache directory: ${cacheDir}; ${err.message}`
+      throw err
     })
 }
 
@@ -161,9 +161,9 @@ function downloadBundle (url, to) {
             .on('finish', () => fs.outputFile(to, body).then(() => resolve(to)))
         )
     )
-    .catch((e) => {
-      const wrapped = new Error(`${e.summary || 'Failed to download UI bundle'}: ${url}`)
-      wrapped.stack += '\nCaused by: ' + (e.stack || 'unknown')
+    .catch((err) => {
+      const wrapped = new Error(`${err.summary || 'Failed to download UI bundle'}: ${url}`)
+      wrapped.stack += '\nCaused by: ' + (err.stack || 'unknown')
       throw wrapped
     })
 }

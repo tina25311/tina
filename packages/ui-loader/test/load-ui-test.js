@@ -910,10 +910,10 @@ describe('loadUi()', () => {
     const actualContents = await fs.readFile(cachedBundlePath)
     try {
       expect(actualContents).to.eql(expectedContents)
-    } catch (e) {
+    } catch (err) {
       // NOTE showing the diff causes mocha to hang
-      e.showDiff = false
-      throw e
+      err.showDiff = false
+      throw err
     }
   })
 
