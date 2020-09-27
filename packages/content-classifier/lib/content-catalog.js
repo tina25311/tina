@@ -372,22 +372,19 @@ class ContentCatalog {
   }
 
   exportToModel () {
-    return Object.assign(
-      new (class ContentCatalogProxy {})(),
-      [
-        this.findBy,
-        this.getAll,
-        this.getById,
-        this.getComponent,
-        this.getComponentVersion,
-        this.getComponents,
-        this.getComponentsSortedBy,
-        this.getPages,
-        this.getSiteStartPage,
-        this.resolvePage,
-        this.resolveResource,
-      ].reduce((accum, method) => (accum[method.name] = method.bind(this)) && accum, {})
-    )
+    return [
+      this.findBy,
+      this.getAll,
+      this.getById,
+      this.getComponent,
+      this.getComponentVersion,
+      this.getComponents,
+      this.getComponentsSortedBy,
+      this.getPages,
+      this.getSiteStartPage,
+      this.resolvePage,
+      this.resolveResource,
+    ].reduce((proxy, method) => (proxy[method.name] = method.bind(this)) && proxy, new (class ContentCatalogProxy {})())
   }
 }
 
