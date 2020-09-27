@@ -16,11 +16,10 @@ function getOptions (config) {
   return collectOptions(config._schema._cvtProperties)
 }
 
-function collectOptions (props, options = [], context = undefined) {
+function collectOptions (props, context = undefined) {
   return Object.entries(props).reduce((accum, [key, value]) => {
-    const path = context ? `${context}.${key}` : key
     if ('_cvtProperties' in value) {
-      return collectOptions(value._cvtProperties, accum, path)
+      accum.push(...collectOptions(value._cvtProperties, context ? `${context}.${key}` : key))
     } else if ('arg' in value) {
       const { arg, format, default: default_ } = value
       const option = { name: arg, form: `--${arg}`, description: value.doc, format: format }
@@ -36,9 +35,8 @@ function collectOptions (props, options = [], context = undefined) {
       } else if (default_ && (typeof default_ !== 'object' || default_.toString() !== '[object Object]')) {
         option.default = default_
       }
-      return accum.concat(option)
-    } else {
-      return accum
+      accum.push(option)
     }
-  }, options)
+    return accum
+  }, [])
 }
