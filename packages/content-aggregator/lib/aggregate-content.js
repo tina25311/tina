@@ -191,7 +191,7 @@ async function loadRepository (url, opts) {
       : { core: GIT_CORE, dir, gitdir: dir, noCheckout: true }
     try {
       await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
-    } catch (e) {
+    } catch {
       throw new Error(
         `Local content source must be a git repository: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`
       )

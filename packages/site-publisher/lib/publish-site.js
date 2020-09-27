@@ -53,7 +53,7 @@ async function publishSite (playbook, catalogs) {
       default:
         try {
           return requireProvider(provider, playbook.dir || '.').bind(null, options)
-        } catch (e) {
+        } catch {
           throw new Error('Unsupported destination provider: ' + provider)
         }
     }
