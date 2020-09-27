@@ -382,6 +382,7 @@ Please adhere to the following style and performance rules which are not current
  ** Keep in mind that `Object.assign` modifies the first argument.
  ** Place the new object first to reduce the number of arguments, but only do so if the object to append doesn't have those properties.
  ** Prefer object spread in the test suite.
+* Avoid the use of the spread syntax during assignment (`+const { prop, ...rest } = obj+`) to delete properties, unless it's executed very few times.
 * If reducer function can be run in parallel, append to copy of the accumulator object instead of modifying it.
  ** Appending to a copy of the accumulator is an order of magnitude slower, so it's best to do it only when required.
 * Use `~str.indexOf(c)` instead of `str.includes(c)`.
