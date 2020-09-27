@@ -57,8 +57,12 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
     examplesdir: EXAMPLES_DIR_TOKEN,
     partialsdir: PARTIALS_DIR_TOKEN,
   }
-  const attributes = family === 'page' ? { 'page-partial': '@' } : {}
-  Object.assign(attributes, config.attributes, intrinsicAttrs, computePageAttrs(file.src, contentCatalog))
+  const attributes = Object.assign(
+    family === 'page' ? { 'page-partial': '@' } : {},
+    config.attributes,
+    intrinsicAttrs,
+    computePageAttrs(file.src, contentCatalog)
+  )
   const extensionRegistry = createExtensionRegistry(asciidoctor, {
     onInclude: (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog),
   })
