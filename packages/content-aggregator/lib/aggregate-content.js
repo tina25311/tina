@@ -90,7 +90,7 @@ function aggregateContent (playbook) {
   return ensureCacheDir(cacheDir, startDir)
     .then((resolvedCacheDir) =>
       Promise.all(
-        Array.from(sourcesByUrl, ([url, sources]) =>
+        [...sourcesByUrl.entries()].map(([url, sources]) =>
           loadRepository(url, {
             cacheDir: resolvedCacheDir,
             credentialManager,
@@ -254,7 +254,7 @@ async function selectReferences (source, repo, remote) {
         branchPatterns = [currentBranch]
       } else {
         if (!isBare) refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', head: 'detached' })
-        return Array.from(refs.values())
+        return [...refs.values()]
       }
     } else {
       branchPatterns = Array.isArray(branchPatterns)
@@ -279,7 +279,7 @@ async function selectReferences (source, repo, remote) {
           }
         }
       } else {
-        return Array.from(refs.values())
+        return [...refs.values()]
       }
     }
     let remoteBranches = await git.listBranches(Object.assign({ remote }, repo))
@@ -311,7 +311,7 @@ async function selectReferences (source, repo, remote) {
     }
   }
 
-  return Array.from(refs.values())
+  return [...refs.values()]
 }
 
 /**

@@ -11,9 +11,9 @@ describe('mapSite()', () => {
   let playbook
 
   const collectUrls = (doc, tagName = 'url') =>
-    Array.from(doc.documentElement.getElementsByTagName(tagName)).map(
-      (node) => node.getElementsByTagName('loc').item(0).textContent
-    )
+    [].slice
+      .call(doc.documentElement.getElementsByTagName(tagName))
+      .map((node) => node.getElementsByTagName('loc').item(0).textContent)
 
   const validateXml = (xml) => {
     const errors = []
