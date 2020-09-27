@@ -49,7 +49,7 @@ describe('cli', function () {
   // NOTE run the antora command from WORK_DIR by default to simulate a typical use case
   const runAntora = (args = undefined, env = undefined, cwd = WORK_DIR) => {
     if (!Array.isArray(args)) args = args ? args.split(' ') : []
-    env = Object.assign({}, process.env, { ANTORA_CACHE_DIR }, env)
+    env = { ...process.env, ANTORA_CACHE_DIR, ...env }
     return Kapok.start(ANTORA_CLI, args, { cwd, env })
   }
 
@@ -372,7 +372,7 @@ describe('cli', function () {
 
   it('should allow environment variable to override properties set in playbook file', () => {
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
-    const env = Object.assign({ URL: 'https://docs.example.com' }, process.env)
+    const env = { ...process.env, URL: 'https://docs.example.com' }
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora('generate the-site --quiet', env).on('exit', resolve)).then(
       (exitCode) => {

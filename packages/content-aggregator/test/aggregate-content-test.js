@@ -3274,7 +3274,7 @@ describe('aggregateContent()', function () {
     })
 
     it('should use fs object specified on git core', async () => {
-      const customFs = Object.assign({}, fs)
+      const customFs = { ...fs }
       customFs.readFile = spy(customFs.readFile)
       RepositoryBuilder.registerPlugin('fs', customFs, GIT_CORE)
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)

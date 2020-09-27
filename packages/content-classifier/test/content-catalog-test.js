@@ -121,14 +121,14 @@ describe('ContentCatalog', () => {
       const url2 = '/the-component/2.0.0/index.html'
       const indexPageT = { family: 'page', relative: 'index.adoc', stem: 'index', mediaType: 'text/asciidoc' }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile({ src: Object.assign({ component: name, version: version1, module: 'ROOT' }, indexPageT) })
+      contentCatalog.addFile({ src: { ...indexPageT, component: name, version: version1, module: 'ROOT' } })
       const componentVersion1 = contentCatalog.registerComponentVersion(name, version1, descriptor1)
       expect(componentVersion1).to.exist()
       expect(contentCatalog.getComponents()).to.have.lengthOf(1)
       const component = contentCatalog.getComponent(name)
       expect(component.latest).to.equal(componentVersion1)
 
-      contentCatalog.addFile({ src: Object.assign({ component: name, version: version2, module: 'ROOT' }, indexPageT) })
+      contentCatalog.addFile({ src: { ...indexPageT, component: name, version: version2, module: 'ROOT' } })
       const componentVersion2 = contentCatalog.registerComponentVersion(name, version2, descriptor2)
       expect(componentVersion2).to.exist()
       expect(contentCatalog.getComponents()).to.have.lengthOf(1)
@@ -180,13 +180,13 @@ describe('ContentCatalog', () => {
       const title1 = 'The Component (1.0.0)'
       const url1 = '/the-component/1.0.0/index.html'
       const descriptor1 = { title: title1, startPage: true }
-      const src1 = Object.assign({}, srcTemplate, { component: componentName, version: version1, module: 'ROOT' })
+      const src1 = { ...srcTemplate, component: componentName, version: version1, module: 'ROOT' }
       const version2 = '2.0.0'
       const title2 = 'The Component (2.0.0)'
       const url2 = '/the-component/2.0.0/index.html'
       const prerelease2 = true
       const descriptor2 = { title: title2, prerelease: prerelease2, startPage: true }
-      const src2 = Object.assign({}, srcTemplate, { component: componentName, version: version2, module: 'ROOT' })
+      const src2 = { ...srcTemplate, component: componentName, version: version2, module: 'ROOT' }
       const contentCatalog = new ContentCatalog()
 
       contentCatalog.addFile({ src: src1 })
@@ -244,13 +244,13 @@ describe('ContentCatalog', () => {
       const url1 = '/the-component/1.0.0/index.html'
       const prerelease1 = true
       const descriptor1 = { title: title1, prerelease: prerelease1, startPage: true }
-      const src1 = Object.assign({}, srcTemplate, { component: componentName, version: version1, module: 'ROOT' })
+      const src1 = { ...srcTemplate, component: componentName, version: version1, module: 'ROOT' }
       const version2 = '2.0.0'
       const title2 = 'The Component (2.0.0)'
       const url2 = '/the-component/2.0.0/index.html'
       const prerelease2 = true
       const descriptor2 = { title: title2, prerelease: prerelease2, startPage: true }
-      const src2 = Object.assign({}, srcTemplate, { component: componentName, version: version2, module: 'ROOT' })
+      const src2 = { ...srcTemplate, component: componentName, version: version2, module: 'ROOT' }
       const contentCatalog = new ContentCatalog()
 
       contentCatalog.addFile({ src: src1 })
@@ -1637,7 +1637,7 @@ describe('ContentCatalog', () => {
       targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
-      const existingPageSrc = Object.assign({}, targetPageSrc)
+      const existingPageSrc = { ...targetPageSrc }
       existingPageSrc.relative = existingPageSrc.basename = 'the-existing-page.adoc'
       const existingPage = contentCatalog.addFile(new File({ src: existingPageSrc }))
       existingPage.path = `modules/${existingPageSrc.module}/pages/${existingPageSrc.relative}`
@@ -1851,11 +1851,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should return site start page if stored as a concrete page', () => {
-      const startPageSrc = Object.assign({}, START_PAGE_ID, {
-        basename: 'index.adoc',
-        stem: 'index',
-        mediaType: 'text/asciidoc',
-      })
+      const startPageSrc = { ...START_PAGE_ID, basename: 'index.adoc', stem: 'index', mediaType: 'text/asciidoc' }
       contentCatalog.addFile({
         contents: Buffer.from('I am your home base!'),
         src: startPageSrc,
@@ -1875,16 +1871,13 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'home.adoc',
       }
-      const thePageSrc = Object.assign({}, thePageId, {
-        basename: 'home.adoc',
-        stem: 'home',
-        mediaType: 'text/asciidoc',
-      })
+      const thePageSrc = { ...thePageId, basename: 'home.adoc', stem: 'home', mediaType: 'text/asciidoc' }
       contentCatalog.addFile({
         contents: Buffer.from('I am your home base!'),
         src: thePageSrc,
       })
-      const startPageSrc = Object.assign({}, START_PAGE_ID, {
+      const startPageSrc = {
+        ...START_PAGE_ID,
         family: 'alias',
         basename: 'index.adoc',
         stem: 'index',
@@ -1901,7 +1894,7 @@ describe('ContentCatalog', () => {
         .called.with(START_PAGE_ID)
       expect(contentCatalog.getById)
         .on.nth(2)
-        .called.with(Object.assign({}, START_PAGE_ID, { family: 'alias' }))
+        .called.with({ ...START_PAGE_ID, family: 'alias' })
       expect(result).to.exist()
       expect(result.src).to.equal(thePageSrc)
       expect(result.contents.toString()).to.equal('I am your home base!')

@@ -269,7 +269,7 @@ describe('convertDocument()', () => {
       'product-name': 'Hi-Speed Tonic',
       'source-highlighter': 'html-pipeline',
     }
-    Object.assign(asciidocConfig.attributes, customAttributes)
+    asciidocConfig.attributes = { ...asciidocConfig.attributes, ...customAttributes }
     convertDocument(inputFile, undefined, asciidocConfig)
     expect(inputFile.contents.toString()).to.include(customAttributes['product-name'])
     expect(inputFile.asciidoc).to.exist()
