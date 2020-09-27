@@ -33,20 +33,6 @@ describe('ContentCatalog', () => {
     }
   })
 
-  describe('#getComponentMap()', () => {
-    it('should return components as a map ordered by insertion order', () => {
-      const contentCatalog = new ContentCatalog()
-      contentCatalog.registerComponentVersion('foo', '1.0', { title: 'Foo' })
-      contentCatalog.registerComponentVersion('bar', '1.0', { title: 'Bar' })
-      contentCatalog.registerComponentVersion('yin', '1.0', { title: 'Yin' })
-      contentCatalog.registerComponentVersion('yang', '1.0', { title: 'Yang' })
-      const componentMap = contentCatalog.getComponentMap()
-      expect(componentMap).to.not.be.instanceOf(Map)
-      expect(Object.keys(componentMap)).to.eql(['foo', 'bar', 'yin', 'yang'])
-      expect(Object.values(componentMap).map((v) => v.title)).to.eql(['Foo', 'Bar', 'Yin', 'Yang'])
-    })
-  })
-
   describe('#getComponentsSortedBy()', () => {
     it('should return components sorted by title', () => {
       const contentCatalog = new ContentCatalog()
@@ -56,19 +42,6 @@ describe('ContentCatalog', () => {
       contentCatalog.registerComponentVersion('yang', '1.0', { title: 'Yang' })
       const components = contentCatalog.getComponentsSortedBy('title')
       expect(components.map((v) => v.title)).to.eql(['Bar', 'Foo', 'Yang', 'Yin'])
-    })
-  })
-
-  describe('#getComponentMapSortedBy()', () => {
-    it('should return components as map sorted by title', () => {
-      const contentCatalog = new ContentCatalog()
-      contentCatalog.registerComponentVersion('foo', '1.0', { title: 'Foo' })
-      contentCatalog.registerComponentVersion('bar', '1.0', { title: 'Bar' })
-      contentCatalog.registerComponentVersion('yin', '1.0', { title: 'Yin' })
-      contentCatalog.registerComponentVersion('yang', '1.0', { title: 'Yang' })
-      const componentMap = contentCatalog.getComponentMapSortedBy('title')
-      expect(Object.keys(componentMap)).to.eql(['bar', 'foo', 'yang', 'yin'])
-      expect(Object.values(componentMap).map((v) => v.title)).to.eql(['Bar', 'Foo', 'Yang', 'Yin'])
     })
   })
 
@@ -103,10 +76,8 @@ describe('ContentCatalog', () => {
         versions: [{ name, version, displayVersion: version, title, url }],
       })
       expect(components[0].latest).to.eql({ name, version, displayVersion: version, title, url })
+      expect(components[0]).to.not.have.property('latestVersion')
       expect(components[0].latestPrerelease).to.be.undefined()
-      // NOTE verify latestVersion alias
-      expect(components[0].latestVersion).to.equal(components[0].latest)
-      expect(components[0].latestVersion).to.equal(componentVersion)
     })
 
     it('should add new version to existing component and return it if component is already present', () => {
@@ -582,6 +553,16 @@ describe('ContentCatalog', () => {
       expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home.adoc')
     })
 
+    it('should warn if specified start page does not have the .adoc file extension', () => {
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
+      const stdErrMessages = captureStdErrSync(() =>
+        contentCatalog.registerComponentVersionStartPage('the-component', '1.0', 'home')
+      )
+      expect(stdErrMessages).to.have.lengthOf(1)
+      expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home')
+    })
+
     it('should warn if specified start page refers to a different component', () => {
       const contentCatalog = new ContentCatalog()
       contentCatalog.addFile({
@@ -854,7 +835,7 @@ describe('ContentCatalog', () => {
     })
   })
 
-  describe('#getAll()', () => {
+  describe('#getFiles()', () => {
     beforeEach(() => {
       aggregate = [
         {
@@ -879,7 +860,7 @@ describe('ContentCatalog', () => {
 
     it('should return all files in catalog', () => {
       const contentCatalog = classifyContent(playbook, aggregate)
-      const files = contentCatalog.getAll()
+      const files = contentCatalog.getFiles()
       expect(files).to.have.lengthOf(5)
       const pages = files.filter((it) => it.src.family === 'page')
       expect(pages).to.have.lengthOf(3)
@@ -887,9 +868,10 @@ describe('ContentCatalog', () => {
       expect(partials).to.have.lengthOf(1)
     })
 
-    it('should map getFiles as alias', () => {
+    it('should map getAll as alias for getFiles', () => {
       const contentCatalog = classifyContent(playbook, aggregate)
-      const files = contentCatalog.getFiles()
+      expect(contentCatalog.getAll).to.equal(contentCatalog.getFiles)
+      const files = contentCatalog.getAll()
       expect(files).to.have.lengthOf(5)
       const pages = files.filter((it) => it.src.family === 'page')
       expect(pages).to.have.lengthOf(3)
@@ -1441,7 +1423,8 @@ describe('ContentCatalog', () => {
 
     // QUESTION should this case throw an error or warning?
     it('should not register alias if page spec is invalid', () => {
-      expect(contentCatalog.registerPageAlias('the-component::', {})).to.be.undefined()
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
+      expect(contentCatalog.registerPageAlias('the-component::', targetPage)).to.be.undefined()
     })
 
     it('should register an alias for target file given a valid qualified page spec', () => {
@@ -1485,6 +1468,14 @@ describe('ContentCatalog', () => {
       expect(result).to.have.property('rel')
       expect(result.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result.src)).to.equal(result)
+    })
+
+    it('should register alias if relative path in page spec is only a file extension', () => {
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
+      const result = contentCatalog.registerPageAlias('ROOT:.adoc', targetPage)
+      expect(result).to.exist()
+      expect(result).to.have.property('src')
+      expect(result.src.relative).to.equal('.adoc')
     })
 
     it('should register different aliases for the same page', () => {
@@ -1918,12 +1909,13 @@ describe('ContentCatalog', () => {
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
       const expectedMethods = [
         'findBy',
-        'getAll',
+        'getAll', // remove in Antora 4
         'getById',
         'getComponent',
         'getComponentVersion',
         'getComponents',
         'getComponentsSortedBy',
+        'getFiles',
         'getPages',
         'getSiteStartPage',
         'resolvePage',

@@ -79,9 +79,9 @@ const layouts = ui.findByType('layout')
 ----
 
 .UiCatalog API
-* `getAll()`
-* `addFile()`
-* `findByType()`
+* `getFiles()` - gets all files in the catalog; replaces deprecated `getAll()` method
+* `addFile()` - add a file to the catalog
+* `findByType()` - find a file in the catalog by type
  ** types include: `asset`, `layout`, `helper`, `partial`, and `static`
 
 == Data

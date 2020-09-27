@@ -4,4 +4,4 @@ Content.
 
 See xref:the-page.adoc[the page].
 
-include::{partialsdir}/diagrams.adoc[]
+include::partial$diagrams.adoc[]

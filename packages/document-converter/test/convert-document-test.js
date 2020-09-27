@@ -4,7 +4,7 @@
 const { expect, heredoc, spy } = require('../../../test/test-utils')
 
 const { convertDocument } = require('@antora/document-converter')
-const { resolveConfig: resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
+const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 
 describe('convertDocument()', () => {
   let inputFile
@@ -71,6 +71,12 @@ describe('convertDocument()', () => {
   })
 
   it('should convert AsciiDoc contents on file to embeddable HTML', () => {
+    const targetImage = {
+      pub: {
+        url: '/component-a/1.2.3/module-b/_images/screenshot.png',
+      },
+    }
+    const contentCatalog = { resolveResource: spy(() => targetImage), getComponent: () => {} }
     inputFile.contents = Buffer.from(heredoc`
       = Page Title
 
@@ -82,9 +88,12 @@ describe('convertDocument()', () => {
       * list item 2
       * list item 3
 
-      image::screenshot.png[]
+      image::module-b:screenshot.png[]
     `)
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, contentCatalog, asciidocConfig)
+    expect(contentCatalog.resolveResource)
+      .nth(1)
+      .called.with('module-b:screenshot.png', inputFile.src)
     expect(inputFile.mediaType).to.equal('text/html')
     expect(inputFile.contents.toString()).to.equal(heredoc`
       <div class="sect1">
@@ -108,7 +117,7 @@ describe('convertDocument()', () => {
       </div>
       <div class="imageblock">
       <div class="content">
-      <img src="_images/screenshot.png" alt="screenshot">
+      <img src="../module-b/_images/screenshot.png" alt="screenshot">
       </div>
       </div>
       </div>
@@ -304,14 +313,14 @@ describe('convertDocument()', () => {
   })
 
   it('should resolve target of include directive to file in content catalog', () => {
-    inputFile.contents = Buffer.from('include::{partialsdir}/definitions.adoc[]')
+    inputFile.contents = Buffer.from('include::partial$definitions.adoc[]')
     const partialFile = {
-      path: 'modules/module-a/pages/_partials/definitions.adoc',
-      dirname: 'modules/module-a/pages/_partials',
+      path: 'modules/module-a/partials/definitions.adoc',
+      dirname: 'modules/module-a/partials',
       contents: Buffer.from("cloud: someone else's computer"),
       src: {
-        path: 'modules/module-a/pages/_partials/definitions.adoc',
-        dirname: 'modules/module-a/pages/_partials',
+        path: 'modules/module-a/partials/definitions.adoc',
+        dirname: 'modules/module-a/partials',
         component: 'component-a',
         version: '1.2.3',
         module: 'module-a',
@@ -468,19 +477,31 @@ describe('convertDocument()', () => {
   ;['block', 'inline'].forEach((macroType) => {
     const macroDelim = macroType === 'block' ? '::' : ':'
 
-    it(`should resolve target of ${macroType} image relative to imagesdir`, () => {
+    it(`should resolve target of ${macroType} image in same module relative to imagesdir`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}image-filename.png[]`)
-      convertDocument(inputFile, undefined, asciidocConfig)
+      const imageFile = {
+        pub: {
+          url: '/component-a/1.2.3/module-a/_images/image-filename.png',
+        },
+      }
+      const contentCatalog = { resolveResource: spy(() => imageFile), getComponent: () => {} }
+      convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="_images/image-filename.png" alt="image filename">')
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with('image-filename.png', inputFile.src)
     })
 
-    // NOTE this scenario should be disallowed in a future major release
-    it(`should honor parent reference in target of ${macroType} image`, () => {
+    it(`should ignore parent references in target of ${macroType} image`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}../../module-b/_images/image-filename.png[]`)
-      convertDocument(inputFile, undefined, asciidocConfig)
+      const contentCatalog = { resolveResource: spy(() => undefined), getComponent: () => {} }
+      convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
-      expect(contents).to.include('<img src="../module-b/_images/image-filename.png" alt="image filename">')
+      expect(contents).to.include('<img src="../../module-b/_images/image-filename.png" alt="image filename">')
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with('../../module-b/_images/image-filename.png', inputFile.src)
     })
 
     it(`should preserve target of ${macroType} image if target is a URL`, () => {
@@ -498,14 +519,23 @@ describe('convertDocument()', () => {
       expect(contents).to.include(`<img src="data:image/gif;base64,${imageData}" alt="dot">`)
     })
 
-    it(`should resolve target of ${macroType} image from file in topic folder relative to imagesdir`, () => {
+    it(`should resolve target of ${macroType} image from file in different topic folder of same module relative to imagesdir`, () => {
       inputFileInTopicFolder.contents = Buffer.from(`image${macroDelim}image-filename.png[]`)
-      convertDocument(inputFileInTopicFolder, undefined, asciidocConfig)
+      const imageFile = {
+        pub: {
+          url: '/component-a/1.2.3/module-a/_images/image-filename.png',
+        },
+      }
+      const contentCatalog = { resolveResource: spy(() => imageFile), getComponent: () => {} }
+      convertDocument(inputFileInTopicFolder, contentCatalog, asciidocConfig)
       const contents = inputFileInTopicFolder.contents.toString()
       expect(contents).to.include('<img src="../_images/image-filename.png" alt="image filename">')
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with('image-filename.png', inputFileInTopicFolder.src)
     })
 
-    it(`should resolve non-URL target of ${macroType} image as resource spec if target contains a colon`, () => {
+    it(`should resolve non-URL target of ${macroType} image as resource spec if target is in different module`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}module-b:image-filename.png[]`)
       const imageFile = {
         path: 'modules/module-b/assets/images/image-filename.png',
@@ -532,7 +562,7 @@ describe('convertDocument()', () => {
         .called.with('module-b:image-filename.png', inputFile.src)
     })
 
-    it(`should resolve non-URL target of ${macroType} image as resource spec if target contains an at sign`, () => {
+    it(`should resolve non-URL target of ${macroType} image as resource spec if target is in different version`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}2.0.0@image-filename.png[]`)
       const imageFile = {
         path: 'modules/module-b/assets/images/image-filename.png',
@@ -559,7 +589,7 @@ describe('convertDocument()', () => {
         .called.with('2.0.0@image-filename.png', inputFile.src)
     })
 
-    it(`should use ${macroType} image target if target matches resource ID spec and image cannot be resolved`, () => {
+    it(`should use ${macroType} image target if target cannot be resolved`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}no-such-module:image-filename.png[]`)
       const contentCatalog = { resolveResource: spy(() => undefined), getComponent: () => {} }
       convertDocument(inputFile, contentCatalog, asciidocConfig)
@@ -570,7 +600,7 @@ describe('convertDocument()', () => {
         .called.with('no-such-module:image-filename.png', inputFile.src)
     })
 
-    it(`should use ${macroType} image target if target matches resource ID spec and syntax is invalid`, () => {
+    it(`should use ${macroType} image target if resource ID spec syntax is invalid`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}component-b::[]`)
       const contentCatalog = {
         resolveResource: spy(() => false),

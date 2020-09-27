@@ -13,12 +13,10 @@ const ContentCatalog = require('./content-catalog')
  * @param {Object} playbook.urls - URL settings for the site.
  * @param {String} playbook.urls.htmlExtensionStyle - The style to use when computing page URLs.
  * @param {Object} aggregate - The raw aggregate of virtual file objects to be classified.
- * @param {Object} [siteAsciiDocConfig=undefined] - Site-wide AsciiDoc processor configuration options.
+ * @param {Object} [siteAsciiDocConfig={}] - Site-wide AsciiDoc processor configuration options.
  * @returns {ContentCatalog} A structured catalog of content components and virtual content files.
  */
-function classifyContent (playbook, aggregate, siteAsciiDocConfig = undefined) {
-  // deprecated; remove fallback in Antora 3.x
-  if (!siteAsciiDocConfig) siteAsciiDocConfig = require('@antora/asciidoc-loader').resolveConfig(playbook)
+function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}) {
   const contentCatalog = new ContentCatalog(playbook)
   aggregate
     .reduce((accum, componentVersionData) => {

@@ -244,7 +244,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should not include extra redirect for directory if HTML URL extension style is indexify', () => {
-      contentCatalog.getAll().forEach((file) => {
+      contentCatalog.getFiles().forEach((file) => {
         const url = file.pub.url
         file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 11 : 5)) + '/'
       })
@@ -264,7 +264,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should not include extra redirect for directory if HTML URL extension style is drop', () => {
-      contentCatalog.getAll().forEach((file) => {
+      contentCatalog.getFiles().forEach((file) => {
         const url = file.pub.url
         file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 10 : 5))
       })

@@ -161,6 +161,18 @@ describe('loadUi()', () => {
   describe('should load all files in the UI bundle', () => {
     testAll('the-ui-bundle.zip', async (playbook) => {
       const uiCatalog = await loadUi(playbook)
+      const files = uiCatalog.getFiles()
+      const paths = files.map((file) => file.path)
+      expect(paths).to.have.members(expectedFilePaths)
+      const relativePaths = files.map((file) => file.relative)
+      expect(paths).to.eql(relativePaths)
+    })
+  })
+
+  describe('should map getAll as alias for getFiles', () => {
+    testAll('the-ui-bundle.zip', async (playbook) => {
+      const uiCatalog = await loadUi(playbook)
+      expect(uiCatalog.getAll).to.equal(uiCatalog.getFiles)
       const files = uiCatalog.getAll()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
@@ -172,7 +184,7 @@ describe('loadUi()', () => {
   describe('should set stat size on files extracted from UI bundle', () => {
     testAll('the-ui-bundle.zip', async (playbook) => {
       const uiCatalog = await loadUi(playbook)
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       files.forEach((file) => {
         const stat = file.stat
         expect(stat.size).to.be.finite()
@@ -184,8 +196,7 @@ describe('loadUi()', () => {
   describe('should assign correct file permissions to files extracted from UI bundle', () => {
     testAll('the-ui-bundle.zip', async (playbook) => {
       const uiCatalog = await loadUi(playbook)
-      const files = uiCatalog.getAll()
-      const modes = [...new Set(files.map(({ stat: { mode } }) => mode))]
+      const modes = [...new Set(uiCatalog.getFiles().map(({ stat: { mode } }) => mode))]
       expect(modes).to.have.lengthOf(1)
       expect(modes[0]).to.equal(33188)
     })
@@ -202,7 +213,7 @@ describe('loadUi()', () => {
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
       expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     })
@@ -220,7 +231,7 @@ describe('loadUi()', () => {
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
       expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     })
@@ -235,7 +246,7 @@ describe('loadUi()', () => {
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
       expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     })
@@ -253,7 +264,7 @@ describe('loadUi()', () => {
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
       expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     })
@@ -268,7 +279,7 @@ describe('loadUi()', () => {
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
       expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     })
@@ -279,7 +290,7 @@ describe('loadUi()', () => {
       testAll('the-ui-bundle.zip', async (playbook) => {
         playbook.ui.bundle.startPath = '/'
         const uiCatalog = await loadUi(playbook)
-        const paths = uiCatalog.getAll().map((file) => file.path)
+        const paths = uiCatalog.getFiles().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
       })
     })
@@ -288,7 +299,7 @@ describe('loadUi()', () => {
       testAll('the-ui-bundle-with-start-path.zip', async (playbook) => {
         playbook.ui.bundle.startPath = '/the-ui-bundle'
         const uiCatalog = await loadUi(playbook)
-        const paths = uiCatalog.getAll().map((file) => file.path)
+        const paths = uiCatalog.getFiles().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
         expect(paths).to.not.include('the-ui-bundle.txt')
       })
@@ -298,7 +309,7 @@ describe('loadUi()', () => {
       testAll('the-ui-bundle-with-start-path.zip', async (playbook) => {
         playbook.ui.bundle.startPath = 'the-ui-bundle'
         const uiCatalog = await loadUi(playbook)
-        const paths = uiCatalog.getAll().map((file) => file.path)
+        const paths = uiCatalog.getFiles().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
         expect(paths).to.not.include('the-ui-bundle.txt')
       })
@@ -308,7 +319,7 @@ describe('loadUi()', () => {
       testAll('the-ui-bundle-with-start-path.zip', async (playbook) => {
         playbook.ui.bundle.startPath = 'the-ui-bundle/'
         const uiCatalog = await loadUi(playbook)
-        const paths = uiCatalog.getAll().map((file) => file.path)
+        const paths = uiCatalog.getFiles().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
         expect(paths).to.not.include('the-ui-bundle.txt')
       })
@@ -324,7 +335,7 @@ describe('loadUi()', () => {
     }, {})
 
     const verifySupplementalFiles = (uiCatalog, compareBuffers = true, expectedBase = undefined) => {
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePathsWithSupplemental)
       files.forEach((file) => {
@@ -389,7 +400,7 @@ describe('loadUi()', () => {
         const staticDotfile = staticFiles.find((it) => it.path === '.htaccess')
         expect(staticDotfile).to.exist()
         expect(staticDotfile.contents).to.eql(staticDotfileContents)
-        expect(uiCatalog.getAll().find((it) => it.path === '.hidden-file.txt')).to.be.undefined()
+        expect(uiCatalog.getFiles().find((it) => it.path === '.hidden-file.txt')).to.be.undefined()
       } finally {
         await fs.unlink(staticDotfilePath).catch(() => {})
         await fs.unlink(uiConfigFilePath).catch(() => {})
@@ -404,7 +415,7 @@ describe('loadUi()', () => {
       try {
         await fs.writeFile(uiConfigFilePath, 'static_files: [.h*]\n')
         const uiCatalog = await loadUi(playbook)
-        const staticDotfile = uiCatalog.getAll().find((it) => it.path === '.hidden-file.txt')
+        const staticDotfile = uiCatalog.getFiles().find((it) => it.path === '.hidden-file.txt')
         expect(staticDotfile).to.exist()
         expect(staticDotfile.contents).to.eql(staticDotfileContents)
       } finally {
@@ -417,7 +428,7 @@ describe('loadUi()', () => {
       fs.ensureDirSync(emptyDir)
       playbook.ui.supplementalFiles = 'empty-directory'
       const uiCatalog = await loadUi(playbook)
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     })
@@ -439,7 +450,7 @@ describe('loadUi()', () => {
       ]
       const uiCatalog = await loadUi(playbook)
       verifySupplementalFiles(uiCatalog, false)
-      const iconFile = uiCatalog.getAll().find((it) => it.path === 'img/icon.png')
+      const iconFile = uiCatalog.getFiles().find((it) => it.path === 'img/icon.png')
       expect(iconFile.stat.mtime).to.be.undefined()
       expect(iconFile.stat.isFile()).to.be.true()
     })
@@ -452,7 +463,7 @@ describe('loadUi()', () => {
         },
       ]
       const uiCatalog = await loadUi(playbook)
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
       const head = files.find((file) => file.path === 'partials/head.hbs')
@@ -543,7 +554,7 @@ describe('loadUi()', () => {
     it('skips supplemental files when empty', async () => {
       playbook.ui.supplementalFiles = []
       const uiCatalog = await loadUi(playbook)
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     })
@@ -551,7 +562,7 @@ describe('loadUi()', () => {
     it('creates empty file when contents of file is not specified', async () => {
       playbook.ui.supplementalFiles = [{ path: 'partials/head.hbs' }]
       const uiCatalog = await loadUi(playbook)
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
       const head = files.find((file) => file.path === 'partials/head.hbs')
@@ -562,7 +573,7 @@ describe('loadUi()', () => {
     it('skips entry when path is not specified', async () => {
       playbook.ui.supplementalFiles = [{ contents: 'this file is ignored' }]
       const uiCatalog = await loadUi(playbook)
-      const files = uiCatalog.getAll()
+      const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     })
@@ -620,7 +631,7 @@ describe('loadUi()', () => {
     describe('should differentiate static files from assets', () => {
       testAll('the-ui-bundle-with-static-files.zip', async (playbook) => {
         const uiCatalog = await loadUi(playbook)
-        const filepaths = uiCatalog.getAll().map((file) => file.path)
+        const filepaths = uiCatalog.getFiles().map((file) => file.path)
         expect(filepaths).to.not.include('ui.yml')
         const uiAssets = uiCatalog.findByType('asset')
         uiAssets.forEach(({ type }) => expect(type).to.equal('asset'))
@@ -645,7 +656,7 @@ describe('loadUi()', () => {
     describe('should discover static files when specified with single glob string', () => {
       testAll('the-ui-bundle-with-static-files-single-glob.zip', async (playbook) => {
         const uiCatalog = await loadUi(playbook)
-        const filepaths = uiCatalog.getAll().map((file) => file.path)
+        const filepaths = uiCatalog.getFiles().map((file) => file.path)
         expect(filepaths).to.not.include('ui.yml')
         const staticFiles = uiCatalog.findByType('static')
         staticFiles.forEach(({ type }) => expect(type).to.equal('static'))
@@ -806,12 +817,12 @@ describe('loadUi()', () => {
     expect(UI_CACHE_DIR)
       .to.be.a.directory()
       .and.not.be.empty()
-    let paths = uiCatalog.getAll().map((file) => file.path)
+    let paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
 
     uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(1)
-    paths = uiCatalog.getAll().map((file) => file.path)
+    paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
   })
 
@@ -829,7 +840,7 @@ describe('loadUi()', () => {
     expect(UI_CACHE_DIR)
       .to.be.a.directory()
       .and.not.be.empty()
-    const paths = uiCatalog.getAll().map((file) => file.path)
+    const paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
 
     uiCatalog = await loadUi(playbook)
@@ -850,13 +861,13 @@ describe('loadUi()', () => {
     expect(UI_CACHE_DIR)
       .to.be.a.directory()
       .and.not.be.empty()
-    let paths = uiCatalog.getAll().map((file) => file.path)
+    let paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
 
     uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(2)
     expect(serverRequests[1]).to.equal('/the-ui-bundle.zip')
-    paths = uiCatalog.getAll().map((file) => file.path)
+    paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
   })
 
@@ -868,7 +879,7 @@ describe('loadUi()', () => {
     expect(serverRequests).to.have.lengthOf(2)
     expect(serverRequests[0]).to.equal('/redirect?to=the-ui-bundle.zip')
     expect(serverRequests[1]).to.equal('/the-ui-bundle.zip')
-    const paths = uiCatalog.getAll().map((file) => file.path)
+    const paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
   })
 
@@ -957,7 +968,7 @@ describe('loadUi()', () => {
       expect(customUiCacheDir)
         .to.be.a.directory()
         .and.not.be.empty()
-      const paths = uiCatalog.getAll().map((file) => file.path)
+      const paths = uiCatalog.getFiles().map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
     }
 

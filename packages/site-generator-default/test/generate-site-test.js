@@ -97,7 +97,7 @@ describe('generateSite()', function () {
   })
 
   it('should generate site into output directory specified in playbook file', async () => {
-    playbookSpec.site.start_page = '2.0@the-component::index'
+    playbookSpec.site.start_page = '2.0@the-component::index.adoc'
     playbookSpec.site.keys = { google_analytics: 'UA-XXXXXXXX-1' }
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
     await generateSite(['--playbook', playbookFile], env)
@@ -190,11 +190,17 @@ describe('generateSite()', function () {
       .with.contents.that.match(/<meta http-equiv="refresh" content="0; url=the-component\/2.0\/index.html">/)
   }).timeout(timeoutOverride)
 
-  it('should throw error if start page cannot be resolved', async () => {
+  it('should show warning if start page is missing .adoc file extension', async () => {
+    playbookSpec.site.start_page = 'the-component::index'
+    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    const stdErrMessages = await captureStdErr(generateSite, ['--playbook', playbookFile], env)
+    expect(stdErrMessages).to.have.lengthOf(1)
+    expect(stdErrMessages[0]).to.equal('Start page specified for site not found: the-component::index')
+  }).timeout(timeoutOverride)
+
+  it('should show warning if start page cannot be resolved', async () => {
     playbookSpec.site.start_page = 'unknown-component::index.adoc'
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
-    //const generateSiteDeferred = await deferExceptions(generateSite, ['--playbook', playbookFile], env)
-    //expect(generateSiteDeferred).to.throw('Specified start page for site not found: unknown-component::index')
     const stdErrMessages = await captureStdErr(generateSite, ['--playbook', playbookFile], env)
     expect(stdErrMessages).to.have.lengthOf(1)
     expect(stdErrMessages[0]).to.equal('Start page specified for site not found: unknown-component::index.adoc')
@@ -607,7 +613,6 @@ describe('generateSite()', function () {
     )
   }).timeout(timeoutOverride)
 
-  // NOTE this also tests xrefs that do not have the .adoc file extension
   it('should resolve xrefs that use an alias as the target', async () => {
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
     await generateSite(['--playbook', playbookFile], env)
@@ -617,22 +622,29 @@ describe('generateSite()', function () {
     expect(contents).to.include('<a href="new-page.html" class="page">2.0</a>')
   }).timeout(timeoutOverride)
 
+  // NOTE this also tests that aliases do not have to have the .adoc file extension
   it('should generate static redirect files for aliases by default', async () => {
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-alias.html')).to.be.a.file()
-    const contents = readFile('the-component/2.0/the-alias.html', absDestDir)
+    let contents = readFile('the-component/2.0/the-alias.html', absDestDir)
     expect(contents).to.include('<script>location="the-page.html"</script>')
+    contents = readFile('the-component/2.0/the-freshness.html', absDestDir)
+    expect(contents).to.include('<script>location="new-page.html"</script>')
   }).timeout(timeoutOverride)
 
+  // NOTE this also tests that aliases do not have to have the .adoc file extension
   it('should generate nginx rewrite config file for aliases when using nginx redirect facility', async () => {
     fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
     await generateSite(['--playbook', playbookFile, '--redirect-facility', 'nginx'], env)
     expect(ospath.join(absDestDir, '.etc/nginx/rewrite.conf')).to.be.a.file()
     const contents = readFile('.etc/nginx/rewrite.conf', absDestDir)
-    const rules = 'location = /the-component/2.0/the-alias.html { return 301 /the-component/2.0/the-page.html; }'
-    expect(contents).to.include(rules)
+    const rule2 = 'location = /the-component/2.0/the-freshness.html { return 301 /the-component/2.0/new-page.html; }'
+    const rule1 = 'location = /the-component/2.0/the-alias.html { return 301 /the-component/2.0/the-page.html; }'
+    expect(contents).to.include(rule1)
+    expect(contents).to.include(rule2)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-alias.html')).to.not.be.a.path()
+    expect(ospath.join(absDestDir, 'the-component/2.0/the-freshness.html')).to.not.be.a.path()
   }).timeout(timeoutOverride)
 
   it('should indexify URLs to internal pages', async () => {

@@ -94,9 +94,8 @@ describe('buildPlaybook()', () => {
   const nullMapSpec = ospath.join(FIXTURES_DIR, 'null-map-spec-sample.yml')
   const invalidDirOrFilesSpec = ospath.join(FIXTURES_DIR, 'invalid-dir-or-files-spec-sample.yml')
   const invalidStringOrBooleanSpec = ospath.join(FIXTURES_DIR, 'invalid-string-or-boolean-spec-sample.yml')
-  const legacyGitSpec = ospath.join(FIXTURES_DIR, 'legacy-git-sample.yml')
-  const legacyAndModernGitSpec = ospath.join(FIXTURES_DIR, 'legacy-and-modern-git-sample.yml')
-  const legacyRuntimeSpec = ospath.join(FIXTURES_DIR, 'legacy-runtime-sample.yml')
+  const legacyGitEnsureGitSuffixSpec = ospath.join(FIXTURES_DIR, 'legacy-git-ensure-git-suffix-sample.yml')
+  const legacyRuntimePullSpec = ospath.join(FIXTURES_DIR, 'legacy-runtime-pull-sample.yml')
   const legacyUiBundleSpec = ospath.join(FIXTURES_DIR, 'legacy-ui-bundle-sample.yml')
   const legacyUiStartPathSpec = ospath.join(FIXTURES_DIR, 'legacy-ui-start-path-sample.yml')
   const invalidSiteUrlSpec = ospath.join(FIXTURES_DIR, 'invalid-site-url-spec-sample.yml')
@@ -551,6 +550,7 @@ describe('buildPlaybook()', () => {
     })
     expect(playbook.asciidoc.extensions).to.eql(['asciidoctor-plantuml', './lib/shout-block'])
     expect(playbook.git.credentials.path).to.equal('./.git-credentials')
+    expect(playbook.git.ensureGitSuffix).to.equal(true)
     expect(playbook.urls.htmlExtensionStyle).to.equal('indexify')
     expect(playbook.urls.redirectFacility).to.equal('nginx')
     expect(playbook.urls.latestVersionSegmentStrategy).to.equal('redirect:to')
@@ -616,35 +616,19 @@ describe('buildPlaybook()', () => {
     )
   })
 
-  it('should assign runtime.fetch to value of runtime.pull if latter is specified', () => {
-    const playbook = buildPlaybook(['--playbook', legacyRuntimeSpec], {})
-    expect(playbook.runtime.fetch).to.equal(true)
-    expect(playbook.runtime).to.not.have.property('pull')
+  it('should not accept playbook data that defines git.ensureGitSuffix', () => {
+    expect(() => buildPlaybook(['--playbook', legacyGitEnsureGitSuffixSpec], {})).to.throw(/not declared in the schema/)
   })
 
-  it('should use value of runtime.pull if both runtime.pull and runtime.fetch are specified', () => {
-    const playbook = buildPlaybook(['--playbook', legacyRuntimeSpec, '--fetch', 'false'], {})
-    expect(playbook.runtime.fetch).to.equal(true)
-    expect(playbook.runtime).to.not.have.property('pull')
+  it('should not accept playbook data that defines runtime.pull', () => {
+    expect(() => buildPlaybook(['--playbook', legacyRuntimePullSpec], {})).to.throw(/not declared in the schema/)
   })
 
-  it('should use value of git.ensure_git_suffix if specified when git.ensureGitSuffix is not specified', () => {
-    const playbook = buildPlaybook(['--playbook', legacyGitSpec], {})
-    expect(playbook.git.ensureGitSuffix).to.equal(false)
-    expect(playbook.git).to.not.have.property('ensure_git_suffix')
-  })
-
-  it('should prefer value of git.ensureGitSuffix if specified', () => {
-    const playbook = buildPlaybook(['--playbook', legacyAndModernGitSpec], {})
-    expect(playbook.git.ensureGitSuffix).to.equal(false)
-    expect(playbook.git).to.not.have.property('ensure_git_suffix')
-  })
-
-  it('should not migrate playbook data that defines ui.bundle as a String', () => {
+  it('should not accept playbook data that defines ui.bundle as a String', () => {
     expect(() => buildPlaybook(['--playbook', legacyUiBundleSpec], {})).to.throw(/not declared in the schema/)
   })
 
-  it('should not migrate playbook data that defines ui.start_path', () => {
+  it('should not accept playbook data that defines ui.start_path', () => {
     expect(() => buildPlaybook(['--playbook', legacyUiStartPathSpec], {})).to.throw(/not declared in the schema/)
   })
 

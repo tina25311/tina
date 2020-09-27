@@ -3,7 +3,8 @@
 
 const { expect, heredoc } = require('../../../test/test-utils')
 
-const { loadAsciiDoc, resolveConfig } = require('@antora/asciidoc-loader')
+const loadAsciiDoc = require('@antora/asciidoc-loader')
+const { extractAsciiDocMetadata, resolveAsciiDocConfig } = loadAsciiDoc
 const mockContentCatalog = require('../../../test/mock-content-catalog')
 const ospath = require('path')
 
@@ -56,7 +57,7 @@ describe('loadAsciiDoc()', () => {
   })
 
   it('should export loadAsciiDoc as default function', () => {
-    expect(require('@antora/asciidoc-loader')).to.equal(loadAsciiDoc)
+    expect(loadAsciiDoc.loadAsciiDoc).to.equal(loadAsciiDoc)
   })
 
   it('should load document model from AsciiDoc contents', () => {
@@ -157,7 +158,7 @@ describe('loadAsciiDoc()', () => {
       = Document Title
       `
       setInputFileContents(contents)
-      const doc = loadAsciiDoc(inputFile, undefined, resolveConfig())
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig())
       expect(doc.getBaseDir()).to.equal('modules/module-a/pages')
       expect(doc.getId()).to.equal('docid')
       expect(doc.getAttributes()).to.include({
@@ -203,8 +204,8 @@ describe('loadAsciiDoc()', () => {
         family: 'page',
         relative: 'topic-a/page-a.adoc',
         contents: '= Document Title',
-      }).getAll()[0]
-      const doc = loadAsciiDoc(inputFile, undefined, resolveConfig())
+      }).getFiles()[0]
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig())
       expect(doc.getAttributes()).to.include({
         imagesdir: '../_images',
         attachmentsdir: '../_attachments',
@@ -217,7 +218,7 @@ describe('loadAsciiDoc()', () => {
         family: 'nav',
         relative: 'nav.adoc',
         contents: '* xref:module-a:index.adoc[Module A]',
-      }).getAll()[0]
+      }).getFiles()[0]
       const doc = loadAsciiDoc(inputFile)
       expect(doc.getAttributes()).to.include.keys(
         'page-component-name',
@@ -237,7 +238,7 @@ describe('loadAsciiDoc()', () => {
         contents: '= Document Title',
       })
       contentCatalog.getComponent('component-a').title = 'Component A'
-      const inputFile = contentCatalog.getAll()[0]
+      const inputFile = contentCatalog.getFiles()[0]
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(doc.getAttributes()).to.include({
         'page-component-name': 'component-a',
@@ -253,7 +254,7 @@ describe('loadAsciiDoc()', () => {
         contents: '= Document Title',
       })
       contentCatalog.getComponent('component-a').latest.displayVersion = '4.5 LTS'
-      const inputFile = contentCatalog.getAll()[0]
+      const inputFile = contentCatalog.getFiles()[0]
       const doc = loadAsciiDoc(inputFile, contentCatalog)
       expect(doc.getAttributes()).to.include({
         'page-component-name': 'component-a',
@@ -268,7 +269,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'page-a.adoc',
         contents: '= Document Title',
       })
-      const inputFileFromBranch = contentCatalog.getAll()[0]
+      const inputFileFromBranch = contentCatalog.getFiles()[0]
       inputFileFromBranch.src.origin = {
         type: 'git',
         url: 'https://example.org/component-a.git',
@@ -297,7 +298,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'page-a.adoc',
         contents: '= Document Title',
       })
-      const inputFileFromBranch = contentCatalog.getAll()[0]
+      const inputFileFromBranch = contentCatalog.getFiles()[0]
       inputFileFromBranch.src.origin = {
         type: 'git',
         url: 'https://example.org/component-a.git',
@@ -326,7 +327,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'page-a.adoc',
         contents: '= Document Title',
       })
-      const inputFileFromTag = contentCatalog.getAll()[0]
+      const inputFileFromTag = contentCatalog.getFiles()[0]
       inputFileFromTag.src.origin = {
         type: 'git',
         url: 'https://example.org/component-a.git',
@@ -386,7 +387,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const doc = loadAsciiDoc(inputFile, undefined, resolveConfig(playbook))
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig(playbook))
       const expectedAttributes = { ...playbook.asciidoc.attributes, 'site-url': 'https://docs.example.org' }
       expect(doc.getAttributes()).to.include(expectedAttributes)
     })
@@ -406,7 +407,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const doc = loadAsciiDoc(inputFile, undefined, resolveConfig(playbook))
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig(playbook))
       const expectedAttributes = { ...playbook.asciidoc.attributes, 'site-title': 'Docs' }
       expect(doc.getAttributes()).to.include(expectedAttributes)
     })
@@ -2667,7 +2668,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'the-page.adoc',
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2699,7 +2700,7 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, 'the-page.html', 'The Page Title')
     })
 
-    it('should convert page reference with a version but without a file extension', () => {
+    it('should not convert page reference with a version but without a file extension', () => {
       const contentCatalog = mockContentCatalog({
         version: '2.0',
         relative: 'the-page.adoc',
@@ -2713,9 +2714,9 @@ describe('loadAsciiDoc()', () => {
           version: '2.0',
           module: 'module-a',
           family: 'page',
-          relative: 'the-page.adoc',
+          relative: 'the-page',
         })
-      expectPageLink(html, '../2.0/module-a/the-page.html', 'The Page Title')
+      expectUnresolvedPageLink(html, '#2.0@the-page', 'The Page Title')
     })
 
     it('should convert a page reference to a non-AsciiDoc page', () => {
@@ -2797,7 +2798,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'topic-b/the-page.adoc',
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2817,7 +2818,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc[Link to Self]',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2837,7 +2838,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc#[Link to Self]',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2857,7 +2858,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]\n\n[#the-fragment]\n== Target Section',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2877,7 +2878,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc#the-fragment[]\n\n[#the-fragment]\n== Target Section',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2897,7 +2898,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'this-page.adoc',
         contents: 'xref:this-page.adoc#the-fragment[Deep Link to Self]',
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById).to.not.have.been.called()
       expectLink(html, '#the-fragment', 'Deep Link to Self')
@@ -2915,7 +2916,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'that-page.adoc',
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog, { relativizePageRefs: false }).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -2944,7 +2945,7 @@ describe('loadAsciiDoc()', () => {
           indexify: true,
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       expect(inputFile.pub.moduleRootPath).to.equal('..')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
@@ -2973,7 +2974,7 @@ describe('loadAsciiDoc()', () => {
           indexify: true,
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3001,7 +3002,7 @@ describe('loadAsciiDoc()', () => {
           indexify: true,
         },
       ]).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       expect(inputFile.pub.moduleRootPath).to.equal('../..')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
@@ -3023,7 +3024,7 @@ describe('loadAsciiDoc()', () => {
         contents: 'xref:module-a:this-page.adoc[Link to Self]',
         indexify: true,
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3044,7 +3045,7 @@ describe('loadAsciiDoc()', () => {
         contents: 'xref:module-a:this-page.adoc#[Link to Self]',
         indexify: true,
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3065,7 +3066,7 @@ describe('loadAsciiDoc()', () => {
         contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
         indexify: true,
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3086,7 +3087,7 @@ describe('loadAsciiDoc()', () => {
         contents: 'xref:module-a:this-page.adoc#the-fragment[Deep Link to Self]',
         indexify: true,
       }).spyOn('getById')
-      inputFile = contentCatalog.getAll()[0]
+      inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3170,6 +3171,7 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, '../module-b/the-topic/the-page.html#frag', 'module-b:the-topic/the-page.adoc#frag')
     })
 
+    // NOTE: the .adoc file extension is required, however
     it('should not fail to process page reference if fragment attribute is not set', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
@@ -3183,8 +3185,8 @@ describe('loadAsciiDoc()', () => {
         this.process((parent, target, attrs) =>
           this.createInline(parent, 'anchor', target, {
             type: 'xref',
-            target,
-            attributes: global.Opal.hash({ refid: target, path: target }),
+            target: target + '.adoc',
+            attributes: global.Opal.hash({ refid: target, path: target + '.adoc' }),
           })
         )
       }
@@ -3274,7 +3276,26 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
-    it('should resolve target of block image if it matches resource ID', () => {
+    it('should resolve target of block image if it matches resource ID in same module', () => {
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-a', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('image::the-image.png[The Image,250]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="_images/the-image.png"')
+    })
+
+    it('should resolve target of block image if it matches resource ID in different module', () => {
       const contentCatalog = mockContentCatalog([
         inputFile.src,
         { module: 'module-b', family: 'image', relative: 'the-image.png' },
@@ -3337,7 +3358,26 @@ describe('loadAsciiDoc()', () => {
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
-    it('should resolve target of inline image if it matches resource ID', () => {
+    it('should resolve target of inline image if it matches resource ID in same module', () => {
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-a', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('Look for image:the-image.png[The Image,16].')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="_images/the-image.png"')
+    })
+
+    it('should resolve target of inline image if it matches resource ID in different module', () => {
       const contentCatalog = mockContentCatalog([
         inputFile.src,
         { module: 'module-b', family: 'image', relative: 'the-image.png' },
@@ -3606,9 +3646,17 @@ describe('loadAsciiDoc()', () => {
     })
   })
 
-  describe('resolveConfig()', () => {
+  describe('resolveAsciiDocConfig()', () => {
+    it('should export resolveAsciiDocConfig function', () => {
+      expect(resolveAsciiDocConfig).to.be.a('function')
+    })
+
+    it('should export deprecated resolveConfig function as alias of resolveAsciiDocConfig', () => {
+      expect(loadAsciiDoc.resolveConfig).to.equal(resolveAsciiDocConfig)
+    })
+
     it('should return config with built-in attributes if site and asciidoc categories not set in playbook', () => {
-      const config = resolveConfig()
+      const config = resolveAsciiDocConfig()
       expect(config.attributes).to.exist()
       expect(config.attributes).to.include({
         env: 'site',
@@ -3622,7 +3670,7 @@ describe('loadAsciiDoc()', () => {
 
     it('should return config with attributes for site title and url if set in playbook', () => {
       const playbook = { site: { url: 'https://docs.example.org', title: 'Docs' }, ui: {} }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.attributes).to.exist()
       expect(config.attributes).to.include({
         'site-title': 'Docs',
@@ -3639,7 +3687,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config).to.not.equal(playbook.asciidoc)
       expect(config.attributes).to.not.equal(playbook.asciidoc.attributes)
       expect(config.attributes).to.include(playbook.asciidoc.attributes)
@@ -3647,19 +3695,19 @@ describe('loadAsciiDoc()', () => {
 
     it('should not load extensions if extensions are not defined', () => {
       const playbook = { asciidoc: {} }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.not.exist()
     })
 
     it('should not load extensions if extensions are empty', () => {
       const playbook = { asciidoc: { extensions: [] } }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.not.exist()
     })
 
     it('should load scoped extension into config but not register it globally', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/scoped-shout-block.js')] } }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3670,7 +3718,7 @@ describe('loadAsciiDoc()', () => {
 
     it('should load global extension and register it globally', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.not.exist()
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
@@ -3680,8 +3728,8 @@ describe('loadAsciiDoc()', () => {
 
     it('should only register a global extension once', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
-      resolveConfig(playbook)
-      resolveConfig(playbook)
+      resolveAsciiDocConfig(playbook)
+      resolveAsciiDocConfig(playbook)
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(1)
@@ -3695,7 +3743,7 @@ describe('loadAsciiDoc()', () => {
           extensions: ['./ext/scoped-shout-block.js'],
         },
       }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3708,7 +3756,7 @@ describe('loadAsciiDoc()', () => {
           extensions: ['lorem-block-macro'],
         },
       }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3725,7 +3773,7 @@ describe('loadAsciiDoc()', () => {
           ],
         },
       }
-      const config = resolveConfig(playbook)
+      const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(2)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3734,6 +3782,50 @@ describe('loadAsciiDoc()', () => {
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(1)
       Extensions.unregisterAll()
+    })
+  })
+
+  describe('extractAsciiDocMetadata()', () => {
+    it('should export extractAsciiDocMetadata function', () => {
+      expect(extractAsciiDocMetadata).to.be.a('function')
+    })
+
+    it('should only extract attributes if document has no header', () => {
+      const contents = heredoc`
+        :foo: bar
+
+        content
+      `
+      setInputFileContents(contents)
+      const doc = loadAsciiDoc(inputFile)
+      const metadata = extractAsciiDocMetadata(doc)
+      expect(metadata).to.have.property('attributes')
+      expect(metadata.attributes).to.eql(doc.getAttributes())
+      expect(metadata.attributes.foo).to.eql('bar')
+      expect(metadata).to.not.have.property('doctitle')
+      expect(metadata).to.not.have.property('xreftext')
+      expect(metadata).to.not.have.property('navtitle')
+    })
+
+    it('should only extract doctitle, xreftext, and navtitle attributes if document has header', () => {
+      const contents = heredoc`
+        = Let's Go!
+        :navtitle: Get Started
+        :foo: bar
+
+        content
+      `
+      setInputFileContents(contents)
+      const doc = loadAsciiDoc(inputFile)
+      const metadata = extractAsciiDocMetadata(doc)
+      expect(metadata).to.have.property('attributes')
+      expect(metadata.attributes).to.eql(doc.getAttributes())
+      expect(metadata).to.have.property('doctitle')
+      expect(metadata.doctitle).to.equal('Let&#8217;s Go!')
+      expect(metadata).to.have.property('xreftext')
+      expect(metadata.navtitle).to.equal('Get Started')
+      expect(metadata).to.have.property('navtitle')
+      expect(metadata.xreftext).to.equal(metadata.doctitle)
     })
   })
 })

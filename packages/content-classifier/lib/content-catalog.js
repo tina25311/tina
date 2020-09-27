@@ -92,12 +92,6 @@ class ContentCatalog {
                 return this.latest.asciidoc
               },
             },
-            // NOTE deprecated; alias latestVersion to latest for backwards compatibility; remove in Antora 3
-            latestVersion: {
-              get () {
-                return this.latest
-              },
-            },
             title: {
               get () {
                 return this.latest.title
@@ -190,28 +184,6 @@ class ContentCatalog {
     )
   }
 
-  /**
-   * @deprecated scheduled to be removed in Antora 3
-   */
-  getComponentMap () {
-    const accum = {}
-    for (const [name, component] of this[$components]) {
-      accum[name] = component
-    }
-    return accum
-  }
-
-  /**
-   * @deprecated scheduled to be removed in Antora 3
-   */
-  getComponentMapSortedBy (property) {
-    const accum = {}
-    for (const component of this.getComponentsSortedBy(property)) {
-      accum[component.name] = component
-    }
-    return accum
-  }
-
   getComponents () {
     return [...this[$components].values()]
   }
@@ -220,7 +192,7 @@ class ContentCatalog {
     return this.getComponents().sort((a, b) => a[property].localeCompare(b[property]))
   }
 
-  getAll () {
+  getFiles () {
     return [...this[$files].values()]
   }
 
@@ -311,9 +283,11 @@ class ContentCatalog {
 
   // QUESTION should this be addPageAlias?
   registerPageAlias (spec, target) {
-    const src = parseResourceId(spec, target.src, 'page', ['page'])
+    // .adoc file extension will be required on ID spec for page alias starting in Antora 4 (possibly in Antora 3)
+    const inferredSpec = spec.endsWith('.adoc') ? spec : spec + '.adoc'
+    const src = parseResourceId(inferredSpec, target.src, 'page', ['page'])
     // QUESTION should we throw an error if alias is invalid?
-    if (!src) return
+    if (!src || (src.relative === '.adoc' && spec !== inferredSpec)) return
     const component = this.getComponent(src.component)
     if (component) {
       // NOTE version is not set when alias specifies a component, but not a version
@@ -374,12 +348,13 @@ class ContentCatalog {
   exportToModel () {
     return [
       this.findBy,
-      this.getAll,
+      { name: 'getAll', bind: (to) => this.getAll.bind(to) },
       this.getById,
       this.getComponent,
       this.getComponentVersion,
       this.getComponents,
       this.getComponentsSortedBy,
+      this.getFiles,
       this.getPages,
       this.getSiteStartPage,
       this.resolvePage,
@@ -389,9 +364,9 @@ class ContentCatalog {
 }
 
 /**
- * @deprecated superceded by getAll()
+ * @deprecated superceded by getFiles(); scheduled to be removed in Antora 4
  */
-ContentCatalog.prototype.getFiles = ContentCatalog.prototype.getAll
+ContentCatalog.prototype.getAll = ContentCatalog.prototype.getFiles
 
 function generateKey ({ component, version, module: module_, family, relative }) {
   return `${version}@${component}:${module_}:${family}$${relative}`
