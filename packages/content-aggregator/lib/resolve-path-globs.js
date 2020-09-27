@@ -123,7 +123,7 @@ function listDirentsFs (base, path) {
 
 function listDirentsGit (repo, treeOid) {
   return git
-    .readObject({ ...repo, oid: treeOid, filepath: '' })
+    .readObject(Object.assign({ oid: treeOid, filepath: '' }, repo))
     .catch(() => ({ object: {} }))
     .then(({ object: { entries } }) =>
       entries
@@ -156,7 +156,7 @@ function retrievePathFs (base, { path }, subpath) {
 }
 
 function retrievePathGit (repo, { oid }, filepath) {
-  return git.readObject({ ...repo, oid, filepath, format: 'deflated' }).catch(invariably.void)
+  return git.readObject(Object.assign({ oid, filepath, format: 'deflated' }, repo)).catch(invariably.void)
 }
 
 function joinPath (parent, child) {
