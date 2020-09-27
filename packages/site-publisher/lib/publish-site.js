@@ -91,9 +91,7 @@ function getDestinations (output) {
 }
 
 function resolveDestination (destination, clean) {
-  const provider = destination.provider
-  const options = Object.assign({}, destination)
-  delete options.provider
+  const { provider, ...options } = destination
   if (clean) options.clean = true
   return { provider, options }
 }
