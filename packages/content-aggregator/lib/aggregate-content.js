@@ -189,11 +189,13 @@ async function loadRepository (url, opts) {
     repo = (await isLocalDirectory(ospath.join(dir, '.git')))
       ? { core: GIT_CORE, dir }
       : { core: GIT_CORE, dir, gitdir: dir, noCheckout: true }
-    await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)).catch(() => {
+    try {
+      await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
+    } catch (e) {
       throw new Error(
         `Local content source must be a git repository: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`
       )
-    })
+    }
   } else {
     throw new Error(`Local content source does not exist: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`)
   }
