@@ -1882,7 +1882,7 @@ describe('ContentCatalog', () => {
         basename: 'index.adoc',
         stem: 'index',
         mediaType: 'text/asciidoc',
-      })
+      }
       contentCatalog.addFile({
         src: startPageSrc,
         rel: contentCatalog.getById(thePageId),
