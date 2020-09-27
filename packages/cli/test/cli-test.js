@@ -514,7 +514,7 @@ describe('cli', function () {
     fs.ensureDirSync(localModulePath)
     const localScript = heredoc`module.exports = async (args, env) => {
       console.log('Using custom site generator')
-      return require(${JSON.stringify(globalModulePath)})(args.concat('--title', 'Custom Site Generator'), env)
+      return require(${JSON.stringify(globalModulePath)})([...args, '--title', 'Custom Site Generator'], env)
     }`
     fs.writeFileSync(ospath.join(localModulePath, 'generate-site.js'), localScript)
     fs.writeJsonSync(ospath.join(localModulePath, 'package.json'), { main: 'generate-site.js' }, { spaces: 2 })

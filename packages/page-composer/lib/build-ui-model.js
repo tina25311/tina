@@ -161,13 +161,14 @@ function getPageVersions (page, component, contentCatalog) {
           //relPage = undefined
         }
       }
-      return accum.concat(
+      accum.push(
         Object.assign(
           componentVersion === latestVersion ? { latest: true } : {},
           componentVersion,
           relPage ? { url: relPage.pub.url } : { missing: true }
         )
       )
+      return accum
     }, [])
     .reverse()
   pageVersions.push(
@@ -205,13 +206,14 @@ function getPageVersions (page, component, contentCatalog) {
         }
       }
     }
-    return accum.concat(
+    accum.push(
       Object.assign(
         componentVersion === latestVersion ? { latest: true } : {},
         componentVersion,
         relPage ? { url: relPage.pub.url } : { missing: true }
       )
     )
+    return accum
   }, pageVersions)
   return pageVersions
 }
@@ -222,7 +224,7 @@ function attachNavProperties (model, currentUrl, title, navigation = []) {
   const { match, ancestors, previous, next } = findNavItem({ ancestors: [], seekNext: true, currentUrl }, navigation)
   if (match) {
     // QUESTION should we filter out component start page from the breadcrumbs?
-    const breadcrumbs = ancestors.filter((item) => 'content' in item)
+    const breadcrumbs = ancestors.filter((item) => 'content' in item).reverse()
     const parent = breadcrumbs.find((item) => item.urlType === 'internal')
     breadcrumbs.reverse().push(match)
     model.breadcrumbs = breadcrumbs
@@ -263,7 +265,7 @@ function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candida
   if (children.length) {
     const ancestors = correlated.ancestors
     correlated = findNavItem(
-      correlated.match ? correlated : Object.assign({}, correlated, { ancestors: [candidate].concat(ancestors) }),
+      correlated.match ? correlated : Object.assign({}, correlated, { ancestors: [...ancestors, candidate] }),
       children,
       false
     )
