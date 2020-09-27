@@ -171,12 +171,15 @@ function resolveConfig (playbook = {}) {
     if (site.title) attributes['site-title'] = site.title
     if (site.url) attributes['site-url'] = site.url
   }
-  const config = { attributes }
-  if (!playbook.asciidoc) return config
+  if (!playbook.asciidoc) return { attributes }
   // TODO process !name attributes
-  Object.assign(config, playbook.asciidoc, { attributes: Object.assign(attributes, playbook.asciidoc.attributes) })
-  if (config.extensions && config.extensions.length) {
-    const extensions = config.extensions.reduce((accum, extensionPath) => {
+  const { extensions, ...config } = Object.assign(
+    { attributes },
+    playbook.asciidoc,
+    { attributes: Object.assign(attributes, playbook.asciidoc.attributes) }
+  )
+  if (extensions && extensions.length) {
+    const scopedExtensions = extensions.reduce((accum, extensionPath) => {
       if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
         // NOTE require resolves a dot-relative path relative to current file; resolve relative to playbook dir instead
         extensionPath = ospath.resolve(playbook.dir || '.', extensionPath)
@@ -194,13 +197,7 @@ function resolveConfig (playbook = {}) {
       }
       return accum
     }, [])
-    if (extensions.length) {
-      config.extensions = extensions
-    } else {
-      delete config.extensions
-    }
-  } else {
-    delete config.extensions
+    if (scopedExtensions.length) config.extensions = scopedExtensions
   }
   return config
 }
