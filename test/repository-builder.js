@@ -1,6 +1,7 @@
 'use strict'
 
-const fs = require('fs-extra')
+const fs = require('fs')
+const { promises: fsp } = fs
 const git = require('isomorphic-git')
 const ospath = require('path')
 const vfs = require('vinyl-fs')
@@ -46,7 +47,7 @@ class RepositoryBuilder {
       gitdir = ospath.join(dir, '.git')
       if (
         this.bare &&
-        !(await fs
+        !(await fsp
           .stat(gitdir)
           .then((stat) => stat.isDirectory())
           .catch(() => false))
@@ -84,7 +85,7 @@ class RepositoryBuilder {
     await git.branch({ ...this.repository, ref: branchName })
     await git.fastCheckout({ ...this.repository, ref, noCheckout: true })
     // NOTE isomorphic-git writes oid to HEAD, but we want to test case when it's a ref
-    await fs.writeFile(ospath.join(this.repository.gitdir, 'HEAD'), `ref: refs/heads/${branchName}\n`)
+    await fsp.writeFile(ospath.join(this.repository.gitdir, 'HEAD'), `ref: refs/heads/${branchName}\n`)
     return this
   }
 
@@ -117,27 +118,31 @@ class RepositoryBuilder {
   async addToWorktree (path_, contents = '') {
     const to = ospath.join(this.repoPath, path_)
     const toDir = ospath.dirname(to)
-    if (toDir !== this.repoPath) await fs.ensureDir(toDir)
-    await fs.writeFile(to, contents)
+    if (toDir !== this.repoPath) await fsp.mkdir(toDir, { recursive: true })
+    await fsp.writeFile(to, contents)
     return this
   }
 
   async copyToWorktree (paths, fromBase) {
     return Promise.all(
       paths.map((path_) => {
+        const from = ospath.join(fromBase, path_)
         const to = ospath.join(this.repoPath, path_)
         // NOTE copy fixture file if exists, otherwise create an empty file
-        // NOTE copy preserves symlinks whereas copyFile does not
-        return fs
-          .ensureDir(ospath.dirname(to))
-          .then(() => fs.copy(ospath.join(fromBase, path_), to).catch(() => fs.writeFile(to, '')))
+        return fsp
+          .mkdir(ospath.dirname(to), { recursive: true })
+          .then(() =>
+            this
+              .copyFile(from, to, { preserveSymlinks: process.platform !== 'win32' })
+              .catch(() => fsp.writeFile(to, ''))
+          )
       })
     ).then(() => this)
   }
 
   async removeFromWorktree (paths) {
     if (!Array.isArray(paths)) paths = [paths]
-    return Promise.all(paths.map((path_) => fs.remove(ospath.join(this.repoPath, path_)))).then(() => this)
+    return Promise.all(paths.map((path_) => fsp.unlink(ospath.join(this.repoPath, path_)))).then(() => this)
   }
 
   async importFilesFromFixture (fixtureName = '', opts = {}) {
@@ -218,6 +223,17 @@ class RepositoryBuilder {
     if (branchName) await git.checkout({ ...this.repository, ref: branchName })
     this.repository = undefined
     return this
+  }
+
+  // copy file, preserving file modes and, if the preserveSymlinks option is enabled, symlinks as well
+  async copyFile (from, to, opts = {}) {
+    return (opts.preserveSymlinks ? fsp.lstat : fsp.stat)(from).then((stat) =>
+      stat.isSymbolicLink()
+        ? fsp.readlink(from, 'utf8').then((target) => fsp.symlink(target, to))
+        : fsp
+          .copyFile(from, to)
+          .then(() => fsp.chmod(to, stat.mode))
+    )
   }
 
   static getPlugin (name, core = 'default') {

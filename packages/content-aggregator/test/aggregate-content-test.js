@@ -1,13 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const { deferExceptions, expect, heredoc, removeSyncForce, spy } = require('../../../test/test-utils')
+const { deferExceptions, expect, heredoc, rmdirSync, spy } = require('../../../test/test-utils')
 
 const aggregateContent = require('@antora/content-aggregator')
 const computeOrigin = aggregateContent._computeOrigin
 const { createHash } = require('crypto')
 const { execFile } = require('child_process')
-const fs = require('fs-extra')
+const fs = require('fs')
+const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const GitServer = require('node-git-server')
 const http = require('http')
@@ -112,11 +113,11 @@ describe('aggregateContent()', function () {
 
   const clean = (fin) => {
     process.chdir(CWD)
-    removeSyncForce(CACHE_DIR)
-    removeSyncForce(CONTENT_REPOS_DIR)
-    removeSyncForce(WORK_DIR)
+    rmdirSync(CACHE_DIR)
+    rmdirSync(CONTENT_REPOS_DIR)
+    rmdirSync(WORK_DIR)
     if (!fin) {
-      fs.ensureDirSync(WORK_DIR)
+      fs.mkdirSync(WORK_DIR, { recursive: true })
       process.chdir(WORK_DIR)
     }
   }
@@ -936,7 +937,7 @@ describe('aggregateContent()', function () {
       }
       await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: ospath.relative(newWorkDir, repoBuilder.url) })
@@ -958,7 +959,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: prefixPath('.', ospath.relative(WORK_DIR, repoBuilder.url)) })
       playbookSpec.dir = WORK_DIR
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let aggregate
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1008,7 +1009,7 @@ describe('aggregateContent()', function () {
       }
       await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: prefixPath('~+', ospath.relative(newWorkDir, repoBuilder.url)) })
@@ -1030,7 +1031,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       playbookSpec.dir = WORK_DIR
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let aggregate
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1654,7 +1655,7 @@ describe('aggregateContent()', function () {
       const fixturePath = 'modules/ROOT/pages/page-one.adoc'
       await initRepoWithFiles(repoBuilder, {}, fixturePath)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const expectedMode = (await fs.stat(ospath.join(repoBuilder.repoPath, fixturePath))).mode
+      const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, fixturePath))).mode
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -1694,7 +1695,7 @@ describe('aggregateContent()', function () {
       const fixturePath = 'modules/ROOT/assets/attachments/installer.sh'
       await initRepoWithFiles(repoBuilder, {}, fixturePath)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const expectedMode = (await fs.stat(ospath.join(repoBuilder.repoPath, fixturePath))).mode
+      const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, fixturePath))).mode
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -1727,7 +1728,7 @@ describe('aggregateContent()', function () {
         const fixturePaths = [targetPath, symlinkPath]
         await initRepoWithFiles(repoBuilder, {}, fixturePaths)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const expectedMode = (await fs.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+        const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -1861,11 +1862,12 @@ describe('aggregateContent()', function () {
     describe('should show sensible error message if cache directory cannot be created', () => {
       testAll(async (repoBuilder) => {
         const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
-        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
-        await fs.createFile(customCacheDir)
+        // NOTE: put a file at the location of the cache directory
+        await fsp.writeFile(customCacheDir, '')
         await initRepoWithFiles(repoBuilder)
         playbookSpec.runtime.cacheDir = customCacheDir
         playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
         const expectedMessage = `Failed to create content cache directory: ${customContentCacheDir};`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedMessage)
@@ -2581,7 +2583,7 @@ describe('aggregateContent()', function () {
 
           This is going to be something special.
         `
-        await fs.writeFile(ospath.join(clonePath, 'modules/ROOT/pages/wip-page.adoc'), wipPageContents)
+        await fsp.writeFile(ospath.join(clonePath, 'modules/ROOT/pages/wip-page.adoc'), wipPageContents)
         playbookSpec.content.sources.push({ url: clonePath })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2659,7 +2661,7 @@ describe('aggregateContent()', function () {
     expect(CONTENT_CACHE_DIR)
       .to.be.a.directory()
       .with.subDirs.have.lengthOf(1)
-    const cachedRepoName = await fs.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+    const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
     expect(cachedRepoName).to.match(/\.git$/)
     const clonedRepoBuilder = new RepositoryBuilder(CONTENT_CACHE_DIR, FIXTURES_DIR, { bare: true })
     await clonedRepoBuilder.open(cachedRepoName)
@@ -2676,7 +2678,7 @@ describe('aggregateContent()', function () {
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
     // NOTE make sure local HEAD is considered if remote HEAD is missing
-    await fs.rename(ospath.join(clonePath, 'refs/remotes/origin/HEAD'), ospath.join(clonePath, 'HEAD'))
+    await fsp.rename(ospath.join(clonePath, 'refs/remotes/origin/HEAD'), ospath.join(clonePath, 'HEAD'))
     aggregate = await aggregateContent(playbookSpec)
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
@@ -2691,7 +2693,7 @@ describe('aggregateContent()', function () {
     expect(CONTENT_CACHE_DIR)
       .to.be.a.directory()
       .with.subDirs.have.lengthOf(1)
-    const cachedRepoName = await fs.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+    const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
     const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
     expect(cachedRepoDir).to.match(/\.git$/)
     const validFile = ospath.join(cachedRepoDir, 'valid')
@@ -2702,9 +2704,9 @@ describe('aggregateContent()', function () {
     expect(headFile)
       .to.be.a.file()
       .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
-    await fs.writeFile(validFile, 'marker')
-    await fs.writeFile(headFile, '')
-    await fs.unlink(validFile)
+    await fsp.writeFile(validFile, 'marker')
+    await fsp.writeFile(headFile, '')
+    await fsp.unlink(validFile)
     aggregate = await aggregateContent(playbookSpec)
     expect(aggregate).to.have.lengthOf(1)
     expect(cachedRepoDir).to.be.a.directory()
@@ -3124,9 +3126,9 @@ describe('aggregateContent()', function () {
     it('should cancel progress bar for fetch and create new one for clone if fetch fails', async () => {
       playbookSpec.runtime.quiet = true
       await aggregateContent(playbookSpec)
-      const cachedRepoName = await fs.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
       // NOTE corrupt the cloned repository
-      await fs.writeFile(ospath.join(CONTENT_CACHE_DIR, cachedRepoName, 'config'), '')
+      await fsp.writeFile(ospath.join(CONTENT_CACHE_DIR, cachedRepoName, 'config'), '')
       playbookSpec.runtime.quiet = false
       playbookSpec.runtime.fetch = true
       return withMockStdout(async (lines) => {
@@ -3473,7 +3475,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder)
       // NOTE include '=' in value to validate characters are not URL encoded
       const credentials = ['invalid URL', repoBuilder.url.replace('//', '//u=:p=@')]
-      await fs.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials.join('\n') + '\n')
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials.join('\n') + '\n')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u=:p=').toString('base64'))
@@ -3486,7 +3488,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       const credentials = repoBuilder.url.replace('//', '//u:p@') + '\n'
-      await fs.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       let aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
@@ -3506,7 +3508,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilderA, { name: 'component-a', version: '1.0' })
       await initRepoWithFiles(repoBuilderB, { name: 'component-b', version: '3.0' })
       const credentials = [repoBuilderA.url.replace('//', '//u:p@'), repoBuilderB.url.replace('//', '//u:p@')]
-      await fs.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials.join('\n') + '\n')
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials.join('\n') + '\n')
       playbookSpec.content.sources.push({ url: repoBuilderA.url }, { url: repoBuilderB.url })
       let aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
@@ -3532,7 +3534,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       const credentials = repoBuilder.url.replace('//', '//u:p@').replace('.git', '') + '\n'
-      await fs.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
@@ -3544,7 +3546,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       const credentials = repoBuilder.url.substr(0, repoBuilder.url.indexOf('/', 8)).replace('//', '//u:p@') + '\n'
-      await fs.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
@@ -3556,8 +3558,8 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       const credentials = repoBuilder.url.replace('//', '//u:p@') + '\n'
-      await fs.mkdirp(ospath.join(process.env.XDG_CONFIG_HOME, 'git'))
-      await fs.writeFile(ospath.join(process.env.XDG_CONFIG_HOME, 'git', 'credentials'), credentials)
+      await fsp.mkdir(ospath.join(process.env.XDG_CONFIG_HOME, 'git'), { recursive: true })
+      await fsp.writeFile(ospath.join(process.env.XDG_CONFIG_HOME, 'git', 'credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
@@ -3569,8 +3571,8 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       const credentials = repoBuilder.url.replace('//', '//u:p@') + '\n'
-      await fs.mkdirp(ospath.join(process.env.XDG_CONFIG_HOME, 'git'))
-      await fs.writeFile(ospath.join(process.env.XDG_CONFIG_HOME, 'git', 'credentials'), credentials)
+      await fsp.mkdir(ospath.join(process.env.XDG_CONFIG_HOME, 'git'), { recursive: true })
+      await fsp.writeFile(ospath.join(process.env.XDG_CONFIG_HOME, 'git', 'credentials'), credentials)
       const customGitCredentialsPath = ospath.join(WORK_DIR, '.custom-git-credentials')
       playbookSpec.git = { credentials: { path: customGitCredentialsPath } }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -3584,7 +3586,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder)
       const credentials = ['https://token@gitlab.com', 'https://git-host', repoBuilder.url.replace('//', '//u:p@')]
       const customGitCredentialsPath = ospath.join(WORK_DIR, '.custom-git-credentials')
-      await fs.writeFile(customGitCredentialsPath, credentials.join('\n') + '\n')
+      await fsp.writeFile(customGitCredentialsPath, credentials.join('\n') + '\n')
       playbookSpec.git = { credentials: { path: customGitCredentialsPath } }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
@@ -3620,7 +3622,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       const credentials = repoBuilder.url.substr(0, repoBuilder.url.indexOf('/', 8)).replace('//', '//u:p@') + '\n'
-      await fs.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
@@ -3737,7 +3739,7 @@ describe('aggregateContent()', function () {
     it('should throw meaningful error if local relative content directory is not a git repository', async () => {
       const regularDir = './regular-directory'
       const absRegularDir = ospath.join(WORK_DIR, regularDir)
-      fs.ensureDirSync(absRegularDir)
+      fs.mkdirSync(absRegularDir, { recursive: true })
       fs.writeFileSync(ospath.join(absRegularDir, 'antora.xml'), 'name: the-component\nversion: 1.0')
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: regularDir })
@@ -3749,7 +3751,7 @@ describe('aggregateContent()', function () {
 
     it('should throw meaningful error if local absolute content directory is not a git repository', async () => {
       const absRegularDir = ospath.join(WORK_DIR, 'regular-directory')
-      fs.ensureDirSync(absRegularDir)
+      fs.mkdirSync(absRegularDir, { recursive: true })
       fs.writeFileSync(ospath.join(absRegularDir, 'antora.xml'), 'name: the-component\nversion: 1.0')
       playbookSpec.content.sources.push({ url: absRegularDir })
       const expectedErrorMessage = 'Local content source must be a git repository: ' + absRegularDir

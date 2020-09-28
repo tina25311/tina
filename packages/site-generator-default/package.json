@@ -27,9 +27,6 @@
     "@antora/site-publisher": "2.3.4",
     "@antora/ui-loader": "2.3.4"
   },
-  "devDependencies": {
-    "fs-extra": "~9.0"
-  },
   "engines": {
     "node": ">=10.17.0"
   },

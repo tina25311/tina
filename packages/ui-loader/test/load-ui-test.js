@@ -1,9 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { deferExceptions, expect, removeSyncForce } = require('../../../test/test-utils')
+const { deferExceptions, expect, rmdirSync } = require('../../../test/test-utils')
 
-const fs = require('fs-extra')
+const fs = require('fs')
+const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const http = require('http')
 const loadUi = require('@antora/ui-loader')
@@ -72,16 +73,16 @@ describe('loadUi()', () => {
 
   const clean = (fin) => {
     process.chdir(CWD)
-    removeSyncForce(CACHE_DIR)
-    removeSyncForce(WORK_DIR)
+    rmdirSync(CACHE_DIR)
+    rmdirSync(WORK_DIR)
     if (!fin) {
-      fs.ensureDirSync(WORK_DIR)
+      fs.mkdirSync(WORK_DIR, { recursive: true })
       process.chdir(WORK_DIR)
     }
   }
 
   before(() =>
-    fs
+    fsp
       .readdir(FIXTURES_DIR)
       .then((entries) =>
         Promise.all(
@@ -117,11 +118,11 @@ describe('loadUi()', () => {
   })
 
   after(() =>
-    fs
+    fsp
       .readdir(FIXTURES_DIR)
       .then((entries) =>
         Promise.all(
-          entries.filter((entry) => entry.endsWith('.zip')).map((it) => fs.unlink(ospath.join(FIXTURES_DIR, it)))
+          entries.filter((entry) => entry.endsWith('.zip')).map((it) => fsp.unlink(ospath.join(FIXTURES_DIR, it)))
         )
       )
   )
@@ -206,9 +207,9 @@ describe('loadUi()', () => {
     it('should append unanchored bundle path to cwd', async () => {
       const playbookDir = ospath.join(WORK_DIR, 'some-other-folder')
       const playbook = { dir: playbookDir }
-      fs.ensureDirSync(playbookDir)
+      fs.mkdirSync(playbookDir, { recursive: true })
       const bundleFixture = ospath.join(FIXTURES_DIR, 'the-ui-bundle.zip')
-      fs.outputFileSync('the-ui-bundle.zip', fs.readFileSync(bundleFixture))
+      fs.copyFileSync(bundleFixture, 'the-ui-bundle.zip')
       playbook.ui = { bundle: { url: 'the-ui-bundle.zip' } }
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
@@ -221,7 +222,7 @@ describe('loadUi()', () => {
     it('should expand leading . segment in bundle path to playbook dir', async () => {
       const playbook = { dir: WORK_DIR }
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       playbook.ui = {
         bundle: {
@@ -254,7 +255,7 @@ describe('loadUi()', () => {
     it('should expand leading ~+ segment in bundle path to cwd', async () => {
       const playbook = { dir: WORK_DIR }
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       playbook.ui = {
         bundle: {
@@ -274,7 +275,7 @@ describe('loadUi()', () => {
     testAll('the-ui-bundle.zip', async (playbook) => {
       playbook.dir = WORK_DIR
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
@@ -378,7 +379,7 @@ describe('loadUi()', () => {
       playbook.dir = WORK_DIR
       playbook.ui.supplementalFiles = prefixPath('.', ospath.relative(WORK_DIR, supplementalFilesAbsDir))
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
@@ -393,8 +394,8 @@ describe('loadUi()', () => {
       const staticDotfilePath = ospath.join(supplementalFilesAbsDir, '.htaccess')
       const staticDotfileContents = Buffer.from('ErrorDocument 404 /404-fun.html\n')
       try {
-        await fs.writeFile(uiConfigFilePath, 'static_files: [.htaccess]\n')
-        await fs.writeFile(staticDotfilePath, staticDotfileContents)
+        await fsp.writeFile(uiConfigFilePath, 'static_files: [.htaccess]\n')
+        await fsp.writeFile(staticDotfilePath, staticDotfileContents)
         const uiCatalog = await loadUi(playbook)
         const staticFiles = uiCatalog.findByType('static')
         const staticDotfile = staticFiles.find((it) => it.path === '.htaccess')
@@ -402,8 +403,8 @@ describe('loadUi()', () => {
         expect(staticDotfile.contents).to.eql(staticDotfileContents)
         expect(uiCatalog.getFiles().find((it) => it.path === '.hidden-file.txt')).to.be.undefined()
       } finally {
-        await fs.unlink(staticDotfilePath).catch(() => {})
-        await fs.unlink(uiConfigFilePath).catch(() => {})
+        await fsp.unlink(staticDotfilePath).catch(() => {})
+        await fsp.unlink(uiConfigFilePath).catch(() => {})
       }
     })
 
@@ -413,19 +414,19 @@ describe('loadUi()', () => {
       playbook.ui.supplementalFiles = supplementalFilesAbsDir
       const staticDotfileContents = fs.readFileSync(ospath.join(supplementalFilesAbsDir, '.hidden-file.txt'))
       try {
-        await fs.writeFile(uiConfigFilePath, 'static_files: [.h*]\n')
+        await fsp.writeFile(uiConfigFilePath, 'static_files: [.h*]\n')
         const uiCatalog = await loadUi(playbook)
         const staticDotfile = uiCatalog.getFiles().find((it) => it.path === '.hidden-file.txt')
         expect(staticDotfile).to.exist()
         expect(staticDotfile.contents).to.eql(staticDotfileContents)
       } finally {
-        await fs.unlink(uiConfigFilePath).catch(() => {})
+        await fsp.unlink(uiConfigFilePath).catch(() => {})
       }
     })
 
     it('skips supplemental files when scan finds no files', async () => {
       const emptyDir = ospath.join(WORK_DIR, 'empty-directory')
-      fs.ensureDirSync(emptyDir)
+      fs.mkdirSync(emptyDir, { recursive: true })
       playbook.ui.supplementalFiles = 'empty-directory'
       const uiCatalog = await loadUi(playbook)
       const files = uiCatalog.getFiles()
@@ -502,7 +503,7 @@ describe('loadUi()', () => {
 
     it('from files with relative paths', async () => {
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       const supplementalFilesDir = ospath.join(FIXTURES_DIR, 'supplemental-files')
       playbook.dir = WORK_DIR
@@ -543,7 +544,7 @@ describe('loadUi()', () => {
         contents: prefixPath('.', ospath.relative(WORK_DIR, ospath.join(supplementalFilesDir, path_))),
       }))
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-      fs.ensureDirSync(newWorkDir)
+      fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let uiCatalog
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
@@ -904,10 +905,10 @@ describe('loadUi()', () => {
     expect(UI_CACHE_DIR)
       .to.be.a.directory()
       .and.not.be.empty()
-    const cachedBundleBasename = await fs.readdir(UI_CACHE_DIR).then((entries) => entries[0])
+    const cachedBundleBasename = await fsp.readdir(UI_CACHE_DIR).then((entries) => entries[0])
     const cachedBundlePath = ospath.join(UI_CACHE_DIR, cachedBundleBasename)
-    const expectedContents = await fs.readFile(ospath.join(FIXTURES_DIR, 'the-ui-bundle.zip'))
-    const actualContents = await fs.readFile(cachedBundlePath)
+    const expectedContents = await fsp.readFile(ospath.join(FIXTURES_DIR, 'the-ui-bundle.zip'))
+    const actualContents = await fsp.readFile(cachedBundlePath)
     try {
       expect(actualContents).to.eql(expectedContents)
     } catch (err) {
@@ -941,9 +942,9 @@ describe('loadUi()', () => {
     expect(UI_CACHE_DIR)
       .to.be.a.directory()
       .and.not.be.empty()
-    const cachedBundleBasename = await fs.readdir(UI_CACHE_DIR).then((entries) => entries[0])
+    const cachedBundleBasename = await fsp.readdir(UI_CACHE_DIR).then((entries) => entries[0])
     const cachedBundlePath = ospath.join(UI_CACHE_DIR, cachedBundleBasename)
-    await fs.copyFile(ospath.join(FIXTURES_DIR, 'the-ui-bundle.tar.gz'), cachedBundlePath)
+    await fsp.copyFile(ospath.join(FIXTURES_DIR, 'the-ui-bundle.tar.gz'), cachedBundlePath)
 
     expect(await deferExceptions(loadUi, playbook))
       .to.throw(`Failed to read UI bundle: ${cachedBundlePath}`)
@@ -996,12 +997,13 @@ describe('loadUi()', () => {
 
     it('should show sensible error message if catch dir cannot be created', async () => {
       const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
-      await fs.createFile(customCacheDir)
-      const customUiCacheDir = ospath.join(customCacheDir, UI_CACHE_FOLDER)
+      // NOTE: put a file in the location of the cache directory
+      await fsp.writeFile(customCacheDir, '')
       const playbook = {
         runtime: { cacheDir: customCacheDir },
         ui: { bundle: { url: 'http://localhost:1337/the-ui-bundle.zip' } },
       }
+      const customUiCacheDir = ospath.join(customCacheDir, UI_CACHE_FOLDER)
       const expectedMessage = `Failed to create UI cache directory: ${customUiCacheDir};`
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
       expect(loadUiDeferred).to.throw(expectedMessage)

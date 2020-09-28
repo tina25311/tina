@@ -1,10 +1,17 @@
 /* eslint-env mocha */
 'use strict'
 
-const { bufferizeContents, deferExceptions, expect, heredoc, removeSyncForce } = require('../../../test/test-utils')
+const {
+  bufferizeContents,
+  deferExceptions,
+  emptyDirSync,
+  expect,
+  heredoc,
+  rmdirSync,
+} = require('../../../test/test-utils')
 
 const File = require('vinyl')
-const fs = require('fs-extra')
+const { promises: fsp } = require('fs')
 const os = require('os')
 const ospath = require('path')
 const publishSite = require('@antora/site-publisher')
@@ -134,12 +141,12 @@ describe('publishSite()', () => {
     catalogs = [contentCatalog, uiCatalog]
     // this sets process.cwd() to a known location, but not otherwise used
     process.chdir(__dirname)
-    fs.emptyDirSync(WORK_DIR)
+    emptyDirSync(WORK_DIR)
   })
 
   after(() => {
     process.chdir(CWD)
-    removeSyncForce(WORK_DIR)
+    rmdirSync(WORK_DIR)
   })
 
   it('should publish site to fs at default path when no destinations are specified', async () => {
@@ -186,7 +193,7 @@ describe('publishSite()', () => {
 
   it('should publish site to fs at relative path resolved from cwd', async () => {
     const workingDir = ospath.join(WORK_DIR, 'some-other-folder')
-    fs.ensureDirSync(workingDir)
+    await fsp.mkdir(workingDir, { recursive: true })
     process.chdir(workingDir)
     const destDir = 'path/to/_site'
     playbook.output.destinations.push({ provider: 'fs', path: destDir })
@@ -227,8 +234,10 @@ describe('publishSite()', () => {
 
   it('should throw an error if cannot write to destination path', async () => {
     const destDir = './_site'
+    const resolvedDestDir = ospath.resolve(playbook.dir, destDir)
+    await fsp.mkdir(ospath.dirname(resolvedDestDir), { recursive: true })
     // NOTE put a file in our way
-    fs.ensureFileSync(ospath.resolve(playbook.dir, destDir))
+    await fsp.writeFile(resolvedDestDir, '')
     playbook.output.destinations.push({ provider: 'fs', path: destDir })
     const publishSiteDeferred = await deferExceptions(publishSite, playbook, catalogs)
     expect(publishSiteDeferred).to.throw('mkdir')
@@ -278,7 +287,7 @@ describe('publishSite()', () => {
 
   it('should publish site to archive at relative path resolved from cwd', async () => {
     const workingDir = ospath.join(WORK_DIR, 'some-other-folder')
-    fs.ensureDirSync(workingDir)
+    await fsp.mkdir(workingDir, { recursive: true })
     process.chdir(workingDir)
     const destFile = 'path/to/site.zip'
     playbook.output.destinations.push({ provider: 'archive', path: destFile })
@@ -414,8 +423,10 @@ describe('publishSite()', () => {
     playbook.output.destinations.push(Object.freeze({ provider: 'fs', path: destDir1 }))
     playbook.output.destinations.push(Object.freeze({ provider: 'fs', path: destDir2 }))
     playbook.output.clean = true
-    fs.outputFileSync(cleanMeFile1, 'clean me!')
-    fs.outputFileSync(cleanMeFile2, 'clean me!')
+    await fsp.mkdir(ospath.dirname(cleanMeFile1), { recursive: true })
+    await fsp.writeFile(cleanMeFile1, 'clean me!')
+    await fsp.mkdir(ospath.dirname(cleanMeFile2), { recursive: true })
+    await fsp.writeFile(cleanMeFile2, 'clean me!')
     await publishSite(playbook, catalogs)
     expect(cleanMeFile1).to.not.be.a.path()
     expect(cleanMeFile2).to.not.be.a.path()
@@ -432,8 +443,10 @@ describe('publishSite()', () => {
     const cleanMeFile2 = ospath.resolve(playbook.dir, destDir2, 'clean-me.txt')
     playbook.output.destinations.push({ provider: 'fs', path: destDir1 })
     playbook.output.destinations.push({ provider: 'fs', path: destDir2, clean: true })
-    fs.outputFileSync(leaveMeFile1, 'leave me!')
-    fs.outputFileSync(cleanMeFile2, 'clean me!')
+    await fsp.mkdir(ospath.dirname(leaveMeFile1), { recursive: true })
+    await fsp.writeFile(leaveMeFile1, 'leave me!')
+    await fsp.mkdir(ospath.dirname(cleanMeFile2), { recursive: true })
+    await fsp.writeFile(cleanMeFile2, 'leave me!')
     await publishSite(playbook, catalogs)
     expect(leaveMeFile1)
       .to.be.a.file()
@@ -446,7 +459,8 @@ describe('publishSite()', () => {
   it('should load custom provider from absolute path', async () => {
     const destFile = './report.txt'
     const absProviderPath = ospath.resolve(playbook.dir, 'reporter-abs.js')
-    fs.copySync(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
+    await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
+    await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
     playbook.site = { title: 'The Site' }
     playbook.output.destinations.push({ provider: absProviderPath, path: destFile })
     await publishSite(playbook, catalogs)
@@ -460,7 +474,8 @@ describe('publishSite()', () => {
     const destFile = './report.txt'
     const absProviderPath = ospath.join(TMP_DIR, `reporter-${process.pid}-${Date.now()}.js`)
     try {
-      fs.copySync(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
+      await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
+      await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
       playbook.site = { title: 'The Site' }
       playbook.output.destinations.push({ provider: absProviderPath, path: destFile })
       await publishSite(playbook, catalogs)
@@ -469,13 +484,15 @@ describe('publishSite()', () => {
         .to.be.a.file()
         .with.contents('published 6 files for The Site')
     } finally {
-      fs.unlinkSync(absProviderPath)
+      await fsp.unlink(absProviderPath)
     }
   })
 
   it('should load custom provider from relative path resolved from playbook dir', async () => {
     const destFile = './report.txt'
-    fs.copySync(ospath.join(FIXTURES_DIR, 'reporter.js'), ospath.resolve(playbook.dir, 'reporter-rel.js'))
+    const absProviderPath = ospath.resolve(playbook.dir, 'reporter-rel.js')
+    await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
+    await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
     playbook.site = { title: 'The Site' }
     playbook.output.destinations.push({ provider: './reporter-rel', path: destFile })
     await publishSite(playbook, catalogs)
@@ -488,7 +505,7 @@ describe('publishSite()', () => {
   it('should load custom provider from relative path resolved from cwd when playbook dir not set', async () => {
     process.chdir(WORK_DIR)
     const destFile = './report.txt'
-    fs.copySync(ospath.join(FIXTURES_DIR, 'reporter.js'), 'reporter-rel.js')
+    await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), 'reporter-rel.js')
     delete playbook.dir
     playbook.site = { title: 'The Site' }
     playbook.output.destinations.push({ provider: './reporter-rel.js', path: destFile })
@@ -502,7 +519,8 @@ describe('publishSite()', () => {
   it('should load custom provider from node modules path', async () => {
     const destFile = './report.txt'
     const absProviderPath = ospath.resolve(playbook.dir, 'node_modules/reporter-mod/index.js')
-    fs.copySync(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
+    await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
+    await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
     playbook.site = { title: 'The Site' }
     playbook.output.destinations.push({ provider: 'reporter-mod', path: destFile })
     await publishSite(playbook, catalogs)
@@ -515,7 +533,9 @@ describe('publishSite()', () => {
   it('should load custom provider multiple times', async () => {
     const destFile = './report.txt'
     const destFile2 = './report.txt.1'
-    fs.copySync(ospath.join(FIXTURES_DIR, 'reporter.js'), ospath.resolve(playbook.dir, 'reporter-multi.js'))
+    const absProviderPath = ospath.resolve(playbook.dir, 'reporter-multi.js')
+    await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
+    await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
     playbook.site = { title: 'The Site' }
     playbook.output.destinations.push({ provider: './reporter-multi', path: destFile })
     playbook.output.destinations.push({ provider: './reporter-multi', path: destFile })

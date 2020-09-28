@@ -9,9 +9,11 @@ if ('encoding' in String.prototype && String(String.prototype.encoding) !== 'UTF
 }
 
 const chai = require('chai')
-const fs = require('fs-extra')
+const fs = require('fs')
 const { Transform } = require('stream')
 const map = (transform) => new Transform({ objectMode: true, transform })
+const ospath = require('path')
+const { removeSync: rimrafSync } = require('fs-extra')
 
 chai.use(require('chai-fs'))
 chai.use(require('chai-cheerio'))
@@ -31,6 +33,57 @@ chai.Assertion.addMethod('endWith', function (expected) {
     undefined
   )
 })
+
+function unlinkSync (path_) {
+  try {
+    fs.unlinkSync(path_)
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err
+  }
+}
+
+function rmdirSyncPosix (dir) {
+  try {
+    const lst = fs.readdirSync(dir, { withFileTypes: true })
+    lst.forEach((it) =>
+      it.isDirectory() ? rmdirSyncPosix(ospath.join(dir, it.name)) : unlinkSync(ospath.join(dir, it.name))
+    )
+    fs.rmdirSync(dir)
+  } catch (err) {
+    if (err.code === 'ENOENT') return
+    if (err.code === 'ENOTDIR') return unlinkSync(dir)
+    throw err
+  }
+}
+
+function rmdirSyncWindows (dir) {
+  // NOTE: Windows requires either rimraf (from fs-extra) or Node 12 to remove a non-empty directory
+  rimrafSync(dir)
+  //fs.rmdirSync(dir, { recursive: true })
+}
+
+// Removes the specified directory (including all of its contents) or file.
+// Equivalent to fs.promises.rmdir(dir, { recursive: true }) in Node 12.
+const rmdirSync = process.platform === 'win32' ? rmdirSyncWindows : rmdirSyncPosix
+
+function emptyDirSync (dir) {
+  let lst
+  try {
+    lst = fs.readdirSync(dir, { withFileTypes: true })
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      fs.mkdirSync(dir, { recursive: true })
+      return
+    }
+    if (err.code === 'ENOTDIR') {
+      unlinkSync(dir)
+      fs.mkdirSync(dir, { recursive: true })
+      return
+    }
+    throw err
+  }
+  lst.forEach((it) => (it.isDirectory() ? rmdirSync(ospath.join(dir, it.name)) : unlinkSync(ospath.join(dir, it.name))))
+}
 
 module.exports = {
   bufferizeContents: () =>
@@ -83,6 +136,7 @@ module.exports = {
     }
     return deferredFn
   },
+  emptyDirSync,
   expect: chai.expect,
   heredoc: (literals, ...values) => {
     const str =
@@ -99,22 +153,7 @@ module.exports = {
     const indentSize = Math.min(...lines.filter((l) => l.startsWith(' ')).map((l) => l.match(indentRx)[0].length))
     return (indentSize ? lines.map((l) => (l.startsWith(' ') ? l.substr(indentSize) : l)) : lines).join('')
   },
-  removeSyncForce: (p, timeout = 5000) => {
-    // NOTE remove can fail multiple times on Windows, so try, try again
-    if (process.platform === 'win32') {
-      const start = Date.now()
-      let retry = true
-      while (retry) {
-        try {
-          fs.removeSync(p)
-          retry = false
-        } catch (err) {
-          if (Date.now() - start > timeout) throw err
-        }
-      }
-    } else {
-      fs.removeSync(p)
-    }
-  },
+  rmdirSync,
   spy: chai.spy,
+  toJSON: (obj) => JSON.stringify(obj, undefined, '  '),
 }

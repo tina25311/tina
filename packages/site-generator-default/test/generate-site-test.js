@@ -1,10 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureStdErr, expect, removeSyncForce } = require('../../../test/test-utils')
+const { captureStdErr, expect, rmdirSync, toJSON } = require('../../../test/test-utils')
 
 const cheerio = require('cheerio')
-const fs = require('fs-extra')
+const fs = require('fs')
 const generateSite = require('@antora/site-generator-default')
 const GitServer = require('node-git-server')
 const ospath = require('path')
@@ -49,15 +49,15 @@ describe('generateSite()', function () {
 
   beforeEach(async () => {
     env = { ANTORA_CACHE_DIR: ospath.join(WORK_DIR, '.antora/cache') }
-    removeSyncForce(CONTENT_REPOS_DIR)
-    fs.ensureDirSync(WORK_DIR)
+    rmdirSync(CONTENT_REPOS_DIR)
+    fs.mkdirSync(WORK_DIR, { recursive: true })
     try {
       fs.unlinkSync(playbookFile)
     } catch (ioe) {
       if (ioe.code !== 'ENOENT') throw ioe
     }
-    removeSyncForce(ospath.join(WORK_DIR, destDir.split('/')[0]))
-    removeSyncForce(ospath.join(env.ANTORA_CACHE_DIR, 'content'))
+    rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
+    rmdirSync(ospath.join(env.ANTORA_CACHE_DIR, 'content'))
     await repoBuilder
       .init('the-component')
       .then(() => repoBuilder.checkoutBranch('v2.0'))
@@ -87,19 +87,19 @@ describe('generateSite()', function () {
 
   after(async () => {
     await new Promise((resolve, reject) => gitServer.server.close((err) => (err ? reject(err) : resolve())))
-    removeSyncForce(CONTENT_REPOS_DIR)
+    rmdirSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
-      removeSyncForce(ospath.join(WORK_DIR, destDir.split('/')[0]))
+      rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
       fs.unlinkSync(playbookFile)
     } else {
-      removeSyncForce(WORK_DIR)
+      rmdirSync(WORK_DIR)
     }
   })
 
   it('should generate site into output directory specified in playbook file', async () => {
     playbookSpec.site.start_page = '2.0@the-component::index.adoc'
     playbookSpec.site.keys = { google_analytics: 'UA-XXXXXXXX-1' }
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, '_'))
       .to.be.a.directory()
@@ -153,9 +153,9 @@ describe('generateSite()', function () {
   it('should resolve dot-relative paths in playbook relative to playbook dir', async () => {
     const repoUrl = '.' + ospath.sep + ospath.relative(WORK_DIR, playbookSpec.content.sources[0].url)
     playbookSpec.content.sources[0].url = repoUrl
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const altWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
-    fs.ensureDirSync(altWorkDir)
+    fs.mkdirSync(altWorkDir, { recursive: true })
     const cwd = process.cwd()
     process.chdir(altWorkDir)
     await generateSite(['--playbook', ospath.relative('.', playbookFile)], env)
@@ -171,7 +171,7 @@ describe('generateSite()', function () {
   it('should generate site into output directory specified in arguments', async () => {
     const destDirOverride = ospath.join(destDir, 'beta')
     const absDestDirOverride = ospath.join(WORK_DIR, destDirOverride)
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile, '--to-dir', '.' + ospath.sep + destDirOverride], env)
     expect(ospath.join(absDestDirOverride, '_'))
       .to.be.a.directory()
@@ -183,7 +183,7 @@ describe('generateSite()', function () {
 
   it('should use start page from latest version of component if version not specified', async () => {
     playbookSpec.site.start_page = 'the-component::index.adoc'
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'index.html'))
       .to.be.a.file()
@@ -192,7 +192,7 @@ describe('generateSite()', function () {
 
   it('should show warning if start page is missing .adoc file extension', async () => {
     playbookSpec.site.start_page = 'the-component::index'
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const stdErrMessages = await captureStdErr(generateSite, ['--playbook', playbookFile], env)
     expect(stdErrMessages).to.have.lengthOf(1)
     expect(stdErrMessages[0]).to.equal('Start page specified for site not found: the-component::index')
@@ -200,7 +200,7 @@ describe('generateSite()', function () {
 
   it('should show warning if start page cannot be resolved', async () => {
     playbookSpec.site.start_page = 'unknown-component::index.adoc'
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const stdErrMessages = await captureStdErr(generateSite, ['--playbook', playbookFile], env)
     expect(stdErrMessages).to.have.lengthOf(1)
     expect(stdErrMessages[0]).to.equal('Start page specified for site not found: unknown-component::index.adoc')
@@ -208,7 +208,7 @@ describe('generateSite()', function () {
 
   it('should qualify applicable links using site url if set in playbook', async () => {
     playbookSpec.site.url = 'https://example.com/docs/'
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'sitemap.xml')).to.be.a.file()
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html'))
@@ -221,7 +221,7 @@ describe('generateSite()', function () {
 
   it('should generate 404 page if site url is set to absolute URL in playbook', async () => {
     playbookSpec.site.url = 'https://example.com'
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
     $ = loadHtmlFile('404.html')
@@ -234,7 +234,7 @@ describe('generateSite()', function () {
 
   it('should generate 404 page if site url is set to absolute URL with subpath in playbook', async () => {
     playbookSpec.site.url = 'https://example.com/docs'
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
     $ = loadHtmlFile('404.html')
@@ -247,7 +247,7 @@ describe('generateSite()', function () {
 
   it('should generate 404 page if site url is set to / in playbook', async () => {
     playbookSpec.site.url = '/'
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
     $ = loadHtmlFile('404.html')
@@ -260,7 +260,7 @@ describe('generateSite()', function () {
 
   it('should generate 404 page if site url is set to a pathname in the playbook', async () => {
     playbookSpec.site.url = '/docs'
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
     $ = loadHtmlFile('404.html')
@@ -272,7 +272,7 @@ describe('generateSite()', function () {
   }).timeout(timeoutOverride)
 
   it('should be able to reference implicit page attributes', async () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
@@ -283,7 +283,7 @@ describe('generateSite()', function () {
     playbookSpec.asciidoc = {
       attributes: { sectanchors: null, sectnums: '', description: 'Stuff about stuff@' },
     }
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
@@ -313,7 +313,7 @@ describe('generateSite()', function () {
         })
       )
       .then(() => repoBuilder.close('master'))
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
@@ -326,15 +326,14 @@ describe('generateSite()', function () {
   }).timeout(timeoutOverride)
 
   it('should register extensions defined in playbook on AsciiDoc processor', async () => {
-    fs.outputFileSync(
-      ospath.resolve(WORK_DIR, 'ext', 'shout-tree-processor.js'),
-      fs.readFileSync(ospath.resolve(FIXTURES_DIR, 'shout-tree-processor.js'), 'utf8')
-    )
+    const absExtensionPath = ospath.resolve(WORK_DIR, 'ext', 'shout-tree-processor.js')
+    fs.mkdirSync(ospath.dirname(absExtensionPath), { recursive: true })
+    fs.copyFileSync(ospath.resolve(FIXTURES_DIR, 'shout-tree-processor.js'), absExtensionPath)
     playbookSpec.asciidoc = {
       attributes: { volume: '3' },
       extensions: ['./ext/shout-tree-processor.js', ospath.resolve(FIXTURES_DIR, 'named-entity-postprocessor.js')],
     }
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html'))
       .to.be.a.file()
@@ -351,7 +350,7 @@ describe('generateSite()', function () {
         contents: '<meta property="og:site_name" content="{{env.SITE_NAME}}">',
       },
     ]
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html'))
       .to.be.a.file()
@@ -366,7 +365,7 @@ describe('generateSite()', function () {
         contents: 'output_dir: not-used',
       },
     ]
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'ui'))
       .to.be.a.directory()
@@ -381,7 +380,7 @@ describe('generateSite()', function () {
       .open()
       .then(() => repoBuilder.config('remote.origin.url', remoteGitUrl))
       .then(() => repoBuilder.close())
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
@@ -395,7 +394,7 @@ describe('generateSite()', function () {
     const refname = 'v2.0'
     playbookSpec.content.sources[0].url = repoBuilder.url
     playbookSpec.content.sources[0].editUrl = `${editBaseUrl}/edit/{refname}/{path}`
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
@@ -407,7 +406,7 @@ describe('generateSite()', function () {
   it('should not add edit page link to toolbar if repository is private', async () => {
     playbookSpec.content.sources[0].url = repoBuilder.url.replace('//', '//@')
     playbookSpec.content.sources[0].editUrl = `${repoBuilder.url.replace(/\.git$/, '')}/edit/{refname}/{path}`
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
@@ -419,7 +418,7 @@ describe('generateSite()', function () {
     const refname = 'v2.0'
     playbookSpec.content.sources[0].url = repoBuilder.url.replace('//', '//@')
     playbookSpec.content.sources[0].editUrl = `${editBaseUrl}/edit/{refname}/{path}`
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     env.FORCE_SHOW_EDIT_PAGE_LINK = 'true'
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
@@ -434,7 +433,7 @@ describe('generateSite()', function () {
       .open()
       .then(() => repoBuilder.checkoutBranch('v2.0'))
       .then(() => repoBuilder.close())
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     expect(env).to.not.have.property('CI')
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
@@ -456,7 +455,7 @@ describe('generateSite()', function () {
       .open()
       .then(() => repoBuilder.config('remote.origin.url', remoteGitUrl))
       .then(() => repoBuilder.checkoutBranch(refname))
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
@@ -483,7 +482,7 @@ describe('generateSite()', function () {
       )
       .then(() => repoBuilder.close('master'))
     playbookSpec.content.sources[0].branches = ['v2.0', 'v1.0']
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component'))
       .to.be.a.directory()
@@ -580,7 +579,7 @@ describe('generateSite()', function () {
       url: repoBuilder.repoPath,
       branches: ['master', 'v1.0'],
     })
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-other-component')).to.be.a.directory()
     expect(ospath.join(absDestDir, 'the-other-component/core/index.html')).to.be.a.file()
@@ -614,7 +613,7 @@ describe('generateSite()', function () {
   }).timeout(timeoutOverride)
 
   it('should resolve xrefs that use an alias as the target', async () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     const contents = readFile('the-component/2.0/index.html', absDestDir)
     expect(contents).to.include('<a href="the-page.html" class="page">its alias</a>')
@@ -624,7 +623,7 @@ describe('generateSite()', function () {
 
   // NOTE this also tests that aliases do not have to have the .adoc file extension
   it('should generate static redirect files for aliases by default', async () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-alias.html')).to.be.a.file()
     let contents = readFile('the-component/2.0/the-alias.html', absDestDir)
@@ -635,7 +634,7 @@ describe('generateSite()', function () {
 
   // NOTE this also tests that aliases do not have to have the .adoc file extension
   it('should generate nginx rewrite config file for aliases when using nginx redirect facility', async () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile, '--redirect-facility', 'nginx'], env)
     expect(ospath.join(absDestDir, '.etc/nginx/rewrite.conf')).to.be.a.file()
     const contents = readFile('.etc/nginx/rewrite.conf', absDestDir)
@@ -649,7 +648,7 @@ describe('generateSite()', function () {
 
   it('should indexify URLs to internal pages', async () => {
     playbookSpec.urls = { html_extension_style: 'indexify' }
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html')).to.be.a.file()
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page/index.html')).to.be.a.file()
@@ -668,7 +667,7 @@ describe('generateSite()', function () {
 
   describe('integration', () => {
     beforeEach(() => {
-      removeSyncForce(ospath.join(env.ANTORA_CACHE_DIR, 'content'))
+      rmdirSync(ospath.join(env.ANTORA_CACHE_DIR, 'content'))
     })
 
     it('should output archive from site generated from git repository', async () => {
@@ -676,7 +675,7 @@ describe('generateSite()', function () {
       const absArchivePath = ospath.join(WORK_DIR, archivePath)
       playbookSpec.content.sources[0].url = repoBuilder.url
       playbookSpec.output.destinations[0] = { provider: 'archive', path: archivePath }
-      fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(['--playbook', playbookFile], env)
       expect(absArchivePath).to.be.a.file()
     }).timeout(timeoutOverride)
@@ -686,7 +685,7 @@ describe('generateSite()', function () {
       playbookSpec.runtime.quiet = false
       playbookSpec.content.sources[0].url = repoBuilder.url
       playbookSpec.output.destinations = []
-      fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const defaultStdout = 'clearLine columns cursorTo isTTY moveCursor write'.split(' ').reduce((accum, name) => {
         accum[name] = process.stdout[name]
         return accum
