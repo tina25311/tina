@@ -1998,14 +1998,12 @@ describe('aggregateContent()', function () {
           basename: 'page-one.adoc',
           stem: 'page-one',
           extname: '.adoc',
-          mediaType: 'text/asciidoc',
         }
         const expectedFileSrc = {
           path: expectedFile.path,
           basename: expectedFile.basename,
           stem: expectedFile.stem,
           extname: expectedFile.extname,
-          mediaType: expectedFile.mediaType,
           origin: {
             type: 'git',
             branch: 'master',
@@ -2052,14 +2050,12 @@ describe('aggregateContent()', function () {
           basename: 'page-one.adoc',
           stem: 'page-one',
           extname: '.adoc',
-          mediaType: 'text/asciidoc',
         }
         const expectedFileSrc = {
           path: expectedFile.path,
           basename: expectedFile.basename,
           stem: expectedFile.stem,
           extname: expectedFile.extname,
-          mediaType: expectedFile.mediaType,
           origin: {
             type: 'git',
             branch: 'master',
@@ -2106,14 +2102,12 @@ describe('aggregateContent()', function () {
           basename: 'page with spaces.adoc',
           stem: 'page with spaces',
           extname: '.adoc',
-          mediaType: 'text/asciidoc',
         }
         const expectedFileSrc = {
           path: expectedFile.path,
           basename: expectedFile.basename,
           stem: expectedFile.stem,
           extname: expectedFile.extname,
-          mediaType: expectedFile.mediaType,
           origin: {
             type: 'git',
             branch: 'master',

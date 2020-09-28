@@ -24,7 +24,6 @@
     "isomorphic-git": "0.78.5",
     "js-yaml": "~3.14",
     "matcher": "~3.0",
-    "mime-types": "~2.1",
     "multi-progress": "~3.0",
     "picomatch": "~2.2",
     "progress": "~2.0",
