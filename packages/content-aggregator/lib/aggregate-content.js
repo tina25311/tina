@@ -6,7 +6,8 @@ const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
 const flattenDeep = require('./flatten-deep')
-const fs = require('fs-extra')
+const fs = require('fs')
+const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('isomorphic-git')
@@ -144,9 +145,9 @@ async function loadRepository (url, opts) {
     const credentialManager = opts.credentialManager
     const validStateFile = ospath.join(repo.gitdir, VALID_STATE_FILENAME)
     try {
-      await fs.access(validStateFile)
+      await fsp.access(validStateFile)
       if (opts.fetch) {
-        await fs.unlink(validStateFile)
+        await fsp.unlink(validStateFile)
         const fetchOpts = getFetchOptions(repo, opts.progress, displayUrl, credentials, opts.fetchTags, 'fetch')
         await git
           .fetch(fetchOpts)
@@ -159,14 +160,14 @@ async function loadRepository (url, opts) {
             if (fetchErr.name === git.E.HTTPError && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
             throw fetchErr
           })
-          .then(() => fs.createFile(validStateFile).catch(invariably.void))
+          .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
           .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
       } else {
         // NOTE use cached value from previous fetch
         authStatus = await git.config(Object.assign({ path: 'remote.origin.private' }, repo))
       }
     } catch (gitErr) {
-      await fs.remove(dir)
+      await rmdir(dir)
       if (gitErr.rethrow) throw transformGitCloneError(gitErr, displayUrl)
       const fetchOpts = getFetchOptions(repo, opts.progress, displayUrl, credentials, opts.fetchTags, 'clone')
       await git
@@ -177,16 +178,16 @@ async function loadRepository (url, opts) {
           return git.config(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
         .catch(async (cloneErr) => {
-          await fs.remove(dir)
+          await rmdir(dir)
           // FIXME triggering the error handler here causes assertion problems in the test suite
           //fetchOpts.emitter && fetchOpts.emitter.emit('error', cloneErr)
           throw transformGitCloneError(cloneErr, displayUrl)
         })
-        .then(() => fs.createFile(validStateFile).catch(invariably.void))
+        .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
         .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
     }
-  } else if (await isLocalDirectory((dir = expandPath(url, '~+', opts.startDir)))) {
-    repo = (await isLocalDirectory(ospath.join(dir, '.git')))
+  } else if (await isDirectory((dir = expandPath(url, '~+', opts.startDir)))) {
+    repo = (await isDirectory(ospath.join(dir, '.git')))
       ? { core: GIT_CORE, dir }
       : { core: GIT_CORE, dir, gitdir: dir, noCheckout: true }
     try {
@@ -384,7 +385,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
 
 function readFilesFromWorktree (worktreePath, startPath) {
   const cwd = path.join(worktreePath, startPath)
-  return fs
+  return fsp
     .stat(cwd)
     .catch(() => {
       throw new Error(`the start path '${startPath}' does not exist`)
@@ -725,11 +726,30 @@ async function resolveRemoteUrl (repo, remoteName) {
  * @param {String} url - The URL to check.
  * @return {Boolean} A flag indicating whether the URL matches a directory on the local filesystem.
  */
-function isLocalDirectory (url) {
-  return fs
+function isDirectory (url) {
+  return fsp
     .stat(url)
     .then((stat) => stat.isDirectory())
     .catch(invariably.false)
+}
+
+/**
+ * Removes the specified directory, including all of its contents.
+ * Equivalent to fs.promises.rmdir(dir, { recursive: true }) in Node 12.
+ */
+function rmdir (dir) {
+  return fsp
+    .readdir(dir, { withFileTypes: true })
+    .then((its) =>
+      Promise.all(
+        its.map((it) => (it.isDirectory() ? rmdir(ospath.join(dir, it.name)) : fsp.unlink(ospath.join(dir, it.name))))
+      )
+    )
+    .then(() => fsp.rmdir(dir))
+    .catch((e) => {
+      if (e.code === 'ENOTDIR') return fsp.unlink(dir)
+      if (e.code !== 'ENOENT') throw e
+    })
 }
 
 function tagsSpecified (sources, defaultTags) {
@@ -776,13 +796,17 @@ function ensureCacheDir (preferredCacheDir, startDir) {
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
       : expandPath(preferredCacheDir, '~+', startDir)
   const cacheDir = ospath.join(baseCacheDir, CONTENT_CACHE_FOLDER)
-  return fs
-    .ensureDir(cacheDir)
-    .then(() => cacheDir)
-    .catch((err) => {
-      err.message = `Failed to create content cache directory: ${cacheDir}; ${err.message}`
-      throw err
-    })
+  return isDirectory(cacheDir).then((dirExists) =>
+    dirExists
+      ? cacheDir
+      : fsp
+        .mkdir(cacheDir, { recursive: true })
+        .then(() => cacheDir)
+        .catch((err) => {
+          err.message = `Failed to create content cache directory: ${cacheDir}; ${err.message}`
+          throw err
+        })
+  )
 }
 
 function transformGitCloneError (err, displayUrl) {

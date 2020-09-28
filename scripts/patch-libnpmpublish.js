@@ -1,7 +1,6 @@
 'use strict'
 
-const fs = require('fs')
-const { promisify } = require('util')
+const { promises: fsp } = require('fs')
 
 function patchSource (source) {
   if (source.includes('readmeFilename: ')) return source
@@ -10,7 +9,5 @@ function patchSource (source) {
 
 ;(async () => {
   const sourceFile = require.resolve('@evocateur/libnpmpublish/publish.js')
-  await promisify(fs.readFile)(sourceFile, 'utf8').then((source) =>
-    promisify(fs.writeFile)(sourceFile, patchSource(source))
-  )
+  await fsp.readFile(sourceFile, 'utf8').then((source) => fsp.writeFile(sourceFile, patchSource(source)))
 })()

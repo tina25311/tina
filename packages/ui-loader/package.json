@@ -20,13 +20,15 @@
     "bl": "~4.0",
     "cache-directory": "~2.0",
     "camelcase-keys": "~6.2",
-    "fs-extra": "~9.0",
     "got": "~11.7",
     "gulp-vinyl-zip": "~2.2",
     "js-yaml": "~3.14",
     "minimatch-all": "~1.1",
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"
+  },
+  "devDependencies": {
+    "fs-extra": "~9.0"
   },
   "engines": {
     "node": ">=10.17.0"
