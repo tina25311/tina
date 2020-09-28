@@ -10,7 +10,8 @@ if ('encoding' in String.prototype && String(String.prototype.encoding) !== 'UTF
 
 const chai = require('chai')
 const fs = require('fs-extra')
-const { obj: map } = require('through2')
+const { Transform } = require('stream')
+const map = (transform) => new Transform({ objectMode: true, transform })
 
 chai.use(require('chai-fs'))
 chai.use(require('chai-cheerio'))
