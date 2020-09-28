@@ -793,17 +793,13 @@ function ensureCacheDir (preferredCacheDir, startDir) {
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
       : expandPath(preferredCacheDir, '~+', startDir)
   const cacheDir = ospath.join(baseCacheDir, CONTENT_CACHE_FOLDER)
-  return isDirectory(cacheDir).then((dirExists) =>
-    dirExists
-      ? cacheDir
-      : fsp
-        .mkdir(cacheDir, { recursive: true })
-        .then(() => cacheDir)
-        .catch((err) => {
-          err.message = `Failed to create content cache directory: ${cacheDir}; ${err.message}`
-          throw err
-        })
-  )
+  return fsp
+    .mkdir(cacheDir, { recursive: true })
+    .then(() => cacheDir)
+    .catch((err) => {
+      err.message = `Failed to create content cache directory: ${cacheDir}; ${err.message}`
+      throw err
+    })
 }
 
 function transformGitCloneError (err, displayUrl) {

@@ -140,20 +140,12 @@ function ensureCacheDir (customCacheDir, startDir) {
       : expandPath(customCacheDir, '~+', startDir)
   const cacheDir = ospath.join(baseCacheDir, UI_CACHE_FOLDER)
   return fsp
-    .stat(cacheDir)
-    .then((stat) => stat.isDirectory())
-    .catch(() => false)
-    .then((dirExists) =>
-      dirExists
-        ? cacheDir
-        : fsp
-          .mkdir(cacheDir, { recursive: true })
-          .then(() => cacheDir)
-          .catch((err) => {
-            err.message = `Failed to create UI cache directory: ${cacheDir}; ${err.message}`
-            throw err
-          })
-    )
+    .mkdir(cacheDir, { recursive: true })
+    .then(() => cacheDir)
+    .catch((err) => {
+      err.message = `Failed to create UI cache directory: ${cacheDir}; ${err.message}`
+      throw err
+    })
 }
 
 function downloadBundle (url, to) {
