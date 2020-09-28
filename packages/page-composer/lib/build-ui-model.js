@@ -49,6 +49,7 @@ function buildSiteUiModel (playbook, contentCatalog) {
   if (startPage) model.homeUrl = startPage.pub.url
 
   model.components = contentCatalog.getComponentsSortedBy('title').reduce((map, it) => (map[it.name] = it) && map, {})
+  // NOTE: duplicate site.keys since original is frozen
   model.keys = Object.assign({}, playbook.site.keys)
 
   const uiConfig = playbook.ui
