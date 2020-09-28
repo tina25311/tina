@@ -3953,7 +3953,7 @@ describe('aggregateContent()', function () {
       it('should throw meaningful error if git host cannot be resolved', async () => {
         const url = 'https://gitlab.info/org/repository.git'
         playbookSpec.content.sources.push({ url })
-        const expectedErrorMessage = `Content repository host could not be resolved: gitlab.info:443 (url: ${url})`
+        const expectedErrorMessage = `Content repository host could not be resolved: gitlab.info (url: ${url})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       })

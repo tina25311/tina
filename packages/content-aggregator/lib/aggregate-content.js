@@ -827,7 +827,7 @@ function transformGitCloneError (err, displayUrl) {
   } else if (code === git.E.RemoteUrlParseError || code === git.E.UnknownTransportError) {
     wrappedMsg = 'Content source uses an unsupported transport protocol'
   } else if (code === 'ENOTFOUND') {
-    wrappedMsg = 'Content repository host could not be resolved: ' + err.host + ':' + err.port
+    wrappedMsg = 'Content repository host could not be resolved: ' + err.hostname
   } else {
     wrappedMsg = name + ': ' + message
     trimMessage = true
