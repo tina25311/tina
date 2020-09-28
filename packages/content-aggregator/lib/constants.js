@@ -2,7 +2,7 @@
 
 module.exports = Object.freeze({
   COMPONENT_DESC_FILENAME: 'antora.yml',
-  CONTENT_CACHE_FOLDER: 'content',
+  CONTENT_CACHE_FOLDER: 'content/2',
   CONTENT_GLOB: '**/*.*',
   // NOTE ignoring 120000 (symlink)
   FILE_MODES: { 100644: 0o100666 & ~process.umask(), 100755: 0o100777 & ~process.umask() },
