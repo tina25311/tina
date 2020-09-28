@@ -543,7 +543,7 @@ function loadComponentDescriptor (files) {
 
 function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefined, editUrl = true) {
   const { shortname: refname, oid: refhash, type: reftype } = ref
-  const origin = { type: 'git', startPath }
+  const origin = { type: 'git', refname, startPath }
   if (url) origin.webUrl = (origin.url = url).replace(GIT_SUFFIX_RX, '')
   if (authStatus) origin.private = authStatus
   origin[reftype] = refname

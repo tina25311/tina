@@ -24,6 +24,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Add urls.latest_version_segment key to playbook schema (#314)
 * *playbook-builder*: Add urls.latest_prerelease_version_segment key to playbook schema (#314)
 * *content-aggregator*: Store computed web URL of content source on `src.origin.webUrl` property of virtual file (#615)
+* *content-aggregator*: Store refname of content source on `src.origin.refname` property of virtual file (#694)
 * *content-classifier*: Extract method to register start page for component version (`ContentCatalog#registerComponentVersionStartPage`) (#605)
 * *content-classifier*: Replace latest version and/or prerelease version segment in out path and pub URL (unless version is master) with symbolic name, if specified (#314)
 * *content-classifier*: Define latestPrerelease property on component version (if applicable) and use when computing latest version segment (#314)
