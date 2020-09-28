@@ -86,6 +86,7 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
     layout: pageAttributes.layout || siteUiModel.ui.defaultLayout,
     title,
     url,
+    author: attributes.author,
     description: attributes.description,
     keywords: attributes.keywords,
     role: attributes.docrole,
