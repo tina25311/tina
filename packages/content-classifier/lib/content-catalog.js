@@ -1,6 +1,7 @@
 'use strict'
 
 const File = require('./file')
+const { lookup: resolveMimeType } = require('./mime-types-with-asciidoc')
 const parseResourceId = require('./util/parse-resource-id')
 const { posix: path } = require('path')
 const resolveResource = require('./util/resolve-resource')
@@ -128,8 +129,28 @@ class ContentCatalog {
         }
       }
     }
-    if (!File.isVinyl(file)) file = new File(file)
-    if (family === 'alias') family = file.rel.src.family
+    // NOTE: if the path property is not set, assume the src likely needs to be prepared
+    // another option is to assume that if the file is not a vinyl object, the src likely needs to be prepared
+    // a vinyl object is one indication the file was created and prepared by the content aggregator
+    //if (!src.path) prepareSrc(src)
+    //if (!File.isVinyl(file)) file = new File(file)
+    if (!File.isVinyl(file)) {
+      prepareSrc(src)
+      file = new File(file)
+    }
+    if (family === 'alias') {
+      src.mediaType = 'text/asciidoc'
+      file.mediaType = 'text/html'
+      // NOTE: an alias masquerades as the target file
+      family = file.rel.src.family
+    //} else {
+    //  if (!src.mediaType && !('mediaType' in src)) {
+    //    src.mediaType = resolveMimeType(src.extname) || (family === 'page' ? 'text/asciidoc' : undefined)
+    //  }
+    //  if (!file.mediaType && !('mediaType' in file)) file.mediaType = src.mediaType
+    } else if (!(file.mediaType = src.mediaType) && !('mediaType' in src)) {
+      file.mediaType = src.mediaType = resolveMimeType(src.extname) || (family === 'page' ? 'text/asciidoc' : undefined)
+    }
     let publishable
     let versionSegment
     if (file.out) {
@@ -232,7 +253,7 @@ class ContentCatalog {
         startPageSrc.version === version
       ) {
         if ((startPageSrc.module !== 'ROOT' || startPageSrc.relative !== 'index.adoc') && !this.getById(indexPageId)) {
-          this.addFile({ mediaType: 'text/html', src: inflateSrc(indexPageId, 'alias'), rel: startPage })
+          this.addFile({ src: Object.assign({}, indexPageId, { family: 'alias' }), rel: startPage })
         }
       } else {
         console.warn(
@@ -250,7 +271,7 @@ class ContentCatalog {
       // QUESTION: should we warn if the default start page cannot be found?
       const versionSegment = computeVersionSegment.bind(this)(name, version)
       componentVersion.url = computePub(
-        (startPageSrc = inflateSrc(indexPageId)),
+        (startPageSrc = prepareSrc(Object.assign({}, indexPageId, { family: 'page' }))),
         computeOut(startPageSrc, startPageSrc.family, versionSegment, this.htmlUrlExtensionStyle),
         startPageSrc.family,
         versionSegment,
@@ -271,7 +292,7 @@ class ContentCatalog {
     if (!startPageSpec) return
     const rel = this.resolvePage(startPageSpec)
     if (rel) {
-      return this.addFile({ mediaType: 'text/html', src: inflateSrc(Object.assign({}, START_ALIAS_ID), 'alias'), rel })
+      return this.addFile({ src: Object.assign({}, START_ALIAS_ID), rel })
     } else if (rel === false) {
       console.warn(`Start page specified for site has invalid syntax: ${startPageSpec}`)
     } else if (~startPageSpec.indexOf(':')) {
@@ -284,10 +305,10 @@ class ContentCatalog {
   // QUESTION should this be addPageAlias?
   registerPageAlias (spec, target) {
     // .adoc file extension will be required on ID spec for page alias starting in Antora 4 (possibly in Antora 3)
-    const inferredSpec = spec.endsWith('.adoc') ? spec : spec + '.adoc'
-    const src = parseResourceId(inferredSpec, target.src, 'page', ['page'])
+    const inferredSpec = spec.endsWith('.adoc') ? undefined : spec + '.adoc'
+    const src = parseResourceId(inferredSpec || spec, target.src, 'page', ['page'])
     // QUESTION should we throw an error if alias is invalid?
-    if (!src || (src.relative === '.adoc' && spec !== inferredSpec)) return
+    if (!src || (inferredSpec && src.relative === '.adoc')) return
     const component = this.getComponent(src.component)
     if (component) {
       // NOTE version is not set when alias specifies a component, but not a version
@@ -314,8 +335,9 @@ class ContentCatalog {
       // QUESTION should we skip registering alias in this case?
       src.version = 'master'
     }
+    src.family = 'alias'
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
-    const alias = this.addFile({ mediaType: 'text/html', src: inflateSrc(src, 'alias'), rel: target })
+    const alias = this.addFile({ src, rel: target })
     // NOTE record the first alias this target claims as the preferred one
     if (!target.rel) target.rel = alias
     return alias
@@ -380,27 +402,36 @@ function generateResourceSpec ({ component, version, module: module_, family, re
   )
 }
 
-function inflateSrc (src, family = 'page', mediaType = 'text/asciidoc') {
-  const basename = (src.basename = path.basename(src.relative))
-  const extIdx = basename.lastIndexOf('.')
-  if (~extIdx) {
-    src.stem = basename.substr(0, extIdx)
-    src.extname = basename.substr(extIdx)
-  } else {
-    src.stem = basename
-    src.extname = ''
+function prepareSrc (src) {
+  let { basename, extname, stem } = src
+  let update
+  if (basename == null) {
+    update = true
+    basename = path.basename(src.relative)
   }
-  src.family = family
-  src.mediaType = mediaType
-  return src
+  if (stem == null) {
+    update = true
+    if (extname == null) {
+      if (~(extname = basename.lastIndexOf('.'))) {
+        stem = basename.substr(0, extname)
+        extname = basename.substr(extname)
+      } else {
+        stem = basename
+        extname = ''
+      }
+    } else {
+      stem = basename.substr(0, basename.length - extname.length)
+    }
+  } else if (extname == null) {
+    update = true
+    extname = basename.substr(stem.length)
+  }
+  return update ? Object.assign(src, { basename, extname, stem }) : src
 }
 
 function computeOut (src, family, version, htmlUrlExtensionStyle) {
-  const component = src.component
-  const module_ = src.module === 'ROOT' ? '' : src.module
-
-  let basename = src.basename || path.basename(src.relative)
-  const stem = src.stem || basename.substr(0, (basename.lastIndexOf('.') + 1 || basename.length + 1) - 1)
+  let { component, module: module_, basename, extname, relative, stem } = src
+  if (module_ === 'ROOT') module_ = ''
   let indexifyPathSegment = ''
   let familyPathSegment = ''
 
@@ -408,7 +439,7 @@ function computeOut (src, family, version, htmlUrlExtensionStyle) {
     if (stem !== 'index' && htmlUrlExtensionStyle === 'indexify') {
       basename = 'index.html'
       indexifyPathSegment = stem
-    } else if (src.mediaType === 'text/asciidoc') {
+    } else if (extname === '.adoc') {
       basename = stem + '.html'
     }
   } else if (family === 'image') {
@@ -418,7 +449,7 @@ function computeOut (src, family, version, htmlUrlExtensionStyle) {
   }
 
   const modulePath = path.join(component, version, module_)
-  const dirname = path.join(modulePath, familyPathSegment, path.dirname(src.relative), indexifyPathSegment)
+  const dirname = path.join(modulePath, familyPathSegment, path.dirname(relative), indexifyPathSegment)
   const path_ = path.join(dirname, basename)
   const moduleRootPath = path.relative(dirname, modulePath) || '.'
   const rootPath = path.relative(dirname, '') || '.'
@@ -486,29 +517,27 @@ function computeVersionSegment (name, version, mode) {
   return version
 }
 
-function createSymbolicVersionAlias (name, version, symbolicVersionSegment, strategy) {
+function createSymbolicVersionAlias (component, version, symbolicVersionSegment, strategy) {
   if (symbolicVersionSegment == null || symbolicVersionSegment === version) return
-  const versionAliasFamily = 'alias'
-  const baseVersionAliasSrc = { component: name, module: 'ROOT', family: versionAliasFamily, relative: '' }
+  const family = 'alias'
+  const baseVersionAliasSrc = { component, module: 'ROOT', family, relative: '', basename: '', stem: '', extname: '' }
   const symbolicVersionAliasSrc = Object.assign({}, baseVersionAliasSrc, { version: symbolicVersionSegment })
   const symbolicVersionAlias = {
-    mediaType: 'text/html',
     src: symbolicVersionAliasSrc,
     pub: computePub(
       symbolicVersionAliasSrc,
-      computeOut(symbolicVersionAliasSrc, versionAliasFamily, symbolicVersionSegment),
-      versionAliasFamily
+      computeOut(symbolicVersionAliasSrc, family, symbolicVersionSegment),
+      family
     ),
   }
   const originalVersionAliasSrc = Object.assign({}, baseVersionAliasSrc, { version })
-  const originalVersionSegment = computeVersionSegment(name, version, 'original')
+  const originalVersionSegment = computeVersionSegment(component, version, 'original')
   const originalVersionAlias = {
-    mediaType: 'text/html',
     src: originalVersionAliasSrc,
     pub: computePub(
       originalVersionAliasSrc,
-      computeOut(originalVersionAliasSrc, versionAliasFamily, originalVersionSegment),
-      versionAliasFamily
+      computeOut(originalVersionAliasSrc, family, originalVersionSegment),
+      family
     ),
   }
   if (strategy === 'redirect:to') {

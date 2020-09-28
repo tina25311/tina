@@ -4,10 +4,9 @@
 const { captureStdErrSync, expect } = require('../../../test/test-utils')
 
 const classifyContent = require('@antora/content-classifier')
-const mimeTypes = require('@antora/content-aggregator/lib/mime-types-with-asciidoc')
 const { posix: path } = require('path')
 
-const { COMPONENT_DESC_FILENAME } = require('@antora/content-aggregator/lib/constants')
+const COMPONENT_DESC_FILENAME = 'antora.yml'
 
 describe('classifyContent()', () => {
   let playbook
@@ -20,7 +19,7 @@ describe('classifyContent()', () => {
     const origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
     return {
       path: path_,
-      src: { basename, mediaType: mimeTypes.lookup(extname), stem, extname, origin },
+      src: { basename, stem, extname, origin },
     }
   }
 
@@ -430,8 +429,10 @@ describe('classifyContent()', () => {
         basename: 'page-one.adoc',
         stem: 'page-one',
         extname: '.adoc',
+        mediaType: 'text/asciidoc',
         moduleRootPath: '..',
       })
+      expect(file.mediaType).to.equal('text/asciidoc')
       expect(file.out).to.include({
         path: 'the-component/v1.2.3/page-one.html',
         dirname: 'the-component/v1.2.3',
@@ -510,10 +511,14 @@ describe('classifyContent()', () => {
       aggregate[0].startPage = 'home.adoc'
       aggregate[0].files.push(createFile('modules/ROOT/pages/home.adoc'))
       const expectedUrl = '/the-component/v1.2.3/home.html'
-      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const component = contentCatalog.getComponent('the-component')
       expect(component).to.exist()
       expect(component.url).to.equal(expectedUrl)
       expect(component.versions[0].url).to.equal(expectedUrl)
+      const startPage = contentCatalog.getFiles().find((it) => it.src.family === 'alias')
+      expect(startPage.mediaType).to.equal('text/html')
+      expect(startPage.src.mediaType).to.equal('text/asciidoc')
     })
 
     it('should allow the start page in non-ROOT module to be specified for a component version', () => {
@@ -587,8 +592,10 @@ describe('classifyContent()', () => {
         family: 'partial',
         relative: 'foo.adoc',
         basename: 'foo.adoc',
+        mediaType: 'text/asciidoc',
         moduleRootPath: '../..',
       })
+      expect(file.mediaType).to.equal('text/asciidoc')
       expect(file.out).to.not.exist()
       expect(file.pub).to.not.exist()
     })
@@ -638,8 +645,10 @@ describe('classifyContent()', () => {
         family: 'image',
         relative: 'foo.png',
         basename: 'foo.png',
+        mediaType: 'image/png',
         moduleRootPath: '..',
       })
+      expect(file.mediaType).to.equal('image/png')
       expect(file.out).to.include({
         path: 'the-component/v1.2.3/_images/foo.png',
         dirname: 'the-component/v1.2.3/_images',
@@ -688,8 +697,10 @@ describe('classifyContent()', () => {
         family: 'attachment',
         relative: 'example.zip',
         basename: 'example.zip',
+        mediaType: 'application/zip',
         moduleRootPath: '..',
       })
+      expect(file.mediaType).to.equal('application/zip')
       expect(file.out).to.include({
         path: 'the-component/v1.2.3/_attachments/example.zip',
         dirname: 'the-component/v1.2.3/_attachments',
@@ -713,8 +724,10 @@ describe('classifyContent()', () => {
         family: 'attachment',
         relative: 'example.adoc',
         basename: 'example.adoc',
+        mediaType: 'text/asciidoc',
         moduleRootPath: '..',
       })
+      expect(file.mediaType).to.equal('text/asciidoc')
       expect(file.out).to.include({
         path: 'the-component/v1.2.3/_attachments/example.adoc',
         dirname: 'the-component/v1.2.3/_attachments',
@@ -763,8 +776,10 @@ describe('classifyContent()', () => {
         family: 'example',
         relative: 'foo.xml',
         basename: 'foo.xml',
+        mediaType: 'application/xml',
         moduleRootPath: '..',
       })
+      expect(file.mediaType).to.equal('application/xml')
       expect(file.out).to.not.exist()
       expect(file.pub).to.not.exist()
     })
@@ -817,8 +832,10 @@ describe('classifyContent()', () => {
         family: 'nav',
         relative: 'nav.adoc',
         basename: 'nav.adoc',
+        mediaType: 'text/asciidoc',
         moduleRootPath: '.',
       })
+      expect(file.mediaType).to.equal('text/asciidoc')
       expect(file.out).to.not.exist()
       expect(file.pub).to.include({
         url: '/the-component/v1.2.3/module-a/',
@@ -1001,6 +1018,8 @@ describe('classifyContent()', () => {
         relative: 'index.adoc',
       })
       expect(expected).to.exist()
+      expect(expected.mediaType).to.equal('text/html')
+      expect(expected.src.mediaType).to.equal('text/asciidoc')
     })
 
     it('should warn if site start page not found', () => {

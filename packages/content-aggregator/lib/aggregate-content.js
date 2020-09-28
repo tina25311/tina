@@ -13,7 +13,6 @@ const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('isomorphic-git')
 const invariably = { false: () => false, void: () => {} }
 const matcher = require('matcher')
-const mimeTypes = require('./mime-types-with-asciidoc')
 const MultiProgress = require('multi-progress')(require('progress'))
 const ospath = require('path')
 const { posix: path } = ospath
@@ -585,10 +584,8 @@ function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefine
 }
 
 function assignFileProperties (file, origin) {
-  const extname = file.extname
   if (!file.src) file.src = {}
-  Object.assign(file.src, { path: file.path, basename: file.basename, stem: file.stem, extname, origin })
-  file.mediaType = file.src.mediaType = mimeTypes.lookup(extname)
+  Object.assign(file.src, { path: file.path, basename: file.basename, stem: file.stem, extname: file.extname, origin })
   if (origin.fileUriPattern) {
     const fileUri = origin.fileUriPattern.replace('%s', file.src.path)
     file.src.fileUri = ~fileUri.indexOf(' ') ? fileUri.replace(SPACE_RX, '%20') : fileUri

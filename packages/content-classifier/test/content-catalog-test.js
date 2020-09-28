@@ -6,7 +6,6 @@ const { captureStdErrSync, expect, spy } = require('../../../test/test-utils')
 const classifyContent = require('@antora/content-classifier')
 const ContentCatalog = require('@antora/content-classifier/lib/content-catalog')
 const File = require('@antora/content-classifier/lib/file')
-const mimeTypes = require('@antora/content-aggregator/lib/mime-types-with-asciidoc')
 const { posix: path } = require('path')
 
 const { START_PAGE_ID } = require('@antora/content-classifier/lib/constants')
@@ -20,10 +19,7 @@ describe('ContentCatalog', () => {
     const basename = path.basename(path_)
     const extname = path.extname(path_)
     const stem = path.basename(path_, extname)
-    return {
-      path: path_,
-      src: { basename, mediaType: mimeTypes.lookup(extname), stem, extname },
-    }
+    return new File({ path: path_, src: { path: path_, basename, extname, stem } })
   }
 
   beforeEach(() => {
@@ -61,8 +57,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'index.adoc',
-          stem: 'index',
-          mediaType: 'text/asciidoc',
         },
       })
       const componentVersion = contentCatalog.registerComponentVersion(name, version, descriptor)
@@ -90,7 +84,7 @@ describe('ContentCatalog', () => {
       const title2 = 'The Component (2.0.0)'
       const descriptor2 = { title: title2, startPage: true }
       const url2 = '/the-component/2.0.0/index.html'
-      const indexPageT = { family: 'page', relative: 'index.adoc', stem: 'index', mediaType: 'text/asciidoc' }
+      const indexPageT = { family: 'page', relative: 'index.adoc' }
       const contentCatalog = new ContentCatalog()
       contentCatalog.addFile({ src: { ...indexPageT, component: name, version: version1, module: 'ROOT' } })
       const componentVersion1 = contentCatalog.registerComponentVersion(name, version1, descriptor1)
@@ -145,7 +139,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should not use prerelease as a latest version', () => {
-      const srcTemplate = { family: 'page', relative: 'index.adoc', stem: 'index', mediaType: 'text/asciidoc' }
+      const srcTemplate = { family: 'page', relative: 'index.adoc' }
       const componentName = 'the-component'
       const version1 = '1.0.0'
       const title1 = 'The Component (1.0.0)'
@@ -208,7 +202,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should point latest to newest version if all versions are prereleases', () => {
-      const srcTemplate = { family: 'page', relative: 'index.adoc', stem: 'index', mediaType: 'text/asciidoc' }
+      const srcTemplate = { family: 'page', relative: 'index.adoc' }
       const componentName = 'the-component'
       const version1 = '1.0.0'
       const title1 = 'The Component (1.0.0)'
@@ -327,8 +321,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'home.adoc',
-          stem: 'home',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.registerComponentVersion(name, version, descriptor)
@@ -392,7 +384,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'home.adoc',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.registerComponentVersion(name, version, { title, startPage: 'home.adoc' })
@@ -423,7 +414,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'index.adoc',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.addFile({
@@ -433,7 +423,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'home.adoc',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.registerComponentVersion(name, version, { title, startPage: 'home.adoc' })
@@ -456,8 +445,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'home.adoc',
-          stem: 'home',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.addFile({
@@ -467,8 +454,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'index.adoc',
-          stem: 'index',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.registerComponentVersion(name, version, { title, startPage: true })
@@ -519,8 +504,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'home.adoc',
-          stem: 'home',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.registerComponentVersionStartPage(name, componentVersion, 'home.adoc')
@@ -572,8 +555,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'start.adoc',
-          stem: 'start',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.registerComponentVersion('other-component', '2.0', { title: 'Other Component', startPage: true })
@@ -595,8 +576,6 @@ describe('ContentCatalog', () => {
           module: 'ROOT',
           family: 'page',
           relative: 'start.adoc',
-          stem: 'start',
-          mediaType: 'text/asciidoc',
         },
       })
       contentCatalog.registerComponentVersion('the-component', '2.0', { title: 'The Component', startPage: true })
@@ -626,11 +605,8 @@ describe('ContentCatalog', () => {
         module: 'ROOT',
         family: 'page',
         relative: 'the-page.adoc',
-        basename: 'the-page.adoc',
-        stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
-      const result = contentCatalog.addFile(new File({ src }))
+      const result = contentCatalog.addFile({ src })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('1.2.3')
       expect(componentVersion.url).to.equal('/the-component/1.2.3/index.html')
@@ -725,11 +701,8 @@ describe('ContentCatalog', () => {
         module: 'ROOT',
         family: 'page',
         relative: 'the-page.adoc',
-        basename: 'the-page.adoc',
-        stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
-      const result = contentCatalog.addFile(new File({ src }))
+      const result = contentCatalog.addFile({ src })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('1.2.3')
       expect(componentVersion.url).to.equal('/the-component/current/index.html')
@@ -1030,19 +1003,19 @@ describe('ContentCatalog', () => {
         module: 'ROOT',
         family: 'page',
         relative: 'the-page.adoc',
-        basename: 'the-page.adoc',
-        stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
+      const expectedSrc = { ...src, basename: 'the-page.adoc', extname: '.adoc', stem: 'the-page' }
       const contentCatalog = new ContentCatalog()
       const file = contentCatalog.addFile({ src })
       expect(file).to.be.instanceOf(File)
       expect(file).to.have.property('contents')
       expect(file).to.have.property('src')
-      expect(file.src).to.include(src)
+      expect(file).to.have.property('mediaType')
+      expect(file.src).to.include(expectedSrc)
       expect(file).to.equal(contentCatalog.getById(src))
     })
 
+    // NOTE: in this case, src must be fully-populated
     it('should populate out and pub when called with vinyl file that has src property', () => {
       const src = {
         component: 'the-component',
@@ -1051,8 +1024,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       const result = contentCatalog.addFile(new File({ src }))
@@ -1063,7 +1036,7 @@ describe('ContentCatalog', () => {
       expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html', rootPath: '../..' })
     })
 
-    it('should only change .adoc file extension to .html in out for pages, not attachments', () => {
+    it('should not change .adoc file extension to .html for attachments', () => {
       const pageSrc = {
         component: 'the-component',
         version: '1.2.3',
@@ -1071,8 +1044,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const attachmentSrc = {
         component: 'the-component',
@@ -1081,8 +1054,8 @@ describe('ContentCatalog', () => {
         family: 'attachment',
         relative: 'the-attachment.adoc',
         basename: 'the-attachment.adoc',
+        extname: '.adoc',
         stem: 'the-attachment',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       const pageResult = contentCatalog.addFile(new File({ src: pageSrc }))
@@ -1091,42 +1064,48 @@ describe('ContentCatalog', () => {
       expect(pageResult.out.path).to.equal('the-component/1.2.3/the-page.html')
       expect(pageResult).to.have.property('pub')
       expect(pageResult.pub).to.include({ url: '/the-component/1.2.3/the-page.html' })
+      expect(pageResult.src.mediaType).to.equal('text/asciidoc')
+      expect(pageResult.mediaType).to.equal('text/asciidoc')
       const attachmentResult = contentCatalog.addFile(new File({ src: attachmentSrc }))
       expect(attachmentResult).to.equal(contentCatalog.getById(attachmentSrc))
       expect(attachmentResult).to.have.property('out')
       expect(attachmentResult.out.path).to.equal('the-component/1.2.3/_attachments/the-attachment.adoc')
       expect(attachmentResult).to.have.property('pub')
       expect(attachmentResult.pub.url).to.equal('/the-component/1.2.3/_attachments/the-attachment.adoc')
+      expect(attachmentResult.src.mediaType).to.equal('text/asciidoc')
+      expect(attachmentResult.mediaType).to.equal('text/asciidoc')
     })
 
-    it('should not require stem and basename to be set on src object of AsciiDoc file', () => {
+    it('should not require stem, basename, and mediaType to be set on src object of AsciiDoc file', () => {
       const src = {
         component: 'the-component',
         version: '1.2.3',
         module: 'ROOT',
         family: 'page',
         relative: 'the-page.adoc',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       const result = contentCatalog.addFile({ src })
+      expect(result.mediaType).to.equal('text/asciidoc')
+      expect(result.src.mediaType).to.equal('text/asciidoc')
       expect(result).to.have.property('out')
       expect(result.out).to.include({ path: 'the-component/1.2.3/the-page.html', rootPath: '../..' })
       expect(result).to.have.property('pub')
       expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html', rootPath: '../..' })
     })
 
-    it('should not require stem and basename to be set on src object of non-AsciiDoc file', () => {
+    it('should not require stem, basename, and mediaType to be set on src object of non-AsciiDoc file', () => {
       const src = {
         component: 'the-component',
         version: '1.2.3',
         module: 'ROOT',
         family: 'image',
         relative: 'screenshots/add-user.png',
-        mediaType: 'image/png',
       }
       const contentCatalog = new ContentCatalog()
       const result = contentCatalog.addFile({ src })
+      expect(result.mediaType).to.equal('image/png')
+      expect(result.src.mediaType).to.equal('image/png')
       expect(result).to.have.property('out')
       expect(result.out).to.include({
         path: 'the-component/1.2.3/_images/screenshots/add-user.png',
@@ -1147,8 +1126,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: '_attributes.adoc',
         basename: '_attributes.adoc',
+        extname: '.adoc',
         stem: '_attributes',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       const result = contentCatalog.addFile(new File({ src }))
@@ -1164,8 +1143,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: '_attributes/common.adoc',
         basename: '_attributes/common.adoc',
+        extname: '.adoc',
         stem: '_attributes/common',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       const result = contentCatalog.addFile(new File({ src }))
@@ -1181,8 +1160,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: '_attributes.adoc',
         basename: '_attributes.adoc',
+        extname: '.adoc',
         stem: '_attributes',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       const result = contentCatalog.addFile(new File({ src, out: undefined }))
@@ -1198,8 +1177,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       contentCatalog.htmlUrlExtensionStyle = 'indexify'
@@ -1220,8 +1199,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.have.property('out')
@@ -1241,8 +1220,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.have.property('out')
@@ -1261,8 +1240,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.have.property('out')
@@ -1282,8 +1261,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const result = contentCatalog.addFile(new File({ src }))
       expect(result).to.have.property('out')
@@ -1300,8 +1279,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const out = {}
       const pub = {}
@@ -1321,8 +1300,8 @@ describe('ContentCatalog', () => {
         family: 'nav',
         relative: 'nav.adoc',
         basename: 'nav.adoc',
+        extname: '.adoc',
         stem: 'nav',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       const result = contentCatalog.addFile(new File({ src }))
@@ -1339,8 +1318,8 @@ describe('ContentCatalog', () => {
         family: 'nav',
         relative: 'pages/_nav.adoc',
         basename: '_nav.adoc',
+        extname: '.adoc',
         stem: 'pages/_nav',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
       const result = contentCatalog.addFile(new File({ src }))
@@ -1349,14 +1328,22 @@ describe('ContentCatalog', () => {
       expect(result.pub.url).to.equal('/the-component/')
     })
 
-    it('should convert object to vinyl file', () => {
+    it('should convert bare object to vinyl file', () => {
       const src = {
         component: 'the-component',
         version: '1.2.3',
         module: 'ROOT',
         family: 'page',
         relative: 'the-page.adoc',
+      }
+      const expectedSrc = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
         mediaType: 'text/asciidoc',
       }
@@ -1364,6 +1351,7 @@ describe('ContentCatalog', () => {
       const result = contentCatalog.addFile({ path: src.relative, src })
       expect(File.isVinyl(result)).to.be.true()
       expect(result.relative).to.equal('the-page.adoc')
+      expect(result.src).to.eql(expectedSrc)
       expect(result).to.have.property('out')
       expect(result).to.have.property('pub')
     })
@@ -1377,8 +1365,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-other-page.adoc',
         basename: 'the-other-page.adoc',
+        extname: '.adoc',
         stem: 'the-other-page',
-        mediaType: 'text/asciidoc',
       }
       const rel = contentCatalog.addFile(new File({ src: relSrc }))
       const src = {
@@ -1388,8 +1376,8 @@ describe('ContentCatalog', () => {
         family: 'alias',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const result = contentCatalog.addFile(new File({ src, rel }))
       expect(result).to.have.property('out')
@@ -1416,8 +1404,8 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'the-page.adoc',
         basename: 'the-page.adoc',
+        extname: '.adoc',
         stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
     })
 
@@ -1440,9 +1428,8 @@ describe('ContentCatalog', () => {
         family: 'alias',
         relative: 'the-topic/alias.adoc',
         basename: 'alias.adoc',
-        stem: 'alias',
         extname: '.adoc',
-        mediaType: 'text/asciidoc',
+        stem: 'alias',
       })
       expect(result.path).to.equal(targetPage.path)
       expect(result).to.have.property('rel')
@@ -1465,6 +1452,7 @@ describe('ContentCatalog', () => {
       })
       expect(result.path).to.equal(targetPage.path)
       expect(result.mediaType).to.equal('text/html')
+      expect(result.src.mediaType).to.equal('text/asciidoc')
       expect(result).to.have.property('rel')
       expect(result.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result.src)).to.equal(result)
@@ -1493,6 +1481,7 @@ describe('ContentCatalog', () => {
       })
       expect(result1.path).to.equal(targetPage.path)
       expect(result1.mediaType).to.equal('text/html')
+      expect(result1.src.mediaType).to.equal('text/asciidoc')
       expect(result1).to.have.property('rel')
       expect(result1.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result1.src)).to.equal(result1)
@@ -1507,6 +1496,7 @@ describe('ContentCatalog', () => {
       })
       expect(result2.path).to.equal(targetPage.path)
       expect(result2.mediaType).to.equal('text/html')
+      expect(result2.src.mediaType).to.equal('text/asciidoc')
       expect(result2).to.have.property('rel')
       expect(result2.rel).to.equal(targetPage)
       expect(contentCatalog.getById(result2.src)).to.equal(result2)
@@ -1569,8 +1559,8 @@ describe('ContentCatalog', () => {
         family: 'alias',
         relative: 'topic/alias.adoc',
         basename: 'alias.adoc',
-        stem: 'alias',
         extname: '.adoc',
+        stem: 'alias',
       })
     })
 
@@ -1842,15 +1832,16 @@ describe('ContentCatalog', () => {
     })
 
     it('should return site start page if stored as a concrete page', () => {
-      const startPageSrc = { ...START_PAGE_ID, basename: 'index.adoc', stem: 'index', mediaType: 'text/asciidoc' }
+      const pageSrc = { ...START_PAGE_ID }
+      const expectedSrc = { ...pageSrc, basename: 'index.adoc', extname: '.adoc', stem: 'index' }
       contentCatalog.addFile({
         contents: Buffer.from('I am your home base!'),
-        src: startPageSrc,
+        src: pageSrc,
       })
       const result = contentCatalog.getSiteStartPage()
       expect(contentCatalog.getById).to.have.been.called.with(START_PAGE_ID)
       expect(result).to.exist()
-      expect(result.src).to.equal(startPageSrc)
+      expect(result.src).to.include(expectedSrc)
       expect(result.contents.toString()).to.equal('I am your home base!')
     })
 
@@ -1862,20 +1853,19 @@ describe('ContentCatalog', () => {
         family: 'page',
         relative: 'home.adoc',
       }
-      const thePageSrc = { ...thePageId, basename: 'home.adoc', stem: 'home', mediaType: 'text/asciidoc' }
-      contentCatalog.addFile({
-        contents: Buffer.from('I am your home base!'),
-        src: thePageSrc,
-      })
-      const startPageSrc = {
-        ...START_PAGE_ID,
-        family: 'alias',
-        basename: 'index.adoc',
-        stem: 'index',
+      const expectedPageSrc = {
+        ...thePageId,
+        basename: 'home.adoc',
+        extname: '.adoc',
+        stem: 'home',
         mediaType: 'text/asciidoc',
       }
       contentCatalog.addFile({
-        src: startPageSrc,
+        contents: Buffer.from('I am your home base!'),
+        src: thePageId,
+      })
+      contentCatalog.addFile({
+        src: { ...START_PAGE_ID, family: 'alias' },
         rel: contentCatalog.getById(thePageId),
       })
       contentCatalog.getById = spy(contentCatalog.getById)
@@ -1887,7 +1877,7 @@ describe('ContentCatalog', () => {
         .on.nth(2)
         .called.with({ ...START_PAGE_ID, family: 'alias' })
       expect(result).to.exist()
-      expect(result.src).to.equal(thePageSrc)
+      expect(result.src).to.eql(expectedPageSrc)
       expect(result.contents.toString()).to.equal('I am your home base!')
     })
   })
@@ -1900,12 +1890,9 @@ describe('ContentCatalog', () => {
         module: 'ROOT',
         family: 'page',
         relative: 'the-page.adoc',
-        basename: 'the-page.adoc',
-        stem: 'the-page',
-        mediaType: 'text/asciidoc',
       }
       const contentCatalog = new ContentCatalog()
-      contentCatalog.addFile(new File({ src }))
+      contentCatalog.addFile({ src })
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
       const expectedMethods = [
         'findBy',

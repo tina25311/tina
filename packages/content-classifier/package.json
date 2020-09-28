@@ -16,10 +16,8 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "mime-types": "~2.1",
     "vinyl": "~2.2"
-  },
-  "devDependencies": {
-    "@antora/content-aggregator": "2.3.4"
   },
   "engines": {
     "node": ">=10.17.0"
