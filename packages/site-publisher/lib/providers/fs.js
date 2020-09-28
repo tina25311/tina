@@ -38,9 +38,9 @@ function rmdir (dir) {
       )
     )
     .then(() => fsp.rmdir(dir))
-    .catch((e) => {
-      if (e.code === 'ENOTDIR') return fsp.unlink(dir)
-      if (e.code !== 'ENOENT') throw e
+    .catch((err) => {
+      if (err.code === 'ENOTDIR') return fsp.unlink(dir)
+      if (err.code !== 'ENOENT') throw err
     })
 }
 
