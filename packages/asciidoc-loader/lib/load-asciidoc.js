@@ -50,8 +50,6 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
     // NOTE docdir implicitly sets base_dir on document; Opal only expands value to absolute path if it starts with ./
     docdir: file.dirname,
     docfilesuffix: extname,
-    // NOTE relfilesuffix must be set for page-to-page xrefs to work correctly
-    relfilesuffix: '.adoc',
     imagesdir: path.join(file.pub.moduleRootPath, '_images'),
     attachmentsdir: path.join(file.pub.moduleRootPath, '_attachments'),
     examplesdir: EXAMPLES_DIR_TOKEN,
@@ -64,7 +62,9 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
     computePageAttrs(file.src, contentCatalog)
   )
   const extensionRegistry = createExtensionRegistry(asciidoctor, {
-    onInclude: (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog),
+    onInclude: contentCatalog
+      ? (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog)
+      : () => undefined,
   })
   const extensions = config.extensions || []
   if (extensions.length) extensions.forEach((ext) => ext.register(extensionRegistry, { file, contentCatalog, config }))
@@ -79,7 +79,9 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
       const doctitleIdx = partialContents.indexOf(DOCTITLE_MARKER_BUF)
       if (!doctitleIdx || partialContents[doctitleIdx - 1] === 10) contents = partialContents
     }
-  } else {
+  } else if (contentCatalog) {
+    // NOTE relfilesuffix must be set for page-to-page xrefs to work correctly
+    attributes.relfilesuffix = '.adoc'
     const relativizePageRefs = config.relativizePageRefs !== false
     opts.converter = createConverter({
       onImageRef: (resourceSpec) => convertImageRef(resourceSpec, file, contentCatalog),

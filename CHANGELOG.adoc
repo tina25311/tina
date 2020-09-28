@@ -41,6 +41,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Show sensible error message if cache directory cannot be created (#680)
 * *ui-loader*: Show sensible error message if cache directory cannot be created (#680)
 * *asciidoc-loader*: Add support for optional option on include directive to silence warning if target is missing (#678)
+* *asciidoc-loader*: Don't crash when loading or converting AsciiDoc document if content catalog is not passed to `loadAsciiDoc` (#695)
 
 === Deprecated
 
