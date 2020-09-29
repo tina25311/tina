@@ -42,7 +42,7 @@ function rmdir (dir) {
       if (err.code === 'ENOENT') return
       if (err.code === 'ENOTDIR') {
         return fsp.unlink(dir).catch((unlinkErr) => {
-          if (err.code !== 'ENOENT') throw unlinkErr
+          if (unlinkErr.code !== 'ENOENT') throw unlinkErr
         })
       }
       throw err
