@@ -12,11 +12,11 @@ IMPORTANT: The added features and changes described below are in *ALPHA* and sub
 
 = Antora 3.0.0-alpha.1
 
-_**Release date:** 2020.09.28 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+_**Release date:** 2020.09.29 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 == Deprecations and breaking changes notice
 
-The following deprecations and breaking changes will be final with the release of Antora 3.0.0.
+The following deprecations and breaking changes will be final with the release of Antora 3.0.
 
 === Syntax
 
@@ -46,8 +46,10 @@ Issue {url-issues}/314[#314^]:: Add `urls.latest_version_segment` and `urls.late
 Issue {url-issues}/314[#314^]:: Replace latest version and/or prerelease version segment in out path and pub URL (unless version is master) with symbolic name, if specified.
 Issue {url-issues}/314[#314^]:: Define `latestPrerelease` property on component version (if applicable) and use when computing latest version segment.
 Issue {url-issues}/314[#314^]:: Use redirect facility to implement redirect:to and redirect:from strategies for version segment in out path / pub URL of latest and latest prerelease versions.
+Issue {url-issues}/355[#355^]:: Assign author to `page` object in UI model
 Issue {url-issues}/425[#425^]:: Assign primary alias to `rel` property on target page.
 Issue {url-issues}/605[#605^]:: Extract method to register start page for component version (`ContentCatalog#registerComponentVersionStartPage`).
+Issue {url-issues}/615[#615^]:: Store computed web URL of content source on `src.origin.webUrl` property of virtual file.
 
 === Changed
 
@@ -70,6 +72,7 @@ Issue {url-issues}/693[#693^]:: Enhance `ContentCatalog#addFile` to update `src`
 
 Issue {url-issues}/678[#678^]:: Add support for optional option on include directive to silence warning if target is missing.
 Issue {url-issues}/680[#680^]:: Show sensible error message if cache directory cannot be created.
+Issue {url-issues}/695[#695^]:: Don't crash when loading or converting AsciiDoc document if content catalog is not passed to `loadAsciiDoc`.
 
 === Deprecated
 
@@ -89,7 +92,6 @@ Issue {url-issues}/689[#689^]:: Remove `ensureGitSuffix` key from `git` category
 Issue {url-issues}/689[#689^]:: Remove fallback to resolve site-wide AsciiDoc config in `classifyContent` function.
 Issue {url-issues}/689[#689^]:: Drop `latestVersion` property on component version object; superceded by `latest` property.
 Issue {url-issues}/689[#689^]:: Remove deprecated `getComponentMap` and `getComponentMapSortedBy` methods on `ContentCatalog`.
-
 
 ////
 [#thanks-3-0-0]

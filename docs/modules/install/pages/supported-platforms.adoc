@@ -1,6 +1,6 @@
 = Supported Platforms and System Requirements
 :navtitle: Supported Platforms
-:test-count: over 1235
+:test-count: over 1345
 :test-coverage: 99%
 // URLs
 :url-repo: https://gitlab.com/antora/antora
@@ -21,10 +21,10 @@ When a platform version reaches the end of active support by its maintainers or 
 |Supported Platform |Supported Version(s)
 
 |Alpine Linux
-|&#8805; 3.9
+|&#8805; 3.10
 
 |Debian
-|&#8805; 9.12
+|&#8805; 10.6
 
 |Fedora
 |&#8805; 31
@@ -60,7 +60,7 @@ Windows Server 2019
 
 |Node.js
 |[%hardbreaks]
-10 (>=10.17.0)
+&#8805; 10.22.1
 12
 14
 |===
@@ -86,7 +86,7 @@ The speed of this operation is dictated by the size of the remote repositories, 
 After the initial run, Antora caches the repositories locally.
 On subsequent runs, Antora only reconnects to the remote repositories if the xref:playbook:runtime-fetch.adoc[fetch option] is enabled or the xref:playbook:runtime-cache-dir.adoc[cache folder] is removed.
 
-[cols="5s,70",width="75%"]
+[cols="2s,4",width="75%"]
 |===
 |RAM
 |Memory requirements depend on the size of your Git repositories.
