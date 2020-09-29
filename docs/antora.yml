@@ -8,6 +8,10 @@ asciidoc:
     xrefstyle: short@
     listing-caption: Example@
     example-caption: false
+    version-node-major: '12'
+    version-node: '12.18.4'
+    version-npm: '6.14.8'
+    url-node-releases: https://nodejs.org/en/about/releases/
 nav:
 - modules/ROOT/nav-start.adoc
 - modules/install/nav.adoc

@@ -1,9 +1,6 @@
 = Windows Requirements
 :url-choco: https://chocolatey.org
-:url-node-releases: https://nodejs.org/en/about/releases/
 :url-nvm-windows: https://github.com/coreybutler/nvm-windows
-:version-node-major: 12
-:version-node: {version-node-major}.16.2
 
 On this page, you'll learn:
 

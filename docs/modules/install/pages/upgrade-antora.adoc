@@ -1,8 +1,5 @@
 = Upgrade Antora
-:version-node-major: 12
-:version-node: {version-node-major}.16.2
-:version-npm: 6.14.4
-//https://github.com/npm/cli/releases/tag/
+// https://github.com/npm/cli/releases/tag/
 
 On this page, you'll learn:
 
@@ -13,7 +10,7 @@ On this page, you'll learn:
 == Upgrade Node (optional)
 
 You can use any currently supported Node LTS release with Antora, but we recommend using the most recent LTS version so that you benefit from the latest performance and security enhancements.
-The https://nodejs.org/en/about/releases/[Node release schedule^] shows which Node LTS versions are active.
+The {url-node-releases}[Node release schedule^] shows which Node LTS versions are active.
 
 To check which Node version you have installed, open a terminal and run:
 
