@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, heredoc, removeSyncForce } = require('../../../test/test-utils')
+const { emptyDirSync, expect, heredoc, rmdirSync, toJSON } = require('../../../test/test-utils')
 
-const fs = require('fs-extra')
+const fs = require('fs')
 const GitServer = require('node-git-server')
 const { default: Kapok } = require('kapok-js')
 const pkg = require('@antora/cli/package.json')
@@ -54,7 +54,7 @@ describe('cli', function () {
   }
 
   before(async () => {
-    fs.emptyDirSync(CONTENT_REPOS_DIR)
+    emptyDirSync(CONTENT_REPOS_DIR)
     gitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })
     const gitServerPort = await new Promise((resolve, reject) =>
       gitServer.listen(0, function (err) {
@@ -69,15 +69,15 @@ describe('cli', function () {
   })
 
   beforeEach(() => {
-    fs.ensureDirSync(WORK_DIR)
+    fs.mkdirSync(WORK_DIR, { recursive: true })
     try {
       fs.unlinkSync(playbookFile)
     } catch (ioe) {
       if (ioe.code !== 'ENOENT') throw ioe
     }
     // NOTE keep the default cache folder between tests
-    removeSyncForce(ospath.join(WORK_DIR, destDir.split('/')[0]))
-    removeSyncForce(ospath.join(WORK_DIR, '.antora-cache-override'))
+    rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
+    rmdirSync(ospath.join(WORK_DIR, '.antora-cache-override'))
     playbookSpec = {
       site: { title: 'The Site' },
       content: {
@@ -89,12 +89,12 @@ describe('cli', function () {
 
   after(async () => {
     await new Promise((resolve, reject) => gitServer.server.close((err) => (err ? reject(err) : resolve())))
-    removeSyncForce(CONTENT_REPOS_DIR)
+    rmdirSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
-      removeSyncForce(ospath.join(WORK_DIR, destDir.split('/')[0]))
+      rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
       fs.unlinkSync(playbookFile)
     } else {
-      removeSyncForce(WORK_DIR)
+      rmdirSync(WORK_DIR)
     }
   })
 
@@ -236,7 +236,7 @@ describe('cli', function () {
 
   it('should show stack if --stacktrace option is specified and an exception is thrown during generation', () => {
     playbookSpec.ui.bundle.url = false
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('--stacktrace generate the-site')
       .assert(/^Error: ui\.bundle\.url: must be of type String/)
       .assert(/at /)
@@ -245,7 +245,7 @@ describe('cli', function () {
 
   it('should recommend --stacktrace option if not specified and an exception is thrown during generation', () => {
     playbookSpec.ui.bundle.url = false
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('generate the-site')
       .assert(/^error: ui\.bundle\.url: must be of type String/)
       .assert(/--stacktrace option/)
@@ -253,7 +253,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should generate site to fs destination when playbook file is passed to generate command', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora('generate the-site --quiet').on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)
@@ -268,7 +268,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should generate site to fs destination when absolute playbook file is passed to generate command', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora(['generate', playbookFile, '--quiet']).on('exit', resolve)).then(
       (exitCode) => {
@@ -286,14 +286,14 @@ describe('cli', function () {
 
   it('should resolve dot-relative paths in playbook relative to playbook dir', () => {
     const runCwd = ospath.join(WORK_DIR, 'some-other-folder')
-    fs.ensureDirSync(runCwd)
+    fs.mkdirSync(runCwd, { recursive: true })
     const relPlaybookFile = ospath.relative(runCwd, playbookFile)
     playbookSpec.content.sources[0].url =
       '.' + ospath.sep + ospath.relative(WORK_DIR, playbookSpec.content.sources[0].url)
     playbookSpec.ui.bundle.url =
       '.' + ospath.sep + ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'ui-bundle.zip'))
     playbookSpec.output = { dir: '.' + ospath.sep + destDir }
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) =>
       runAntora(['generate', relPlaybookFile, '--quiet'], undefined, runCwd).on('exit', resolve)
@@ -312,7 +312,7 @@ describe('cli', function () {
   describe('cache directory', async () => {
     it('should store cache in cache directory passed to --cache-dir option', () => {
       playbookSpec.content.sources[0].url = repoBuilder.url
-      fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const absCacheDir = ospath.resolve(WORK_DIR, '.antora-cache-override')
       expect(absCacheDir).to.not.be.a.path()
       // Q: how do we assert w/ kapok when there's no output; use promise as workaround
@@ -329,13 +329,13 @@ describe('cli', function () {
         expect(ospath.join(absCacheDir, 'ui'))
           .to.be.a.directory()
           .and.not.be.empty()
-        removeSyncForce(absCacheDir)
+        rmdirSync(absCacheDir)
       })
     }).timeout(timeoutOverride)
 
     it('should store cache in cache directory defined by ANTORA_CACHE_DIR environment variable', () => {
       playbookSpec.content.sources[0].url = repoBuilder.url
-      fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const absCacheDir = ospath.resolve(WORK_DIR, '.antora-cache-override')
       expect(absCacheDir).to.not.be.a.path()
       // Q: how do we assert w/ kapok when there's no output; use promise as workaround
@@ -352,13 +352,13 @@ describe('cli', function () {
         expect(ospath.join(absCacheDir, 'ui'))
           .to.be.a.directory()
           .and.not.be.empty()
-        removeSyncForce(absCacheDir)
+        rmdirSync(absCacheDir)
       })
     }).timeout(timeoutOverride)
   })
 
   it('should allow CLI option to override properties set in playbook file', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) =>
       runAntora(['generate', 'the-site', '--title', 'Awesome Docs', '--quiet']).on('exit', resolve)
@@ -371,7 +371,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should allow environment variable to override properties set in playbook file', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const env = { ...process.env, URL: 'https://docs.example.com' }
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora('generate the-site --quiet', env).on('exit', resolve)).then(
@@ -386,7 +386,7 @@ describe('cli', function () {
 
   it('should pass keys defined using options to UI model', () => {
     playbookSpec.site.keys = { google_analytics: 'UA-12345-1' }
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // NOTE we're treating hyphens and underscores in the key name as equivalent
     const args = ['generate', 'the-site', '--key', 'foo=bar', '--key', 'google-analytics=UA-67890-1']
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
@@ -400,7 +400,7 @@ describe('cli', function () {
 
   it('should remap legacy --google-analytics-key option', () => {
     playbookSpec.site.keys = { google_analytics: 'UA-12345-1' }
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const args = ['generate', 'the-site', '--google-analytics-key', 'UA-67890-1']
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
@@ -413,7 +413,7 @@ describe('cli', function () {
 
   it('should pass attributes defined using options to AsciiDoc processor', () => {
     playbookSpec.asciidoc = { attributes: { idprefix: '' } }
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const args = ['generate', 'the-site', '--attribute', 'sectanchors=~', '--attribute', 'experimental', '--quiet']
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
@@ -426,7 +426,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should invoke generate command if no command is specified', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     // TODO once we have common options, we'll need to be sure they get moved before the default command
     return new Promise((resolve) =>
@@ -440,7 +440,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should allow CLI option name and value to be separated by an equals sign', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     // TODO once we have common options, we'll need to be sure they get moved before the default command
     return new Promise((resolve) =>
@@ -456,7 +456,7 @@ describe('cli', function () {
 
   it('should use the generator specified by the --generator option', () => {
     const generator = ospath.resolve(FIXTURES_DIR, 'simple-generator')
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return new Promise((resolve) =>
       runAntora(`generate the-site.json --generator ${generator}`).on('exit', resolve)
     ).then((exitCode) => {
@@ -468,7 +468,7 @@ describe('cli', function () {
   })
 
   it('should show error message if custom generator fails to load', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     return runAntora('--generator no-such-module generate the-site')
       .assert(/error: Generator not found or failed to load. Try installing the 'no-such-module' package./i)
@@ -477,9 +477,9 @@ describe('cli', function () {
 
   it('should clean output directory before generating when --clean switch is used', () => {
     const residualFile = ospath.join(absDestDir, 'the-component/1.0/old-page.html')
-    fs.ensureDirSync(ospath.dirname(residualFile))
+    fs.mkdirSync(ospath.dirname(residualFile), { recursive: true })
     fs.writeFileSync(residualFile, '<!DOCTYPE html><html><body>contents</body></html>')
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora('generate the-site.json --clean --quiet').on('exit', resolve)).then(
       (exitCode) => {
@@ -494,7 +494,7 @@ describe('cli', function () {
     // NOTE we must use a subdirectory of destDir so it gets cleaned up properly
     const betaDestDir = ospath.join(destDir, 'beta')
     const absBetaDestDir = ospath.join(absDestDir, 'beta')
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) =>
       runAntora(['generate', 'the-site.json', '--to-dir', betaDestDir, '--quiet']).on('exit', resolve)
@@ -507,18 +507,18 @@ describe('cli', function () {
 
   it('should discover locally installed default site generator', () => {
     const runCwd = ospath.join(WORK_DIR, 'some-other-folder')
-    fs.ensureDirSync(runCwd)
+    fs.mkdirSync(runCwd, { recursive: true })
     const globalModulePath = require.resolve('@antora/site-generator-default')
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
     const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
-    fs.ensureDirSync(localModulePath)
+    fs.mkdirSync(localModulePath, { recursive: true })
     const localScript = heredoc`module.exports = async (args, env) => {
       console.log('Using custom site generator')
       return require(${JSON.stringify(globalModulePath)})([...args, '--title', 'Custom Site Generator'], env)
     }`
     fs.writeFileSync(ospath.join(localModulePath, 'generate-site.js'), localScript)
-    fs.writeJsonSync(ospath.join(localModulePath, 'package.json'), { main: 'generate-site.js' }, { spaces: 2 })
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'generate-site.js' }))
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const relPlaybookFile = ospath.relative(runCwd, playbookFile)
     const messages = []
     return new Promise((resolve) =>
@@ -526,7 +526,7 @@ describe('cli', function () {
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
-      removeSyncForce(localNodeModules)
+      rmdirSync(localNodeModules)
       expect(exitCode).to.equal(0)
       expect(messages).to.include('Using custom site generator')
       expect(absDestDir).to.be.a.directory()
@@ -537,7 +537,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should show error message if require path fails to load', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     return runAntora('-r no-such-module generate the-site')
       .assert(/error: Cannot find module/i)
@@ -547,19 +547,19 @@ describe('cli', function () {
   it('should show error message if site generator fails to load', () => {
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
     const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
-    fs.ensureDirSync(localModulePath)
+    fs.mkdirSync(localModulePath, { recursive: true })
     fs.writeFileSync(ospath.join(localModulePath, 'index.js'), 'throw false')
-    fs.writeJsonSync(ospath.join(localModulePath, 'package.json'), { main: 'index.js' }, { spaces: 2 })
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     return runAntora('generate the-site')
       .assert(/not found or failed to load/i)
-      .on('exit', () => removeSyncForce(localNodeModules))
+      .on('exit', () => rmdirSync(localNodeModules))
       .done()
   })
 
   it('should preload libraries specified using the require option', () => {
-    fs.writeJsonSync(playbookFile, playbookSpec, { spaces: 2 })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const r1 = ospath.resolve(FIXTURES_DIR, 'warming-up')
     const r2 = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-postprocessor'))
     const args = ['--require', r1, '-r', r2, 'generate', 'the-site', '--quiet']

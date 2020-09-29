@@ -27,9 +27,6 @@
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"
   },
-  "devDependencies": {
-    "fs-extra": "~9.0"
-  },
   "engines": {
     "node": ">=10.17.0"
   },
