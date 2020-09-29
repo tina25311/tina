@@ -26,21 +26,26 @@ function publishToFs (config, files, playbook) {
 }
 
 /**
- * Removes the specified directory, including all of its contents.
+ * Removes the specified directory (including all of its contents) or file.
  * Equivalent to fs.promises.rmdir(dir, { recursive: true }) in Node 12.
  */
 function rmdir (dir) {
   return fsp
     .readdir(dir, { withFileTypes: true })
-    .then((its) =>
+    .then((lst) =>
       Promise.all(
-        its.map((it) => (it.isDirectory() ? rmdir(ospath.join(dir, it.name)) : fsp.unlink(ospath.join(dir, it.name))))
+        lst.map((it) => (it.isDirectory() ? rmdir(ospath.join(dir, it.name)) : fsp.unlink(ospath.join(dir, it.name))))
       )
     )
     .then(() => fsp.rmdir(dir))
     .catch((err) => {
-      if (err.code === 'ENOTDIR') return fsp.unlink(dir)
-      if (err.code !== 'ENOENT') throw err
+      if (err.code === 'ENOENT') return
+      if (err.code === 'ENOTDIR') {
+        return fsp.unlink(dir).catch((unlinkErr) => {
+          if (err.code !== 'ENOENT') throw unlinkErr
+        })
+      }
+      throw err
     })
 }
 
