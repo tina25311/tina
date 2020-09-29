@@ -143,11 +143,7 @@ class ContentCatalog {
       file.mediaType = 'text/html'
       // NOTE: an alias masquerades as the target file
       family = file.rel.src.family
-    //} else {
-    //  if (!src.mediaType && !('mediaType' in src)) {
-    //    src.mediaType = resolveMimeType(src.extname) || (family === 'page' ? 'text/asciidoc' : undefined)
-    //  }
-    //  if (!file.mediaType && !('mediaType' in file)) file.mediaType = src.mediaType
+      // QUESTION: should we preserve the mediaType property on file if already defined?
     } else if (!(file.mediaType = src.mediaType) && !('mediaType' in src)) {
       file.mediaType = src.mediaType = resolveMimeType(src.extname) || (family === 'page' ? 'text/asciidoc' : undefined)
     }
