@@ -3268,15 +3268,28 @@ describe('aggregateContent()', function () {
     })
 
     it('should use fs object specified on git core', async () => {
-      const customFs = { ...fs }
-      customFs.readFile = spy(customFs.readFile)
-      RepositoryBuilder.registerPlugin('fs', customFs, GIT_CORE)
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
       await initRepoWithFiles(repoBuilder)
+      // see https://isomorphic-git.org/docs/en/0.78.0/plugin_fs#using-the-callback-api
+      const customFs = 'readFile writeFile unlink readdir mkdir rmdir stat lstat readlink symlink'
+        .split(' ')
+        .reduce((proxy, methodName) => {
+          if (methodName === 'readFile') {
+            proxy.readFile = function () {
+              this.readFileCalled = true
+              return fs.readFile(...arguments)
+            }
+          } else {
+            proxy[methodName] = fs[methodName].bind(fs)
+          }
+          return proxy
+        }, new (class FsProxy {})())
+      RepositoryBuilder.registerPlugin('fs', customFs, GIT_CORE)
+      expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
-      expect(customFs.readFile).to.have.been.called()
+      expect(customFs.readFileCalled).to.be.true()
       expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
     })
   })
