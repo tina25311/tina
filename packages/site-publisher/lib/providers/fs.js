@@ -34,7 +34,13 @@ function rmdir (dir) {
     .readdir(dir, { withFileTypes: true })
     .then((lst) =>
       Promise.all(
-        lst.map((it) => (it.isDirectory() ? rmdir(ospath.join(dir, it.name)) : fsp.unlink(ospath.join(dir, it.name))))
+        lst.map((it) =>
+          it.isDirectory()
+            ? rmdir(ospath.join(dir, it.name))
+            : fsp.unlink(ospath.join(dir, it.name)).catch((unlinkErr) => {
+              if (unlinkErr.code !== 'ENOENT') throw unlinkErr
+            })
+        )
       )
     )
     .then(() => fsp.rmdir(dir))
