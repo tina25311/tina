@@ -22,7 +22,7 @@
 ** xref:ui-bundle-url.adoc[]
 ** xref:ui-output-dir.adoc[]
 ** xref:ui-default-layout.adoc[]
-* xref:configure-redirect-facility.adoc[]
+* xref:urls-redirect-facility.adoc[]
 * xref:configure-output.adoc[]
 ** xref:output-dir.adoc[]
 ** xref:output-provider-archive.adoc[]

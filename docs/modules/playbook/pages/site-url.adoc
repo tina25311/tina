@@ -22,7 +22,7 @@ The value may be an absolute URL (e.g., _\https://docs.example.com_) with an opt
 == Configure an absolute site URL
 
 An absolute URL value must start with a URL scheme directly followed by a colon and two forward slashes (e.g., `https://`).
-Common schemes include *http*, *https*, and *file*.
+Common schemes include *https* and *file*.
 Absolute URLs may include a path segment (aka pathname) (e.g., _\https://example.com/docs_).
 
 .antora-playbook.yml
@@ -70,11 +70,11 @@ When the site URL is set to any allowable value, the following features are enab
 * The `site.url` property is set in the UI model (the value of the `site.url` key in the playbook).
 * The `site.path` property is set in the UI model (the path segment extracted from the value of the `site.url` key in the playbook; if the site URL does not have a path segment or the path segment is /, this value is empty)
 * The 404 page is generated.
-* The robots.txt file is generated if `site.robots` is also defined in the playbook.
-* The redirects include the path segment of the site URL (which would otherwise be empty).
+* The [.path]_robots.txt_ file is generated if `site.robots` is also defined in the playbook.
+* xref:urls-redirect-facility.adoc[Redirects] include the path segment of the site URL (which would otherwise be empty).
 * The link in the top-left corner of the navbar points to the site URL instead of a relative path (behavior specific to the default UI).
 
-When the site URL is set to an absolue URL, the following additional features are enabled:
+When the site URL is set to an absolute URL, the following additional features are enabled:
 
 * The sitemap files are generated.
 * The `page.canonicalUrl` is set in the UI model, which gets used by the default UI to create the canonical link tag in the head.
@@ -87,7 +87,7 @@ The path segment of the site URL represents the location from the root of the do
 In other words, the site URL takes the visitor to the URL where the redirect for the site start page is located.
 If your site is published to a subfolder of your domain (e.g., _\https://example.com/path/to/docs_), then the site URL should include this path (e.g., _/path/to/docs_) as well.
 
-NOTE: The path segment of a URL is sometimes referred to as the [.term]_pathname_.
+NOTE: The path segment of a URL is sometimes referred to as the [.term]*pathname*.
 
 Antora uses the path from the site URL to construct absolute and root-relative URLs to pages in your site.
 This includes URLs in the sitemap (absolute URLs) as well as rewrite rules (root-relative URLs).
@@ -96,8 +96,8 @@ Let's consider an example of how the path segment is used when creating a server
 Assume the following conditions are true:
 
 * The site is published to the [.path]_docs_ subfolder of the example.com domain.
-* The page [.path]_new-page.adoc_ in the ROOT module of the versionless _component-a_ component defines the page alias [.path]_old-page.adoc_ (meaning old-page.adoc was renamed to new-page.adoc).
-* The redirect facility is set as `nginx`.
+* The page [.path]_new-page.adoc_ in the ROOT module of the versionless _component-a_ component defines the xref:page:page-aliases.adoc[page alias] [.path]_old-page.adoc_ (meaning [.path]_old-page.adoc_ was renamed to [.path]_new-page.adoc_).
+* The xref:urls-redirect-facility.adoc[redirect facility] is set as `nginx`.
 * You've set the site `url` key to _\https://example.com_ (the incorrect value) in your playbook.
 
 When you run Antora, it will generate the following redirect rule:

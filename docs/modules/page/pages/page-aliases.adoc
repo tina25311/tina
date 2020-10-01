@@ -1,6 +1,4 @@
 = Set Up URL Redirects with page-aliases
-:xrefstyle: short
-:listing-caption: Example
 
 You can create a redirect using Antora's built-in `page-aliases` attribute.
 This xref:page-attributes.adoc[page attribute] is useful when you delete a page, rename a page's file, or move a page to a different module or component.
@@ -27,7 +25,7 @@ Multiple page IDs can be assigned to the attribute in a comma-separated list.
 
 Antora calculates the URL for a source page's page ID and generates redirect information so that the source page URL redirects to the target page URL.
 Any coordinates, such as xref:page-id.adoc#id-version[version] or xref:page-id.adoc#id-component[component], that aren't specified in a page ID assigned to `page-aliases` are interpolated from the target page's coordinates.
-The generated output format of the redirect information is determined by your chosen xref:playbook:configure-redirect-facility.adoc[redirect facility].
+The generated output format of the redirect information is determined by your chosen xref:playbook:urls-redirect-facility.adoc[redirect facility].
 
 A page ID assigned to a `page-aliases` attribute can be used in an xref.
 Therefore, if you delete, rename, or move a page, you don't need to update any references to it in your source files.
@@ -109,7 +107,7 @@ If it's appropriate to redirect the deleted page's URL to another page, assign t
 :page-aliases: source-page-filename.adoc
 ----
 
-TIP: It creates a bad user experience (and is a bad SEO practice), to just redirect deleted pages to the site's home page or a project's start page.
+TIP: It creates a bad user experience (and is a bad SEO practice), to redirect deleted pages to the site's home page or a project's start page.
 This policy confuses visitors because they may not realize the page they're looking for no longer exists.
 In cases where there isn't a highly relevant target page to redirect the deleted page to, it's better to direct visitors to a custom 404 page.
 
