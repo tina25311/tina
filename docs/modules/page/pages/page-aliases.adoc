@@ -53,7 +53,7 @@ If you change a source page's filename from [.path]_old-name.adoc_ to [.path]_ne
 
 This will result in [.path]_\https://base-url.com/component/version/module/old-name.html_ being redirected to [.path]_\https://base-url.com/component/version/module/new-name.html_.
 The version, component, and module coordinates that weren't specified in the `old-name.adoc` page ID are interpolated from the target page's coordinates.
-Alternatively, if you've specified `indexify` in your playbook, [.path]_\https://base-url.com/component/version/module/old-name_ will redirect to [.path]_\https://base-url.com/component/version/module/new-name_ .
+Alternatively, if you assigned xref:playbook:urls-html-extension-style.adoc#indexify-style[indexify] to the `html-extension-style` key in your playbook, [.path]_\https://base-url.com/component/version/module/old-name/_ will redirect to [.path]_\https://base-url.com/component/version/module/new-name/_ .
 
 == Create a redirect for a moved page
 

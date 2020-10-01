@@ -24,6 +24,7 @@
 ** xref:ui-default-layout.adoc[]
 * xref:configure-urls.adoc[]
 ** xref:urls-redirect-facility.adoc[]
+** xref:urls-html-extension-style.adoc[]
 * xref:configure-output.adoc[]
 ** xref:output-dir.adoc[]
 ** xref:output-provider-archive.adoc[]
