@@ -132,9 +132,9 @@ class RepositoryBuilder {
         return fsp
           .mkdir(ospath.dirname(to), { recursive: true })
           .then(() =>
-            this
-              .copyFile(from, to, { preserveSymlinks: process.platform !== 'win32' })
-              .catch(() => fsp.writeFile(to, ''))
+            this.copyFile(from, to, { preserveSymlinks: process.platform !== 'win32' }).catch(() =>
+              fsp.writeFile(to, '')
+            )
           )
       })
     ).then(() => this)
@@ -230,9 +230,7 @@ class RepositoryBuilder {
     return (opts.preserveSymlinks ? fsp.lstat : fsp.stat)(from).then((stat) =>
       stat.isSymbolicLink()
         ? fsp.readlink(from, 'utf8').then((target) => fsp.symlink(target, to))
-        : fsp
-          .copyFile(from, to)
-          .then(() => fsp.chmod(to, stat.mode))
+        : fsp.copyFile(from, to).then(() => fsp.chmod(to, stat.mode))
     )
   }
 
