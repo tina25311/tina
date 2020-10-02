@@ -77,7 +77,7 @@ CLI usage examples:
  $ antora generate antora-playbook.yml
 
 .Run the generate command with additional options
- $ antora generate --to-dir site --html-extension-style=indexify antora-playbook.yml
+ $ antora generate --to-dir site --html-url-extension-style=indexify antora-playbook.yml
 
 == Data
 

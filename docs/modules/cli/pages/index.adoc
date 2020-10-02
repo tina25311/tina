@@ -122,7 +122,7 @@ Overrides the xref:playbook:runtime-fetch.adoc[fetch key] in a playbook.
 |[[redirect-facility]]`--redirect-facility <facility>`
 |Facility for handling URL redirects calculated from xref:page:page-aliases.adoc[page-aliases].
 The supported facilities are `disabled`, `netlify`, `nginx`, and `static`.
-Overrides the xref:playbook:configure-redirect-facility.adoc#redirect-facility-key[redirect_facility key] in a playbook.
+Overrides the xref:playbook:urls-redirect-facility.adoc#redirect-facility-key[redirect_facility key] in a playbook.
 |String
 |`static`
 
