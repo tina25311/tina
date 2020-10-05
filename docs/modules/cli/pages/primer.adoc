@@ -1,4 +1,4 @@
-= Command Line Primer
+= CLI Primer
 
 If you aren't familiar with command line interfaces, the following sections provide a basic overview of command line functions and the terminal concepts used in this documentation.
 
@@ -23,6 +23,7 @@ Some options toggle behavior on or off and others accept values.
 Options that accept values can be written using a single space between the option's name and value (`--option value`) or using an equals sign between the name and value (`--option=value`).
 
 environment variable:: xref:playbook:environment-variables.adoc[Environment variables] are read from your terminal's state unless a variable is explicitly specified in a function.
+An environment variable passed from the CLI overrides the corresponding variable set in the terminal's state and corresponding key set in the playbook.
 
 argument:: An argument, such as the name of the xref:index.adoc#specify-playbook[required playbook file], is entered last in the function.
 
@@ -37,15 +38,15 @@ The prompt you see when you open your terminal depends on the terminal applicati
 Don't include the `$` prompt when you type or copy functions.
 
 [[working-directory]]Working directory::
-Every command is run from a directory, known as the working directory.
-You may be asked to change the working directory of your terminal before running a command.
-You can navigate to your working directory from the command line using the `cd` command (e.g., `$ cd <path/to/directory>`).
-A few examples in this documentation show the name of the working directory in front of the prompt as a helpful hint.
 +
 --
-----
-name-of-working-directory $
-----
+Every function is run from a current working directory.
+The processes associated with a function's inputs are interpreted relative to the working directory.
+Your current working directory is often displayed directly to the left of the terminal's command prompt (`$`), however, this is dependent on the terminal application you're using and how its configured.
+
+A few examples in this documentation show the name of the working directory in front of the prompt as a helpful hint.
+
+ name-of-working-directory $ antora antora-playbook
 
 Don't include this text or the prompt when copying the functions.
 --

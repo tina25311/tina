@@ -1,11 +1,9 @@
-= Antora CLI
+= Antora CLI Commands
 
 == What's the Antora CLI?
 
 The Antora command line interface (Antora CLI) helps you configure and run Antora, its software components, and any applicable libraries and extensions.
 When the Antora CLI is installed, you can interact with Antora from the command prompt of your terminal application.
-
-TIP: If you aren't familiar with CLIs, the xref:primer.adoc[] provides a basic overview of command line functions and terminal application concepts.
 
 [#cli-commands]
 == Base and generate commands
@@ -20,16 +18,16 @@ The Antora CLI provides access to two commands.
 |Required base command that calls Antora.
 
 |`generate`
-|The command generates a site using the specified playbook file.
-A playbook file is required in the function's argument.
-`generate` executes by default.
+|Generates a site using the specified playbook file.
+Antora runs `generate` automatically with the default Antora pipeline unless an alternate command is specified.
+The command requires the path to a playbook file, relative to the working directory, be specified in the function's argument.
 |===
 
 [#run-cli-commands]
 == Run the antora and generate commands
 
-At its simplest, a command line function explicitly specifies the required `antora` command and required playbook argument.
-If the function in <<ex-simple>> is executed from the Antora CLI, Antora will generate a site using a playbook file named [.path]_antora-playbook.yml_.
+The simplest command line function you can enter into the Antora CLI specifies the required `antora` command and required playbook argument.
+When the function in <<ex-simple>> is executed from the Antora CLI, Antora will generate a site using a playbook file named [.path]_antora-playbook.yml_.
 
 [#ex-simple]
 .antora base command and playbook argument
@@ -39,14 +37,18 @@ $ antora antora-playbook.yml
 
 Let's break down the function in <<ex-simple>>.
 
-The function starts with the `antora` command.
-This calls Antora to run the remaining command and argument.
-The remaining command is `generate`.
-You don't need to explicitly specify it because it's run by default.
-But it does require an explicit argument that specifies the filesystem path of a xref:playbook:index.adoc[playbook file] relative to the xref:primer.adoc#working-directory[working directory].
+. The function assumes it's being executed from a directory where Antora is installed or that Antora is installed globally.
+. The function starts with the `antora` base command.
+This calls Antora to run using the remaining command and argument.
+. The remaining command is `generate`.
+You don't see it typed in <<ex-simple>> because Antora runs `generate` automatically when you're using the default Antora pipeline.
+. The `generate` command requires an explicit argument that <<specify-playbook,specifies the filesystem path of a playbook file>> relative to the current working directory.
 In <<ex-simple>>, the relative filesystem path to the playbook file is [.path]_antora-playbook.yml_.
+That is, the function is being executed from the same directory that stores the playbook.
 
-If you wanted to explicitly specify the `generate` command the function would look like <<ex-explicit>>.
+TIP: If you aren't familiar with the command line, the xref:primer.adoc[] provides a basic overview of function anatomy, navigating working directories, and terminal application concepts.
+
+If you were to explicitly type the `generate` command in the function, it would look like <<ex-explicit>>.
 
 [#ex-explicit]
 .Explicitly run the generate command
@@ -55,28 +57,58 @@ $ antora generate antora-playbook.yml
 ----
 
 The commands and argument shown in <<ex-explicit>> are equivalent to those in <<ex-simple>>.
-You can see more examples of the `antora` and `generate` commands in xref:ROOT:run-antora.adoc#run-antora[Run Antora].
 
 [#specify-playbook]
 == Specify a playbook
 
+The `generate` command, whether explicitly or implicitly entered in a function, requires an argument that specifies the filesystem path of a playbook file relative to the xref:primer.adoc#working-directory[current working directory].
+
+For the next example, let's use a playbook file named [.path]_antora-playbook.yml_ that's located in [.path]_home/my-projects/a-project/docs-site_.
+As shown directly before the command prompt (`$`) in <<ex-working>>, the working directory is [.path]_docs-site_.
+That means the processes associated with the `antora` and `generate` commands as well as the playbook argument will be interpreted relative to [.path]_docs-site_.
+Since the playbook file, [.path]_antora-playbook.yml_, happens to be located in the working directory, only the playbook's file name needs to be entered in the function.
+
+[#ex-working]
+.Specify a playbook located in the working directory
+----
+docs-site $ antora antora-playbook.yml
+----
+
+When the playbook isn't stored in the working directory, the playbook argument must include the path relative to the working directory or the full path to the playbook file from the filesystem's root directory.
+
+The working directory in <<ex-relative>> is [.path]_my-projects_.
+The playbook file is stored in [.path]_home/my-projects/a-project/docs-site_.
+
+[#ex-relative]
+.Specify the filesystem path to the playbook
+----
+my-projects $ antora a-project/docs-site/antora-playbook.yml
+----
+
+In <<ex-relative>>, the playbook's filesystem path relative to the working directory is entered as the function's playbook argument.
+
+=== Playbook file extension
+
 The file extension of the playbook doesn't need to be specified.
-Antora auto-detects the file extension as long as the playbook argument is a file's stem (e.g., [.path]_local-antora-playbook_, [.path]_antora-playbook_, etc.)
-The playbook argument in <<ex-detect>> doesn't have a file extension, so Antora will look for a file matching the playbook's file stem name.
+Antora auto-detects the file extension as long as the playbook argument includes the file's stem (e.g., [.path]_antora-playbook_).
+
+The playbook argument in <<ex-detect>> doesn't have a file extension, so Antora will look for a file matching the playbook's file stem relative to the working directory.
 
 [#ex-detect]
 .Auto-detection of the playbook file extension
 ----
-$ antora local-antora-playbook
+docs-site $ antora antora-playbook
 ----
 
-Antora's search order for unspecified playbook file formats is YAML, then JSON, and then TOML.
+Antora's search order for playbook file formats is YAML, then JSON, and then TOML.
+
+NOTE: You can see more examples of the `antora` and `generate` commands in xref:ROOT:run-antora.adoc#run-antora[Run Antora].
 
 [#cli-help]
 == Display the Antora CLI help
 
 The `antora` and `generate` commands xref:options.adoc[accept options].
-The option that both of these commands share is `-h` or `--help` which displays help in your terminal for the Antora CLI commands and their options.
+One such option is the help option (`-h` or `--help`) which displays information in your terminal about the CLI commands and options.
 
 The function in <<ex-base-help>> will display help for the `antora` command.
 
@@ -90,5 +122,5 @@ Help can also be displayed for the `generate` command.
 
 .Display help for the generate command
 ----
-$ antora generate --help
+$ antora generate -h
 ----

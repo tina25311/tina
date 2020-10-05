@@ -4,6 +4,7 @@ Antora provides environment variables that map to a few select playbook keys.
 
 == Execution precedence
 
+Environment variables are read from your terminal's state unless a variable is explicitly specified in a command line function.
 When executed from the xref:cli:index.adoc[Antora CLI], these variables will override any corresponding keys and values defined in the designated playbook file.
 
 == Environment variables and value formats

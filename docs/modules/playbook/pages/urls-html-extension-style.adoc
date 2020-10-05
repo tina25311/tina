@@ -13,10 +13,10 @@ urls:
   html_extension_style: indexify
 ----
 
-Its accepted built-in values are:
+It accepts the following built-in values:
 
 `default`:: Published page URLs are displayed with the _.html_ extension, i.e., [.path]_\https://base-url.com/component/version/module/my-file.html_.
-Antora automatically applies this style when `html_extension_style` isn't set in the playbook.
+Antora automatically applies this style when `html_extension_style` isn't set in the playbook or via the CLI.
 
 `drop`:: The _.html_ extension is dropped from the end of the published page URLs, i.e., [.path]_\https://base-url.com/component/version/module/my-file_.
 
@@ -25,7 +25,7 @@ Antora automatically applies this style when `html_extension_style` isn't set in
 [#default]
 == Using the default style
 
-Antora will automatically assign the value `default` to the `html_extension_style` key at runtime if it isn't set in the playbook or in the CLI using the `--html-url-extension-style` option.
+Antora will automatically assign the value `default` to the `html_extension_style` key at runtime if it isn't set in the playbook or in the CLI using the xref:cli:options.adoc#html-extension[--html-url-extension-style option].
 The default style appends the _.html_ extension to the end of every published page's URL.
 For example, the resulting URL for the page [.path]_my-file.adoc_ would be displayed in a browser with _.html_ appended to the end, i.e., [.path]_\https://base-url.com/component/version/module/my-file.html_.
 
