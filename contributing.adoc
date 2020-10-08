@@ -780,15 +780,30 @@ By committing your code first, then running prettier and committing those change
 
 === Run the development version
 
-After fixing your critical bugs or implementing your wonderful new feature, you'll probably want to try out your local antora version on your projects.
-The code in [.path]_packages_ is already set up to be run from [.path]_packages/cli/bin/antora_.
-When you ran `yarn` to install the dependencies, an alias was set up from [.path]_node_modules/.bin/antora_ to [.path]_packages/cli/bin/antora_.
+After fixing critical bugs or implementing your wonderful new feature, you'll probably want to test out your local Antora version on your projects.
+The code in [.path]_packages_ is already set up to be run from source.
+When you ran `yarn` to install the dependencies, it set up a bin stub from [.path]_node_modules/.bin/antora_ to [.path]_packages/cli/bin/antora_.
 
-Therefore, the most convenient way to run your development code is:
+Therefore, the most convenient way to run your development code is to use the local bin stub:
 
-* In your antora working directory, run `./node_modules/.bin/antora path/to/the/antora-playbook.yml`
+ $ $(npm bin)/antora /path/to/your/antora-playbook.yml
 
-TIP: It might be convenient to put `export ANTORA_DEV=~/path/to/dev/dir/node_modules/.bin/antora` in your .profile or similar file, allowing `$ANTORA_DEV antora-playbook.yml` to work anywhere.
+which is equivalent to running:
+
+ $ ./node_modules/.bin/antora /path/to/your/antora-playbook.yml
+
+[TIP]
+====
+It might be convenient to turn this script location into an alias so you can execute the development version of Antora from any directory:
+
+ $ alias antora-dev=$HOME/projects/antora/node_modules/.bin/antora
+
+Then you can run:
+
+ $ antora-dev /path/to/your/antora-playbook.yml
+
+You can instruct your shell to register this alias automatically by defining it in your shell profile (e.g., $HOME/.bash_profile).
+====
 
 === Continuous Integration
 
