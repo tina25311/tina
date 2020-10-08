@@ -408,6 +408,8 @@ Please adhere to the following style and performance rules which are not current
 * Use ++ instead of += 1 (style rule only)
 * Use `v.indexOf() < 0` instead of `!~v.indexOf()` (style rule only)
 * Use `err` instead of `e` for the error variable, using an optional prefix (e.g., `cloneErr`).
+* If a function is not declared as async, but can return a Promise, always return a Promise (or else it is not guaranteed to response to .then)
+ ** It's best to mark functions that return a Promise as async just to be sure.
 
 [#test-rq]
 === Test structure and coverage expectations
