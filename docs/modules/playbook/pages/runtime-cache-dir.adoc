@@ -22,7 +22,7 @@ Another option is to locate the Antora cache directory on your system and manual
 
 The optional `cache_dir` key is configured under the xref:configure-runtime.adoc[runtime key] in a playbook.
 `cache_dir` specifies the directory where the remote repositories should be cloned and the remote UI bundle should be downloaded.
-[[resolution-rules]]It accepts a relative or absolute filesystem path.
+It accepts a relative or absolute filesystem path.
 
 .antora-playbook.yml
 [source,yaml]

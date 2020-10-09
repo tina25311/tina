@@ -1,11 +1,11 @@
 = CLI Options
 
-You can configure Antora and numerous playbook and component version descriptor keys directly from your terminal using the command line options.
+You can configure the behavior of the Antora CLI and various playbook keys directly from your terminal using command line options.
+This page lists these options, how to specify them, and how they are used.
 
-[#option-precedence]
-== Option precedence
+== Precedence
 
-The CLI options will override any corresponding keys and values defined in the playbook file and the [.path]_antora.yml_ files.
+The CLI options will override the value of corresponding keys defined in the playbook file as well as any environment variables.
 
 == Global options
 
@@ -42,7 +42,7 @@ See <<ex-boolean-true>> and xref:ROOT:run-antora.adoc#error-stacktrace[Show erro
 [#generate-options]
 == generate command options
 
-The options in the table below apply to the `generate` command.
+The options in the table below apply only to the `generate` command.
 
 [cols="2,2,2,4"]
 |===
@@ -158,10 +158,10 @@ See xref:playbook:output-dir.adoc[] and <<ex-option-value>>.
 
 == Pass options to the CLI
 
-You can enter multiple options in a command line function.
-A function must start with the xref:index.adoc#usage[antora base call] and end with the xref:index.adoc#specify-playbook[playbook file argument].
-The xref:index.adoc#generate-command[generate command] executes by default and therefore doesn't have to be specified.
-Remember that the function executes relative to the xref:primer.adoc#working-directory[current working directory].
+You can specify multiple options to a command.
+A command must start with the xref:index.adoc#usage[antora base call] and end with the xref:index.adoc#specify-playbook[playbook file argument].
+The xref:index.adoc#generate-command[generate command] is implied if not present, so it doesn't have to be specified explicitly.
+Remember that the command you type executes relative to the xref:primer.adoc#working-directory[current working directory].
 
 [#ex-multiple-options]
 .Pass multiple options to the CLI
@@ -171,9 +171,11 @@ $ antora --ui-bundle-url ./../ui-bundle.zip --redirect-facility nginx --clean an
 
 In <<ex-multiple-options>>, the option `--ui-bundle-url` is assigned a value that specifies a local filesystem path relative to the working directory.
 The `--redirect-facility` is assigned the built-in value `nginx`.
-The <<boolean-value,boolean option>>, `--clean`, is activated simply by entering its name in the function.
+The <<boolean-value,boolean option>>, `--clean`, is enabled by entering its name without a value.
 
-Some options can be specified multiple times in the same function.
+Some options can be specified multiple times.
+These are keys that correspond to a map of values.
+Examples include `--key` and `--attribute`.
 Each value must be preceded by the option's flag.
 
 [#ex-multiple-values]
@@ -184,12 +186,12 @@ $ antora --key support=587tyr999 --key tracer=ID-${spawn} antora-playbook
 
 In <<ex-multiple-values>>, the `--key` option has been assigned two values in <<name-value,the form name=value>>.
 
-[#option-values]
-== Option values
+== Value types
 
 There are two ways to assign a value to an option.
 The option flag and its value can be written with a single space between them: `--option value`.
 Or, it can be written using an equals sign (`=`) between the option flag and the value: `--option=value`.
+Which form you choose is a personal preference.
 
 In <<ex-option-value>>, the option `--to-dir` is assigned the value `prod`.
 When Antora runs, a folder named [.path]_prod_ will be created relative to the working directory and the site files written to it.
@@ -200,12 +202,12 @@ When Antora runs, a folder named [.path]_prod_ will be created relative to the w
 $ antora --to-dir prod antora-playbook
 ----
 
-Values that contain white space must be surrounded by quotation marks: `--option 'Value with Spaces'` or `--option='Value with Spaces'`.
+Values that contain spaces must be surrounded by quotation marks: `--option 'Value with Spaces'` or `--option='Value with Spaces'`.
 In <<ex-option-quotes>>, the option `title` is assigned the value `My Docs`.
 The generated site's title will be _My Docs_.
 
 [#ex-option-quotes]
-.Assign a value containing white spaces to an option
+.Assign a value containing spaces to an option
 ----
 $ antora --title 'My Docs' antora-playbook
 ----
@@ -215,7 +217,7 @@ $ antora --title 'My Docs' antora-playbook
 
 The `--attribute` and `--key` options accept values in the form `name=value`, where `name` represents the name of the AsciiDoc attribute or API key, respectively.
 In <<ex-name-value-pair>>, the attribute `page-team` is assigned the value `Coco B`.
-The `@` at the end of the value indicates that it is soft set.
+The `@` at the end of the value indicates that the attribute is xref:ROOT:component-attributes.adoc#soft-set[soft set].
 
 [#ex-name-value-pair]
 .Assign a name=value value to an option
