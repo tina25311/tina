@@ -95,7 +95,7 @@ Once cloning is complete, Antora converts the AsciiDoc pages to embeddable HTML,
 
 . Antora has completed generation when the command prompt (`$`) reappears in the terminal.
 +
-[TIP]
+[TIP#error-stacktrace]
 ====
 If something goes wrong during generation, you'll see an error message in the terminal.
 

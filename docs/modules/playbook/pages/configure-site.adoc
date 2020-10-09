@@ -2,6 +2,8 @@
 
 The playbook keys configured under `site` manage the site's published identity and how it interacts with certain applications once it's published.
 
+When building the site, some of the attributes defined in the playbook can be overridden on the xref:cli:options.adoc#generate-options[command line] or with xref:environment-variables.adoc[environment variables].
+
 [#site-key]
 == site key
 
@@ -29,6 +31,9 @@ site: # <1>
 The `site`, `title`, and `url` keys are required.
 The other keys are optional; Antora will use their default values if they're not specified.
 Many of these keys can also be configured from the xref:cli:index.adoc[Antora CLI] or with environment variables.
+
+TIP: Alternatively, `title`, `start_page`, and `keys` can be xref:cli:options.adoc[assigned from the CLI].
+The `url` key can be assigned from the xref:cli:options.adoc#site-url[CLI] or using an xref:environment-variables.adoc[environment variable].
 
 [#site-reference]
 == Available site keys

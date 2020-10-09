@@ -15,6 +15,7 @@ site:
 ----
 
 The `title` key accepts a string that's displayed wherever the UI calls the site's title.
+The `title` key can also be xref:cli:options.adoc#title[assigned from the CLI].
 
 [#add-site-title]
 == Add a site title
