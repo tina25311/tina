@@ -19,7 +19,7 @@ The options in the table below apply to the xref:index.adoc#usage[antora base ca
 |_Not applicable_
 |_Not applicable_
 |Displays information about the command usage and its options and arguments.
-See xref:index.adoc#cli-help[Display Antora CLI help].
+See xref:index.adoc#help[Display Antora CLI help].
 
 |[[require]]`-r`, `--require`
 |Not set
@@ -92,7 +92,7 @@ _$XDG_CONFIG_HOME/git/credentials_
 |_Not applicable_
 |_Not applicable_
 |Displays information about the command usage and its options and arguments.
-See xref:index.adoc#cli-help[Display Antora CLI help].
+See xref:index.adoc#help[Display Antora CLI help].
 
 |[[html-extension]]`--html-url-extension-style`
 |`default`
