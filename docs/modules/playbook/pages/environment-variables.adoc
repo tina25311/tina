@@ -23,7 +23,7 @@ And in Windows Powershell, you'd type:
 
  $ echo $env:PATH
 
-If environment variables are not something you are comfortable using, please note that the are not required for using Antora.
+If environment variables are not something you are comfortable using, note that they are not required for using Antora.
 
 == Precedence
 
@@ -31,7 +31,7 @@ Environment variables take precedence over keys defined in the xref:index.adoc[p
 
 == Variables and formats
 
-The following table summaries the environment variables that Antora recognizes and can thus be used to control the operation of Antora.
+The following table summarizes the environment variables that Antora recognizes and can thus be used to control the operation of Antora.
 
 [cols="4,2,2,4"]
 |===

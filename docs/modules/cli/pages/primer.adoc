@@ -9,8 +9,8 @@ Once entered in a terminal, the command is executed using the specified inputs.
 
  $ antora <command> [options] <arguments>
 
-base call:: The Antora CLI command starts with the xref:index.adoc#commands[base call], which is the name of the program (i.e., `antora`).
-This tells the command interpretter to execute the Antora CLI.
+base call:: The Antora CLI command starts with the xref:index.adoc#usage[base call], which is the name of the program (i.e., `antora`).
+This tells the command interpreter to execute the Antora CLI.
 If the system cannot find the program name by itself, you must specify the path to the `antora` bin script instead (e.g., `$(npm bin)/antora`).
 
 command:: A xref:index.adoc#commands[command] tells Antora what operation to perform.
@@ -43,7 +43,7 @@ The prompt you see when you open your terminal depends on the terminal applicati
 +
 --
 Every command is run from a current working directory.
-The processes associated with a commands's inputs are interpreted relative to the working directory.
+The processes associated with a command's inputs are interpreted relative to the working directory.
 Your current working directory is often displayed directly to the left of the terminal's command prompt (`$`), however, this is dependent on the terminal application you're using and how its configured.
 
 A few examples in this documentation show the name of the working directory in front of the prompt as a helpful hint.
