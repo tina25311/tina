@@ -29,7 +29,7 @@ Every command starts with the base call (i.e., program name or path).
 In the case of the Antora CLI, the base call is `antora`.
 This assumes that the Antora CLI is available on the `PATH` (e.g., installed globally).
 Otherwise, the base call must be the path to the `antora` bin script (e.g., `$(npm bin)/antora`).
-The base call must be offset from any command (of the program), options, or arguments by at least one space.
+The base call must be offset from any command (for the program), options, or arguments by at least one space.
 
 If you run the base call without specifying any command, options, or arguments, as shown here, you will be presented with a usage statement (i.e., help text).
 

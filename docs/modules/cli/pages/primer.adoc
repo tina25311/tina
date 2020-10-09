@@ -1,20 +1,20 @@
 = CLI Primer
 
-If you aren't familiar with command line interfaces, the following sections provide a basic overview of command line functions and the terminal concepts used in this documentation.
+If you aren't familiar with command line interfaces, the following sections provide some basic information about command line and terminal concepts used in this documentation.
 
-[#function-inputs]
-== Function inputs and structure
+== Command inputs and structure
 
-The Antora CLI accepts function inputs in the form of commands, options, environment variables, and positional arguments.
-Once entered in a terminal, the function is executed using the specified inputs.
+The Antora CLI accepts command inputs in the form of a base call, a command (for the program), options, and arguments.
+Once entered in a terminal, the command is executed using the specified inputs.
 
- $ antora <command> [options and environment variables] <arguments>
+ $ antora <command> [options] <arguments>
 
-antora:: All functions start with the xref:index.adoc#cli-commands[base command antora].
-This required command calls and runs Antora.
+base call:: The Antora CLI command starts with the xref:index.adoc#cli-commands[base call], which is the name of the program (i.e., `antora`).
+This tells the command interpretter to execute the Antora CLI.
+If the system cannot find the program name by itself, you must specify the path to the `antora` bin script instead (e.g., `$(npm bin)/antora`).
 
 command:: A xref:index.adoc#cli-commands[command] tells Antora what operation to perform.
-A function can include more than one command.
+Only one command can be specified at a time.
 
 option:: One or more xref:options.adoc[options] can be specified after a command.
 The full name of an option is prefixed with two hyphens (`--`); a shorthand name is prefixed with one hyphen (`-`).
@@ -22,10 +22,12 @@ The full name of an option is prefixed with two hyphens (`--`); a shorthand name
 Some options toggle behavior on or off and others accept values.
 Options that accept values can be written using a single space between the option's name and value (`--option value`) or using an equals sign between the name and value (`--option=value`).
 
-environment variable:: xref:playbook:environment-variables.adoc[Environment variables] are read from your terminal's state unless a variable is explicitly specified in a function.
-An environment variable passed from the CLI overrides the corresponding variable set in the terminal's state and corresponding key set in the playbook.
+argument:: An argument is entered after the base call and any options.
+You can think of an argument as an anonymous options.
+The `generate` command only accepts a single argument, which is the xref:index.adoc#specify-playbook[path to the playbook file].
 
-argument:: An argument, such as the name of the xref:index.adoc#specify-playbook[required playbook file], is entered last in the function.
+environment variable:: xref:playbook:environment-variables.adoc[Environment variables] (which are not present in the command itself) are read from your terminal's state.
+An environment variable overrides the corresponding key in the playbook file, but is itself overridden by the corresponding CLI option.
 
 [#terminal-conventions]
 == Terminal conventions
@@ -35,27 +37,27 @@ If you're new to terminal applications, here are the common conventions used in 
 Prompt (`$`)::
 The terminal command prompt is shown as a dollar sign (`$`) in the examples throughout this documentation.
 The prompt you see when you open your terminal depends on the terminal application you use.
-Don't include the `$` prompt when you type or copy functions.
+*Don't include the `$` prompt when you type or copy commands.*
 
 [[working-directory]]Working directory::
 +
 --
-Every function is run from a current working directory.
-The processes associated with a function's inputs are interpreted relative to the working directory.
+Every command is run from a current working directory.
+The processes associated with a commands's inputs are interpreted relative to the working directory.
 Your current working directory is often displayed directly to the left of the terminal's command prompt (`$`), however, this is dependent on the terminal application you're using and how its configured.
 
 A few examples in this documentation show the name of the working directory in front of the prompt as a helpful hint.
 
  name-of-working-directory $ antora antora-playbook
 
-Don't include this text or the prompt when copying the functions.
+*Don't include this text or the prompt when copying the command.*
 --
 
 Replaceable input::
 Many options are defined according to your content, environment, and site requirements.
 Some command line examples in this documentation call out the input you define with a set of angle brackets (`< >`).
 The text inside the brackets describes the input or represents a common input format, e.g., `--require <path/to/library-script>`, `--title '<Title of Your Site>'`.
-When composing the function in your terminal, replace the representative text with your input and don't enclose it in angle brackets (`< >`).
+When composing the command in your terminal, replace the representative text with your input and don't enclose it in angle brackets (`< >`).
 
 Command output::
 If a command returns information, the output is displayed in your terminal on the lines beneath the executed command.
