@@ -6,7 +6,7 @@ On subsequent runs, Antora resolves these resources from the cache folder, effec
 [#default]
 == Default cache directory
 
-The remote resources are stored in Antora's default cache location unless an alternate location is configured in the playbook using the `cache_dir` key.
+The remote resources are stored in Antora's default cache location unless an alternate location is configured using the `cache_dir` key.
 The default location for the cache varies by operating system.
 
 Linux:: [.path]_$XDG_CACHE_HOME/antora_ or [.path]_$HOME/.cache/antora_ if `$XDG_CACHE_HOME` isn't set
@@ -14,7 +14,7 @@ macOS:: [.path]_$HOME/Library/Caches/antora_
 Windows:: [.path]_$APPDATA/antora/Caches_
 
 Before downloading remote resources, Antora will first look for them in the cache folder.
-If you want to update the cache, configure Antora to xref:runtime-fetch.adoc[fetch updates].
+If you want to update your cache, configure Antora to xref:runtime-fetch.adoc[fetch updates].
 Another option is to locate the Antora cache directory on your system and manually delete it.
 
 [#cache-dir-key]
@@ -36,3 +36,5 @@ We know the the resolved location is relative to the playbook file because it st
 
 The resolution rules for `cache_dir` are the same as for any path in the playbook.
 include::partial$relative-path-rules.adoc[]
+
+The cache directory can also be configured from the CLI with the xref:cli:options.adoc#cache-dir[--cache-dir option] or using the xref:environment-variables.adoc[ANTORA_CACHE_DIR variable].

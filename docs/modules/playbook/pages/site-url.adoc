@@ -18,6 +18,8 @@ The `url` key defines the base URL of the published site.
 The value may be an absolute URL (e.g., _\https://docs.example.com_) with an optional path segment (aka pathname) (e.g., _\https://example.com/docs_) or a root-relative path (e.g., _/docs_).
 *The value should not include a trailing forward slash* unless the value itself is a forward slash.
 
+Alternatively, the `url` key can be assigned from the xref:cli:options.adoc#site-rl[CLI] or using an xref:environment-variables.adoc[environment variable].
+
 [#absolute-site-url]
 == Configure an absolute site URL
 

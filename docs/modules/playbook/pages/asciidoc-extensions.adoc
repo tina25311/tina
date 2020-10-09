@@ -107,9 +107,10 @@ The main difference is that if the extension exports the `register` function, it
 
 //Perhaps we should require #register at the end of the extension; hmmm
 
-== Preloading modules
+[#preload-extensions]
+== Preloading extensions
 
-Instead of registering extensions using the playbook, you can preload extensions using the `-r` (or `--require`) CLI option.
+Instead of registering extensions using the playbook, you can preload extensions using the xref:cli:options.adoc#require[-r or --require CLI option].
 The value of this option may be either a path to a file (relative to the current directory), or a node module name.
 The `-r` option may be specified multiple times.
 
@@ -127,4 +128,4 @@ Here's an example showing how to use the Antora CLI to preload multiple Asciidoc
 
 The `-r` option can also be used for other purposes, such as to alter global state or override Antora components.
 
-For more information about the CLI, see the xref:cli:index.adoc[CLI commands and options] page.
+For more information about the CLI, see xref:cli:index.adoc[].

@@ -35,3 +35,4 @@
 ** xref:runtime-cache-dir.adoc[]
 * xref:author-mode.adoc[]
 * xref:use-an-existing-playbook-project.adoc[]
+* xref:environment-variables.adoc[]
