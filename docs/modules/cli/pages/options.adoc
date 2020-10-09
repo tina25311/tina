@@ -7,9 +7,9 @@ You can configure Antora and numerous playbook and component version descriptor 
 
 The CLI options will override any corresponding keys and values defined in the playbook file and the [.path]_antora.yml_ files.
 
-== antora command options
+== Global options
 
-The options in the table below apply to the xref:index.adoc#cli-commands[antora base command].
+The options in the table below apply to the xref:index.adoc#usage[antora base call] and impact the behavior of the Antora CLI as a whole.
 
 [cols="2,2,2,4"]
 |===
@@ -159,8 +159,8 @@ See xref:playbook:output-dir.adoc[] and <<ex-option-value>>.
 == Pass options to the CLI
 
 You can enter multiple options in a command line function.
-A function must start with the xref:index.adoc#run-cli-commands[antora base command] and end with the xref:index.adoc#specify-playbook[playbook file argument].
-The xref:index.adoc#run-cli-commands[generate command] executes by default and therefore doesn't have to be specified.
+A function must start with the xref:index.adoc#usage[antora base call] and end with the xref:index.adoc#specify-playbook[playbook file argument].
+The xref:index.adoc#generate-command[generate command] executes by default and therefore doesn't have to be specified.
 Remember that the function executes relative to the xref:primer.adoc#working-directory[current working directory].
 
 [#ex-multiple-options]
