@@ -65,7 +65,7 @@ Before installing Antora, make a new directory for your site named [.path]_docs-
  $ mkdir docs-site
  $ cd docs-site
 
-To generate documentation sites with Antora, you need the Antora command line interface (CLI) and the Antora site generator.
+To generate documentation sites with Antora, you need the Antora CLI and the Antora site generator.
 Let's install these packages globally to make them available on your PATH:
 
  $ npm i -g @antora/cli @antora/site-generator-default

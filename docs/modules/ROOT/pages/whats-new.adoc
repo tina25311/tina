@@ -177,7 +177,7 @@ It also explains the difference between using an absolute URL and a pathname, wh
 
 Several updates have also been made to the default UI which impact the appearance of the documentation.
 In particular, hyphenation has been disabled for monospaced phrases.
-This change will avoid confusion by removing erroneous hyphens in the option names shown on the xref:cli:index.adoc[] page.
+This change will avoid confusion by removing erroneous hyphens in the option names shown on the xref:cli:options.adoc[] page.
 
 == Resolved issues
 

@@ -1,6 +1,6 @@
 = Install Antora
 
-To generate and publish documentation sites with Antora, you need the Antora command line interface (CLI) and an Antora site generator pipeline.
+To generate and publish documentation sites with Antora, you need the Antora's command line interface (Antora CLI) and an Antora site generator pipeline.
 
 Assumptions:
 
