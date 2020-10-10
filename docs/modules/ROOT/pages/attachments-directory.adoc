@@ -1,4 +1,4 @@
-= Attachments Directory and Attachment Files
+= Attachments Directory and Files
 
 [#attachments-dir]
 == Attachments family directory

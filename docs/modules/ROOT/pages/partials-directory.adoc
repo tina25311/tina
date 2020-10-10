@@ -1,4 +1,4 @@
-= Partials Directory and Partial Files
+= Partials Directory and Files
 
 [#partials-dir]
 == Partials family directory

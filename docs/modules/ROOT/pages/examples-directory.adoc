@@ -1,4 +1,4 @@
-= Examples Directory and Example Files
+= Examples Directory and Files
 
 [#examples-dir]
 == Examples family directory
