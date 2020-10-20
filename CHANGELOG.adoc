@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *redirect-producer*: Add redirect modifier to splat alias nginx rule (#698)
+
 == 3.0.0-alpha.1 (2020-09-29)
 
 === Added
