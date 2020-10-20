@@ -399,7 +399,7 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        'location ^~ /component-c++/current/ { rewrite ^/component-c\\+\\+/current/(.*)$ /component-c\\+\\+/1\\.0/$1; }',
+        'location ^~ /component-c++/current/ { rewrite ^/component-c\\+\\+/current/(.*)$ /component-c\\+\\+/1\\.0/$1 redirect; }',
       ])
     })
 
