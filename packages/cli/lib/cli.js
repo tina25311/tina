@@ -19,8 +19,13 @@ async function run (argv = process.argv) {
 }
 
 function exitWithError (err, showStack, msg = undefined) {
-  msg = showStack ? err.stack : `error: ${msg || err.message}\nAdd the --stacktrace option to see the cause.`
-  console.error(msg)
+  msg = `error: ${msg || err.message || err}`
+  // NOTE: the fallback for locating the stack can likely be removed after upgrading to Asciidoctor 2
+  console.error(
+    showStack
+      ? err.stack || (err.backtrace ? [msg, ...err.backtrace.slice(1)].join('\n') : `${msg} (no stack)`)
+      : `${msg}\nAdd the --stacktrace option to see the cause.`
+  )
   process.exit(1)
 }
 
