@@ -7,9 +7,13 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *asciidoc-loader*: Remove deprecated `page-relative` attribute (replaced by `page-relative-src-path`) (#689)
+
 === Fixed
 
-* *redirect-producer*: Add redirect modifier to splat alias nginx rule (#698)
+* *redirect-producer*: Add redirect modifier to splat alias rule for nginx (#698)
 
 == 3.0.0-alpha.1 (2020-09-29)
 
