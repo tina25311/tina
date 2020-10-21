@@ -30,9 +30,9 @@ function mockContentCatalog (seed = []) {
     let versions
     if (component in components) {
       versions = components[component].versions
-      if (versions.findIndex((it) => it.version === version) < 0) versions.unshift({ version })
+      if (versions.findIndex((it) => it.version === version) < 0) versions.unshift({ name: component, version })
     } else {
-      components[component] = { name: component, versions: (versions = [{ version }]) }
+      components[component] = { name: component, versions: (versions = [{ name: component, version }]) }
     }
     // NOTE assume we want the latest to be the last version we register
     components[component].latest = versions[0]
