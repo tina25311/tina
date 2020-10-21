@@ -10,8 +10,8 @@ const { makeRe: makePicomatchRx } = require('picomatch')
 const RX_ESCAPE_EXCEPT_GLOB = /[.+?^${}()|[\]\\]/g
 const RX_MAGIC_DETECTOR = /[*{]/
 const RX_QUESTION_MARK = /\?/g
-const PICO_OPTS = { nobracket: true, noextglob: true, noglobstar: true, noquantifiers: true }
-const PICO_NEGATED_OPTS = { nobracket: true, noextglob: true, noquantifiers: true }
+const PICOMATCH_OPTS = { nobracket: true, noextglob: true, noglobstar: true, noquantifiers: true }
+const PICOMATCH_NEGATED_OPTS = { nobracket: true, noextglob: true, noquantifiers: true }
 
 function resolvePathGlobs (base, patterns, listDirents, retrievePath, tree = { path: '' }) {
   return patterns.reduce((paths, pattern) => {
@@ -19,7 +19,7 @@ function resolvePathGlobs (base, patterns, listDirents, retrievePath, tree = { p
       return paths.then((resolvedPaths) => {
         if (resolvedPaths.length) {
           if (~pattern.indexOf('?')) pattern = pattern.replace(RX_QUESTION_MARK, '\\?')
-          const rx = makePicomatchRx(pattern, PICO_NEGATED_OPTS)
+          const rx = makePicomatchRx(pattern, PICOMATCH_NEGATED_OPTS)
           return resolvedPaths.filter(rx.test.bind(rx))
         } else {
           return resolvedPaths
@@ -46,7 +46,7 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
       if (globbed) {
         if (patternSegment.charAt() === '!') patternSegment = '\\' + patternSegment
         if (~patternSegment.indexOf('?')) patternSegment = patternSegment.replace(RX_QUESTION_MARK, '\\?')
-        isMatch = (isMatch = makePicomatchRx(patternSegment, PICO_OPTS)).test.bind(isMatch)
+        isMatch = (isMatch = makePicomatchRx(patternSegment, PICOMATCH_OPTS)).test.bind(isMatch)
       } else if (~patternSegment.indexOf('*')) {
         const [wildPatterns, literals] = expandBraces(patternSegment).reduce(
           ([wild, literal], it) => (~it.indexOf('*') ? [[...wild, it], literal] : [wild, [...literal, it]]),
