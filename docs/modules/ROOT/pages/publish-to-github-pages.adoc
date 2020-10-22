@@ -63,3 +63,21 @@ Since the `contents` key is absent, Antora will create an empty file (the equiva
 CAUTION: The solution to use the supplemental UI to create the [.path]_.nojekyll_ file at the root of the published site will not work if you configure Antora to read the supplemental UI from a local directory.
 That's because, in this case, Antora ignores files that begin with a dot (such as [.path]_.nojekyll_), and thus won't pick them up.
 Follow https://gitlab.com/antora/antora/-/issues/627[issue #627] to track the status of this bug.
+
+== Using GitHub Actions
+
+If your playbook repository is hosted on GitHub, you can configure a GitHub Actions workflow to build and publish your site to GitHub Pages.
+
+<<github-actions-workflow>> shows an example of a GitHub Actions workflow that uses the latest stable release of Antora to build and publish your site to GitHub Pages.
+This workflow assumes that the name of the default branch of your playbook repository is _main_, that the name of your playbook file is [.path]_antora-playbook.yml_, and that Antora is configured to publish the files to the [.path]_build/site_ directory.
+If your site uses different settings, update the values in the workflow file accordingly.
+
+..github/workflows/publish.yml
+[source#github-actions-workflow,yaml]
+----
+include::example$github-actions-workflow.yml[]
+----
+
+The benefit of using GitHub Actions is two-fold.
+First, you don't have to worry about how to get the published files into the gh-pages branch for publishing.
+Second, you don't have to worry about the [.path]_.nojekyll_ file since the action adds it for you.
