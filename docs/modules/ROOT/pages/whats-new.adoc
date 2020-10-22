@@ -27,7 +27,7 @@ Antora has added the _.adoc_ file extension to a xref:page:page-id.adoc#id-coord
 This fallback mechanism has been deprecated in Antora 3.0 to make way for using non-AsciiDoc pages in the xref facility.
 Review the page IDs in your xrefs and `page-aliases` attributes to ensure the _.adoc_ extension is specified before upgrading.
 
-=== Dependenices
+=== Dependencies
 
 Support for Node.js 8 has been dropped; the minimum required version is now Node 10.
 
