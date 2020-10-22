@@ -243,6 +243,23 @@ describe('cli', function () {
       .done()
   }).timeout(timeoutOverride)
 
+  it('should show stack if --stacktrace option is specified and a Ruby exception without a stack property is thrown', () => {
+    playbookSpec.asciidoc = { attributes: { idseparator: 1 } }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return runAntora('--stacktrace generate the-site')
+      .assert(/^error: asciidoctor: FAILED: .* - undefined method `length' for 1/)
+      .assert(/^at Number\./)
+      .done()
+  }).timeout(timeoutOverride)
+
+  it('should show message if --stacktrace option is specified and an exception with no stack is thrown', () => {
+    const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-fail-tree-processor'))
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return runAntora(`-r ${ext} --stacktrace generate the-site`)
+      .assert(/^error: not today! \(no stack\)/)
+      .done()
+  }).timeout(timeoutOverride)
+
   it('should recommend --stacktrace option if not specified and an exception is thrown during generation', () => {
     playbookSpec.ui.bundle.url = false
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -553,7 +570,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     return runAntora('generate the-site')
-      .assert(/not found or failed to load/i)
+      .assert(/^error: Generator not found or failed to load/i)
       .on('exit', () => rmdirSync(localNodeModules))
       .done()
   })
