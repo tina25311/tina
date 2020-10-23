@@ -318,7 +318,7 @@ To disable publishing entirely, including the default output, set destinations t
 ==== provider
 
 The provider key specifies the transport protocol Antora should use for publishing the generated site.
-Antora has two built-in providers, `fs` (filesytem) and `archive` (ZIP archive).
+Antora has two built-in providers, `fs` (filesystem) and `archive` (ZIP archive).
 This value is also an extension point that can be used to delegate to a custom provider, such as SSH, S3, etc.
 The default provider is `fs`.
 
