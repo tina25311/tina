@@ -37,7 +37,7 @@ The `destinations` key accepts a list of specifications that tell Antora which p
 When `destinations` is set, one or more `provider` keys must be defined under it.
 
 A [.term]*provider* determines which transport protocol (local, SSH, HTTP, etc.) Antora should use when publishing the site and manages the low-level details of publication.
-Antora has two built-in providers, `fs` (filesytem) and `archive` (ZIP archive).
+Antora has two built-in providers, `fs` (filesystem) and `archive` (ZIP archive).
 `provider` is also an extension point that can be used to delegate to a custom provider, such as SSH, S3, etc.
 
 [#disable-publishing]
