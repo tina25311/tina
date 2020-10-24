@@ -43,11 +43,11 @@ content:
   - url: git://git-service.com/org/repo-x.git
 ----
 
-Whether the `.git` extension is required depends on the settings of the git host.
-It's usually best to include it.
+Whether the [.path]_.git_ extension is required depends on the settings of the git host.
+It's not needed for repositories hosted on GitHub, required for repositories hosted on GitLab, and forbidden for repositories hosted on Team Foundation Server (TFS) or Azure DevOps, to cite a few scenarios (and to exhibit the nature of the problem).
+That's why the xref:git-suffix.adoc[ensure_git_suffix key] is provided for you, which is enabled by default.
 
 Antora can connect to private git repositories as long as a xref:private-repository-auth.adoc[supported authentication method] is specified for the private content source repositories.
-//See  to learn how to use Antora to connect to private repositories over HTTP/HTTPS using a username+password or OAuth token.
 
 [#local-urls]
 == Use local content repositories
