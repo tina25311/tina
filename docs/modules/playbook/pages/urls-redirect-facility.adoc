@@ -30,7 +30,7 @@ Antora automatically assigns the value `static` to the `redirect_facility` key u
 
 === Configure the redirect facility from the playbook
 
-The `redirect_facility` key is configured in the playbook under the `urls` category key.
+The `redirect_facility` key is configured in the playbook under the `urls` key.
 
 .antora-playbook.yml
 [source,yaml]

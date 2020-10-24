@@ -75,6 +75,7 @@ https://<credentials>@<hostname>
 You can populate the credential store interactively using the system `git` command or by editing the credential store directly.
 Let's start with the interactive approach.
 
+[#populate-credentials-interactively]
 === Populate the credential store interactively
 
 You can use the `git` command to populate the credential store interactively.
@@ -113,6 +114,7 @@ It only affects the behavior of your native git client.
 If the interactive approach didn't work for you, you can populate the credential store directly.
 Let's give that a shot.
 
+[#populate-credentials-directly]
 === Populate the credential store directly
 
 To add credentials to the git credential store directly, create the file [.path]_$HOME/.git-credentials_ and open it in your editor.
@@ -147,7 +149,7 @@ https://octocat:ilovegit@github.com/octocat/Hello-World
 
 Here are examples for several popular git hosts (for which you'd substitute the placeholders in bold with the real values):
 
-[subs=+quotes]
+[#host-credential-structure,subs=+quotes]
 ----
 https://**TOKEN**:@github.com/org/project-docs
 https://oauth2:**TOKEN**@gitlab.com/org/project-docs.git
@@ -159,7 +161,7 @@ https://**USERNAME**:**APP_PASSWORD**@bitbucket.org/org/project-docs.git
 NOTE: Specifying the repository path is optional.
 If you don't include it, the credential will be used for all URLs that share the same git host.
 
-CAUTION: For GitHub URLs, you may need to add the `.git` file extension depending on which URL format you use for your content sources and whether you've configured the `git.ensure_git_suffix` setting in your playbook.
+CAUTION: You may need to append the `.git` file extension depending on which URL format you use for your content sources and whether you've configured the xref:git-suffix.adoc[ensure_git_suffix key] in your playbook.
 
 NOTE: Notice that the tokens are located in different locations in the URL depending on the git host.
 See {url-oauth2-formats}[OAuth2 formats^] for more details.
@@ -178,16 +180,9 @@ Here's an example that uses the CLI option to specify a path relative to the pla
 
  $ antora --git-credentials-path=./.git-credentials antora-playbook.yml
 
-You can also specify this location directly in your playbook file under the `git` key.
+You can also specify this location directly in your playbook using the xref:git-credentials-path-and-contents.adoc#path-key[credentials.path key] under the xref:configure-git.adoc[git key].
 
-.antora-playbook.yml (fragment)
-[source,yaml]
-----
-git:
-  credentials:
-    path: ./.git-credentials
-----
-
+[#git-credentials-environment-variable]
 == Pass credentials via an environment variable
 
 Instead of reading the credentials from a file, you can have Antora read the credentials directly from the environment variable named `GIT_CREDENTIALS`.
