@@ -670,6 +670,7 @@ describe('buildNavigation()', () => {
         },
         {
           content: 'z-product.example.com/console',
+          roles: 'bare',
           url: 'https://z-product.example.com/console',
           urlType: 'external',
         },
@@ -1624,6 +1625,205 @@ describe('buildNavigation()', () => {
         {
           content: 'Caching',
           url: '/component-a/advanced/caching.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  //For all the 'title' tests I can't find the Ruby code that includes it.
+  //Perhaps it was removed in Asciidoctor 2.
+  it('should deal with role and title in list item', () => {
+    const navContents = heredoc`
+      * xref:index.adoc[Module A, role="icon-tic", title="bar"]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      { family: 'page', relative: 'index.adoc' },
+    ])
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu).to.have.lengthOf(1)
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'Module A',
+          roles: 'icon-tic',
+          title: 'bar',
+          url: '/component-a/module-a/index.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  it('should deal with multiple roles and title in list item', () => {
+    const navContents = heredoc`
+      * xref:index.adoc[Module A, role="icon-tic icon-toc   icon-toe", title="bar"]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      { family: 'page', relative: 'index.adoc' },
+    ])
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu).to.have.lengthOf(1)
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'Module A',
+          roles: 'icon-tic icon-toc icon-toe',
+          title: 'bar',
+          url: '/component-a/module-a/index.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  it('should deal with multiple roles in list item', () => {
+    const navContents = heredoc`
+      * xref:index.adoc[Module A, role="icon-tic icon-toc   icon-toe"]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      { family: 'page', relative: 'index.adoc' },
+    ])
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu).to.have.lengthOf(1)
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'Module A',
+          roles: 'icon-tic icon-toc icon-toe',
+          url: '/component-a/module-a/index.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  it('should deal with multiple roles, window, and title in list item', () => {
+    const navContents = heredoc`
+      * xref:index.adoc[Module A, role="icon-tic icon-toc   icon-toe", title="bar", window='_blank']
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      { family: 'page', relative: 'index.adoc' },
+    ])
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu).to.have.lengthOf(1)
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'Module A',
+          rel: 'noopener',
+          roles: 'icon-tic icon-toc icon-toe',
+          target: '_blank',
+          title: 'bar',
+          url: '/component-a/module-a/index.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  it('should deal with multiple roles, opts=nofollow, and title in list item', () => {
+    const navContents = heredoc`
+      * xref:index.adoc[Module A, role="icon-tic icon-toc   icon-toe", title="bar", opts=nofollow]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      { family: 'page', relative: 'index.adoc' },
+    ])
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu).to.have.lengthOf(1)
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'Module A',
+          rel: 'nofollow',
+          roles: 'icon-tic icon-toc icon-toe',
+          title: 'bar',
+          url: '/component-a/module-a/index.html',
+          urlType: 'internal',
+        },
+      ],
+    })
+  })
+
+  //I would expect `rel: 'nofollow noopener`. Perhaps this will change with Asciidoctor 2.
+  it('should deal with multiple roles, window, opts=nofollow, and title in list item', () => {
+    const navContents = heredoc`
+      * xref:index.adoc[Module A, role="icon-tic icon-toc   icon-toe", title="bar", window=_blank, ops=nofollow]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      { family: 'page', relative: 'index.adoc' },
+    ])
+    const navCatalog = buildNavigation(contentCatalog)
+    const menu = navCatalog.getNavigation('component-a', 'master')
+    expect(menu).to.exist()
+    expect(menu).to.have.lengthOf(1)
+    expect(menu[0]).to.eql({
+      order: 0,
+      root: true,
+      items: [
+        {
+          content: 'Module A',
+          rel: 'noopener',
+          roles: 'icon-tic icon-toc icon-toe',
+          target: '_blank',
+          title: 'bar',
+          url: '/component-a/module-a/index.html',
           urlType: 'internal',
         },
       ],

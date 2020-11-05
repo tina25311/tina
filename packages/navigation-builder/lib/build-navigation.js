@@ -3,7 +3,9 @@
 const loadAsciiDoc = require('@antora/asciidoc-loader')
 const NavigationCatalog = require('./navigation-catalog')
 
-const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
+// eslint-disable-next-line max-len
+const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?(?: title="([^"]+)")?(?: target="([^"]+)")?(?: rel="([^"]+)")?>(.+?)<\/a>/
+const SPACES_RX = / +/
 
 /**
  * Builds a {NavigationCatalog} from files in the navigation family that are
@@ -96,24 +98,40 @@ function partitionContent (content) {
   if (~content.indexOf('<a')) {
     const match = content.match(LINK_RX)
     if (match) {
-      const [, url, role, content] = match
+      const [, url, role, title, target, rel, content] = match
       let roles
-      if (role && (roles = role.includes(' ') ? role.split(' ') : [role]).includes('page')) {
+      let result
+      if (role && (roles = role.includes(' ') ? role.split(SPACES_RX) : [role]).includes('page')) {
+        roles.splice(roles.indexOf('page'), 1)
         const hashIdx = url.indexOf('#')
         if (~hashIdx) {
           if (roles.includes('unresolved')) {
-            return { content, url, urlType: 'internal', unresolved: true }
+            roles.splice(roles.indexOf('unresolved'), 1)
+            result = { content, url, urlType: 'internal', unresolved: true }
           } else {
-            return { content, url, urlType: 'internal', hash: url.substr(hashIdx) }
+            result = { content, url, urlType: 'internal', hash: url.substr(hashIdx) }
           }
         } else {
-          return { content, url, urlType: 'internal' }
+          result = { content, url, urlType: 'internal' }
         }
       } else if (url.charAt() === '#') {
-        return { content, url, urlType: 'fragment', hash: url }
+        result = { content, url, urlType: 'fragment', hash: url }
       } else {
-        return { content, url, urlType: 'external' }
+        result = { content, url, urlType: 'external' }
       }
+      if (roles && roles.length) {
+        result.roles = roles.join(' ')
+      }
+      if (title) {
+        result.title = title
+      }
+      if (target) {
+        result.target = target
+      }
+      if (rel) {
+        result.rel = rel
+      }
+      return result
     }
   }
   return { content }
