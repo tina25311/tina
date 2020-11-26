@@ -120,11 +120,17 @@ TIP: See the xref:playbook:index.adoc[Antora playbook] for more detailed informa
 To generate the site, point the `antora` command at your playbook file.
 In the terminal, make sure you're in [.path]_docs-site_ directory, then type:
 
- $ antora antora-playbook.yml
+ $ antora --fetch antora-playbook.yml
 
 Antora will clone the content and UI repositories and generate your documentation site to the default output directory.
-Navigate to the [.path]_docs-site/build/site_ directory and open the [.path]_index.html_ file in your browser.
 
+IMPORTANT: By default, Antora does not sync the repository once it clones it.
+Instead, it tries to work offline by using the repository in the cache it previously cloned.
+This default can create some confusion when getting started.
+Therefore, we recommend including the xref:playbook:runtime-fetch#fetch-option[`--fetch` option] in the command until you're more familiar with Antora.
+You can also set the xref:playbook:runtime-fetch#fetch-key[fetch key] in your playbook to enable this setting permanently.
+
+Navigate to the [.path]_docs-site/build/site_ directory and open the [.path]_index.html_ file in your browser to see the result.
 Congratulations!
 You've successfully built your first site with Antora.
 
