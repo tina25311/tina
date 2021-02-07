@@ -1,7 +1,5 @@
 'use strict'
 
-const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-loader')
-
 /**
  * Converts the contents on the specified file from AsciiDoc to embedded HTML.
  *
@@ -20,13 +18,15 @@ const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-load
  * @param {File} file - The virtual file whose contents is an AsciiDoc source document.
  * @param {ContentCatalog} [contentCatalog=undefined] - The catalog of all virtual content files in the site.
  * @param {Object} [asciidocConfig={}] - AsciiDoc processor configuration options specific to this file.
+ * @param {Object} context - The pipeline context.
  *
  * @returns {File} The virtual file that was converted.
  */
-function convertDocument (file, contentCatalog = undefined, asciidocConfig = {}) {
-  const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig)
+function convertDocument (file, contentCatalog = undefined, asciidocConfig = {}, context) {
+  const { loadAsciiDoc, extractAsciiDocMetadata } = context.asciidocLoader
+  const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig, context)
   if (!file.asciidoc) {
-    file.asciidoc = extractAsciiDocMetadata(doc)
+    file.asciidoc = extractAsciiDocMetadata(doc, context)
     if (doc.hasAttribute('page-partial')) file.src.contents = file.contents
   }
   file.contents = Buffer.from(doc.convert())

@@ -832,7 +832,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should return all files in catalog', () => {
-      const contentCatalog = classifyContent(playbook, aggregate)
+      const contentCatalog = classifyContent(aggregate, {}, { playbook })
       const files = contentCatalog.getFiles()
       expect(files).to.have.lengthOf(5)
       const pages = files.filter((it) => it.src.family === 'page')
@@ -842,7 +842,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should map getAll as alias for getFiles', () => {
-      const contentCatalog = classifyContent(playbook, aggregate)
+      const contentCatalog = classifyContent(aggregate, {}, { playbook })
       expect(contentCatalog.getAll).to.equal(contentCatalog.getFiles)
       const files = contentCatalog.getAll()
       expect(files).to.have.lengthOf(5)
@@ -875,7 +875,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find all pages', () => {
-      const contentCatalog = classifyContent(playbook, aggregate)
+      const contentCatalog = classifyContent(aggregate, {}, { playbook })
       const pages = contentCatalog.getPages()
       expect(pages.length).to.equal(2)
       pages.sort((a, b) => a.src.version.localeCompare(b.src.version) || a.path.localeCompare(b.path))
@@ -886,7 +886,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find pages that match filter', () => {
-      const contentCatalog = classifyContent(playbook, aggregate)
+      const contentCatalog = classifyContent(aggregate, {}, { playbook })
       const pages = contentCatalog.getPages((page) => page.src.version === 'v1.0.0')
       expect(pages.length).to.equal(1)
       expect(pages[0].path).to.equal('modules/ROOT/pages/page-two.adoc')
@@ -928,7 +928,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find files by family', () => {
-      const contentCatalog = classifyContent(playbook, aggregate)
+      const contentCatalog = classifyContent(aggregate, {}, { playbook })
       const numPages = contentCatalog.getPages().length
       const pages = contentCatalog.findBy({ family: 'page' })
       expect(pages).to.have.lengthOf(numPages)
@@ -942,7 +942,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find files by component', () => {
-      const pages = classifyContent(playbook, aggregate).findBy({ component: 'the-component' })
+      const pages = classifyContent(aggregate, {}, { playbook }).findBy({ component: 'the-component' })
       expect(pages).to.have.lengthOf(7)
       pages.sort((a, b) => a.src.version.localeCompare(b.src.version) || a.path.localeCompare(b.path))
       expect(pages[0].path).to.equal('modules/ROOT/assets/images/foo.png')
@@ -962,7 +962,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find files by relative path', () => {
-      const pages = classifyContent(playbook, aggregate).findBy({ relative: 'page-one.adoc' })
+      const pages = classifyContent(aggregate, {}, { playbook }).findBy({ relative: 'page-one.adoc' })
       expect(pages).to.have.lengthOf(2)
       pages.sort((a, b) => a.src.version.localeCompare(b.src.version))
       expect(pages[0].path).to.equal('modules/ROOT/pages/page-one.adoc')
@@ -972,7 +972,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find files by extname', () => {
-      const pages = classifyContent(playbook, aggregate).findBy({ extname: '.svg' })
+      const pages = classifyContent(aggregate, {}, { playbook }).findBy({ extname: '.svg' })
       expect(pages).to.have.lengthOf(1)
       const page = pages[0]
       expect(page.path).to.equal('modules/ROOT/assets/images/directory-structure.svg')
@@ -980,7 +980,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find all versions of a page', () => {
-      const pages = classifyContent(playbook, aggregate).findBy({
+      const pages = classifyContent(aggregate, {}, { playbook }).findBy({
         component: 'the-component',
         module: 'ROOT',
         family: 'page',
@@ -1693,32 +1693,32 @@ describe('ContentCatalog', () => {
 
     it('should find file by qualified page spec', () => {
       const pageSpec = 'v1.2.3@the-component:ROOT:page-one.adoc'
-      const page = classifyContent(playbook, aggregate).resolvePage(pageSpec)
+      const page = classifyContent(aggregate, {}, { playbook }).resolvePage(pageSpec)
       expect(page.path).to.equal('modules/ROOT/pages/page-one.adoc')
     })
 
     it('should return undefined if file not resolved from qualified page spec', () => {
       const pageSpec = 'v1.2.3@the-component:ROOT:no-such-page.adoc'
-      const page = classifyContent(playbook, aggregate).resolvePage(pageSpec)
+      const page = classifyContent(aggregate, {}, { playbook }).resolvePage(pageSpec)
       expect(page).to.not.exist()
     })
 
     it('should find file by contextual page spec', () => {
       const pageSpec = 'ROOT:page-one.adoc'
       const context = { component: 'the-component', version: 'v1.2.3' }
-      const page = classifyContent(playbook, aggregate).resolvePage(pageSpec, context)
+      const page = classifyContent(aggregate, {}, { playbook }).resolvePage(pageSpec, context)
       expect(page.path).to.equal('modules/ROOT/pages/page-one.adoc')
     })
 
     it('should return undefined if file not resolved from contextual page spec', () => {
       const pageSpec = 'ROOT:page-one.adoc'
       const context = {}
-      const page = classifyContent(playbook, aggregate).resolvePage(pageSpec, context)
+      const page = classifyContent(aggregate, {}, { playbook }).resolvePage(pageSpec, context)
       expect(page).to.not.exist()
     })
 
     it('should dereference alias in order to resolve page', () => {
-      const contentCatalog = classifyContent(playbook, aggregate)
+      const contentCatalog = classifyContent(aggregate, {}, { playbook })
       const targetPage = contentCatalog.resolvePage('v1.2.3@the-component::page-one.adoc')
       contentCatalog.registerPageAlias('alias.adoc', targetPage)
       const pageResolvedFromAlias = contentCatalog.resolvePage('v1.2.3@the-component::alias.adoc')
@@ -1741,7 +1741,7 @@ describe('ContentCatalog', () => {
 
     it('should find file by qualified resource spec', () => {
       const pageSpec = 'v1.2.3@the-component:ROOT:image$foo.png'
-      const page = classifyContent(playbook, aggregate).resolveResource(pageSpec)
+      const page = classifyContent(aggregate, {}, { playbook }).resolveResource(pageSpec)
       expect(page.path).to.equal('modules/ROOT/assets/images/foo.png')
     })
   })
@@ -1759,7 +1759,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find file by ID', () => {
-      const page = classifyContent(playbook, aggregate).getById({
+      const page = classifyContent(aggregate, {}, { playbook }).getById({
         component: 'the-component',
         version: 'v1.2.3',
         module: 'ROOT',
@@ -1770,7 +1770,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should return undefined if ID is not found', () => {
-      const page = classifyContent(playbook, aggregate).getById({
+      const page = classifyContent(aggregate, {}, { playbook }).getById({
         component: 'the-component',
         version: 'v1.2.3',
         module: 'ROOT',
@@ -1794,7 +1794,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should find file by path', () => {
-      const page = classifyContent(playbook, aggregate).getByPath({
+      const page = classifyContent(aggregate, {}, { playbook }).getByPath({
         component: 'the-component',
         version: 'v1.2.3',
         path: 'modules/ROOT/pages/_partials/tables/options.adoc',
@@ -1809,7 +1809,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should return undefined if path is not found', () => {
-      const page = classifyContent(playbook, aggregate).getByPath({
+      const page = classifyContent(aggregate, {}, { playbook }).getByPath({
         component: 'the-component',
         version: 'v1.2.3',
         path: 'modules/ROOT/pages/_partials/does-not-exist.adoc',

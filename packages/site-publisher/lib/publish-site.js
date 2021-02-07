@@ -30,14 +30,16 @@ const { DEFAULT_DEST_FS } = require('./constants.js')
  *
  * @memberof site-publisher
  *
- * @param {Object} playbook - The configuration object for Antora that provides
- *   access to the output destinations.
  * @param {Array<Catalog>} catalogs - The collection of catalogs from which to retrieve the
  *   publishable virtual files.
+ * @param {Object} context - The pipeline context, containing the playbook
+ * @param {Object} playbook - The configuration object for Antora that provides
+ *   access to the output destinations.
  * @returns Nothing.
  */
 // QUESTION should this function return a report of virtual files that were published (by provider)
-async function publishSite (playbook, catalogs) {
+async function publishSite (catalogs, context) {
+  const playbook = context.playbook
   const output = playbook.output
   const destinations = getDestinations(output)
 

@@ -1,17 +1,23 @@
 'use strict'
 
 const EventEmitter = require('events')
-const aggregateContent = require('@antora/content-aggregator')
-const buildNavigation = require('@antora/navigation-builder')
 const buildPlaybook = require('@antora/playbook-builder')
-const classifyContent = require('@antora/content-classifier')
-const convertDocuments = require('@antora/document-converter')
-const createPageComposer = require('@antora/page-composer')
-const loadUi = require('@antora/ui-loader')
-const mapSite = require('@antora/site-mapper')
-const produceRedirects = require('@antora/redirect-producer')
-const publishSite = require('@antora/site-publisher')
-const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
+const { requireLibrary } = require('@antora/util')
+
+//Map of stage name to default implementation.
+//Playbook configuration can override the defaults.
+const defaultStages = {
+  asciidocLoader: '@antora/asciidoc-loader',
+  contentAggregator: '@antora/content-aggregator',
+  navigationBuilder: '@antora/navigation-builder',
+  contentClassifier: '@antora/content-classifier',
+  documentConverter: '@antora/document-converter',
+  pageComposer: '@antora/page-composer',
+  uiLoader: '@antora/ui-loader',
+  siteMapper: '@antora/site-mapper',
+  redirectProducer: '@antora/redirect-producer',
+  sitePublisher: '@antora/site-publisher',
+}
 
 async function generateSite (args, env) {
   const baseEmitter = new EventEmitter()
@@ -27,40 +33,60 @@ async function generateSite (args, env) {
     on: (name, listener) => baseEmitter.on(name, (promises, ...args) => promises.push(listener(...args))),
   }
   const playbook = await buildPlaybook(args, env, undefined, eventEmitter)
-  const asciidocConfig = await wrapSync(eventEmitter, 'ResolveAsciiDocConfig', resolveAsciiDocConfig, playbook, { playbook })
+  const context = constructContext(playbook, eventEmitter)
+  const asciidocConfig = await wrapSync('ResolveAsciiDocConfig', context.asciidocLoader.resolveAsciiDocConfig)
   const [contentCatalog, uiCatalog] = await Promise.all([
-    wrapAsync(eventEmitter, 'AggregateContent', aggregateContent, playbook, [playbook])
-      .then((contentAggregate) => wrapSync(eventEmitter, 'ClassifyContent', classifyContent, playbook, { playbook, contentAggregate, asciidocConfig })),
-    wrapAsync(eventEmitter, 'LoadUi', loadUi, playbook, [playbook]),
+    wrapAsync('AggregateContent', context.contentAggregator)
+      .then((contentAggregate) => wrapSync('ClassifyContent', context.contentClassifier, {
+        contentAggregate,
+        asciidocConfig,
+      })),
+    wrapAsync('LoadUi', context.uiLoader),
   ])
-  const pages = await wrapAsync(eventEmitter, 'ConvertDocuments', convertDocuments, playbook, { contentCatalog, asciidocConfig })
-  const navigationCatalog = await wrapSync(eventEmitter, 'BuildNavigation', buildNavigation, playbook, { contentCatalog, asciidocConfig })
-  const composePage = await wrapSync(eventEmitter, 'CreatePageComposer', createPageComposer, playbook, { playbook, contentCatalog, uiCatalog, env })
-  await Promise.all(pages.map((page) => wrapSync(eventEmitter, 'ComposePage', composePage, playbook, { page, contentCatalog, navigationCatalog })))
-  const siteFiles = (await wrapSync(eventEmitter, 'MapSite', mapSite, playbook, { playbook, pages }))
-    .concat(await wrapSync(eventEmitter, 'ProduceRedirects', produceRedirects, playbook, { playbook, contentCatalog }))
+  const pages = await wrapAsync('ConvertDocuments', context.documentConverter, { contentCatalog, asciidocConfig })
+  const navigationCatalog = await wrapSync('BuildNavigation', context.navigationBuilder, { contentCatalog, asciidocConfig })
+  const composePage = await wrapSync('CreatePageComposer', context.pageComposer, {
+    contentCatalog,
+    uiCatalog,
+    env,
+  })
+  await Promise.all(pages.map((page) => wrapSync('ComposePage', composePage, { page, contentCatalog, navigationCatalog })))
+  const siteFiles = (await wrapSync('MapSite', context.siteMapper, { pages }))
+    .concat(await wrapSync('ProduceRedirects', context.redirectProducer, { contentCatalog }))
   if (playbook.site.url) siteFiles.push(composePage(create404Page()))
   const siteCatalog = { getFiles: () => siteFiles }
-  return wrapAsync(eventEmitter, 'PublishSite', publishSite, playbook, { playbook, catalogs: [contentCatalog, uiCatalog, siteCatalog] })
-}
+  return wrapAsync('PublishSite', context.sitePublisher, { catalogs: [contentCatalog, uiCatalog, siteCatalog] })
 
-async function wrapAsync (eventEmitter, name, funct, playbook, argObject) {
-  const args = Object.values(argObject)
-  'playbook' in argObject || (argObject.playbook = playbook)
-  await eventEmitter.emit('before' + name, argObject)
-  return funct(...args, eventEmitter).then(async (result) => {
-    await eventEmitter.emit('after' + name, playbook, result)
+  async function wrapAsync (name, funct, argObject) {
+    argObject || (argObject = {})
+    argObject.context = context
+    const args = Object.values(argObject)
+    await eventEmitter.emit('before' + name, argObject)
+    return funct(...args).then(async (result) => {
+      await eventEmitter.emit('after' + name, context, result)
+      return result
+    })
+  }
+
+  async function wrapSync (name, funct, argObject) {
+    argObject || (argObject = {})
+    argObject.context = context
+    const args = Object.values(argObject)
+    await eventEmitter.emit('before' + name, argObject)
+    const result = funct(...args)
+    await eventEmitter.emit('after' + name, context, result)
     return result
-  })
+  }
 }
 
-async function wrapSync (eventEmitter, name, funct, playbook, argObject) {
-  const args = Object.values(argObject)
-  'playbook' in argObject || (argObject.playbook = playbook)
-  await eventEmitter.emit('before' + name, argObject)
-  const result = funct(...args, eventEmitter)
-  await eventEmitter.emit('after' + name, playbook, result)
-  return result
+// Returns a frozen context object containing the event emitter, the playbook, and all pipeline stages.
+function constructContext (playbook, eventEmitter) {
+  const context = { playbook, eventEmitter }
+  Object.entries(defaultStages).forEach(([stage, defaultImpl]) => {
+    context[stage] = requireLibrary(playbook.pipelineStages[stage] || defaultImpl, playbook.dir)
+  })
+  Object.freeze(context)
+  return context
 }
 
 function create404Page () {

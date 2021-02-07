@@ -3,6 +3,7 @@
 
 const { expect } = require('../../../test/test-utils')
 
+const context = { asciidocLoader: require('@antora/asciidoc-loader') }
 const produceRedirects = require('@antora/redirect-producer')
 const mockContentCatalog = require('../../../test/mock-content-catalog')
 
@@ -36,7 +37,7 @@ describe('produceRedirects()', () => {
 
   it('should run on all files in the alias family', () => {
     const emptyContentCatalog = mockContentCatalog().spyOn('findBy')
-    const result = produceRedirects(playbook, emptyContentCatalog)
+    const result = produceRedirects(emptyContentCatalog, { playbook })
     expect(result).to.have.lengthOf(0)
     expect(emptyContentCatalog.findBy)
       .nth(1)
@@ -49,7 +50,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should populate contents of files in alias family with static redirect page', () => {
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, Object.assign({ playbook }, context))
       expect(result).to.have.lengthOf(0)
       const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/the-target.html'
       const expectedRelativeUrls = {
@@ -89,7 +90,7 @@ describe('produceRedirects()', () => {
       }
       const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/the-target.html'
       const expectedRelativeUrls = { 'alias-a.adoc': 'the-target.html' }
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, Object.assign({ playbook }, context))
       expect(result).to.have.lengthOf(0)
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         if (file.src.relative) {
@@ -114,7 +115,7 @@ describe('produceRedirects()', () => {
         { family: 'alias', relative: 'alias with spaces.adoc' },
       ])
       contentCatalog.findBy({ family: 'alias' })[0].rel = contentCatalog.getPages()[0]
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, Object.assign({ playbook }, context))
       expect(result).to.have.lengthOf(0)
       const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/target%20with%20spaces.html'
       const expectedRelativeUrls = {
@@ -132,7 +133,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should not remove the out property on alias files', () => {
-      produceRedirects(playbook, contentCatalog)
+      produceRedirects(contentCatalog, Object.assign({ playbook }, context))
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         expect(file).to.have.property('out')
       })
@@ -140,7 +141,7 @@ describe('produceRedirects()', () => {
 
     it('should remove trailing / from value of site.url', () => {
       playbook.site.url = playbook.site.url + '/'
-      produceRedirects(playbook, contentCatalog)
+      produceRedirects(contentCatalog, Object.assign({ playbook }, context))
       const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/the-target.html'
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         const html = file.contents.toString()
@@ -150,7 +151,7 @@ describe('produceRedirects()', () => {
 
     it('should not add canonical link element if site.url not specified in playbook', () => {
       delete playbook.site.url
-      produceRedirects(playbook, contentCatalog)
+      produceRedirects(contentCatalog, Object.assign({ playbook }, context))
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         const html = file.contents.toString()
         expect(html).to.not.include('<link rel="canonical"')
@@ -160,7 +161,7 @@ describe('produceRedirects()', () => {
 
     it('should not add canonical link element if site.url is /', () => {
       playbook.site.url = '/'
-      produceRedirects(playbook, contentCatalog)
+      produceRedirects(contentCatalog, Object.assign({ playbook }, context))
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         const html = file.contents.toString()
         expect(html).to.not.include('<link rel="canonical"')
@@ -170,7 +171,7 @@ describe('produceRedirects()', () => {
 
     it('should not add canonical link element if site.url is a pathname', () => {
       playbook.site.url = '/docs'
-      produceRedirects(playbook, contentCatalog)
+      produceRedirects(contentCatalog, Object.assign({ playbook }, context))
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         const html = file.contents.toString()
         expect(html).to.not.include('<link rel="canonical"')
@@ -185,7 +186,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should create and return netlify redirects file', () => {
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -215,7 +216,7 @@ describe('produceRedirects()', () => {
         src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
         pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
       }
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -231,7 +232,7 @@ describe('produceRedirects()', () => {
         { family: 'alias', relative: 'alias with spaces.adoc' },
       ])
       contentCatalog.findBy({ family: 'alias' })[0].rel = contentCatalog.getPages()[0]
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -249,7 +250,7 @@ describe('produceRedirects()', () => {
         file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 11 : 5)) + '/'
       })
       playbook.urls.htmlExtensionStyle = 'indexify'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('_redirects')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -269,7 +270,7 @@ describe('produceRedirects()', () => {
         file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 10 : 5))
       })
       playbook.urls.htmlExtensionStyle = 'drop'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('_redirects')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -285,7 +286,7 @@ describe('produceRedirects()', () => {
 
     it('should prefix each rewrite rule with URL context derived from absolute URL', () => {
       playbook.site.url = 'https://example.org/docs'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('_redirects')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -303,7 +304,7 @@ describe('produceRedirects()', () => {
 
     it('should prefix each rewrite rule with URL context derived from pathname', () => {
       playbook.site.url = '/docs'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('_redirects')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -321,7 +322,7 @@ describe('produceRedirects()', () => {
 
     it('should drop trailing slash from site URL path when using it as prefix for rewrite rule', () => {
       playbook.site.url = 'https://example.org/docs/'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('_redirects')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -333,7 +334,7 @@ describe('produceRedirects()', () => {
 
     it('should not prefix rewrite rule with extra prefix if URL context is /', () => {
       playbook.site.url = playbook.site.url + '/'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('_redirects')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -350,7 +351,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should remove the out property on alias files', () => {
-      produceRedirects(playbook, contentCatalog)
+      produceRedirects(contentCatalog, { playbook })
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         expect(file).to.not.have.property('out')
       })
@@ -363,7 +364,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should create and return nginx rewrite config file', () => {
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -391,7 +392,7 @@ describe('produceRedirects()', () => {
         src: { component: 'component-c++', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
         pub: { url: '/component-c++/1.0', moduleRootPath: '.', splat: true },
       }
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -409,7 +410,7 @@ describe('produceRedirects()', () => {
         { family: 'alias', relative: 'alias with spaces.adoc' },
       ])
       contentCatalog.findBy({ family: 'alias' })[0].rel = contentCatalog.getPages()[0]
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -423,7 +424,7 @@ describe('produceRedirects()', () => {
 
     it('should prefix each rewrite rule with URL context derived from absolute URL', () => {
       playbook.site.url = 'https://example.org/docs'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('.etc/nginx/rewrite.conf')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -439,7 +440,7 @@ describe('produceRedirects()', () => {
 
     it('should prefix each rewrite rule with URL context derived from pathname', () => {
       playbook.site.url = '/docs'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('.etc/nginx/rewrite.conf')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -455,7 +456,7 @@ describe('produceRedirects()', () => {
 
     it('should drop trailing slash from site URL path when using it as prefix for rewrite rule', () => {
       playbook.site.url = 'https://example.org/docs/'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('.etc/nginx/rewrite.conf')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -467,7 +468,7 @@ describe('produceRedirects()', () => {
 
     it('should not prefix rewrite rule with extra prefix if URL context is /', () => {
       playbook.site.url = playbook.site.url + '/'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('.etc/nginx/rewrite.conf')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -482,7 +483,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should remove the out property on alias files', () => {
-      produceRedirects(playbook, contentCatalog)
+      produceRedirects(contentCatalog, { playbook })
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         expect(file).to.not.have.property('out')
       })
@@ -495,7 +496,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should create and return httpd .htaccess config file', () => {
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -523,7 +524,7 @@ describe('produceRedirects()', () => {
         src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
         pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
       }
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -539,7 +540,7 @@ describe('produceRedirects()', () => {
         { family: 'alias', relative: 'alias with spaces.adoc' },
       ])
       contentCatalog.findBy({ family: 'alias' })[0].rel = contentCatalog.findBy({ family: 'page' })[0]
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0]).to.have.property('contents')
       expect(result[0]).to.have.property('out')
@@ -553,7 +554,7 @@ describe('produceRedirects()', () => {
 
     it('should prefix each rewrite rule with URL context derived from absolute URL', () => {
       playbook.site.url = 'https://example.org/docs'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('.htaccess')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -569,7 +570,7 @@ describe('produceRedirects()', () => {
 
     it('should prefix each rewrite rule with URL context derived from pathname', () => {
       playbook.site.url = '/docs'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('.htaccess')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -585,7 +586,7 @@ describe('produceRedirects()', () => {
 
     it('should drop trailing slash from site URL path when using it as prefix for rewrite rule', () => {
       playbook.site.url = 'https://example.org/docs/'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('.htaccess')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -597,7 +598,7 @@ describe('produceRedirects()', () => {
 
     it('should not prefix rewrite rule with extra prefix if URL context is /', () => {
       playbook.site.url = playbook.site.url + '/'
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(1)
       expect(result[0].out.path).to.equal('.htaccess')
       expect(result[0].contents.toString()).to.endWith('\n')
@@ -612,7 +613,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should remove the out property on alias files', () => {
-      produceRedirects(playbook, contentCatalog)
+      produceRedirects(contentCatalog, { playbook })
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         expect(file).to.not.have.property('out')
       })
@@ -625,7 +626,7 @@ describe('produceRedirects()', () => {
     })
 
     it('should remove out property from files in alias family', () => {
-      const result = produceRedirects(playbook, contentCatalog)
+      const result = produceRedirects(contentCatalog, { playbook })
       expect(result).to.have.lengthOf(0)
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         expect(file).to.not.have.property('out')

@@ -195,7 +195,7 @@ describe('aggregateContent()', function () {
         }
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
         const paths = aggregate[0].files.map((file) => file.path)
@@ -214,7 +214,7 @@ describe('aggregateContent()', function () {
         }
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.have.property('displayVersion', '1.2.3')
         expect(aggregate[0]).to.have.property('startPage', 'home.adoc')
@@ -227,7 +227,7 @@ describe('aggregateContent()', function () {
         await repoBuilder.init('the-component').then(() => repoBuilder.close())
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -243,7 +243,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessageStart)
         expect(aggregateContentDeferred).to.throw(expectedMessageEnd)
       })
@@ -255,7 +255,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, { version: 'v1.0' })
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a name in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -266,7 +266,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' })
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -279,7 +279,7 @@ describe('aggregateContent()', function () {
         const expectedMessage =
           `name in ${COMPONENT_DESC_FILENAME} cannot have path segments: foo/bar` +
           ` in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -292,7 +292,7 @@ describe('aggregateContent()', function () {
         const expectedMessage =
           `version in ${COMPONENT_DESC_FILENAME} cannot have path segments: 1.1/0` +
           ` in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -301,7 +301,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { repoName: 'the-component', name: 10, version: '1.0' })
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: '10', version: '1.0' })
       })
@@ -311,7 +311,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: 27 })
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: '27' })
       })
@@ -333,7 +333,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
       })
@@ -351,7 +351,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'docs' })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref} | path: docs)`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessageStart)
         expect(aggregateContentDeferred).to.throw(expectedMessageEnd)
       })
@@ -368,7 +368,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: mangledStartPath })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
       })
@@ -390,7 +390,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: [startPath] })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
       })
@@ -407,7 +407,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: [mangledStartPath] })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
       })
@@ -423,7 +423,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
       })
@@ -444,7 +444,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
       })
@@ -465,7 +465,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '*ocs' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
       })
@@ -491,7 +491,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry1).to.exist()
         expect(componentDescEntry2).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: [startPath1, startPath2].join(', ') })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
@@ -519,7 +519,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry1).to.exist()
         expect(componentDescEntry2).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: [startPath1, startPath2] })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
@@ -547,7 +547,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry1).to.exist()
         expect(componentDescEntry2).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: `{${startPath1},${startPath2}}` })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
@@ -581,7 +581,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry2).to.exist()
         expect(componentDescEntry3).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{more*,doc*}' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
@@ -612,7 +612,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry2).to.exist()
         expect(componentDescEntry3).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{doc{s,x},more*}' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
@@ -642,7 +642,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry2).to.exist()
         const startPaths = ['path/*/docs', '*/docs', '*/dne', '*/{does-,}not-exist']
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
@@ -664,7 +664,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{d*,.d*}' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc)
@@ -692,7 +692,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry1).to.exist()
         expect(componentDescEntry2).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '*docs*, !more*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc1)
       })
@@ -733,7 +733,7 @@ describe('aggregateContent()', function () {
           branches: ['master', 'other'],
           startPaths: ['docs', 'moredocs'],
         })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(4)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1v1)
@@ -749,7 +749,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'does-not-exist' })
         const expectedMessage = `the start path 'does-not-exist' does not exist in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -760,7 +760,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'antora.yml' })
         const expectedMessage = `the start path 'antora.yml' is not a directory in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -771,7 +771,7 @@ describe('aggregateContent()', function () {
         await initRepoWithFiles(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'modules' })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref} | path: modules)`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -788,7 +788,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{more,}docs' })
         const expectedMessage = `the start path 'moredocs' does not exist in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -805,7 +805,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc{s}' })
         const expectedMessage = `the start path 'doc{s}' does not exist in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -821,7 +821,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'docs, !doc{s}' })
         let aggregate
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
         expect(aggregate).to.have.lengthOf(1)
       })
@@ -833,7 +833,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'does-not-exist-*' })
         const expectedMessage = `no start paths found in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -847,7 +847,7 @@ describe('aggregateContent()', function () {
           "^the start path 'does-not-exist/(foo|bar\\*)' does not exist in " +
             `${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)$`
         )
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -862,7 +862,7 @@ describe('aggregateContent()', function () {
         )
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: parseInt(startPath) })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
       })
@@ -886,7 +886,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry1).to.exist()
         expect(componentDescEntry2).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: [10, true] })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
@@ -904,7 +904,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilderB, componentDescB)
         playbookSpec.content.sources.push({ url: repoBuilderB.url })
 
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include(componentDescA)
@@ -923,7 +923,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilderA2, componentDescA2)
         playbookSpec.content.sources.push({ url: repoBuilderA2.url })
 
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         // NOTE the keys of the two component descriptors are merged, last wins
         expect(aggregate[0]).to.include({ ...componentDescA1, ...componentDescA2 })
@@ -944,7 +944,7 @@ describe('aggregateContent()', function () {
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: ospath.relative(newWorkDir, repoBuilder.url) })
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
@@ -964,7 +964,7 @@ describe('aggregateContent()', function () {
       fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
@@ -980,7 +980,7 @@ describe('aggregateContent()', function () {
       await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
       playbookSpec.content.sources.push({ url: prefixPath('.', ospath.relative(WORK_DIR, repoBuilder.url)) })
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
@@ -996,7 +996,7 @@ describe('aggregateContent()', function () {
       await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
       playbookSpec.content.sources.push({ url: prefixPath('~', ospath.relative(os.homedir(), repoBuilder.url)) })
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
@@ -1016,7 +1016,7 @@ describe('aggregateContent()', function () {
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: prefixPath('~+', ospath.relative(newWorkDir, repoBuilder.url)) })
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
@@ -1036,7 +1036,7 @@ describe('aggregateContent()', function () {
       fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
@@ -1078,7 +1078,8 @@ describe('aggregateContent()', function () {
         playbookSpec.dir = WORK_DIR
         playbookSpec.content.sources.push({ url: ospath.relative(newWorkDir, repoBuilder.url) })
         let aggregate
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec, eventEmitter)
+        const aggregateContentDeferred =
+          await deferExceptions(aggregateContent, { playbook: playbookSpec, eventEmitter })
         expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include(componentDesc)
@@ -1106,7 +1107,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(0)
       })
     })
@@ -1115,7 +1116,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: undefined })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(0)
       })
     })
@@ -1124,7 +1125,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
       })
@@ -1139,7 +1140,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '5.6' }))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 5.6 })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: componentName, version: '5.6' })
       })
@@ -1154,7 +1155,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: 'push' }))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.0' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: componentName, version: 'v1.0' })
       })
@@ -1164,7 +1165,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1180,7 +1181,7 @@ describe('aggregateContent()', function () {
           url: repoBuilder.url,
           branches: ['master', 'v1*', 'v3.*', 5.6],
         })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
@@ -1196,7 +1197,7 @@ describe('aggregateContent()', function () {
           url: repoBuilder.url,
           branches: 'master,v1* , v3.*',
         })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
@@ -1212,7 +1213,7 @@ describe('aggregateContent()', function () {
           url: repoBuilder.url,
           branches: ['v*', '!master', '!v2*'],
         })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1224,7 +1225,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder, 'the-component', () => repoBuilder.createTag('v1.0.0', 'v1.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1238,7 +1239,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         playbookSpec.content.branches = ['v1.0', 'v2*']
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1251,7 +1252,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         playbookSpec.content.branches = 'v1.*'
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
       })
@@ -1265,7 +1266,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
         freeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
       })
@@ -1277,7 +1278,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '.' })
         freeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
       })
@@ -1289,7 +1290,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['master', 'HEAD'] })
         freeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
@@ -1303,7 +1304,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['master', '.'] })
         freeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
@@ -1317,7 +1318,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master,HEAD' })
         freeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
@@ -1331,7 +1332,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master,.' })
         freeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
@@ -1347,7 +1348,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.close())
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['HEAD', 'v1.0', 'v2.0'] })
         freeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1360,7 +1361,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['HEAD', 'master'] })
         freeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
       })
@@ -1376,7 +1377,7 @@ describe('aggregateContent()', function () {
         )
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: 'v*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1394,7 +1395,7 @@ describe('aggregateContent()', function () {
         )
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: 'v2.0.0' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v2.0' })
       })
@@ -1405,7 +1406,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder, 'the-component', () => repoBuilder.createTag('1', 'v1.0'))
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: 1 })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
       })
@@ -1421,7 +1422,7 @@ describe('aggregateContent()', function () {
         )
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: [1, 'v3.*'] })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1439,7 +1440,7 @@ describe('aggregateContent()', function () {
         )
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: 'v1.0.0 , v3.*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1457,7 +1458,7 @@ describe('aggregateContent()', function () {
         )
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: 'z*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(0)
       })
     })
@@ -1473,7 +1474,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.branches = []
         playbookSpec.content.tags = 'v2.*'
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v2.0' })
       })
@@ -1490,7 +1491,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.branches = []
         playbookSpec.content.tags = ['v1.*', 'v3.0.0']
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1509,7 +1510,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.branches = undefined
         playbookSpec.content.tags = 'v*'
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: undefined })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(0)
       })
     })
@@ -1523,7 +1524,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.createTag('v3.0.0', 'v3.0'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['v3.*'], tags: ['v*', '!v3.*'] })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -1545,7 +1546,7 @@ describe('aggregateContent()', function () {
         .then(() => repoBuilder.detachHead())
         .then(() => repoBuilder.close())
       playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD', tags: 'v3*' })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(aggregate).to.have.lengthOf(2)
       sortAggregate(aggregate)
       expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
@@ -1558,7 +1559,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithFiles(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -1601,7 +1602,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.createTag('v1.0.0'))
           .then(() => repoBuilder.close('master'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: [], tags: 'v*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include(componentDesc)
@@ -1624,7 +1625,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.createTag('v1.0.0', 'HEAD', false))
           .then(() => repoBuilder.close('master'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: [], tags: 'v*' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include(componentDesc)
@@ -1645,7 +1646,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.copyToWorktree(['modules/ROOT/pages/page-one.adoc'], repoBuilder.fixtureBase))
           .then(() => repoBuilder.close())
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(0)
       })
     })
@@ -1654,7 +1655,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithFiles(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
         const pageOne = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
@@ -1684,7 +1685,7 @@ describe('aggregateContent()', function () {
         })
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
         const expectedMode = 0o100666 & ~process.umask()
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v2.0' })
         const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
@@ -1702,7 +1703,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder, {}, fixturePath)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, fixturePath))).mode
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
       const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
@@ -1724,7 +1725,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
         // NOTE Windows doesn't support setting executable bit on file (and can't current emulate in git server)
         const expectedMode = (process.platform === 'win32' ? 0o100666 : 0o100777) & ~process.umask()
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v2.0' })
         const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
@@ -1742,7 +1743,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder, {}, fixturePath)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, fixturePath))).mode
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
       const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
@@ -1759,7 +1760,7 @@ describe('aggregateContent()', function () {
           const fixturePaths = [targetPath, symlinkPath]
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () => repoBuilder.checkoutBranch('other'))
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const aggregate = await aggregateContent(playbookSpec)
+          const aggregate = await aggregateContent({ playbook: playbookSpec })
           expect(aggregate).to.have.lengthOf(1)
           expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
           const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
@@ -1775,7 +1776,7 @@ describe('aggregateContent()', function () {
         await initRepoWithFiles(repoBuilder, {}, fixturePaths)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
         const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
         const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
@@ -1791,7 +1792,7 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder)
           if (repoBuilder.remote && repoBuilder.bare) repoBuilder.url += '/.git'
           playbookSpec.content.sources.push({ url: repoBuilder.url })
-          await aggregateContent(playbookSpec)
+          await aggregateContent({ playbook: playbookSpec })
           if (repoBuilder.remote) {
             const normalizedUrl = repoBuilder.url
               .toLowerCase()
@@ -1822,7 +1823,7 @@ describe('aggregateContent()', function () {
         await initRepoWithFiles(repoBuilder)
         playbookSpec.runtime.cacheDir = customCacheDir
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        await aggregateContent(playbookSpec)
+        await aggregateContent({ playbook: playbookSpec })
         expect(CONTENT_CACHE_DIR).to.not.be.a.path()
         if (repoBuilder.remote) {
           expect(customContentCacheDir)
@@ -1843,7 +1844,7 @@ describe('aggregateContent()', function () {
         await initRepoWithFiles(repoBuilder)
         playbookSpec.runtime.cacheDir = '.antora-cache'
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        await aggregateContent(playbookSpec)
+        await aggregateContent({ playbook: playbookSpec })
         expect(CONTENT_CACHE_DIR).to.not.be.a.path()
         if (repoBuilder.remote) {
           expect(customContentCacheDir)
@@ -1866,7 +1867,7 @@ describe('aggregateContent()', function () {
         playbookSpec.dir = WORK_DIR
         playbookSpec.runtime.cacheDir = './.antora-cache'
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        await aggregateContent(playbookSpec)
+        await aggregateContent({ playbook: playbookSpec })
         expect(CONTENT_CACHE_DIR).to.not.be.a.path()
         if (repoBuilder.remote) {
           expect(customContentCacheDir)
@@ -1891,7 +1892,7 @@ describe('aggregateContent()', function () {
           ospath.relative(os.homedir(), ospath.join(WORK_DIR, '.antora-cache'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        await aggregateContent(playbookSpec)
+        await aggregateContent({ playbook: playbookSpec })
         expect(CONTENT_CACHE_DIR).to.not.be.a.path()
         if (repoBuilder.remote) {
           expect(customContentCacheDir)
@@ -1915,7 +1916,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
         const expectedMessage = `Failed to create content cache directory: ${customContentCacheDir};`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
     })
@@ -1951,7 +1952,7 @@ describe('aggregateContent()', function () {
         )
         await initRepoWithFiles(repoBuilder, {}, undefined, () => repoBuilder.addFilesFromFixture(fixturePaths))
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const files = aggregate[0].files
         const paths = files.map((f) => f.path)
@@ -1972,7 +1973,7 @@ describe('aggregateContent()', function () {
           repoBuilder.addFilesFromFixture('should-be-ignored.adoc', '', false)
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: repoBuilder.startPath })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include(componentDesc)
@@ -1998,7 +1999,7 @@ describe('aggregateContent()', function () {
           repoBuilder.addFilesFromFixture('should-be-ignored.adoc', '', false)
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: repoBuilder.startPath })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include(componentDesc)
@@ -2018,7 +2019,7 @@ describe('aggregateContent()', function () {
         const fixturePaths = ['modules/ROOT/pages/page-one.adoc']
         await initRepoWithFiles(repoBuilder, componentDesc, fixturePaths)
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: repoBuilder.startPath })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include(componentDesc)
@@ -2035,7 +2036,7 @@ describe('aggregateContent()', function () {
           repoBuilder.resolveRef().then((oid) => (refhash = oid))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
         const pageOne = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
@@ -2087,7 +2088,7 @@ describe('aggregateContent()', function () {
           repoBuilder.resolveRef().then((oid) => (refhash = oid))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: repoBuilder.startPath })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
         const pageOne = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
@@ -2139,7 +2140,7 @@ describe('aggregateContent()', function () {
           repoBuilder.resolveRef().then((oid) => (refhash = oid))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
         const actualFile = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page with spaces.adoc')
@@ -2190,7 +2191,7 @@ describe('aggregateContent()', function () {
         const fixturePath = 'modules/ROOT/pages/page-one.adoc'
         await initRepoWithFiles(repoBuilder, {}, fixturePath, () => repoBuilder.config('remote.origin.url', remoteUrl))
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
@@ -2203,7 +2204,7 @@ describe('aggregateContent()', function () {
         const fixturePath = 'modules/ROOT/pages/page-one.adoc'
         await initRepoWithFiles(repoBuilder, {}, fixturePath, () => repoBuilder.config('remote.origin.url', remoteUrl))
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
@@ -2216,7 +2217,7 @@ describe('aggregateContent()', function () {
         const fixturePath = 'modules/ROOT/pages/page-one.adoc'
         await initRepoWithFiles(repoBuilder, {}, fixturePath, () => repoBuilder.config('remote.origin.url', remoteUrl))
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
@@ -2230,7 +2231,7 @@ describe('aggregateContent()', function () {
         const fixturePath = 'modules/ROOT/pages/page-one.adoc'
         await initRepoWithFiles(repoBuilder, {}, fixturePath, () => repoBuilder.config('remote.origin.url', remoteUrl))
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
@@ -2241,7 +2242,7 @@ describe('aggregateContent()', function () {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithFiles(repoBuilder, {}, 'modules/ROOT/pages/page-one.adoc')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
@@ -2381,7 +2382,7 @@ describe('aggregateContent()', function () {
       it('should not populate editUrl if edit_url key on content source is falsy', async () => {
         const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
         playbookSpec.content.sources.push({ url, editUrl: false })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const file = aggregate[0].files[0]
         expect(file.src).to.not.have.property('editUrl')
@@ -2394,7 +2395,7 @@ describe('aggregateContent()', function () {
         const sourceTwo = { url, branches: 'v2.0', startPath: 'docs', editUrl: '{web_url}/blob/{refname}/{path}' }
         playbookSpec.content.sources.push(sourceDev)
         playbookSpec.content.sources.push(sourceTwo)
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         const aggregateDev = aggregate.find(({ version }) => version === 'dev')
         const aggregateTwo = aggregate.find(({ version }) => version === '2.0')
@@ -2425,7 +2426,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
           .then(() => repoBuilder.close('master'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.2.3-fixes', tags: 'v1.2.3' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include(componentDesc)
         const pageOne = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
@@ -2441,7 +2442,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilderA.url })
         await initRepoWithFiles(repoBuilderB, { repoName: 'the-component-repo-b' }, 'modules/ROOT/pages/page-two.adoc')
         playbookSpec.content.sources.push({ url: repoBuilderB.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
         const pageOne = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
@@ -2479,7 +2480,7 @@ describe('aggregateContent()', function () {
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.0' })
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v2.0' })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         if (repoBuilder.remote) {
           expect(CONTENT_CACHE_DIR)
             .to.be.a.directory()
@@ -2519,7 +2520,7 @@ describe('aggregateContent()', function () {
         }
         await initRepoWithFiles(repoBuilderB, componentDescB, [])
         playbookSpec.content.sources.push({ url: repoBuilderB.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include({
           name: 'the-component',
@@ -2554,7 +2555,7 @@ describe('aggregateContent()', function () {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithFilesAndWorktree(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -2577,7 +2578,7 @@ describe('aggregateContent()', function () {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithFilesAndWorktree(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -2600,7 +2601,7 @@ describe('aggregateContent()', function () {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithFilesAndWorktree(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -2631,7 +2632,7 @@ describe('aggregateContent()', function () {
         `
         await fsp.writeFile(ospath.join(clonePath, 'modules/ROOT/pages/wip-page.adoc'), wipPageContents)
         playbookSpec.content.sources.push({ url: clonePath })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
         const files = aggregate[0].files
@@ -2655,7 +2656,7 @@ describe('aggregateContent()', function () {
     describe('should not catalog files in worktree', () => {
       const testNonWorktreeAggregate = async (repoBuilder) => {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -2701,7 +2702,7 @@ describe('aggregateContent()', function () {
     const defaultBranch = 'tip'
     await initRepoWithFiles(repoBuilder, undefined, undefined, () => repoBuilder.checkoutBranch(defaultBranch))
     playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
-    let aggregate = await aggregateContent(playbookSpec)
+    let aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
     expect(CONTENT_CACHE_DIR)
@@ -2720,12 +2721,12 @@ describe('aggregateContent()', function () {
     //.and.empty()
     // NOTE make sure local HEAD is ignored
     await clonedRepoBuilder.checkoutBranch$1('local', 'refs/remotes/origin/HEAD')
-    aggregate = await aggregateContent(playbookSpec)
+    aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
     // NOTE make sure local HEAD is considered if remote HEAD is missing
     await fsp.rename(ospath.join(clonePath, 'refs/remotes/origin/HEAD'), ospath.join(clonePath, 'HEAD'))
-    aggregate = await aggregateContent(playbookSpec)
+    aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
   })
@@ -2734,7 +2735,7 @@ describe('aggregateContent()', function () {
     const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
     await initRepoWithFiles(repoBuilder)
     playbookSpec.content.sources.push({ url: repoBuilder.url })
-    let aggregate = await aggregateContent(playbookSpec)
+    let aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(1)
     expect(CONTENT_CACHE_DIR)
       .to.be.a.directory()
@@ -2753,7 +2754,7 @@ describe('aggregateContent()', function () {
     await fsp.writeFile(validFile, 'marker')
     await fsp.writeFile(headFile, '')
     await fsp.unlink(validFile)
-    aggregate = await aggregateContent(playbookSpec)
+    aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(1)
     expect(cachedRepoDir).to.be.a.directory()
     expect(validFile)
@@ -2771,7 +2772,7 @@ describe('aggregateContent()', function () {
     )
     playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', tags: 'release/*' })
 
-    const firstAggregate = await aggregateContent(playbookSpec)
+    const firstAggregate = await aggregateContent({ playbook: playbookSpec })
 
     expect(firstAggregate).to.have.lengthOf(1)
     expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -2793,7 +2794,7 @@ describe('aggregateContent()', function () {
       .then(() => repoBuilder.close())
 
     playbookSpec.runtime.fetch = true
-    const secondAggregate = await aggregateContent(playbookSpec)
+    const secondAggregate = await aggregateContent({ playbook: playbookSpec })
 
     expect(secondAggregate).to.have.lengthOf(3)
     sortAggregate(secondAggregate)
@@ -2820,7 +2821,7 @@ describe('aggregateContent()', function () {
     const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
     await repoBuilder.init('the-component').then(() => repoBuilder.close())
     playbookSpec.content.sources.push({ url: repoBuilder.url })
-    const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+    const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
     expect(aggregateContentDeferred).to.throw()
 
     await repoBuilder
@@ -2830,7 +2831,7 @@ describe('aggregateContent()', function () {
       .then(() => repoBuilder.close())
 
     playbookSpec.runtime.fetch = true
-    const aggregate = await aggregateContent(playbookSpec)
+    const aggregate = await aggregateContent({ playbook: playbookSpec })
 
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
@@ -2845,7 +2846,7 @@ describe('aggregateContent()', function () {
     )
     playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
 
-    const firstAggregate = await aggregateContent(playbookSpec)
+    const firstAggregate = await aggregateContent({ playbook: playbookSpec })
 
     expect(firstAggregate).to.have.lengthOf(1)
     expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -2867,7 +2868,7 @@ describe('aggregateContent()', function () {
     playbookSpec.content.sources[0].branches = 'v2*'
     // NOTE this also verifies we can fetch tags after not fetching them originally
     playbookSpec.content.sources[0].tags = 'v*'
-    const secondAggregate = await aggregateContent(playbookSpec)
+    const secondAggregate = await aggregateContent({ playbook: playbookSpec })
 
     expect(secondAggregate).to.have.lengthOf(2)
     sortAggregate(secondAggregate)
@@ -2898,7 +2899,7 @@ describe('aggregateContent()', function () {
     )
     playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
 
-    const firstAggregate = await aggregateContent(playbookSpec)
+    const firstAggregate = await aggregateContent({ playbook: playbookSpec })
     expect(firstAggregate).to.have.lengthOf(3)
     sortAggregate(firstAggregate)
     expect(firstAggregate.map((it) => it.version)).to.have.members(['1.1', '1.2', '2.0'])
@@ -2919,7 +2920,7 @@ describe('aggregateContent()', function () {
       .then(() => repoBuilder.close())
     playbookSpec.runtime.fetch = true
 
-    const secondAggregate = await aggregateContent(playbookSpec)
+    const secondAggregate = await aggregateContent({ playbook: playbookSpec })
     expect(secondAggregate).to.have.lengthOf(1)
     expect(secondAggregate[0]).to.include({ name: 'the-component', version: '2.0' })
   })
@@ -2940,7 +2941,7 @@ describe('aggregateContent()', function () {
     )
     playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', tags: 'v*' })
 
-    const firstAggregate = await aggregateContent(playbookSpec)
+    const firstAggregate = await aggregateContent({ playbook: playbookSpec })
     expect(firstAggregate).to.have.lengthOf(3)
     sortAggregate(firstAggregate)
     expect(firstAggregate.map((it) => it.version)).to.have.members(['v1.1.0', 'v1.1', 'v1.2.3'])
@@ -2956,7 +2957,7 @@ describe('aggregateContent()', function () {
       .then(() => repoBuilder.close())
     playbookSpec.runtime.fetch = true
 
-    const secondAggregate = await aggregateContent(playbookSpec)
+    const secondAggregate = await aggregateContent({ playbook: playbookSpec })
     expect(secondAggregate).to.have.lengthOf(1)
     expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
   })
@@ -2968,7 +2969,7 @@ describe('aggregateContent()', function () {
     )
     playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
 
-    const firstAggregate = await aggregateContent(playbookSpec)
+    const firstAggregate = await aggregateContent({ playbook: playbookSpec })
 
     expect(firstAggregate).to.have.lengthOf(1)
     expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -2982,7 +2983,7 @@ describe('aggregateContent()', function () {
       .then(() => repoBuilder.commitAll('content updates'))
       .then(() => repoBuilder.close())
 
-    const secondAggregate = await aggregateContent(playbookSpec)
+    const secondAggregate = await aggregateContent({ playbook: playbookSpec })
 
     expect(secondAggregate).to.have.lengthOf(1)
     expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -3007,7 +3008,7 @@ describe('aggregateContent()', function () {
         await repoBuilder.checkoutBranch('master')
       })
       playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1' })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(aggregate).to.have.lengthOf(1)
     }).timeout(this.timeout() * 3)
   }
@@ -3026,7 +3027,7 @@ describe('aggregateContent()', function () {
 
     playbookSpec.content.sources.push({ url: localRepoBuilder.url })
 
-    const aggregate = await aggregateContent(playbookSpec)
+    const aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(1)
     const pageOne = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
     expect(pageOne).to.exist()
@@ -3054,7 +3055,7 @@ describe('aggregateContent()', function () {
 
     playbookSpec.content.sources.push({ url: localRepoBuilder.url, remote: 'upstream' })
 
-    const aggregate = await aggregateContent(playbookSpec)
+    const aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(2)
     sortAggregate(aggregate)
     expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
@@ -3079,7 +3080,7 @@ describe('aggregateContent()', function () {
 
     playbookSpec.content.sources.push({ url: localRepoBuilder.url })
 
-    const aggregate = await aggregateContent(playbookSpec)
+    const aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
   })
@@ -3091,7 +3092,7 @@ describe('aggregateContent()', function () {
 
     playbookSpec.content.sources.push({ url: repoBuilder.url, remote: 'upstream' })
 
-    const aggregate = await aggregateContent(playbookSpec)
+    const aggregate = await aggregateContent({ playbook: playbookSpec })
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
   })
@@ -3100,7 +3101,7 @@ describe('aggregateContent()', function () {
     testRemote(async (repoBuilder) => {
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url.replace('//localhost:', '//[::1]:') })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(aggregate).to.have.lengthOf(1)
     })
   })
@@ -3127,7 +3128,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'master' })
       // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
       const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: master)`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred).to.throw(expectedMessage)
     })
   })
@@ -3146,7 +3147,7 @@ describe('aggregateContent()', function () {
 
     it('should show progress bar when cloning a remote repository', async () => {
       return withMockStdout(async (lines) => {
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(lines).to.have.lengthOf.at.least(2)
         expect(lines[0]).to.include('[clone] ' + repoBuilder.url)
@@ -3157,10 +3158,10 @@ describe('aggregateContent()', function () {
 
     it('should show progress bar when fetching a remote repository', async () => {
       return withMockStdout(async (lines) => {
-        await aggregateContent(playbookSpec)
+        await aggregateContent({ playbook: playbookSpec })
         lines.length = 0
         playbookSpec.runtime.fetch = true
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(lines).to.have.lengthOf.at.least(2)
         expect(lines[0]).to.include('[fetch] ' + repoBuilder.url)
@@ -3171,14 +3172,14 @@ describe('aggregateContent()', function () {
 
     it('should cancel progress bar for fetch and create new one for clone if fetch fails', async () => {
       playbookSpec.runtime.quiet = true
-      await aggregateContent(playbookSpec)
+      await aggregateContent({ playbook: playbookSpec })
       const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
       // NOTE corrupt the cloned repository
       await fsp.writeFile(ospath.join(CONTENT_CACHE_DIR, cachedRepoName, 'config'), '')
       playbookSpec.runtime.quiet = false
       playbookSpec.runtime.fetch = true
       return withMockStdout(async (lines) => {
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(lines).to.have.lengthOf.at.least(2)
         expect(lines[0]).to.include('[fetch] ' + repoBuilder.url)
@@ -3200,7 +3201,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: otherRepoBuilder.url })
 
       return withMockStdout(async (lines) => {
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         expect(lines).to.have.lengthOf.at.least(4)
         const repoLines = lines.filter((l) => l.includes(repoBuilder.url))
@@ -3225,11 +3226,11 @@ describe('aggregateContent()', function () {
       })
 
       return withMockStdout(async (lines) => {
-        await aggregateContent(playbookSpec)
+        await aggregateContent({ playbook: playbookSpec })
         lines.length = 0
         playbookSpec.content.sources.push({ url: otherRepoBuilder.url })
         playbookSpec.runtime.fetch = true
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(2)
         expect(lines).to.have.lengthOf.at.least(4)
         const repoLines = lines.filter((l) => l.includes(repoBuilder.url))
@@ -3245,7 +3246,7 @@ describe('aggregateContent()', function () {
 
     it('should truncate repository URL to fit within progress bar', async () => {
       return withMockStdout(async (lines) => {
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(lines).to.have.lengthOf.at.least(2)
         expect(lines[0]).to.include('[clone] ...' + repoBuilder.url.substr(7))
@@ -3254,7 +3255,7 @@ describe('aggregateContent()', function () {
 
     it('should not show progress bar if window is too narrow', async () => {
       return withMockStdout(async (lines) => {
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(lines).to.have.lengthOf(0)
       }, 40)
@@ -3263,7 +3264,7 @@ describe('aggregateContent()', function () {
     it('should not show progress bar if stdout is not a TTY', async () => {
       return withMockStdout(
         async (lines) => {
-          const aggregate = await aggregateContent(playbookSpec)
+          const aggregate = await aggregateContent({ playbook: playbookSpec })
           expect(aggregate).to.have.lengthOf(1)
           expect(lines).to.have.lengthOf(0)
         },
@@ -3275,7 +3276,7 @@ describe('aggregateContent()', function () {
     it('should not show progress bar if playbook runtime is quiet', async () => {
       return withMockStdout(async (lines) => {
         playbookSpec.runtime = { quiet: true }
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(lines).to.have.lengthOf(0)
       })
@@ -3284,7 +3285,7 @@ describe('aggregateContent()', function () {
     it('should not show progress bar if playbook runtime is silent', async () => {
       return withMockStdout(async (lines) => {
         playbookSpec.runtime = { silent: true }
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(lines).to.have.lengthOf(0)
       })
@@ -3293,7 +3294,7 @@ describe('aggregateContent()', function () {
     it('should not show progress bar if repository is local', async () => {
       return withMockStdout(async (lines) => {
         playbookSpec.content.sources[0].url = repoBuilder.repoPath
-        const aggregate = await aggregateContent(playbookSpec)
+        const aggregate = await aggregateContent({ playbook: playbookSpec })
         expect(aggregate).to.have.lengthOf(1)
         expect(lines).to.have.lengthOf(0)
       })
@@ -3304,7 +3305,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.pop()
         playbookSpec.content.sources.push({ url: 'https://gitlab.com/antora/no-such-repository-a.git' })
         playbookSpec.content.sources.push({ url: 'https://gitlab.com/antora/no-such-repository-b.git' })
-        await deferExceptions(aggregateContent, playbookSpec)
+        await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(process.stdout.clearLine).to.have.been.called.exactly(3)
       })
     })
@@ -3335,7 +3336,7 @@ describe('aggregateContent()', function () {
       RepositoryBuilder.registerPlugin('fs', customFs, GIT_CORE)
       expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(aggregate).to.have.lengthOf(1)
       expect(customFs.readFileCalled).to.be.true()
       expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
@@ -3397,7 +3398,7 @@ describe('aggregateContent()', function () {
       // NOTE include '=' in value to validate characters are not URL encoded
       repoBuilder.url = urlWithoutAuth.replace('//', '//u=:p=@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u=:p=').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u=', password: 'p=' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3413,7 +3414,7 @@ describe('aggregateContent()', function () {
       repoBuilder.url = urlWithoutAuth.replace('//', '//@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       skipAuthenticateIfNoAuth = true
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.be.undefined()
       expect(credentialsSent).to.eql({})
       expect(aggregate).to.have.lengthOf(1)
@@ -3429,7 +3430,7 @@ describe('aggregateContent()', function () {
       repoBuilder.url = urlWithoutAuth.replace('//', '//:@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       skipAuthenticateIfNoAuth = true
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.be.undefined()
       expect(credentialsSent).to.eql({})
       expect(aggregate).to.have.lengthOf(1)
@@ -3445,7 +3446,7 @@ describe('aggregateContent()', function () {
       repoBuilder.url = urlWithoutAuth.replace('//', '//:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       skipAuthenticateIfNoAuth = true
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.be.undefined()
       expect(credentialsSent).to.eql({})
       expect(aggregate).to.have.lengthOf(1)
@@ -3461,7 +3462,7 @@ describe('aggregateContent()', function () {
       const urlWithoutAuth = repoBuilder.url
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + urlWithoutAuth + ')'
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
@@ -3474,7 +3475,7 @@ describe('aggregateContent()', function () {
       const urlWithoutAuth = repoBuilder.url
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + urlWithoutAuth + ')'
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
@@ -3483,7 +3484,7 @@ describe('aggregateContent()', function () {
         .and.be.empty()
       authorizationHeaderValue = undefined
       credentialsVerdict = undefined
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
@@ -3495,7 +3496,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder)
       const urlWithoutAuth = repoBuilder.url.replace('.git', '')
       playbookSpec.content.sources.push({ url: urlWithoutAuth.replace('//', '//u:p@') })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3508,7 +3509,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder)
       repoBuilder.url = repoBuilder.url.replace('//', '//u@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:').toString('base64'))
       expect(credentialsSent).to.not.be.undefined()
       expect(credentialsSent.username).to.equal('u')
@@ -3523,7 +3524,7 @@ describe('aggregateContent()', function () {
       const credentials = ['invalid URL', repoBuilder.url.replace('//', '//u=:p=@')]
       await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials.join('\n') + '\n')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u=:p=').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u=', password: 'p=' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3536,13 +3537,13 @@ describe('aggregateContent()', function () {
       const credentials = repoBuilder.url.replace('//', '//u:p@') + '\n'
       await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      let aggregate = await aggregateContent(playbookSpec)
+      let aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
       credentialsSent = undefined
-      aggregate = await aggregateContent(playbookSpec)
+      aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(credentialsSent).to.be.undefined()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
@@ -3556,7 +3557,7 @@ describe('aggregateContent()', function () {
       const credentials = [repoBuilderA.url.replace('//', '//u:p@'), repoBuilderB.url.replace('//', '//u:p@')]
       await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials.join('\n') + '\n')
       playbookSpec.content.sources.push({ url: repoBuilderA.url }, { url: repoBuilderB.url })
-      let aggregate = await aggregateContent(playbookSpec)
+      let aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(credentialsRequestCount).to.equal(2)
@@ -3564,7 +3565,7 @@ describe('aggregateContent()', function () {
       playbookSpec.runtime.fetch = true
       credentialsSent = undefined
       credentialsRequestCount = 0
-      aggregate = await aggregateContent(playbookSpec)
+      aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(credentialsRequestCount).to.equal(2)
       expect(aggregate).to.have.lengthOf(2)
@@ -3582,7 +3583,7 @@ describe('aggregateContent()', function () {
       const credentials = repoBuilder.url.replace('//', '//u:p@').replace('.git', '') + '\n'
       await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3594,7 +3595,7 @@ describe('aggregateContent()', function () {
       const credentials = repoBuilder.url.substr(0, repoBuilder.url.indexOf('/', 8)).replace('//', '//u:p@') + '\n'
       await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3607,7 +3608,7 @@ describe('aggregateContent()', function () {
       await fsp.mkdir(ospath.join(process.env.XDG_CONFIG_HOME, 'git'), { recursive: true })
       await fsp.writeFile(ospath.join(process.env.XDG_CONFIG_HOME, 'git', 'credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3623,7 +3624,7 @@ describe('aggregateContent()', function () {
       playbookSpec.git = { credentials: { path: customGitCredentialsPath } }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedMessage = 'Content repository not found or requires credentials (url: ' + repoBuilder.url + ')'
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred).to.throw(expectedMessage)
     })
 
@@ -3635,7 +3636,7 @@ describe('aggregateContent()', function () {
       await fsp.writeFile(customGitCredentialsPath, credentials.join('\n') + '\n')
       playbookSpec.git = { credentials: { path: customGitCredentialsPath } }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3647,7 +3648,7 @@ describe('aggregateContent()', function () {
       const credentials = 'https://token@git-host,' + repoBuilder.url.replace('//', '//u:p@') + '\n'
       playbookSpec.git = { credentials: { contents: credentials } }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3657,7 +3658,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + repoBuilder.url + ')'
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.be.undefined()
@@ -3670,7 +3671,7 @@ describe('aggregateContent()', function () {
       const credentials = repoBuilder.url.substr(0, repoBuilder.url.indexOf('/', 8)).replace('//', '//u:p@') + '\n'
       await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(aggregate).to.have.lengthOf(1)
       expect(CONTENT_CACHE_DIR)
         .to.be.a.directory()
@@ -3681,7 +3682,7 @@ describe('aggregateContent()', function () {
       playbookSpec.runtime.quiet = false
       playbookSpec.runtime.fetch = true
       return withMockStdout(async (lines) => {
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         const expectedErrorMessage =
           'Content repository not found or credentials were rejected (url: ' + repoBuilder.url + ')'
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
@@ -3708,7 +3709,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3732,7 +3733,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
+      const aggregate = await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
       expect(aggregate).to.have.lengthOf(1)
@@ -3756,7 +3757,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      await aggregateContent(playbookSpec)
+      await aggregateContent({ playbook: playbookSpec })
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(credentialManager.configured).to.be.true()
     })
@@ -3770,7 +3771,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: invalidDir })
       const expectedErrorMessage =
         'Local content source does not exist: ' + absInvalidDir + ' (url: ' + invalidDir + ')'
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
 
@@ -3778,7 +3779,7 @@ describe('aggregateContent()', function () {
       const absInvalidDir = ospath.join(WORK_DIR, 'no-such-directory')
       playbookSpec.content.sources.push({ url: absInvalidDir })
       const expectedErrorMessage = 'Local content source does not exist: ' + absInvalidDir
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
 
@@ -3791,7 +3792,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: regularDir })
       const expectedErrorMessage =
         'Local content source must be a git repository: ' + absRegularDir + ' (url: ' + regularDir + ')'
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
 
@@ -3801,7 +3802,7 @@ describe('aggregateContent()', function () {
       fs.writeFileSync(ospath.join(absRegularDir, 'antora.xml'), 'name: the-component\nversion: 1.0')
       playbookSpec.content.sources.push({ url: absRegularDir })
       const expectedErrorMessage = 'Local content source must be a git repository: ' + absRegularDir
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
 
@@ -3812,7 +3813,7 @@ describe('aggregateContent()', function () {
         const repoName = 'no-such-user@localhost:no-such-repository'
         await initRepoWithFiles(repoBuilder, { repoName })
         playbookSpec.content.sources.push({ url: repoName })
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw()
       })
     }
@@ -3878,7 +3879,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url })
       await withMockStdout(async (lines) => {
         playbookSpec.runtime.quiet = false
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
         expect(lines[0]).to.include(url)
       })
@@ -3889,7 +3890,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/500/bar.git`
       const expectedErrorMessage = `HTTP Error: 500 Internal Server Error (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
@@ -3904,7 +3905,7 @@ describe('aggregateContent()', function () {
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` +
         `but received: 001e# service=git-upload-pack\n0007ref (url: ${url})`
       const expectedCauseMessage = `RemoteDoesNotSupportSmartHTTP: ${commonErrorMessage}`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
@@ -3919,7 +3920,7 @@ describe('aggregateContent()', function () {
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` +
         `but received: 001e# service=git-upload-pack\n0009ref\x00 (url: ${url})`
       const expectedCauseMessage = `RemoteDoesNotSupportSmartHTTP: ${commonErrorMessage}`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
@@ -3933,7 +3934,7 @@ describe('aggregateContent()', function () {
       const expectedErrorMessage =
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` + `but received: 0000 (url: ${url})`
       const expectedCauseMessage = `RemoteDoesNotSupportSmartHTTP: ${commonErrorMessage}`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
@@ -3944,7 +3945,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/404/invalid-repository.git`
       const expectedErrorMessage = 'Content repository not found (url: ' + url + ')'
       playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
@@ -3957,7 +3958,7 @@ describe('aggregateContent()', function () {
         playbookSpec.git = { ensureGitSuffix: false }
         playbookSpec.content.sources.push({ url: repoBuilder.url.replace(/\.git$/, '') })
         const expectedErrorMessage = 'Content repository not found (url: ' + repoBuilder.url.replace(/\.git$/, '') + ')'
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       })
     })
@@ -3966,7 +3967,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + url + ')'
       playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
 
@@ -3974,7 +3975,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + url + ')'
       playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
@@ -3988,7 +3989,7 @@ describe('aggregateContent()', function () {
       return withMockStdout(async (lines) => {
         playbookSpec.runtime.quiet = false
         playbookSpec.content.sources.push({ url })
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
         expect(lines[0]).to.not.include('0123456789@')
       }, GIT_OPERATION_LABEL_LENGTH + 1 + url.length * 2)
@@ -3999,7 +4000,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url })
       const commonErrorMessage = 'Remote did not reply using the "smart" HTTP protocol.'
       const expectedErrorMessage = `${commonErrorMessage} Expected "001e# service=git-upload-pack"`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
 
@@ -4009,7 +4010,7 @@ describe('aggregateContent()', function () {
         const url = 'https://gitlab.info/org/repository.git'
         playbookSpec.content.sources.push({ url })
         const expectedErrorMessage = `Content repository host could not be resolved: gitlab.info (url: ${url})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, { playbook: playbookSpec })
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       })
     }

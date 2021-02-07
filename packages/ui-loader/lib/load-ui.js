@@ -36,6 +36,7 @@ const EXT_RX = /\.[a-z]{2,3}$/
  * returned.
  *
  * @memberof ui-loader
+ * @param {Object} context - The pipeline context including the playbook.
  * @param {Object} playbook - The configuration object for Antora.
  * @param {Object} playbook.dir - The working directory of the playbook.
  * @param {Object} playbook.runtime - The runtime configuration object for Antora.
@@ -58,7 +59,8 @@ const EXT_RX = /\.[a-z]{2,3}$/
  *
  * @returns {UiCatalog} A catalog of UI files which were read from the bundle.
  */
-async function loadUi (playbook) {
+async function loadUi (context) {
+  const playbook = context.playbook
   const startDir = playbook.dir || '.'
   const { bundle, supplementalFiles: supplementalFilesSpec, outputDir } = playbook.ui
   const bundleUrl = bundle.url

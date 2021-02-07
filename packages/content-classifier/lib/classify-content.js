@@ -7,17 +7,18 @@ const ContentCatalog = require('./content-catalog')
  *
  * @memberof content-classifier
  *
+ * @param {Object} aggregate - The raw aggregate of virtual file objects to be classified.
+ * @param {Object} [siteAsciiDocConfig={}] - Site-wide AsciiDoc processor configuration options.
+ * @param {Object} context - the context object for the pipeline, containing the playbook.
  * @param {Object} playbook - The configuration object for Antora.
  * @param {Object} playbook.site - Site-related configuration data.
  * @param {String} playbook.site.startPage - The start page for the site; redirects from base URL.
  * @param {Object} playbook.urls - URL settings for the site.
  * @param {String} playbook.urls.htmlExtensionStyle - The style to use when computing page URLs.
- * @param {Object} aggregate - The raw aggregate of virtual file objects to be classified.
- * @param {Object} [siteAsciiDocConfig={}] - Site-wide AsciiDoc processor configuration options.
  * @returns {ContentCatalog} A structured catalog of content components and virtual content files.
  */
-function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}) {
-  const contentCatalog = new ContentCatalog(playbook)
+function classifyContent (aggregate, siteAsciiDocConfig = {}, context) {
+  const contentCatalog = new ContentCatalog(context.playbook)
   aggregate
     .reduce((accum, componentVersionData) => {
       const { name, version } = componentVersionData
@@ -38,7 +39,7 @@ function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}) {
       files.forEach((file) => allocateSrc(file, name, version, nav) && contentCatalog.addFile(file))
       contentCatalog.registerComponentVersionStartPage(name, componentVersion, startPage)
     })
-  contentCatalog.registerSiteStartPage(playbook.site.startPage)
+  contentCatalog.registerSiteStartPage(context.playbook.site.startPage)
   return contentCatalog
 }
 

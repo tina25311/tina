@@ -127,7 +127,7 @@ function computePageAttrs ({ component: componentName, version, module: module_,
   return attrs
 }
 
-function extractAsciiDocMetadata (doc) {
+function extractAsciiDocMetadata (doc, context) {
   const metadata = { attributes: doc.getAttributes() }
   if (doc.hasHeader()) {
     const doctitle = (metadata.doctitle = doc.getDocumentTitle())
@@ -151,12 +151,14 @@ function extractAsciiDocMetadata (doc) {
  *
  * @memberof asciidoc-loader
  *
+ * @param {Object} context - The pipeline context, containing the playbook.
  * @param {Object} playbook - The configuration object for Antora (default: {}).
  * @param {Object} playbook.asciidoc - The AsciiDoc configuration data in the playbook.
  *
  * @returns {Object} A resolved configuration object to be used by the loadAsciiDoc function.
  */
-function resolveAsciiDocConfig (playbook = {}) {
+function resolveAsciiDocConfig (context = { playbook: {} }) {
+  const playbook = context.playbook
   const attributes = {
     env: 'site',
     'env-site': '',

@@ -16,16 +16,17 @@ const requireFromString = require('require-from-string')
  *
  * @memberof page-composer
  *
- * @param {Object} playbook - The configuration object for Antora.
  * @param {ContentCatalog} contentCatalog - The content catalog
  *   that provides access to the virtual files in the site.
  * @param {UiCatalog} uiCatalog - The file catalog
  *   that provides access to the UI files for the site.
  * @param {Object} [env=process.env] - A map of environment variables.
+ * @param {Object} context - The pipeline context, containing the playbook.
+ * @param {Object} playbook - The configuration object for Antora.
  * @returns {Function} A function to compose a page (i.e., wrap the embeddable
  *   HTML contents in a standalone page layout).
  */
-function createPageComposer (playbook, contentCatalog, uiCatalog, env = process.env) {
+function createPageComposer (contentCatalog, uiCatalog, env = process.env, context) {
   handlebars.registerHelper('relativize', relativize)
   handlebars.registerHelper('resolvePage', resolvePage)
   handlebars.registerHelper('resolvePageURL', resolvePageURL)
@@ -42,7 +43,7 @@ function createPageComposer (playbook, contentCatalog, uiCatalog, env = process.
         accum.set(stem, handlebars.compile(contents.toString(), { preventIndent: true, srcName })),
       new Map()
     )
-  return createPageComposerInternal(buildBaseUiModel(playbook, contentCatalog, env), layouts)
+  return createPageComposerInternal(buildBaseUiModel(context.playbook, contentCatalog, env), layouts)
 }
 
 function createPageComposerInternal (baseUiModel, layouts) {

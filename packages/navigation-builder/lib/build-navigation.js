@@ -1,6 +1,5 @@
 'use strict'
 
-const loadAsciiDoc = require('@antora/asciidoc-loader')
 const NavigationCatalog = require('./navigation-catalog')
 
 const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
@@ -23,10 +22,11 @@ const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
  * @param {Object} [asciidocConfig={}] - AsciiDoc processor configuration options. Extensions are not propagated.
  *   Sets the relativizePageRefs option to false before passing to the loadAsciiDoc function.
  * @param {Object} [asciidocConfig.attributes={}] - Shared AsciiDoc attributes to assign to the document.
+ * @param {Object} context - The pipeline context.
  *
  * @returns {NavigationCatalog} A navigation catalog built from the navigation files in the content catalog.
  */
-function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
+function buildNavigation (contentCatalog, siteAsciiDocConfig = {}, context) {
   const navCatalog = new NavigationCatalog()
   const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizePageRefs: false }
   contentCatalog
@@ -42,7 +42,7 @@ function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
     }, new Map())
     .forEach(({ component, version, componentVersion, asciidocConfig, navFiles }) => {
       const trees = navFiles.reduce((accum, navFile) => {
-        accum.push(...loadNavigationFile(navFile, contentCatalog, asciidocConfig))
+        accum.push(...loadNavigationFile(navFile, contentCatalog, asciidocConfig, context))
         return accum
       }, [])
       componentVersion.navigation = navCatalog.addNavigation(component, version, trees)
@@ -50,8 +50,8 @@ function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
   return navCatalog
 }
 
-function loadNavigationFile (navFile, contentCatalog, asciidocConfig) {
-  const lists = loadAsciiDoc(navFile, contentCatalog, asciidocConfig).blocks.filter((b) => b.getContext() === 'ulist')
+function loadNavigationFile (navFile, contentCatalog, asciidocConfig, context) {
+  const lists = context.asciidocLoader(navFile, contentCatalog, asciidocConfig, context).blocks.filter((b) => b.getContext() === 'ulist')
   if (!lists.length) return []
   const index = navFile.nav.index
   return lists.map((list, idx) => {

@@ -6,7 +6,7 @@ const publishSite = require('@antora/site-publisher')
 async function generateSite (args, env) {
   const playbook = await buildPlaybook(args, env)
   const siteCatalog = { getFiles: () => [create418Page()] }
-  return publishSite(playbook, [siteCatalog])
+  return publishSite([siteCatalog], { playbook })
 }
 
 function create418Page () {

@@ -18,17 +18,19 @@ const ENCODED_SPACE_RX = /%20/g
  *
  * @memberof redirect-producer
  *
+ * @param {ContentCatalog} contentCatalog - The content catalog that provides
+ *   access to the virtual content files (i.e., pages) in the site.
+ * @param {Object} context - The pipeline context, containing the playbook.
  * @param {Object} playbook - The configuration object for Antora.
  * @param {Object} playbook.site - Site-related configuration data.
  * @param {String} playbook.site.url - The base URL of the site.
  * @param {String} playbook.urls - URL-related configuration data.
  * @param {String} playbook.urls.redirectFacility - The redirect facility for
  *   which redirect configuration is being produced.
- * @param {ContentCatalog} contentCatalog - The content catalog that provides
- *   access to the virtual content files (i.e., pages) in the site.
  * @returns {Array<File>} An array of File objects that contain rewrite configuration for the web server.
  */
-function produceRedirects (playbook, contentCatalog) {
+function produceRedirects (contentCatalog, context) {
+  const playbook = context.playbook
   const aliases = contentCatalog.findBy({ family: 'alias' })
   if (!aliases.length) return []
   let siteUrl = playbook.site.url
@@ -50,7 +52,8 @@ function produceRedirects (playbook, contentCatalog) {
     case 'static':
       return populateStaticRedirectFiles(
         aliases.filter((it) => it.out),
-        siteUrl
+        siteUrl,
+        context
       )
     default:
       return unpublish(aliases)
@@ -119,12 +122,12 @@ function createNginxRewriteConf (files, urlPath) {
   return [new File({ contents: Buffer.from(rules.join('\n') + '\n'), out: { path: '.etc/nginx/rewrite.conf' } })]
 }
 
-function populateStaticRedirectFiles (files, siteUrl) {
-  files.forEach((file) => (file.contents = Buffer.from(createStaticRedirectContents(file, siteUrl) + '\n')))
+function populateStaticRedirectFiles (files, siteUrl, context) {
+  files.forEach((file) => (file.contents = Buffer.from(createStaticRedirectContents(file, siteUrl, context) + '\n')))
   return []
 }
 
-function createStaticRedirectContents (file, siteUrl) {
+function createStaticRedirectContents (file, siteUrl, context) {
   const targetUrl = file.rel.pub.url
   const relativeUrl = computeRelativeUrlPath(file.pub.url, targetUrl)
   const canonicalUrl = siteUrl && siteUrl.charAt() !== '/' ? siteUrl + targetUrl : undefined

@@ -4,7 +4,8 @@
 const { expect, heredoc, spy } = require('../../../test/test-utils')
 
 const { convertDocument } = require('@antora/document-converter')
-const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
+const context = { asciidocLoader: require('@antora/asciidoc-loader') }
+const { resolveAsciiDocConfig } = context.asciidocLoader
 
 describe('convertDocument()', () => {
   let inputFile
@@ -21,7 +22,7 @@ describe('convertDocument()', () => {
         url: 'https://docs.example.org',
       },
     }
-    asciidocConfig = resolveAsciiDocConfig(playbook)
+    asciidocConfig = resolveAsciiDocConfig({ playbook })
     inputFile = {
       path: 'modules/module-a/pages/page-a.adoc',
       dirname: 'modules/module-a/pages',
@@ -90,7 +91,7 @@ describe('convertDocument()', () => {
 
       image::module-b:screenshot.png[]
     `)
-    convertDocument(inputFile, contentCatalog, asciidocConfig)
+    convertDocument(inputFile, contentCatalog, asciidocConfig, context)
     expect(contentCatalog.resolveResource)
       .nth(1)
       .called.with('module-b:screenshot.png', inputFile.src)
@@ -134,14 +135,14 @@ describe('convertDocument()', () => {
       ++++
       ++++
     `)
-    expect(() => convertDocument(inputFile, undefined, asciidocConfig)).to.throw("undefined method `include?' for nil")
+    expect(() => convertDocument(inputFile, undefined, asciidocConfig, context)).to.throw("undefined method `include?' for nil")
   })
 
   it('should resolve attachment relative to module root', () => {
     inputFileInTopicFolder.contents = Buffer.from(heredoc`
       Grab the link:{attachmentsdir}/quickstart-project.zip[quickstart project].
     `)
-    convertDocument(inputFileInTopicFolder, undefined, asciidocConfig)
+    convertDocument(inputFileInTopicFolder, undefined, asciidocConfig, context)
     const contents = inputFileInTopicFolder.contents.toString()
     expect(contents).to.include('href="../_attachments/quickstart-project.zip"')
   })
@@ -152,7 +153,7 @@ describe('convertDocument()', () => {
 
       NOTE: Icons not enabled.
     `)
-    convertDocument(inputFile)
+    convertDocument(inputFile, undefined, {}, context)
     expect(inputFile.asciidoc).to.exist()
     const contents = inputFile.contents.toString()
     expect(contents).to.include('<h2 id="_heading">Heading</h2>')
@@ -165,7 +166,7 @@ describe('convertDocument()', () => {
 
       article contents
     `)
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.doctitle).to.equal('<em>Awesome</em> Document Title')
   })
@@ -174,7 +175,7 @@ describe('convertDocument()', () => {
     inputFile.contents = Buffer.from(heredoc`
       article contents only
     `)
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.doctitle).to.not.exist()
     expect(inputFile.asciidoc.xreftext).to.not.exist()
@@ -188,7 +189,7 @@ describe('convertDocument()', () => {
 
       article contents
     `)
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.xreftext).to.equal('<em>Awesome</em> Document Title')
   })
@@ -199,7 +200,7 @@ describe('convertDocument()', () => {
 
       article contents
     `)
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.doctitle).to.equal(inputFile.asciidoc.xreftext)
     expect(inputFile.asciidoc.xreftext).to.equal('<em>Awesome</em> Document Title')
@@ -212,7 +213,7 @@ describe('convertDocument()', () => {
 
       article contents
     `)
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.navtitle).to.equal('Start <em>Here</em>')
   })
@@ -224,7 +225,7 @@ describe('convertDocument()', () => {
 
       article contents
     `)
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.navtitle).to.exist()
     expect(inputFile.asciidoc.navtitle).to.equal('Start <em>Here</em>')
@@ -237,7 +238,7 @@ describe('convertDocument()', () => {
 
       article contents
     `)
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.asciidoc).to.exist()
     const attrs = inputFile.asciidoc.attributes
     expect(attrs).to.exist()
@@ -260,7 +261,7 @@ describe('convertDocument()', () => {
       doctitle: 'Document Title',
       attributes: { yin: 'yang' },
     }
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.doctitle).to.equal('Document Title')
     expect(inputFile.asciidoc.attributes).to.exist()
@@ -279,7 +280,7 @@ describe('convertDocument()', () => {
       'source-highlighter': 'html-pipeline',
     }
     asciidocConfig.attributes = { ...asciidocConfig.attributes, ...customAttributes }
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.contents.toString()).to.include(customAttributes['product-name'])
     expect(inputFile.asciidoc).to.exist()
     expect(inputFile.asciidoc.attributes).to.exist()
@@ -293,7 +294,7 @@ describe('convertDocument()', () => {
 
       article contents
     `))
-    convertDocument(inputFile, undefined, asciidocConfig)
+    convertDocument(inputFile, undefined, asciidocConfig, context)
     expect(inputFile.src.contents).to.equal(sourceContents)
   })
 
@@ -305,7 +306,7 @@ describe('convertDocument()', () => {
       },
     }
     const contentCatalog = { resolvePage: spy(() => targetFile), getComponent: () => {} }
-    convertDocument(inputFile, contentCatalog, asciidocConfig)
+    convertDocument(inputFile, contentCatalog, asciidocConfig, context)
     expect(contentCatalog.resolvePage)
       .nth(1)
       .called.with('module-b:page-b.adoc', inputFile.src)
@@ -329,7 +330,7 @@ describe('convertDocument()', () => {
       },
     }
     const contentCatalog = { getById: spy(() => partialFile), getComponent: () => {} }
-    convertDocument(inputFile, contentCatalog, asciidocConfig)
+    convertDocument(inputFile, contentCatalog, asciidocConfig, context)
     expect(contentCatalog.getById)
       .nth(1)
       .called.with({
@@ -378,9 +379,9 @@ describe('convertDocument()', () => {
       },
     }
     const contentCatalog = { getByPath: spy(() => includedFile), getComponent: () => {} }
-    convertDocument(includedFile, undefined, asciidocConfig)
+    convertDocument(includedFile, undefined, asciidocConfig, context)
     expect(includedFile.src).to.have.property('contents')
-    convertDocument(inputFile, contentCatalog, asciidocConfig)
+    convertDocument(inputFile, contentCatalog, asciidocConfig, context)
     expect(contentCatalog.getByPath)
       .nth(1)
       .called.with({
@@ -409,7 +410,7 @@ describe('convertDocument()', () => {
 
   it('should be able to include a page marked as a partial which has already been converted', () => {
     playbook.asciidoc = { attributes: { 'page-partial': false } }
-    asciidocConfig = resolveAsciiDocConfig(playbook)
+    asciidocConfig = resolveAsciiDocConfig({ playbook })
     inputFile.contents = Buffer.from(heredoc`
       = Page Title
 
@@ -446,9 +447,9 @@ describe('convertDocument()', () => {
       },
     }
     const contentCatalog = { getByPath: spy(() => includedFile), getComponent: () => {} }
-    convertDocument(includedFile, undefined, asciidocConfig)
+    convertDocument(includedFile, undefined, asciidocConfig, context)
     expect(includedFile.src).to.have.property('contents')
-    convertDocument(inputFile, contentCatalog, asciidocConfig)
+    convertDocument(inputFile, contentCatalog, asciidocConfig, context)
     expect(contentCatalog.getByPath)
       .nth(1)
       .called.with({
@@ -485,7 +486,7 @@ describe('convertDocument()', () => {
         },
       }
       const contentCatalog = { resolveResource: spy(() => imageFile), getComponent: () => {} }
-      convertDocument(inputFile, contentCatalog, asciidocConfig)
+      convertDocument(inputFile, contentCatalog, asciidocConfig, context)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="_images/image-filename.png" alt="image filename">')
       expect(contentCatalog.resolveResource)
@@ -496,7 +497,7 @@ describe('convertDocument()', () => {
     it(`should ignore parent references in target of ${macroType} image`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}../../module-b/_images/image-filename.png[]`)
       const contentCatalog = { resolveResource: spy(() => undefined), getComponent: () => {} }
-      convertDocument(inputFile, contentCatalog, asciidocConfig)
+      convertDocument(inputFile, contentCatalog, asciidocConfig, context)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../../module-b/_images/image-filename.png" alt="image filename">')
       expect(contentCatalog.resolveResource)
@@ -506,7 +507,7 @@ describe('convertDocument()', () => {
 
     it(`should preserve target of ${macroType} image if target is a URL`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}https://example.org/image-filename.png[]`)
-      convertDocument(inputFile, undefined, asciidocConfig)
+      convertDocument(inputFile, undefined, asciidocConfig, context)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="https://example.org/image-filename.png" alt="image filename">')
     })
@@ -514,7 +515,7 @@ describe('convertDocument()', () => {
     it(`should preserve target of ${macroType} image if target is a data URI`, () => {
       const imageData = 'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
       inputFile.contents = Buffer.from(`image${macroDelim}data:image/gif;base64,${imageData}[dot]`)
-      convertDocument(inputFile, undefined, asciidocConfig)
+      convertDocument(inputFile, undefined, asciidocConfig, context)
       const contents = inputFile.contents.toString()
       expect(contents).to.include(`<img src="data:image/gif;base64,${imageData}" alt="dot">`)
     })
@@ -527,7 +528,7 @@ describe('convertDocument()', () => {
         },
       }
       const contentCatalog = { resolveResource: spy(() => imageFile), getComponent: () => {} }
-      convertDocument(inputFileInTopicFolder, contentCatalog, asciidocConfig)
+      convertDocument(inputFileInTopicFolder, contentCatalog, asciidocConfig, context)
       const contents = inputFileInTopicFolder.contents.toString()
       expect(contents).to.include('<img src="../_images/image-filename.png" alt="image filename">')
       expect(contentCatalog.resolveResource)
@@ -554,7 +555,7 @@ describe('convertDocument()', () => {
         },
       }
       const contentCatalog = { resolveResource: spy(() => imageFile), getComponent: () => {} }
-      convertDocument(inputFile, contentCatalog, asciidocConfig)
+      convertDocument(inputFile, contentCatalog, asciidocConfig, context)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../module-b/_images/image-filename.png" alt="image filename">')
       expect(contentCatalog.resolveResource)
@@ -581,7 +582,7 @@ describe('convertDocument()', () => {
         },
       }
       const contentCatalog = { resolveResource: spy(() => imageFile), getComponent: () => {} }
-      convertDocument(inputFile, contentCatalog, asciidocConfig)
+      convertDocument(inputFile, contentCatalog, asciidocConfig, context)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../../2.0.0/module-b/_images/image-filename.png" alt="image filename">')
       expect(contentCatalog.resolveResource)
@@ -592,7 +593,7 @@ describe('convertDocument()', () => {
     it(`should use ${macroType} image target if target cannot be resolved`, () => {
       inputFile.contents = Buffer.from(`image${macroDelim}no-such-module:image-filename.png[]`)
       const contentCatalog = { resolveResource: spy(() => undefined), getComponent: () => {} }
-      convertDocument(inputFile, contentCatalog, asciidocConfig)
+      convertDocument(inputFile, contentCatalog, asciidocConfig, context)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="no-such-module:image-filename.png" alt="image filename">')
       expect(contentCatalog.resolveResource)
@@ -606,7 +607,7 @@ describe('convertDocument()', () => {
         resolveResource: spy(() => false),
         getComponent: () => {},
       }
-      convertDocument(inputFile, contentCatalog, asciidocConfig)
+      convertDocument(inputFile, contentCatalog, asciidocConfig, context)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="component-b::" alt="">')
       expect(contentCatalog.resolveResource)

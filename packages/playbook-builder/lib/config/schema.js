@@ -223,4 +223,56 @@ module.exports = {
     default: [],
     arg: 'pipeline-extension',
   },
+  pipelineStages: {
+    asciidocLoader: {
+      doc: 'asciidoc-loader implementation package.',
+      format: String,
+      default: undefined,
+    },
+    contentAggregator: {
+      doc: 'content-aggregator implementation package.',
+      format: String,
+      default: undefined,
+    },
+    contentClassifier: {
+      doc: 'content-classifier implementation package.',
+      format: String,
+      default: undefined,
+    },
+    documentConverter: {
+      doc: 'document-converter implementation package.',
+      format: String,
+      default: undefined,
+    },
+    navigationBuilder: {
+      doc: 'navigation-builder implementation package.',
+      format: String,
+      default: undefined,
+    },
+    pageComposer: {
+      doc: 'page-composer implementation package.',
+      format: String,
+      default: undefined,
+    },
+    redirectProducer: {
+      doc: 'redirect-producer implementation package.',
+      format: String,
+      default: undefined,
+    },
+    siteMapper: {
+      doc: 'site-mapper implementation package.',
+      format: String,
+      default: undefined,
+    },
+    sitePublisher: {
+      doc: 'site-publisher implementation package.',
+      format: String,
+      default: undefined,
+    },
+    uiLoader: {
+      doc: 'ui-loader implementation package.',
+      format: String,
+      default: undefined,
+    },
+  },
 }

@@ -173,17 +173,17 @@ describe('createPageComposer()', () => {
   })
 
   it('should create a page composer function', () => {
-    const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+    const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
     expect(composePage).to.be.instanceOf(Function)
   })
 
   it('should use exported content catalog', () => {
-    createPageComposer(playbook, contentCatalog, uiCatalog)
+    createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
     expect(contentCatalog.exportToModel).to.have.been.called.once()
   })
 
   it('should operate on helper, partial, and layout files from UI catalog', () => {
-    createPageComposer(playbook, contentCatalog, uiCatalog)
+    createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
     const types = uiCatalog.findByType.__spy.calls.map((call) => call[0]).sort((a, b) => a.localeCompare(b, 'en'))
     expect(types).to.eql(['helper', 'layout', 'partial'])
   })
@@ -301,7 +301,7 @@ describe('createPageComposer()', () => {
     })
 
     it('should execute the default template against the UI model', () => {
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       const result = composePage(file, contentCatalog, navigationCatalog)
       expect(result).to.equal(file)
       expect(file.contents).to.be.instanceOf(Buffer)
@@ -321,7 +321,7 @@ describe('createPageComposer()', () => {
 
     it('should apply helper function to template variable', () => {
       replaceCallToBodyPartial('{{> body-upper-title}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<h1>THE PAGE</h1>')
     })
@@ -333,35 +333,35 @@ describe('createPageComposer()', () => {
         b
         c</pre>
       `)
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<pre>a\nb\nc</pre>')
     })
 
     it('should be able to compare component with entry in component list for equality', () => {
       replaceCallToBodyPartial('{{> the-component}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>The current component is the-component.</p>')
     })
 
     it('should be able to include a dynamic partial', () => {
       replaceCallToBodyPartial('{{> (lookup page.component "name")}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>The current component is the-component.</p>')
     })
 
     it('should be able to access a property that is not defined', () => {
       replaceCallToBodyPartial('{{> body-undefined-property-reference}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>No such thang.</p>')
     })
 
     it('should be able to access the Antora version', () => {
       replaceCallToBodyPartial('<body>{{antoraVersion}}</body>')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include(`<body>${VERSION}</body>`)
     })
@@ -371,7 +371,7 @@ describe('createPageComposer()', () => {
       try {
         process.env = { FOO: 'BAR' }
         replaceCallToBodyPartial('<body>{{env.FOO}}</body>')
-        const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+        const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
         composePage(file, contentCatalog, navigationCatalog)
         expect(file.contents.toString()).to.include('<body>BAR</body>')
       } finally {
@@ -381,7 +381,7 @@ describe('createPageComposer()', () => {
 
     it('should be able to reference the provided environment variables using the env variable', () => {
       replaceCallToBodyPartial('<body>{{env.FOO}}</body>')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog, { FOO: 'BAR' })
+      const composePage = createPageComposer(contentCatalog, uiCatalog, { FOO: 'BAR' }, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<body>BAR</body>')
     })
@@ -389,28 +389,28 @@ describe('createPageComposer()', () => {
     it('should be able to reference properties of site', () => {
       replaceCallToBodyPartial('<body>{{site.url}}</body>')
       playbook.site.url = 'https://docs.example.org/site'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<body>https://docs.example.org/site</body>')
     })
 
     it('should use default layout specified in playbook', () => {
       playbook.ui.defaultLayout = 'chapter'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<html class="chapter">')
     })
 
     it('should use the layout specified by page-layout attribute on file', () => {
       file.asciidoc.attributes['page-layout'] = 'chapter'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<html class="chapter">')
     })
 
     it('should use default layout if layout specified in page-layout attribute does not exist', () => {
       file.asciidoc.attributes['page-layout'] = 'does-not-exist'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<html class="default">')
     })
@@ -418,19 +418,19 @@ describe('createPageComposer()', () => {
     // QUESTION should this be checked in the function generator?
     it('should throw an error if default layout cannot be found', () => {
       playbook.ui.defaultLayout = 'does-not-exist'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(/does-not-exist layout not found/i)
     })
 
     it('should throw an error if layout specified in page-layout attribute does not exist and is default', () => {
       playbook.ui.defaultLayout = 'also-does-not-exist'
       file.asciidoc.attributes['page-layout'] = 'does-not-exist'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(/neither .* layout .* found/i)
     })
 
     it('should throw an error if 404 layout cannot be found', () => {
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       expect(() => composePage(create404Page(), contentCatalog, navigationCatalog)).to.throw(/404 layout not found/i)
     })
 
@@ -449,7 +449,7 @@ describe('createPageComposer()', () => {
           ` + '\n'
         ),
       })
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       const result = composePage(file, contentCatalog, navigationCatalog)
       expect(result).to.equal(file)
       expect(file.contents).to.be.instanceOf(Buffer)
@@ -480,7 +480,7 @@ describe('createPageComposer()', () => {
         ),
       })
       playbook.site.url = 'https://example.org/docs'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       const result = composePage(file, contentCatalog, navigationCatalog)
       expect(result).to.equal(file)
       expect(file.contents).to.be.instanceOf(Buffer)
@@ -505,7 +505,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-get-the-page}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/the-component/0.9/the-page.html</p>')
     })
@@ -520,7 +520,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include(
         '<p>/the-component/1.0/the-page.html matches /the-component/1.0/the-page.html</p>'
@@ -535,7 +535,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/the-component/1.0/the-page.html</p>')
     })
@@ -552,7 +552,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-falsy}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>no such page</p>')
     })
@@ -565,7 +565,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-falsy}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p></p>')
     })
@@ -580,7 +580,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/the-component/1.0/the-page.html</p>')
     })
@@ -597,7 +597,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-inside-with}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include(
         '<p>/the-component/1.0/the-page.html matches /the-component/1.0/the-page.html</p>'
@@ -614,7 +614,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-inside-with}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/the-component/1.0/the-page.html</p>')
     })
@@ -629,7 +629,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-from-context}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include(
         '<p>/the-component/0.9/the-page.html is older than /the-component/1.0/the-page.html</p>'
@@ -648,7 +648,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-from-context}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include(
         '<p>/the-component/1.0/the-page.html is /the-component/1.0/the-page.html</p>'
@@ -663,7 +663,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-from-context}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/the-component/0.9/the-page.html</p>')
     })
@@ -678,7 +678,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-resolve-page-url-from-context}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/the-component/1.0/the-page.html</p>')
     })
@@ -697,7 +697,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-relativize-url}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include(heredoc`<ul>
       <li>index.html</li>
@@ -717,7 +717,7 @@ describe('createPageComposer()', () => {
       replaceCallToBodyPartial('{{> body-relativize-url}}')
       playbook.site.url = 'https://docs.example.org/site'
       delete file.pub.url
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/site/to.html</p>')
     })
@@ -731,7 +731,7 @@ describe('createPageComposer()', () => {
       )
       replaceCallToBodyPartial('{{> body-relativize-url}}')
       delete file.pub.url
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>/to.html</p>')
     })
@@ -744,7 +744,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> body-relativize-url}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<p>../../to.html#fragment</p>')
     })
@@ -759,7 +759,7 @@ describe('createPageComposer()', () => {
         `
       )
       playbook.ui.defaultLayout = 'broken-layout'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       const expectedMessage = "Expecting 'CLOSE', got 'CLOSE_UNESCAPED'\n^ in UI template layouts/broken-layout.hbs"
       expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(expectedMessage)
     })
@@ -774,7 +774,7 @@ describe('createPageComposer()', () => {
         `
       )
       replaceCallToBodyPartial('{{> broken-partial}}')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      const composePage = createPageComposer(contentCatalog, uiCatalog, process.env, { playbook })
       const expectedMessage = "each doesn't match if - 1:3 in UI template partials/broken-partial.hbs"
       expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(expectedMessage)
     })

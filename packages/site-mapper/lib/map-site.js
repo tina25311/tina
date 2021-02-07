@@ -36,13 +36,15 @@ const SITEMAP_PREFIX = 'sitemap-'
  *
  * @memberof site-mapper
  *
+ * @param {Array<File>} pages - The publishable pages to to map.
+ * @param {Object} context - The pipeline context, containing the playbook.
  * @param {Object} playbook - The configuration object for Antora.
  * @param {Object} playbook.site - Site-related configuration data.
  * @param {String} playbook.site.url - The base URL of the site.
- * @param {Array<File>} pages - The publishable pages to to map.
  * @returns {Array<File>} An array of File objects that represent the sitemaps.
  */
-function mapSite (playbook, pages) {
+function mapSite (pages, context) {
+  const playbook = context.playbook
   let siteUrl = playbook.site.url
   if (!(siteUrl && pages.length)) return []
   const robots = playbook.site.robots

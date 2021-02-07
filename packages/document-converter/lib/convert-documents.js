@@ -1,7 +1,6 @@
 'use strict'
 
 const convertDocument = require('./convert-document')
-const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-loader')
 const ON_DOCUMENT_HEADERS_PARSED = 'onDocumentHeadersParsed'
 
 /**
@@ -23,10 +22,12 @@ const ON_DOCUMENT_HEADERS_PARSED = 'onDocumentHeadersParsed'
  *
  * @param {ContentCatalog} contentCatalog - The catalog of all virtual content files in the site.
  * @param {Object} [siteAsciiDocConfig={}] - Site-wide AsciiDoc processor configuration options.
+ * @param {Object} context - The pipeline context.
  *
  * @returns {Array<File>} The publishable virtual files in the page family taken from the content catalog.
  */
-async function convertDocuments (contentCatalog, siteAsciiDocConfig = {}, eventEmitter) {
+async function convertDocuments (contentCatalog, siteAsciiDocConfig = {}, context = {}) {
+  const { loadAsciiDoc, extractAsciiDocMetadata } = context.asciidocLoader
   const mainAsciiDocConfigs = new Map()
   contentCatalog.getComponents().forEach(({ name: component, versions }) => {
     versions.forEach(({ version, asciidoc }) => {
@@ -44,7 +45,9 @@ async function convertDocuments (contentCatalog, siteAsciiDocConfig = {}, eventE
       if (page.mediaType === 'text/asciidoc') {
         const asciidocConfig = headerAsciiDocConfigs.get(buildCacheKey(page.src))
         const { attributes } = (page.asciidoc = extractAsciiDocMetadata(
-          loadAsciiDoc(page, contentCatalog, asciidocConfig || Object.assign({}, siteAsciiDocConfig, headerOverrides))
+          loadAsciiDoc(page, contentCatalog,
+            asciidocConfig || Object.assign({}, siteAsciiDocConfig, headerOverrides), context),
+          context
         ))
         Object.defineProperty(page, 'title', {
           get () {
@@ -56,13 +59,14 @@ async function convertDocuments (contentCatalog, siteAsciiDocConfig = {}, eventE
       }
       return page
     })
-  if (eventEmitter) {
-    await eventEmitter.emit(ON_DOCUMENT_HEADERS_PARSED, { pagesWithHeaders, contentCatalog })
+  if (context.eventEmitter) {
+    await context.eventEmitter.emit(ON_DOCUMENT_HEADERS_PARSED, { pagesWithHeaders, contentCatalog })
   }
   return pagesWithHeaders
     .map((page) =>
       page.mediaType === 'text/asciidoc'
-        ? convertDocument(page, contentCatalog, mainAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig)
+        ? convertDocument(page, contentCatalog,
+          mainAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig, context)
         : page
     )
     .map((page) => delete page.src.contents && page)

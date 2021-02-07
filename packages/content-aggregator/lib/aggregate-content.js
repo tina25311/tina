@@ -60,6 +60,7 @@ const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)
  *
  * @memberof content-aggregator
  *
+ * @param {Object} context - The pipeline context, containing the playbook.
  * @param {Object} playbook - The configuration object for Antora.
  * @param {Object} playbook.dir - The working directory of the playbook.
  * @param {Object} playbook.runtime - The runtime configuration object for Antora.
@@ -78,7 +79,8 @@ const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)
  *
  * @returns {Promise<Object>} A map of files organized by component version.
  */
-function aggregateContent (playbook, eventEmitter) {
+function aggregateContent (context = {}) {
+  let eventEmitter = context.eventEmitter
   if (!eventEmitter) {
     const baseEmitter = new EventEmitter()
 
@@ -95,6 +97,7 @@ function aggregateContent (playbook, eventEmitter) {
       listenerCount: (name) => baseEmitter.listenerCount(name),
     }
   }
+  const playbook = context.playbook
   const startDir = playbook.dir || '.'
   const { branches, editUrl, tags, sources } = playbook.content
   const sourcesByUrl = sources.reduce(

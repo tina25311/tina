@@ -14,9 +14,6 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
-  "dependencies": {
-    "@antora/asciidoc-loader": "3.0.0-alpha.1"
-  },
   "engines": {
     "node": ">=10.17.0"
   },

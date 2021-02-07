@@ -421,7 +421,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig(playbook))
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig({ playbook }))
       const expectedAttributes = { ...playbook.asciidoc.attributes, 'site-url': 'https://docs.example.org' }
       expect(doc.getAttributes()).to.include(expectedAttributes)
     })
@@ -441,7 +441,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig(playbook))
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig({ playbook }))
       const expectedAttributes = { ...playbook.asciidoc.attributes, 'site-title': 'Docs' }
       expect(doc.getAttributes()).to.include(expectedAttributes)
     })
@@ -3704,7 +3704,7 @@ describe('loadAsciiDoc()', () => {
 
     it('should return config with attributes for site title and url if set in playbook', () => {
       const playbook = { site: { url: 'https://docs.example.org', title: 'Docs' }, ui: {} }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config.attributes).to.exist()
       expect(config.attributes).to.include({
         'site-title': 'Docs',
@@ -3721,7 +3721,7 @@ describe('loadAsciiDoc()', () => {
           },
         },
       }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config).to.not.equal(playbook.asciidoc)
       expect(config.attributes).to.not.equal(playbook.asciidoc.attributes)
       expect(config.attributes).to.include(playbook.asciidoc.attributes)
@@ -3729,19 +3729,19 @@ describe('loadAsciiDoc()', () => {
 
     it('should not load extensions if extensions are not defined', () => {
       const playbook = { asciidoc: {} }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config.extensions).to.not.exist()
     })
 
     it('should not load extensions if extensions are empty', () => {
       const playbook = { asciidoc: { extensions: [] } }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config.extensions).to.not.exist()
     })
 
     it('should load scoped extension into config but not register it globally', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/scoped-shout-block.js')] } }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3752,7 +3752,7 @@ describe('loadAsciiDoc()', () => {
 
     it('should load global extension and register it globally', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config.extensions).to.not.exist()
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
@@ -3762,8 +3762,8 @@ describe('loadAsciiDoc()', () => {
 
     it('should only register a global extension once', () => {
       const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
-      resolveAsciiDocConfig(playbook)
-      resolveAsciiDocConfig(playbook)
+      resolveAsciiDocConfig({ playbook })
+      resolveAsciiDocConfig({ playbook })
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
       expect(extensionGroupNames).to.have.lengthOf(1)
@@ -3777,7 +3777,7 @@ describe('loadAsciiDoc()', () => {
           extensions: ['./ext/scoped-shout-block.js'],
         },
       }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3790,7 +3790,7 @@ describe('loadAsciiDoc()', () => {
           extensions: ['lorem-block-macro'],
         },
       }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
@@ -3807,7 +3807,7 @@ describe('loadAsciiDoc()', () => {
           ],
         },
       }
-      const config = resolveAsciiDocConfig(playbook)
+      const config = resolveAsciiDocConfig({ playbook })
       expect(config.extensions).to.exist()
       expect(config.extensions).to.have.lengthOf(2)
       expect(config.extensions[0]).to.be.instanceOf(Function)

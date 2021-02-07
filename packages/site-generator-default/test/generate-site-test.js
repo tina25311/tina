@@ -743,21 +743,21 @@ describe('generateSite()', function () {
     expect(eventContext.beforeBuildPlaybook).to.be.a('undefined')
     expect(eventContext.afterBuildPlaybook.playbook).to.be.an('object')
 
-    expect(eventContext.beforeResolveAsciiDocConfig.playbook).to.be.an('object')
+    expect(eventContext.beforeResolveAsciiDocConfig.context).to.be.an('object')
     expect(eventContext.afterResolveAsciiDocConfig.asciidocConfig).to.be.an('object')
 
-    expect(eventContext.beforeAggregateContent.playbook).to.be.an('object')
+    expect(eventContext.beforeAggregateContent.context).to.be.an('object')
     expect(eventContext.onComponentDescriptor.componentDescriptor).to.be.an('object')
     expect(eventContext.afterAggregateContent.contentAggregate).to.be.an('array')
     expect(eventContext.afterAggregateContent.contentAggregate.length).to.equal(1)
 
-    expect(eventContext.beforeClassifyContent.playbook).to.be.an('object')
+    expect(eventContext.beforeClassifyContent.context).to.be.an('object')
     expect(eventContext.beforeClassifyContent.contentAggregate).to.be.an('array')
     expect(eventContext.beforeClassifyContent.contentAggregate.length).to.equal(1)
     expect(eventContext.beforeClassifyContent.asciidocConfig).to.be.an('object')
     expect(eventContext.afterClassifyContent.contentCatalog).to.be.an('object')
 
-    expect(eventContext.beforeLoadUi.playbook).to.be.an('object')
+    expect(eventContext.beforeLoadUi.context).to.be.an('object')
     expect(eventContext.afterLoadUi.uiCatalog).to.be.an('object')
 
     expect(eventContext.beforeConvertDocuments.contentCatalog).to.be.an('object')
@@ -772,7 +772,7 @@ describe('generateSite()', function () {
     expect(eventContext.beforeBuildNavigation.asciidocConfig).to.be.an('object')
     expect(eventContext.afterBuildNavigation.navigationCatalog).to.be.an('object')
 
-    expect(eventContext.beforeCreatePageComposer.playbook).to.be.an('object')
+    expect(eventContext.beforeCreatePageComposer.context).to.be.an('object')
     expect(eventContext.beforeCreatePageComposer.contentCatalog).to.be.an('object')
     expect(eventContext.beforeCreatePageComposer.uiCatalog).to.be.an('object')
     expect(eventContext.beforeCreatePageComposer.env).to.be.an('object')
@@ -783,23 +783,56 @@ describe('generateSite()', function () {
     expect(eventContext.beforeComposePage.navigationCatalog).to.be.an('object')
     expect(eventContext.afterComposePage.page).to.be.an('object')
 
-    expect(eventContext.beforeMapSite.playbook).to.be.an('object')
+    expect(eventContext.beforeMapSite.context).to.be.an('object')
     expect(eventContext.beforeMapSite.pages).to.be.an('array')
     expect(eventContext.beforeMapSite.pages.length).to.equal(3)
     expect(eventContext.afterMapSite.siteFiles).to.be.an('array')
     expect(eventContext.afterMapSite.siteFiles.length).to.equal(0)
 
-    expect(eventContext.beforeProduceRedirects.playbook).to.be.an('object')
+    expect(eventContext.beforeProduceRedirects.context).to.be.an('object')
     expect(eventContext.beforeProduceRedirects.contentCatalog).to.be.an('object')
     expect(eventContext.afterProduceRedirects.siteFiles).to.be.an('array')
     expect(eventContext.afterProduceRedirects.siteFiles.length).to.equal(0)
 
-    expect(eventContext.beforePublishSite.playbook).to.be.an('object')
+    expect(eventContext.beforePublishSite.context).to.be.an('object')
     expect(eventContext.beforePublishSite.catalogs).to.be.an('array')
     expect(eventContext.beforePublishSite.catalogs.length).to.equal(3)
     expect(eventContext.afterPublishSite.reports).to.be.an('array')
     expect(eventContext.afterPublishSite.reports.length).to.equal(2)
   }).timeout(timeoutOverride)
+
+  it('should use stages configured in playbook', async () => {
+    function copy (stage, name) {
+      fs.writeFileSync(
+        ospath.resolve(WORK_DIR, 'stages', `${stage}.js`),
+        fs.readFileSync(ospath.resolve(FIXTURES_DIR, 'stages', `${stage}.js`), 'utf8')
+      )
+      playbookSpec.pipelineStages[name] = `./stages/${stage}`
+    }
+    playbookSpec.pipelineStages = {}
+    fs.mkdirSync(ospath.resolve(WORK_DIR, 'stages'))
+    copy('asciidoc-loader', 'asciidocLoader')
+    copy('content-aggregator', 'contentAggregator')
+    copy('content-classifier', 'contentClassifier')
+    copy('document-converter', 'documentConverter')
+    copy('navigation-builder', 'navigationBuilder')
+    copy('page-composer', 'pageComposer')
+    copy('redirect-producer', 'redirectProducer')
+    copy('site-mapper', 'siteMapper')
+    copy('ui-loader', 'uiLoader')
+    fs.mkdirSync(ospath.resolve(WORK_DIR, 'node_modules', '@ext', 'site-publisher'), { recursive: true })
+    fs.writeFileSync(
+      ospath.resolve(WORK_DIR, 'node_modules', '@ext', 'site-publisher', 'index.js'),
+      fs.readFileSync(ospath.resolve(FIXTURES_DIR, 'node_modules', '@ext', 'site-publisher', 'index.js'), 'utf8')
+    )
+    playbookSpec.pipelineStages.sitePublisher = '@ext/site-publisher'
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const reports = await generateSite(['--playbook', playbookFile], env)
+    expect(reports).to.be.not.null()
+    const pings = reports[reports.length - 1]
+    expect(pings).to.be.not.null()
+    expect(pings.size).to.equal(11)
+  })
 
   // to test:
   // - don't pass environment variable map to generateSite

@@ -9,93 +9,93 @@ module.exports.register = (eventEmitter) => {
     eventContext.beforeBuildPlaybook = 'called'
   })
   eventEmitter.on('afterBuildPlaybook', (playbook) => {
-    eventContext.afterBuildPlaybook = {playbook}
+    eventContext.afterBuildPlaybook = { playbook }
   })
 
-  eventEmitter.on('beforeResolveAsciiDocConfig', ({playbook}) => {
-    eventContext.beforeResolveAsciiDocConfig = {playbook}
+  eventEmitter.on('beforeResolveAsciiDocConfig', ({ context }) => {
+    eventContext.beforeResolveAsciiDocConfig = { context }
   })
-  eventEmitter.on('afterResolveAsciiDocConfig', (playbook, asciidocConfig) => {
+  eventEmitter.on('afterResolveAsciiDocConfig', (context, asciidocConfig) => {
     eventContext.afterResolveAsciiDocConfig = {asciidocConfig}
   })
 
-  eventEmitter.on('beforeAggregateContent', ({playbook}) => {
-    eventContext.beforeAggregateContent = {playbook}
+  eventEmitter.on('beforeAggregateContent', ({ context }) => {
+    eventContext.beforeAggregateContent = { context }
   })
   eventEmitter.on('onComponentDescriptor',
     ({ componentDescriptor, files, startPath, repo, authStatus, ref, worktreePath, origin }) => {
       eventContext.onComponentDescriptor = { componentDescriptor, files, startPath, repo, authStatus, ref, worktreePath, origin }
     }
   )
-  eventEmitter.on('afterAggregateContent', async (playbook, contentAggregate) => {
+  eventEmitter.on('afterAggregateContent', async (context, contentAggregate) => {
     eventContext.afterAggregateContent = {contentAggregate}
   })
 
-  eventEmitter.on('beforeClassifyContent', async ({playbook, contentAggregate, asciidocConfig}) => {
-    eventContext.beforeClassifyContent = {playbook, contentAggregate, asciidocConfig}
+  eventEmitter.on('beforeClassifyContent', async ({context, contentAggregate, asciidocConfig}) => {
+    eventContext.beforeClassifyContent = {context, contentAggregate, asciidocConfig}
   })
-  eventEmitter.on('afterClassifyContent', (playbook, contentCatalog) => {
+  eventEmitter.on('afterClassifyContent', (context, contentCatalog) => {
     eventContext.afterClassifyContent = {contentCatalog}
   })
 
-  eventEmitter.on('beforeLoadUi', ({playbook}) => {
-    eventContext.beforeLoadUi = {playbook}
+  eventEmitter.on('beforeLoadUi', ({context}) => {
+    eventContext.beforeLoadUi = {context}
   })
-  eventEmitter.on('afterLoadUi', (playbook, uiCatalog) => {
+  eventEmitter.on('afterLoadUi', (context, uiCatalog) => {
     eventContext.afterLoadUi = {uiCatalog}
   })
 
-  eventEmitter.on('beforeConvertDocuments', ({contentCatalog, asciidocConfig, playbook}) => {
-    eventContext.beforeConvertDocuments = {contentCatalog, asciidocConfig, playbook}
+  eventEmitter.on('beforeConvertDocuments', ({contentCatalog, asciidocConfig, context}) => {
+    eventContext.beforeConvertDocuments = {contentCatalog, asciidocConfig, context}
   })
   eventEmitter.on('onDocumentHeadersParsed',
     ({ pagesWithHeaders, contentCatalog }) => {
       eventContext.onDocumentHeadersParsed = { pagesWithHeaders, contentCatalog }
     }
   )
-  eventEmitter.on('afterConvertDocuments', (playbook, pages) => {
+  eventEmitter.on('afterConvertDocuments', (context, pages) => {
     eventContext.afterConvertDocuments = {pages}
   })
 
-  eventEmitter.on('beforeBuildNavigation', ({contentCatalog, asciidocConfig, playbook}) => {
-    eventContext.beforeBuildNavigation = {contentCatalog, asciidocConfig, playbook}
+  eventEmitter.on('beforeBuildNavigation', ({contentCatalog, asciidocConfig, context}) => {
+    eventContext.beforeBuildNavigation = {contentCatalog, asciidocConfig, context}
   })
-  eventEmitter.on('afterBuildNavigation', (navigationCatalog ) => {
+  eventEmitter.on('afterBuildNavigation', (context, navigationCatalog ) => {
     eventContext.afterBuildNavigation = {navigationCatalog}
   })
 
-  eventEmitter.on('beforeCreatePageComposer', ({playbook, contentCatalog, uiCatalog, env}) => {
-    eventContext.beforeCreatePageComposer = {playbook, contentCatalog, uiCatalog, env}
+  eventEmitter.on('beforeCreatePageComposer', ({context, contentCatalog, uiCatalog, env}) => {
+    eventContext.beforeCreatePageComposer = {context, contentCatalog, uiCatalog, env}
   })
-  eventEmitter.on('afterCreatePageComposer', (playbook, composePage) => {
+  eventEmitter.on('afterCreatePageComposer', (context, composePage) => {
     eventContext.afterCreatePageComposer = {composePage}
   })
 
-  eventEmitter.on('beforeComposePage', ({page, contentCatalog, navigationCatalog, playbook}) => {
-    eventContext.beforeComposePage = {page, contentCatalog, navigationCatalog, playbook}
+  eventEmitter.on('beforeComposePage', ({page, contentCatalog, navigationCatalog, context}) => {
+    eventContext.beforeComposePage = {page, contentCatalog, navigationCatalog, context}
   })
-  eventEmitter.on('afterComposePage', (playbook, page) => {
+  eventEmitter.on('afterComposePage', (context, page) => {
     eventContext.afterComposePage = {page}
   })
 
-  eventEmitter.on('beforeMapSite', ({playbook, pages}) => {
-    eventContext.beforeMapSite = {playbook, pages}
+  eventEmitter.on('beforeMapSite', ({context, pages}) => {
+    eventContext.beforeMapSite = {context, pages}
   })
-  eventEmitter.on('afterMapSite', (playbook, siteFiles) => {
+  eventEmitter.on('afterMapSite', (context, siteFiles) => {
     eventContext.afterMapSite = {siteFiles}
   })
 
-  eventEmitter.on('beforeProduceRedirects', ({playbook, contentCatalog}) => {
-    eventContext.beforeProduceRedirects = {playbook, contentCatalog}
+  eventEmitter.on('beforeProduceRedirects', ({context, contentCatalog}) => {
+    eventContext.beforeProduceRedirects = {context, contentCatalog}
   })
-  eventEmitter.on('afterProduceRedirects', (playbook, siteFiles) => {
+  eventEmitter.on('afterProduceRedirects', (context, siteFiles) => {
     eventContext.afterProduceRedirects = {siteFiles}
   })
 
-  eventEmitter.on('beforePublishSite', ({playbook, catalogs}) => {
-    eventContext.beforePublishSite = {playbook, catalogs}
+  eventEmitter.on('beforePublishSite', ({context, catalogs}) => {
+    eventContext.beforePublishSite = {context, catalogs}
   })
-  eventEmitter.on('afterPublishSite', (playbook, reports) => {
+  eventEmitter.on('afterPublishSite', (context, reports) => {
     eventContext.afterPublishSite = {reports}
     reports.push(eventContext)
   })
