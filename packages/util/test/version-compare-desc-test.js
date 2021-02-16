@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('../../../test/test-utils')
-const versionCompareDesc = require('@antora/content-classifier/lib/util/version-compare-desc')
+const versionCompareDesc = require('@antora/util/lib/version-compare-desc')
 
 describe('versionCompareDesc()', () => {
   it('should consider same version string as equal', () => {

@@ -1,8 +1,6 @@
 'use strict'
 
-const ospath = require('path')
-
-const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').replace('\\', '\\\\')}]`)
+const { requireLibrary } = require('@antora/util')
 
 /**
  * Generates a function to resolve and require a custom provider.
@@ -30,21 +28,7 @@ function createRequireProvider () {
    * @returns {Object} The object returned by calling require on the resolved path.
    */
   return function requireProvider (request, requireBase) {
-    let resolved = requestCache.get(request)
-    if (!resolved) {
-      if (request.charAt() === '.' && DOT_RELATIVE_RX.test(request)) {
-        resolved = ospath.resolve(requireBase, request)
-      } else if (ospath.isAbsolute(request)) {
-        resolved = request
-      } else {
-        // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
-        const paths = [requireBase, ospath.dirname(__dirname)].map((start) => ospath.join(start, 'node_modules'))
-        resolved = require.resolve(request, { paths })
-      }
-      requestCache.set(request, resolved)
-    }
-
-    return require(resolved)
+    return requireLibrary(request, requireBase, requestCache)
   }
 }
 

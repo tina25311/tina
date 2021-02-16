@@ -17,6 +17,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@antora/util": "3.0.0-alpha.1",
     "asciidoctor.js": "1.5.9",
     "opal-runtime": "1.0.11"
   },

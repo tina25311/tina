@@ -1,6 +1,6 @@
 'use strict'
 
-const computeRelativeUrlPath = require('../util/compute-relative-url-path')
+const { computeRelativeUrlPath } = require('@antora/util')
 
 function convertImageRef (resourceSpec, currentPage, contentCatalog) {
   const image = contentCatalog.resolveResource(resourceSpec, currentPage.src, 'image', ['image'])

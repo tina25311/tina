@@ -1,6 +1,6 @@
 'use strict'
 
-const computeRelativeUrlPath = require('../util/compute-relative-url-path')
+const { computeRelativeUrlPath } = require('@antora/util')
 
 /**
  * Converts the specified page reference to the data necessary to build an HTML link.

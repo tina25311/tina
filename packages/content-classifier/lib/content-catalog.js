@@ -5,7 +5,7 @@ const { lookup: resolveMimeType } = require('./mime-types-with-asciidoc')
 const parseResourceId = require('./util/parse-resource-id')
 const { posix: path } = require('path')
 const resolveResource = require('./util/resolve-resource')
-const versionCompare = require('./util/version-compare-desc')
+const { versionCompare } = require('@antora/util')
 
 const { START_ALIAS_ID, START_PAGE_ID } = require('./constants')
 const SPACE_RX = / /g

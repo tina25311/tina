@@ -15,7 +15,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@antora/asciidoc-loader": "3.0.0-alpha.1",
+    "@antora/util": "3.0.0-alpha.1",
     "vinyl": "~2.2"
   },
   "engines": {

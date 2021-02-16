@@ -7,8 +7,8 @@ const cli = require('./commander')
 const configSchema = require('@antora/playbook-builder/lib/config/schema')
 const convict = require('@antora/playbook-builder/lib/solitary-convict')
 const ospath = require('path')
+const { requireLibrary } = require('@antora/util')
 
-const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').replace('\\', '\\\\')}]`)
 const { version: VERSION } = require('../package.json')
 
 async function run (argv = process.argv) {
@@ -30,19 +30,7 @@ function exitWithError (err, showStack, msg = undefined) {
 }
 
 function requireLibraries (requirePaths) {
-  if (requirePaths) requirePaths.forEach((requirePath) => requireLibrary(requirePath))
-}
-
-function requireLibrary (requirePath, cwd = process.cwd()) {
-  if (requirePath.charAt() === '.' && DOT_RELATIVE_RX.test(requirePath)) {
-    // NOTE require resolves a dot-relative path relative to current file; resolve relative to cwd instead
-    requirePath = ospath.resolve(requirePath)
-  } else if (!ospath.isAbsolute(requirePath)) {
-    // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
-    const paths = [cwd, ospath.dirname(__dirname)].map((start) => ospath.join(start, 'node_modules'))
-    requirePath = require.resolve(requirePath, { paths })
-  }
-  return require(requirePath)
+  if (requirePaths) requirePaths.forEach((requirePath) => requireLibrary(requirePath, process.cwd()))
 }
 
 cli

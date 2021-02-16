@@ -1,7 +1,7 @@
 {
-  "name": "@antora/playbook-builder",
+  "name": "@antora/util",
   "version": "3.0.0-alpha.1",
-  "description": "Builds a playbook object from user input for configuring successive documentation components in an Antora pipeline.",
+  "description": "Utility functions used in several packages.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
   "contributors": [
@@ -15,14 +15,6 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
-  "dependencies": {
-    "@antora/util": "3.0.0-alpha.1",
-    "@iarna/toml": "~2.2",
-    "camelcase-keys": "~6.2",
-    "convict": "~6.0",
-    "js-yaml": "~3.14",
-    "json5": "~2.1"
-  },
   "engines": {
     "node": ">=10.17.0"
   },
@@ -30,11 +22,6 @@
     "lib/"
   ],
   "keywords": [
-    "antora",
-    "antora-component",
-    "config",
-    "documentation",
-    "static site",
-    "web publishing"
+    "antora"
   ]
 }
