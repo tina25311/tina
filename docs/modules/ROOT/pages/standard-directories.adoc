@@ -4,7 +4,7 @@
 //Antora also uses this structure to assign preset behavior to the files stored in each directory.
 
 Antora collects and processes content source files that are organized in a standard hierarchy under a content source root.
-This hierarchy (i.e., directory structure) and its reserved names helps Antora understand which files to collect, the role of each of those files and how they should classified, and which files to ignore.
+This hierarchy (i.e., directory structure) and its reserved names helps Antora understand which files to collect, the role of each of those files and how they should be classified, and which files to ignore.
 The required [.path]_antora.yml_ file and the optional navigation file(s) also give Antora information about how to classify the files and what metadata to apply to them.
 
 This page introduces this hierarchy, the reserved names it employs, and the rules about which files get collected or ignored.
