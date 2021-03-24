@@ -12,10 +12,7 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 :url-issues: {url-repo}/issues
 :url-ci-pipelines: {url-repo}/pipelines
 :img-ci-status: {url-repo}/badges/master/pipeline.svg
-:url-chat-dev: https://gitter.im/antora/dev
-:img-chat-dev: https://img.shields.io/badge/chat-dev-blue.svg
-:url-chat-users: https://gitter.im/antora/users
-:img-chat-users: https://img.shields.io/badge/chat-users-blue.svg
+:url-chat: https://antora.zulipchat.com/
 :url-twitter: https://twitter.com/antoraproject
 :url-twitter-hash: https://twitter.com/hashtag/antora?src=hash
 // External URLs
@@ -33,8 +30,6 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 
 ifdef::badges[]
 image:{img-ci-status}[CI Status (GitLab CI), link={url-ci-pipelines}]
-image:{img-chat-dev}[Chat - dev (Gitter), link={url-chat-dev}]
-image:{img-chat-users}[Chat - users (Gitter), link={url-chat-users}]
 endif::[]
 
 {url-project}[Antora] is a modular, multi-repository site generator designed for creating documentation sites from content composed in AsciiDoc and processed with {url-asciidoctor}[Asciidoctor].
@@ -183,9 +178,6 @@ We encourage you to report issues, ask questions, share ideas, or discuss other 
 
 === Issues
 
-*Activity drives progress!*
-To that end, the issue tracker is king.
-
 The preferred means of communicating problems, ideas, and other feedback is through the project issue tracker.
 
 * {url-issues}[Issue tracker] (GitLab)
@@ -194,14 +186,11 @@ Any significant change or decision about the project must be logged there.
 
 === Chat
 
-If you need to switch to real time input, you may be interested in visiting one of the chat rooms.
-We've set up two chat rooms for discussing Antora.
-Choose the one that best suits your needs.
+If you need to switch to real time input, visit our community chat room.
 
-* {url-chat-users}[antora/users] (Gitter) -- Community support for Antora users.
-* {url-chat-dev}[antora/dev] (Gitter) -- Discussions involving the development of Antora.
+* {url-chat}[Antora on Zulip] -- Community support for Antora users.
 
-Keep in mind that the discussion logs for these rooms are archived, but there is no guarantee those logs will be saved indefinitely.
+//Keep in mind that the discussion logs for these rooms are archived, but there is no guarantee those logs will be saved indefinitely.
 
 === Social
 
@@ -234,7 +223,7 @@ Only the latest minor release will receive patch releases.
 
 == Copyright and License
 
-Copyright (C) 2017-2020 by OpenDevise Inc. and the individual contributors to Antora.
+Copyright (C) 2017-2021 by OpenDevise Inc. and the individual contributors to Antora.
 
 Use of this software is granted under the terms of the https://www.mozilla.org/en-US/MPL/2.0/[Mozilla Public License Version 2.0] (MPL-2.0).
 See link:LICENSE[] to find the full license text.
