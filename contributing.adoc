@@ -73,6 +73,12 @@ In return, you'll get to use better software that we built together as a communi
 We want your choice to participate in the Antora project to be the start of an exciting and rewarding journey.
 From all of us to you, welcome!
 
+== Code of Conduct
+
+The Antora project and its project spaces are governed by our xref:CODE-OF-CONDUCT.adoc[Code of Conduct].
+By participating, you're agreeing to honor this code.
+Let's work together to make this a welcoming, professional, inclusive, and safe environment for everyone.
+
 == Project Host
 
 This project is hosted on GitLab under the {url-org}[Antora organization].

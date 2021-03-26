@@ -38,6 +38,12 @@ Antora's toolchain and workflow help documentation and engineering teams create,
 
 This project includes a command line interface (CLI) and a preassembled site generator pipeline so you can quickly start publishing documentation sites with Antora.
 
+== Code of Conduct
+
+The Antora project and its project spaces are governed by our xref:CODE-OF-CONDUCT.adoc[Code of Conduct].
+By participating, you're agreeing to honor this code.
+Let's work together to make this a welcoming, professional, inclusive, and safe environment for everyone.
+
 == Quickstart
 
 This section offers a basic tutorial for evaluating Antora.
