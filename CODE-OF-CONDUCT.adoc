@@ -27,14 +27,14 @@ Examples of unacceptable behavior include:
 * Deliberate or repetitive use of a name or pronoun different than what the individual prefers and has clearly declared
 * Trolling, spamming, swarming, flaming, baiting, or other attention-stealing behavior
 * Demanding a change to the software to satisfy your specific or immediate needs
-* Publishing others' private information, such as a physical or email address, without their explicit permission
+* Publishing others`' private information, such as a physical or email address, without their explicit permission
 * Other conduct which could reasonably be considered inappropriate in a professional setting or which community leaders have determined to be inappropriate in this setting
 
 This isn't an exhaustive list of unacceptable behavior.
 Please be aware of your impact on other people and take responsibility for your own actions.
 If someone says they have been harmed through your words or actions, listen carefully and correct your behavior going forward.
 Specifically, if someone asks you to stop, then stop.
-Persisting or being defensive after being asked to stop is harassment.
+Persisting or being defensive after being asked to stop is considered harassment.
 
 Please take these standards in the spirit in which they are intended, as guidelines to make our community a harassment-free experience for everyone.
 
@@ -43,13 +43,14 @@ Please take these standards in the spirit in which they are intended, as guideli
 We're a worldwide community and we come from many cultures and backgrounds.
 Remember that you may not be communicating in someone's primary language.
 Give people time to formulate their thoughts and respond.
-The idioms you use may not be understood, or worse, may be interpreted as offensive.
-Listen and update your language by considering the needs of others from their point of view.
-In general, work to eliminate your own biases, prejudices and discriminatory practices.
+The idioms and slang you use may not be understood, or worse, may be interpreted as offensive.
+Listen and update your language when necessary by considering the needs of others from their point of view.
+In general, work to eliminate your own biases, prejudices, and discriminatory practices.
 
 We're not always going to agree, but a disagreement is no excuse for poor behavior.
 It's important to resolve disagreements respectfully.
 When working to resolve a disagreement, be respectful, remain open to different outcomes, and strive to be teachable.
+
 Architectural, design, and implementation decisions were made using the best information that was available at the time.
 Circumstances change, and therefore, a past decision may not always make sense when looking at it through the lens of the present.
 Trade-offs have to be made and there's seldom one right answer.
