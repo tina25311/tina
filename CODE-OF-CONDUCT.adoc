@@ -26,13 +26,13 @@ Examples of unacceptable behavior include:
 * The use of sexualized language or imagery, and sexual attention or advances of any kind
 * Deliberate or repetitive use of a name or pronoun different than what the individual prefers and has clearly declared
 * Trolling, spamming, swarming, flaming, baiting, or other attention-stealing behavior
-* Demanding a change to the software to satisfy your specific or immediate needs
+* Demanding an immediate action or code change, or one that's not aligned with the goals of the project
 * Publishing others`' private information, such as a physical or email address, without their explicit permission
 * Other conduct which could reasonably be considered inappropriate in a professional setting or which community leaders have determined to be inappropriate in this setting
 
 This isn't an exhaustive list of unacceptable behavior.
 Please be aware of your impact on other people and take responsibility for your own actions.
-If someone says they have been harmed through your words or actions, listen carefully and correct your behavior going forward.
+If someone says they have been harmed by your words or actions, listen carefully and correct your behavior going forward.
 Specifically, if someone asks you to stop, then stop.
 Persisting or being defensive after being asked to stop is considered harassment.
 
@@ -52,7 +52,7 @@ It's important to resolve disagreements respectfully.
 When working to resolve a disagreement, be respectful, remain open to different outcomes, and strive to be teachable.
 
 Architectural, design, and implementation decisions were made using the best information that was available at the time.
-Circumstances change, and therefore, a past decision may not always make sense when looking at it through the lens of the present.
+Circumstances change, and therefore, a past decision may not always make sense when viewed through the lens of the present.
 Trade-offs have to be made and there's seldom one right answer.
 Please be considerate of this actuality when stating your case.
 Rather than blaming someone for what you perceive to be a mistake, focus on helping to resolve the issue while leaving space for that person to learn from it.
