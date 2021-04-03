@@ -2,7 +2,7 @@
 
 == Copyright
 
-Copyright (C) 2017-2020 by OpenDevise Inc. and the individual contributors to Antora.
+Copyright (C) 2017-present by OpenDevise Inc. and the individual contributors to Antora.
 
 == License
 
