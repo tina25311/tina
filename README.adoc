@@ -12,7 +12,7 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 :url-issues: {url-repo}/issues
 :url-ci-pipelines: {url-repo}/pipelines
 :img-ci-status: {url-repo}/badges/master/pipeline.svg
-:url-chat: https://antora.zulipchat.com/
+:url-chat: https://antora.zulipchat.com
 :url-twitter: https://twitter.com/antoraproject
 :url-twitter-hash: https://twitter.com/hashtag/antora?src=hash
 // External URLs
@@ -194,9 +194,9 @@ Any significant change or decision about the project must be logged there.
 
 If you need to switch to real time input, visit our community chat room.
 
-* {url-chat}[Antora on Zulip] -- Community support for Antora users.
+* {url-chat}[Chat] (Zulip)
 
-//Keep in mind that the discussion logs for these rooms are archived, but there is no guarantee those logs will be saved indefinitely.
+Keep in mind that the discussion logs for these rooms are archived, but there's no guarantee those logs will be saved indefinitely.
 
 === Social
 
