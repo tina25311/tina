@@ -22,6 +22,7 @@ rapidly changing weather conditions.
 
 . Once you finish creating your content, save the file with the extension `.adoc` in a [.path]_partials_ directory.
 +
+[listing]
 ----
 📂 modules
   📂 ROOT

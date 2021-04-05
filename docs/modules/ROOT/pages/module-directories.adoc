@@ -6,6 +6,7 @@
 
 The [.path]_modules_ directory is required wherever a component version descriptor file ([.path]_antora.yml_) is located.
 
+[listing]
 ----
 📒 repository
   📂 docs <1>
@@ -30,6 +31,7 @@ Module directories must be stored in a <<modules-dir,_modules_ directory>>.
 A [.term]*module directory* stores the source files for pages, reusable text and example snippets, images, and other content, in one or more xref:family-directories.adoc[family directories].
 The source files stored in a module directory become part of a <<module,module>> in a component version.
 
+[listing]
 ----
 📒 repository
   📂 docs <1>

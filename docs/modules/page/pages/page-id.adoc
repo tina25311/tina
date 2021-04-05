@@ -67,7 +67,7 @@ If no link text is specified in the xref macro's square brackets (`[]`), the xre
 
 Here's how an xref macro with a fully qualified page ID looks in practice:
 
-[subs=attributes+]
+[listing,subs=attributes+]
 ----
 See xref:{page-component-version}@antora:ROOT:how-antora-works.adoc[].
 ----

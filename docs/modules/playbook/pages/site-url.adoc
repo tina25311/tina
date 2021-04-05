@@ -105,6 +105,7 @@ Assume the following conditions are true:
 When you run Antora, it will generate the following redirect rule:
 
 .A redirect entry that does not includes a path segment
+[listing]
 ----
 /component-a/old-page.html /component-a/new-page.html 301!
 ----
@@ -117,6 +118,7 @@ Edit your playbook and set the site `url` key to _\https://example.com/docs_.
 Now when you run Antora, it will generate the following redirect rule:
 
 .A redirect entry that does not includes a path segment
+[listing]
 ----
 /docs/component-a/old-page.html /docs/component-a/new-page.html 301!
 ----

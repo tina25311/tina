@@ -20,11 +20,11 @@ xref:version@component:module:target-page-filename.adoc[link text]
 For context, let's use the pages that belong to the component versions `colorado 5.2` and `wyoming 1.0` as the basis for the examples on this section.
 Their source files are stored in the xref:ROOT:standard-directories.adoc[standard directory trees] listed in <<ex-co-and-wy>>.
 
-[#ex-co-and-wy]
 .Standard directories assigned to the component versions colorado 5.2 and wyoming 1.0
+[listing#ex-co-and-wy]
 ----
 📒 repository
-  📄 antora.yml <1> 
+  📄 antora.yml <1>
   📂 modules
     📂 get-started
       📂 pages
@@ -129,8 +129,8 @@ xref:version@target-page-filename.adoc[link text]
 For context, let's use the pages that belong to the component versions `colorado 5.2` and `colorado 6.0` as the basis for the example in this section.
 Their source files are stored in the xref:ROOT:standard-directories.adoc[standard directory trees] listed in <<ex-co-versions>>.
 
-[#ex-co-versions]
 .Standard directories assigned to the component versions colorado 5.2 and colorado 6.0
+[listing#ex-co-versions]
 ----
 📒 repository | branch name v5.2.x
   📄 antora.yml <- Declares files belong to colorado 5.2

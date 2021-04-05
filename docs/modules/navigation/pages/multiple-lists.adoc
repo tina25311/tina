@@ -137,6 +137,7 @@ The navigation file should be located at the same hierarchy level as the [.path]
 *Don't save it in the [.path]_pages_ folder!*
 +
 --
+[listing]
 ----
 📂 modules
   📂 a-module
