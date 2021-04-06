@@ -118,11 +118,11 @@ The Antora 2.1.0 release provides more image capabilities, adds a new page attri
 Antora 1.1 introduced the resource ID for referencing xref:asciidoc:include-partial.adoc[partial] and xref:asciidoc:include-example.adoc[example files] stored in other modules, components, and versions.
 Now you can use the resource ID to reference images in the AsciiDoc image macro, too!
 
-```
+----
 image::module-b:image.png[]
 
 image::2.0@image.png[]
-```
+----
 
 See xref:asciidoc:insert-image.adoc[Insert an Image] for more image macro and resource ID examples.
 See <<deprecation>> for future image referencing changes.

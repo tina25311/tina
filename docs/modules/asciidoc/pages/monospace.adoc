@@ -23,7 +23,7 @@ Bounded characters are characters that are:
 * directly followed by a non-whitespace character.
 
 .Monospace inline formatting
-[source,asciidoc]
+[source]
 ----
 A monospace `word`, and a monospace `phrase of text`.
 
@@ -44,7 +44,7 @@ Monospace c``hara``cter``s`` within a word.
 You can add multiple emphasis styles to monospace text as long as the syntax is placed in the correct order.
 
 .Order of inline formatting syntax
-[source,asciidoc]
+[source]
 ----
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----

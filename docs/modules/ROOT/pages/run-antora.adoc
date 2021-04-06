@@ -283,7 +283,7 @@ For example:
 To avoid the need for the extra command, the other way to do it is to inject the file using Antora's supplemental UI feature.
 To do so, add the following `supplemental_files` block under the `ui` category in your playbook file:
 
-[source,yml]
+[source,yaml]
 ----
 ui:
   bundle:
