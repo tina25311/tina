@@ -7,8 +7,8 @@
 Named module directories are xref:module-directories.adoc#module-dir[optional module directories] that are located in a xref:module-directories.adoc#modules-dir[_modules_ directory].
 You can create as many named module directories as you need.
 
-[#ex-named]
 .Named module directories
+[listing#ex-named]
 ----
 📒 repository
   📂 docs <1>

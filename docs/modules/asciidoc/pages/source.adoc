@@ -27,6 +27,7 @@ This specialization is done by adding the `source` keyword in the first position
 
 Here's how that block appears when rendered:
 
+[listing]
 ----
 # Insert logic here
 ----

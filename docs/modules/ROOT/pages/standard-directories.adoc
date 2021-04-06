@@ -15,8 +15,8 @@ This page introduces this hierarchy, the reserved names it employs, and the rule
 The content source root in <<ex-standard-dirs>> is at the root of the repository.
 However, a content source root can also be a subdirectory in the repository, which you can see in <<ex-image>>.
 
-[#ex-standard-dirs]
 .All required and optional standard files and directories
+[listing#ex-standard-dirs]
 ----
 📒 repository <1>
   📄 antora.yml <2>
@@ -66,8 +66,8 @@ The directory and file set in <<ex-root>> is valid because it contains the requi
 The [.path]_modules_ directory contains one module directory, in this case the special _ROOT_ module directory.
 In turn, the _ROOT_ module directory contains a family directory that contains one source file.
 
-[#ex-root]
 .Valid standard file and directory set containing a ROOT module directory
+[listing#ex-root]
 ----
 📒 repository <1>
   📄 antora.yml <2>
@@ -85,8 +85,8 @@ In turn, the _ROOT_ module directory contains a family directory that contains o
 
 In <<ex-image>>, the content source root is located at the directory [.path]_ops-training_.
 
-[#ex-image]
 .Valid standard file and directory set containing a named module directory
+[listing#ex-image]
 ----
 📒 repository
   📂 courses
@@ -113,8 +113,8 @@ Antora ignores any files stored in hierarchy that begin with a dot (`.`) or whic
 These hidden files *do not* get added to Antora's content catalog and thus cannot be referenced or published.
 If the filename begins with an underscore (`+_+`), it's added to the content catalog, but isn't automatically published, even if it's stored in a folder of a publishable family (like [.path]_pages_).
 
-[#ex-hide]
 .Standard directory set containing hidden and unpublished files
+[listing#ex-hide]
 ----
 📒 repository
   📄 antora.yml

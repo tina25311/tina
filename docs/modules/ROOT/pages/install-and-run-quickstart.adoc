@@ -39,18 +39,14 @@ If *you have Node installed, but it isn't an active LTS version*, you need to up
 To upgrade to the latest Node LTS version and set it as your default version, type the following commands in your terminal:
 
 .Linux and macOS
-[subs=attributes+]
-----
+[listing,subs=attributes+]
 $ nvm install --lts
 $ nvm alias default {version-node-major}
-----
 
 .Windows
-[subs=attributes+]
-----
+[listing,subs=attributes+]
 $ nvm install {version-node}
 $ nvm alias default {version-node}
-----
 
 Once you've installed Node, it's time to install Antora.
 

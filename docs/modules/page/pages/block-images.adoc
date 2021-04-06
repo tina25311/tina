@@ -33,7 +33,7 @@ Only the xref:resource-id.adoc#id-resource[resource coordinate] of the xref:reso
 . On a new line, enter the macro's name followed by two colons, `image::`.
 Make sure there is a blank line between the previous element, such as a paragraph or source block, and the line where you place the image macro.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 This is a paragraph.
 
@@ -42,14 +42,14 @@ This is a paragraph.
 
 . Enter the resource ID of the target image file directly after the two colons.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 image::**target-resource-filename.ext**
 ----
 
 . Complete the macro with a set of square brackets (`+[]+`).
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 image::target-resource-filename.ext**[]**
 ----

@@ -18,8 +18,8 @@ xref:target-page-filename.adoc[link text]
 For context, let's use the pages that belong to the component version `colorado 5.2` as the basis for the examples on this page.
 The component version's source files are stored in the xref:ROOT:standard-directories.adoc[set of standard directories] listed in <<ex-co>>.
 
-[#ex-co]
 .Standard directories assigned to the component version colorado 5.2
+[listing#ex-co]
 ----
 📒 repository
   📄 antora.yml

@@ -29,28 +29,27 @@ Only the xref:resource-id.adoc#id-resource[resource coordinate] of the xref:reso
 
 . At the location in a line where you want to place the image, enter the macro's name followed by one colon (`+image:+`).
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 Here's an inline *image:*
 ----
 
 . Enter the resource ID of the target image file directly after the colon.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 Here's an inline image:**target-resource-filename.ext**
 ----
 
 . Complete the macro with a set of square brackets (`+[]+`).
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 Here's an inline image:target-resource-filename.ext**[]**
 ----
 
 . Press the kbd:[SPACE] bar once after the last square bracket (`]`) to insert a space after the macro, then continue entering your content.
 +
-[subs=+quotes]
 ----
 Here's an inline image:target-resource-filename.ext[] image.
 ----

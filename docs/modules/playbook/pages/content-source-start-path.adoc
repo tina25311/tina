@@ -36,8 +36,8 @@ The `start_path` key accepts a repository root relative path.
 The value of the `start_path` key is the repository relative path to a content source root.
 Let's define a `start_path` value for the repository shown in <<ex-root>>.
 
-[#ex-root]
 .Content source root isn't located at the repository root
+[listing#ex-root]
 ----
 📒 repository <1>
   📂 packages

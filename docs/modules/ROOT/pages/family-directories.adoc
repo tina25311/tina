@@ -10,6 +10,7 @@ Certain families, like the page family, require that all files share the same fi
 
 Antora recognizes five standard family directories: [.path]_attachments_, [.path]_examples_, [.path]_images_, [.path]_pages_, and [.path]_partials_.
 
+[listing]
 ----
 📒 repository
   📄 antora.yml
