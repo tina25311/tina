@@ -25,8 +25,8 @@ Then enter the image's filename, including its extension, followed by a set of s
 For context, let's use the pages and images that belong to the component version `colorado 5.2` as the basis for the examples in this section.
 The component version's source files are stored in the xref:ROOT:standard-directories.adoc[set of standard directories] listed in <<ex-co>>.
 
-[#ex-co]
 .Standard directories assigned to the component version colorado 5.2
+[listing#ex-co]
 ----
 📒 repository
   📄 antora.yml
@@ -75,8 +75,8 @@ image::version@component:module:target-resource-filename.ext[]
 For context, let's use the pages and images that belong to the component versions `colorado 5.2` and `wyoming 1.0` as the basis for the examples in this section.
 Their source files are stored in the xref:ROOT:standard-directories.adoc[standard directory trees] listed in <<ex-co-and-wy>>.
 
-[#ex-co-and-wy]
 .Standard directories assigned to the component versions colorado 5.2 and wyoming 1.0
+[listing#ex-co-and-wy]
 ----
 📒 repository
   📄 antora.yml <1>
@@ -182,8 +182,8 @@ image::version@target-resource-filename.ext[]
 For context, let's use the images and pages that belong to the component versions `colorado 5.2` and `colorado 5.0` as the basis for the example in this section.
 Their source files are stored in the xref:ROOT:standard-directories.adoc[standard directory trees] listed in <<ex-co-versions>>.
 
-[#ex-co-versions]
 .Standard directories assigned to the component versions colorado 5.2 and colorado 5.0
+[listing#ex-co-versions]
 ----
 📒 repository | branch name v5.2.x
   📄 antora.yml <- Declares files belong to colorado 5.2

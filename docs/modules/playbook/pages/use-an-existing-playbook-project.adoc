@@ -10,8 +10,7 @@ Before you can generate a site with Antora, you'll need to fetch the playbook pr
 
 To start, open a terminal and clone the playbook project using git:
 
-[source,subs=attributes+]
-$ git clone your-playbook-repo && cd "`basename $_`"
+ $ git clone your-playbook-repo && cd "`basename $_`"
 
 // Good place to put in demo info
 

@@ -23,7 +23,7 @@ See {url-adoc-manual}/#include-partial[the Asciidoctor documentation] for full d
 
 . On a new line, enter the name of the directive followed by two colons.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 *include::*
 ----
@@ -33,7 +33,7 @@ A relative path include is resolved from the current page (not the root of the p
 The relative path must be prefixed with `./`.
 +
 --
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 \include::**./relative-page-filename.adoc**[]
 ----
@@ -43,7 +43,7 @@ CAUTION: You may find that the relative path works without this prefix, but that
 
 . Close the directive using a set of square brackets (`[]`).
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 include::./relative-page-filename.adoc**[]**
 ----
@@ -52,7 +52,7 @@ include::./relative-page-filename.adoc**[]**
 Attributes are entered as key-value pairs separated by commas.
 +
 --
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 \include::./relative-page-filename.adoc[**attribute,attribute**]
 ----

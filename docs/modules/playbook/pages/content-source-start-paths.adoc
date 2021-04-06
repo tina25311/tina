@@ -51,6 +51,7 @@ If the version folders are named consistently, it becomes easy to match them usi
 
 Here's an example of a repository layout that uses folders to store documentation versions:
 
+[listing]
 ----
 📒 repository
   📂 docs
@@ -75,6 +76,7 @@ Only this time, the content source roots will match different components (and po
 
 Here's an example of a repository layout that uses folders to store components:
 
+[listing]
 ----
 📒 repository
   📂 product-a

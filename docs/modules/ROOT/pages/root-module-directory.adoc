@@ -7,6 +7,7 @@ The [.path]_ROOT_ directory is an xref:module-directories.adoc#module-dir[option
 A [.path]_ROOT_ module directory is located in a xref:module-directories.adoc#modules-dir[_modules_ directory], and its name must be written in all uppercase letters.
 A [.path]_ROOT_ directory stores content source files in one or more of the xref:family-directories.adoc[family directories].
 
+[listing]
 ----
 📒 repository
   📂 docs <1>

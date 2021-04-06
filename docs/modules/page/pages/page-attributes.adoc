@@ -20,7 +20,7 @@ Otherwise, the prefix is not required.
 
 Here's an example of page that defines two page attributes:
 
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :page-category: DevOps
@@ -42,7 +42,7 @@ Otherwise, the page attribute will not be found.
 
 Here's an example of an xref:define-and-modify-attributes.adoc#attribute-entry[attribute entry] that defines a page attribute:
 
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :page-name-goes-here: value goes here
@@ -65,7 +65,7 @@ You can promote a document attribute to a page attribute using an attribute refe
 For example, let's say you have the attribute `product-name` defined on the page or site.
 You can promote it to a page attribute using the following attribute entry:
 
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :product-name: Name of My Product
@@ -83,7 +83,7 @@ Examples include `page-aliases`, `page-layout`, and `page-partial`.
 The `page-aliases` attribute allows you to configure alternate page IDs for the current page.
 For example, to claim the old name of a page, you'd use:
 
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :page-aliases: old-page-name.adoc
@@ -95,7 +95,7 @@ See xref:page-aliases.adoc[page aliases] to learn about the `page-aliases` attri
 The `page-layout` attribute allows you to specify which UI template to apply to the current page.
 For example, to apply the `home` layout to the current page, you'd use:
 
-[source,asciidoc]
+[source]
 ----
 = Home Page
 :page-layout: home
@@ -114,7 +114,7 @@ The UI template can use the information provided by the page attributes in a var
 As an example, the default UI allows you do configure the depth of the sidebar TOC using the page attribute named `toclevels` (i.e., `page-toclevels` when defined).
 For example:
 
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :page-toclevels: 3
@@ -158,7 +158,7 @@ For example, the name of the current component can be read from the `page-compon
 ////
 One way to use the intrinsic page attributes is to construct references to a page in another product that shares the same version, as shown here:
 
-[source,asciidoc]
+[source]
 ----
 You might also be interested in xref:{page-version}@other-product::index.adoc[other product].
 ----

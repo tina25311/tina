@@ -5,6 +5,7 @@
 
 A module directory can contain an xref:family-directories.adoc[optional family directory] named [.path]_partials_.
 
+[listing]
 ----
 📂 modules
   📂 ROOT

@@ -4,6 +4,7 @@
 A module directory can also contain a directory named [.path]_assets_.
 This is an alternate location, recognized by Antora, where the [.path]_attachments_ and [.path]_images_ family directories can be placed.
 
+[listing]
 ----
 📒 repository
   📄 antora.yml

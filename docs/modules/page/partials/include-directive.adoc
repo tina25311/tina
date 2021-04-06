@@ -15,7 +15,7 @@ The steps below assume that the target {family} and current page belong to the s
 
 . On a new line, enter the name of the directive followed by two colons, `include::`.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 **include::**
 ----
@@ -23,14 +23,14 @@ The steps below assume that the target {family} and current page belong to the s
 . Enter the resource ID of the target {family} file.
 The resource ID must specify the `{coordinate}` family coordinate since the include directive is also used to insert files from other families.
 +
-[subs="attributes+,+quotes"]
+[listing,subs="attributes+,+quotes"]
 ----
 include::**{coordinate}{family}-filename{ext}**
 ----
 
 . Close the directive with a set of square brackets (`+[]+`).
 +
-[subs="attributes+,+quotes"]
+[listing,subs="attributes+,+quotes"]
 ----
 include::{coordinate}{family}-filename{ext}**[]**
 ----
@@ -38,7 +38,7 @@ include::{coordinate}{family}-filename{ext}**[]**
 . The brackets can contain an optional list of attributes.
 The attributes are entered as key-value pairs separated by commas.
 +
-[subs="attributes+,+quotes"]
+[listing,subs="attributes+,+quotes"]
 ----
 include::{coordinate}{family}-filename{ext}**[attribute,attribute]**
 ----

@@ -6,6 +6,7 @@
 A module directory can contain an xref:family-directories.adoc[optional family directory] named [.path]_pages_.
 Only AsciiDoc source files with the file extension (_.adoc_) should be stored in the [.path]_pages_ directory because Antora applies preset behavior to these files when it runs.
 
+[listing]
 ----
 📂 modules
   📂 a-named-module <1>

@@ -83,6 +83,7 @@ Otherwise, the URLs in the 404 page will not be correct (e.g., the URL for the C
 
 . Configure nginx to use the 404.html from the subpath folder for any missing URL that falls under that subpath:
 +
+[listing]
 ----
 location /site-a/ {
   error_page 404 /site-a/404.html;

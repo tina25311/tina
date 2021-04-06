@@ -11,8 +11,8 @@ That means the xref:root-module-directory.adoc[module name], _ROOT_, never appea
 To demonstrate this concept, let's compare the URLs of two pages, one assigned to a ROOT module and one assigned to a named module.
 The xref:standard-directories.adoc[set of standard directories] illustrated in <<ex-modules>> contains content source files for a project named _Hyper Lemur_.
 
-[#ex-modules]
 .Two module directories containing content that's part of the Hyper Lemur project
+[listing#ex-modules]
 ----
 📒 repository
   📄 antora.yml

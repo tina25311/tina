@@ -21,8 +21,8 @@ Good module names are short and descriptive.
 
 <<ex-named>> shows a set of standard directories with three named module directories.
 
-[#ex-named]
 .Three named module directories
+[listing#ex-named]
 ----
 📒 repository
   📂 docs
