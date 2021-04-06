@@ -19,7 +19,7 @@ Let's break down the AsciiDoc syntax and resource coordinates you need to includ
 
 . On a new line, enter the directive name followed by two colons, `include::`.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 **include::**version@component:module:example$name-of-file.ext[optional attributes]
 ----
@@ -27,14 +27,14 @@ Let's break down the AsciiDoc syntax and resource coordinates you need to includ
 . Enter the xref:page:resource-id.adoc[resource ID] of the example file.
 An example's resource coordinates are determined just like the xref:page-to-page-xref.adoc#same-module[coordinates in an xref].
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 \include::**version@component:module:example$name-of-file.ext**[optional attributes]
 ----
 
 . The resource ID must contain the `example$` family.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 \include::version@component:module:**example$**name-of-file.ext[optional attributes]
 ----
@@ -43,7 +43,7 @@ An example's resource coordinates are determined just like the xref:page-to-page
 The brackets can contain an optional list of attributes such as `indent` and `tags`.
 The attributes should be entered as key=value pairs separated by commas.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 include::version@component:module:example$name-of-file.ext**[optional attributes]**
 ----
@@ -56,37 +56,40 @@ See https://asciidoctor.org/docs/user-manual/#include-partial[the Asciidoctor do
 
 When the example file and the standard page file belong to the same module, you only need to enter the family name (`example$`) and the name of the example file.
 
-....
+[source]
+------
 [source,java]
 ----
 \include::example$HelloWorld.java[]
 ----
-....
+------
 
 == Include an example from another module
 
 When the example and the page belong to the same component, but different modules, enter the example's module, family (`example$`), and the name of the example file.
 
-....
+[source]
+------
 [source,json]
 ----
 \include::ROOT:example$output/query-max.json[]
 ----
-....
+------
 
 == Include an example from another component
 
 When the example and page belong to different components, enter the example's component, module, family (`example$`), and the name of the example file.
 
-....
+[source]
+------
 [source,javascript]
 ----
-include::uml:admin:example$tour/config.js[]  // <1>
+include::uml:admin:example$tour/config.js[] <1>
 [...]
 
-include::4.5@tree::example$extension.js[] // <2>
+include::4.5@tree::example$extension.js[] <2>
 ----
-....
+------
 <1> When including an example from another component, the include directive will use the example file from the latest stable version of its component unless a version coordinate is specified.
 <2> Enter the version coordinate to use a specific version of an example.
 

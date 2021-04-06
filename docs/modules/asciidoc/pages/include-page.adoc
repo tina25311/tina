@@ -36,7 +36,7 @@ Let's explore the syntax of the include directive in detail.
 
 . On a new line, enter the name of the directive followed by two colons.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 *include::*
 ----
@@ -49,7 +49,7 @@ Target as relative path::
 A relative path include is resolved from the current page (not the root of the pages family).
 The relative path must be prefixed with `./`.
 
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 \include::**./relative-page.adoc**[]
 ----
@@ -70,7 +70,7 @@ The presence of the family segment forces the target to be treated as a resource
 
 Like in the xref macro, all other segments (component, version, and module) are optional and will assume the context of the current page.
 
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 \include::**version@component:module:page$topic/page.adoc**[]
 ----
@@ -79,7 +79,7 @@ Like in the xref macro, all other segments (component, version, and module) are 
 . Close the directive using a set of square brackets (`[]`).
 +
 --
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 include::version@component:module:page$topic/page.adoc**[]**
 ----
@@ -87,7 +87,7 @@ include::version@component:module:page$topic/page.adoc**[]**
 The brackets may contain an optional list of attributes (represented in the previous examples by `<attrlist>`).
 Include attributes should be entered as key=value pairs separated by commas.
 
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 include::version@component:module:page$topic/page.adoc**[tag=definition]**
 ----
@@ -129,7 +129,7 @@ The `page-partial` attribute will no longer be set globally.
 Now you *must* set the `page-partial` attribute on any page you want to use in an include directive.
 For example:
 
-[source,asciidoc]
+[source]
 ----
 = Shared Page
 :page-partial:
@@ -139,7 +139,7 @@ Page contents.
 
 With the `page-partial` attribute set, you can safely refer to that page using the include directive:
 
-[source,asciidoc]
+[source]
 ----
 \include:shared-page.adoc[]
 ----

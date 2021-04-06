@@ -33,7 +33,7 @@ A sidebar block is delimited by a set of four consecutive asterisks (`pass:[****
 You don't need to set the block name when you use a delimited block.
 
 .Delimited sidebar block syntax
-[source,asciidoc]
+[source]
 ....
 .Optional Title
 ****

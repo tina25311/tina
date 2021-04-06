@@ -19,7 +19,7 @@ The page header is a set of contiguous lines that start on the first line of the
 The header is separated from the page body by at least one blank line.
 
 .Common elements in a page header
-[source,asciidoc]
+[source]
 ----
 = Page Title // <1>
 First Middle Last <author@email.com> // <2>
@@ -46,7 +46,7 @@ The header can also contain xref:comments.adoc[comments].
 A page title is specified by one equals sign (`=`), followed by one blank space, and then the text of the title.
 
 .Page title syntax
-[source,asciidoc]
+[source]
 ----
 = The title of this page
 ----
@@ -64,7 +64,7 @@ An optional email address or contact URL can follow an author’s name inside a 
 When a page has multiple authors, each author is separated by a semicolon (`;`).
 
 .Multiple authors and author information syntax
-[source,asciidoc]
+[source]
 ----
 = Page Title
 First Middle Last <author@email.com>; First Last <author@email.com>
@@ -95,7 +95,7 @@ If set, `description` is output to an HTML `<meta>` tag with the same name.
 You can break long values across several lines by ending each line with a backslash `\` that is preceded by a space.
 
 .Description attribute syntax
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :description: A description of the page stored in an HTML meta tag. This page is \
@@ -115,7 +115,7 @@ about all kinds of interesting things.
 The keywords attribute contains a list of comma-separated values that are assigned to an HTML `<meta>` tag with the same name.
 
 .Keywords attribute syntax
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :keywords: comma-separated values, stored, in an HTML, meta, tag
@@ -148,7 +148,7 @@ These attributes usually do two things; they toggle a behavior on or off (boolea
 Let's turn on the attribute `sectanchors`.
 
 .Set a built-in attribute
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :sectanchors:
@@ -161,7 +161,7 @@ The attribute is turned on, also known as _set_, by simply entering it into the 
 Built-in attributes that are on by default, like `table-captions`, can be _unset_ (turned _off_) with a leading or trailing `!` added to its name.
 
 .Unset a built-in attribute
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :sectanchors:
@@ -177,7 +177,7 @@ This attribute is set (on) by default and has an implicit value of `NOTE`.
 Let's change the value to "`OPS HINT`".
 
 .Change a built-in page attribute value
-[source,asciidoc]
+[source]
 ----
 = Page Title
 :note-caption: OPS HINT

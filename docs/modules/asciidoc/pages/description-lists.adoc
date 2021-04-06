@@ -24,11 +24,11 @@ Each item in a description list consists of a term or phrase followed by:
 
 Here's an example of a description list with two terms and their content.
 
-[source,asciidoc]
+[source]
 ----
 Keyboard::
-Used to enter text or control items on the screen. // <1>
-Mouse:: Used to point to and select items on your computer screen. // <2>
+Used to enter text or control items on the screen. <1>
+Mouse:: Used to point to and select items on your computer screen. <2>
 ----
 <1> The term and its description can be placed on separate lines.
 <2> The term and its description can be placed on the same line as long as there is at least one blank space between the `::` and description content.
@@ -48,7 +48,7 @@ It can even contain other list types.
 Let's look at an example that includes content other than a single paragraph.
 
 .A description list including complex content
-[source,asciidoc]
+[source]
 ----
 term 1::
 This description needs two paragraphs.

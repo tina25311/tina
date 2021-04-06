@@ -15,9 +15,9 @@ There are two image macro types, block and inline.
 ----
 This is a paragraph.
 
-image::resource-id[optional attributes] // <1>
+image::resource-id[optional attributes] <1>
 
-This is a sentence with an inline image image:resource-id[optional attributes]. // <2>
+This is a sentence with an inline image image:resource-id[optional attributes]. <2>
 ----
 <1> A block image is designated by two colons (`::`) after the macro name.
 It's preceded by a blank line, entered on a line by itself, and then followed by blank line.
@@ -32,7 +32,7 @@ Let's break down the AsciiDoc syntax and resource coordinates you need to insert
 . On a new line, enter the macro's name followed by two colons, `image::`.
 Make sure there is a blank line between the previous element, such as a paragraph or source block, and the line where you place the image macro.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 This is a paragraph.
 
@@ -44,19 +44,19 @@ An image's resource coordinates are assembled like the xref:page-to-page-xref.ad
 In this example, the image file is stored in the same module as the page it is being inserted into, so you only need to identify the image's file name.
 Enter the image's file name, including its extension, directly after the colons.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 image::**name-of-file.ext**
 ----
 
 . Complete the macro with a set of square brackets (`+[]+`).
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 image::name-of-file.ext**[]**
 ----
 
-. Press kbd:Enter[] twice after the last square bracket (`]`) to insert a new line after the image macro.
+. Press kbd:[Enter] twice after the last square bracket (`]`) to insert a new line after the image macro.
 +
 ----
 This is a paragraph.
@@ -73,7 +73,7 @@ The inline image macro is structured almost identically to the block image macro
 
 . After the word or other content where you want to insert the image, press the kbd:[SPACE] bar once, and then enter the macro's name followed by one colon (`image:`).
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 This sentence has an inline *image:*
 ----
@@ -84,14 +84,13 @@ In this example, the image file is stored in the same module as the page it is b
 Enter the image's file name, including its extension, directly after the colon.
 Then complete the macro with a set of square brackets (`+[]+`).
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 This sentence has an inline image:**name-of-file.ext[]**
 ----
 
 . Press the kbd:[SPACE] bar once after the last square bracket (`]`) to insert a space after the macro, then continue entering your content.
 +
-[subs=+quotes]
 ----
 This sentence has an inline image:name-of-file.ext[] image in it.
 Yet another sentence!
@@ -239,52 +238,3 @@ image::name-of-version@name-of-component:name-of-module:name-of-file.ext[]
 
 * xref:ROOT:component-structure.adoc[Organize your documentation into components and modules]
 * xref:ROOT:modules.adoc#images-dir[Store image files in a module's image directory]
-
-////
-== Image resource ID patterns
-
-----
-image::name-of-file.ext[] // <1>
-
-image::name-of-version@name-of-file.ext[] // <2>
-
-image::name-of-module:name-of-file.ext[] // <3>
-
-image::ROOT:name-of-file.ext[] // <4>
-
-image::name-of-version@name-of-module:name-of-file.ext[] // <5>
-
-image::name-of-version@ROOT:name-of-file.ext[] // <6>
-
-image::name-of-component:name-of-module:name-of-file.ext[] // <7>
-
-image::name-of-component::name-of-file.ext[] // <8>
-
-image::name-of-version@name-of-component:name-of-module:name-of-file.ext[] // <9>
-
-image::name-of-version@name-of-component::name-of-file.ext[] // <10>
-----
-<1> Image is in the same version, component, and module as page.
-<2> Image is in a different version but same component and module as page.
-<3> Image is in a different module but same version and component as page.
-<4> Image is in the ROOT module but same version and component as page.
-<5> Image is in a different version and module but same component as page.
-<6> Image is in a different version and the ROOT module but the same component as page.
-<7> Image is in the most recent version of a different component and module.
-<8> Image is in the most recent version of a different component and the ROOT module.
-<9> Image is in a specific version of a different component and module.
-<10> Image is in a specific version of a different component and the ROOT module.
-
-
-== Apply attributes to an image
-
-The brackets can contain an list of attributes such as alt text, width, or height.
-Attributes are optional.
-The attributes are entered as key=value pairs separated by commas.
-To add alt text to the image, enter the information between the square brackets (`+[]+`).
-+
-[subs=+quotes]
-----
-image::name-of-file.ext**[This is the alt text for this image]**
-----
-////

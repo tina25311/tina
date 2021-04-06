@@ -20,7 +20,7 @@ First level list items are created with a single dot (a period) and nested items
 The dot (or dots) is separated from the content of the list item by a single space.
 
 .Ordered list with nested levels
-[source,asciidoc]
+[source]
 ----
 . Step 1
 . Step 2
@@ -65,7 +65,7 @@ When your list doesn't need to be numbered, use an unordered list.
 First level list items are marked using an asterisk (`+*+`) and nested items by two or more asterisk.
 
 .Unordered list with nested levels
-[source,asciidoc]
+[source]
 ----
 * Item A
 * Item B
@@ -98,7 +98,7 @@ List items can be any AsciiDoc element.
 You can also mix ordered and unordered list items.
 Let's look at an example that contains a variety of content and list item types.
 
-[source,asciidoc]
+[source]
 ....
 * A list item can contain two or more paragraphs or blocks of content.
 + // <1>
@@ -158,7 +158,7 @@ Alternatively, when a list item contains multiple blocks, you can wrap them in a
 Then you only need a single list continuation line to attach the open block to the list item.
 
 .Use an open block instead of multiple list continuations
-[source,asciidoc]
+[source]
 ....
 * A list item that includes several blocks wrapped in an open block.
 + // <1>

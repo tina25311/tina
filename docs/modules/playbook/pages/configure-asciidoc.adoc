@@ -81,7 +81,7 @@ asciidoc:
 Now, any page can override this attribute as follows:
 
 .Overriding a default global attribute in a page
-[source,asciidoc]
+[source]
 ----
 = Document Title
 :product-name: Explosive Container Maker
