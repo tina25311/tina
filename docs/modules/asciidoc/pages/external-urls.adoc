@@ -28,13 +28,13 @@ To create a link to an external URL, all you need to do is add the URL prefixed 
 
 .Raw URL syntax
 [source]
-Chat with other documentation writers at https://gitter.im/antora/users.
+Chat with other documentation writers at https://antora.zulipchat.com.
 
 Links that begin with official schemes, such as `https`, `ftp`, `mailto`, etc., are automatically turned into hyperlinks when they're processed.
 
 .Result
 ====
-Chat with other documentation writers at https://gitter.im/antora/users.
+Chat with other documentation writers at https://antora.zulipchat.com.
 ====
 
 To attach a URL to text, enclose the text in square brackets (`[]`) at the end of the URL.
@@ -43,13 +43,13 @@ To attach a URL to text, enclose the text in square brackets (`[]`) at the end o
 [source]
 ----
 Looking for help?
-Visit the https://gitter.im/antora/users[Antora chat room].
+Visit the https://antora.zulipchat.com[Antora chat room].
 ----
 
 .Result
 ====
 Looking for help?
-Visit the https://gitter.im/antora/users[Antora chat room^].
+Visit the https://antora.zulipchat.com[Antora chat room^].
 ====
 
 .*Asciidoctor resources*
