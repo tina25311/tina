@@ -16,7 +16,7 @@ To highlight (or mark) a word or phrase, place a hash (`#`) at the beginning and
 To highlight one or more characters bounded by other characters, place two hashes (`##`) before and after the characters (unconstrained formatting).
 
 .Highlight inline formatting
-[source,asciidoc]
+[source]
 ----
 Let's #highlight this phrase# and the i and s in th##is##.
 ----

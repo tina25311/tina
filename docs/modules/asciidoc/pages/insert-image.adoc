@@ -9,7 +9,7 @@ On this page, you'll learn:
 To insert a standalone image, use the AsciiDoc block image macro (`image::[]`).
 
 .Anatomy of a block image macro
-[source,asciidoc]
+[source]
 ----
 image::file-name.ext[optional alt text]
 ----
@@ -21,7 +21,7 @@ Put the path of the image relative to the xref:ROOT:modules.adoc#images-dir[imag
 Finally, end with a pair of square brackets (`+[]+`), optionally containing alt text for the image (which is otherwise generated).
 
 .Block image syntax
-[source,asciidoc]
+[source]
 ----
 image::pipeline-workflow.png[a diagram illustrating the pipeline stages]
 ----

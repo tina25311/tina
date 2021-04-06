@@ -43,7 +43,7 @@ The most common items in a navigation list are xrefs to pages in xref:filenames-
 In this case, the page ID doesn't require the component or module coordinates.
 
 .xrefs to in-module pages
-[source,asciidoc]
+[source]
 ----
 .xref:index.adoc[In-module page]
 * xref:a-page-in-this-module.adoc[Another in-module page]
@@ -56,7 +56,7 @@ In this case, the page ID doesn't require the component or module coordinates.
 Using the appropriate page ID pattern, you can link to any document in the site from a navigation list, whether it's stored in a xref:asciidoc:page-to-page-xref.adoc#different-module[different module] or xref:asciidoc:page-to-page-xref.adoc#different-component[component].
 
 .xrefs to pages in other modules and components
-[source,asciidoc]
+[source]
 ----
 * xref:index.adoc[In-module page]
 * xref:other-module:page.adoc[Page in the same component, but a different module]
@@ -72,7 +72,7 @@ An attachment is a resource stored in a xref:ROOT:modules.adoc#attachments-dir[m
 To xref:asciidoc:link-attachment.adoc[insert a link to an attachment], use the AsciiDoc link macro (`+link:[]+`).
 
 .Attachment link syntax
-[source,asciidoc]
+[source]
 ----
 * link:{attachmentsdir}/filename.ext[Link to resource in attachments directory]
 ----
@@ -85,7 +85,7 @@ These links are created using the xref:asciidoc:external-urls.adoc#url-syntax[As
 //In a few unique cases, the link is created with a link macro.
 
 .Link to an external website
-[source,asciidoc]
+[source]
 ----
 * https://other-website.com/url[Link to another website]
 ----
@@ -95,7 +95,7 @@ These links are created using the xref:asciidoc:external-urls.adoc#url-syntax[As
 
 When you want to include content in a navigation list, but you don't want it to be a link, simply don't mark it up with any link syntax.
 
-[source,asciidoc]
+[source]
 ----
 * Unlinked Content
 ** xref:a-page.adoc[Linked Content]
@@ -105,7 +105,7 @@ When you want to include content in a navigation list, but you don't want it to 
 
 Whether linked or unlinked, the text you want displayed in your component menu can be formatted using inline AsciiDoc markup.
 
-[source,asciidoc]
+[source]
 ----
 * xref:index.adoc[*Bold linked text*]
 * `Monospaced` text
@@ -118,10 +118,10 @@ A navigation item can be an image.
 To include an image, use the inline image macro (`+image:filename.ext[]+`).
 The inline image macro has only one colon (`:`).
 
-[source,asciidoc]
+[source]
 ----
-.image:status.png[] // <1>
-* xref:index.adoc[image:star.svg[] What's New] // <2>
+.image:status.png[] <1>
+* xref:index.adoc[image:star.svg[] What's New] <2>
 ----
 <1> Unlinked image
 <2> Linked image
@@ -135,26 +135,3 @@ Learn how to register navigation files so they get included in a component menu:
 Learn all about structuring navigation lists:
 
 * xref:list-structures.adoc[Navigation lists: list title and item hierarchy, single list file, multi-list file]
-
-////
-
-.List title and item content
-[source,asciidoc]
-----
-.xref:overview.adoc[The Special Project] // <1>
-* xref:install.adoc[Install the App] // <2>
-* More Resources // <3>
-** https://special-project.com/support[Get Help] // <4>
-----
-<1> Xref list title
-<2> Xref list item
-<3> Normal text list item
-<4> URL list item
-
-
-Xrefs::
-A cross reference (xref) to a page in your documentation site.
-An xref always contains a page ID; the unique identifier assign to each documentation page.
-The xref usually also contains link content, such as text or an icon, that, when clicked on in the component navigation menu, takes the visitor to the webpage that corresponds with the page ID.
-Cross references that don't include link content are called bare.
-////
