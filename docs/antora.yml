@@ -1,6 +1,9 @@
 name: antora
 version: '2.1'
 title: Antora
+asciidoc:
+  attributes:
+    source-language: asciidoc@
 nav:
 - modules/ROOT/nav.adoc
 - modules/asciidoc/nav.adoc
