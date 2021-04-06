@@ -20,10 +20,9 @@ const IncludeProcessor = (() => {
   })
 
   Opal.defn(scope, '$process', function (doc, reader, target, attrs) {
-    if (reader.$include_depth() >= Opal.hash_get(reader.maxdepth, 'abs')) {
-      if (Opal.hash_get(reader.maxdepth, 'abs')) {
-        log('error', `maximum include depth of ${Opal.hash_get(reader.maxdepth, 'rel')} exceeded`, reader)
-      }
+    if (reader.maxdepth === Opal.nil) return
+    if (reader.$include_depth() >= Opal.hash_get(reader.maxdepth, 'curr')) {
+      log('error', `maximum include depth of ${Opal.hash_get(reader.maxdepth, 'rel')} exceeded`, reader)
       return
     }
     const resolvedFile = this[$callback](doc, target, reader.$cursor_at_prev_line())

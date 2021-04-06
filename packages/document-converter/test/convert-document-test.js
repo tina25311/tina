@@ -125,8 +125,7 @@ describe('convertDocument()', () => {
     `)
   })
 
-  // TODO: reverse this test once Asciidoctor.js is upgraded
-  it('should throw an exception if contents of stem block is empty', () => {
+  it('should not throw exception if contents of stem block is empty', () => {
     inputFile.contents = Buffer.from(heredoc`
       = Page Title
 
@@ -134,7 +133,8 @@ describe('convertDocument()', () => {
       ++++
       ++++
     `)
-    expect(() => convertDocument(inputFile, undefined, asciidocConfig)).to.throw("undefined method `include?' for nil")
+    expect(() => convertDocument(inputFile, undefined, asciidocConfig)).to.not.throw()
+    expect(inputFile.contents.toString()).to.include('<div class="stemblock">')
   })
 
   it('should resolve attachment relative to module root', () => {
