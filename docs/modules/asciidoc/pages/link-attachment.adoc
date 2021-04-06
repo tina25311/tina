@@ -10,7 +10,7 @@ An attachment is a resource that you want your user to download, such as a PDF o
 To insert a link to an attachment for download, use the AsciiDoc link macro (`+link:[]+`).
 
 .Attachment link syntax
-[source,asciidoc]
+[source]
 ----
 link:{attachmentsdir}/example.raml[Download the RAML example] and run it.
 ----

@@ -11,7 +11,7 @@ You can insert one page, or a portion of that page, into another page using the 
 Before we get started, we need to talk about the `page-partial` attribute.
 If you plan to use a page as an include, you *must* define the `page-partial` attribute in the header of that page, as shown here:
 
-[source,asciidoc]
+[source]
 ----
 = Page Used as an Include
 :page-partial:
@@ -39,7 +39,7 @@ Let's explore this syntax.
 
 . On a new line, enter the name of the directive followed by two colons.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 **include::**version@component:module:page$relative-path.adoc[]
 ----
@@ -49,7 +49,7 @@ Let's explore this syntax.
 --
 A relative path must begin with `./`.
 
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 \include::**./relative-path.adoc**[]
 ----
@@ -58,7 +58,7 @@ A page's resource ID is determined just like the xref:page-to-page-xref.adoc#sam
 However, when used in an include directive, the resource ID must contain the `page$` family (since it supports multiple families).
 All other segments (component, version, and module) are optional and will inherit the context from the current file.
 
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 \include::**version@component:module:page$relative-path.adoc**[]
 ----
@@ -68,7 +68,7 @@ All other segments (component, version, and module) are optional and will inheri
 The brackets may contain an optional list of attributes (i.e., attrlist) such as `leveloffset`, `tag`, and `tags`.
 The attributes should be entered as key=value pairs separated by commas.
 +
-[subs=+quotes]
+[listing,subs=+quotes]
 ----
 include::version@component:module:page$relative-path.adoc**[tag=definition]**
 ----

@@ -28,7 +28,7 @@ Each top-level item can have as many nested items as you need.
 The greatest nesting depth allowed is level five (`+*****+`).
 
 .Item level syntax
-[source,asciidoc]
+[source]
 ----
 * Level 1 (top)
 ** Level 2
@@ -44,7 +44,7 @@ A title is preceded by a period (`.`).
 Unlike list items, there must be *no spaces* between the `.` and the content of the title.
 
 .List title syntax
-[source,asciidoc]
+[source]
 ----
 .List title
 * List item
@@ -62,7 +62,7 @@ If a navigation file contains <<multi,multiple lists>>, each list in that file m
 When a navigation file only contains one list, a list title is optional.
 
 .Single list structure and syntax
-[source,asciidoc]
+[source]
 ----
 * List item
 ** Nested item
@@ -83,7 +83,7 @@ The blank lines are removed from the HTML when the list is published as a naviga
 When a navigation file contains multiple lists, each list must have a title and be separated by at least one blank line.
 
 .Multi-list structure and syntax
-[source,asciidoc]
+[source]
 ----
 .List title        // <1>
 * List item

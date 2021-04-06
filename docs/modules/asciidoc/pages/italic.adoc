@@ -25,7 +25,7 @@ Bounded characters are characters that are:
 * directly followed by a non-whitespace character.
 
 .Italic inline formatting
-[source,asciidoc]
+[source]
 ----
 An italic _word_, and an italic _phrase of text_.
 
@@ -46,7 +46,7 @@ Italic c__hara__cter__s__ within a word.
 You can add multiple emphasis styles to italic text as long as the syntax is placed in the correct order.
 
 .Order of inline formatting syntax
-[source,asciidoc]
+[source]
 ----
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----
