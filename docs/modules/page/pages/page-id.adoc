@@ -41,7 +41,7 @@ image::page-id-anatomy-diagram.svg[Page ID anatomy,600]
 
 For example, this is the fully-qualified page ID for the "`How Antora Works`" page, which is located in the ROOT module of the Antora docs component.
 
-[source,asciidoc]
+[source]
 1.1@antora:ROOT:how-antora-works.adoc
 
 == How is a page referenced with its ID?
@@ -52,7 +52,7 @@ image::xref-macro-anatomy-diagram.svg[Page reference anatomy,780]
 
 Here's how that looks in practice:
 
-[source,asciidoc]
+[source]
 Learn all about xref:1.0@antora:ROOT:how-antora-works.adoc[the Antora pipeline].
 
 Specifying the version, component, and even module every time seems like overkill, right?
@@ -62,7 +62,7 @@ For instance, if you're linking to a page in the same module as the page you're 
 The next example shows a cross reference from the "`How Antora Works`"  page ([.path]_how-antora-works.adoc_) to the "`Run Antora`" page ([.path]_run-antora.adoc_).
 Both of these pages live in the same component and module.
 
-[source,asciidoc]
+[source]
 Let's xref:run-antora.adoc[run Antora]!
 
 A whole range of examples, from linking between different components to linking to different versions of a page, are explained in xref:asciidoc:page-to-page-xref.adoc[page cross references].
@@ -86,14 +86,3 @@ If you move or rename a page within a module, you don't have to change any refer
 You just specify the coordinates of the page you want to reference.
 There's no need to worry about the source file's physical location on disk or its published URL.
 All you need to know are the names of your components, versions, modules, and pages so you can fill in this information.
-
-////
-This needs to go in a section about future development.
-
-Of course, inbound references to the page you move do have to be updated.
-To counter this, you could pin the page ID of the page you want to move, thus adding more stability.
-That way, references to the page don't have to be updated even when it moves.
-Though, a little help from the text editor to "`refactor`" references could make this abstraction unnecessary.
-
-*We've made it possible to validate and update references* by using a well-defined pattern that's easy for a script to locate, parse, and rewrite.
-////

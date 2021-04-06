@@ -68,8 +68,8 @@ Let's determine what the edit URL would look like for the page generated from a 
 This [.path]_index.adoc_ file is stored in branch _v1.2.5_ of the _zap_ repository in the pages directory of the ROOT module.
 Using the pattern assigned to `edit_url` in <<ex-value>>, Antora would compute the edit URL shown in <<ex-value-result>> for [.path]_index.adoc_.
 
-[#ex-value-result]
 .Edit URL for index.adoc using the inputs from <<ex-value>>
+[listing#ex-value-result]
 ----
 https://app.company.com/the-group/zap/_src/v1.2.5/u890/modules/ROOT/pages/index.adoc
 ----
@@ -96,8 +96,8 @@ content:
 
 Using the inputs from <<ex-start>>, the edit URL for [.path]_index.adoc_ would be:
 
-[#ex-start-result]
 .Edit URL for index.adoc using the inputs from <<ex-start>>
+[listing#ex-start-result]
 ----
 https://app.company.com/the-group/zap/_src/v1.2.5/u890/learn/docs/modules/ROOT/pages/index.adoc
 ----

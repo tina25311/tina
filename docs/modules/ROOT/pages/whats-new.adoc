@@ -152,21 +152,21 @@ Multiple entries can be separated either by semi-colons or commas.
 
 For example, here's how you'd select the first line of this page:
 
-[source,asciidoc]
+[source]
 ----
 \include::./whats-new.adoc[lines=1]
 ----
 
 Here's how you'd select lines 2 through 10:
 
-[source,asciidoc]
+[source]
 ----
 \include::./whats-new.adoc[lines=2..10]
 ----
 
 And here's how you'd select the first line, and all the remaining lines starting at line 10:
 
-[source,asciidoc]
+[source]
 ----
 \include::./whats-new.adoc[lines=1;10..]
 ----

@@ -9,7 +9,7 @@ Standard pages have a header, which includes the page title, and a body, which i
 +
 A page title is specified by one equals sign (`=`), followed by one blank space, and then the text of the title.
 +
-[source,asciidoc]
+[source]
 ----
 = The title of my new page
 ----
@@ -21,7 +21,7 @@ A page title is specified by one equals sign (`=`), followed by one blank space,
 
 . Write your content.
 +
-[source,asciidoc]
+[source]
 ----
 = The title of my new page
 :attribute-a: value-a

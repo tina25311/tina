@@ -17,7 +17,7 @@ Task lists are xref:ordered-and-unordered-lists#unordered[unordered lists] that 
 Here’s an example:
 
 .Checklist syntax
-[source,asciidoc]
+[source]
 ----
 * [*] checked
 * [x] also checked
@@ -31,7 +31,7 @@ Here’s an example:
 If you want to make the checkbox clickable, add the `interactive` option to the checklist, which is shown here using the shorthand syntax (`%`) for `options`.
 
 .Interactive checklist syntax
-[source,asciidoc]
+[source]
 ----
 [%interactive]
 * [ ] Binge watch Death in Paradise

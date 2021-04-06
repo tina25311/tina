@@ -28,7 +28,7 @@ Antora sets the following attributes for each page:
 
 These attributes are available to the pipeline during processing and can be referenced in a page.
 
-[source,asciidoc]
+[source]
 ----
 Let's install *{page-component-title} {page-component-version}*.
 The source document for this page is in the *{page-module}* module.
@@ -55,4 +55,3 @@ Antora sets these site attributes for each page.
 == Learn more
 
 * xref:asciidoc:page-header.adoc#set-attribute[Set and unset AsciiDoc attributes].
-//* Create your own page attributes.

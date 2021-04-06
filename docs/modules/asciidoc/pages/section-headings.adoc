@@ -13,7 +13,7 @@ Sections partition a page into a content hierarchy.
 In AsciiDoc, sections are defined using section titles.
 
 .Section title syntax
-[source,asciidoc]
+[source]
 ----
 == Level 1 Section Title
 

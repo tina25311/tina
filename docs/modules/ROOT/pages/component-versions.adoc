@@ -64,14 +64,14 @@ NOTE: Although the version `master` has special meaning when <<versionless-urls,
 
 Here's an example of a version list that has been sorted according to these rules:
 
-----
+....
 wily
 vivid
 utopic
 v3.10
 v3.9
 v2.0
-----
+....
 
 Whenever Antora displays versions in the UI, it presents them in this order.
 Bear in mind that if a display version is specified, the display version is shown instead.
