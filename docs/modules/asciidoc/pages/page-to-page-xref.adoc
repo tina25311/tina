@@ -73,15 +73,15 @@ To learn more about referencing aspect pages, go to the xref:apect-page-link.ado
 When the current page and the destination page are in the same module, you only need to enter the name of the destination file.
 
 .Link to a page in the same module
-[source,asciidoc]
+[source]
 xref:error-handling.adoc[Error Handling]
 
 .Link to a page in a topic folder
-[source,asciidoc]
+[source]
 xref:concept/index.adoc[Key Concepts]
 
 .Link to a page in the same module but in a different version
-[source,asciidoc]
+[source]
 xref:3.3@error-handling.adoc#message-list[error messages]
 
 [#different-module]
@@ -90,15 +90,15 @@ xref:3.3@error-handling.adoc#message-list[error messages]
 When the current page and the destination page are in the same component but different modules, you'll enter the name of the destination module and destination file.
 
 .Link to a page in another module
-[source,asciidoc]
+[source]
 xref:get-started:implement-api.adoc[implement an API]
 
 .Link to a page in the ROOT module and in a topic folder
-[source,asciidoc]
+[source]
 xref:ROOT:transports/c04-reference.adoc[C04 Transports]
 
 .Link to a page in the ROOT module and in a different version
-[source,asciidoc]
+[source]
 The xref:3.4@ROOT:scopes/super-mass.adoc[super massive scope] splits atoms.
 
 [#different-component]
@@ -108,13 +108,13 @@ When the current page and the destination page are in different components, you'
 If a version is not specified, the implicit value is `master@`.
 
 .Link to a page in the ROOT module of a versioned component
-[source,asciidoc]
+[source]
 How do I xref:2.0@default-ui::modify-template.adoc[modify a UI template]?
 
 .Link to a page in the ROOT module of a component that doesn't have versions
-[source,asciidoc]
+[source]
 xref:icons::index.adoc#intro[Introducing the Icon Project]
 
 .Link to a page in a module of a component that doesn't have versions
-[source,asciidoc]
+[source]
 xref:icons:web:modify-svg.adoc[Get started with the SVG assets]

@@ -15,7 +15,7 @@ On this page, you'll learn:
 Text is subscripted when enclosed in a set of tildes (`{tilde}`).
 
 .Subscript
-[source,asciidoc]
+[source]
 ----
 The chemical formula for water is H~2~O.
 ----
@@ -30,7 +30,7 @@ The chemical formula for water is H~2~O.
 Text is superscripted when enclosed in a set of carets (`{caret}`).
 
 .Superscript
-[source,asciidoc]
+[source]
 ----
 What is the answer to E=mc^2^?
 ----
