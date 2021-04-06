@@ -3056,16 +3056,12 @@ describe('aggregateContent()', function () {
       await new Promise((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())))
     })
 
-    // NOTE this test also verifies that the SSH URL is still shown in the progress bar and error message
+    // NOTE this test also verifies that the SSH URL is still shown in the error message
     it('should throw meaningful error when cannot connect to SSH repository', async () => {
       const oldSshAuthSock = process.env.SSH_AUTH_SOCK
       delete process.env.SSH_AUTH_SOCK
-      const url = 'git@gitlab.com:invalid-repository.git'
-      const expectedErrorMessage =
-        'Remote does not support the "smart" HTTP protocol, ' +
-        'and isomorphic-git does not support the "dumb" HTTP protocol, so they are incompatible (url: ' +
-        url +
-        ')'
+      const url = 'git@github.com:invalid-repository.git'
+      const expectedErrorMessage = new RegExp(`^Content repository not found \\(url: ${url}\\)`)
       playbookSpec.content.sources.push({ url })
       await withMockStdout(async (lines) => {
         playbookSpec.runtime.quiet = false
