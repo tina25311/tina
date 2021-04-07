@@ -2009,6 +2009,7 @@ describe('aggregateContent()', function () {
           origin: {
             type: 'git',
             branch: 'master',
+            refname: 'master',
             startPath: '',
           },
         }
@@ -2061,6 +2062,7 @@ describe('aggregateContent()', function () {
           origin: {
             type: 'git',
             branch: 'master',
+            refname: 'master',
             startPath: 'docs',
           },
         }
@@ -2113,6 +2115,7 @@ describe('aggregateContent()', function () {
           origin: {
             type: 'git',
             branch: 'master',
+            refname: 'master',
             startPath: '',
           },
         }
@@ -2322,6 +2325,7 @@ describe('aggregateContent()', function () {
         const origin = computeOrigin(url, false, { shortname: branch, type: 'branch' }, '', worktreePath)
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
+        expect(origin.refname).to.equal(branch)
         expect(origin.fileUriPattern).to.equal(expectedfileUriPattern)
         expect(origin.editUrlPattern).to.be.undefined()
       })
@@ -2384,8 +2388,10 @@ describe('aggregateContent()', function () {
         expect(aggregate[0]).to.include(componentDesc)
         const pageOne = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
         expect(pageOne.src.origin.tag).to.equal('v1.2.3')
+        expect(pageOne.src.origin.refname).to.equal('v1.2.3')
         const pageTwo = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
         expect(pageTwo.src.origin.branch).to.equal('v1.2.3-fixes')
+        expect(pageTwo.src.origin.refname).to.equal('v1.2.3-fixes')
       })
     })
 
@@ -2658,6 +2664,7 @@ describe('aggregateContent()', function () {
     let aggregate = await aggregateContent(playbookSpec)
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
     expect(CONTENT_CACHE_DIR)
       .to.be.a.directory()
       .with.subDirs.have.lengthOf(1)
@@ -2677,11 +2684,13 @@ describe('aggregateContent()', function () {
     aggregate = await aggregateContent(playbookSpec)
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
     // NOTE make sure local HEAD is considered if remote HEAD is missing
     await fsp.rename(ospath.join(clonePath, 'refs/remotes/origin/HEAD'), ospath.join(clonePath, 'HEAD'))
     aggregate = await aggregateContent(playbookSpec)
     expect(aggregate).to.have.lengthOf(1)
     expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
   })
 
   it('should clone repository again if valid file is not found in cached repository', async () => {
