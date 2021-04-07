@@ -94,7 +94,15 @@ The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#
 |No
 
 |xref:content-source-start-paths.adoc[sources++[n]++.start_paths]
-|Accepts a list of repository relative path patterns to content source root locations, either as exact paths or shell glob patterns.
+|Accepts a list of repository relative path patterns to content source root locations, either as exact paths or shell glob patterns. Single values are coerced into an array.
+|No
+
+|xref:content-branches.adoc[sources++[n]++.branches]
+|Accepts a list of of exact branch names and glob patterns. Single values are coerced into an array.
+|No
+
+|xref:content-tags.adoc[sources++[n]++.tags]
+|Accepts a list of of exact tag names and glob patterns. Single values are coerced into an array.
 |No
 
 |xref:content-tags.adoc[tags]
