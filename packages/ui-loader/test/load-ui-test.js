@@ -63,12 +63,13 @@ describe('loadUi()', () => {
         .on('end', resolve)
     )
 
-  const testAll = (archive, testBlock) => {
+  const testAll = (bundle, testBlock) => {
+    const isArchive = !!ospath.extname(bundle)
     const makeTest = (url) => testBlock({ ui: { bundle: { url } } })
-    it('with dot-relative bundle path', () =>
-      makeTest(prefixPath('.', ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, archive)))))
-    it('with absolute bundle path', () => makeTest(ospath.join(FIXTURES_DIR, archive)))
-    it('with remote bundle URI', () => makeTest('http://localhost:1337/' + archive))
+    it(`with dot-relative ${isArchive ? 'bundle' : 'directory'} path`, () =>
+      makeTest(prefixPath('.', ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, bundle)))))
+    it(`with absolute ${isArchive ? 'bundle' : 'directory'} path`, () => makeTest(ospath.join(FIXTURES_DIR, bundle)))
+    if (isArchive) it('with remote bundle URI', () => makeTest('http://localhost:1337/' + bundle))
   }
 
   const clean = (fin) => {
@@ -87,7 +88,7 @@ describe('loadUi()', () => {
       .then((entries) =>
         Promise.all(
           entries
-            .filter((entry) => ~entry.indexOf('-ui-bundle') && entry.indexOf('.') < 0)
+            .filter((entry) => ~entry.indexOf('-ui-bundle') && !ospath.extname(entry))
             .map((it) => zipDir(ospath.join(FIXTURES_DIR, it)))
         )
       )
@@ -141,6 +142,11 @@ describe('loadUi()', () => {
           .to.throw(expectedMessage)
           .with.property('stack')
           .that.matches(/Caused by: HTTP.*404/)
+      } else if (playbook.ui.bundle.url.startsWith('.')) {
+        const expectedMessage =
+          `UI bundle does not exist: ${ospath.join(FIXTURES_DIR, 'no-such-bundle.zip')} ` +
+          `(resolved from url: ${playbook.ui.bundle.url})`
+        expect(loadUiDeferred).to.throw(expectedMessage)
       } else {
         const expectedMessage = `UI bundle does not exist: ${playbook.ui.bundle.url}`
         expect(loadUiDeferred).to.throw(expectedMessage)
@@ -160,14 +166,16 @@ describe('loadUi()', () => {
   })
 
   describe('should load all files in the UI bundle', () => {
-    testAll('the-ui-bundle.zip', async (playbook) => {
+    const testBlock = async (playbook) => {
       const uiCatalog = await loadUi(playbook)
       const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
       const relativePaths = files.map((file) => file.relative)
       expect(paths).to.eql(relativePaths)
-    })
+    }
+    testAll('the-ui-bundle.zip', testBlock)
+    testAll('the-ui-bundle', testBlock)
   })
 
   describe('should map getAll as alias for getFiles', () => {
@@ -272,7 +280,7 @@ describe('loadUi()', () => {
   })
 
   describe('should locate bundle when cwd and playbook dir are different', () => {
-    testAll('the-ui-bundle.zip', async (playbook) => {
+    const testBlock = async (playbook) => {
       playbook.dir = WORK_DIR
       const newWorkDir = ospath.join(WORK_DIR, 'some-other-folder')
       fs.mkdirSync(newWorkDir, { recursive: true })
@@ -283,17 +291,21 @@ describe('loadUi()', () => {
       const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
-    })
+    }
+    testAll('the-ui-bundle.zip', testBlock)
+    testAll('the-ui-bundle', testBlock)
   })
 
   describe('should load all files in the bundle from specified startPath', () => {
     describe('when startPath is /', () => {
-      testAll('the-ui-bundle.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         playbook.ui.bundle.startPath = '/'
         const uiCatalog = await loadUi(playbook)
         const paths = uiCatalog.getFiles().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
-      })
+      }
+      testAll('the-ui-bundle.zip', testBlock)
+      testAll('the-ui-bundle', testBlock)
     })
 
     describe('when startPath is absolute', () => {
@@ -582,37 +594,43 @@ describe('loadUi()', () => {
 
   describe('findByType()', () => {
     describe('should discover helpers', () => {
-      testAll('the-ui-bundle.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         const uiCatalog = await loadUi(playbook)
         const helpers = uiCatalog.findByType('helper')
         helpers.forEach(({ type }) => expect(type).to.equal('helper'))
         const helperPaths = helpers.map((file) => file.path)
         expect(helperPaths).to.have.members(['helpers/and.js', 'helpers/or.js'])
-      })
+      }
+      testAll('the-ui-bundle.zip', testBlock)
+      testAll('the-ui-bundle', testBlock)
     })
 
     describe('should discover layouts', () => {
-      testAll('the-ui-bundle.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         const uiCatalog = await loadUi(playbook)
         const layouts = uiCatalog.findByType('layout')
         layouts.forEach(({ type }) => expect(type).to.equal('layout'))
         const layoutPaths = layouts.map((file) => file.path)
         expect(layoutPaths).to.have.members(['layouts/404.hbs', 'layouts/default.hbs'])
-      })
+      }
+      testAll('the-ui-bundle.zip', testBlock)
+      testAll('the-ui-bundle', testBlock)
     })
 
     describe('should discover partials', () => {
-      testAll('the-ui-bundle.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         const uiCatalog = await loadUi(playbook)
         const partials = uiCatalog.findByType('partial')
         partials.forEach(({ type }) => expect(type).to.equal('partial'))
         const partialPaths = partials.map((file) => file.path)
         expect(partialPaths).to.have.members(['partials/footer.hbs', 'partials/head.hbs', 'partials/header.hbs'])
-      })
+      }
+      testAll('the-ui-bundle.zip', testBlock)
+      testAll('the-ui-bundle', testBlock)
     })
 
     describe('should discover assets', () => {
-      testAll('the-ui-bundle.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         const uiCatalog = await loadUi(playbook)
         const uiAssets = uiCatalog.findByType('asset')
         uiAssets.forEach(({ type }) => expect(type).to.equal('asset'))
@@ -626,7 +644,9 @@ describe('loadUi()', () => {
           'js/01-one.js',
           'js/02-two.js',
         ])
-      })
+      }
+      testAll('the-ui-bundle.zip', testBlock)
+      testAll('the-ui-bundle', testBlock)
     })
 
     describe('should differentiate static files from assets', () => {
@@ -668,37 +688,43 @@ describe('loadUi()', () => {
   })
 
   describe('should not set the out property on helpers', () => {
-    testAll('the-ui-bundle.zip', async (playbook) => {
+    const testBlock = async (playbook) => {
       const uiCatalog = await loadUi(playbook)
       const helpers = uiCatalog.findByType('helper')
       helpers.forEach((file) => {
         expect(file).to.not.have.property('out')
       })
-    })
+    }
+    testAll('the-ui-bundle.zip', testBlock)
+    testAll('the-ui-bundle', testBlock)
   })
 
   describe('should not set the out property on layouts', () => {
-    testAll('the-ui-bundle.zip', async (playbook) => {
+    const testBlock = async (playbook) => {
       const uiCatalog = await loadUi(playbook)
       const layouts = uiCatalog.findByType('layout')
       layouts.forEach((file) => {
         expect(file).to.not.have.property('out')
       })
-    })
+    }
+    testAll('the-ui-bundle.zip', testBlock)
+    testAll('the-ui-bundle', testBlock)
   })
 
   describe('should not set the out property on partials', () => {
-    testAll('the-ui-bundle.zip', async (playbook) => {
+    const testBlock = async (playbook) => {
       const uiCatalog = await loadUi(playbook)
       const partials = uiCatalog.findByType('partial')
       partials.forEach((file) => {
         expect(file).to.not.have.property('out')
       })
-    })
+    }
+    testAll('the-ui-bundle.zip', testBlock)
+    testAll('the-ui-bundle', testBlock)
   })
 
   describe('should set the out property on assets', () => {
-    testAll('the-ui-bundle.zip', async (playbook) => {
+    const testBlock = async (playbook) => {
       const uiCatalog = await loadUi(playbook)
       const uiAssets = uiCatalog.findByType('asset')
       uiAssets.forEach((file) => {
@@ -711,12 +737,14 @@ describe('loadUi()', () => {
         basename: '01-one.js',
         path: '_/js/01-one.js',
       })
-    })
+    }
+    testAll('the-ui-bundle.zip', testBlock)
+    testAll('the-ui-bundle', testBlock)
   })
 
   describe('should set the out property on assets relative to ui.outputDir from playbook', () => {
     describe('when value is relative', () => {
-      testAll('the-ui-bundle.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         playbook.ui.outputDir = '_ui'
         const uiCatalog = await loadUi(playbook)
         const uiAssets = uiCatalog.findByType('asset')
@@ -730,11 +758,13 @@ describe('loadUi()', () => {
           basename: '01-one.js',
           path: '_ui/js/01-one.js',
         })
-      })
+      }
+      testAll('the-ui-bundle.zip', testBlock)
+      testAll('the-ui-bundle', testBlock)
     })
 
     describe('when value is absolute', () => {
-      testAll('the-ui-bundle.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         playbook.ui.outputDir = '/_ui'
         const uiCatalog = await loadUi(playbook)
         const uiAssets = uiCatalog.findByType('asset')
@@ -748,7 +778,9 @@ describe('loadUi()', () => {
           basename: '01-one.js',
           path: '_ui/js/01-one.js',
         })
-      })
+      }
+      testAll('the-ui-bundle.zip', testBlock)
+      testAll('the-ui-bundle', testBlock)
     })
 
     describe('when value is undefined fall back to value specified in UI descriptor in bundle', () => {
