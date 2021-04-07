@@ -70,44 +70,53 @@ async function loadUi (playbook) {
       return fetch && bundle.snapshot
         ? downloadBundle(bundleUrl, cachePath)
         : fsp
-          .access(cachePath)
-          .then(() => cachePath)
+          .stat(cachePath)
+          .then((stat) => new File({ path: cachePath, stat }))
           .catch(() => downloadBundle(bundleUrl, cachePath))
     })
   } else {
     const localPath = expandPath(bundleUrl, '~+', startDir)
     resolveBundle = fsp
-      .access(localPath)
-      .then(() => localPath)
+      .stat(localPath)
+      .then((stat) => new File({ path: localPath, stat }))
       .catch(() => {
-        throw new Error('Specified UI bundle does not exist: ' + bundleUrl)
+        throw new Error(
+          `Specified UI ${path.extname(localPath) ? 'bundle' : 'directory'} does not exist: ` +
+            (bundleUrl === localPath ? bundleUrl : `${localPath} (resolved from url: ${bundleUrl})`)
+        )
       })
   }
-
   const files = await Promise.all([
-    resolveBundle.then((bundlePath) =>
+    resolveBundle.then((bundleFile) =>
       new Promise((resolve, reject) =>
-        vzip
-          .src(bundlePath)
-          .on('error', (err) => {
-            err.message = `not a valid zip file; ${err.message}`
-            reject(err)
-          })
-          .pipe(selectFilesStartingFrom(bundle.startPath))
-          .pipe(bufferizeContents())
-          .on('error', reject)
-          .pipe(collectFiles(resolve))
+        bundleFile.isDirectory()
+          ? vfs
+            .src('**/*', { cwd: bundleFile.path, removeBOM: false })
+            .on('error', reject)
+            .pipe(relativizeFiles())
+            .pipe(collectFiles(resolve))
+          : vzip
+            .src(bundleFile.path)
+            .on('error', (err) => {
+              err.message = `not a valid zip file; ${err.message}`
+              reject(err)
+            })
+            .pipe(selectFilesStartingFrom(bundle.startPath))
+            .pipe(bufferizeContents())
+            .on('error', reject)
+            .pipe(collectFiles(resolve))
       ).catch((err) => {
-        const wrapped = new Error(`Failed to read UI bundle: ${bundlePath} (resolved from url: ${bundleUrl})`)
+        const wrapped = new Error(
+          `Failed to read UI ${bundleFile.isDirectory() ? 'directory' : 'bundle'}: ` +
+            (bundleUrl === bundleFile.path ? bundleUrl : `${bundleFile.path} (resolved from url: ${bundleUrl})`)
+        )
         wrapped.stack += '\nCaused by: ' + (err.stack || 'unknown')
         throw wrapped
       })
     ),
     srcSupplementalFiles(supplementalFilesSpec, startDir),
   ]).then(([bundleFiles, supplementalFiles]) => mergeFiles(bundleFiles, supplementalFiles))
-
   const config = loadConfig(files, outputDir)
-
   const catalog = new UiCatalog()
   files.forEach((file) => classifyFile(file, config) && catalog.addFile(file))
   return catalog
@@ -164,7 +173,7 @@ function downloadBundle (url, to) {
               fsp
                 .mkdir(ospath.dirname(to), { recursive: true })
                 .then(() => fsp.writeFile(to, body))
-                .then(() => resolve(to))
+                .then(() => resolve(new File({ path: to, stat: { isDirectory: () => false } })))
             )
         )
     )
