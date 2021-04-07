@@ -29,9 +29,10 @@ content: # <1>
 <7> Optional `start_path` key
 <8> Another `url` key
 
-The `content`, `sources`, and `url` keys are required.
-The other keys are optional.
-The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly set in the playbook.
+The `content` and `sources` keys are required.
+The `sources` key must contain at least one entry with the `url` key defined.
+All other keys are optional.
+The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_url] keys have built-in values Antora automatically applies at runtime if they're not explicitly set in the playbook.
 
 Keys-value pairs that are specified directly under `content` are applied to all of the `url` key entries under `sources`, unless the key is also specified on a specific `url`.
 
@@ -39,8 +40,8 @@ Keys-value pairs that are specified directly under `content` are applied to all 
 == sources key
 
 The `sources` key is required and nested under the `content` key.
-The `sources` key contains the list of git repository locations, branch and tag name patterns, and other repository properties that Antora uses when aggregating the site content.
-The `sources` key must contain at least one `url` key with an assigned value.
+The `sources` key contains a list of source entries, which consist of a git repository location, branch and/or tag name patterns, and other repository properties that Antora uses when aggregating the site content.
+The `sources` key must contain at least one entry with a `url` key defined.
 
 [source,yaml]
 ----
@@ -66,61 +67,70 @@ content: # <1>
 <9> Optional `start_path` key
 <10> Optional `edit_url` key
 
-The `content`, `sources`, and `url` keys are required.
-The other keys are optional.
-The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_URL] keys have built-in values Antora automatically applies at runtime if they're not explicitly defined in the playbook.
+The `content` and `sources` keys are required.
+The `sources` key must contain at least one entry with the `url` key defined.
+All other keys are optional.
+The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_url] keys have built-in values Antora automatically applies at runtime if they're not explicitly defined in the playbook.
 
-[#sources-reference]
+[#content-reference]
 == Available content keys
+
+The following keys can be defined under the `content` key.
+With the exception of the `sources` key, which contains the source entries themselves, these keys are used to provide default values for each source entry.
 
 [cols="3,6,1"]
 |===
 |Content Keys |Description |Required
 
 |xref:content-branches.adoc[branches]
-|Accepts a list of branch name patterns, either as exact names or shell glob patterns.
+|Accepts a list of branch names or glob patterns to use from the repository specified in the content source.
 |No
 
 |xref:content-edit-url.adoc[edit_url]
-|Accepts a URL pattern that contains the URL segments of the git solution or source file view plus three placeholder segments, `+{web_url}+`, `+{refname}+`, and `+{path}+`.
-|No
-
-|xref:content-source-url.adoc[sources++[n]++.url]
-|Accepts any URI that git supports, including a local filesystem path.
-|Yes
-
-|xref:content-source-start-path.adoc[sources++[n]++.start_path]
-|Specifies the repository relative path to a content source root's location.
-|No
-
-|xref:content-source-start-paths.adoc[sources++[n]++.start_paths]
-|Accepts a list of repository relative path patterns to content source root locations, either as exact paths or shell glob patterns. Single values are coerced into an array.
-|No
-
-|xref:content-branches.adoc[sources++[n]++.branches]
-|Accepts a list of of exact branch names and glob patterns. Single values are coerced into an array.
-|No
-
-|xref:content-tags.adoc[sources++[n]++.tags]
-|Accepts a list of of exact tag names and glob patterns. Single values are coerced into an array.
+|Accepts a URL pattern for building the URL that maps to the source view for the current page.
+Accomodates the following placeholder segments: `+{web_url}+`, `+{refname}+`, and `+{path}+`.
 |No
 
 |xref:content-tags.adoc[tags]
-|Accepts a list of tag name patterns, either as exact names or shell glob patterns.
+|Accepts a list of tag names or glob patterns to use from the repository specified in the content source.
 |No
+
+|xref:content-source-url.adoc[sources]
+|Accepts a list of content source entries that specify which repositories and repository references to use as content.
+|Yes
 |===
 
-////
-[source,yaml]
-----
-content: # <1>
-  sources: # <2>
-  - url: https://gitlab.com/antora/demo/demo-component-b.git # <3>
-    branches: [v1.0, v2.0] # <4>
-    start_paths: ? # <5>
-  - url: https://gitlab.com/antora/demo/demo-component-b.git
-    tags: v3.* # <6>
-    start_path: docs # <7>
-    edit_url: '{web_url}/blob/{refname}/{path}' # <8>
-----
-////
+[#content-source-reference]
+== Available content source keys
+
+[cols="3,6,1"]
+|===
+|Content Keys |Description |Required
+
+|xref:content-branches.adoc[branches]
+|Accepts a list of branch names or glob patterns to use from the repository specified in the content source.
+If not specified, defaults to the value of the `branches` key defined on the `content` key.
+|No
+
+|xref:content-edit-url.adoc[edit_url]
+|Accepts a URL pattern for building the URL that maps to the source view for the current page.
+Accomodates the following placeholder segments: `+{web_url}+`, `+{refname}+`, and `+{path}+`.
+|No
+
+|xref:content-source-start-path.adoc[start_path]
+|Specifies the relative path in the repository to a content source root's location.
+|No
+
+|xref:content-source-start-paths.adoc[start_paths]
+|Accepts a list of repository relative path patterns to content source root locations, either as exact paths or shell glob patterns.
+Single values are coerced into an array.
+|No
+
+|xref:content-tags.adoc[tags]
+|Accepts a list of tag names or glob patterns to use from the repository specified in the content source.
+|No
+
+|xref:content-source-url.adoc[url]
+|Accepts the URL of a git repository, which can either be an HTTPS URL or a local filesystem path.
+|Yes
+|===
