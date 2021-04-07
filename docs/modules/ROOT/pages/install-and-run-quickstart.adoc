@@ -22,7 +22,7 @@ To see if you have Node installed, and which version, open a terminal and type:
 
  $ node --version
 
-This command should return an {url-node-releases}[active Node LTS version number].
+This command should return an {url-node-releases}[active Node LTS version number], for example:
 
 [subs=attributes+]
 ....
