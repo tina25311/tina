@@ -9,17 +9,17 @@ This project utilizes semantic versioning.
 
 === Added
 
-* *content-aggregator*: store refname of content source on `src.origin.refname` property of virtual file (#694)
+* *content-aggregator*: Store refname of content source on `src.origin.refname` property of virtual file (#694)
 * *ui-loader*: Allow extracted UI bundle to be loaded from directory (#150) (@g.grossetie)
 
-=== Changed
+=== Removed
 
 * *asciidoc-loader*: Remove deprecated `page-relative` attribute (replaced by `page-relative-src-path`) (#689)
 
 === Fixed
 
 * *redirect-producer*: Add `redirect` modifier on splat alias rewrite rule for nginx (when redirect-facility=nginx) (#698)
-* *cli*: Show error message with backtrace (if available) when --stacktrace option is set, even if stack property is missing (#700)
+* *cli*: Show error message with backtrace (if available) when `--stacktrace` option is set, even if stack property is missing (#700)
 
 == 3.0.0-alpha.1 (2020-09-29)
 

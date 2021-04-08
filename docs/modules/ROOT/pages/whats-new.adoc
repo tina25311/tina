@@ -10,6 +10,29 @@
 
 IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
 
+= Antora 3.0.0-alpha.2
+
+_**Release date:** 2021.04.08 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+
+=== Added
+
+Issue {url-issues}/150[#150^]:: Allow extracted UI bundle to be loaded from directory.
+Issue {url-issues}/694[#694^]:: Store refname of content source on `src.origin.refname` property of virtual file.
+
+=== Fixed
+
+Issue {url-issues}/698[#698^]:: Add `redirect` modifier to splat alias rewrite rule for nginx (when redirect-facility=nginx).
+Issue {url-issues}/700[#700^]:: Show error message with backtrace (if available) when `--stacktrace` option is set, even if the stack property is missing.
+
+[#removed-alpha-2]
+=== Removed
+
+Issue {url-issues}/689[#689^]:: Remove deprecated `page-relative` attribute; superseded by `page-relative-src-path`.
+
 = Antora 3.0.0-alpha.1
 
 _**Release date:** 2020.09.29 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
@@ -31,9 +54,7 @@ Review the page IDs in your xrefs and `page-aliases` attributes to ensure the _.
 
 Support for Node.js 8 has been dropped; the minimum required version is now Node 10.
 
-See the <<removed>> and <<deprecated>> sections for the entire list of breaking changes.
-
-//== Highlights
+See the <<removed-alpha-1>> and <<deprecated-alpha-1>> sections for the entire list of breaking changes.
 
 == Resolved issues
 
@@ -74,23 +95,25 @@ Issue {url-issues}/678[#678^]:: Add support for optional option on include direc
 Issue {url-issues}/680[#680^]:: Show sensible error message if cache directory cannot be created.
 Issue {url-issues}/695[#695^]:: Don't crash when loading or converting AsciiDoc document if content catalog is not passed to `loadAsciiDoc`.
 
+[#deprecated-alpha-1]
 === Deprecated
 
-Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on ContentCatalog; superceded by `getFiles`.
-Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on UiCatalog; superceded by `getFiles`.
+Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on ContentCatalog; superseded by `getFiles`.
+Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on UiCatalog; superseded by `getFiles`.
 Issue {url-issues}/689[#689^]:: Deprecate exported `resolveConfig` function in AsciiDoc loader.
 Issue {url-issues}/689[#689^]:: Deprecate use of page ID spec without .adoc file for page alias.
 Issue {url-issues}/689[#689^]:: Deprecate use of non-resource ID spec (e.g., parent path) as target of include directive.
-Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on site catalog; superceded by `getFiles`.
-Issue {url-issues}/689[#689^]:: Deprecate the `--google-analytics-key` CLI option; superceded by the `--key` option.
+Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on site catalog; superseded by `getFiles`.
+Issue {url-issues}/689[#689^]:: Deprecate the `--google-analytics-key` CLI option; superseded by the `--key` option.
 
+[#removed-alpha-1]
 === Removed
 
 Issue {url-issues}/679[#679^]:: Drop support for Node.js 8 and set minimum required version to 10.
-Issue {url-issues}/689[#689^]:: Remove `pull` key from `runtime` category in playbook; superceded by `fetch` key.
+Issue {url-issues}/689[#689^]:: Remove `pull` key from `runtime` category in playbook; superseded by `fetch` key.
 Issue {url-issues}/689[#689^]:: Remove `ensureGitSuffix` key from `git` category in playbook file (but not playbook model); renamed to `ensure_git_suffix`.
 Issue {url-issues}/689[#689^]:: Remove fallback to resolve site-wide AsciiDoc config in `classifyContent` function.
-Issue {url-issues}/689[#689^]:: Drop `latestVersion` property on component version object; superceded by `latest` property.
+Issue {url-issues}/689[#689^]:: Drop `latestVersion` property on component version object; superseded by `latest` property.
 Issue {url-issues}/689[#689^]:: Remove deprecated `getComponentMap` and `getComponentMapSortedBy` methods on `ContentCatalog`.
 
 ////
