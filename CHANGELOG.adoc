@@ -12,6 +12,10 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Store refname of content source on `src.origin.refname` property of virtual file (#694)
 * *ui-loader*: Allow extracted UI bundle to be loaded from directory (#150) (@g.grossetie)
 
+=== Changes
+
+* Upgrade dependencies
+
 === Removed
 
 * *asciidoc-loader*: Remove deprecated `page-relative` attribute (replaced by `page-relative-src-path`) (#689)
