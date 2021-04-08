@@ -5,17 +5,18 @@ const opts = require('yargs-parser')(process.argv.slice(2))
 const { series } = require('gulp')
 const createTask = require('./gulp.d/lib/create-task')
 const exportTasks = require('./gulp.d/lib/export-tasks')
+const { posix: path } = require('path')
 
 const { format, lint, test } = require('./gulp.d/tasks')
 const glob = opts.package
   ? {
-    sourceFiles: [`packages/${opts.package}/{lib,test}/**/*.js`],
-    testFiles: [`packages/${opts.package}/test/**/*-test.js`],
-  }
+      sourceFiles: [`packages/${opts.package}/{lib,test}/**/*.js`],
+      testFiles: [`packages/${opts.package}/test/**/*-test.js`],
+    }
   : {
-    sourceFiles: ['gulpfile.js', '{gulp.d,lib-example,scripts,test}/**/*.js', 'packages/*/{lib,test}/**/*.js'],
-    testFiles: ['test/**/*-test.js', 'packages/*/test/**/*-test.js'],
-  }
+      sourceFiles: ['gulpfile.js', '{gulp.d,lib-example,scripts,test}/**/*.js', 'packages/*/{lib,test}/**/*.js'],
+      testFiles: ['test/**/*-test.js', 'packages/*/test/**/*-test.js'],
+    }
 const sharedOpts = { '--package <name>': 'Only run on files in the specified package' }
 
 const lintTask = createTask({
@@ -30,7 +31,7 @@ const formatTask = createTask({
   desc: 'Format JavaScript files using prettier (JavaScript Standard profile)',
   opts: sharedOpts,
   // convert globs to absolute path to workaround https://github.com/prettier/prettier-eslint-cli/issues/208
-  call: format(glob.sourceFiles.map((it) => `${__dirname}/${it}`)),
+  call: format(glob.sourceFiles.map((it) => path.join(__dirname, it))),
 })
 
 const testTask = createTask({
