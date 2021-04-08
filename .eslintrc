@@ -1,6 +1,7 @@
 {
   "extends": "standard",
   "rules": {
+    "array-callback-return": "off",
     "arrow-parens": ["error", "always"],
     "comma-dangle": ["error", {
       "arrays": "always-multiline",
@@ -14,6 +15,7 @@
       "ignoreUrls": true,
       "ignoreTemplateLiterals": true
     }],
+    "prefer-regex-literals": "off",
     "spaced-comment": "off"
   }
 }
