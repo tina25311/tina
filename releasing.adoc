@@ -8,7 +8,7 @@ This document describes how releases of the packages (aka modules) in this repos
 
 == Quickstart
 
-To publish a release, first make sure the <<Credentials,npm token>> is still valid and that the copyright year is current in README.adoc, packages/*/README.adoc, and docs/modules/ROOT/pages/project/copyright-and-license.adoc.
+To publish a release, first make sure the <<Credentials,npm token>> is still valid and that the end copyright year is current in README.adoc and docs/modules/ROOT/pages/project/copyright-and-license.adoc (unless the end year is already "`present`").
 Then switch to the _releases_ branch, update the [.path]_releaserc_ file, and force push the branch to origin.
 The CI job takes over from there.
 See <<Release Trigger>> to find more details and step-by-step commands.
@@ -17,7 +17,7 @@ The remainder of this document describes how the release process works, includin
 
 == Overview
 
-Here's what happens when a release is made:
+Here's what happens automatically when a release is made:
 
 * The version property in [.path]_lerna.json_ and each [.path]_package.json_ file under [.path]_packages/_ is set to the new version.
 * The Unreleased section title is in CHANGELOG.adoc is replaced with the release version and current date.
@@ -115,7 +115,7 @@ In addition to these two package-scope scripts, the https://gitlab.com/antora/an
 
 * Replace the Unreleased section title in [.path]_CHANGELOG.adoc_ with the release version and date.
 * Update the docs version in [.path]_docs/antora.yml_.
-* Update the copyright year in all README files.
+* Update the end copyright year in all package README files (unless the end year is "`present`").
 
 === Version Selection
 

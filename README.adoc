@@ -32,7 +32,7 @@ ifdef::badges[]
 image:{img-ci-status}[CI Status (GitLab CI), link={url-ci-pipelines}]
 endif::[]
 
-{url-project}[Antora] is a modular, multi-repository site generator designed for creating documentation sites from content composed in AsciiDoc and processed with {url-asciidoctor}[Asciidoctor].
+{url-project}[Antora] is a modular, multi-repository site generator designed for creating documentation sites from content composed in AsciiDoc(R) and processed with {url-asciidoctor}[Asciidoctor].
 
 Antora's toolchain and workflow help documentation and engineering teams create, manage, collaborate on, remix, and publish documentation sites sourced from multiple versioned git repositories without needing expertise in web technologies, build automation, or system administration.
 
@@ -229,7 +229,7 @@ Only the latest minor release will receive patch releases.
 
 == Copyright and License
 
-Copyright (C) 2017-2021 by OpenDevise Inc. and the individual contributors to Antora.
+Copyright (C) 2017-present by OpenDevise Inc. and the individual contributors to Antora.
 
 Use of this software is granted under the terms of the https://www.mozilla.org/en-US/MPL/2.0/[Mozilla Public License Version 2.0] (MPL-2.0).
 See link:LICENSE[] to find the full license text.
@@ -237,3 +237,7 @@ See link:LICENSE[] to find the full license text.
 == Authors
 
 Development of Antora is led and sponsored by {url-opendevise}[OpenDevise].
+
+== Trademarks
+
+AsciiDoc(R) is a trademark of the Eclipse Foundation, Inc.
