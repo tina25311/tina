@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Changed
+
+* Migrate Windows CI pipeline from AppVeyor CI to GitLab CI (#732)
+
 == 3.0.0-alpha.2 (2021-04-08)
 
 === Added
