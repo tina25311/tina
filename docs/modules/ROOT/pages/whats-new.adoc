@@ -20,12 +20,12 @@ IMPORTANT: The added features and changes described below are in *ALPHA* and sub
 
 === Added
 
-Issue {url-issues}/150[#150^]:: Support loading the UI bundle from a directory.
+Issue {url-issues}/150[#150^]:: Allow extracted UI bundle to be loaded from directory.
 Issue {url-issues}/694[#694^]:: Store refname of content source on `src.origin.refname` property of virtual file.
 
 === Fixed
 
-Issue {url-issues}/698[#698^]:: Add redirect modifier to splat alias rule for nginx.
+Issue {url-issues}/698[#698^]:: Add `redirect` modifier to splat alias rewrite rule for nginx (when redirect-facility=nginx).
 Issue {url-issues}/700[#700^]:: Show error message with backtrace (if available) when `--stacktrace` option is set, even if the stack property is missing.
 
 [#removed-alpha-2]
