@@ -310,7 +310,7 @@ function loadConfig (files, outputDir) {
   const configFile = files.get(UI_DESC_FILENAME)
   if (configFile) {
     files.delete(UI_DESC_FILENAME)
-    const config = camelCaseKeys(yaml.safeLoad(configFile.contents.toString()), { deep: true })
+    const config = camelCaseKeys(yaml.load(configFile.contents.toString()), { deep: true })
     if (outputDir !== undefined) config.outputDir = outputDir
     const staticFiles = config.staticFiles
     if (staticFiles) {

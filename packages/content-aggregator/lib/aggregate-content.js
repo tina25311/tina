@@ -13,7 +13,7 @@ const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('isomorphic-git')
 const invariably = { false: () => false, void: () => {} }
 const matcher = require('matcher')
-const MultiProgress = require('multi-progress')(require('progress'))
+const MultiProgress = require('multi-progress')
 const ospath = require('path')
 const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
@@ -521,7 +521,7 @@ function loadComponentDescriptor (files) {
   files.splice(descriptorFileIdx, 1)
   let data
   try {
-    data = yaml.safeLoad(descriptorFile.contents.toString())
+    data = yaml.load(descriptorFile.contents.toString())
   } catch (err) {
     err.message = `${COMPONENT_DESC_FILENAME} has invalid syntax; ${err.message}`
     throw err

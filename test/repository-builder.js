@@ -108,7 +108,7 @@ class RepositoryBuilder {
         .map((w) => w.charAt(0).toUpperCase() + w.substr(1))
         .join(' ')
     }
-    return this.addToWorktree(path_, yaml.safeDump(data))
+    return this.addToWorktree(path_, yaml.dump(data))
   }
 
   async addComponentDescriptor (data) {
