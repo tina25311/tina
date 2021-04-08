@@ -71,14 +71,14 @@ function getLines (attrs) {
           if (~(delim = linedef.indexOf('..'))) {
             from = linedef.substr(0, delim)
             let to = linedef.substr(delim + 2)
-            if ((to = parseInt(to) || -1) > 0) {
-              if ((from = parseInt(from) || -1) > 0) {
+            if ((to = parseInt(to, 10) || -1) > 0) {
+              if ((from = parseInt(from, 10) || -1) > 0) {
                 for (let i = from; i <= to; i++) linenums.push(i)
               }
-            } else if (to === -1 && (from = parseInt(from) || -1) > 0) {
+            } else if (to === -1 && (from = parseInt(from, 10) || -1) > 0) {
               linenums.push(from, Infinity)
             }
-          } else if ((from = parseInt(linedef) || -1) > 0) {
+          } else if ((from = parseInt(linedef, 10) || -1) > 0) {
             linenums.push(from)
           }
         })
