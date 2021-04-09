@@ -24,7 +24,7 @@ variables:
     <<: *cache_paths
 - &yarn_install
   before_script:
-  - yarn --cache-folder=.cache/yarn --pure-lockfile > /dev/null
+  - yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile > /dev/null
 yarn:
   stage: init
   <<: *except_docs
