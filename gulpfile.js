@@ -38,7 +38,7 @@ const testTask = createTask({
   name: 'test',
   desc: 'Run the test suite',
   opts: { ...sharedOpts, '--watch': 'Watch files and run the test suite whenever a file is changed' },
-  call: test(glob.testFiles, process.env.COVERAGE === 'true' || process.env.CI),
+  call: test(glob.testFiles, opts.timeout, process.env.COVERAGE === 'true'),
   loop: opts.watch ? glob.sourceFiles : false,
 })
 

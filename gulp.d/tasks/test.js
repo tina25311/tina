@@ -3,10 +3,11 @@
 const { buildArtifactUrl } = require('../lib/gitlab')
 const run = require('../lib/run-command')
 
-module.exports = (files, analyzeCodeCoverage = false) => () => {
+module.exports = (files, timeout = process.env.MOCHA_TIMEOUT, enableCodeCoverage = false) => () => {
   const args = [...files]
-  if (process.env.CI) args.unshift('--forbid-only', '--timeout', String(5000 * (process.platform === 'win32' ? 2 : 1)))
-  if (analyzeCodeCoverage) {
+  if (process.env.CI) args.unshift('--forbid-only')
+  if (timeout) args.unshift('--timeout', String(timeout))
+  if (enableCodeCoverage) {
     let onSuccess
     if (process.env.GITLAB_CI) {
       const coverageReportUrl = buildArtifactUrl(

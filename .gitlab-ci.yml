@@ -3,7 +3,9 @@ image: node:10-buster
   tags: [windows]
 stages: [initiate, verify, deploy]
 variables:
+  COVERAGE: 'true'
   GIT_DEPTH: '5'
+  MOCHA_TIMEOUT: '5000'
 .defs:
 # only_code not used when an MR is created, hence the need for except_docs
 - &only_code
@@ -53,6 +55,8 @@ test:linux:
 test:windows:
   extends: [.shared_windows_runners]
   stage: verify
+  variables:
+    MOCHA_TIMEOUT: '10000'
   <<: *except_docs
   <<: *only_code
   # cache does not currently work on the Windows runner
