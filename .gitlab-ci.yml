@@ -1,6 +1,4 @@
 image: node:10-buster
-.shared_windows_runners:
-  tags: [windows]
 stages: [init, verify, deploy]
 variables:
   GIT_DEPTH: '5'
@@ -72,7 +70,7 @@ test:node-14-linux:
   <<: *yarn_install
   script: $(npm bin)/gulp test
 test:windows:
-  extends: [.shared_windows_runners]
+  tags: [windows]
   stage: verify
   variables:
     COVERAGE: 'true'
