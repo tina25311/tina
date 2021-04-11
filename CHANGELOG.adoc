@@ -9,7 +9,8 @@ This project utilizes semantic versioning.
 
 === Changed
 
-* Migrate Windows CI pipeline from AppVeyor CI to GitLab CI (#732)
+* *infrastructure*: Migrate Windows CI pipeline from AppVeyor CI to GitLab CI (#732)
+* *infrastructure*: Run tests nightly on Node 12 and Node 14 (in addition to Node 10) (#731)
 
 == 3.0.0-alpha.2 (2021-04-08)
 

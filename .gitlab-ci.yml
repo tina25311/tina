@@ -3,7 +3,6 @@ image: node:10-buster
   tags: [windows]
 stages: [init, verify, deploy]
 variables:
-  COVERAGE: 'true'
   GIT_DEPTH: '5'
   MOCHA_TIMEOUT: '5000'
 .defs:
@@ -19,6 +18,10 @@ variables:
 - &except_docs
   except:
   - /^docs\/./
+- &only_schedules
+  only:
+    refs:
+    - schedules
 - &yarn_cache_config
   key: yarn-cache
   paths:
@@ -42,8 +45,10 @@ lint:
   <<: *yarn_cache_pull_push
   <<: *yarn_install
   script: $(npm bin)/gulp lint
-test:linux:
+test:node-10-linux:
   stage: verify
+  variables:
+    COVERAGE: 'true'
   <<: *except_docs
   <<: *only_code
   <<: *yarn_cache_pull_only
@@ -52,10 +57,25 @@ test:linux:
   artifacts:
     paths:
     - coverage/
+test:node-12-linux:
+  image: node:12-buster
+  stage: verify
+  <<: *only_schedules
+  <<: *yarn_cache_pull_only
+  <<: *yarn_install
+  script: $(npm bin)/gulp test
+test:node-14-linux:
+  image: node:14-buster
+  stage: verify
+  <<: *only_schedules
+  <<: *yarn_cache_pull_only
+  <<: *yarn_install
+  script: $(npm bin)/gulp test
 test:windows:
   extends: [.shared_windows_runners]
   stage: verify
   variables:
+    COVERAGE: 'true'
     MOCHA_TIMEOUT: '10000'
   <<: *except_docs
   <<: *only_code
