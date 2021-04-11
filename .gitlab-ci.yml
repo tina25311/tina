@@ -1,7 +1,7 @@
 image: node:10-buster
 .shared_windows_runners:
   tags: [windows]
-stages: [initiate, verify, deploy]
+stages: [init, verify, deploy]
 variables:
   COVERAGE: 'true'
   GIT_DEPTH: '5'
@@ -36,7 +36,7 @@ variables:
   - yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile > /dev/null
 # this step also seeds the dependency cache
 lint:
-  stage: initiate
+  stage: init
   <<: *except_docs
   <<: *only_code
   <<: *yarn_cache_pull_push
