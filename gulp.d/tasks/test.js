@@ -5,7 +5,7 @@ const run = require('../lib/run-command')
 
 module.exports = (files, analyzeCodeCoverage = false) => () => {
   const args = [...files]
-  if (process.env.CI) args.unshift('--forbid-only', '--timeout', '5000')
+  if (process.env.CI) args.unshift('--forbid-only', '--timeout', String(5000 * (process.platform === 'win32' ? 2 : 1)))
   if (analyzeCodeCoverage) {
     let onSuccess
     if (process.env.GITLAB_CI) {
