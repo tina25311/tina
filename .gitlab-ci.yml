@@ -1,5 +1,7 @@
-image: node:10.20.1-buster
-stages: [ init, verify, deploy ]
+image: node:10-buster
+.shared_windows_runners:
+  tags: [windows]
+stages: [initiate, verify, deploy]
 variables:
   GIT_DEPTH: '5'
 .defs:
@@ -15,38 +17,49 @@ variables:
 - &except_docs
   except:
   - /^docs\/./
-- &cache_paths
+- &yarn_cache_config
+  key: yarn-cache
   paths:
   - .cache/yarn
-- &pull_cache
+- &yarn_cache_pull_push
   cache:
+    <<: *yarn_cache_config
+    policy: pull-push
+- &yarn_cache_pull_only
+  cache:
+    <<: *yarn_cache_config
     policy: pull
-    <<: *cache_paths
 - &yarn_install
   before_script:
-  - yarn --cache-folder=.cache/yarn --pure-lockfile > /dev/null
-yarn:
-  stage: init
-  <<: *except_docs
-  <<: *only_code
-  cache:
-    <<: *cache_paths
-  <<: *yarn_install
-  script: $(npm bin)/antora version
+  - yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile > /dev/null
+# this step also seeds the dependency cache
 lint:
-  stage: verify
+  stage: initiate
   <<: *except_docs
   <<: *only_code
-  <<: *pull_cache
+  <<: *yarn_cache_pull_push
   <<: *yarn_install
   script: $(npm bin)/gulp lint
-test:
+test:linux:
   stage: verify
   <<: *except_docs
   <<: *only_code
-  <<: *pull_cache
+  <<: *yarn_cache_pull_only
   <<: *yarn_install
   script: $(npm bin)/gulp test
+  artifacts:
+    paths:
+    - coverage/
+test:windows:
+  extends: [.shared_windows_runners]
+  stage: verify
+  <<: *except_docs
+  <<: *only_code
+  # cache does not currently work on the Windows runner
+  #<<: *yarn_cache_pull_only
+  before_script:
+  - npx yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile
+  script: node_modules/.bin/gulp test
   artifacts:
     paths:
     - coverage/
