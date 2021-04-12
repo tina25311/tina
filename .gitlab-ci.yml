@@ -20,6 +20,7 @@ variables:
   only:
     refs:
     - schedules
+    - releases@antora/antora
 - &yarn_cache_config
   key: yarn-cache
   paths:
