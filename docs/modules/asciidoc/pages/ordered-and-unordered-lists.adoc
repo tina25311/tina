@@ -32,8 +32,7 @@ The dot (or dots) is separated from the content of the list item by a single spa
 . Step 3
 ----
 
-The maximum nesting level is five (`+.....+`).
-A different numbering or lettering scheme is provided for each nesting level.
+A different numbering or lettering scheme is provided for each nesting level. You can nest unordered lists to any depth. Keep in mind, however, that some interfaces will begin flattening lists after a certain depth. For instance, GitHub starts flattening list after 10 levels of nesting.
 
 . Step 1
 . Step 2
@@ -77,8 +76,7 @@ First level list items are marked using an asterisk (`+*+`) and nested items by 
 * Item C
 ----
 
-The maximum nesting level is five (`+*****+`).
-Unordered lists use a bullet or other illustrative marker before each list item depending on nesting level.
+Unordered lists use a bullet or other illustrative marker before each list item depending on nesting level. You can nest unordered lists to any depth. Keep in mind, however, that some interfaces will begin flattening lists after a certain depth. For instance, GitHub starts flattening list after 10 levels of nesting.
 
 * Item A
 * Item B
