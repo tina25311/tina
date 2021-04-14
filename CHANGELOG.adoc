@@ -7,6 +7,11 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *content-classifier*: Add support for `_` keyword to refer to empty version in resource ID (#669)
+* *content-classifier*: Allow version in component descriptor to be `~` (shorthand for `null`) or empty string to indicate a versionless component version (#669)
+
 === Changed
 
 * *asciidoc-loader*: Upgrade to Asciidoctor.js 2 and allow use of newer patch versions (#522)

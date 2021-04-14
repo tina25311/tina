@@ -92,6 +92,20 @@ describe('parseResourceId()', () => {
     expect(result).to.eql(expected)
   })
 
+  it('should set version to empty string if version is specified as _', () => {
+    const input = '_@the-component:the-module:the-page.adoc'
+    const inputCtx = { version: '1.0' }
+    const expected = {
+      version: '',
+      component: 'the-component',
+      module: 'the-module',
+      family: 'page',
+      relative: 'the-page.adoc',
+    }
+    const result = parseResourceId(input, inputCtx)
+    expect(result).to.eql(expected)
+  })
+
   it('should set module to ROOT if component is specified but not module', () => {
     const input = '1.0@the-component::the-page.adoc'
     const expected = {
