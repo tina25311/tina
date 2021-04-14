@@ -17,7 +17,7 @@ const Html5Converter = (() => {
     this[$pageRefCallback] = callbacks.onPageRef
     this[$imageRefCallback] = callbacks.onImageRef
   })
-  Opal.defn(scope, '$inline_anchor', function convertInlineAnchor (node) {
+  Opal.defn(scope, '$convert_inline_anchor', function convertInlineAnchor (node) {
     if (node.getType() === 'xref') {
       let callback
       let refSpec = node.getAttribute('path', undefined, false)
@@ -41,15 +41,15 @@ const Html5Converter = (() => {
         node = Opal.module(null, 'Asciidoctor').Inline.$new(node.getParent(), 'anchor', content, options)
       }
     }
-    return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_anchor', convertInlineAnchor), [node])
+    return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_anchor', convertInlineAnchor), [node])
   })
-  Opal.defn(scope, '$image', function convertImage (node) {
-    return Opal.send(this, Opal.find_super_dispatcher(this, 'image', convertImage), [
+  Opal.defn(scope, '$convert_image', function convertImage (node) {
+    return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_image', convertImage), [
       transformImageNode(this, node, node.getAttribute('target')),
     ])
   })
-  Opal.defn(scope, '$inline_image', function convertInlineImage (node) {
-    return Opal.send(this, Opal.find_super_dispatcher(this, 'inline_image', convertInlineImage), [
+  Opal.defn(scope, '$convert_inline_image', function convertInlineImage (node) {
+    return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_image', convertInlineImage), [
       transformImageNode(this, node, node.getTarget()),
     ])
   })

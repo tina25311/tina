@@ -121,6 +121,20 @@ describe('loadAsciiDoc()', () => {
     expect(doc.getAttribute('page-layout')).to.eql('home')
   })
 
+  it('should apply source style to listing block if source-language is set on document', () => {
+    const contents = heredoc`
+      :source-language: ruby
+
+      ----
+      puts "Hello, World!"
+      ----
+    `
+    setInputFileContents(contents)
+    const doc = loadAsciiDoc(inputFile)
+    expect(doc.getBlocks()).to.have.lengthOf(1)
+    expect(doc.getBlocks()[0].getStyle()).to.eql('source')
+  })
+
   it('should not hang on mismatched passthrough syntax', () => {
     const contents = 'Link the system library `+libconfig++.so.9+` located at `+/usr/lib64/libconfig++.so.9+`.'
     const html = Asciidoctor.convert(contents, { safe: 'safe' })
@@ -225,7 +239,7 @@ describe('loadAsciiDoc()', () => {
         'page-relative-src-path': 'page-a.adoc',
         // computed
         doctitle: 'Document Title',
-        docrole: 'docrole',
+        role: 'docrole',
         notitle: '',
         embedded: '',
         'safe-mode-name': 'safe',
@@ -500,11 +514,9 @@ describe('loadAsciiDoc()', () => {
       expect(shoutBlockExtension.registered).to.equal(2)
       expect(html).to.include('RELEASE EARLY. RELEASE OFTEN')
 
-      let messages
-      ;[html, messages] = captureStderr(() => loadAsciiDoc(inputFile).convert())
+      html = loadAsciiDoc(inputFile).convert()
+      expect(shoutBlockExtension.registered).to.equal(2)
       expect(html).to.include('Release early. Release often.')
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('page-a.adoc: line 2: invalid style for paragraph: shout')
     })
 
     it('should give extension access to context that includes current file and content catalog', () => {
@@ -629,6 +641,50 @@ describe('loadAsciiDoc()', () => {
         'include::partial$does-not-exist.adoc[]',
       ].join(' - ')
       expect(firstBlock.getSourceLines()).to.eql(['before', expectedSource, 'after'])
+    })
+
+    it('should not remove trailing spaces from lines of a non-AsciiDoc include file', () => {
+      const includeContents = ['puts "Hello"\t', 'sleep 5 ', 'puts "See ya!"  '].join('\n')
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'visit.rb',
+        contents: includeContents,
+      }).spyOn('getById')
+      setInputFileContents(['----', 'include::example$visit.rb[]', '----'].join('\n'))
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'example',
+          relative: 'visit.rb',
+        })
+      expect(doc.getBlocks()).to.have.lengthOf(1)
+      expect(doc.getBlocks()[0].getContent()).to.equal(includeContents)
+    })
+
+    it('should not drop leading and trailing empty lines of AsciiDoc include file', () => {
+      const includeContents = ['', 'included content', '', ''].join('\n')
+      const contentCatalog = mockContentCatalog({
+        family: 'partial',
+        relative: 'paragraph.adoc',
+        contents: includeContents,
+      }).spyOn('getById')
+      setInputFileContents(['before', 'include::partial$paragraph.adoc[]', 'after'].join('\n'))
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'paragraph.adoc',
+        })
+      expect(doc.getBlocks()).to.have.lengthOf(3)
+      expect(doc.getBlocks()[1].getSourceLines()).to.eql(['included content'])
     })
 
     it('should not crash if contents of included file is undefined', () => {
@@ -1223,7 +1279,7 @@ describe('loadAsciiDoc()', () => {
       expect(doc.getBlocks()).to.have.lengthOf(1)
       expect(messages).to.have.lengthOf(1)
       expect(messages[0].trim()).to.equal(
-        'asciidoctor: ERROR: greeting.adoc: line 3: maximum include depth of 1 exceeded'
+        'asciidoctor: ERROR: greeting.adoc: line 3: maximum include depth of 0 exceeded'
       )
     })
 
@@ -1588,6 +1644,28 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
+    })
+
+    it('should not drop leading and trailing empty lines inside a tagged region of AsciiDoc include file', () => {
+      const includeContents = ['preamble', 'tag::main[]', '', 'included content', '', 'end::main[]', 'trailer'].join('\n')
+      const contentCatalog = mockContentCatalog({
+        family: 'partial',
+        relative: 'paragraph.adoc',
+        contents: includeContents,
+      }).spyOn('getById')
+      setInputFileContents(['before', 'include::partial$paragraph.adoc[tag=main]', 'after'].join('\n'))
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'paragraph.adoc',
+        })
+      expect(doc.getBlocks()).to.have.lengthOf(3)
+      expect(doc.getBlocks()[1].getSourceLines()).to.eql(['included content'])
     })
 
     it('should match tag directives enclosed in circumfix comments', () => {
@@ -3239,7 +3317,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'index.adoc',
       })
       ;[
-        'xref:6.5@relnotes::index.adoc[completely removed\\]',
+        'xref:6.5@relnotes::index.adoc[completely removed]',
         '<<6.5@relnotes::index.adoc#,completely removed>>',
       ].forEach((pageMacro) => {
         const contents = `Text.footnote:[Support for pixie dust has been ${pageMacro}.]`
@@ -3261,7 +3339,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'index.adoc',
       })
       ;[
-        'xref:6.5@relnotes::index.adoc[completely removed\\]',
+        'xref:6.5@relnotes::index.adoc[completely removed]',
         '<<6.5@relnotes::index.adoc#,completely removed>>',
       ].forEach((pageMacro) => {
         const contents = heredoc`

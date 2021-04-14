@@ -9,8 +9,13 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *asciidoc-loader*: Upgrade to Asciidoctor.js 2 and allow use of newer patch versions (#522)
 * *infrastructure*: Migrate Windows CI pipeline from AppVeyor CI to GitLab CI (#732)
 * *infrastructure*: Run tests nightly on Node 12 and Node 14 (in addition to Node 10) (#731)
+
+=== Fixed
+
+* *asciidoc-loader*: Don't crash if stem block is empty (#663)
 
 == 3.0.0-alpha.2 (2021-04-08)
 
