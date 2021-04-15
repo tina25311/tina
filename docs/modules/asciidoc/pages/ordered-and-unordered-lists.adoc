@@ -32,7 +32,10 @@ The dot (or dots) is separated from the content of the list item by a single spa
 . Step 3
 ----
 
-A different numbering or lettering scheme is provided for each nesting level. You can nest unordered lists to any depth. Keep in mind, however, that some interfaces will begin flattening lists after a certain depth. For instance, GitHub starts flattening list after 10 levels of nesting.
+You can nest unordered lists to any depth.
+A different numbering or lettering scheme (e.g., arabic, alpha, roman, etc) used to identify each nesting level.
+However, the depth at which a unique scheme is applied depends on the stylesheet.
+The scheme will fallback to the browser default (arabic numbering) beyond that depth.
 
 . Step 1
 . Step 2
@@ -76,7 +79,10 @@ First level list items are marked using an asterisk (`+*+`) and nested items by 
 * Item C
 ----
 
-Unordered lists use a bullet or other illustrative marker before each list item depending on nesting level. You can nest unordered lists to any depth. Keep in mind, however, that some interfaces will begin flattening lists after a certain depth. For instance, GitHub starts flattening list after 10 levels of nesting.
+You can nest unordered lists to any depth.
+Unordered lists use a bullet or other illustrative marker in front of each list item to identify each nesting level.
+However, the depth at which a unique marker is applied depends on the stylesheet.
+The scheme will fallback to the browser default (a square bullet) beyond that depth.
 
 * Item A
 * Item B
