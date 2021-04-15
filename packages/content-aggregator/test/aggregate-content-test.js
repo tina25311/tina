@@ -269,6 +269,26 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should allow component descriptor to have a null version and coerce value to empty string', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: null })
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '')
+      })
+    })
+
+    describe('should allow component descriptor to have an empty version', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '')
+      })
+    })
+
     describe('should throw if name defined in component descriptor contains a path segment', () => {
       testLocal(async (repoBuilder) => {
         const ref = 'master <worktree>'

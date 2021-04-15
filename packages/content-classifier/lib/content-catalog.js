@@ -54,14 +54,17 @@ class ContentCatalog {
    */
   registerComponentVersion (name, version, descriptor = {}) {
     const { asciidoc, displayVersion, prerelease, startPage: startPageSpec, title } = descriptor
-    const componentVersion = { displayVersion: displayVersion || version, title: title || name, version }
+    const componentVersion = { displayVersion: displayVersion || version || 'default', title: title || name, version }
     Object.defineProperty(componentVersion, 'name', { value: name, enumerable: true })
     if (prerelease) {
       componentVersion.prerelease = prerelease
       if (!displayVersion && (typeof prerelease === 'string' || prerelease instanceof String)) {
-        const ch0 = prerelease.charAt()
-        const sep = ch0 === '-' || ch0 === '.' ? '' : ' '
-        componentVersion.displayVersion = `${version}${sep}${prerelease}`
+        if (version) {
+          const ch0 = prerelease.charAt()
+          componentVersion.displayVersion = `${version}${ch0 === '-' || ch0 === '.' ? '' : ' '}${prerelease}`
+        } else {
+          componentVersion.displayVersion = prerelease
+        }
       }
     }
     if (asciidoc) componentVersion.asciidoc = asciidoc
@@ -308,7 +311,7 @@ class ContentCatalog {
     const component = this.getComponent(src.component)
     if (component) {
       // NOTE version is not set when alias specifies a component, but not a version
-      if (!src.version) src.version = component.latest.version
+      if (src.version == null) src.version = component.latest.version
       const existingPage = this.getById(src)
       if (existingPage) {
         throw new Error(
@@ -327,9 +330,9 @@ class ContentCatalog {
             `  source: ${getFileLocation(target)}`
         )
       }
-    } else if (!src.version) {
+    } else if (src.version == null) {
       // QUESTION should we skip registering alias in this case?
-      src.version = 'master'
+      src.version = ''
     }
     src.family = 'alias'
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
@@ -490,10 +493,10 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
 }
 
 function computeVersionSegment (name, version, mode) {
-  if (mode === 'original') return version === 'master' ? '' : version
+  if (mode === 'original') return !version || version === 'master' ? '' : version
   const strategy = this.latestVersionUrlSegmentStrategy
   // NOTE: special exception; revisit in Antora 3
-  if (version === 'master') {
+  if (!version || version === 'master') {
     if (mode !== 'alias') return ''
     if (strategy === 'redirect:to') return
   }

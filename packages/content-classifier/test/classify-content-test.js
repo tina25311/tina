@@ -176,6 +176,26 @@ describe('classifyContent()', () => {
       expect(versions).to.eql(['master', 'dev', 'v1.2.3'])
     })
 
+    it('should sort versionless version first', () => {
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'dev',
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: '',
+        files: [],
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      expect(component).to.exist()
+      expect(component.name).to.equal('the-component')
+      const versions = component.versions.map((version) => version.version)
+      expect(versions).to.eql(['', 'dev', 'v1.2.3'])
+    })
+
     it('should use name as title if title is falsy', () => {
       aggregate[0].title = undefined
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
@@ -287,6 +307,24 @@ describe('classifyContent()', () => {
       const componentVersion = catalog.getComponentVersion('the-component', 'v1.2.3')
       expect(componentVersion).to.exist()
       expect(componentVersion.displayVersion).to.equal(componentVersion.version)
+    })
+
+    it('should use "default" as fallback display version for versionless version', () => {
+      aggregate[0].version = ''
+      const catalog = classifyContent(playbook, aggregate)
+      const componentVersion = catalog.getComponentVersion('the-component', '')
+      expect(componentVersion).to.exist()
+      expect(componentVersion.displayVersion).to.equal('default')
+    })
+
+    it('should not prepend separator to display version if version is empty and prerelease is a string', () => {
+      aggregate[0].prerelease = 'dev'
+      aggregate[0].version = ''
+      const catalog = classifyContent(playbook, aggregate)
+      const componentVersion = catalog.getComponentVersion('the-component', '')
+      expect(componentVersion).to.exist()
+      expect(componentVersion.version).to.equal('')
+      expect(componentVersion.displayVersion).to.equal('dev')
     })
 
     it('should compute display version from version and prerelease if prerelease is set', () => {
@@ -1150,12 +1188,54 @@ describe('classifyContent()', () => {
       })
     })
 
+    it('with empty version', () => {
+      aggregate = [
+        {
+          name: 'the-component',
+          title: 'The Component',
+          version: '',
+          files: [createFile('modules/the-module/pages/page-one.adoc')],
+        },
+      ]
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.out).to.include({
+        dirname: 'the-component/the-module',
+        basename: 'page-one.html',
+        path: 'the-component/the-module/page-one.html',
+        moduleRootPath: '.',
+        rootPath: '../..',
+      })
+    })
+
     it('with ROOT module and master version', () => {
       aggregate = [
         {
           name: 'the-component',
           title: 'The Component',
           version: 'master',
+          files: [createFile('modules/ROOT/pages/page-one.adoc')],
+        },
+      ]
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.out).to.include({
+        dirname: 'the-component',
+        basename: 'page-one.html',
+        path: 'the-component/page-one.html',
+        moduleRootPath: '.',
+        rootPath: '..',
+      })
+    })
+
+    it('with ROOT module and empty version', () => {
+      aggregate = [
+        {
+          name: 'the-component',
+          title: 'The Component',
+          version: '',
           files: [createFile('modules/ROOT/pages/page-one.adoc')],
         },
       ]

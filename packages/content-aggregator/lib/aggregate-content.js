@@ -527,17 +527,19 @@ function loadComponentDescriptor (files) {
     throw err
   }
   if (data.name == null) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a name`)
-  const name = String(data.name)
+  const name = data.name = String(data.name)
   if (name === '.' || name === '..' || ~name.indexOf('/')) {
     throw new Error(`name in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${name}`)
   }
-  if (data.version == null) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a version`)
-  const version = String(data.version)
-  if (version === '.' || version === '..' || ~version.indexOf('/')) {
-    throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
+  if (data.version == null) {
+    if (!('version' in data)) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a version`)
+    data.version = ''
+  } else {
+    const version = data.version = String(data.version)
+    if (version === '.' || version === '..' || ~version.indexOf('/')) {
+      throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
+    }
   }
-  data.name = name
-  data.version = version
   return camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
 }
 

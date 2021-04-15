@@ -134,6 +134,31 @@ describe('resolveResource', () => {
     expect(result).to.exist()
   })
 
+  it('should use versionless version of component if component is specified with _ version', () => {
+    const targetFile = {
+      src: {
+        component: 'the-component',
+        version: '',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+      },
+    }
+    const contentCatalog = mockContentCatalog(targetFile, { latest: { version: '1.0' } })
+    const targetPageIdSpec = '_@the-component::the-page.adoc'
+    const targetPageId = {
+      component: 'the-component',
+      version: '',
+      module: 'ROOT',
+      family: 'page',
+      relative: 'the-page.adoc',
+    }
+    const result = resolveResource(targetPageIdSpec, contentCatalog)
+    expect(contentCatalog.getComponent).to.not.have.been.called()
+    expect(contentCatalog.getById).to.have.been.called.with(targetPageId)
+    expect(result).to.exist()
+  })
+
   it('should use latest version of component if component is specified without a version', () => {
     const targetFile = {
       src: {

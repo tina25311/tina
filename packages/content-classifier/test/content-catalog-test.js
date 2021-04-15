@@ -269,6 +269,15 @@ describe('ContentCatalog', () => {
       expect(component.versions[0].displayVersion).to.equal('1.0 Beta')
     })
 
+    it('should set displayVersion property to "default" if version is empty and displayVersion is not specified', () => {
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.registerComponentVersion('the-component', '', { title: 'ACME' })
+      const component = contentCatalog.getComponent('the-component')
+      expect(component).to.exist()
+      expect(component.versions[0]).to.exist()
+      expect(component.versions[0].displayVersion).to.equal('default')
+    })
+
     it('should set displayVersion property automatically if prerelease is a string literal', () => {
       const contentCatalog = new ContentCatalog()
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'ACME', prerelease: 'Beta' })
@@ -1271,6 +1280,47 @@ describe('ContentCatalog', () => {
       expect(result.pub).to.include({ url: '/the-component/the-page.html', rootPath: '..' })
     })
 
+    it('should not introduce version segment in pub.url and out.path when symbolic name is specified if version is empty', () => {
+      const contentCatalog = new ContentCatalog({ urls: { latestVersionSegment: 'current' } })
+      contentCatalog.registerComponentVersion('the-component', '', { title: 'The Component' })
+      const src = {
+        component: 'the-component',
+        version: '',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        extname: '.adoc',
+        stem: 'the-page',
+      }
+      const result = contentCatalog.addFile(new File({ src }))
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({ path: 'the-component/the-page.html', rootPath: '..' })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({ url: '/the-component/the-page.html', rootPath: '..' })
+    })
+
+    it('should not introduce prerelease version segment in pub.url and out.path when symbolic name is specified if version is empty', () => {
+      const contentCatalog = new ContentCatalog({ urls: { latestPrereleaseVersionSegment: 'unstable' } })
+      contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
+      contentCatalog.registerComponentVersion('the-component', '', { title: 'The Component', prerelease: true })
+      const src = {
+        component: 'the-component',
+        version: '',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        extname: '.adoc',
+        stem: 'the-page',
+      }
+      const result = contentCatalog.addFile(new File({ src }))
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({ path: 'the-component/the-page.html', rootPath: '..' })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({ url: '/the-component/the-page.html', rootPath: '..' })
+    })
+
     it('should not set out and pub properties if defined on input', () => {
       const src = {
         component: 'the-component',
@@ -1564,14 +1614,14 @@ describe('ContentCatalog', () => {
       })
     })
 
-    it('should register alias in master version if component does not exist and version is not specified', () => {
+    it('should register alias in versionless version if component does not exist and version is not specified', () => {
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('unknown-component::alias.adoc', targetPage)
       expect(result).to.exist()
       expect(result).to.have.property('src')
       expect(result.src).to.include({
         component: 'unknown-component',
-        version: 'master',
+        version: '',
         module: 'ROOT',
         family: 'alias',
         relative: 'alias.adoc',
