@@ -10,6 +10,78 @@
 
 IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
 
+= Antora 3.0.0-alpha.3
+
+_**Release date:** 2021.04.15 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Deprecations and breaking changes notice
+
+The following deprecations and breaking changes will be final with the release of Antora 3.0.
+
+=== Dependencies
+
+Antora now automatically depends on the latest patch version of Asciidoctor.js 2.2 (e.g., 2.2.3).
+Support for Asciidoctor.js 1.5.9 has been dropped.
+
+=== Specifying the versionless component version
+
+Since the first release of Antora, the version `master` has been given special meaning to identify a versionless component version.
+Using that term for this purpose was a mistake and we're correcting it.
+
+When a component version is "`versionless`", it means the URL for that component version and its resources do not have a version segment (e.g., [.path]_/component-name/module-name/page-name.html_ instead of [.path]_/component-name/module-name/version-name/page-name.html_).
+In Antora 3.0, we're deprecating the use of the version `master` for this purpose.
+The reason we're phasing out this term is because it's not descriptive, it infers that the version is coupled to the branch (which it's not), and it glorifies an immoral system based on human exploitation.
+In short, the term just isn't appropriate and we want to move away from it.
+
+Instead, you should identify a versionless component version by assigning the tilde symbol (`~`) (shorthand for `null`) to the version key in the component descriptor (i.e., [.path]_antora.yml_).
+
+.antora.yml for a versionless component version
+[source,yaml]
+----
+name: component-name
+version: ~
+----
+
+As expected, when the version key is assigned `~`, Antora doesn't include the version segment in the component version's page URLs (e.g., [.path]_/component-name/module-name/page-name.html_).
+Although rare, if you ever need to refer to a resource in a versionless version, you can do so using the `_` keyword in the resource ID (e.g., `_@page.html`).
+
+== Resolved issues
+
+IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+
+=== Added
+
+Issue {url-issues}/669[#669^]:: Allow value of the `version` key in a component descriptor file to be `~` (shorthand for `null`) to indicate a versionless component version.
+Null is assigned using the tilde symbol (`~`) or the keyword `null`.
+Empty string is also accepted, but not as elegant.
+Internally, the value is coerced to empty string for practical purposes.
+Issue {url-issues}/669[#669^]:: If the version is empty (`version: ~`), don't add a version segment to `pub.url` and `out.path` (even if it's a prerelease).
+Issue {url-issues}/669[#669^]:: Sort the versionless version above all other versions (semantic and non-semantic) that belong to the same component.
+Assign the fallback _default_ as the display version if the version is empty and the `display_version` key isn't specified.
+If `prerelease` is set in the component descriptor to a string value, use that as the fallback display version instead.
+Issue {url-issues}/669[#669^]:: If the version is not specified on an alias that specifies an unknown component, set the version to empty string.
+We expect this change to be internal and not affect any sites.
+Issue {url-issues}/669[#669^]:: Add support for `_` keyword to refer to an empty version in a resource ID (e.g., `_@page.html`).
+
+=== Changed
+
+Issue {url-issues}/522[#522^]:: Upgrade to Asciidoctor.js 2.2.3 and allow installation of newer patch versions automatically.
+Issue {url-issues}/731[#731^]:: Add support for Node.js 12 and Node.js 14.
+Run tests nightly on Node.js 12 and 14 (in addition to Node.js 10).
+
+=== Fixed
+
+Issue {url-issues}/663[#663^]:: Don't crash if a stem block is empty.
+
+=== Deprecated
+
+Issue {url-issues}/669[#669^]:: Deprecate the value `master` to represent an empty (versionless) version when assigned to the `version` key in a component descriptor file; replace with the tilde symbol (`~`).
+
+=== Removed
+
+Issue {url-issues}/522[#522^]:: Drop support for Asciidoctor.js 1.5.9.
+By using Antora 3, you will automatically be upgraded to using Asciidoctor.js 2.2.x.
+
 = Antora 3.0.0-alpha.2
 
 _**Release date:** 2021.04.08 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
