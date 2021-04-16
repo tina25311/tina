@@ -9,18 +9,26 @@ This project utilizes semantic versioning.
 
 === Added
 
-* *content-classifier*: Add support for `_` keyword to refer to empty version in resource ID (#669)
 * *content-classifier*: Allow version in component descriptor to be `~` (shorthand for `null`) or empty string to indicate a versionless component version (#669)
+* *content-classifier*: Use the prerelease string, if set, otherwise the value `default`, as the fallback display version for a versionless component version (#669)
+* *content-classifier*: Sort the versionless component version above all other versions (semantic or non-semantic) in the same component (#669)
+* *content-classifier*: If the version of a component version is empty (`version: ~`), don't add a version segment to `pub.url` and `out.path` (even if it's a prerelease) (#669)
+* *content-classifier*: Add support for `_` keyword to refer to empty version in resource ID (#669)
 
 === Changed
 
 * *asciidoc-loader*: Upgrade to Asciidoctor.js 2 and allow use of newer patch versions (#522)
+* *content-classifier*: If an alias refers to an unknown component, and the version is not specified, set the version to empty string (#669)
 * *infrastructure*: Migrate Windows CI pipeline from AppVeyor CI to GitLab CI (#732)
 * *infrastructure*: Run tests nightly on Node 12 and Node 14 (in addition to Node 10) (#731)
 
 === Fixed
 
-* *asciidoc-loader*: Don't crash if stem block is empty (#663)
+* *asciidoc-loader*: Don't crash if the contents of a stem block is empty (#663)
+
+=== Deprecated
+
+* *content-classifier*: Deprecate use of the keyword `master` to represent a versionless component version; replace the value of the `version` key in the component descriptor (antora.yml) with `~` or empty string
 
 == 3.0.0-alpha.2 (2021-04-08)
 
