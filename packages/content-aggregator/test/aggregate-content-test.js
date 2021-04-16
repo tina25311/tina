@@ -2974,7 +2974,7 @@ describe('aggregateContent()', function () {
     expect(page1v1.contents.toString()).to.not.have.string('Update received!')
   })
 
-  if (process.env.CI_COMMIT_REF_NAME === 'releases') {
+  if (process.env.CI_COMMIT_REF_NAME === 'releases' && process.platform !== 'win32') {
     it('should clone a remote repository with a large number of branches', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder, {}, [], async () => {
