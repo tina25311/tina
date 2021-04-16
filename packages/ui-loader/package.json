@@ -23,7 +23,7 @@
     "camelcase-keys": "~6.2",
     "got": "~11.8",
     "gulp-vinyl-zip": "~2.2",
-    "js-yaml": "~4.0",
+    "js-yaml": "~4.1",
     "minimatch-all": "~1.1",
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"
