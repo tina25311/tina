@@ -11,7 +11,7 @@
     "chai-spies": "~1.0",
     "cheerio": "1.0.0-rc.6",
     "dirty-chai": "~2.0",
-    "eslint": "~7.23",
+    "eslint": "~7.24",
     "eslint-config-standard": "~16.0",
     "eslint-plugin-import": "~2.22",
     "eslint-plugin-node": "~11.1",
