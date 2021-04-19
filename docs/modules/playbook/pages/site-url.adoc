@@ -73,7 +73,8 @@ When the site URL is set to any allowable value, the following features are enab
 * The `site.path` property is set in the UI model (the path segment extracted from the value of the `site.url` key in the playbook; if the site URL does not have a path segment or the path segment is /, this value is empty)
 * The 404 page is generated.
 * The [.path]_robots.txt_ file is generated if `site.robots` is also defined in the playbook.
-* xref:urls-redirect-facility.adoc[Redirects] include the path segment of the site URL (which would otherwise be empty).
+* xref:urls-redirect-facility.adoc[Redirects] include the path segment of the site URL (which is otherwise assumed to empty).
+This does not affect the static redirect facility, which uses relative URLs.
 * The link in the top-left corner of the navbar points to the site URL instead of a relative path (behavior specific to the default UI).
 
 When the site URL is set to an absolute URL, the following additional features are enabled:
