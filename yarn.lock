@@ -7,12 +7,12 @@
   resolved "https://registry.yarnpkg.com/@antora/expand-path-helper/-/expand-path-helper-1.0.0.tgz#3bfd6938ab86d4709af8d869cbf3bb17b8fe8912"
   integrity sha512-hg3y6M3OvRTb7jtLAnwwloYDxafbyKYttcf16kGCXvP7Wqosh7c+Ag+ltaZ7VSebpzpphO/umb/BXdpU7rxapw==
 
-"@asciidoctor/core@~2.2.0":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@asciidoctor/core/-/core-2.2.3.tgz#b1ffcbb759f3548c195211e47bf4729f04d66837"
-  integrity sha512-hejJoR9VIbHFH5GI5v18JeD3P8pjew8bNaUQhwppCNoCqfqThm+Y3yVfTnm0FoYpeOD4gFNHa1dPYcTbhBOXoQ==
+"@asciidoctor/core@2.2.4-rc.2":
+  version "2.2.4-rc.2"
+  resolved "https://registry.yarnpkg.com/@asciidoctor/core/-/core-2.2.4-rc.2.tgz#eb8064639a4b5e64afb70ddbb2decd10036aacf1"
+  integrity sha512-uecRAaOfsu6KPwFvhSKGf84T5Epkdw2G238FoBqg2KeRJfZPH3FserFyPUdEInld0LXGdKfm/wslIsRUCcHh2A==
   dependencies:
-    asciidoctor-opal-runtime "0.3.2"
+    asciidoctor-opal-runtime "0.3.3"
     unxhr "1.0.1"
 
 "@babel/code-frame@7.12.11":
@@ -636,10 +636,10 @@ arrify@^2.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
-asciidoctor-opal-runtime@0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/asciidoctor-opal-runtime/-/asciidoctor-opal-runtime-0.3.2.tgz#4e8a20b7f8ff3ef13ad4575a6fd4b54be25ccb00"
-  integrity sha512-J9N2VMItYiJ0TVuCUsrD3cGxB5Y1noIuTACJ0LP7I3V4IhcQ3/LQwvLot0+AcXZTpLSN3KS2CauwNPri7+pkLA==
+asciidoctor-opal-runtime@0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/asciidoctor-opal-runtime/-/asciidoctor-opal-runtime-0.3.3.tgz#2667635f858d3eb3fdfcf6795cf68138e2040174"
+  integrity sha512-/CEVNiOia8E5BMO9FLooo+Kv18K4+4JBFRJp8vUy/N5dMRAg+fRNV4HA+o6aoSC79jVU/aT5XvUpxSxSsTS8FQ==
   dependencies:
     glob "7.1.3"
     unxhr "1.0.1"

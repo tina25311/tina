@@ -17,8 +17,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@asciidoctor/core": "~2.2.0",
-    "asciidoctor-opal-runtime": "0.3.2"
+    "@asciidoctor/core": "2.2.4-rc.2"
   },
   "engines": {
     "node": ">=10.17.0"

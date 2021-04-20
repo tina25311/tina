@@ -398,6 +398,7 @@ describe('convertDocuments()', () => {
     expectPageLink(convertedContents, 'here.html', 'here.adoc')
   })
 
+  // this case is handled by Asciidoctor itself
   it('should fill in missing contents of xref that points to top of page with page title', () => {
     const contents = Buffer.from(heredoc`
       = Document Title
@@ -416,6 +417,7 @@ describe('convertDocuments()', () => {
     expect(convertedContents).to.include('<a href="#">Document Title</a>')
   })
 
+  // this case is handled by Asciidoctor itself
   it('should fill in missing contents of xref that points to top of page with no page title', () => {
     const contents = Buffer.from(heredoc`
       You are xref:#[].
