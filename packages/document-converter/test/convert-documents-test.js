@@ -364,6 +364,25 @@ describe('convertDocuments()', () => {
     expectPageLink(fromConvertedContents, 'to.html', 'To')
   })
 
+  // FIXME reverse this test once it's fixed in either Antora or Asciidoctor
+  it('should not replace empty text of xref that resolves to current page with reftext', () => {
+    const contents = Buffer.from(heredoc`
+      = Document Title
+
+      You are xref:here.adoc[].
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'here.adoc',
+        contents: contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const convertedContents = pages.find((it) => it.src.relative === 'here.adoc').contents.toString()
+    expect(convertedContents).to.include('You are <a href="#">[]</a>.')
+  })
+
   it('should be able to reference page alias as target of xref', () => {
     const contentsA = Buffer.from(heredoc`
       = The Page
