@@ -336,7 +336,7 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
   const displayUrl = url || repo.dir
   const editUrl = source.editUrl
   let worktreePath
-  if (ref.head && !(url || repo.noCheckout)) {
+  if (ref.head) {
     worktreePath = repo.dir
   } else {
     ref.oid = await git.resolveRef(Object.assign({ ref: 'refs/' + ref.fullname }, repo))
