@@ -113,7 +113,7 @@ function computePageAttrs ({ component: componentName, version, module: module_,
       attrs['page-origin-reftype'] = 'tag'
     }
     if (origin.worktree) {
-      attrs['page-origin-worktree'] = ''
+      attrs['page-origin-worktree'] = origin.worktree
       attrs['page-origin-refhash'] = '(worktree)'
     } else {
       attrs['page-origin-refhash'] = origin.refhash

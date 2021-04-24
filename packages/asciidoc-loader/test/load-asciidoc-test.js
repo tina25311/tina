@@ -352,7 +352,7 @@ describe('loadAsciiDoc()', () => {
         url: 'https://example.org/component-a.git',
         startPath: 'docs',
         branch: 'v4.5.x',
-        worktree: true,
+        worktree: '/path/to/worktree',
       }
       const docFromBranch = loadAsciiDoc(inputFileFromBranch, contentCatalog)
       expect(docFromBranch.getAttributes()).to.include({
@@ -363,7 +363,7 @@ describe('loadAsciiDoc()', () => {
         'page-origin-refname': 'v4.5.x',
         'page-origin-reftype': 'branch',
         'page-origin-refhash': '(worktree)',
-        'page-origin-worktree': '',
+        'page-origin-worktree': '/path/to/worktree',
       })
       expect(docFromBranch.hasAttribute('page-origin-tag')).to.be.false()
     })

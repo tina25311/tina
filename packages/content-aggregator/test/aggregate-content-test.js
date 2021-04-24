@@ -1694,7 +1694,7 @@ describe('aggregateContent()', function () {
       expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
       const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
       expect(fixtureFile).to.exist()
-      expect(fixtureFile.src.origin.worktree).to.be.true()
+      expect(fixtureFile.src.origin.worktree).to.equal(repoBuilder.repoPath)
       expect(fixtureFile.stat.mode).to.equal(expectedMode)
     })
 
@@ -1732,7 +1732,7 @@ describe('aggregateContent()', function () {
       expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
       const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
       expect(fixtureFile).to.exist()
-      expect(fixtureFile.src.origin.worktree).to.be.true()
+      expect(fixtureFile.src.origin.worktree).to.equal(repoBuilder.repoPath)
       expect(fixtureFile.stat.mode).to.equal(expectedMode)
     })
 
@@ -2053,7 +2053,7 @@ describe('aggregateContent()', function () {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.fileUriPattern = fileUriScheme + repoBuilder.repoPath + '/%s'
-          expectedFileSrc.origin.worktree = true
+          expectedFileSrc.origin.worktree = repoBuilder.repoPath
           expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath
           if (posixify) {
             expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
@@ -2107,7 +2107,7 @@ describe('aggregateContent()', function () {
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.fileUriPattern =
             fileUriScheme + ospath.join(repoBuilder.repoPath, repoBuilder.startPath, '%s')
-          expectedFileSrc.origin.worktree = true
+          expectedFileSrc.origin.worktree = repoBuilder.repoPath
           expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath
           if (posixify) {
             expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
@@ -2159,7 +2159,7 @@ describe('aggregateContent()', function () {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.fileUriPattern = fileUriScheme + repoBuilder.repoPath + '/%s'
-          expectedFileSrc.origin.worktree = true
+          expectedFileSrc.origin.worktree = repoBuilder.repoPath
           expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath.replace(/ /g, '%20')
           if (posixify) {
             expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
@@ -2523,10 +2523,12 @@ describe('aggregateContent()', function () {
   })
 
   describe('aggregate files from worktree', () => {
-    const initRepoWithFilesAndWorktree = async (repoBuilder) => {
-      const componentDesc = { name: 'the-component', version: 'v1.2.3' }
+    const initRepoWithFilesAndWorktree = async (repoBuilder, componentDesc, beforeClose) => {
+      componentDesc = { name: 'the-component', version: 'v1.2.3', ...componentDesc }
+      const repoName = componentDesc.repoName || componentDesc.name
+      delete componentDesc.repoName
       return repoBuilder
-        .init(componentDesc.name)
+        .init(repoName)
         .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
         .then(() =>
           repoBuilder.addFilesFromFixture([
@@ -2537,11 +2539,12 @@ describe('aggregateContent()', function () {
           ])
         )
         .then(() => repoBuilder.copyToWorktree(['modules/ROOT/pages/page-two.adoc'], repoBuilder.fixtureBase))
+        .then(() => beforeClose && beforeClose())
         .then(() => repoBuilder.close())
     }
 
     describe('should catalog files in worktree', () => {
-      it('on local repo', async () => {
+      it('in local repo', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithFilesAndWorktree(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -2564,6 +2567,150 @@ describe('aggregateContent()', function () {
         expect(relatives).to.have.members(expectedPaths)
       })
 
+      it('in linked worktree', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const repoName = 'the-component'
+        const version = '1.2'
+        const dir = ospath.join(repoBuilder.repoBase, repoName)
+        const linkedWorktreeRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const linkedWorktreeRepoName = 'the-component-v1.2.x'
+        const linkedWorktreeDir = ospath.join(linkedWorktreeRepoBuilder.repoBase, linkedWorktreeRepoName)
+        const linkedWorktreeDotgit = ospath.join(linkedWorktreeDir, '.git')
+        const linkedWorktreeGitdir = ospath.join(dir, '.git/worktrees/v1.2.x')
+        await initRepoWithFilesAndWorktree(repoBuilder, { version }, () =>
+          repoBuilder
+            .addToWorktree('.git/worktrees/v1.2.x/HEAD', 'ref: refs/heads/v1.2.x\n')
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/commondir', '../..\n'))
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
+            .then(() => repoBuilder.checkoutBranch('v1.2.x'))
+            .then(() => repoBuilder.checkoutBranch('master'))
+        )
+        await initRepoWithFilesAndWorktree(
+          linkedWorktreeRepoBuilder,
+          { repoName: linkedWorktreeRepoName, version },
+          () =>
+            linkedWorktreeRepoBuilder
+              .addToWorktree('modules/ROOT/pages/page-three.adoc', '= Page Three\n\ncontent\n')
+              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const componentVersion = aggregate[0]
+        expect(componentVersion).to.include({ name: 'the-component', version: '1.2' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+          'modules/ROOT/pages/page-two.adoc',
+          'modules/ROOT/pages/page-three.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageThree = files.find((it) => it.relative === 'modules/ROOT/pages/page-three.adoc')
+        expect(pageThree.src.abspath).to.equal(ospath.join(linkedWorktreeRepoBuilder.url, pageThree.relative))
+      })
+
+      it('in linked worktree in detached HEAD state', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const repoName = 'the-component'
+        const version = '1.2'
+        const dir = ospath.join(repoBuilder.repoBase, repoName)
+        const linkedWorktreeRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const linkedWorktreeRepoName = 'the-component-v1.2.x'
+        const linkedWorktreeDir = ospath.join(linkedWorktreeRepoBuilder.repoBase, linkedWorktreeRepoName)
+        const linkedWorktreeDotgit = ospath.join(linkedWorktreeDir, '.git')
+        const linkedWorktreeGitdir = ospath.join(dir, '.git/worktrees/v1.2.x')
+        await initRepoWithFilesAndWorktree(repoBuilder, { version }, () =>
+          repoBuilder
+            .checkoutBranch('v1.2.x')
+            .then(() => repoBuilder.getHeadCommit())
+            .then((oid) => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/HEAD', oid + '\n'))
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/commondir', '../..\n'))
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
+            .then(() => repoBuilder.checkoutBranch('master'))
+        )
+        await initRepoWithFilesAndWorktree(
+          linkedWorktreeRepoBuilder,
+          { repoName: linkedWorktreeRepoName, version },
+          () =>
+            linkedWorktreeRepoBuilder
+              .addToWorktree('modules/ROOT/pages/page-three.adoc', '= Page Three\n\ncontent\n')
+              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const componentVersion = aggregate[0]
+        expect(componentVersion).to.include({ name: 'the-component', version: '1.2' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+          'modules/ROOT/pages/page-two.adoc',
+          'modules/ROOT/pages/page-three.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageThree = files.find((it) => it.relative === 'modules/ROOT/pages/page-three.adoc')
+        expect(pageThree.src.abspath).to.equal(ospath.join(linkedWorktreeRepoBuilder.url, pageThree.relative))
+      })
+
+      it('should skip linked worktree if selected branch is not checked out', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const repoName = 'the-component'
+        const version = '1.2'
+        const dir = ospath.join(repoBuilder.repoBase, repoName)
+        const linkedWorktreeRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const linkedWorktreeRepoName = 'the-component-v1.2.x'
+        const linkedWorktreeDir = ospath.join(linkedWorktreeRepoBuilder.repoBase, linkedWorktreeRepoName)
+        const linkedWorktreeDotgit = ospath.join(linkedWorktreeDir, '.git')
+        const linkedWorktreeGitdir = ospath.join(dir, '.git/worktrees/v1.2.x')
+        await initRepoWithFilesAndWorktree(repoBuilder, { version }, () =>
+          repoBuilder
+            .addToWorktree('.git/worktrees/v1.2.x/HEAD', 'ref: refs/heads/v2.0.x\n')
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/commondir', '../..\n'))
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
+            .then(() => repoBuilder.checkoutBranch('v1.2.x'))
+            .then(() => repoBuilder.checkoutBranch('v2.0.x'))
+            .then(() => repoBuilder.checkoutBranch('master'))
+        )
+        await initRepoWithFilesAndWorktree(
+          linkedWorktreeRepoBuilder,
+          { repoName: linkedWorktreeRepoName, version },
+          () =>
+            linkedWorktreeRepoBuilder
+              .addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One (Worktree)\n\ncontent\n')
+              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.*' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const componentVersion = aggregate[0]
+        expect(componentVersion).to.include({ name: 'the-component', version: '1.2' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
+        expect(pageOne.contents.toString()).to.include('= Page One\n')
+        expect(pageOne.src.abspath).to.be.undefined()
+        const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
+        expect(pageTwo).to.be.undefined()
+      })
+
       it('should set src.abspath and src.origin.worktree properties on files taken from worktree', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithFilesAndWorktree(repoBuilder)
@@ -2584,7 +2731,7 @@ describe('aggregateContent()', function () {
         expect(files[0].src).to.have.property('abspath')
         const paths = files.map((file) => file.src.abspath)
         expect(paths).to.have.members(expectedPaths)
-        files.forEach((file) => expect(file).to.have.nested.property('src.origin.worktree', true))
+        files.forEach((file) => expect(file).to.have.nested.property('src.origin.worktree', repoBuilder.repoPath))
       })
 
       it('should set src.fileUri property on files taken from worktree', async () => {
