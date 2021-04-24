@@ -30,6 +30,8 @@ v{version-node}
 If you have an active Node LTS version on your machine, you're ready to <<install-antora,install Antora>>.
 
 If *no version number is displayed in your terminal*, you need to install Node.
+We recommend using nvm to install Node, though you are free to take a different path.
+Follow one of these guides to learn how to install nvm and Node on your platform.
 
 * xref:install:linux-requirements.adoc#install-nvm[Install nvm and Node on Linux]
 * xref:install:macos-requirements.adoc#install-nvm[Install nvm and Node on macOS]
