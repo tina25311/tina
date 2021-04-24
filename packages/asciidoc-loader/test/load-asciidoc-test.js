@@ -1647,7 +1647,9 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should not drop leading and trailing empty lines inside a tagged region of AsciiDoc include file', () => {
-      const includeContents = ['preamble', 'tag::main[]', '', 'included content', '', 'end::main[]', 'trailer'].join('\n')
+      const includeContents = ['preamble', 'tag::main[]', '', 'included content', '', 'end::main[]', 'trailer'].join(
+        '\n'
+      )
       const contentCatalog = mockContentCatalog({
         family: 'partial',
         relative: 'paragraph.adoc',

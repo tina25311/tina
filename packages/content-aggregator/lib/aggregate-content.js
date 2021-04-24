@@ -527,7 +527,7 @@ function loadComponentDescriptor (files) {
     throw err
   }
   if (data.name == null) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a name`)
-  const name = data.name = String(data.name)
+  const name = (data.name = String(data.name))
   if (name === '.' || name === '..' || ~name.indexOf('/')) {
     throw new Error(`name in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${name}`)
   }
@@ -535,7 +535,7 @@ function loadComponentDescriptor (files) {
     if (!('version' in data)) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a version`)
     data.version = ''
   } else {
-    const version = data.version = String(data.version)
+    const version = (data.version = String(data.version))
     if (version === '.' || version === '..' || ~version.indexOf('/')) {
       throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
     }
