@@ -24,7 +24,7 @@ const Html5Converter = (() => {
       if (refSpec && (callback = this[$pageRefCallback])) {
         const attrs = node.getAttributes()
         const fragment = attrs.fragment
-        if (fragment && fragment !== Opal.nil) refSpec += '#' + fragment
+        if (fragment) refSpec += '#' + fragment
         const { content, target, internal, unresolved } = callback(refSpec, node.getText())
         let type
         if (internal) {
