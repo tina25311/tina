@@ -50,9 +50,13 @@ Now you're ready to xref:install-antora.adoc[install Antora].
 [#install-nvm]
 == Install nvm and Node
 
-We recommend using the {url-nvm}[Node Version Manager (nvm)^] to manage your Node installations.
-Follow these {url-nvm-install}[installation instructions^] to set up nvm on your machine.
-Then, return here.
+We recommend using the {url-nvm}[Node Version Manager (nvm)^] to manage your Node installations, though this is not a requirement.
+Follow the {url-nvm-install}[nvm installation guide^] to set up nvm on your machine.
+Once you've successfully installed nvm, close your current terminal, open a new one, and return here.
+
+NOTE: If you get `nvm: command not found` after running the install script, then it did not complete successfully.
+Be sure to follow all prompts issued by the install script.
+Consult the troubleshooting section in the {url-nvm-install}[install guide^] if you run into problems.
 
 TIP: Many CI environments use nvm to manage the version of Node used in the build job.
 By using nvm, you can align your setup with the environment used to generate and publish your production site.
