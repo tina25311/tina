@@ -364,8 +364,7 @@ describe('convertDocuments()', () => {
     expectPageLink(fromConvertedContents, 'to.html', 'To')
   })
 
-  // FIXME reverse this test once it's fixed in either Antora or Asciidoctor
-  it('should not replace empty text of xref that resolves to current page with reftext', () => {
+  it('should fill in missing contents of page reference that resolves to current page with page title', () => {
     const contents = Buffer.from(heredoc`
       = Document Title
 
@@ -380,7 +379,75 @@ describe('convertDocuments()', () => {
     ])
     const pages = convertDocuments(contentCatalog, asciidocConfig)
     const convertedContents = pages.find((it) => it.src.relative === 'here.adoc').contents.toString()
-    expect(convertedContents).to.include('You are <a href="#">[]</a>.')
+    expectPageLink(convertedContents, 'here.html', 'Document Title')
+  })
+
+  it('should fill in missing contents of page reference that resolves to current page without page title', () => {
+    const contents = Buffer.from(heredoc`
+      You are xref:here.adoc[].
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'here.adoc',
+        contents: contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const convertedContents = pages.find((it) => it.src.relative === 'here.adoc').contents.toString()
+    expectPageLink(convertedContents, 'here.html', 'here.adoc')
+  })
+
+  it('should fill in missing contents of xref that points to top of page with page title', () => {
+    const contents = Buffer.from(heredoc`
+      = Document Title
+
+      You are xref:#[].
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'here.adoc',
+        contents: contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const convertedContents = pages.find((it) => it.src.relative === 'here.adoc').contents.toString()
+    expect(convertedContents).to.include('<a href="#">Document Title</a>')
+  })
+
+  it('should fill in missing contents of xref that points to top of page with no page title', () => {
+    const contents = Buffer.from(heredoc`
+      You are xref:#[].
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'here.adoc',
+        contents: contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const convertedContents = pages.find((it) => it.src.relative === 'here.adoc').contents.toString()
+    expect(convertedContents).to.include('<a href="#">[^top]</a>')
+  })
+
+  it('should fill in missing contents of page reference with family that resolves to current page', () => {
+    const contents = Buffer.from(heredoc`
+      = Document Title
+
+      You are xref:page$here.adoc[].
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'here.adoc',
+        contents: contents,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const convertedContents = pages.find((it) => it.src.relative === 'here.adoc').contents.toString()
+    expectPageLink(convertedContents, 'here.html', 'Document Title')
   })
 
   it('should be able to reference page alias as target of xref', () => {

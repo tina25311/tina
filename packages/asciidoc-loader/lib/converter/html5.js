@@ -20,17 +20,25 @@ const Html5Converter = (() => {
   Opal.defn(scope, '$convert_inline_anchor', function convertInlineAnchor (node) {
     if (node.getType() === 'xref') {
       let callback
-      let refSpec = node.getAttribute('path', undefined, false)
+      let refSpec =
+        node.getAttribute('path', undefined, false) ||
+        // NOTE detect and convert self reference into a page reference
+        (node.target === '#' && node.getText() == null && node.getDocument().getAttribute('page-relative-src-path'))
       if (refSpec && (callback = this[$pageRefCallback])) {
         const attrs = node.getAttributes()
         const fragment = attrs.fragment
         if (fragment) refSpec += '#' + fragment
-        const { content, target, internal, unresolved } = callback(refSpec, node.getText())
+        let { content, target, internal, unresolved } = callback(refSpec, node.getText())
         let type
         if (internal) {
           type = 'xref'
           attrs.path = undefined
           attrs.fragment = attrs.refid = fragment
+        } else if (fragment === '') { // NOTE empty fragment indicates original target is # (i.e., xref:#[])
+          // FIXME after upgrading to Asciidoctor 2.0.15, remove condition and let default converter handle this case
+          type = 'xref'
+          target = '#'
+          if (content === refSpec && node.getText() == null) content = '[^top]'
         } else {
           type = 'link'
           attrs.role = `page${unresolved ? ' unresolved' : ''}${attrs.role ? ' ' + attrs.role : ''}`
