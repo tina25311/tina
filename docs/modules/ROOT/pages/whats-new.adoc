@@ -117,6 +117,7 @@ The following deprecations and breaking changes will be final with the release o
 
 The ability to use parent references in the target of the AsciiDoc image macro (e.g., `image::../../../module-b/_images/image-filename.png[]`) has been removed.
 Replace any such image targets with resource IDs before upgrading.
+Additionally, if an image cannot be resolved, its path will be passed through as entered rather than being prefixed with the imagesdir value ([.path]___images/__).
 
 Antora has added the _.adoc_ file extension to a xref:page:page-id.adoc#id-coordinates[page coordinate] in page aliases and xrefs whenever it wasn't specified by the writer.
 This fallback mechanism has been deprecated in Antora 3.0 to make way for using non-AsciiDoc pages in the xref facility.
