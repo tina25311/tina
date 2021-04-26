@@ -29,9 +29,8 @@ const Html5Converter = (() => {
         let type
         if (internal) {
           type = 'xref'
-          delete attrs.path
-          delete attrs.fragment
-          attrs.refid = fragment // or target.substr(1)
+          attrs.path = undefined
+          attrs.fragment = attrs.refid = fragment
         } else {
           type = 'link'
           attrs.role = `page${unresolved ? ' unresolved' : ''}${attrs.role ? ' ' + attrs.role : ''}`
