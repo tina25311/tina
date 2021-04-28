@@ -250,39 +250,38 @@ async function selectReferences (source, repo, remote) {
   if (branchPatterns) {
     const branchPatternsString = String(branchPatterns)
     if (branchPatternsString === 'HEAD' || branchPatternsString === '.') {
-      // NOTE current branch is undefined when HEAD is detached
       const currentBranch = await getCurrentBranchName(repo, remote)
       if (currentBranch) {
         branchPatterns = [currentBranch]
       } else {
+        // NOTE current branch is undefined when HEAD is detached
         if (!isBare) refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', head: 'detached' })
         return [...refs.values()]
       }
-    } else {
-      branchPatterns = Array.isArray(branchPatterns)
+    } else if (
+      (branchPatterns = Array.isArray(branchPatterns)
         ? branchPatterns.map((pattern) => String(pattern))
-        : branchPatternsString.split(CSV_RX)
-      if (branchPatterns.length) {
-        let headBranchIdx
-        // NOTE we can assume at least two entries if HEAD or . are present
-        if (~(headBranchIdx = branchPatterns.indexOf('HEAD')) || ~(headBranchIdx = branchPatterns.indexOf('.'))) {
-          // NOTE current branch is undefined when HEAD is detached
-          const currentBranch = await getCurrentBranchName(repo, remote)
-          if (currentBranch) {
-            // NOTE ignore if current branch is already in list
-            if (~branchPatterns.indexOf(currentBranch)) {
-              branchPatterns = branchPatterns.filter((_, idx) => idx !== headBranchIdx)
-            } else {
-              branchPatterns[headBranchIdx] = currentBranch
-            }
-          } else {
-            if (!isBare) refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', head: 'detached' })
+        : branchPatternsString.split(CSV_RX)).length
+    ) {
+      let headBranchIdx
+      // NOTE we can assume at least two entries if HEAD or . are present
+      if (~(headBranchIdx = branchPatterns.indexOf('HEAD')) || ~(headBranchIdx = branchPatterns.indexOf('.'))) {
+        const currentBranch = await getCurrentBranchName(repo, remote)
+        if (currentBranch) {
+          // NOTE ignore if current branch is already in list
+          if (~branchPatterns.indexOf(currentBranch)) {
             branchPatterns = branchPatterns.filter((_, idx) => idx !== headBranchIdx)
+          } else {
+            branchPatterns[headBranchIdx] = currentBranch
           }
+        } else {
+          // NOTE current branch is undefined when HEAD is detached
+          if (!isBare) refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', head: 'detached' })
+          branchPatterns = branchPatterns.filter((_, idx) => idx !== headBranchIdx)
         }
-      } else {
-        return [...refs.values()]
       }
+    } else {
+      return [...refs.values()]
     }
     let remoteBranches = await git.listBranches(Object.assign({ remote }, repo))
     if (remoteBranches.length) {
