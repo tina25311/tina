@@ -1312,7 +1312,22 @@ describe('aggregateContent()', function () {
         expect(aggregate[1]).to.include({ name: 'the-component', version: 'v3.0' })
       })
 
-      it('should resolve HEAD to worktree if repository is in detached HEAD state', async () => {
+      it('should resolve branches pattern HEAD to worktree if repository is in detached HEAD state', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        await initRepoWithBranches(repoBuilder)
+          .then(() => repoBuilder.open())
+          .then(() => repoBuilder.checkoutBranch('v3.0'))
+          .then(() => repoBuilder.detachHead())
+          .then(() => repoBuilder.close())
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
+        freeze(playbookSpec)
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+
+      it('should resolve HEAD entry in branches pattern to worktree if repository is in detached HEAD state', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
