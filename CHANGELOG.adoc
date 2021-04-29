@@ -9,7 +9,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
-* *asciidoc-loader*: Provide fallback link text for xref when target is # or matches relative src path of current page (#739)
+* *asciidoc-loader*: Provide fallback link text for xref when target matches relative src path of current page (#739)
 
 == 3.0.0-alpha.3 (2021-04-16)
 
