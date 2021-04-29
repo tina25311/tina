@@ -1312,7 +1312,7 @@ describe('aggregateContent()', function () {
         expect(aggregate[1]).to.include({ name: 'the-component', version: 'v3.0' })
       })
 
-      it('should use worktree for HEAD if not on branch', async () => {
+      it('should resolve HEAD to worktree if repository is in detached HEAD state', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
