@@ -1678,9 +1678,7 @@ describe('aggregateContent()', function () {
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v2.0' })
         const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
         expect(fixtureFile).to.exist()
-        if (!(repoBuilder.bare || repoBuilder.remote)) {
-          expect(fixtureFile.src.origin.worktree).to.be.undefined()
-        }
+        if (!(repoBuilder.bare || repoBuilder.remote)) expect(fixtureFile.src.origin.worktree).to.be.undefined()
         expect(fixtureFile.stat.mode).to.equal(expectedMode)
       })
     })
@@ -1718,9 +1716,7 @@ describe('aggregateContent()', function () {
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v2.0' })
         const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
         expect(fixtureFile).to.exist()
-        if (!(repoBuilder.bare || repoBuilder.remote)) {
-          expect(fixtureFile.src.origin.worktree).to.be.undefined()
-        }
+        if (!(repoBuilder.bare || repoBuilder.remote)) expect(fixtureFile.src.origin.worktree).to.be.undefined()
         expect(fixtureFile.stat.mode).to.equal(expectedMode)
       })
     })
