@@ -205,8 +205,12 @@ class RepositoryBuilder {
     return this
   }
 
+  async getHeadCommit () {
+    return git.resolveRef({ ...this.repository, ref: 'HEAD' })
+  }
+
   async detachHead (oid = undefined) {
-    if (!oid) oid = await git.resolveRef({ ...this.repository, ref: 'HEAD' })
+    if (!oid) oid = await this.getHeadCommit()
     await git.checkout({ ...this.repository, ref: oid })
     return this
   }
