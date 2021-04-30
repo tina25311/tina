@@ -70,6 +70,14 @@ test:node-14-linux:
   <<: *yarn_cache_pull_only
   <<: *yarn_install
   script: $(npm bin)/gulp test
+test:node-16-linux:
+  image: node:16-buster
+  stage: verify
+  <<: *except_docs
+  <<: *only_code
+  <<: *yarn_cache_pull_only
+  <<: *yarn_install
+  script: $(npm bin)/gulp test
 test:windows:
   tags: [windows]
   stage: verify

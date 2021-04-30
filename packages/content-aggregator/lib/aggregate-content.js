@@ -10,7 +10,13 @@ const fs = require('fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
-const git = require('isomorphic-git')
+const git = ((globalPerformance) => {
+  // hide global performance object from marky (see #745)
+  if (globalPerformance) delete global.performance
+  const result = require('isomorphic-git')
+  if (globalPerformance) global.performance = globalPerformance
+  return result
+})(global.performance)
 const invariably = { false: () => false, void: () => {}, emptyArray: () => [] }
 const matcher = require('matcher')
 const MultiProgress = require('multi-progress')
