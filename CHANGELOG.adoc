@@ -9,11 +9,16 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *content-aggregator*: Patch isomorphic-git to work on Node 16 (#745)
 * *asciidoc-loader*: Provide fallback link text for xref when target matches relative src path of current page (#739)
 
 === Added
 
 * *content-aggregator*: Automatically detect and use linked worktrees registered with local content source (i.e., local git clone) (#742)
+
+=== Changed
+
+* *infrastructure*: Run tests in CI on Node 16 (#745)
 
 == 3.0.0-alpha.3 (2021-04-16)
 
