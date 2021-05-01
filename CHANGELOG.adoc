@@ -11,6 +11,7 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Patch isomorphic-git to work on Node 16 (#745)
 * *asciidoc-loader*: Provide fallback link text for xref when target matches relative src path of current page (#739)
+* *cli*: Fix error message from being printed twice in certain cases when `--stacktrace` option is set
 
 === Added
 

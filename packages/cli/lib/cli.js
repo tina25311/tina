@@ -21,10 +21,15 @@ async function run (argv = process.argv) {
 function exitWithError (err, showStack, msg = undefined) {
   if (!msg) msg = err.message || err
   if (showStack) {
-    const stack = err.backtrace || (err.stack && err.stack.split('\n')) || []
-    const msgLine = stack.shift()
-    msg = msgLine && msgLine.endsWith(': ' + msg) ? msgLine : `error: ${msg}`
-    console.error(stack.length ? [msg, ...stack].join('\n') : `${msg} (no stack)`)
+    let stack
+    if ((stack = err.backtrace)) {
+      msg = [`error: ${msg}`, ...stack.slice(1)].join('\n')
+    } else if ((stack = err.stack)) {
+      msg = stack.startsWith(`${err.name}: ${msg}\n`) ? stack : [msg, ...stack.split('\n').slice(1)].join('\n')
+    } else {
+      msg = `error: ${msg} (no stack)`
+    }
+    console.error(msg)
   } else {
     console.error(`error: ${msg}\nAdd the --stacktrace option to see the cause.`)
   }

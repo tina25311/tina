@@ -243,7 +243,7 @@ describe('cli', function () {
       .done()
   }).timeout(timeoutOverride)
 
-  it('should show stack if --stacktrace option is specified and a Ruby exception without a stack property is thrown', () => {
+  it('should show stack if --stacktrace option is specified and a Ruby exception with only a backtrace property is thrown', () => {
     playbookSpec.asciidoc = { attributes: { idseparator: 1 } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('--stacktrace generate the-site')
