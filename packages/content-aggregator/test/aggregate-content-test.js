@@ -1333,7 +1333,41 @@ describe('aggregateContent()', function () {
         expect(page.src.origin.worktree).to.equal(repoBuilder.url)
       })
 
-      it('should resolve branches pattern HEAD to worktree if repository is in detached HEAD state', async () => {
+      it('should resolve branches pattern HEAD to current branch in git index if worktrees is false', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const componentDesc = { name: 'the-component', version: '3.0' }
+        await initRepoWithFiles(repoBuilder, componentDesc, 'modules/ROOT/pages/page-one.adoc', () => {
+          return repoBuilder
+            .checkoutBranch('v3.0.x')
+            .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\ncontent\n'))
+        })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD', worktrees: false })
+        freeze(playbookSpec)
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const expectedPaths = ['modules/ROOT/pages/page-one.adoc']
+        expect(aggregate[0]).to.include(componentDesc)
+        expect(aggregate[0].files).to.have.lengthOf(expectedPaths.length)
+      })
+
+      it('should resolve branches pattern HEAD to current branch in git index if worktrees is *', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const componentDesc = { name: 'the-component', version: '3.0' }
+        await initRepoWithFiles(repoBuilder, componentDesc, 'modules/ROOT/pages/page-one.adoc', () => {
+          return repoBuilder
+            .checkoutBranch('v3.0.x')
+            .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\ncontent\n'))
+        })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD', worktrees: '*' })
+        freeze(playbookSpec)
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const expectedPaths = ['modules/ROOT/pages/page-one.adoc']
+        expect(aggregate[0]).to.include(componentDesc)
+        expect(aggregate[0].files).to.have.lengthOf(expectedPaths.length)
+      })
+
+      it('should use worktree if branches pattern is HEAD and HEAD is detached', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
@@ -1352,7 +1386,7 @@ describe('aggregateContent()', function () {
         expect(page.src.origin.worktree).to.equal(repoBuilder.url)
       })
 
-      it('should resolve HEAD entry in branches pattern to worktree if repository is in detached HEAD state', async () => {
+      it('should use worktree if branches pattern contains HEAD and HEAD is detached', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
@@ -1371,6 +1405,58 @@ describe('aggregateContent()', function () {
         const page = aggregate[2].files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
         expect(page.src.abspath).to.equal(ospath.join(repoBuilder.url, page.relative))
         expect(page.src.origin.worktree).to.equal(repoBuilder.url)
+      })
+
+      it('should bypass worktree if branches pattern is HEAD, HEAD is detached, and worktrees is false', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        await initRepoWithBranches(repoBuilder)
+          .then(() => repoBuilder.open())
+          .then(() => repoBuilder.checkoutBranch('v3.0'))
+          .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-one.adoc'))
+          .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\ncontent\n'))
+          .then(() => repoBuilder.detachHead())
+          .then(() => repoBuilder.close())
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD', worktrees: false })
+        freeze(playbookSpec)
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
+        const files = aggregate[0].files
+        const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
+        const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
+        expect(pageOne.src.abspath).to.be.undefined()
+        expect(pageOne.src.origin.worktree).to.be.undefined()
+        expect(pageTwo).to.be.undefined()
+      })
+
+      it('should bypass worktree if branches pattern contains HEAD, HEAD is detached, and worktrees is false', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        await initRepoWithBranches(repoBuilder)
+          .then(() => repoBuilder.open())
+          .then(() => repoBuilder.checkoutBranch('v3.0'))
+          .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-one.adoc'))
+          .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\ncontent\n'))
+          .then(() => repoBuilder.detachHead())
+          .then(() => repoBuilder.close())
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          branches: ['HEAD', 'v1.0', 'v2.0'],
+          worktrees: false,
+        })
+        freeze(playbookSpec)
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(3)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: 'v2.0' })
+        expect(aggregate[2]).to.include({ name: 'the-component', version: 'v3.0' })
+        const files = aggregate[2].files
+        const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
+        const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
+        expect(pageOne.src.abspath).to.be.undefined()
+        expect(pageOne.src.origin.worktree).to.be.undefined()
+        expect(pageTwo).to.be.undefined()
       })
 
       it('should only select branch once if both HEAD and current branch name are listed', async () => {
@@ -2606,29 +2692,35 @@ describe('aggregateContent()', function () {
         const linkedWorktreeDir = ospath.join(linkedWorktreeRepoBuilder.repoBase, linkedWorktreeRepoName)
         const linkedWorktreeDotgit = ospath.join(linkedWorktreeDir, '.git')
         const linkedWorktreeGitdir = ospath.join(dir, '.git/worktrees/v1.2.x')
+        const pageOnePath = 'modules/ROOT/pages/page-one.adoc'
+        const pageThreePath = 'modules/ROOT/pages/page-three.adoc'
         await initRepoWithFilesAndWorktree(repoBuilder, { version }, () =>
           repoBuilder
             .addToWorktree('.git/worktrees/v1.2.x/HEAD', 'ref: refs/heads/v1.2.x\n')
             .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/commondir', '../..\n'))
             .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
             .then(() => repoBuilder.checkoutBranch('v1.2.x'))
-            .then(() => repoBuilder.checkoutBranch('master'))
+            .then(() => repoBuilder.checkoutBranch('main'))
+            .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: '2.0' }))
+            .then(() => repoBuilder.commitSelect(['antora.yml'], 'add new version'))
+            .then(() => repoBuilder.addToWorktree(pageOnePath, '= Page One (Main Worktree)\n\ncontent\n'))
         )
         await initRepoWithFilesAndWorktree(
           linkedWorktreeRepoBuilder,
           { repoName: linkedWorktreeRepoName, version },
           () =>
             linkedWorktreeRepoBuilder
-              .addToWorktree('modules/ROOT/pages/page-three.adoc', '= Page Three\n\ncontent\n')
+              .addToWorktree(pageThreePath, '= Page Three\n\ncontent\n')
               .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
               .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
         )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD, v*', worktrees: '*' })
         const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        const componentVersion = aggregate[0]
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        let componentVersion = aggregate[0]
         expect(componentVersion).to.include({ name: 'the-component', version: '1.2' })
-        const expectedPaths = [
+        let expectedPaths = [
           'README.adoc',
           'modules/ROOT/_attributes.adoc',
           'modules/ROOT/pages/_attributes.adoc',
@@ -2636,11 +2728,25 @@ describe('aggregateContent()', function () {
           'modules/ROOT/pages/page-two.adoc',
           'modules/ROOT/pages/page-three.adoc',
         ]
-        const files = aggregate[0].files
+        let files = componentVersion.files
         expect(files).to.have.lengthOf(expectedPaths.length)
         expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
-        const pageThree = files.find((it) => it.relative === 'modules/ROOT/pages/page-three.adoc')
+        const pageThree = files.find((it) => it.relative === pageThreePath)
         expect(pageThree.src.abspath).to.equal(ospath.join(linkedWorktreeRepoBuilder.url, pageThree.relative))
+        componentVersion = aggregate[1]
+        expect(componentVersion).to.include({ name: 'the-component', version: '2.0' })
+        expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+        ]
+        files = componentVersion.files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageOne = files.find((it) => it.relative === pageOnePath)
+        expect(pageOne.contents.toString()).to.include('= Page One\n')
+        expect(pageOne.src.abspath).to.be.undefined()
       })
 
       it('in linked worktree in detached HEAD state', async () => {
@@ -2660,7 +2766,7 @@ describe('aggregateContent()', function () {
             .then((oid) => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/HEAD', oid + '\n'))
             .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/commondir', '../..\n'))
             .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
-            .then(() => repoBuilder.checkoutBranch('master'))
+            .then(() => repoBuilder.checkoutBranch('main'))
         )
         await initRepoWithFilesAndWorktree(
           linkedWorktreeRepoBuilder,
@@ -2671,7 +2777,7 @@ describe('aggregateContent()', function () {
               .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
               .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
         )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', worktrees: true })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
@@ -2713,6 +2819,51 @@ describe('aggregateContent()', function () {
         expect(pageTwo).to.be.undefined()
       })
 
+      it('in main and linked worktree', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const repoName = 'the-component'
+        const version = '1.2'
+        const dir = ospath.join(repoBuilder.repoBase, repoName)
+        const linkedWorktreeRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const linkedWorktreeRepoName = 'the-component-v1.2.x'
+        const linkedWorktreeDir = ospath.join(linkedWorktreeRepoBuilder.repoBase, linkedWorktreeRepoName)
+        const linkedWorktreeDotgit = ospath.join(linkedWorktreeDir, '.git')
+        const linkedWorktreeGitdir = ospath.join(dir, '.git/worktrees/v1.2.x')
+        const pageOnePath = 'modules/ROOT/pages/page-one.adoc'
+        await initRepoWithFilesAndWorktree(repoBuilder, { version }, () =>
+          repoBuilder
+            .addToWorktree('.git/worktrees/v1.2.x/HEAD', 'ref: refs/heads/v1.2.x\n')
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/commondir', '../..\n'))
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
+            .then(() => repoBuilder.checkoutBranch('v1.2.x'))
+            .then(() => repoBuilder.checkoutBranch('main'))
+            .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component', version: '2.0' }))
+            .then(() => repoBuilder.commitAll('add new version'))
+            .then(() => repoBuilder.addToWorktree(pageOnePath, '= Page One (Main Worktree)\n\ncontent\n'))
+        )
+        await initRepoWithFilesAndWorktree(
+          linkedWorktreeRepoBuilder,
+          { repoName: linkedWorktreeRepoName, version },
+          () =>
+            linkedWorktreeRepoBuilder
+              .addToWorktree(pageOnePath, '= Page One (Linked Worktree)\n\ncontent\n')
+              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD, v*', worktrees: '., v*' })
+        const aggregate = await aggregateContent(playbookSpec)
+        sortAggregate(aggregate)
+        expect(aggregate).to.have.lengthOf(2)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '1.2' })
+        const pageOne1 = aggregate[0].files.find((it) => it.relative === pageOnePath)
+        expect(pageOne1.contents.toString()).to.include('= Page One (Linked Worktree)\n')
+        expect(pageOne1.src.abspath).to.equal(ospath.join(linkedWorktreeRepoBuilder.url, pageOne1.relative))
+        expect(aggregate[1]).to.include({ name: 'the-component', version: '2.0' })
+        const pageOne2 = aggregate[1].files.find((it) => it.relative === pageOnePath)
+        expect(pageOne2.contents.toString()).to.include('= Page One (Main Worktree)\n')
+        expect(pageOne2.src.abspath).to.equal(ospath.join(repoBuilder.url, pageOne2.relative))
+      })
+
       it('should skip linked worktree if selected branch is not checked out', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         const repoName = 'the-component'
@@ -2741,7 +2892,55 @@ describe('aggregateContent()', function () {
               .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
               .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
         )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.*' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.*', worktrees: true })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const componentVersion = aggregate[0]
+        expect(componentVersion).to.include({ name: 'the-component', version: '1.2' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
+        expect(pageOne.contents.toString()).to.include('= Page One\n')
+        expect(pageOne.src.abspath).to.be.undefined()
+        const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
+        expect(pageTwo).to.be.undefined()
+      })
+
+      it('should skip linked worktree if worktree name not matched by worktrees pattern', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const repoName = 'the-component'
+        const version = '1.2'
+        const dir = ospath.join(repoBuilder.repoBase, repoName)
+        const linkedWorktreeRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const linkedWorktreeRepoName = 'the-component-v1.2.x'
+        const linkedWorktreeDir = ospath.join(linkedWorktreeRepoBuilder.repoBase, linkedWorktreeRepoName)
+        const linkedWorktreeDotgit = ospath.join(linkedWorktreeDir, '.git')
+        const linkedWorktreeGitdir = ospath.join(dir, '.git/worktrees/v1.2.x')
+        await initRepoWithFilesAndWorktree(repoBuilder, { version }, () =>
+          repoBuilder
+            .addToWorktree('.git/worktrees/v1.2.x/HEAD', 'ref: refs/heads/v1.2.x\n')
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/commondir', '../..\n'))
+            .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
+            .then(() => repoBuilder.checkoutBranch('v1.2.x'))
+            .then(() => repoBuilder.checkoutBranch('master'))
+        )
+        await initRepoWithFilesAndWorktree(
+          linkedWorktreeRepoBuilder,
+          { repoName: linkedWorktreeRepoName, version },
+          () =>
+            linkedWorktreeRepoBuilder
+              .addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One (Worktree)\n\ncontent\n')
+              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.*', worktrees: 'v2.*' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]

@@ -16,6 +16,7 @@ This project utilizes semantic versioning.
 === Added
 
 * *content-aggregator*: Automatically detect and use linked worktrees registered with local content source (i.e., local git clone) (#742)
+* *content-aggregator*: Allow worktrees to be filtered or disabled using the `worktrees` key on the content source (#742)
 
 === Changed
 
