@@ -8,7 +8,64 @@
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-git-antora}/merge_requests
 
+= Antora 3.0.0-alpha.4
+
+_**Release date:** 2021.05.01 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Deprecations and breaking changes notice
+
+The following deprecations and breaking changes will be final with the release of Antora 3.0.
+
+=== Default branches pattern
+
+If the branches key is absent on both the `content` key and the content source, Antora will use the default branches pattern.
+This pattern has been changed from `[master, v*]` to `[HEAD, v*]`.
+
+`HEAD` is a symbolic name that refers to the default branch for remote repositories (as set on the git host) and the current branch for local repositories.
+It's very unlikely this will cause a change when using remote repositories.
+For local repositories, it may result in the worktree being used in cases it wasn't previously.
+
+=== Using worktrees
+
+It's now possible to use https://git-scm.com/docs/git-worktree[linked worktrees^] with Antora.
+A linked worktree allows a user to keep multiple branches checked out at once. (In other words, have one worktree per branch).
+Linked worktrees can be very useful for editing content across branches.
+
+By default, Antora will only use the main worktree (i.e., `worktrees: .`), as it has always done.
+If you set the `worktrees` key on the content source to `true`, Antora will automatically discover and use linked worktrees as well.
+To give you even more control, you can filter which linked trees are discovered by specifying a pattern (e.g., `v2.*`).
+
+To disable use of the main worktree, either set the `worktrees` key to `false` or only specify a pattern (e.g., `*`).
+This is an alternative approach to pointing the content source directly at the [.path]_.git_ folder to disable the main worktree, as previously recommended.
+
+If you want to use the main worktree and filter the linked worktrees, add `.` as the first entry in the value (e.g., `+., v2.*+`).
+
+== Resolved issues
+
 IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+
+=== Added
+
+Issue {url-issues}/742[#742^]:: Automatically detect and use linked worktrees registered with a local content source (i.e., a local git clone).
+
+Issue {url-issues}/742[#743^]:: Allow worktrees to be filtered or disabled using the `worktrees` key on the content source.
+This is an alternative approach to pointing the content source directly at the [.path]_.git_ folder as previously recommended.
+
+=== Fixed
+
+Issue {url-issues}/745[#745^]:: Upgrade marky dependency to allow isomorphic-git to work on Node.js 16.
+Node.js 16 has also been added to the CI matrix so the test suite is run on Node.js 16 nightly.
+
+Issue {url-issues}/739[#739^]:: Provide fallback link text for an xref when the target matches relative src path of current page.
+Previously, the link text would end up being `[]` in this scenario.
+
+Issue {url-issues}/700[#700^] (revisited):: Fix error message from being printed twice in certain cases when `--stacktrace` option is passed to CLI.
+
+=== Changed
+
+Issue {url-issues}/522[#522^] (revisited):: Release lock on Asciidoctor.js patch version so newer patch releases of Asciidoctor.js 2.2 are installed automatically when Antora is installed.
+
+Issue {url-issues}/737[#737^]:: Update default branches pattern for content sources to `[HEAD, v*]`.
 
 = Antora 3.0.0-alpha.3
 
