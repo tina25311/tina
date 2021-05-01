@@ -531,7 +531,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.content.sources).to.have.lengthOf(1)
     expect(playbook.content.sources[0]).to.eql({
       url: 'https://gitlab.com/antora/demo/demo-component-a.git',
-      branches: ['master', 'v*'],
+      branches: ['main', 'v*'],
     })
     expect(playbook.ui.bundle.url).to.equal('./../ui/build/ui-bundles.zip')
     expect(playbook.ui.bundle.startPath).to.equal('dark-theme')

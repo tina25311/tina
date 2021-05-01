@@ -19,6 +19,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *playbook-builder*: Update default branches pattern for content sources to `[HEAD, v*]` (#737)
 * *infrastructure*: Run tests in CI on Node 16 (#745)
 
 == 3.0.0-alpha.3 (2021-04-16)
