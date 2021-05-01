@@ -2662,6 +2662,30 @@ describe('aggregateContent()', function () {
         expect(pageThree.src.abspath).to.equal(ospath.join(linkedWorktreeRepoBuilder.url, pageThree.relative))
       })
 
+      it('should skip main worktree if content source url points to .git folder', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const repoName = 'the-component'
+        const version = '1.2'
+        const dir = ospath.join(repoBuilder.repoBase, repoName)
+        await initRepoWithFilesAndWorktree(repoBuilder, { version }, () => repoBuilder.checkoutBranch('v1.2.x'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url + '/.git', branches: 'v1.2.x' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const componentVersion = aggregate[0]
+        expect(componentVersion).to.include({ name: 'the-component', version: '1.2' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
+        expect(pageTwo).to.be.undefined()
+      })
+
       it('should skip linked worktree if selected branch is not checked out', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         const repoName = 'the-component'
