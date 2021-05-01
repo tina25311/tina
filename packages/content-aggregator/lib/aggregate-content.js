@@ -233,7 +233,6 @@ async function selectReferences (source, repo, remote) {
   let { branches: branchPatterns, tags: tagPatterns, worktrees: worktreePatterns = '.' } = source
   const isBare = repo.noCheckout
   const refs = new Map()
-
   if (tagPatterns) {
     tagPatterns = Array.isArray(tagPatterns)
       ? tagPatterns.map((pattern) => String(pattern))
@@ -246,7 +245,6 @@ async function selectReferences (source, repo, remote) {
       }
     }
   }
-
   if (branchPatterns) {
     if (worktreePatterns) {
       if (worktreePatterns === '.') {
@@ -328,7 +326,6 @@ async function selectReferences (source, repo, remote) {
       }
     }
   }
-
   return [...refs.values()]
 }
 
