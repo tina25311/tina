@@ -302,12 +302,10 @@ async function selectReferences (source, repo, remote) {
     } else {
       return [...refs.values()]
     }
-    const remoteBranches = await git.listBranches(Object.assign({ remote }, repo))
+    // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
+    const remoteBranches = (await git.listBranches(Object.assign({ remote }, repo))).filter((it) => it !== 'HEAD')
     if (remoteBranches.length) {
-      // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
-      const headIdx = remoteBranches.indexOf('HEAD')
-      if (~headIdx) remoteBranches.splice(headIdx, 1)
-      for (const shortname of remoteBranches.length ? matcher(remoteBranches, branchPatterns) : remoteBranches) {
+      for (const shortname of matcher(remoteBranches, branchPatterns)) {
         refs.set(shortname, { shortname, fullname: path.join('remotes', remote, shortname), type: 'branch', remote })
       }
     }
