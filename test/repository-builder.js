@@ -2,13 +2,7 @@
 
 const fs = require('fs')
 const { promises: fsp } = fs
-const git = ((globalPerformance) => {
-  // hide global performance object from marky (see #745)
-  if (globalPerformance) delete global.performance
-  const result = require('isomorphic-git')
-  if (globalPerformance) global.performance = globalPerformance
-  return result
-})(global.performance)
+const git = require('isomorphic-git')
 const ospath = require('path')
 const vfs = require('vinyl-fs')
 const yaml = require('js-yaml')
