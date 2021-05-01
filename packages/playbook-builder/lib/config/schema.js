@@ -54,7 +54,7 @@ module.exports = {
     branches: {
       doc: 'The default branch pattern to use when no specific pattern is provided.',
       format: Array,
-      default: ['v*', 'master'],
+      default: ['HEAD', 'v*'],
     },
     edit_url: {
       doc: 'The default edit URL setting when no specific setting is provided.',
