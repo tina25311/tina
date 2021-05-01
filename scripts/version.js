@@ -44,20 +44,18 @@ function updateReadmes (now) {
 }
 
 function updateDocsConfig () {
-  const minorVersion = VERSION.split('.')
-    .slice(0, 2)
-    .join('.')
-  const prereleaseSuffix = VERSION.split('-')
-    .slice(1)
-    .join('-')
+  const hyphenIdx = VERSION.indexOf('-')
+  const base = ~hyphenIdx ? VERSION.substr(0, hyphenIdx) : VERSION
+  const [major, minor, patch] = base.split('.')
+  const prerelease = ~hyphenIdx ? VERSION.substr(hyphenIdx + 1) : undefined
   return fsp
     .readFile(COMPONENT_VERSION_DESC, 'utf8')
     .then((desc) =>
       fsp.writeFile(
         COMPONENT_VERSION_DESC,
         desc
-          .replace(/^version: \S+$/m, `version: ${q(minorVersion)}`)
-          .replace(/^prerelease: \S+$/m, `prerelease: ${prereleaseSuffix ? q('-' + prereleaseSuffix) : 'false'}`),
+          .replace(/^version: \S+$/m, `version: ${q(major + '.' + minor)}`)
+          .replace(/^prerelease: \S+$/m, `prerelease: ${prerelease ? q('.' + patch + '-' + prerelease) : 'false'}`),
         'utf8'
       )
     )
