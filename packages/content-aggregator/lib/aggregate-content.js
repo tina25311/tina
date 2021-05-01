@@ -285,7 +285,7 @@ async function selectReferences (source, repo, remote) {
         if (currentBranch) {
           // NOTE ignore if current branch is already in list
           if (~branchPatterns.indexOf(currentBranch)) {
-            branchPatterns = branchPatterns.filter((_, idx) => idx !== headBranchIdx)
+            branchPatterns.splice(headBranchIdx, 1)
           } else {
             branchPatterns[headBranchIdx] = currentBranch
           }
@@ -296,17 +296,17 @@ async function selectReferences (source, repo, remote) {
             if (worktreePatterns[0] === '.' && (worktreePatterns = worktreePatterns.slice(1))) ref.head = repo.dir
             refs.set('HEAD', ref)
           }
-          branchPatterns = branchPatterns.filter((_, idx) => idx !== headBranchIdx)
+          branchPatterns.splice(headBranchIdx, 1)
         }
       }
     } else {
       return [...refs.values()]
     }
-    let remoteBranches = await git.listBranches(Object.assign({ remote }, repo))
+    const remoteBranches = await git.listBranches(Object.assign({ remote }, repo))
     if (remoteBranches.length) {
       // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
       const headIdx = remoteBranches.indexOf('HEAD')
-      if (~headIdx) remoteBranches = remoteBranches.filter((_, idx) => idx !== headIdx)
+      if (~headIdx) remoteBranches.splice(headIdx, 1)
       for (const shortname of remoteBranches.length ? matcher(remoteBranches, branchPatterns) : remoteBranches) {
         refs.set(shortname, { shortname, fullname: path.join('remotes', remote, shortname), type: 'branch', remote })
       }
