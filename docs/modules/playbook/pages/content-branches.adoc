@@ -52,8 +52,9 @@ content:
 [#default]
 == Default branches filter
 
-When the `branches` key isn't set on the `content` key or a content source, Antora will use the [.term]*default branches filter*.
-By default, Antora will select all of the branches from the repository that begin with the letter `v` as well as the branch named `master`.
+When the `branches` key isn't set on the `content` key or a content source, Antora will inherit the [.term]*default branches filter*, `+[master, v*]+`.
+That means Antora will use files from the master branch (e.g., `main`) as well as any branch that begins with the letter `v` (e.g., `v2.0.x`).
+You can override this inherited value per content source by setting the `branches` key.
 
 .antora-playbook.yml
 [source,yaml]
