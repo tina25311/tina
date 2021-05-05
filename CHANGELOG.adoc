@@ -10,6 +10,8 @@ This project utilizes semantic versioning.
 === Added
 
 * *content-aggregator*: Add full support for resolving symlinks in the git tree (#188)
+* *content-aggregator*: Allow playbook or component descriptor to configure version for content source to be derived from refname (#296)
+* *content-aggregator*: Allow playbook to define version for content source (#296)
 
 === Fixed
 

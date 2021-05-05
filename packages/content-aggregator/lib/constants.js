@@ -8,6 +8,18 @@ module.exports = Object.freeze({
   GIT_CORE: 'antora',
   GIT_OPERATION_LABEL_LENGTH: 8,
   GIT_PROGRESS_PHASES: ['Counting objects', 'Compressing objects', 'Receiving objects', 'Resolving deltas'],
+  PICOMATCH_VERSION_OPTS: {
+    bash: true,
+    debug: false,
+    dot: true,
+    fastpaths: false,
+    lookbehinds: false,
+    noextglob: true,
+    noglobstar: true,
+    nonegate: true,
+    noquantifiers: true,
+    strictSlashes: true,
+  },
   SYMLINK_FILE_MODE: '120000',
   VALID_STATE_FILENAME: 'valid',
 })
