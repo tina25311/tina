@@ -479,9 +479,8 @@ function srcGitTree (repo, tree) {
 
 function walkGitTree (repo, root, filter) {
   const emitter = new EventEmitter()
-  let depth = 1
   function visit (tree, dirname = '') {
-    depth--
+    const reads = []
     for (const entry of tree) {
       if (filter(entry)) {
         const type = entry.type
@@ -494,17 +493,18 @@ function walkGitTree (repo, root, filter) {
             )
           }
         } else if (type === 'tree') {
-          depth++
-          git
-            .readTree(Object.assign({ oid: entry.oid }, repo))
-            .then(({ tree: subtree }) => visit(subtree, path.join(dirname, entry.path)))
-            .catch((err) => emitter.emit('error', err))
+          reads.push(
+            git
+              .readTree(Object.assign({ oid: entry.oid }, repo))
+              .then(({ tree: subtree }) => visit(subtree, path.join(dirname, entry.path)))
+              .catch((err) => emitter.emit('error', err))
+          )
         }
       }
     }
-    if (depth === 0) emitter.emit('end')
+    return Promise.all(reads)
   }
-  emitter.start = () => visit(root)
+  emitter.start = () => visit(root).then(() => emitter.emit('end'))
   return emitter
 }
 
