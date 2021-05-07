@@ -115,11 +115,19 @@ class RepositoryBuilder {
     return this.addComponentDescriptorToWorktree(data).then(() => this.commitAll('add component descriptor'))
   }
 
-  async addToWorktree (path_, contents = '') {
+  async addToWorktree (path_, contents = '', symlink = false) {
     const to = ospath.join(this.repoPath, path_)
     const toDir = ospath.dirname(to)
     if (toDir !== this.repoPath) await fsp.mkdir(toDir, { recursive: true })
-    await fsp.writeFile(to, contents)
+    if (symlink) {
+      await fsp.symlink(
+        ospath.relative(toDir, ospath.isAbsolute(contents) ? contents : ospath.join(this.repoPath, contents)),
+        to,
+        symlink
+      )
+    } else {
+      await fsp.writeFile(to, contents)
+    }
     return this
   }
 
