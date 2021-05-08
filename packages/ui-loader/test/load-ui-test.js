@@ -354,9 +354,9 @@ describe('loadUi()', () => {
       files.forEach((file) => {
         const path_ = file.path
         if (path_ in supplementalFileContents) {
-          if (expectedBase) expect(file.base).to.eql(expectedBase)
+          if (expectedBase) expect(file.base).to.equal(expectedBase)
           if (compareBuffers) {
-            expect(file.contents).to.eql(supplementalFileContents[path_])
+            expect(file.contents).to.deep.equal(supplementalFileContents[path_])
           } else {
             expect(file.contents.toString()).to.equal(supplementalFileContents[path_].toString())
           }
