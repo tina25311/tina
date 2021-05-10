@@ -119,6 +119,13 @@ If you want to help complete an issue by contributing code, documentation, or ot
 However, please wait until we have agreed on what change to make before submitting an MR.
 This avoids the discussion of the change getting lost and saves maintainers from having to address MRs that aren't relevant.
 
+When thinking about how to contribute, please know that while merge requests are welcome, they aren't the first thing that's needed.
+In fact, submitting a merge request (without prior discussion) can often slow down progress on an issue because it requires the maintainers to stop, review it, and reconcile it with the proposed design.
+What we need more than anything else is help with the requirements and design, which often means making decisions in response to open questions.
+Making those decisions is the exceptionally hard part.
+Once that's done, writing the code becomes straightforward.
+It's either something the maintainers can do or it can serve as an opportunity for someone in the community to contribute code (without the aforementioned disruption).
+
 ////
 A merge request (MR) must close an issue!
 Please study the {url-issue-labels}[issue labels] to understand what they mean and how to apply them.
