@@ -1854,264 +1854,371 @@ describe('aggregateContent()', function () {
     })
 
     describe('resolve symlinks', () => {
-      describe('should ignore symlinks read from git repository', () => {
+      describe('should resolve file symlink to sibling file', () => {
         testAll(async (repoBuilder) => {
           const targetPath = 'modules/ROOT/pages/page-one.adoc'
           const symlinkPath = 'modules/ROOT/pages/page-one-link.adoc'
           const fixturePaths = [targetPath]
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
-            repoBuilder
-              .addToWorktree(symlinkPath, targetPath, true)
-              .then(() => repoBuilder.commitAll('add symlink'))
-              .then(() => repoBuilder.checkoutBranch('other'))
+            repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const expectedMode = repoBuilder.remote || repoBuilder.bare
+            ? 0o100666 & ~process.umask()
+            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
           expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
           const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
-          expect(symlinkPage).to.not.exist()
+          expect(symlinkPage).to.exist()
+          expect(symlinkPage.symlink).to.not.exist()
+          expect(symlinkPage.stat.mode).to.equal(expectedMode)
+          expect(symlinkPage.contents).to.deep.equal(expectedContents)
+          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
         })
       })
 
-      it('should resolve symlink to sibling file in worktree', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const targetPath = 'modules/ROOT/pages/page-one.adoc'
-        const symlinkPath = 'modules/ROOT/pages/page-one-link.adoc'
-        const fixturePaths = [targetPath]
-        await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
-          repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-        const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
-        expect(symlinkPage).to.exist()
-        expect(symlinkPage.symlink).to.not.exist()
-        expect(symlinkPage.stat.mode).to.equal(expectedMode)
+      describe('should resolve file symlink to file in parent directory', () => {
+        testAll(async (repoBuilder) => {
+          const targetPath = 'modules/ROOT/pages/page-one.adoc'
+          const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
+          const fixturePaths = [targetPath]
+          await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+            repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const expectedMode = repoBuilder.remote || repoBuilder.bare
+            ? 0o100666 & ~process.umask()
+            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+          const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
+          expect(symlinkPage).to.exist()
+          expect(symlinkPage.symlink).to.not.exist()
+          expect(symlinkPage.stat.mode).to.equal(expectedMode)
+          expect(symlinkPage.contents).to.deep.equal(expectedContents)
+          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+        })
       })
 
-      it('should resolve symlink to non-sibling file in worktree', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const targetPath = 'modules/ROOT/pages/page-one.adoc'
-        const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
-        const fixturePaths = [targetPath]
-        await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
-          repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-        const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
-        expect(symlinkPage).to.exist()
-        expect(symlinkPage.symlink).to.not.exist()
-        expect(symlinkPage.stat.mode).to.equal(expectedMode)
+      describe('should resolve file symlink to file in child directory', () => {
+        testAll(async (repoBuilder) => {
+          const targetPath = 'modules/ROOT/pages/topic-c/page-one.adoc'
+          const symlinkPath = 'modules/ROOT/pages/page-one-link.adoc'
+          const fixturePaths = [targetPath]
+          await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+            repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const expectedMode = repoBuilder.remote || repoBuilder.bare
+            ? 0o100666 & ~process.umask()
+            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+          const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
+          expect(symlinkPage).to.exist()
+          expect(symlinkPage.symlink).to.not.exist()
+          expect(symlinkPage.stat.mode).to.equal(expectedMode)
+          expect(symlinkPage.contents).to.deep.equal(expectedContents)
+          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+        })
       })
 
-      it('should resolve symlink to symlink in worktree', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const targetPath = 'modules/ROOT/pages/page-one.adoc'
-        const symlink1Path = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
-        const symlink2Path = 'modules/ROOT/pages/page-one-link.adoc'
-        const fixturePaths = [targetPath]
-        await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+      describe('should resolve symlink when content source defines a start path', () => {
+        testAll(async (repoBuilder) => {
+          const startPath = 'docs'
+          const componentDesc = { name: 'the-component', version: '1.0', startPath }
+          const targetPath = 'modules/ROOT/pages/page-one.adoc'
+          const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
+          const fixturePaths = [targetPath]
+          await initRepoWithFiles(repoBuilder, componentDesc, fixturePaths, () =>
+            repoBuilder
+              .addToWorktree(startPath + '/' + symlinkPath, startPath + '/' + targetPath, 'file')
+              .then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
+          const expectedMode = repoBuilder.remote || repoBuilder.bare
+            ? 0o100666 & ~process.umask()
+            : (await fsp.stat(ospath.join(repoBuilder.repoPath, startPath, targetPath))).mode
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, startPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: '1.0' })
+          const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
+          expect(symlinkPage).to.exist()
+          expect(symlinkPage.symlink).to.not.exist()
+          expect(symlinkPage.stat.mode).to.equal(expectedMode)
+          expect(symlinkPage.contents).to.deep.equal(expectedContents)
+          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+        })
+      })
+
+      describe('should resolve symlink to symlink', () => {
+        testAll(async (repoBuilder) => {
+          const targetPath = 'modules/ROOT/pages/page-one.adoc'
+          const symlink1Path = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
+          const symlink2Path = 'modules/ROOT/pages/page-one-link.adoc'
+          const fixturePaths = [targetPath]
+          await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+            repoBuilder
+              .addToWorktree(symlink1Path, targetPath, 'file')
+              .then(() => repoBuilder.addToWorktree(symlink2Path, symlink1Path, 'file'))
+              .then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const expectedMode = repoBuilder.remote || repoBuilder.bare
+            ? 0o100666 & ~process.umask()
+            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+          const page = aggregate[0].files.find((file) => file.path === symlink2Path)
+          expect(page).to.exist()
+          expect(page.symlink).to.not.exist()
+          expect(page.stat.mode).to.equal(expectedMode)
+          expect(page.contents).to.deep.equal(expectedContents)
+          if (repoBuilder.bare || repoBuilder.remote) expect(page.src.origin.worktree).to.be.undefined()
+        })
+      })
+
+      describe('should resolve files inside directory symlink', () => {
+        testAll(async (repoBuilder) => {
+          const targetDir = 'modules/ROOT/pages/topic-a'
+          const targetPath = 'modules/ROOT/pages/topic-a/page-three.adoc'
+          const symlinkDir = 'modules/ROOT/pages/topic-c'
+          const pageInsideSymlinkDir = 'modules/ROOT/pages/topic-c/page-three.adoc'
+          const fixturePaths = [targetPath]
+          await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+            repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir').then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const expectedMode = repoBuilder.remote || repoBuilder.bare
+            ? 0o100666 & ~process.umask()
+            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+          const page = aggregate[0].files.find((file) => file.path === pageInsideSymlinkDir)
+          expect(page).to.exist()
+          expect(page.symlink).to.not.exist()
+          expect(page.stat.mode).to.equal(expectedMode)
+          expect(page.contents).to.deep.equal(expectedContents)
+          if (repoBuilder.bare || repoBuilder.remote) expect(page.src.origin.worktree).to.be.undefined()
+        })
+      })
+
+      describe('should resolve files inside directory inside directory symlink', () => {
+        testAll(async (repoBuilder) => {
+          const targetDir = 'modules/ROOT/pages/topic-b'
+          const targetPath = 'modules/ROOT/pages/topic-b/subtopic/page-five.adoc'
+          const symlinkDir = 'modules/ROOT/pages/topic-c'
+          const pageInsideSymlinkDir = 'modules/ROOT/pages/topic-c/subtopic/page-five.adoc'
+          const fixturePaths = [targetPath]
+          await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+            repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir').then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const expectedMode = repoBuilder.remote || repoBuilder.bare
+            ? 0o100666 & ~process.umask()
+            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+          const page = aggregate[0].files.find((file) => file.path === pageInsideSymlinkDir)
+          expect(page).to.exist()
+          expect(page.symlink).to.not.exist()
+          expect(page.stat.mode).to.equal(expectedMode)
+          expect(page.contents).to.deep.equal(expectedContents)
+          if (repoBuilder.bare || repoBuilder.remote) expect(page.src.origin.worktree).to.be.undefined()
+        })
+      })
+
+      describe('should throw if symlink is broken', () => {
+        testAll(async (repoBuilder) => {
+          const targetPath = 'modules/ROOT/pages/page-one.adoc'
+          const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
+          await initRepoWithFiles(repoBuilder, {}, [], () =>
+            repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const expectedPath =
+            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
+          const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
+          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+          expect(aggregateContentDeferred).to.throw(expectedMessage)
+        })
+      })
+
+      describe('should throw if symlink resolved from symlink is broken', () => {
+        testAll(async (repoBuilder) => {
+          const targetPath = 'modules/ROOT/pages/page-one.adoc'
+          const symlink1Path = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
+          const symlink2Path = 'modules/ROOT/pages/page-one-link.adoc'
+          await initRepoWithFiles(repoBuilder, {}, [], () =>
+            repoBuilder
+              .addToWorktree(symlink1Path, symlink2Path, 'file')
+              .then(() => repoBuilder.addToWorktree(symlink2Path, targetPath, 'file'))
+              .then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const expectedPath =
+            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink2Path) : symlink2Path
+          const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
+          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+          expect(aggregateContentDeferred).to.throw(expectedMessage)
+        })
+      })
+
+      describe('should throw if symlink is broken and content source defines start path', () => {
+        testAll(async (repoBuilder) => {
+          const startPath = 'docs'
+          const componentDesc = { name: 'the-component', version: '1.0', startPath }
+          const targetPath = 'modules/ROOT/pages/page-one.adoc'
+          const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
+          await initRepoWithFiles(repoBuilder, componentDesc, [], () =>
+            repoBuilder
+              .addToWorktree(startPath + '/' + symlinkPath, startPath + '/' + targetPath, 'file')
+              .then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
+          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const expectedPath =
+            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
+          const expectedMessage =
+            `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} ` +
+            `(ref: ${ref} | path: ${startPath})`
+          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+          expect(aggregateContentDeferred).to.throw(expectedMessage)
+        })
+      })
+
+      describe('should throw if symlink outside start path is broken and content source defines start path', () => {
+        testAll(async (repoBuilder) => {
+          const startPath = 'docs'
+          const componentDesc = { name: 'the-component', version: '1.0', startPath }
+          const symlinkPath = 'modules/ROOT/pages/project/link-to-process.adoc'
+          await initRepoWithFiles(repoBuilder, componentDesc, [], () =>
+            repoBuilder
+              .addToWorktree(startPath + '/modules/ROOT/pages/project', 'project', 'dir')
+              .then(() => repoBuilder.addToWorktree('project/link-to-process.adoc', 'project/process.adoc', 'file'))
+              .then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
+          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const expectedPath =
+            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
+          const expectedMessage =
+            `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} ` +
+            `(ref: ${ref} | path: ${startPath})`
+          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+          expect(aggregateContentDeferred).to.throw(expectedMessage)
+        })
+      })
+
+      describe('should throw if self-referencing file symlink cycle is detected', () => {
+        testAll(async (repoBuilder) => {
+          const symlink1Path = 'modules/ROOT/pages/page-one-link.adoc'
+          const symlink2Path = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
+          const fixturePaths = ['modules/ROOT/pages/page-one.adoc']
+          await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+            repoBuilder
+              .addToWorktree(symlink1Path, symlink2Path, 'file')
+              .then(() => repoBuilder.addToWorktree(symlink2Path, symlink1Path, 'file'))
+              .then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const expectedPath =
+            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink1Path) : symlink1Path
+          const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
+          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+          expect(aggregateContentDeferred).to.throw(expectedMessage)
+        })
+      })
+
+      // NOTE vinyl-fs doesn't throw an exception in this case; rather, it just ignores the directory
+      it('should throw if self-referencing directory symlink cycle is detected', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
+        const symlink1Path = 'modules/ROOT/pages/foo'
+        const symlink2Path = 'modules/ROOT/pages/bar'
+        await initRepoWithFiles(repoBuilder, {}, [], () =>
           repoBuilder
-            .addToWorktree(symlink1Path, targetPath, 'file')
+            .addToWorktree(symlink1Path, symlink2Path, 'file')
             .then(() => repoBuilder.addToWorktree(symlink2Path, symlink1Path, 'file'))
             .then(() => repoBuilder.commitAll('add symlink'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-        const page = aggregate[0].files.find((file) => file.path === symlink2Path)
-        expect(page).to.exist()
-        expect(page.symlink).to.not.exist()
-        expect(page.stat.mode).to.equal(expectedMode)
-      })
-
-      it('should throw if symlink in worktree is broken', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const targetPath = 'modules/ROOT/pages/page-one.adoc'
-        const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
-        const fixturePaths = []
-        await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
-          repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
+        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+        const expectedMessage = new RegExp(
+          `^Symbolic link cycle detected at (${symlink1Path}|${symlink2Path}) in ` +
+            `${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)$`
         )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const ref = 'master <worktree>'
-        const expectedMessage =
-          `Broken symbolic link detected at ${unposixify ? unposixify(symlinkPath) : symlinkPath} in ${repoBuilder.url} ` +
-          `(ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
 
-      it('should throw if symlink resolved from symlink in worktree is broken', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const targetPath = 'modules/ROOT/pages/page-one.adoc'
-        const symlink1Path = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
-        const symlink2Path = 'modules/ROOT/pages/page-one-link.adoc'
-        const fixturePaths = []
-        await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+      // NOTE vinyl-fs doesn't throw an exception in this case; rather, it just stops traversing at a certain depth
+      it('should throw if reentrant directory symlink cycle is detected', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
+        await initRepoWithFiles(repoBuilder, {}, [], () =>
           repoBuilder
-            .addToWorktree(symlink1Path, symlink2Path, 'file')
-            .then(() => repoBuilder.addToWorktree(symlink2Path, targetPath, 'file'))
-            .then(() => repoBuilder.commitAll('add symlink'))
+            .addToWorktree('a', 'b', 'dir')
+            .then(() => repoBuilder.addToWorktree('b/c.adoc', 'c'))
+            .then(() => repoBuilder.addToWorktree('b/d.adoc', 'd'))
+            .then(() => repoBuilder.addToWorktree('b/e', 'a', 'dir'))
+            .then(() => repoBuilder.commitSelect(['a', 'b', 'b/c.adoc', 'b/d.adoc', 'b/e'], 'add symlink'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const ref = 'master <worktree>'
-        const expectedMessage =
-          `Broken symbolic link detected at ${unposixify ? unposixify(symlink2Path) : symlink2Path} in ${repoBuilder.url} ` +
-          `(ref: ${ref})`
+        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+        // NOTE could instead be reported as b/e, but I can't work out how to track the original symlink path
+        const expectedPath = 'a/e'
+        const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedMessage)
       })
 
-      it('should throw if symlink under start path in worktree is broken and content source has start path', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const startPath = 'docs'
-        const componentDesc = { name: 'the-component', version: '1.0', startPath }
-        const targetPath = 'modules/ROOT/pages/page-one.adoc'
-        const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
-        const fixturePaths = []
-        await initRepoWithFiles(repoBuilder, componentDesc, fixturePaths, () =>
-          repoBuilder
-            .addToWorktree(startPath + '/' + symlinkPath, startPath + '/' + targetPath, 'file')
-            .then(() => repoBuilder.commitAll('add symlink'))
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-        const ref = 'master <worktree>'
-        const expectedMessage =
-          `Broken symbolic link detected at ${unposixify ? unposixify(symlinkPath) : symlinkPath} in ${repoBuilder.url} ` +
-          `(ref: ${ref} | path: ${startPath})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+      describe('should resolve symlink that points outside of start path', () => {
+        testAll(async (repoBuilder) => {
+          const startPath = 'path/to/docs'
+          const componentDesc = { name: 'the-component', version: '1.0', startPath }
+          const targetPath = 'modules/ROOT/pages/page-one.adoc'
+          const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
+          await initRepoWithFiles(repoBuilder, componentDesc, [], () =>
+            repoBuilder
+              .addFilesFromFixture([targetPath], '', false)
+              .then(() => repoBuilder.addToWorktree(ospath.join(startPath, symlinkPath), targetPath, 'file'))
+              .then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
+          const expectedMode = repoBuilder.remote || repoBuilder.bare
+            ? 0o100666 & ~process.umask()
+            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: '1.0' })
+          const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
+          expect(symlinkPage).to.exist()
+          expect(symlinkPage.symlink).to.not.exist()
+          expect(symlinkPage.stat.mode).to.equal(expectedMode)
+          expect(symlinkPage.contents).to.deep.equal(expectedContents)
+          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+        })
       })
 
-      it('should throw if symlink outside start path in worktree is broken and content source has start path', async () => {
+      it('should resolve file symlink in worktree that points outside worktree', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const startPath = 'docs'
-        const componentDesc = { name: 'the-component', version: '1.0', startPath }
-        const symlinkPath = 'modules/ROOT/pages/project/link-to-process.adoc'
-        await initRepoWithFiles(repoBuilder, componentDesc, [], () =>
-          repoBuilder
-            .addToWorktree(startPath + '/modules/ROOT/pages/project', 'project', 'dir')
-            .then(() => repoBuilder.addToWorktree('project/link-to-process.adoc', 'project/process.adoc', 'file'))
-            .then(() => repoBuilder.commitAll('add symlink'))
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-        const ref = 'master <worktree>'
-        const expectedMessage =
-          `Broken symbolic link detected at ${unposixify ? unposixify(symlinkPath) : symlinkPath} in ${repoBuilder.url} ` +
-          `(ref: ${ref} | path: ${startPath})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
-      })
-
-      it('should throw if symlink cycle is detected in worktree', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const symlink1Path = 'modules/ROOT/pages/page-one-link.adoc'
-        const symlink2Path = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
-        const fixturePaths = ['modules/ROOT/pages/page-one.adoc']
-        await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
-          repoBuilder
-            .addToWorktree(symlink1Path, symlink2Path, 'file')
-            .then(() => repoBuilder.addToWorktree(symlink2Path, symlink1Path, 'file'))
-            .then(() => repoBuilder.commitAll('add symlink'))
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const ref = 'master <worktree>'
-        const expectedMessage =
-          `Symbolic link cycle detected at ${unposixify ? unposixify(symlink1Path) : symlink1Path} in ${repoBuilder.url} ` +
-          `(ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
-      })
-
-      it('should resolve file symlinks in worktree that points outside start path', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const startPath = 'path/to/docs'
-        const componentDesc = {
-          name: 'the-component',
-          version: '1.0',
-          startPath,
-        }
-        const targetPath = 'modules/ROOT/pages/page-one.adoc'
-        const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
-        await initRepoWithFiles(repoBuilder, componentDesc, [], () =>
-          repoBuilder
-            .addFilesFromFixture([targetPath], '', false)
-            .then(() =>
-              repoBuilder
-                .addToWorktree(ospath.join(startPath, symlinkPath), targetPath, 'file')
-                .then(() => repoBuilder.commitAll('add symlink'))
-            )
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-        const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(aggregate[0]).to.include({ name: 'the-component', version: '1.0' })
-        const symlinkPage = aggregate[0].files.find((file) => file.path === symlinkPath)
-        expect(symlinkPage).to.exist()
-        expect(symlinkPage.symlink).to.not.exist()
-        expect(symlinkPage.stat.mode).to.equal(expectedMode)
-      })
-
-      it('should resolve files inside directory symlinks in worktree', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const targetDir = 'modules/ROOT/pages/topic-a'
-        const targetPath = 'modules/ROOT/pages/topic-a/page-three.adoc'
-        const symlinkDir = 'modules/ROOT/pages/topic-c'
-        const pageInsideSymlinkDir = 'modules/ROOT/pages/topic-c/page-three.adoc'
-        const fixturePaths = [targetPath]
-        await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
-          repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir').then(() => repoBuilder.commitAll('add symlink'))
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-        const page = aggregate[0].files.find((file) => file.path === pageInsideSymlinkDir)
-        expect(page).to.exist()
-        expect(page.symlink).to.not.exist()
-        expect(page.stat.mode).to.equal(expectedMode)
-      })
-
-      it('should resolve files inside directories inside directory symlinks in worktree', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const targetDir = 'modules/ROOT/pages/topic-b'
-        const targetPath = 'modules/ROOT/pages/topic-b/subtopic/page-five.adoc'
-        const symlinkDir = 'modules/ROOT/pages/topic-c'
-        const pageInsideSymlinkDir = 'modules/ROOT/pages/topic-c/subtopic/page-five.adoc'
-        const fixturePaths = [targetPath]
-        await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
-          repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir').then(() => repoBuilder.commitAll('add symlink'))
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-        const page = aggregate[0].files.find((file) => file.path === pageInsideSymlinkDir)
-        expect(page).to.exist()
-        expect(page.symlink).to.not.exist()
-        expect(page.stat.mode).to.equal(expectedMode)
-      })
-
-      it('should resolve file symlinks in worktree that point outside worktree', async () => {
-        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const componentDesc = {
-          name: 'the-component',
-          version: '1.0',
-        }
+        const componentDesc = { name: 'the-component', version: '1.0' }
         const targetPath = ospath.join(FIXTURES_DIR, 'modules/ROOT/pages/page-one.adoc')
         const symlinkPath = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
         await initRepoWithFiles(repoBuilder, componentDesc, [], () =>
