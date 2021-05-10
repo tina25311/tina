@@ -720,7 +720,7 @@ function generateCloneFolderName (url) {
  * @param {String} remoteName - The name of the remote to resolve.
  * @returns {String} The URL of the specified remote, if present.
  */
-async function resolveRemoteUrl (repo, remoteName) {
+function resolveRemoteUrl (repo, remoteName) {
   return git.config(Object.assign({ path: 'remote.' + remoteName + '.url' }, repo)).then((url) => {
     if (!url) return
     if (url.startsWith('https://') || url.startsWith('http://')) {
