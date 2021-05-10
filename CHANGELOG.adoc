@@ -5,6 +5,13 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *content-aggregator*: Add full support for resolving symlinks that originate from the worktree; enable symlink tests on Windows (#747)
+* *content-aggregator*: Provide clearer error message when broken symlink or symlink cycle is detected in worktree (#747)
+
 == 3.0.0-alpha.4 (2021-05-01)
 
 === Fixed

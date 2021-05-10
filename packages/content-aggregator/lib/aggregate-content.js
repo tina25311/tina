@@ -406,8 +406,12 @@ function readFilesFromWorktree (worktreePath, startPath) {
       if (!stat.isDirectory()) throw new Error(`the start path '${startPath}' is not a directory`)
       return new Promise((resolve, reject) =>
         vfs
-          .src(CONTENT_GLOB, { cwd, removeBOM: false })
-          .on('error', reject)
+          .src(CONTENT_GLOB, { cwd, follow: true, removeBOM: false })
+          .on('error', (e) => {
+            if (e.code === 'ENOENT') e.message = `Broken symbolic link detected at ${ospath.relative(cwd, e.path)}`
+            else if (e.code === 'ELOOP') e.message = `Symbolic link cycle detected at ${ospath.relative(cwd, e.path)}`
+            reject(e)
+          })
           .pipe(relativizeFiles())
           .pipe(collectFiles(resolve))
       )
