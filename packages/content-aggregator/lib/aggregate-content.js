@@ -396,7 +396,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
 }
 
 function readFilesFromWorktree (worktreePath, startPath) {
-  const cwd = path.join(worktreePath, startPath)
+  const cwd = ospath.join(worktreePath, startPath)
   return fsp
     .stat(cwd)
     .catch(() => {
