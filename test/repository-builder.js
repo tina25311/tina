@@ -156,9 +156,9 @@ class RepositoryBuilder {
     })
   }
 
-  async addFilesFromFixture (paths, fixtureName = '', toStartPath = true) {
+  async addFilesFromFixture (paths, fixtureName = '', toStartPath = this.startPath) {
     if (!Array.isArray(paths)) paths = [paths]
-    if (toStartPath && this.startPath) paths = paths.map((path_) => ospath.join(this.startPath, path_))
+    if (toStartPath) paths = paths.map((path_) => ospath.join(toStartPath, path_))
     await this.copyToWorktree(paths, ospath.join(this.fixtureBase, fixtureName))
     return this.commitAll('add fixtures')
   }
