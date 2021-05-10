@@ -156,7 +156,7 @@ async function loadRepository (url, opts) {
           })
           .catch((fetchErr) => {
             fetchOpts.emitter && fetchOpts.emitter.emit('error', fetchErr)
-            if (fetchErr.name === git.E.HTTPError && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
+            if (fetchErr.code === git.E.HTTPError && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
             throw fetchErr
           })
           .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
