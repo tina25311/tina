@@ -481,69 +481,72 @@ function getGitTreeAtStartPath (repo, oid, startPath) {
     .then((result) => Object.assign(result, { dirname: startPath }))
 }
 
-// Q: should we rename root and start to rootTree and startTree, respectively?
 function srcGitTree (repo, root, start) {
   return new Promise((resolve, reject) => {
     const files = []
-    walkGitTree(repo, root, start, filterGitEntry)
+    createGitTreeWalker(repo, root, filterGitEntry)
       .on('entry', (entry) => files.push(entryToFile(entry)))
       .on('error', reject)
       .on('end', () => resolve(Promise.all(files)))
-      .start()
+      .walk(start)
   })
 }
 
-function walkGitTree (repo, root, start, filter) {
-  const emitter = new EventEmitter()
-  function visit (parent, dirname = '', following = new Set()) {
-    const reads = []
-    for (const entry of parent.tree) {
-      const filterVerdict = filter(entry)
-      if (filterVerdict) {
-        const vfilePath = dirname ? path.join(dirname, entry.path) : entry.path
-        if (entry.type === 'tree') {
+function createGitTreeWalker (repo, root, filter) {
+  return Object.assign(new EventEmitter(), {
+    walk (start) {
+      return (
+        visitGitTree(this, repo, root, filter, start)
+          .then(() => this.emit('end'))
+          // NOTE if error is thrown, promises already being resolved won't halt
+          .catch((err) => this.emit('error', err))
+      )
+    },
+  })
+}
+
+function visitGitTree (emitter, repo, root, filter, parent, dirname = '', following = new Set()) {
+  const reads = []
+  for (const entry of parent.tree) {
+    const filterVerdict = filter(entry)
+    if (filterVerdict) {
+      const vfilePath = dirname ? path.join(dirname, entry.path) : entry.path
+      if (entry.type === 'tree') {
+        reads.push(
+          git.readTree(Object.assign({ oid: entry.oid }, repo)).then((subtree) => {
+            Object.assign(subtree, { dirname: path.join(parent.dirname, entry.path) })
+            return visitGitTree(emitter, repo, root, filter, subtree, vfilePath, following)
+          })
+        )
+      } else if (entry.type === 'blob') {
+        let mode
+        if (entry.mode === SYMLINK_FILE_MODE) {
           reads.push(
-            git
-              .readTree(Object.assign({ oid: entry.oid }, repo))
-              .then((subtree) =>
-                visit(Object.assign(subtree, { dirname: path.join(parent.dirname, entry.path) }), vfilePath, following)
-              )
+            readGitSymlink(repo, root, parent, entry, following)
+              .catch((err) => {
+                // NOTE this error could be caught after promie chain has already been rejected
+                if (err.code === git.E.TreeOrBlobNotFoundError) {
+                  err.message = `Broken symbolic link detected at ${vfilePath}`
+                } else if (err.code === 'SymbolicLinkCycleError') {
+                  err.message = `Symbolic link cycle detected at ${vfilePath}`
+                }
+                throw err
+              })
+              .then((target) => {
+                if (target.type === 'tree') {
+                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, new Set(following).add(entry.oid))
+                } else if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
+                  emitter.emit('entry', Object.assign({ mode, oid: target.oid, path: vfilePath }, repo))
+                }
+              })
           )
-        } else if (entry.type === 'blob') {
-          let mode
-          if (entry.mode === SYMLINK_FILE_MODE) {
-            reads.push(
-              readGitSymlink(repo, root, parent, entry, following)
-                .catch((err) => {
-                  // NOTE this error could be caught after promie chain has already been rejected
-                  if (err.code === git.E.TreeOrBlobNotFoundError) {
-                    err.message = `Broken symbolic link detected at ${vfilePath}`
-                  } else if (err.code === 'SymbolicLinkCycleError') {
-                    err.message = `Symbolic link cycle detected at ${vfilePath}`
-                  }
-                  throw err
-                })
-                .then((target) => {
-                  if (target.type === 'tree') return visit(target, vfilePath, new Set(following).add(entry.oid))
-                  if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
-                    emitter.emit('entry', Object.assign({ mode, oid: target.oid, path: vfilePath }, repo))
-                  }
-                })
-            )
-          } else if ((mode = FILE_MODES[entry.mode])) {
-            emitter.emit('entry', Object.assign({ mode, oid: entry.oid, path: vfilePath }, repo))
-          }
+        } else if ((mode = FILE_MODES[entry.mode])) {
+          emitter.emit('entry', Object.assign({ mode, oid: entry.oid, path: vfilePath }, repo))
         }
       }
     }
-    return Promise.all(reads)
   }
-  // NOTE if error is thrown, promises already being resolved won't halt
-  emitter.start = () =>
-    visit(start)
-      .then(() => emitter.emit('end'))
-      .catch((err) => emitter.emit('error', err))
-  return emitter
+  return Promise.all(reads)
 }
 
 function readGitSymlink (repo, root, parent, { oid }, following) {
