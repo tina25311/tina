@@ -460,7 +460,6 @@ function collectFiles (done) {
 }
 
 function readFilesFromGitTree (repo, oid, startPath) {
-  // QUESTION: should we read root tree lazily / on demand?
   return git
     .readTree(Object.assign({ oid }, repo))
     .then((root) =>
@@ -720,7 +719,6 @@ function getFetchOptions (repo, progress, url, credentials, fetchTags, operation
 
 function createProgress (urls, term) {
   if (term.isTTY && term.columns > 59) {
-    //term.write('Aggregating content...\n')
     let maxUrlLength = 0
     for (const url of urls) {
       if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
@@ -975,7 +973,6 @@ function findWorktrees (repo, patterns) {
           ? Promise.all(
             worktreeNames.map((worktreeName) => {
               const gitdir = ospath.resolve(worktreesDir, worktreeName)
-              // REVIEW if HEAD is detached, use worktree name as branch name
               return git
                 .currentBranch(Object.assign({}, repo, { gitdir }))
                 .then((branch = worktreeName) =>
