@@ -1863,9 +1863,10 @@ describe('aggregateContent()', function () {
             repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const expectedMode = repoBuilder.remote || repoBuilder.bare
-            ? 0o100666 & ~process.umask()
-            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedMode =
+            repoBuilder.remote || repoBuilder.bare
+              ? 0o100666 & ~process.umask()
+              : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -1888,9 +1889,10 @@ describe('aggregateContent()', function () {
             repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const expectedMode = repoBuilder.remote || repoBuilder.bare
-            ? 0o100666 & ~process.umask()
-            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedMode =
+            repoBuilder.remote || repoBuilder.bare
+              ? 0o100666 & ~process.umask()
+              : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -1913,9 +1915,10 @@ describe('aggregateContent()', function () {
             repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const expectedMode = repoBuilder.remote || repoBuilder.bare
-            ? 0o100666 & ~process.umask()
-            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedMode =
+            repoBuilder.remote || repoBuilder.bare
+              ? 0o100666 & ~process.umask()
+              : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -1942,9 +1945,10 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-          const expectedMode = repoBuilder.remote || repoBuilder.bare
-            ? 0o100666 & ~process.umask()
-            : (await fsp.stat(ospath.join(repoBuilder.repoPath, startPath, targetPath))).mode
+          const expectedMode =
+            repoBuilder.remote || repoBuilder.bare
+              ? 0o100666 & ~process.umask()
+              : (await fsp.stat(ospath.join(repoBuilder.repoPath, startPath, targetPath))).mode
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, startPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -1971,9 +1975,10 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const expectedMode = repoBuilder.remote || repoBuilder.bare
-            ? 0o100666 & ~process.umask()
-            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedMode =
+            repoBuilder.remote || repoBuilder.bare
+              ? 0o100666 & ~process.umask()
+              : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -1998,9 +2003,10 @@ describe('aggregateContent()', function () {
             repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir').then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const expectedMode = repoBuilder.remote || repoBuilder.bare
-            ? 0o100666 & ~process.umask()
-            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedMode =
+            repoBuilder.remote || repoBuilder.bare
+              ? 0o100666 & ~process.umask()
+              : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -2025,9 +2031,10 @@ describe('aggregateContent()', function () {
             repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir').then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const expectedMode = repoBuilder.remote || repoBuilder.bare
-            ? 0o100666 & ~process.umask()
-            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedMode =
+            repoBuilder.remote || repoBuilder.bare
+              ? 0o100666 & ~process.umask()
+              : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -2200,9 +2207,10 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-          const expectedMode = repoBuilder.remote || repoBuilder.bare
-            ? 0o100666 & ~process.umask()
-            : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
+          const expectedMode =
+            repoBuilder.remote || repoBuilder.bare
+              ? 0o100666 & ~process.umask()
+              : (await fsp.stat(ospath.join(repoBuilder.repoPath, targetPath))).mode
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
