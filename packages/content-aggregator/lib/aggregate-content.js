@@ -31,6 +31,7 @@ const {
   GIT_CORE,
   GIT_OPERATION_LABEL_LENGTH,
   GIT_PROGRESS_PHASES,
+  SYMLINK_FILE_MODE,
   VALID_STATE_FILENAME,
 } = require('./constants')
 
@@ -407,10 +408,13 @@ function readFilesFromWorktree (worktreePath, startPath) {
       return new Promise((resolve, reject) =>
         vfs
           .src(CONTENT_GLOB, { cwd, follow: true, removeBOM: false })
-          .on('error', (e) => {
-            if (e.code === 'ENOENT') e.message = `Broken symbolic link detected at ${ospath.relative(cwd, e.path)}`
-            else if (e.code === 'ELOOP') e.message = `Symbolic link cycle detected at ${ospath.relative(cwd, e.path)}`
-            reject(e)
+          .on('error', (err) => {
+            if (err.code === 'ENOENT') {
+              err.message = `Broken symbolic link detected at ${ospath.relative(cwd, err.path)}`
+            } else if (err.code === 'ELOOP') {
+              err.message = `Symbolic link cycle detected at ${ospath.relative(cwd, err.path)}`
+            }
+            reject(err)
           })
           .pipe(relativizeFiles())
           .pipe(collectFiles(resolve))
@@ -456,10 +460,17 @@ function collectFiles (done) {
 }
 
 function readFilesFromGitTree (repo, oid, startPath) {
-  return getGitTree(repo, oid, startPath).then((tree) => srcGitTree(repo, tree))
+  // QUESTION: should we read root tree lazily / on demand?
+  return git
+    .readTree(Object.assign({ oid }, repo))
+    .then((root) =>
+      getGitTreeAtStartPath(repo, oid, startPath).then((start) =>
+        srcGitTree(repo, Object.assign(root, { dirname: '' }), start)
+      )
+    )
 }
 
-function getGitTree (repo, oid, startPath) {
+function getGitTreeAtStartPath (repo, oid, startPath) {
   return git
     .readTree(Object.assign({ oid, filepath: startPath }, repo))
     .catch(({ code }) => {
@@ -467,49 +478,126 @@ function getGitTree (repo, oid, startPath) {
         `the start path '${startPath}' ${code === git.E.ResolveTreeError ? 'is not a directory' : 'does not exist'}`
       )
     })
-    .then(({ tree }) => tree)
+    .then((result) => Object.assign(result, { dirname: startPath }))
 }
 
-function srcGitTree (repo, tree) {
+function srcGitTree (repo, root, start) {
   return new Promise((resolve, reject) => {
     const files = []
-    walkGitTree(repo, tree, filterGitEntry)
+    createGitTreeWalker(repo, root, filterGitEntry)
       .on('entry', (entry) => files.push(entryToFile(entry)))
       .on('error', reject)
       .on('end', () => resolve(Promise.all(files)))
-      .start()
+      .walk(start)
   })
 }
 
-function walkGitTree (repo, root, filter) {
-  const emitter = new EventEmitter()
-  function visit (tree, dirname = '') {
-    const reads = []
-    for (const entry of tree) {
-      if (filter(entry)) {
-        const type = entry.type
-        if (type === 'blob') {
-          const mode = FILE_MODES[entry.mode]
-          if (mode) {
-            emitter.emit(
-              'entry',
-              Object.assign({}, repo, { mode, oid: entry.oid, path: path.join(dirname, entry.path) })
-            )
-          }
-        } else if (type === 'tree') {
+function createGitTreeWalker (repo, root, filter) {
+  return Object.assign(new EventEmitter(), {
+    walk (start) {
+      return (
+        visitGitTree(this, repo, root, filter, start)
+          .then(() => this.emit('end'))
+          // NOTE if error is thrown, promises already being resolved won't halt
+          .catch((err) => this.emit('error', err))
+      )
+    },
+  })
+}
+
+function visitGitTree (emitter, repo, root, filter, parent, dirname = '', following = new Set()) {
+  const reads = []
+  for (const entry of parent.tree) {
+    const filterVerdict = filter(entry)
+    if (filterVerdict) {
+      const vfilePath = dirname ? path.join(dirname, entry.path) : entry.path
+      if (entry.type === 'tree') {
+        reads.push(
+          git.readTree(Object.assign({ oid: entry.oid }, repo)).then((subtree) => {
+            Object.assign(subtree, { dirname: path.join(parent.dirname, entry.path) })
+            return visitGitTree(emitter, repo, root, filter, subtree, vfilePath, following)
+          })
+        )
+      } else if (entry.type === 'blob') {
+        let mode
+        if (entry.mode === SYMLINK_FILE_MODE) {
           reads.push(
-            git
-              .readTree(Object.assign({ oid: entry.oid }, repo))
-              .then(({ tree: subtree }) => visit(subtree, path.join(dirname, entry.path)))
-              .catch((err) => emitter.emit('error', err))
+            readGitSymlink(repo, root, parent, entry, following)
+              .catch((err) => {
+                // NOTE this error could be caught after promie chain has already been rejected
+                if (err.code === git.E.TreeOrBlobNotFoundError) {
+                  err.message = `Broken symbolic link detected at ${vfilePath}`
+                } else if (err.code === 'SymbolicLinkCycleError') {
+                  err.message = `Symbolic link cycle detected at ${vfilePath}`
+                }
+                throw err
+              })
+              .then((target) => {
+                if (target.type === 'tree') {
+                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, new Set(following).add(entry.oid))
+                } else if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
+                  emitter.emit('entry', Object.assign({ mode, oid: target.oid, path: vfilePath }, repo))
+                }
+              })
           )
+        } else if ((mode = FILE_MODES[entry.mode])) {
+          emitter.emit('entry', Object.assign({ mode, oid: entry.oid, path: vfilePath }, repo))
         }
       }
     }
-    return Promise.all(reads)
   }
-  emitter.start = () => visit(root).then(() => emitter.emit('end'))
-  return emitter
+  return Promise.all(reads)
+}
+
+function readGitSymlink (repo, root, parent, { oid }, following) {
+  if (following.size !== (following = new Set(following).add(oid)).size) {
+    return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: target }) => {
+      target = posixify && process.env.NODE_ENV === 'test' ? posixify(target.toString()) : target.toString()
+      let targetParent
+      if (parent.dirname) {
+        const dirname = parent.dirname + '/'
+        target = path.join(dirname, target)
+        if (target.startsWith(dirname)) {
+          target = target.substr(dirname.length)
+          targetParent = parent
+        } else {
+          targetParent = root
+        }
+      } else {
+        target = path.normalize(target)
+        targetParent = root
+      }
+      return readGitObjectAtPath(repo, root, targetParent, target.split('/'), following)
+    })
+  }
+  const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid }
+  return Promise.reject(Object.assign(new Error(`Symbolic link cycle found at oid: ${err.oid}`), err))
+}
+
+// QUESTION: could we use this to resolve the start path too?
+function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
+  const firstPathSegment = pathSegments[0]
+  for (const entry of parent.tree) {
+    if (entry.path === firstPathSegment) {
+      return entry.type === 'tree'
+        ? git.readTree(Object.assign({ oid: entry.oid }, repo)).then((subtree) => {
+          Object.assign(subtree, { dirname: path.join(parent.dirname, entry.path) })
+          return (pathSegments = pathSegments.slice(1)).length
+            ? readGitObjectAtPath(repo, root, subtree, pathSegments, following)
+            : Object.assign(subtree, { type: 'tree' })
+        })
+        : entry.mode === SYMLINK_FILE_MODE
+          ? readGitSymlink(repo, root, parent, entry, following)
+          : Promise.resolve(entry)
+    }
+  }
+  const err = {
+    name: git.E.TreeOrBlobNotFoundError,
+    code: git.E.TreeOrBlobNotFoundError,
+    oid: parent.oid,
+    filepath: pathSegments.join('/'),
+  }
+  return Promise.reject(Object.assign(new Error(`No file or directory found at "${err.oid}:${err.filepath}".`), err))
 }
 
 /**
@@ -518,7 +606,10 @@ function walkGitTree (repo, root, filter) {
  * not have a file extension.
  */
 function filterGitEntry (entry) {
-  return entry.path.charAt() !== '.' && (entry.type !== 'blob' || ~entry.path.indexOf('.'))
+  return (
+    entry.path.charAt() !== '.' &&
+    (entry.type !== 'blob' || entry.path.indexOf('.') > 0 || (entry.mode === SYMLINK_FILE_MODE ? 'treeOnly' : false))
+  )
 }
 
 function entryToFile (entry) {

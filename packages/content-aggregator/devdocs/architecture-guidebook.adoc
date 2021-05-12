@@ -120,6 +120,24 @@ Each virtual file object should include the following properties:
 
 The `mediaType` property should also be set directly on the file object to match the value of `src.mediaType`.
 
+=== Symlink support
+
+Although Antora requires files in a content repository to adhere to a standard, predefined structure, it's not always possible for users to organize their files this way.
+Symbolic links (symlinks) can be used as a bridge to resolve disparate hierarchies, so it's crucial that Antora provide support for them.
+In the same repository, an Antora structure can be set up, and files can be wired into that structure a la carte using symlinks.
+
+Starting with Antora 3, Antora supports file and directory symlinks in both the git tree and worktree at any depth.
+The symlink can even target a location outside of the start path (but still within the repository).
+
+Antora resolves symlinks as though they are a copy of the target file or directory.
+In other words, the symlink path is retained as the path of the virtual file, and the contents of the target file or directory is read into that location.
+The behavior is the same had you copied the files into the location instead of making a symlink to them.
+But the benefit is that you don't actually have to duplicate the file.
+If both the symlink source and target are at a publishable location, they will each map to a separate file in the published site.
+Antora does not make any attempt to preserve the symlink in the output.
+
+If Antora detects a broken symlink or a symlink cycle, Antora will fail with an error message.
+
 == Consequences
 
 The content aggregator component allows the Antora documentation pipeline to work with content from multiple repositories and their branches and tags.

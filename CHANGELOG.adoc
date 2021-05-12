@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *content-aggregator*: Add full support for resolving symlinks in the git tree (#188)
+
 === Fixed
 
 * *content-aggregator*: Add full support for resolving symlinks that originate from the worktree; enable symlink tests on Windows (#747)
