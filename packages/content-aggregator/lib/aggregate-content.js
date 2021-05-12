@@ -320,7 +320,7 @@ async function selectReferences (source, repo, remote) {
         }
       }
     } else if (!remoteBranches.length) {
-      // QUESTION should local branches be used if only remote branch is HEAD?
+      // QUESTION should local branches be used if the only remote branch is HEAD?
       const localBranches = await git.listBranches(repo)
       for (const shortname of localBranches.length ? matcher(localBranches, branchPatterns) : localBranches) {
         refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch' })
@@ -391,8 +391,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
     .catch((err) => {
       const refInfo = `ref: ${ref.fullname.replace(/^heads\//, '')}${worktreePath ? ' <worktree>' : ''}`
       const pathInfo = !startPath || err.message.startsWith('the start path ') ? '' : ' | path: ' + startPath
-      err.message += ` in ${repo.url || repo.dir} (${refInfo}${pathInfo})`
-      throw err
+      throw Object.assign(err, { message: `${err.message} in ${repo.url || repo.dir} (${refInfo}${pathInfo})` })
     })
 }
 
@@ -630,8 +629,7 @@ function loadComponentDescriptor (files) {
   try {
     data = yaml.load(descriptorFile.contents.toString())
   } catch (err) {
-    err.message = `${COMPONENT_DESC_FILENAME} has invalid syntax; ${err.message}`
-    throw err
+    throw Object.assign(err, { message: `${COMPONENT_DESC_FILENAME} has invalid syntax; ${err.message}` })
   }
   if (data.name == null) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a name`)
   const name = (data.name = String(data.name))
@@ -915,8 +913,7 @@ function ensureCacheDir (preferredCacheDir, startDir) {
     .mkdir(cacheDir, { recursive: true })
     .then(() => cacheDir)
     .catch((err) => {
-      err.message = `Failed to create content cache directory: ${cacheDir}; ${err.message}`
-      throw err
+      throw Object.assign(err, { message: `Failed to create content cache directory: ${cacheDir}; ${err.message}` })
     })
 }
 
@@ -973,6 +970,7 @@ function findWorktrees (repo, patterns) {
           ? Promise.all(
             worktreeNames.map((worktreeName) => {
               const gitdir = ospath.resolve(worktreesDir, worktreeName)
+              // NOTE uses name of worktree as branch name if HEAD is detached
               return git
                 .currentBranch(Object.assign({}, repo, { gitdir }))
                 .then((branch = worktreeName) =>
