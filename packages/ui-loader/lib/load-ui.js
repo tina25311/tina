@@ -97,10 +97,7 @@ async function loadUi (playbook) {
             .pipe(collectFiles(resolve))
           : vzip
             .src(bundleFile.path)
-            .on('error', (err) => {
-              err.message = `not a valid zip file; ${err.message}`
-              reject(err)
-            })
+            .on('error', (err) => reject(Object.assign(err, { message: `not a valid zip file; ${err.message}` })))
             .pipe(selectFilesStartingFrom(bundle.startPath))
             .pipe(bufferizeContents())
             .on('error', reject)
@@ -152,8 +149,7 @@ function ensureCacheDir (customCacheDir, startDir) {
     .mkdir(cacheDir, { recursive: true })
     .then(() => cacheDir)
     .catch((err) => {
-      err.message = `Failed to create UI cache directory: ${cacheDir}; ${err.message}`
-      throw err
+      throw Object.assign(err, { message: `Failed to create UI cache directory: ${cacheDir}; ${err.message}` })
     })
 }
 
@@ -164,11 +160,9 @@ function downloadBundle (url, to) {
         new Promise((resolve, reject) =>
           new ReadableFile(new MemoryFile({ path: ospath.basename(to), contents: body }))
             .pipe(vzip.src())
-            .on('error', (err) => {
-              err.message = `not a valid zip file; ${err.message}`
-              err.summary = 'Invalid UI bundle'
-              reject(err)
-            })
+            .on('error', (err) =>
+              reject(Object.assign(err, { message: `not a valid zip file; ${err.message}`, summary: 'Invalid UI bundle' }))
+            )
             .on('finish', () =>
               fsp
                 .mkdir(ospath.dirname(to), { recursive: true })
@@ -285,7 +279,7 @@ function srcSupplementalFiles (filesSpec, startDir) {
       )
       .catch((err) => {
         // Q: should we skip unreadable files?
-        throw new Error('problem encountered while reading ui.supplemental_files: ' + err.message)
+        throw Object.assign(err, { message: `problem encountered while reading ui.supplemental_files: ${err.message}` })
       })
   }
 }
