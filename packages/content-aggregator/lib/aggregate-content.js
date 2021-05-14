@@ -12,6 +12,7 @@ const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('isomorphic-git')
 const invariably = { false: () => false, void: () => {}, emptyArray: () => [] }
+const { makeRe: makePicomatchRx } = require('picomatch')
 const matcher = require('matcher')
 const MultiProgress = require('multi-progress')
 const ospath = require('path')
@@ -31,6 +32,7 @@ const {
   GIT_CORE,
   GIT_OPERATION_LABEL_LENGTH,
   GIT_PROGRESS_PHASES,
+  PICOMATCH_VERSION_OPTS,
   SYMLINK_FILE_MODE,
   VALID_STATE_FILENAME,
 } = require('./constants')
@@ -348,7 +350,7 @@ function getCurrentBranchName (repo, remote) {
 async function collectFilesFromReference (source, repo, remoteName, authStatus, ref, originUrl) {
   const url = repo.url
   const displayUrl = url || repo.dir
-  const editUrl = source.editUrl
+  const { version, editUrl } = source
   const worktreePath = ref.head
   if (!worktreePath) {
     ref.oid = await git.resolveRef(
@@ -369,21 +371,21 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
     }
     return Promise.all(
       startPaths.map((startPath) =>
-        collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl)
+        collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, version)
       )
     )
   }
   const startPath = cleanStartPath(coerceToString(source.startPath))
-  return collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl)
+  return collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, version)
 }
 
-function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl) {
+function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, version) {
   return (worktreePath
     ? readFilesFromWorktree(worktreePath, startPath)
     : readFilesFromGitTree(repo, ref.oid, startPath)
   )
     .then((files) => {
-      const componentVersionBucket = loadComponentDescriptor(files)
+      const componentVersionBucket = loadComponentDescriptor(files, ref, version)
       const origin = computeOrigin(originUrl, authStatus, ref, startPath, worktreePath, editUrl)
       componentVersionBucket.files = files.map((file) => assignFileProperties(file, origin))
       return componentVersionBucket
@@ -620,7 +622,7 @@ function entryToFile (entry) {
   })
 }
 
-function loadComponentDescriptor (files) {
+function loadComponentDescriptor (files, ref, version) {
   const descriptorFileIdx = files.findIndex((file) => file.path === COMPONENT_DESC_FILENAME)
   if (descriptorFileIdx < 0) throw new Error(`${COMPONENT_DESC_FILENAME} not found`)
   const descriptorFile = files[descriptorFileIdx]
@@ -636,15 +638,35 @@ function loadComponentDescriptor (files) {
   if (name === '.' || name === '..' || ~name.indexOf('/')) {
     throw new Error(`name in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${name}`)
   }
-  if (data.version == null) {
-    if (!('version' in data)) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a version`)
-    data.version = ''
-  } else {
-    const version = (data.version = String(data.version))
-    if (version === '.' || version === '..' || ~version.indexOf('/')) {
-      throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
+  if ('version' in data) version = data.version
+  if (!version) {
+    if (version === undefined) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a version`)
+    version = ''
+  } else if (version === true) {
+    version = ref.shortname.replace(/[/]/g, '-')
+  } else if (version.constructor === Object) {
+    const refname = ref.shortname
+    let matched
+    if (refname in version) {
+      matched = version[refname]
+    } else if (
+      !Object.entries(version).some(([pattern, replacement]) => {
+        const result = refname.replace(makePicomatchRx(pattern, PICOMATCH_VERSION_OPTS), '\0' + replacement)
+        if (result === refname) return false
+        matched = result.substr(1)
+        return true
+      })
+    ) {
+      matched = refname
     }
+    if (matched === '.' || matched === '..') {
+      throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${matched}`)
+    }
+    version = matched.replace(/[/]/g, '-')
+  } else if ((version = String(version)) === '.' || version === '..' || ~version.indexOf('/')) {
+    throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
   }
+  data.version = version
   return camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
 }
 

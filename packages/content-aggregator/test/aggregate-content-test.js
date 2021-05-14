@@ -249,7 +249,7 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should throw if component descriptor does not define a name', () => {
+    describe('should throw if component descriptor does not define name key', () => {
       testAll(async (repoBuilder) => {
         const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { version: 'v1.0' })
@@ -260,7 +260,7 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should throw if component descriptor does not define a version', () => {
+    describe('should throw if component descriptor does not define version key and content source does not define version key', () => {
       testAll(async (repoBuilder) => {
         const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' })
@@ -268,6 +268,168 @@ describe('aggregateContent()', function () {
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedMessage)
+      })
+    })
+
+    describe('should use refname as version if version key in component descriptor is true', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: true }, () =>
+          repoBuilder.checkoutBranch('v/2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', 'v-2.1')
+      })
+    })
+
+    describe('should use refname as version if component descriptor does not define version key and content source sets version to true', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, version: true })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', 'v2.1')
+      })
+    })
+
+    describe('should extract version from refname if version key in component descriptor is a pattern map', () => {
+      testAll(async (repoBuilder) => {
+        const componentDesc = { name: 'the-component', version: { 'v(?<version>{0..9}+.{0..9}+).x': '$<version>' } }
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
+          repoBuilder.checkoutBranch('v2.1.x').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '2.1')
+      })
+    })
+
+    describe('should extract version from refname if component descriptor does not define version key and content source sets version to pattern map', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('v2.1.x').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          version: { 'v(?<version>{0..9}+.{0..9}+).x': '$<version>' },
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '2.1')
+      })
+    })
+
+    describe('should extract version from refname with slash if component descriptor does not define version key and content source sets version to pattern map', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('version/ga/2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, version: { '*/(*)': '$1' } })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', 'ga-2.1')
+      })
+    })
+
+    describe('should use refname as version if component descriptor does not define version key and version pattern on content source does not match', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('version/2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          version: { 'r/(?<version>*)': '$<version>', 'v(?<version>[0-9]*)': '$<version>' },
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', 'version-2.1')
+      })
+    })
+
+    describe('should use refname as version if component descriptor does not define version key and version pattern on content source maps to match', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, version: { '*': '$&' } })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', 'v2.1')
+      })
+    })
+
+    describe('should use next match if component descriptor does not define version key and previous version pattern on content source does not match', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          version: { 'v/(?<version>*)': '$<version>', '*': '' },
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '')
+      })
+    })
+
+    describe('should use refname as version if component descriptor does not define version key and version pattern on content source is invalid', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, version: { '(?<version>': '$<version>' } })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', 'v2.1')
+      })
+    })
+
+    describe('should use non-empty version specified in component descriptor even if content source defines version', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '2_1' }, () =>
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, version: true })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '2_1')
+      })
+    })
+
+    describe('should use empty version specified in component descriptor even if content source defines version', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '' }, () =>
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, version: true })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '')
+      })
+    })
+
+    describe('should use version defined on content source if component descriptor does not have version key', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' }, () =>
+          repoBuilder
+            .checkoutBranch('v1.0')
+            .then(() => repoBuilder.deleteBranch('master'))
+            .then(() => repoBuilder.checkoutBranch('v2.0'))
+            .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component' }))
+            .then(() => repoBuilder.checkoutBranch('v2.1.x'))
+            .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component', version: '2.1' }))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', version: true })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(3)
+        expect(aggregate[0]).to.have.property('version', '1.0')
+        expect(aggregate[1]).to.have.property('version', 'v2.0')
+        expect(aggregate[2]).to.have.property('version', '2.1')
       })
     })
 
