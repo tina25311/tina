@@ -20,7 +20,7 @@
     "gulp": "~4.0",
     "isomorphic-git": "0.78.5",
     "js-yaml": "~4.1",
-    "mocha": "~8.3",
+    "mocha": "~8.4",
     "node-git-server": "~0.6",
     "npm-which": "~3.0",
     "nyc": "~15.1",
