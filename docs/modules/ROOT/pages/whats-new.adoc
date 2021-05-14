@@ -8,6 +8,36 @@
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-git-antora}/merge_requests
 
+= Antora 3.0.0-alpha.5
+
+_**Release date:** 2021.05.14 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+
+=== Added
+
+Issue {url-issues}/188[#188^]:: Add full support for resolving symlinks located in the git tree of a content source.
+Provide a clear error message when a broken symlink or symlink cycle is detected in the git tree.
+
+Issue {url-issues}/296[#296^]:: Allow the component version string for a content source to be derived from the git refname.
++
+The mapping is defined using a map of pattern and replacements on the `version` key on the content source in the playbook or on the `version` key in the component descriptor.
+The replacement that corresponds to first pattern that matches will be used.
+If no pattern is matched, or the value of version is `true`, the refname will be used as the version.
+
+=== Fixed
+
+Issue {url-issues}/747[#747^]:: Add full support for resolving symlinks that originate from the worktree of a local content source.
+Provide a clear error message when a broken symlink or symlink cycle is detected in worktree.
+
+NOTE: All symlink tests are now verified on Windows in additional to Linux.
+
+=== Changed
+
+None.
+
 = Antora 3.0.0-alpha.4
 
 _**Release date:** 2021.05.01 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
