@@ -161,7 +161,9 @@ function downloadBundle (url, to) {
           new ReadableFile(new MemoryFile({ path: ospath.basename(to), contents: body }))
             .pipe(vzip.src())
             .on('error', (err) =>
-              reject(Object.assign(err, { message: `not a valid zip file; ${err.message}`, summary: 'Invalid UI bundle' }))
+              reject(
+                Object.assign(err, { message: `not a valid zip file; ${err.message}`, summary: 'Invalid UI bundle' })
+              )
             )
             .on('finish', () =>
               fsp
