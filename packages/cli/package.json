@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@antora/site-publisher": "3.0.0-alpha.4",
-    "convict": "~6.0",
+    "convict": "~6.1",
     "kapok-js": "~0.10"
   },
   "engines": {
