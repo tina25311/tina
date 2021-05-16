@@ -291,7 +291,7 @@ The `status` method, if available, is used by Antora to look up whether authenti
 
 To activate your custom credential manager, first write your implementation in a dedicated JavaScript file and register it with isomorphic-git as follows:
 
-.custom-credential-manager.js
+.custom-git-credential-manager.js
 [source,js]
 ----
 const git = require('isomorphic-git')
@@ -305,7 +305,7 @@ git.cores.create('antora').set('credentialManager', {
 
 Then pass this file to the `-r` option when running Antora:
 
- $ antora -r ./custom-credential-manager.js antora-playbook.yml
+ $ antora -r ./custom-git-credential-manager.js antora-playbook.yml
 
 If you've installed Antora globally using `npm`, you may run into problems getting your custom credential manager to work.
 Either you'll encounter the error `Cannot find module 'isomorphic-git'` or your custom credential manager won't be called.
