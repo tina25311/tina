@@ -7,6 +7,7 @@ const fs = require('fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const http = require('http')
+const https = require('https')
 const loadUi = require('@antora/ui-loader')
 const os = require('os')
 const ospath = require('path')
@@ -40,9 +41,16 @@ describe('loadUi()', () => {
     'js/02-two.js',
   ]
 
-  let server
-  let serverUrl
+  let httpServer
+  let httpServerUrl
+  let httpsServer
+  let httpsServerUrl
   let serverRequests
+
+  const ssl = {
+    cert: fs.readFileSync(ospath.join(FIXTURES_DIR, 'ssl.cert')),
+    key: fs.readFileSync(ospath.join(FIXTURES_DIR, 'ssl.key')),
+  }
 
   const prefixPath = (prefix, path_) => [prefix, path_].join(ospath.sep)
 
@@ -70,7 +78,14 @@ describe('loadUi()', () => {
     it(`with dot-relative ${isArchive ? 'bundle' : 'directory'} path`, () =>
       makeTest(prefixPath('.', ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, bundle)))))
     it(`with absolute ${isArchive ? 'bundle' : 'directory'} path`, () => makeTest(ospath.join(FIXTURES_DIR, bundle)))
-    if (isArchive) it('with remote bundle URI', () => makeTest(serverUrl + bundle))
+    if (isArchive) {
+      it('with http bundle URI', () => makeTest(httpServerUrl + bundle))
+      it('with https bundle URI', () => {
+        const env = process.env
+        process.env = Object.assign({}, env, { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
+        return makeTest(httpsServerUrl + bundle).finally(() => (process.env = env))
+      })
+    }
   }
 
   const clean = (fin) => {
@@ -98,7 +113,7 @@ describe('loadUi()', () => {
   beforeEach(() => {
     clean()
     serverRequests = []
-    server = http
+    httpServer = http
       .createServer((request, response) => {
         serverRequests.push(request.url)
         if (request.url.startsWith('/redirect?to=')) {
@@ -117,7 +132,23 @@ describe('loadUi()', () => {
         })
       })
       .listen(0)
-    serverUrl = new URL(`http://localhost:${server.address().port}`).toString()
+    httpServerUrl = new URL(`http://localhost:${httpServer.address().port}`).toString()
+
+    httpsServer = https
+      .createServer(ssl, (request, response) => {
+        serverRequests.push(request.url)
+        fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
+          if (err) {
+            response.writeHead(404, { 'Content-Type': 'text/html' })
+            response.end('<!DOCTYPE html><html><body>Not Found</body></html>', 'utf8')
+          } else {
+            response.writeHead(200, { 'Content-Type': 'application/zip' })
+            response.end(content)
+          }
+        })
+      })
+      .listen(0)
+    httpsServerUrl = new URL(`https://localhost:${httpsServer.address().port}`).toString()
   })
 
   after(() =>
@@ -132,13 +163,14 @@ describe('loadUi()', () => {
 
   afterEach(() => {
     clean(true)
-    server.close()
+    httpServer.close()
+    httpsServer.close()
   })
 
   describe('should throw error if bundle cannot be found', () => {
     testAll('no-such-bundle.zip', async (playbook) => {
       const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      if (playbook.ui.bundle.url.startsWith('http://')) {
+      if (~playbook.ui.bundle.url.indexOf('://')) {
         const expectedMessage = `Failed to download UI bundle: ${playbook.ui.bundle.url}`
         expect(loadUiDeferred)
           .to.throw(expectedMessage)
@@ -158,8 +190,9 @@ describe('loadUi()', () => {
 
   describe('should throw error if bundle is not a valid zip file', () => {
     testAll('the-ui-bundle.tar.gz', async (playbook) => {
-      const isRemote = playbook.ui.bundle.url.startsWith('http://')
-      const expectedMessage = isRemote ? `Invalid UI bundle: ${playbook.ui.bundle.url}` : 'Failed to read UI bundle:'
+      const expectedMessage = ~playbook.ui.bundle.url.indexOf('://')
+        ? `Invalid UI bundle: ${playbook.ui.bundle.url}`
+        : 'Failed to read UI bundle:'
       expect(await deferExceptions(loadUi, playbook))
         .to.throw(expectedMessage)
         .with.property('stack')
@@ -841,7 +874,7 @@ describe('loadUi()', () => {
 
   it('should use remote bundle from cache on subsequent run', async () => {
     const playbook = {
-      ui: { bundle: { url: serverUrl + 'the-ui-bundle.zip' } },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
     }
     let uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(1)
@@ -864,7 +897,7 @@ describe('loadUi()', () => {
   it('should not download if fetch option is enabled and bundle is permanent', async () => {
     const playbook = {
       runtime: { fetch: true },
-      ui: { bundle: { url: serverUrl + 'the-ui-bundle.zip' } },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
     }
     let uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(1)
@@ -885,7 +918,7 @@ describe('loadUi()', () => {
   it('should download instead of using cache if fetch option is enabled and bundle is a snapshot', async () => {
     const playbook = {
       runtime: { fetch: true },
-      ui: { bundle: { url: serverUrl + 'the-ui-bundle.zip', snapshot: true } },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip', snapshot: true } },
     }
     let uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(1)
@@ -908,7 +941,7 @@ describe('loadUi()', () => {
 
   it('should follow redirect when fetching remote UI bundle', async () => {
     const playbook = {
-      ui: { bundle: { url: serverUrl + 'redirect?to=the-ui-bundle.zip', snapshot: true } },
+      ui: { bundle: { url: httpServerUrl + 'redirect?to=the-ui-bundle.zip', snapshot: true } },
     }
     const uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(2)
@@ -921,7 +954,7 @@ describe('loadUi()', () => {
   it('should throw error if remote UI bundle cannot be found', async () => {
     const playbook = {
       runtime: { fetch: true },
-      ui: { bundle: { url: serverUrl + 'the-ui-bundl.zip', snapshot: true } },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundl.zip', snapshot: true } },
     }
     const loadUiDeferred = await deferExceptions(loadUi, playbook)
     const expectedMessage = 'Failed to download UI bundle'
@@ -930,7 +963,7 @@ describe('loadUi()', () => {
 
   it('should cache bundle if a valid zip file', async () => {
     const playbook = {
-      ui: { bundle: { url: serverUrl + 'the-ui-bundle.zip' } },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
     }
     await loadUi(playbook)
     expect(CACHE_DIR)
@@ -954,7 +987,7 @@ describe('loadUi()', () => {
 
   it('should not cache bundle if not a valid zip file', async () => {
     const playbook = {
-      ui: { bundle: { url: serverUrl + 'the-ui-bundle.tar.gz' } },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.tar.gz' } },
     }
     expect(await deferExceptions(loadUi, playbook)).to.throw()
     expect(CACHE_DIR)
@@ -967,7 +1000,7 @@ describe('loadUi()', () => {
 
   it('should throw error if bundle in cache is not a valid zip file', async () => {
     const playbook = {
-      ui: { bundle: { url: serverUrl + 'the-ui-bundle.zip' } },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
     }
     await loadUi(playbook)
     expect(CACHE_DIR)
@@ -993,7 +1026,7 @@ describe('loadUi()', () => {
       const playbook = {
         dir,
         runtime: { cacheDir },
-        ui: { bundle: { url: serverUrl + 'the-ui-bundle.zip' } },
+        ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
       }
       const uiCatalog = await loadUi(playbook)
       expect(UI_CACHE_DIR).to.not.be.a.path()
@@ -1035,7 +1068,7 @@ describe('loadUi()', () => {
       await fsp.writeFile(customCacheDir, '')
       const playbook = {
         runtime: { cacheDir: customCacheDir },
-        ui: { bundle: { url: serverUrl + 'the-ui-bundle.zip' } },
+        ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
       }
       const customUiCacheDir = ospath.join(customCacheDir, UI_CACHE_FOLDER)
       const expectedMessage = `Failed to create UI cache directory: ${customUiCacheDir};`
