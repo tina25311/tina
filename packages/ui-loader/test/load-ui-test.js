@@ -115,7 +115,7 @@ describe('loadUi()', () => {
     serverRequests = []
     httpServer = http
       .createServer((request, response) => {
-        serverRequests.push(request.url)
+        serverRequests.push(httpServerUrl + request.url.substr(1))
         if (request.url.startsWith('/redirect?to=')) {
           response.writeHead(301, { Location: `/${request.url.substr(13)}` })
           response.end('<!DOCTYPE html><html><body>Moved.</body></html>', 'utf8')
@@ -136,7 +136,7 @@ describe('loadUi()', () => {
 
     httpsServer = https
       .createServer(ssl, (request, response) => {
-        serverRequests.push(request.url)
+        serverRequests.push(httpsServerUrl + request.url.substr(1))
         fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
           if (err) {
             response.writeHead(404, { 'Content-Type': 'text/html' })
@@ -878,7 +878,7 @@ describe('loadUi()', () => {
     }
     let uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(1)
-    expect(serverRequests[0]).to.equal('/the-ui-bundle.zip')
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
     expect(CACHE_DIR)
       .to.be.a.directory()
       .with.subDirs([UI_CACHE_FOLDER])
@@ -901,7 +901,7 @@ describe('loadUi()', () => {
     }
     let uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(1)
-    expect(serverRequests[0]).to.equal('/the-ui-bundle.zip')
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
     expect(CACHE_DIR)
       .to.be.a.directory()
       .with.subDirs([UI_CACHE_FOLDER])
@@ -922,7 +922,7 @@ describe('loadUi()', () => {
     }
     let uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(1)
-    expect(serverRequests[0]).to.equal('/the-ui-bundle.zip')
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
     expect(CACHE_DIR)
       .to.be.a.directory()
       .with.subDirs([UI_CACHE_FOLDER])
@@ -934,7 +934,7 @@ describe('loadUi()', () => {
 
     uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(2)
-    expect(serverRequests[1]).to.equal('/the-ui-bundle.zip')
+    expect(serverRequests[1]).to.equal(playbook.ui.bundle.url)
     paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
   })
@@ -945,8 +945,8 @@ describe('loadUi()', () => {
     }
     const uiCatalog = await loadUi(playbook)
     expect(serverRequests).to.have.lengthOf(2)
-    expect(serverRequests[0]).to.equal('/redirect?to=the-ui-bundle.zip')
-    expect(serverRequests[1]).to.equal('/the-ui-bundle.zip')
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+    expect(serverRequests[1]).to.equal(httpServerUrl + 'the-ui-bundle.zip')
     const paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
   })
