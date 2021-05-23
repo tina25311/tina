@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Added
+
+* *ui-loader*: Add support for HTTP/HTTPS proxy environment variables (http_proxy, https_proxy, and no_proxy) (#749)
+
 == 3.0.0-alpha.5 (2021-05-15)
 
 === Added

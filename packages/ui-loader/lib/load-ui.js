@@ -68,11 +68,11 @@ async function loadUi (playbook) {
     resolveBundle = ensureCacheDir(cacheDir, startDir).then((absCacheDir) => {
       const cachePath = ospath.join(absCacheDir, `${sha1(bundleUrl)}.zip`)
       return fetch && bundle.snapshot
-        ? downloadBundle(bundleUrl, cachePath)
+        ? downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, process.env))
         : fsp
           .stat(cachePath)
           .then((stat) => new File({ path: cachePath, stat }))
-          .catch(() => downloadBundle(bundleUrl, cachePath))
+          .catch(() => downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, process.env)))
     })
   } else {
     const localPath = expandPath(bundleUrl, '~+', startDir)
@@ -153,8 +153,23 @@ function ensureCacheDir (customCacheDir, startDir) {
     })
 }
 
-function downloadBundle (url, to) {
-  return get(url, { resolveBodyOnly: true, responseType: 'buffer' })
+function createAgent (url, env) {
+  if (env.https_proxy || env.http_proxy) {
+    const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
+    const proxy = url.startsWith('https:')
+      ? { protocol: 'https', ProxyAgent: HttpsProxyAgent, url: env.https_proxy }
+      : { protocol: 'http', ProxyAgent: HttpProxyAgent, url: env.http_proxy }
+    if (proxy.url && require('should-proxy')(url, { no_proxy: env.no_proxy })) {
+      // see https://github.com/delvedor/hpagent/issues/18
+      const { protocol, hostname, port, username, password } = new URL(proxy.url)
+      const proxyUrl = { protocol, hostname, port: port, username: username || null, password: password || null }
+      return { [proxy.protocol]: new proxy.ProxyAgent({ keepAlive: false, maxSockets: Infinity, proxy: proxyUrl }) }
+    }
+  }
+}
+
+function downloadBundle (url, to, agent) {
+  return get(url, { agent, resolveBodyOnly: true, responseType: 'buffer' })
     .then(
       (body) =>
         new Promise((resolve, reject) =>

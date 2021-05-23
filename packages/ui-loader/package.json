@@ -22,9 +22,11 @@
     "camelcase-keys": "~6.2",
     "got": "~11.8",
     "gulp-vinyl-zip": "~2.2",
+    "hpagent": "~0.1.0",
     "js-yaml": "~4.1",
     "minimatch-all": "~1.1",
     "simple-concat": "~1.0",
+    "should-proxy": "~1.0",
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"
   },
