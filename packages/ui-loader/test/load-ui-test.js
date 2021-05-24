@@ -974,27 +974,27 @@ describe('loadUi()', () => {
   })
 
   it('should honor http_proxy environment variable when fetching bundle over http', async () => {
-    const playbook = { ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } } }
-    const env = process.env
-    try {
-      process.env = Object.assign({}, env, { http_proxy: proxyServerUrl })
-      const uiCatalog = await loadUi(playbook)
-      expect(serverRequests).to.have.lengthOf(2)
-      expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${httpServer.address().port}`)
-      expect(proxyAuthorizationHeader).to.be.undefined()
-      expect(serverRequests[1]).to.equal(playbook.ui.bundle.url)
-      const paths = uiCatalog.getFiles().map((file) => file.path)
-      expect(paths).to.have.members(expectedFilePaths)
-    } finally {
-      process.env = env
+    const playbook = {
+      network: { httpProxy: proxyServerUrl },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
     }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(2)
+    expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${httpServer.address().port}`)
+    expect(proxyAuthorizationHeader).to.be.undefined()
+    expect(serverRequests[1]).to.equal(playbook.ui.bundle.url)
+    const paths = uiCatalog.getFiles().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
   })
 
   it('should honor https_proxy environment variable when fetching bundle over https', async () => {
-    const playbook = { ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } } }
+    const playbook = {
+      network: { httpsProxy: proxyServerUrl },
+      ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } },
+    }
     const env = process.env
     try {
-      process.env = Object.assign({}, env, { https_proxy: proxyServerUrl, NODE_TLS_REJECT_UNAUTHORIZED: '0' })
+      process.env = Object.assign({}, env, { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
       const uiCatalog = await loadUi(playbook)
       expect(serverRequests).to.have.lengthOf(2)
       expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${httpsServer.address().port}`)
@@ -1008,29 +1008,25 @@ describe('loadUi()', () => {
   })
 
   it('should not use proxy if http_proxy environment variable is set but URL is excluded by no_proxy environment variable', async () => {
-    const playbook = { ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } } }
-    const env = process.env
-    try {
-      process.env = Object.assign({}, env, { http_proxy: proxyServerUrl, no_proxy: 'example.org,localhost' })
-      const uiCatalog = await loadUi(playbook)
-      expect(serverRequests).to.have.lengthOf(1)
-      expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
-      const paths = uiCatalog.getFiles().map((file) => file.path)
-      expect(paths).to.have.members(expectedFilePaths)
-    } finally {
-      process.env = env
+    const playbook = {
+      network: { httpProxy: proxyServerUrl, noProxy: 'example.org,localhost' },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
     }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(1)
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+    const paths = uiCatalog.getFiles().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
   })
 
   it('should not use proxy if https_proxy environment variable is set but URL is excluded by no_proxy environment variable', async () => {
-    const playbook = { ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } } }
+    const playbook = {
+      network: { httpsProxy: proxyServerUrl, noProxy: 'example.org,localhost' },
+      ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } },
+    }
     const env = process.env
     try {
-      process.env = Object.assign({}, env, {
-        https_proxy: proxyServerUrl,
-        no_proxy: 'example.org,localhost',
-        NODE_TLS_REJECT_UNAUTHORIZED: '0',
-      })
+      process.env = Object.assign({}, env, { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
       const uiCatalog = await loadUi(playbook)
       expect(serverRequests).to.have.lengthOf(1)
       expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)

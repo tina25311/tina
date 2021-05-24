@@ -9,7 +9,8 @@ This project utilizes semantic versioning.
 
 === Added
 
-* *ui-loader*: Add support for HTTP/HTTPS proxy environment variables (http_proxy, https_proxy, and no_proxy) (#749)
+* *playbook-builder*: Add network category key with child keys http_proxy, https_proxy, and no_proxy to configure proxy settings (#749)
+* *ui-loader*: Add support for proxy environment variables (http_proxy, https_proxy, and no_proxy) (#749)
 
 == 3.0.0-alpha.5 (2021-05-15)
 

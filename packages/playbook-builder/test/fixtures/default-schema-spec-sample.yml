@@ -41,6 +41,10 @@ git:
   credentials:
     path: ./.git-credentials
   ensure_git_suffix: true
+network:
+  http_proxy: http://proxy.example.org
+  https_proxy: http://proxy.example.org
+  no_proxy: example.org,example.com
 output:
   dir: ./_site
   destinations:

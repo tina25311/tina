@@ -142,6 +142,29 @@ module.exports = {
       default: true,
     },
   },
+  network: {
+    http_proxy: {
+      doc: 'The URL of the proxy to use for HTTP URLs.',
+      format: 'url',
+      default: undefined,
+      arg: 'http-proxy',
+      env: 'http_proxy',
+    },
+    https_proxy: {
+      doc: 'The URL of the proxy to use for HTTPS URLs.',
+      format: 'url',
+      default: undefined,
+      arg: 'https-proxy',
+      env: 'https_proxy',
+    },
+    no_proxy: {
+      doc: 'A comma-separated list of domains and IPs that should not be proxied.',
+      format: String,
+      default: undefined,
+      arg: 'noproxy',
+      env: 'no_proxy',
+    },
+  },
   runtime: {
     cache_dir: {
       doc: 'The cache directory. (default: antora folder under cache dir for current user)',
