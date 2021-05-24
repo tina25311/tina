@@ -1,7 +1,7 @@
 'use strict'
 
 const camelCaseKeys = require('camelcase-keys')
-const collectBuffer = require('bl')
+const concat = require('simple-concat')
 const { createHash } = require('crypto')
 const expandPath = require('@antora/expand-path-helper')
 const { File, MemoryFile, ReadableFile } = require('./file')
@@ -214,14 +214,11 @@ function bufferizeContents () {
   return map((file, _, next) => {
     // NOTE gulp-vinyl-zip automatically converts the contents of an empty file to a Buffer
     if (file.isStream()) {
-      file.contents.pipe(
-        collectBuffer((err, data) => {
-          if (err) return next(err)
-          file.contents = data
-          file.stat.size = data.length
-          next(null, file)
-        })
-      )
+      concat(file.contents, (err, contents) => {
+        if (err) return next(err)
+        file.stat.size = (file.contents = contents).length
+        next(null, file)
+      })
     } else {
       file.stat.size = file.contents.length
       next(null, file)
