@@ -13,6 +13,7 @@ const os = require('os')
 const ospath = require('path')
 const { Transform } = require('stream')
 const map = (transform) => new Transform({ objectMode: true, transform })
+const net = require('net')
 const vfs = require('vinyl-fs')
 const zip = require('gulp-vinyl-zip')
 
@@ -45,7 +46,10 @@ describe('loadUi()', () => {
   let httpServerUrl
   let httpsServer
   let httpsServerUrl
+  let proxyServer
+  let proxyServerUrl
   let serverRequests
+  let proxyAuthorizationHeader
 
   const ssl = {
     cert: fs.readFileSync(ospath.join(FIXTURES_DIR, 'ssl.cert')),
@@ -113,6 +117,7 @@ describe('loadUi()', () => {
   beforeEach(() => {
     clean()
     serverRequests = []
+    proxyAuthorizationHeader = undefined
     httpServer = http
       .createServer((request, response) => {
         serverRequests.push(httpServerUrl + request.url.substr(1))
@@ -149,6 +154,22 @@ describe('loadUi()', () => {
       })
       .listen(0)
     httpsServerUrl = new URL(`https://localhost:${httpsServer.address().port}`).toString()
+
+    proxyServer = http
+      .createServer()
+      .on('connect', (request, clientSocket, head) => {
+        serverRequests.push(proxyServerUrl + ' -> ' + request.url)
+        proxyAuthorizationHeader = request.headers['proxy-authorization']
+        const [host, port = 80] = request.url.split(':', 2)
+        const serverSocket = net.connect({ port, host }, () => {
+          clientSocket.write('HTTP/1.1 200 Connection Established\n\n')
+          serverSocket.write(head)
+          serverSocket.pipe(clientSocket)
+          clientSocket.pipe(serverSocket)
+        })
+      })
+      .listen(0)
+    proxyServerUrl = new URL(`http://localhost:${proxyServer.address().port}`).toString()
   })
 
   after(() =>
@@ -165,6 +186,7 @@ describe('loadUi()', () => {
     clean(true)
     httpServer.close()
     httpsServer.close()
+    proxyServer.close()
   })
 
   describe('should throw error if bundle cannot be found', () => {
@@ -949,6 +971,70 @@ describe('loadUi()', () => {
     expect(serverRequests[1]).to.equal(httpServerUrl + 'the-ui-bundle.zip')
     const paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
+  })
+
+  it('should honor http_proxy environment variable when fetching bundle over http', async () => {
+    const playbook = {
+      network: { httpProxy: proxyServerUrl },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
+    }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(2)
+    expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${httpServer.address().port}`)
+    expect(proxyAuthorizationHeader).to.be.undefined()
+    expect(serverRequests[1]).to.equal(playbook.ui.bundle.url)
+    const paths = uiCatalog.getFiles().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
+  })
+
+  it('should honor https_proxy environment variable when fetching bundle over https', async () => {
+    const playbook = {
+      network: { httpsProxy: proxyServerUrl },
+      ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } },
+    }
+    const env = process.env
+    try {
+      process.env = Object.assign({}, env, { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
+      const uiCatalog = await loadUi(playbook)
+      expect(serverRequests).to.have.lengthOf(2)
+      expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${httpsServer.address().port}`)
+      expect(proxyAuthorizationHeader).to.be.undefined()
+      expect(serverRequests[1]).to.equal(playbook.ui.bundle.url)
+      const paths = uiCatalog.getFiles().map((file) => file.path)
+      expect(paths).to.have.members(expectedFilePaths)
+    } finally {
+      process.env = env
+    }
+  })
+
+  it('should not use proxy if http_proxy environment variable is set but URL is excluded by no_proxy environment variable', async () => {
+    const playbook = {
+      network: { httpProxy: proxyServerUrl, noProxy: 'example.org,localhost' },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
+    }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(1)
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+    const paths = uiCatalog.getFiles().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
+  })
+
+  it('should not use proxy if https_proxy environment variable is set but URL is excluded by no_proxy environment variable', async () => {
+    const playbook = {
+      network: { httpsProxy: proxyServerUrl, noProxy: 'example.org,localhost' },
+      ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } },
+    }
+    const env = process.env
+    try {
+      process.env = Object.assign({}, env, { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
+      const uiCatalog = await loadUi(playbook)
+      expect(serverRequests).to.have.lengthOf(1)
+      expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+      const paths = uiCatalog.getFiles().map((file) => file.path)
+      expect(paths).to.have.members(expectedFilePaths)
+    } finally {
+      process.env = env
+    }
   })
 
   it('should throw error if remote UI bundle cannot be found', async () => {

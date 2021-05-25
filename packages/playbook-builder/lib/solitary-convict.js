@@ -102,6 +102,20 @@ function registerFormats (convict) {
     },
   })
   convict.addFormat({
+    name: 'url',
+    validate: (val) => {
+      if (val == null) return
+      if (val.constructor !== String) throw new Error('must be a string')
+      let protocol
+      try {
+        protocol = new URL(val).protocol
+      } catch {
+        throw new Error('must be a valid URL')
+      }
+      if (!(protocol === 'https:' || protocol === 'http:')) throw new Error('must be an HTTP or HTTPS URL')
+    },
+  })
+  convict.addFormat({
     name: 'url-or-pathname',
     validate: (val) => {
       if (val == null) return

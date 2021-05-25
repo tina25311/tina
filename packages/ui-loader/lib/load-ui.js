@@ -42,6 +42,10 @@ const EXT_RX = /\.[a-z]{2,3}$/
  * @param {String} [playbook.runtime.cacheDir=undefined] - The base cache directory.
  * @param {Boolean} [playbook.runtime.fetch=false] - Forces the bundle to be
  * retrieved if configured as a snapshot.
+ * @param {Object} playbook.network - The network configuration object for Antora.
+ * @param {String} [playbook.network.httpProxy=undefined] - The URL of the proxy to use for HTTP URLs.
+ * @param {String} [playbook.network.httpsProxy=undefined] - The URL of the proxy to use for HTTPS URLs.
+ * @param {String} [playbook.network.noProxy=undefined] - The list of domains and IPs that should not be proxied.
  * @param {Object} playbook.ui - The UI configuration object for Antora.
  * @param {String} playbook.ui.bundle - The UI bundle configuration.
  * @param {String} playbook.ui.bundle.url - The path (relative or absolute) or URI
@@ -68,11 +72,11 @@ async function loadUi (playbook) {
     resolveBundle = ensureCacheDir(cacheDir, startDir).then((absCacheDir) => {
       const cachePath = ospath.join(absCacheDir, `${sha1(bundleUrl)}.zip`)
       return fetch && bundle.snapshot
-        ? downloadBundle(bundleUrl, cachePath)
+        ? downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {}))
         : fsp
           .stat(cachePath)
           .then((stat) => new File({ path: cachePath, stat }))
-          .catch(() => downloadBundle(bundleUrl, cachePath))
+          .catch(() => downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {})))
     })
   } else {
     const localPath = expandPath(bundleUrl, '~+', startDir)
@@ -153,8 +157,23 @@ function ensureCacheDir (customCacheDir, startDir) {
     })
 }
 
-function downloadBundle (url, to) {
-  return get(url, { resolveBodyOnly: true, responseType: 'buffer' })
+function createAgent (url, { httpProxy, httpsProxy, noProxy }) {
+  if (httpsProxy || httpProxy) {
+    const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
+    const proxy = url.startsWith('https:')
+      ? { protocol: 'https', ProxyAgent: HttpsProxyAgent, url: httpsProxy }
+      : { protocol: 'http', ProxyAgent: HttpProxyAgent, url: httpProxy }
+    if (proxy.url && require('should-proxy')(url, { no_proxy: noProxy })) {
+      // see https://github.com/delvedor/hpagent/issues/18
+      const { protocol, hostname, port, username, password } = new URL(proxy.url)
+      const proxyUrl = { protocol, hostname, port: port, username: username || null, password: password || null }
+      return { [proxy.protocol]: new proxy.ProxyAgent({ keepAlive: false, maxSockets: Infinity, proxy: proxyUrl }) }
+    }
+  }
+}
+
+function downloadBundle (url, to, agent) {
+  return get(url, { agent, resolveBodyOnly: true, responseType: 'buffer' })
     .then(
       (body) =>
         new Promise((resolve, reject) =>

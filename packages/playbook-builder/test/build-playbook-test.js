@@ -521,6 +521,9 @@ describe('buildPlaybook()', () => {
     expect(playbook.runtime.fetch).to.equal(true)
     expect(playbook.runtime.quiet).to.equal(false)
     expect(playbook.runtime.silent).to.equal(false)
+    expect(playbook.network.httpProxy).to.equal('http://proxy.example.org')
+    expect(playbook.network.httpsProxy).to.equal('http://proxy.example.org')
+    expect(playbook.network.noProxy).to.equal('example.org,example.com')
     expect(playbook.site.url).to.equal('https://example.com')
     expect(playbook.site.title).to.equal('Example site')
     expect(playbook.site.startPage).to.equal('1.0@server::intro')
@@ -600,6 +603,16 @@ describe('buildPlaybook()', () => {
   it('should throw error if site.url is an absolute URL containing spaces in the pathname', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'https://example.org/my docs'], {})).to.throw(
       'must not contain spaces'
+    )
+  })
+
+  it('should throw error if url is not a string', () => {
+    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec], { http_proxy: 5 })).to.throw('must be a string')
+  })
+
+  it('should throw error if url is a file URI', () => {
+    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--http-proxy', 'file:///proxy'], {})).to.throw(
+      'must be an HTTP or HTTPS URL'
     )
   })
 
