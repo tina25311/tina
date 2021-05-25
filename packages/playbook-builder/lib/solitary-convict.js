@@ -119,23 +119,17 @@ function registerFormats (convict) {
     name: 'url-or-pathname',
     validate: (val) => {
       if (val == null) return
-      if (val.constructor === String) {
-        if (val.charAt() === '/') val = 'https://example.org' + val
-        let protocol
-        let pathname
-        try {
-          ;({ protocol, pathname } = new URL(val))
-        } catch {
-          throw new Error('must be an absolute URL or a pathname (i.e., root-relative path)')
-        }
-        if (protocol !== 'https:' && protocol !== 'http:') {
-          throw new Error('must be an absolute URL or a pathname (i.e., root-relative path)')
-        } else if (~pathname.indexOf('%20')) {
-          throw new Error('must not contain spaces')
-        }
-      } else {
-        throw new Error('must be an absolute URL or a pathname (i.e., root-relative path)')
+      if (val.constructor !== String) throw new Error('must be a string')
+      let parsedUrl
+      try {
+        parsedUrl = new URL((val.charAt() === '/' ? 'https://example.org' : '') + val)
+      } catch {
+        throw new Error('must be a valid URL or a pathname (i.e., root-relative path)')
       }
+      if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+        throw new Error('must be an HTTP or HTTPS URL or a pathname (i.e., root-relative path)')
+      }
+      if (~parsedUrl.pathname.indexOf('%20')) throw new Error('pathname segment must not contain spaces')
     },
   })
 }

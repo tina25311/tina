@@ -572,37 +572,35 @@ describe('buildPlaybook()', () => {
 
   it('should throw error if site.url is a relative path', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'docs'], {})).to.throw(
-      'must be an absolute URL or a pathname (i.e., root-relative path)'
+      'must be a valid URL or a pathname (i.e., root-relative path)'
     )
   })
 
   it('should throw error if site.url is a file URI', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'file:///path/to/docs'], {})).to.throw(
-      'must be an absolute URL or a pathname (i.e., root-relative path)'
+      'must be an HTTP or HTTPS URL or a pathname (i.e., root-relative path)'
     )
   })
 
   it('should throw error if site.url is an invalid URL', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', ':/foo'], {})).to.throw(
-      'must be an absolute URL or a pathname (i.e., root-relative path)'
+      'must be a valid URL or a pathname (i.e., root-relative path)'
     )
   })
 
   it('should throw error if site.url is not a string', () => {
-    expect(() => buildPlaybook(['--playbook', invalidSiteUrlSpec], {})).to.throw(
-      'must be an absolute URL or a pathname (i.e., root-relative path)'
-    )
+    expect(() => buildPlaybook(['--playbook', invalidSiteUrlSpec], {})).to.throw('must be a string')
   })
 
   it('should throw error if site.url is a pathname containing spaces', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', '/my docs'], {})).to.throw(
-      'must not contain spaces'
+      'pathname segment must not contain spaces'
     )
   })
 
   it('should throw error if site.url is an absolute URL containing spaces in the pathname', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'https://example.org/my docs'], {})).to.throw(
-      'must not contain spaces'
+      'pathname segment must not contain spaces'
     )
   })
 
