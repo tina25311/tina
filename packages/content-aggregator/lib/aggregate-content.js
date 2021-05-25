@@ -89,7 +89,7 @@ function aggregateContent (playbook) {
   const { cacheDir, fetch, silent, quiet } = playbook.runtime
   const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
   const { ensureGitSuffix, credentials } = Object.assign({ ensureGitSuffix: true }, playbook.git)
-  const credentialManager = registerGitPlugins(credentials, startDir).get('credentialManager')
+  const credentialManager = registerGitPlugins(credentials, playbook.network || {}, startDir).get('credentialManager')
   return ensureCacheDir(cacheDir, startDir)
     .then((resolvedCacheDir) =>
       Promise.all(
@@ -894,19 +894,25 @@ function tagsSpecified (sources, defaultTags) {
   })
 }
 
-function registerGitPlugins (config, startDir) {
+function registerGitPlugins (credentials, network, startDir) {
   const plugins = git.cores.create(GIT_CORE)
   if (!plugins.has('fs')) plugins.set('fs', Object.assign({ _managed: true }, fs))
   let credentialManager
   if (plugins.has('credentialManager')) {
     credentialManager = plugins.get('credentialManager')
-    if (typeof credentialManager.configure === 'function') credentialManager.configure({ config, startDir })
+    if (typeof credentialManager.configure === 'function') {
+      credentialManager.configure({ config: credentials, startDir })
+    }
     if (typeof credentialManager.status !== 'function') {
       plugins.set('credentialManager', Object.assign({}, credentialManager, { status () {} }))
     }
   } else {
-    ;(credentialManager = new GitCredentialManagerStore().configure({ config, startDir }))._managed = true
+    credentialManager = new GitCredentialManagerStore().configure({ config: credentials, startDir })
+    credentialManager._managed = true
     plugins.set('credentialManager', credentialManager)
+  }
+  if (!plugins.has('http') && (network.httpsProxy || network.httpProxy)) {
+    plugins.set('http', Object.assign(require('./git-plugin-http')(network), { _managed: true }))
   }
   return plugins
 }
