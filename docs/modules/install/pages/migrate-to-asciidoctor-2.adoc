@@ -7,23 +7,32 @@ There are significant changes in Asciidoctor 2 that may impact your documentatio
 
 The feature changes described in the following table may impact your documentation.
 
+
+I think we should separate the impact this change has on indent into a separate line (like you do with callouts).
+
+The fact that Trailing spaces are not removed, tabs are not expanded, and newlines are not normalized in non-AsciiDoc files inserted into a verbatim block using an include directive is the base change. An optional action here is to ensure that non-AsciiDoc files do not have trailing spaces, a mix of tabs and spaces, and inconsistent newlines.
+
+The fact that tabs are not expanded can interfere with the behavior of the indent attribute, essentially preventing it from working.
+
 |===
 |Changed feature |New behavior |Action
 
-|Non-AsciiDoc files that are inserted into a verbatim block with an include directive and `indent` is set on the directive or block
+|Non-AsciiDoc files that are inserted into a verbatim block (listing, literal, and source blocks) with an include directive
+|Trailing space characters aren't removed, tabs aren't expanded, and newlines aren't normalized in non-AsciiDoc files that are inserted into a verbatim block with an include directive.
+This can change how the output is displayed.
+.3+.^a|* Update non-AsciiDoc files that use a mix of tabs and spaces or inconsistent newlines if their content isn't displaying as expected when published.
+* Replace any tabs in non-AsciiDoc files if the `indent` attribute is set but not working as expected.
+* Remove trailing space characters from non-AsciiDoc files, especially if using callouts in the file content or applying the `indent` attribute.
 
-Non-AsciiDoc files with callouts that are inserted into a document with an include directive
-//(https://github.com/asciidoctor/asciidoctor/issues/3436)
-|Trailing space characters, such as tab and ASCII space, are no longer removed from non-AsciiDoc files that are inserted with an include directive .
-This can change how the expected output is displayed when used with the `indent` attribute.
+|Non-AsciiDoc files with the `indent` attribute set on the verbatim block they're inserted into with an include directive
+|Since tabs aren't expanded, the `indent` attribute may not work as expected.
 
-Callout numbers may no longer be detected if they're followed by a space character in non-AsciiDoc files.
-|Remove any trailing space characters from non-AsciiDoc files that you're inserting into your pages, especially if using callouts in the file content or the `indent` attribute when including it in a page.
+|Non-AsciiDoc files with callouts that are inserted into a verbatim block with an include directive
+|Callout numbers may no longer be detected if followed by a space character.
 
 |Delimited listing blocks without an explicit style and `source-language` is set
-|Delimited listing blocks (`+----+`) that don't have an explicit style are automatically promoted to source blocks if `source-language` is set in the document, component description, or playbook.
-This may result in unwanted syntax highlighting in your output.
-//(https://github.com/asciidoctor/asciidoctor/issues/1117)
+|Delimited listing blocks (`+----+`) that don't have an explicit style are automatically promoted to source blocks if `source-language` is set in the document, component descriptor, or playbook.
+This may result in unwanted syntax highlighting.
 a|If `source-language` isn't set, you don't need to take any action.
 
 If `source-language` is set, do the following:
@@ -37,7 +46,7 @@ The `source` style is applied automatically.
 
 |Source blocks that aren't assigned a language
 |The language `none` is automatically assigned to source blocks (`source`) when no language is set on the block or by `source-language`.
-//(https://github.com/asciidoctor/asciidoctor/issues/2106).
+
 The block is styled like other source blocks, but no syntax highlighting is applied.
 a|If this behavior is acceptable, no change is needed.
 Otherwise, do one of the following:
@@ -47,87 +56,57 @@ Otherwise, do one of the following:
 * remove the `source` style and change the block to a delimited literal block (`+....+`).
 
 |Section and block title substitution order
-//(https://github.com/asciidoctor/asciidoctor/issues/1173)
 |The order of substitutions applied to section and block titles now matches the normal substitution order.
 This can affect section and block titles that use attribute references.
 |Review section and block titles that contain attribute references for errors.
 
 |`a` and `l` column modifiers
-|AsciiDoc (`a`) and literal (`l`) text formatting is now applied to cells in an implicit header row when these modifiers are applied to the columns in a table.
-//(https://github.com/asciidoctor/asciidoctor/issues/3760)
-Previously, these styles were not honored in the implicit header row.
-|Update any tables that use the `a` and `l` modifiers so your desired output is displayed.
+|Normal substitutions and the default header formatting are now correctly applied to the cells in an implicit header row when the AsciiDoc (`a`) and literal (`l`) modifiers are applied to the columns in a table.
+|Update tables that use the `a` and `l` modifiers in combination with an implicit header row so your desired output is displayed.
 
 |`table-topbot` CSS class
 |The CSS class `table-ends` replaces the deprecated `table-topbot` CSS class.
-//(https://github.com/asciidoctor/asciidoctor/issues/3797)
 |If you customized the styles for `table-topbot` in your UI, update the class name to `table-ends` and build a new UI bundle version.
 
 |"`Unresolved include directive`" message in the content
-|The message has changed to "`Unresolved directive`"
-//(https://github.com/asciidoctor/asciidoctor/issues/2868)
+|The message has changed to "`Unresolved directive`".
 |
 
 |`attribute-missing`
 |The `attribute-missing` setting is now honored when include directive and block macros are processed.
 This may reveal new missing include files and references.
-//(https://github.com/asciidoctor/asciidoctor/issues/2855)
 |Check the log messages for new warnings and fix any reported errors.
 
 |Footnotes
 |The `footnoteref` macro is deprecated and the structure of the `footnote` macro has changed to be consistent with other AsciiDoc macros.
 Previously the footnote target was placed inside the macro's square brackets.
 Now the target is placed directly after the colon (`+footnote:<target>[<optional attributes>]+`).
-//(https://github.com/asciidoctor/asciidoctor/issues/2347)
 |Change `footnoteref` to `footnote` and move the footnote target to the correct position.
-//Add documentation about this feature
 
 |Anchors and xrefs in footnotes
-//(https://github.com/asciidoctor/asciidoctor/pull/3151)
 |Anchor and xref macros are processed before footnote macros so that footnote macros aren't terminated prematurely.
 |Remove escape syntax, such as a backslash (`+\+`), from anchor and xref macros used inside footnote macro attribute lists.
 
 |Encode characters in email address to comply with RFC-3986
-//(https://github.com/asciidoctor/asciidoctor/pull/3015)
 |Previously, spaces in an email address were encoded as `%20`.
 Now, spaces are encoded as a plus sign (`{plus}`) in email addresses to comply with https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Description[RFC-3986].
 |
 
 |Description list delimiters (`::`)
-//(https://github.com/asciidoctor/asciidoctor/issues/2766)
 |Description list delimiters, that is, double colons (`::`) that are bare or at the start of line are no longer mistaken for a description list item.
 |Remove escape syntax around double colons (`::`) that were previously mistaken for description list delimiters.
 
 |Intrinsic `*-number` attributes
-|Using intrinsic *-number attributes in title of child block is not supported
+|Using intrinsic *-number attributes in title of child block is not supported.
 |
 
 |Table column width
 |The rounding used when calculating table column widths changed minutely.
 |No action is needed as the change shouldn't be noticeable to site visitors.
 
-|Autolink disabled for URL in link tag
-|
-|
 |===
 
 == Semantic versioning for Asciidoctor 2
 
 Starting with Asciidoctor 2.0, Asciidoctor switched to semantic versioning.
 This allows Antora to use newer patch versions of Asciidoctor.js without making a new Antora release.
-
-== New Asciidoctor 2 features
-
-|===
-|New feature |Description
-
-|`table-frame` and `table-grid` document attributes
-|Table frames and grids can be controlled using the `table-frame` and `table-grid` document attributes.
-These attributes can be overridden on an individual table using the `frame` and `grid` block attributes.
-//(https://github.com/asciidoctor/asciidoctor/issues/3059)
-
-|Collapsible blocks
-|Built-in support for collapsible blocks
-//(https://github.com/asciidoctor/asciidoctor/issues/1699)
-
-|===
