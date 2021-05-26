@@ -7,6 +7,7 @@ const fs = require('fs')
 const GitServer = require('node-git-server')
 const { default: Kapok } = require('kapok-js')
 const pkg = require('@antora/cli/package.json')
+const { once } = require('events')
 const ospath = require('path')
 const RepositoryBuilder = require('../../../test/repository-builder')
 
@@ -88,7 +89,7 @@ describe('cli', function () {
   })
 
   after(async () => {
-    await new Promise((resolve, reject) => gitServer.server.close((err) => (err ? reject(err) : resolve())))
+    await once(gitServer.server.close(), 'close')
     rmdirSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
       rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))

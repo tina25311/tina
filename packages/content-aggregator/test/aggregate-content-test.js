@@ -12,6 +12,7 @@ const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const GitServer = require('node-git-server')
 const http = require('http')
+const { once } = require('events')
 const os = require('os')
 const ospath = require('path')
 const { Readable } = require('stream')
@@ -146,9 +147,9 @@ describe('aggregateContent()', function () {
   }
 
   before(async () => {
-    gitServerPort = await new Promise((resolve, reject) =>
+    await new Promise((resolve, reject) =>
       (gitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })).listen(0, function (err) {
-        err ? reject(err) : resolve(this.address().port)
+        err ? reject(err) : resolve((gitServerPort = this.address().port))
       })
     )
   })
@@ -165,7 +166,7 @@ describe('aggregateContent()', function () {
   })
 
   after(async () => {
-    await new Promise((resolve, reject) => gitServer.server.close((err) => (err ? reject(err) : resolve())))
+    await once(gitServer.server.close(), 'close')
     clean(true)
   })
 
@@ -4739,51 +4740,46 @@ describe('aggregateContent()', function () {
     let server
     let serverPort
     before(async () => {
-      serverPort = await new Promise(
-        (resolve, reject) =>
-          (server = http
-            .createServer((req, res) => {
-              const headers = {}
-              let body = 'No dice!'
-              let stream
-              let [statusCode, scenario] = req.url.split('/').slice(1, 3)
-              statusCode = parseInt(statusCode)
-              scenario = scenario.replace(/\.git$/, '')
-              if (statusCode === 401) {
-                headers['WWW-Authenticate'] = 'Basic realm="example"'
-              } else if (statusCode === 301) {
-                headers.Location = 'http://example.org'
-              } else if (statusCode === 200) {
-                if (scenario === 'incomplete-ref-capabilities') {
-                  body = '001e# service=git-upload-pack\n0007ref\n'
-                } else if (scenario === 'insufficient-capabilities') {
-                  body = '001e# service=git-upload-pack\n0009ref\x00\n'
-                } else {
-                  body = '0000'
-                }
-                headers['Transfer-Encoding'] = 'chunked'
-                stream = new Readable({
-                  read (size) {
-                    this.push(body)
-                    this.push(null)
-                  },
-                })
-              }
-              res.writeHead(statusCode, headers)
-              if (stream) {
-                stream.pipe(res)
-              } else {
-                res.end(body)
-              }
-            })
-            .listen(0, function (err) {
-              err ? reject(err) : resolve(this.address().port)
-            }))
-      )
+      server = http.createServer((req, res) => {
+        const headers = {}
+        let body = 'No dice!'
+        let stream
+        let [statusCode, scenario] = req.url.split('/').slice(1, 3)
+        statusCode = parseInt(statusCode)
+        scenario = scenario.replace(/\.git$/, '')
+        if (statusCode === 401) {
+          headers['WWW-Authenticate'] = 'Basic realm="example"'
+        } else if (statusCode === 301) {
+          headers.Location = 'http://example.org'
+        } else if (statusCode === 200) {
+          if (scenario === 'incomplete-ref-capabilities') {
+            body = '001e# service=git-upload-pack\n0007ref\n'
+          } else if (scenario === 'insufficient-capabilities') {
+            body = '001e# service=git-upload-pack\n0009ref\x00\n'
+          } else {
+            body = '0000'
+          }
+          headers['Transfer-Encoding'] = 'chunked'
+          stream = new Readable({
+            read (size) {
+              this.push(body)
+              this.push(null)
+            },
+          })
+        }
+        res.writeHead(statusCode, headers)
+        if (stream) {
+          stream.pipe(res)
+        } else {
+          res.end(body)
+        }
+      })
+      await once(server.listen(0), 'listening')
+      serverPort = server.address().port
     })
 
     after(async () => {
-      await new Promise((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())))
+      await once(server.close(), 'close')
     })
 
     // NOTE this test also verifies that the SSH URL is still shown in the error message

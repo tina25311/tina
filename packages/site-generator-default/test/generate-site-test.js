@@ -7,6 +7,7 @@ const cheerio = require('cheerio')
 const fs = require('fs')
 const generateSite = require('@antora/site-generator-default')
 const GitServer = require('node-git-server')
+const { once } = require('events')
 const ospath = require('path')
 const RepositoryBuilder = require('../../../test/repository-builder')
 
@@ -86,7 +87,7 @@ describe('generateSite()', function () {
   })
 
   after(async () => {
-    await new Promise((resolve, reject) => gitServer.server.close((err) => (err ? reject(err) : resolve())))
+    await once(gitServer.server.close(), 'close')
     rmdirSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
       rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
