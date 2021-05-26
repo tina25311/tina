@@ -9,6 +9,7 @@ const getCacheDir = require('cache-directory')
 const http = require('http')
 const https = require('https')
 const loadUi = require('@antora/ui-loader')
+const { once } = require('events')
 const os = require('os')
 const ospath = require('path')
 const { Transform } = require('stream')
@@ -115,58 +116,69 @@ describe('loadUi()', () => {
     clean()
     serverRequests = []
     proxyAuthorizationHeader = undefined
-    httpServer = http
-      .createServer((request, response) => {
-        serverRequests.push(httpServerUrl + request.url.substr(1))
-        if (request.url.startsWith('/redirect?to=')) {
-          response.writeHead(301, { Location: `/${request.url.substr(13)}` })
-          response.end('<!DOCTYPE html><html><body>Moved.</body></html>', 'utf8')
-          return
+    httpServer = http.createServer((request, response) => {
+      serverRequests.push(httpServerUrl + request.url.substr(1))
+      if (request.url.startsWith('/redirect?to=')) {
+        response.writeHead(301, { Location: `/${request.url.substr(13)}` })
+        response.end('<!DOCTYPE html><html><body>Moved.</body></html>', 'utf8')
+        return
+      }
+      fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
+        if (err) {
+          response.writeHead(404, { 'Content-Type': 'text/html' })
+          response.end('<!DOCTYPE html><html><body>Not Found</body></html>', 'utf8')
+        } else {
+          response.writeHead(200, { 'Content-Type': 'application/zip' })
+          response.end(content)
         }
-        fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
-          if (err) {
-            response.writeHead(404, { 'Content-Type': 'text/html' })
-            response.end('<!DOCTYPE html><html><body>Not Found</body></html>', 'utf8')
-          } else {
-            response.writeHead(200, { 'Content-Type': 'application/zip' })
-            response.end(content)
-          }
-        })
       })
-      .listen(0)
-    httpServerUrl = new URL(`http://localhost:${httpServer.address().port}`).toString()
+    })
 
-    httpsServer = https
-      .createServer(ssl, (request, response) => {
-        serverRequests.push(httpsServerUrl + request.url.substr(1))
-        fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
-          if (err) {
-            response.writeHead(404, { 'Content-Type': 'text/html' })
-            response.end('<!DOCTYPE html><html><body>Not Found</body></html>', 'utf8')
-          } else {
-            response.writeHead(200, { 'Content-Type': 'application/zip' })
-            response.end(content)
-          }
-        })
+    httpsServer = https.createServer(ssl, (request, response) => {
+      serverRequests.push(httpsServerUrl + request.url.substr(1))
+      fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
+        if (err) {
+          response.writeHead(404, { 'Content-Type': 'text/html' })
+          response.end('<!DOCTYPE html><html><body>Not Found</body></html>', 'utf8')
+        } else {
+          response.writeHead(200, { 'Content-Type': 'application/zip' })
+          response.end(content)
+        }
       })
-      .listen(0)
-    httpsServerUrl = new URL(`https://localhost:${httpsServer.address().port}`).toString()
+    })
 
-    proxyServer = http
-      .createServer()
-      .on('connect', (request, clientSocket, head) => {
-        serverRequests.push(proxyServerUrl + ' -> ' + request.url)
-        proxyAuthorizationHeader = request.headers['proxy-authorization']
-        const [host, port = 80] = request.url.split(':', 2)
-        const serverSocket = net.connect({ port, host }, () => {
+    proxyServer = http.createServer().on('connect', (request, clientSocket, head) => {
+      serverRequests.push(proxyServerUrl + ' -> ' + request.url)
+      proxyAuthorizationHeader = request.headers['proxy-authorization']
+      const [host, port = 80] = request.url.split(':', 2)
+      const serverSocket = net
+        .connect({ port, host }, () => {
           clientSocket.write('HTTP/1.1 200 Connection Established\n\n')
           serverSocket.write(head)
           serverSocket.pipe(clientSocket)
           clientSocket.pipe(serverSocket)
         })
-      })
-      .listen(0)
-    proxyServerUrl = new URL(`http://localhost:${proxyServer.address().port}`).toString()
+        .on('end', () => clientSocket.destroy())
+    })
+
+    return Promise.all([
+      once(httpServer.listen(0), 'listening'),
+      once(httpsServer.listen(0), 'listening'),
+      once(proxyServer.listen(0), 'listening'),
+    ]).then(() => {
+      httpServerUrl = new URL(`http://localhost:${httpServer.address().port}`).toString()
+      httpsServerUrl = new URL(`https://localhost:${httpsServer.address().port}`).toString()
+      proxyServerUrl = new URL(`http://localhost:${proxyServer.address().port}`).toString()
+    })
+  })
+
+  afterEach(() => {
+    clean(true)
+    return Promise.all([
+      once(httpServer.close(), 'close'),
+      once(httpsServer.close(), 'close'),
+      once(proxyServer.close(), 'close'),
+    ])
   })
 
   after(() =>
@@ -178,13 +190,6 @@ describe('loadUi()', () => {
         )
       )
   )
-
-  afterEach(() => {
-    clean(true)
-    httpServer.close()
-    httpsServer.close()
-    proxyServer.close()
-  })
 
   describe('should throw error if bundle cannot be found', () => {
     testAll('no-such-bundle.zip', async (playbook) => {
