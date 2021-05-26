@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { deferExceptions, expect, heredoc, rmdirSync, spy } = require('../../../test/test-utils')
+const { deferExceptions, expect, heredoc, loadSslConfig, rmdirSync, spy } = require('../../../test/test-utils')
 
 const aggregateContent = require('@antora/content-aggregator')
 const computeOrigin = aggregateContent._computeOrigin
@@ -4252,6 +4252,54 @@ describe('aggregateContent()', function () {
       expect(aggregate).to.have.lengthOf(1)
       expect(customFs.readFileCalled).to.be.true()
       expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
+    })
+  })
+
+  describe('https', () => {
+    let oldEnv
+    let secureGitServer
+    let secureGitServerPort
+
+    const ssl = loadSslConfig()
+
+    before(
+      () =>
+        new Promise((resolve, reject) => {
+          ;(secureGitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })).listen(0, ssl, function (err) {
+            err ? reject(err) : resolve((secureGitServerPort = this.address().port))
+          })
+        })
+    )
+
+    beforeEach(() => {
+      process.env = Object.assign({}, (oldEnv = process.env), { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
+    })
+
+    afterEach(() => {
+      process.env = oldEnv
+    })
+
+    after(() => once(secureGitServer.server.close(), 'close'))
+
+    it('should aggregate content from content source with https URL', async () => {
+      const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+    })
+
+    it('should fail to clone repository with https URL if cert is unauthorized', async () => {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1'
+      const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const expectedMessage = `Error: self signed certificate (url: ${repoBuilder.url})`
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      expect(aggregateContentDeferred).to.throw(expectedMessage)
     })
   })
 
