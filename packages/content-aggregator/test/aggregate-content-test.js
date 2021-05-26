@@ -4260,20 +4260,16 @@ describe('aggregateContent()', function () {
     let credentialsSent
     let credentialsVerdict
     let skipAuthenticateIfNoAuth
-    let originalEnv
+    let oldEnv
 
     before(() => {
-      originalEnv = process.env
-    })
-
-    beforeEach(() => {
-      process.env.USERPROFILE = process.env.HOME = WORK_DIR
-      process.env.XDG_CONFIG_HOME = ospath.join(WORK_DIR, '.local')
-      authorizationHeaderValue = undefined
-      credentialsRequestCount = 0
-      credentialsSent = undefined
-      credentialsVerdict = undefined
-      skipAuthenticateIfNoAuth = undefined
+      oldEnv = Object.assign({}, process.env)
+      // NOTE must reuse process.env object since os.homedir() caches a reference to it
+      Object.assign(process.env, {
+        HOME: WORK_DIR,
+        USERPROFILE: WORK_DIR,
+        XDG_CONFIG_HOME: ospath.join(WORK_DIR, '.local'),
+      })
       gitServer.authenticate = ({ type, repo, user, headers }, next) => {
         authorizationHeaderValue = headers.authorization
         if (type === 'fetch') {
@@ -4293,13 +4289,22 @@ describe('aggregateContent()', function () {
       }
     })
 
+    beforeEach(() => {
+      authorizationHeaderValue = undefined
+      credentialsRequestCount = 0
+      credentialsSent = undefined
+      credentialsVerdict = undefined
+      skipAuthenticateIfNoAuth = undefined
+    })
+
     afterEach(() => {
       RepositoryBuilder.unregisterPlugin('credentialManager', GIT_CORE)
     })
 
     after(() => {
       gitServer.authenticate = undefined
-      process.env = originalEnv
+      Object.keys(process.env).forEach((name) => (delete process.env[name]))
+      Object.assign(process.env, oldEnv)
     })
 
     it('should read valid credentials from URL', async () => {

@@ -369,7 +369,7 @@ describe('createPageComposer()', () => {
     it('should be able to reference the real environment variables using the env variable', () => {
       const oldEnv = process.env
       try {
-        process.env = { FOO: 'BAR' }
+        process.env = Object.assign({}, oldEnv, { FOO: 'BAR' })
         replaceCallToBodyPartial('<body>{{env.FOO}}</body>')
         const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
         composePage(file, contentCatalog, navigationCatalog)

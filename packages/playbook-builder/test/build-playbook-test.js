@@ -648,11 +648,11 @@ describe('buildPlaybook()', () => {
   })
 
   it('should be decoupled from the process environment', () => {
-    const originalEnv = process.env
-    process.env = { URL: 'https://docs.example.org' }
+    const oldEnv = process.env
+    process.env = Object.assign({}, oldEnv, { URL: 'https://docs.example.org' })
     const playbook = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'])
     expect(playbook.site.url).to.be.undefined()
-    process.env = originalEnv
+    process.env = oldEnv
   })
 
   it('should leave the process environment unchanged', () => {
