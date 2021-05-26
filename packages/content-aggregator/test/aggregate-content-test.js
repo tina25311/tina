@@ -4303,7 +4303,7 @@ describe('aggregateContent()', function () {
 
     after(() => {
       gitServer.authenticate = undefined
-      Object.keys(process.env).forEach((name) => (delete process.env[name]))
+      Object.keys(process.env).forEach((name) => delete process.env[name])
       Object.assign(process.env, oldEnv)
     })
 

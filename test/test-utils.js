@@ -147,6 +147,10 @@ module.exports = {
     const indentSize = Math.min(...lines.filter((l) => l.startsWith(' ')).map((l) => l.match(indentRx)[0].length))
     return (indentSize ? lines.map((l) => (l.startsWith(' ') ? l.substr(indentSize) : l)) : lines).join('')
   },
+  loadSslConfig: () => ({
+    cert: fs.readFileSync(ospath.join(__dirname, 'ssl.cert')),
+    key: fs.readFileSync(ospath.join(__dirname, 'ssl.key')),
+  }),
   rmdirSync,
   spy: chai.spy,
   toJSON: (obj) => JSON.stringify(obj, undefined, '  '),

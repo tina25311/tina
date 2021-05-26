@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { deferExceptions, expect, rmdirSync } = require('../../../test/test-utils')
+const { deferExceptions, expect, loadSslConfig, rmdirSync } = require('../../../test/test-utils')
 
 const fs = require('fs')
 const { promises: fsp } = fs
@@ -51,10 +51,7 @@ describe('loadUi()', () => {
   let serverRequests
   let proxyAuthorizationHeader
 
-  const ssl = {
-    cert: fs.readFileSync(ospath.join(FIXTURES_DIR, 'ssl.cert')),
-    key: fs.readFileSync(ospath.join(FIXTURES_DIR, 'ssl.key')),
-  }
+  const ssl = loadSslConfig()
 
   const prefixPath = (prefix, path_) => [prefix, path_].join(ospath.sep)
 
