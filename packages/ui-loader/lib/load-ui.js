@@ -6,7 +6,7 @@ const { createHash } = require('crypto')
 const expandPath = require('@antora/expand-path-helper')
 const { File, MemoryFile, ReadableFile } = require('./file')
 const { promises: fsp } = require('fs')
-const get = require('got')
+const { concat: get } = require('simple-get')
 const getCacheDir = require('cache-directory')
 const minimatchAll = require('minimatch-all')
 const ospath = require('path')
@@ -161,42 +161,42 @@ function createAgent (url, { httpProxy, httpsProxy, noProxy }) {
   if (httpsProxy || httpProxy) {
     const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
     const proxy = url.startsWith('https:')
-      ? { protocol: 'https', ProxyAgent: HttpsProxyAgent, url: httpsProxy }
-      : { protocol: 'http', ProxyAgent: HttpProxyAgent, url: httpProxy }
+      ? { ProxyAgent: HttpsProxyAgent, url: httpsProxy }
+      : { ProxyAgent: HttpProxyAgent, url: httpProxy }
     if (proxy.url && require('should-proxy')(url, { no_proxy: noProxy })) {
       // see https://github.com/delvedor/hpagent/issues/18
       const { protocol, hostname, port, username, password } = new URL(proxy.url)
       const proxyUrl = { protocol, hostname, port: port, username: username || null, password: password || null }
-      return { [proxy.protocol]: new proxy.ProxyAgent({ keepAlive: false, maxSockets: Infinity, proxy: proxyUrl }) }
+      return new proxy.ProxyAgent({ keepAlive: false, maxSockets: Infinity, proxy: proxyUrl })
     }
   }
 }
 
 function downloadBundle (url, to, agent) {
-  return get(url, { agent, resolveBodyOnly: true, responseType: 'buffer' })
-    .then(
-      (body) =>
-        new Promise((resolve, reject) =>
-          new ReadableFile(new MemoryFile({ path: ospath.basename(to), contents: body }))
-            .pipe(vzip.src())
-            .on('error', (err) =>
-              reject(
-                Object.assign(err, { message: `not a valid zip file; ${err.message}`, summary: 'Invalid UI bundle' })
-              )
-            )
-            .on('finish', () =>
-              fsp
-                .mkdir(ospath.dirname(to), { recursive: true })
-                .then(() => fsp.writeFile(to, body))
-                .then(() => resolve(new File({ path: to, stat: { isDirectory: () => false } })))
-            )
+  return new Promise((resolve, reject) => {
+    get({ url, agent }, (err, response, contents) => {
+      if (err) reject(err)
+      if (response.statusCode !== 200) {
+        const message = `Response code ${response.statusCode} (${response.statusMessage})`
+        return reject(Object.assign(new Error(message), { name: 'HTTPError' }))
+      }
+      new ReadableFile(new MemoryFile({ path: ospath.basename(to), contents }))
+        .pipe(vzip.src())
+        .on('error', (err) =>
+          reject(Object.assign(err, { message: `not a valid zip file; ${err.message}`, summary: 'Invalid UI bundle' }))
         )
-    )
-    .catch((err) => {
-      const wrapped = new Error(`${err.summary || 'Failed to download UI bundle'}: ${url}`)
-      wrapped.stack += '\nCaused by: ' + (err.stack || 'unknown')
-      throw wrapped
+        .on('finish', function () {
+          fsp
+            .mkdir(ospath.dirname(to), { recursive: true })
+            .then(() => fsp.writeFile(to, contents))
+            .then(() => resolve(new File({ path: to, stat: { isDirectory: () => false } })))
+        })
     })
+  }).catch((err) => {
+    const wrapped = new Error(`${err.summary || 'Failed to download UI bundle'}: ${url}`)
+    wrapped.stack += '\nCaused by: ' + (err.stack || 'unknown')
+    throw wrapped
+  })
 }
 
 function selectFilesStartingFrom (startPath) {
