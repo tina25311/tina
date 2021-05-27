@@ -12,6 +12,7 @@ const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const GitServer = require('node-git-server')
 const http = require('http')
+const net = require('net')
 const { once } = require('events')
 const os = require('os')
 const ospath = require('path')
@@ -4255,31 +4256,55 @@ describe('aggregateContent()', function () {
     })
   })
 
-  describe('https', () => {
+  describe('https and proxy', () => {
     let oldEnv
+    let proxyServer
+    let proxyServerUrl
     let secureGitServer
     let secureGitServerPort
 
+    let serverRequests
+    let proxyAuthorizationHeader
+
     const ssl = loadSslConfig()
 
-    before(
-      () =>
-        new Promise((resolve, reject) => {
-          ;(secureGitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })).listen(0, ssl, function (err) {
-            err ? reject(err) : resolve((secureGitServerPort = this.address().port))
+    before(() => {
+      proxyServer = http.createServer().on('connect', (request, clientSocket, head) => {
+        serverRequests.push(proxyServerUrl + ' -> ' + request.url)
+        proxyAuthorizationHeader = request.headers['proxy-authorization']
+        const [host, port = 80] = request.url.split(':', 2)
+        const serverSocket = net
+          .connect({ port, host }, () => {
+            clientSocket.write('HTTP/1.1 200 Connection Established\n\n')
+            serverSocket.write(head)
+            serverSocket.pipe(clientSocket)
+            clientSocket.pipe(serverSocket)
           })
-        })
-    )
+          .on('end', () => clientSocket.destroy())
+      })
+
+      secureGitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })
+      const secureGitServerStartup = new Promise((resolve, reject) =>
+        secureGitServer.listen(0, ssl, (err) => (err ? reject(err) : resolve()))
+      )
+
+      return Promise.all([once(proxyServer.listen(0), 'listening'), secureGitServerStartup]).then(() => {
+        proxyServerUrl = new URL(`http://localhost:${proxyServer.address().port}`).toString()
+        secureGitServerPort = secureGitServer.server.address().port
+      })
+    })
 
     beforeEach(() => {
       process.env = Object.assign({}, (oldEnv = process.env), { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
+      serverRequests = []
+      proxyAuthorizationHeader = undefined
     })
 
     afterEach(() => {
       process.env = oldEnv
     })
 
-    after(() => once(secureGitServer.server.close(), 'close'))
+    after(() => Promise.all([once(proxyServer.close(), 'close'), once(secureGitServer.server.close(), 'close')]))
 
     it('should aggregate content from content source with https URL', async () => {
       const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
@@ -4300,6 +4325,60 @@ describe('aggregateContent()', function () {
       const expectedMessage = `Error: self signed certificate (url: ${repoBuilder.url})`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedMessage)
+    })
+
+    it('should honor http_proxy setting when cloning repository over http', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.network = { httpProxy: proxyServerUrl }
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.be.undefined()
+      expect(serverRequests).to.not.be.empty()
+      expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${gitServerPort}`)
+      expect(proxyAuthorizationHeader).to.be.undefined()
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+    })
+
+    it('should ignore http_proxy setting if URL is excluded by no_proxy setting', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.network = { httpProxy: proxyServerUrl, noProxy: 'example.org,localhost' }
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.be.undefined()
+      expect(serverRequests).to.be.empty()
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+    })
+
+    it('should honor https_proxy setting when cloning repository over https', async () => {
+      const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.network = { httpsProxy: proxyServerUrl }
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.be.undefined()
+      expect(serverRequests).to.not.be.empty()
+      expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${secureGitServerPort}`)
+      expect(proxyAuthorizationHeader).to.be.undefined()
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+    })
+
+    it('should ignore https_proxy setting if URL is excluded by no_proxy setting', async () => {
+      const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.network = { httpsProxy: proxyServerUrl, noProxy: 'example.org,localhost' }
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.be.undefined()
+      expect(serverRequests).to.be.empty()
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
     })
   })
 
