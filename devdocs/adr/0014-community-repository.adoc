@@ -1,0 +1,56 @@
+= ADR 0014: Create Community Repository
+:revdate: 2021-05-27
+
+== Status
+
+Pending
+
+== Context
+
+As the Antora ecosystem and community grows, our ability to set expectations and maintain project quality and operational consistency is increasingly important.
+To support these goals, we need to document and communicate our operational processes, governance methods, and other project-related guidelines.
+Currently, the few documents we use for the purposes described above are stored in the Antora repository and Antora playbook repository.
+The documents in the Antora repository get versioned.
+Due to versioning, maintainers and contributors can end up wasting time if they inadvertently use obsolete testing, CI/CD, or contributing instructions.
+Additionally, some general information, such as help channel information and the Code of Conduct, is replicated multiple times even though the content rarely changes.
+This information also applies to the entire organization, not just the Antora core repository.
+
+Also, when new repositories are created in the Antora repository, they often make use of the most recent workflows, methods, and patterns documented in the main branch of the Antora core repository and then add to or modify the guidelines as a specific project requires.
+These files are copied from one repository to another, but end up diverging when the information is only updated in one file copy.
+
+== Options considered
+
+* Set up a dedicated branch in the Antora core repository that only contains the operational, governance, and project guideline documents.
+* Set up a health files style repository, like GitHub's _.github_, in the Antora organization.
+* Set up a new repository in the Antora organization named community.
+
+Setting up a dedicated branch in the Antora core repository will reduce content duplication, but the files won't be as easy to find.
+Also, issues and MRs directed at the files stored in this branch will be mixed with the issues and MRs of the host repository.
+Finally, creating a new branch and then removing all the unneeded files and configuration isn't any less work than setting up a new repository, so this doesn't seem to be an accessible or efficient solution.
+
+At this time ({revdate}), GitLab.org doesn't provide the same experience as a _.github_ repository at our service level.
+To the best of our knowledge, even if we upgraded our service level, the functionality corresponding to a health files repository, is implemented as templates that can only be edited using the web editor and/or interacted with using the API.
+Like the dedicated branch option, this option seems to have accessibility issues.
+
+A new repository in the Antora organization with a single branch will reduce duplication and maintain consistency throughout the organization.
+Unlike the dedicated branch solution, a dedicated repository will be easier to discover and navigate.
+Also, issues and MRs for the documents stored in the new repository won't be mixed with issues and MRs for the Antora code base, configuration, and documentation files.
+Several files and sections of content will need to be moved from other repositories to the new repository and, when applicable, redirects, symlinks, links, or notices will need to be added to direct people and applications to the source files.
+
+== Decision
+
+We've decided to create a new repository in the Antora organization to store its community-wide and baseline operational processes, governance methods, and other project-related guidelines.
+This will reduce file duplication and unwanted version associations, improve project on-boarding efficiency, and ensure that issues and MRs for these files aren't mixed with another project's concerns.
+
+The repository will be named *community* because the files will communicate the organization-wide operational processes, governance methods, and other project-related policies that apply to maintainers, contributors, and users.
+
+== Consequences
+
+Initially, the project will only contain a few files, such as the lifecyle and versioning policy and communication channel information.
+Files currently stored in the Antora core repository and other repositories that are selected for the community repository will need to be moved.
+The original repositories will then need to be updated with redirects, symlinks, links, notices, etc. to the community content.
+
+We will also need to set up a new component version because some (or most) of the community files will be published to docs.antora.org or another existing or new subdomain as a versionless component.
+
+An individual repository can still have additional or modified instructions, policies, and guidelines as needed to suit the purpose of the project.
+However, there will be a set of policies, such as the Code of Conduct, that all new repositories must adopt.
