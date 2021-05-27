@@ -166,8 +166,8 @@ function createAgent (url, { httpProxy, httpsProxy, noProxy }) {
     if (proxy.url && require('should-proxy')(url, { no_proxy: noProxy })) {
       // see https://github.com/delvedor/hpagent/issues/18
       const { protocol, hostname, port, username, password } = new URL(proxy.url)
-      const proxyUrl = { protocol, hostname, port: port, username: username || null, password: password || null }
-      return new proxy.ProxyAgent({ keepAlive: false, maxSockets: Infinity, proxy: proxyUrl })
+      const proxyUrl = { protocol, hostname, port, username: username || null, password: password || null }
+      return new proxy.ProxyAgent({ proxy: proxyUrl })
     }
   }
 }

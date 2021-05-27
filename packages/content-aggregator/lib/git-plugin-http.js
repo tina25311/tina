@@ -18,8 +18,8 @@ module.exports = ({ httpProxy, httpsProxy, noProxy }) => {
     if (proxy.url && shouldProxy(url, { no_proxy: noProxy })) {
       // see https://github.com/delvedor/hpagent/issues/18
       const { protocol, hostname, port, username, password } = new URL(proxy.url)
-      const proxyUrl = { protocol, hostname, port: port, username: username || null, password: password || null }
-      agent = new proxy.ProxyAgent({ keepAlive: false, maxSockets: Infinity, proxy: proxyUrl })
+      const proxyUrl = { protocol, hostname, port, username: username || null, password: password || null }
+      agent = new proxy.ProxyAgent({ proxy: proxyUrl })
     }
     return new Promise((resolve, reject) =>
       get({ url, agent, method, headers, body }, (err, res) => {
