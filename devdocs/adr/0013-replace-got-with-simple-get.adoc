@@ -1,0 +1,33 @@
+= ADR 0013: Minimum Node Version
+:revdate: 2021-05-27
+
+== Status
+
+Accepted
+
+== Context
+
+When we began work on Antora, we only had to integrate a single HTTP(S) client into the UI loader for the purpose of downloading the UI bundle.
+We selected https://github.com/sindresorhus/got[got] because it offered (and still does offer) a simple, promise-based API that's easy to use and supports all the features of HTTP we could ever need.
+Although the original git client in the content aggregator, nodegit, had support for cloning over HTTP(S), that HTTP client was hidden away, so it was not something we had direct control over.
+
+When we switched the content aggregator to use isomorphic-git, it introduced a second HTTP(s) client, https://github.com/feross/simple-get[simple-get].
+Now that we need Antora to be able to configure the client to offer features such as proxy and custom certificate authority support, having two different clients doesn't make a lot of sense.
+In order to get back to a single client, the choice is between got and simple-get.
+
+== Decision
+
+Although got is an incredibly powerful HTTP(S) client with an API that's simple to use, it does pull in a lot of extra dependencies (approx. 25).
+simple-get on the other hand has only three (one of which we were already using).
+And one of our goals for Antora is to keep the dependencies to a minimum (to reduce the size of Antora and to make it easier to manage updates).
+Even if we replaced the HTTP(s) client in isomorphic-git with got, isomorphic-git would still pull in simple-get as a dependency.
+So the only way to reduce the number of dependencies is to remove got.
+For our purposes, simple-get matches the feature set of got, with the one exception that it does not have a promise-based API.
+
+For these reasons, we've decided to consolidate on simple-get as the HTTP(S) client in Antora.
+
+== Consequences
+
+We may learn that we need the extra features that got provides over simple-get.
+So far, we aren't aware of any limitations, as both expose the features of the underlying HTTP(S) client in Node.js that we need, including agent, ca (certificate authority), and authentication.
+If we do learn that we need a feature that only got provides, then we can invert the decision and integrate got in both places instead.
