@@ -12,8 +12,8 @@ module.exports = ({ httpProxy, httpsProxy, noProxy }) => {
       body = Buffer.concat(buffers)
     }
     const proxy = url.startsWith('https:')
-      ? { protocol: 'https', ProxyAgent: HttpsProxyAgent, url: httpsProxy }
-      : { protocol: 'http', ProxyAgent: HttpProxyAgent, url: httpProxy }
+      ? { ProxyAgent: HttpsProxyAgent, url: httpsProxy }
+      : { ProxyAgent: HttpProxyAgent, url: httpProxy }
     let agent
     if (proxy.url && shouldProxy(url, { no_proxy: noProxy })) {
       // see https://github.com/delvedor/hpagent/issues/18
