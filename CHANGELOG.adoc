@@ -13,6 +13,10 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Add support for proxy settings to git client (by way of http_proxy, https_proxy, and no_proxy environment variables mapped to the playbook schema) (#749)
 * *ui-loader*: Add support for proxy settings to UI downloader (by way of http_proxy, https_proxy, and no_proxy environment variables mapped to the playbook schema) (#749)
 
+=== Changed
+
+* *ui-loader*: Replace got with simple-get as HTTP client
+
 == 3.0.0-alpha.5 (2021-05-15)
 
 === Added
