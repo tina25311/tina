@@ -975,7 +975,7 @@ describe('loadUi()', () => {
     expect(paths).to.have.members(expectedFilePaths)
   })
 
-  it('should honor http_proxy environment variable when fetching bundle over http', async () => {
+  it('should honor http_proxy network setting when fetching bundle over http', async () => {
     const playbook = {
       network: { httpProxy: proxyServerUrl },
       ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
@@ -989,7 +989,7 @@ describe('loadUi()', () => {
     expect(paths).to.have.members(expectedFilePaths)
   })
 
-  it('should honor https_proxy environment variable when fetching bundle over https', async () => {
+  it('should honor https_proxy network setting when fetching bundle over https', async () => {
     const playbook = {
       network: { httpsProxy: proxyServerUrl },
       ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } },
@@ -1009,7 +1009,7 @@ describe('loadUi()', () => {
     }
   })
 
-  it('should not use proxy if http_proxy environment variable is set but URL is excluded by no_proxy environment variable', async () => {
+  it('should not use proxy if http_proxy network setting is specified but URL is excluded by no_proxy setting', async () => {
     const playbook = {
       network: { httpProxy: proxyServerUrl, noProxy: 'example.org,localhost' },
       ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
@@ -1021,7 +1021,7 @@ describe('loadUi()', () => {
     expect(paths).to.have.members(expectedFilePaths)
   })
 
-  it('should not use proxy if https_proxy environment variable is set but URL is excluded by no_proxy environment variable', async () => {
+  it('should not use proxy if https_proxy network setting is specified but URL is excluded by no_proxy setting', async () => {
     const playbook = {
       network: { httpsProxy: proxyServerUrl, noProxy: 'example.org,localhost' },
       ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } },
