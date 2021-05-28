@@ -1,4 +1,5 @@
 * xref:whats-new.adoc[]
+** xref:asciidoctor-upgrade-notes.adoc[]
 * xref:features.adoc[]
 * xref:how-antora-works.adoc[]
 * xref:install-and-run-quickstart.adoc[]
