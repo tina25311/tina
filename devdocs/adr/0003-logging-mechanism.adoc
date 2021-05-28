@@ -12,7 +12,7 @@ To the end user, the application should communicate information about the applic
 To the developer, the application needs to capture and record information to aid with debugging when the application malfunctions.
 
 Reporting this diagnostic information is called logging.
-Logging helps end users and developers understand better how the application works.
+Logging helps end users and developers better understand how the application works.
 
 Messages *should not* be sent directly to the standard streams (e.g., `console.log` or `console.warn`).
 This would make the messages hard to control, lack context, and couple the application to a console environment.
@@ -35,11 +35,11 @@ The logging library should also hook into Asciidoctor's logger and route message
 In the future, we anticipate wanting to send messages to an external service for monitoring.
 Due to Node's single-threaded event loop, it's highly recommended that log processing, alert triggering, and formatting is done in a separate process.
 
-That leads us to the recommended practice of emitting log messages in a structured logging/JSON format (i.e., https://developer.ibm.com/languages/node-js/blogs/nodejs-reference-architectire-pino-for-logging/#structured-logging[structured logging]).
+That leads to the recommended practice of emitting log messages in a structured logging/JSON format (see https://developer.ibm.com/languages/node-js/blogs/nodejs-reference-architectire-pino-for-logging/#structured-logging[structured logging]).
 Structured logging is often combined with a pipe-based architecture, in which log messages are emitted in raw format, then filtered, formatted, and/or routed using discrete applications attached by Unix pipes.
 This architecture has the benefit of eliminating the latency caused by processing long messages in situ.
 In other words, all log processing is performed in a separate process.
-It also affords the user more flexibility in how those log messages are processed and even allows the use of log aggregation tools to collect logs across processes, containers, and applications that run Antora.
+It also affords the user more flexibility in how log messages are processed and even allows the use of log aggregation tools to collect logs across processes, containers, and applications that run Antora.
 
 Node.js does not provide a standard logging module.
 Therefore, we had to evaluate available logging libraries and select one.
@@ -49,17 +49,17 @@ Therefore, we had to evaluate available logging libraries and select one.
 We evaluated the following logging libraries:
 
 * https://yarnpkg.com/en/package/winston[Winston] - a multi-transport sync logging library for Node.js
-* https://yarnpkg.com/en/package/pino[Pino] - a super fast, all natural json logger for Node.js with very low overhead
+* https://yarnpkg.com/en/package/pino[Pino] - a fast, JSON logger for Node.js with low overhead
 
-After reading https://developer.ibm.com/languages/node-js/blogs/nodejs-reference-architectire-pino-for-logging/[this reference architecture article] published by IBM/Red Hat, we became convinced that Pino is the best choice for logging over Winston.
-In addition to being small (< 1MB), fast and efficient, and extensible, Pino embraces the modern, pipe-oriented, opts-friendly approach to logging.
+After reading https://developer.ibm.com/languages/node-js/blogs/nodejs-reference-architectire-pino-for-logging/[this reference architecture article] published by IBM/Red Hat and other resources, we determined that Pino is the best choice for logging over Winston.
+In addition to being small (< 1MB), fast, efficient, and extensible, Pino embraces the modern, pipe-oriented, opts-friendly approach to logging.
 In other words, it emits structured messages to stdout in JSON format.
 Those messages, in turn, can be routed to a local formatter or log collector via a pipe.
 
-That takes care of the question of what format to use for the messages, because the answer is whatever format the Antora user requires by way of the Pino ecosystem.
+That answers the question of what format to use for the messages; the format can be whatever format the Antora user requires by way of the Pino ecosystem.
 We can, however, still offer to automatically format messages for authors when using Antora locally as a convenience (without compromising the ability to use Pino for ops-friendly logging).
 
-In particular, here's what we like about Pino:
+In summary, we selected Pino because it offers the following features:
 
 * broadly adopted
 * actively maintained
@@ -101,7 +101,7 @@ const logger = require('pino')({
 logger.info('holler')
 ----
 
-We decided against other loggers because they do not embrace the low-overhead, structured logging architecture to the degree that Pino does.
+We decided against other loggers because they don't provide the low-overhead, structured logging architecture to the same degree that Pino does.
 
 == Consequences
 
@@ -113,3 +113,8 @@ However, since Node.js does not provide a built-in logging mechanism, this is un
 By choosing a logging library for core, it determines the logging library that all extensions must use as well (if those extensions expect to participate in the same logging subsystem / configuration).
 
 The benefit of using a single logging mechanism is that we can allow the playbook to define the logging configuration, thus making it easy for the end user to tune the logging.
+
+== History
+
+We originally accepted this ADR with the decision to use Winston on 2017-11-18, but we never implemented the logging mechanism.
+In revisiting the ADR and current logging options in May 2021, we decided to update this ADR instead of creating a new ADR as our initial requirements were still valid, the logging ecosystem has just advanced.
