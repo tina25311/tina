@@ -1,23 +1,16 @@
-= Asciidoctor 2 Migration Guide
+= Asciidoctor 2 Features and Changes
 
-Antora 3 automatically upgrades you to Asciidoctor 2.
-There are significant changes in Asciidoctor 2 that may impact your documentation sites.
+Antora 3 uses Asciidoctor 2 to process content files.
+Asciidoctor 2 introduces many new features and a few substantive changes to existing features.
 
-== Significant Asciidoctor 2 changes
+== Asciidoctor 2 feature changes
 
-The feature changes described in the following table may impact your documentation.
-
-
-I think we should separate the impact this change has on indent into a separate line (like you do with callouts).
-
-The fact that Trailing spaces are not removed, tabs are not expanded, and newlines are not normalized in non-AsciiDoc files inserted into a verbatim block using an include directive is the base change. An optional action here is to ensure that non-AsciiDoc files do not have trailing spaces, a mix of tabs and spaces, and inconsistent newlines.
-
-The fact that tabs are not expanded can interfere with the behavior of the indent attribute, essentially preventing it from working.
+The following table describes the new behavior of existing Asciidoctor features and suggests the actions you should take prior to upgrading to Antora 3.
 
 |===
-|Changed feature |New behavior |Action
+|Feature |New behavior |Action
 
-|Non-AsciiDoc files that are inserted into a verbatim block (listing, literal, and source blocks) with an include directive
+|Non-AsciiDoc files inserted into a verbatim block (listing, literal, and source blocks) with an include directive
 |Trailing space characters aren't removed, tabs aren't expanded, and newlines aren't normalized in non-AsciiDoc files that are inserted into a verbatim block with an include directive.
 This can change how the output is displayed.
 .3+.^a|* Update non-AsciiDoc files that use a mix of tabs and spaces or inconsistent newlines if their content isn't displaying as expected when published.
@@ -30,7 +23,7 @@ This can change how the output is displayed.
 |Non-AsciiDoc files with callouts that are inserted into a verbatim block with an include directive
 |Callout numbers may no longer be detected if followed by a space character.
 
-|Delimited listing blocks without an explicit style and `source-language` is set
+|Delimited listing blocks without an explicit style when `source-language` is set
 |Delimited listing blocks (`+----+`) that don't have an explicit style are automatically promoted to source blocks if `source-language` is set in the document, component descriptor, or playbook.
 This may result in unwanted syntax highlighting.
 a|If `source-language` isn't set, you don't need to take any action.
@@ -41,8 +34,6 @@ If `source-language` is set, do the following:
 You can also change them to delimited literal blocks (`+....+`).
 * (optional) Remove the style `source` from delimited listing blocks that should be promoted to source blocks.
 The `source` style is applied automatically.
-//See xref:asciidoc:source.adoc[] for examples.
-//Update the docs in source.adoc to be compliant with Asciidoctor 2
 
 |Source blocks that aren't assigned a language
 |The language `none` is automatically assigned to source blocks (`source`) when no language is set on the block or by `source-language`.
@@ -61,7 +52,7 @@ This can affect section and block titles that use attribute references.
 |Review section and block titles that contain attribute references for errors.
 
 |`a` and `l` column modifiers
-|Normal substitutions and the default header formatting are now correctly applied to the cells in an implicit header row when the AsciiDoc (`a`) and literal (`l`) modifiers are applied to the columns in a table.
+|Normal substitutions and default header formatting are now correctly applied to the cells in an implicit header row when the AsciiDoc (`a`) and literal (`l`) modifiers are applied to the columns in a table.
 |Update tables that use the `a` and `l` modifiers in combination with an implicit header row so your desired output is displayed.
 
 |`table-topbot` CSS class
@@ -73,13 +64,13 @@ This can affect section and block titles that use attribute references.
 |
 
 |`attribute-missing`
-|The `attribute-missing` setting is now honored when include directive and block macros are processed.
+|The `attribute-missing` setting is now honored when include directives and block macros are processed.
 This may reveal new missing include files and references.
 |Check the log messages for new warnings and fix any reported errors.
 
 |Footnotes
 |The `footnoteref` macro is deprecated and the structure of the `footnote` macro has changed to be consistent with other AsciiDoc macros.
-Previously the footnote target was placed inside the macro's square brackets.
+Previously, the footnote target was placed inside the macro's square brackets.
 Now the target is placed directly after the colon (`+footnote:<target>[<optional attributes>]+`).
 |Change `footnoteref` to `footnote` and move the footnote target to the correct position.
 
@@ -96,17 +87,13 @@ Now, spaces are encoded as a plus sign (`{plus}`) in email addresses to comply w
 |Description list delimiters, that is, double colons (`::`) that are bare or at the start of line are no longer mistaken for a description list item.
 |Remove escape syntax around double colons (`::`) that were previously mistaken for description list delimiters.
 
-|Intrinsic `*-number` attributes
-|Using intrinsic *-number attributes in title of child block is not supported.
-|
-
 |Table column width
 |The rounding used when calculating table column widths changed minutely.
 |No action is needed as the change shouldn't be noticeable to site visitors.
 
 |===
 
-== Semantic versioning for Asciidoctor 2
+== Semantic versioning and Asciidoctor 2
 
-Starting with Asciidoctor 2.0, Asciidoctor switched to semantic versioning.
+Starting with version 2.0.0, Asciidoctor switched to semantic versioning.
 This allows Antora to use newer patch versions of Asciidoctor.js without making a new Antora release.
