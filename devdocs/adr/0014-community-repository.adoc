@@ -1,9 +1,9 @@
-= ADR 0014: Create Community Repository
+= ADR 0014: Create the Antora Community Repository
 :revdate: 2021-05-27
 
 == Status
 
-Pending
+Accepted
 
 == Context
 
@@ -11,18 +11,18 @@ As the Antora ecosystem and community grows, our ability to set expectations and
 To support these goals, we need to document and communicate our operational processes, governance methods, and other project-related guidelines.
 Currently, the few documents we use for the purposes described above are stored in the Antora repository and Antora playbook repository.
 The documents in the Antora repository get versioned.
-Due to versioning, maintainers and contributors can end up wasting time if they inadvertently use obsolete testing, CI/CD, or contributing instructions.
-Additionally, some general information, such as help channel information and the Code of Conduct, is replicated multiple times even though the content rarely changes.
-This information also applies to the entire organization, not just the Antora core repository.
+Due to versioning, contributors can end up wasting time if they inadvertently use obsolete testing, CI/CD, or contributing instructions or be otherwise misled from looking at these documents in an old version.
+Some general information, such as where to find the help channel and the Code of Conduct, is duplicated with each version though the content rarely changes and any changes that do occur shouldn't be coupled with a specific version.
+This general information, in its latest state, applies to the entire organization, not just the Antora core repository.
 
-Also, when new repositories are created in the Antora repository, they often make use of the most recent workflows, methods, and patterns documented in the main branch of the Antora core repository and then add to or modify the guidelines as a specific project requires.
+Additionally, when new repositories are created in the Antora organization, they often make use of the most recent workflows, methods, and patterns documented in the main branch of the Antora core repository and then add to or modify the guidelines as a specific project requires.
 These files are copied from one repository to another, but end up diverging when the information is only updated in one file copy.
 
 == Options considered
 
 * Set up a dedicated branch in the Antora core repository that only contains the operational, governance, and project guideline documents.
 * Set up a health files style repository, like GitHub's _.github_, in the Antora organization.
-* Set up a new repository in the Antora organization named community.
+* Set up a new repository in the Antora organization named antora-community.
 
 Setting up a dedicated branch in the Antora core repository will reduce content duplication, but the files won't be as easy to find.
 Also, issues and MRs directed at the files stored in this branch will be mixed with the issues and MRs of the host repository.
@@ -40,9 +40,9 @@ Several files and sections of content will need to be moved from other repositor
 == Decision
 
 We've decided to create a new repository in the Antora organization to store its community-wide and baseline operational processes, governance methods, and other project-related guidelines.
-This will reduce file duplication and unwanted version associations, improve project on-boarding efficiency, and ensure that issues and MRs for these files aren't mixed with another project's concerns.
+This will reduce file duplication and unintentional version associations, improve project on-boarding efficiency, and ensure that issues and MRs for these files aren't mixed with another project's concerns.
 
-The repository will be named *community* because the files will communicate the organization-wide operational processes, governance methods, and other project-related policies that apply to maintainers, contributors, and users.
+The repository will be named *antora-community* because the files will communicate the organization-wide operational processes, governance methods, and other project-related policies that apply to maintainers, contributors, and users.
 
 == Consequences
 
