@@ -33,7 +33,7 @@ describe('cli', function () {
 
   const timeoutOverride = this.timeout() * 2.5
 
-  const createContentRepository = async (gitServerPort) =>
+  const createContentRepository = (gitServerPort) =>
     (repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } }))
       .init('the-component')
       .then((builder) => builder.checkoutBranch('v1.0'))
@@ -327,7 +327,7 @@ describe('cli', function () {
     })
   }).timeout(timeoutOverride)
 
-  describe('cache directory', async () => {
+  describe('cache directory', () => {
     it('should store cache in cache directory passed to --cache-dir option', () => {
       playbookSpec.content.sources[0].url = repoBuilder.url
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -530,7 +530,7 @@ describe('cli', function () {
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
     const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
     fs.mkdirSync(localModulePath, { recursive: true })
-    const localScript = heredoc`module.exports = async (args, env) => {
+    const localScript = heredoc`module.exports = (args, env) => {
       console.log('Using custom site generator')
       return require(${JSON.stringify(globalModulePath)})([...args, '--title', 'Custom Site Generator'], env)
     }`
