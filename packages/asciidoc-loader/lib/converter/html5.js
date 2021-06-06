@@ -9,14 +9,15 @@ const Html5Converter = (() => {
   const scope = Opal.klass(
     Opal.module(null, 'Antora', $Antora),
     Opal.module(null, 'Asciidoctor').Converter.Html5Converter,
-    'Html5Converter',
-    function () {}
+    'Html5Converter'
   )
+
   Opal.defn(scope, '$initialize', function initialize (backend, opts, callbacks) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), [backend, opts])
     this[$pageRefCallback] = callbacks.onPageRef
     this[$imageRefCallback] = callbacks.onImageRef
   })
+
   Opal.defn(scope, '$convert_inline_anchor', function convertInlineAnchor (node) {
     if (node.getType() === 'xref') {
       let callback
@@ -48,16 +49,19 @@ const Html5Converter = (() => {
     }
     return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_anchor', convertInlineAnchor), [node])
   })
+
   Opal.defn(scope, '$convert_image', function convertImage (node) {
     return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_image', convertImage), [
       transformImageNode(this, node, node.getAttribute('target')),
     ])
   })
+
   Opal.defn(scope, '$convert_inline_image', function convertInlineImage (node) {
     return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_image', convertInlineImage), [
       transformImageNode(this, node, node.getTarget()),
     ])
   })
+
   return scope
 })()
 
