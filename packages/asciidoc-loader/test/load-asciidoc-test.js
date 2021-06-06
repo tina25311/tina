@@ -847,6 +847,37 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
     })
 
+    it('should resolve correct target from resource ID if previous include is empty', () => {
+      const contentCatalog = mockContentCatalog([
+        { module: 'module-a', family: 'partial', relative: 'target.adoc', contents: 'from module-a' },
+        { module: 'module-b', family: 'partial', relative: 'target.adoc', contents: 'from module-b' },
+        { module: 'module-b', family: 'partial', relative: 'empty.adoc' },
+      ]).spyOn('getById')
+      setInputFileContents('include::module-b:partial$empty.adoc[]\ninclude::partial$target.adoc[]')
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'partial',
+          relative: 'empty.adoc',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'target.adoc',
+        })
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getSourceLines()).to.eql(['from module-a'])
+    })
+
     it('should resolve include target with resource ID in separate component', () => {
       const includeContents = 'Hello, World!'
       const contentCatalog = mockContentCatalog({
