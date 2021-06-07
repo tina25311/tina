@@ -21,11 +21,12 @@ const IncludeProcessor = (() => {
 
   Opal.defn(scope, '$process', function (doc, reader, target, attrs) {
     if (reader.maxdepth === Opal.nil) return
+    const sourceCursor = reader.$cursor_at_prev_line()
     if (reader.$include_depth() >= Opal.hash_get(reader.maxdepth, 'curr')) {
-      log('error', `maximum include depth of ${Opal.hash_get(reader.maxdepth, 'rel')} exceeded`, reader)
+      log('error', `maximum include depth of ${Opal.hash_get(reader.maxdepth, 'rel')} exceeded`, reader, sourceCursor)
       return
     }
-    const resolvedFile = this[$callback](doc, target, reader.$cursor_at_prev_line())
+    const resolvedFile = this[$callback](doc, target, sourceCursor)
     if (resolvedFile) {
       let includeContents
       let linenums
@@ -34,7 +35,7 @@ const IncludeProcessor = (() => {
       if ((linenums = getLines(attrs))) {
         ;[includeContents, startLineNum] = filterLinesByLineNumbers(reader, target, resolvedFile, linenums)
       } else if ((tags = getTags(attrs))) {
-        ;[includeContents, startLineNum] = filterLinesByTags(reader, target, resolvedFile, tags)
+        ;[includeContents, startLineNum] = filterLinesByTags(reader, target, resolvedFile, tags, sourceCursor)
       } else {
         includeContents = resolvedFile.contents
         startLineNum = 1
@@ -45,10 +46,10 @@ const IncludeProcessor = (() => {
       reader.pushInclude(includeContents, file, resolvedFile.path, startLineNum, attrs)
     } else {
       if (attrs['$key?']('optional-option')) {
-        log('info', `optional include dropped because include file not found: ${target}`, reader)
+        log('info', `optional include dropped because include file not found: ${target}`, reader, sourceCursor)
       } else {
-        log('error', `include target not found: ${target}`, reader)
-        reader.$unshift(`Unresolved include directive in ${reader.$cursor_at_prev_line().file} - include::${target}[]`)
+        log('error', `include target not found: ${target}`, reader, sourceCursor)
+        reader.$unshift(`Unresolved include directive in ${sourceCursor.file} - include::${target}[]`)
       }
     }
   })
@@ -132,7 +133,7 @@ function filterLinesByLineNumbers (reader, target, file, linenums) {
   return [lines, startLineNum || 1]
 }
 
-function filterLinesByTags (reader, target, file, tags) {
+function filterLinesByTags (reader, target, file, tags, sourceCursor) {
   let selecting, selectingDefault, wildcard
   if (tags.has('**')) {
     if (tags.has('*')) {
@@ -182,6 +183,7 @@ function filterLinesByTags (reader, target, file, tags) {
               `mismatched end tag (expected '${activeTag}' but found '${thisTag}') ` +
                 `at line ${lineNum} of include file: ${file.file})`,
               reader,
+              sourceCursor,
               createIncludeCursor(reader, file, target, lineNum)
             )
           } else {
@@ -189,6 +191,7 @@ function filterLinesByTags (reader, target, file, tags) {
               'warn',
               `unexpected end tag '${thisTag}' at line ${lineNum} of include file: ${file.file}`,
               reader,
+              sourceCursor,
               createIncludeCursor(reader, file, target, lineNum)
             )
           }
@@ -211,6 +214,7 @@ function filterLinesByTags (reader, target, file, tags) {
         'warn',
         `detected unclosed tag '${tagName}' starting at line ${tagLineNum} of include file: ${file.file}`,
         reader,
+        sourceCursor,
         createIncludeCursor(reader, file, target, tagLineNum)
       )
     )
@@ -221,6 +225,7 @@ function filterLinesByTags (reader, target, file, tags) {
       'warn',
       `tag${tags.size > 1 ? 's' : ''} '${[...tags.keys()].join(', ')}' not found in include file: ${file.file}`,
       reader,
+      sourceCursor,
       createIncludeCursor(reader, file, target, 0)
     )
   }
@@ -232,10 +237,10 @@ function createIncludeCursor (reader, { file, src }, path, lineno) {
   return reader.$create_include_cursor(file, path, lineno)
 }
 
-function log (severity, message, reader, includeCursor = undefined) {
+function log (severity, message, reader, sourceCursor, includeCursor = undefined) {
   const opts = includeCursor
-    ? { source_location: reader.$cursor_at_prev_line(), include_location: includeCursor }
-    : { source_location: reader.$cursor_at_prev_line() }
+    ? { source_location: sourceCursor, include_location: includeCursor }
+    : { source_location: sourceCursor }
   reader.$logger()['$' + severity](reader.$message_with_context(message, Opal.hash(opts)))
 }
 
