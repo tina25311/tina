@@ -41,7 +41,7 @@ const IncludeProcessor = (() => {
       }
       Opal.hash_put(attrs, 'partial-option', '')
       const file = new String(resolvedFile.file) // eslint-disable-line no-new-wrappers
-      file.context = resolvedFile.context
+      file.src = resolvedFile.src
       reader.pushInclude(includeContents, file, resolvedFile.path, startLineNum, attrs)
     } else {
       if (attrs['$key?']('optional-option')) {
@@ -227,9 +227,8 @@ function filterLinesByTags (reader, target, file, tags) {
   return [lines, startLineNum || 1]
 }
 
-function createIncludeCursor (reader, { file, context }, path, lineno) {
-  file = new String(file) // eslint-disable-line no-new-wrappers
-  file.context = context
+function createIncludeCursor (reader, { file, src }, path, lineno) {
+  ;(file = new String(file)).src = src // eslint-disable-line no-new-wrappers
   return reader.$create_include_cursor(file, path, lineno)
 }
 
