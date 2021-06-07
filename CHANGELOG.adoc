@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *content-aggregator*: Assign file URL to src.origin.url on virtual file if repository has no remote and not using worktree (#764)
 * *asciidoc-loader*: Add file info to reader before pushing include onto the stack so it stays in sync if file is empty (#765)
 
 === Added

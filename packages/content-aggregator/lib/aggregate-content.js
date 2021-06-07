@@ -672,17 +672,20 @@ function loadComponentDescriptor (files, ref, version) {
 
 function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefined, editUrl = true) {
   const { shortname: refname, oid: refhash, type: reftype } = ref
+  const remote = !url.startsWith('file://')
   const origin = { type: 'git', refname, startPath }
-  if (url) origin.webUrl = (origin.url = url).replace(GIT_SUFFIX_RX, '')
   if (authStatus) origin.private = authStatus
   origin[reftype] = refname
   if (worktreePath) {
+    if (remote) origin.url = url
     origin.fileUriPattern =
-      'file://' + (posixify ? '/' + posixify(worktreePath) : worktreePath) + path.join('/', startPath, '%s')
+      (posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath) + path.join('/', startPath, '%s')
     origin.worktree = worktreePath
   } else {
+    origin.url = url
     origin.refhash = refhash
   }
+  if (remote) origin.webUrl = url.replace(GIT_SUFFIX_RX, '')
   if (editUrl === true) {
     let match
     if (url && (match = url.match(HOSTED_GIT_REPO_RX))) {
@@ -835,7 +838,7 @@ function generateCloneFolderName (url) {
  */
 function resolveRemoteUrl (repo, remoteName) {
   return git.config(Object.assign({ path: 'remote.' + remoteName + '.url' }, repo)).then((url) => {
-    if (!url) return
+    if (!url) return posixify ? 'file:///' + posixify(repo.dir) : 'file://' + repo.dir
     if (url.startsWith('https://') || url.startsWith('http://')) {
       return ~url.indexOf('@') ? url.replace(URL_AUTH_CLEANER_RX, '$1') : url
     } else if (url.startsWith('git@')) {
