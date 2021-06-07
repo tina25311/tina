@@ -36,6 +36,7 @@ function collectOptions (props, context = undefined) {
         option.default = default_
       }
       accum.push(option)
+      //if (format === 'boolean') accum.push({ form: `--no-${arg}`, format: format })
     }
     return accum
   }, [])

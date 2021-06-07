@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureStdErrSync, expect, spy } = require('../../../test/test-utils')
+const { captureLogSync, expect, spy } = require('../../../test/test-utils')
 
 const classifyContent = require('@antora/content-classifier')
 const ContentCatalog = require('@antora/content-classifier/lib/content-catalog')
@@ -538,21 +538,23 @@ describe('ContentCatalog', () => {
     it('should warn if specified start page not found', () => {
       const contentCatalog = new ContentCatalog()
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
-      const stdErrMessages = captureStdErrSync(() =>
+      const messages = captureLogSync(() =>
         contentCatalog.registerComponentVersionStartPage('the-component', '1.0', 'home.adoc')
       )
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home.adoc')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.equal('Start page specified for 1.0@the-component not found: home.adoc')
     })
 
     it('should warn if specified start page does not have the .adoc file extension', () => {
       const contentCatalog = new ContentCatalog()
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
-      const stdErrMessages = captureStdErrSync(() =>
+      const messages = captureLogSync(() =>
         contentCatalog.registerComponentVersionStartPage('the-component', '1.0', 'home')
       )
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0].trim()).to.equal('Start page specified for 1.0@the-component not found: home')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.equal('Start page specified for 1.0@the-component not found: home')
     })
 
     it('should warn if specified start page refers to a different component', () => {
@@ -568,12 +570,13 @@ describe('ContentCatalog', () => {
       })
       contentCatalog.registerComponentVersion('other-component', '2.0', { title: 'Other Component', startPage: true })
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
-      const stdErrMessages = captureStdErrSync(() =>
+      const messages = captureLogSync(() =>
         contentCatalog.registerComponentVersionStartPage('the-component', '1.0', 'other-component::start.adoc')
       )
       const expectedMessage = 'Start page specified for 1.0@the-component not found: other-component::start.adoc'
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.equal(expectedMessage)
     })
 
     it('should warn if specified start page refers to a different component version', () => {
@@ -589,12 +592,13 @@ describe('ContentCatalog', () => {
       })
       contentCatalog.registerComponentVersion('the-component', '2.0', { title: 'The Component', startPage: true })
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
-      const stdErrMessages = captureStdErrSync(() =>
+      const messages = captureLogSync(() =>
         contentCatalog.registerComponentVersionStartPage('the-component', '1.0', '2.0@start.adoc')
       )
       const expectedMessage = 'Start page specified for 1.0@the-component not found: 2.0@start.adoc'
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0].trim()).to.equal(expectedMessage)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.equal(expectedMessage)
     })
 
     it('should register splat alias for component version if strategy is redirect:from but not replace latest version in pub.url/out.path', () => {

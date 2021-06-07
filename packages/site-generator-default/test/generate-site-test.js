@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureStdErr, expect, rmdirSync, toJSON } = require('../../../test/test-utils')
+const { captureStdoutLog, expect, rmdirSync, toJSON } = require('../../../test/test-utils')
 
 const cheerio = require('cheerio')
 const fs = require('fs')
@@ -191,20 +191,28 @@ describe('generateSite()', function () {
       .with.contents.that.match(/<meta http-equiv="refresh" content="0; url=the-component\/2.0\/index.html">/)
   }).timeout(timeoutOverride)
 
-  it('should show warning if start page is missing .adoc file extension', async () => {
+  it('should emit warning if start page is missing .adoc file extension', async () => {
     playbookSpec.site.start_page = 'the-component::index'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const stdErrMessages = await captureStdErr(generateSite, ['--playbook', playbookFile], env)
-    expect(stdErrMessages).to.have.lengthOf(1)
-    expect(stdErrMessages[0]).to.equal('Start page specified for site not found: the-component::index')
+    const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.include({
+      level: 'warn',
+      name: '@antora/content-classifier',
+      msg: 'Start page specified for site not found: the-component::index',
+    })
   }).timeout(timeoutOverride)
 
-  it('should show warning if start page cannot be resolved', async () => {
+  it('should emit warning if start page cannot be resolved', async () => {
     playbookSpec.site.start_page = 'unknown-component::index.adoc'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const stdErrMessages = await captureStdErr(generateSite, ['--playbook', playbookFile], env)
-    expect(stdErrMessages).to.have.lengthOf(1)
-    expect(stdErrMessages[0]).to.equal('Start page specified for site not found: unknown-component::index.adoc')
+    const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.include({
+      level: 'warn',
+      name: '@antora/content-classifier',
+      msg: 'Start page specified for site not found: unknown-component::index.adoc',
+    })
   }).timeout(timeoutOverride)
 
   it('should qualify applicable links using site url if set in playbook', async () => {

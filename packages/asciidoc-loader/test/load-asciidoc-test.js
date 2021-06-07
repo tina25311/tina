@@ -1,8 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, heredoc } = require('../../../test/test-utils')
+const { captureLogSync, captureStderrSync, configureLogger, expect, heredoc } = require('../../../test/test-utils')
 
+// NOTE use separate require statement to verify loadAsciiDoc is default export
 const loadAsciiDoc = require('@antora/asciidoc-loader')
 const { extractAsciiDocMetadata, resolveAsciiDocConfig } = loadAsciiDoc
 const mockContentCatalog = require('../../../test/mock-content-catalog')
@@ -25,20 +26,12 @@ describe('loadAsciiDoc()', () => {
     inputFile.contents = Buffer.from(contents)
   }
 
-  const captureStderr = (block) => {
-    const messages = []
-    const defaultStderrWrite = process.stderr.write
-    process.stderr.write = (msg) => messages.push(msg)
-    const returnVal = block()
-    process.stderr.write = defaultStderrWrite
-    return [returnVal, messages]
-  }
-
   beforeEach(() => {
     inputFile = {
       path: 'modules/module-a/pages/page-a.adoc',
       dirname: 'modules/module-a/pages',
       src: {
+        path: 'modules/module-a/pages/page-a.adoc',
         component: 'component-a',
         version: 'master',
         module: 'module-a',
@@ -54,6 +47,11 @@ describe('loadAsciiDoc()', () => {
         rootPath: '../..',
       },
     }
+  })
+
+  afterEach(() => {
+    // see https://github.com/asciidoctor/asciidoctor.js/issues/1321
+    Asciidoctor.LoggerManager['$logger='](null)
   })
 
   it('should export loadAsciiDoc as default function', () => {
@@ -149,11 +147,13 @@ describe('loadAsciiDoc()', () => {
 
       include::does-not-resolve.adoc[]
     `
-    const [html, messages] = captureStderr(() => Asciidoctor.convert(contents, { safe: 'safe' }))
+    const { lines, returnValue: html } = captureStderrSync(() =>
+      Asciidoctor.convert(contents, { safe: 'safe' })
+    ).withReturnValue()
     expectLink(html, '1.0@component-b::index.html', 'Component B')
     expect(html).to.include('Unresolved directive in &lt;stdin&gt; - include::does-not-resolve.adoc[]')
-    expect(messages).to.have.lengthOf(1)
-    expect(messages[0]).to.include('line 5: include file not found')
+    expect(lines).to.have.lengthOf(1)
+    expect(lines[0]).to.include('line 5: include file not found')
   })
 
   it('should not apply Antora enhancements if content catalog is not specified', () => {
@@ -169,7 +169,9 @@ describe('loadAsciiDoc()', () => {
 
       xref:more.adoc[Read more].
     `)
-    const [html, messages] = captureStderr(() => loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig()).convert())
+    const { messages, returnValue: html } = captureLogSync(() =>
+      loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig()).convert()
+    ).withReturnValue()
     expect(html).to.equal(heredoc`
       <div class="sect1">
       <h2 id="_section_title"><a class="anchor" href="#_section_title"></a>Section Title</h2>
@@ -189,7 +191,12 @@ describe('loadAsciiDoc()', () => {
       </div>
     `)
     expect(messages).to.have.lengthOf(1)
-    expect(messages[0]).to.include('line 6: include target not found: partial$intro.adoc')
+    expect(messages[0]).to.eql({
+      level: 'error',
+      name: 'asciidoctor',
+      msg: 'include target not found: partial$intro.adoc',
+      file: { path: inputFile.src.path, line: 6 },
+    })
   })
 
   it('should use UTF-8 as the default String encoding', () => {
@@ -199,6 +206,153 @@ describe('loadAsciiDoc()', () => {
   it('should return correct bytes for String', () => {
     expect('foo'.$bytesize()).to.equal(3)
     expect('foo'.$each_byte().$to_a()).to.eql([102, 111, 111])
+  })
+
+  describe('logger adapter', () => {
+    it('should use null logger if logger is not enabled', () => {
+      setInputFileContents('= Page Title')
+      const doc = loadAsciiDoc(inputFile)
+      expect(doc.getOptions().logger).to.be.false()
+      expect(Asciidoctor.LoggerManager.getLogger()).to.be.instanceOf(Asciidoctor.NullLogger)
+    })
+
+    it('should not use null logger if logger is silent but failure level is active', () => {
+      configureLogger({ level: 'silent', failureLevel: 'warn' })
+      setInputFileContents('= Page Title')
+      const doc = loadAsciiDoc(inputFile)
+      expect(doc.getOptions().logger).to.not.be.false()
+      expect(Asciidoctor.LoggerManager.getLogger()).to.not.be.instanceOf(Asciidoctor.NullLogger)
+      expect(Asciidoctor.LoggerManager.getLogger().delegate.constructor.name).to.equal('Pino')
+    })
+
+    it('should mark logger to fail on exit if log failure level is reached', () => {
+      const messages = []
+      const rootLogger = configureLogger({
+        failureLevel: 'warn',
+        destination: { write: (messageString) => messages.push(messageString) },
+      }).get(null)
+      setInputFileContents('= Page Title\n\n2. two')
+      loadAsciiDoc(inputFile).convert()
+      expect(messages).to.have.lengthOf(1)
+      expect(rootLogger.failOnExit).to.be.true()
+    })
+
+    it('should mark logger to fail on exit if log failure level is reached and log level is not enabled', () => {
+      const messages = []
+      const rootLogger = configureLogger({
+        level: 'silent',
+        failureLevel: 'warn',
+        destination: { write: (messageString) => messages.push(messageString) },
+      }).get(null)
+      setInputFileContents('= Page Title\n\n2. two')
+      loadAsciiDoc(inputFile).convert()
+      expect(messages).to.have.lengthOf(0)
+      expect(rootLogger.failOnExit).to.be.true()
+    })
+
+    it('should not mark logger to fail on exit if log failure level is not reached and log level is not enabled', () => {
+      const messages = []
+      const rootLogger = configureLogger({
+        level: 'silent',
+        failureLevel: 'error',
+        destination: { write: (messageString) => messages.push(messageString) },
+      }).get(null)
+      setInputFileContents('= Page Title\n\n2. two')
+      loadAsciiDoc(inputFile).convert()
+      expect(messages).to.have.lengthOf(0)
+      expect(rootLogger.failOnExit).to.be.undefined()
+    })
+
+    it('should set level to infinity when logger is silent and failure level is not silent', () => {
+      configureLogger({ level: 'silent', failureLevel: 'warn' })
+      setInputFileContents('= Page Title')
+      loadAsciiDoc(inputFile)
+      expect(Asciidoctor.LoggerManager.getLogger().level).to.equal(Infinity)
+    })
+
+    it('should include file and source keys in log object when Asciidoctor does not provide source location', () => {
+      setInputFileContents('= Page Title\n\n{no-such-attribute}')
+      inputFile.src.origin = {
+        type: 'git',
+        url: 'https://git.example.org/repo.git',
+        startPath: 'docs',
+        refname: 'main',
+      }
+      const config = {
+        attributes: { 'attribute-missing': 'warn' },
+      }
+      const messages = captureLogSync(() => loadAsciiDoc(inputFile, undefined, config).convert())
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'warn',
+        name: 'asciidoctor',
+        file: { path: 'docs/modules/module-a/pages/page-a.adoc' },
+        source: { url: 'https://git.example.org/repo.git', refname: 'main', startPath: 'docs' },
+        msg: 'skipping reference to missing attribute: no-such-attribute',
+      })
+    })
+
+    it('should invoke block if log message is provided by block', () => {
+      setInputFileContents('= Page Title\n\n{no-such-attribute}')
+      const config = {
+        attributes: { 'attribute-missing': 'drop-line' },
+      }
+      const messages = captureLogSync(() => loadAsciiDoc(inputFile, undefined, config).convert())
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'info',
+        name: 'asciidoctor',
+        file: { path: 'modules/module-a/pages/page-a.adoc' },
+        msg: 'dropping line containing reference to missing attribute: no-such-attribute',
+      })
+    })
+
+    // NOTE this would only happen in an extension
+    it('should process contextual log message missing the source_location property', () => {
+      setInputFileContents('= Page Title')
+      const messages = captureLogSync(() => {
+        loadAsciiDoc(inputFile)
+        Asciidoctor.LoggerManager.getLogger().$warn(Asciidoctor.Logging.createLogMessage('oops', {}))
+      })
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'warn',
+        name: 'asciidoctor',
+        file: { path: 'modules/module-a/pages/page-a.adoc' },
+        msg: 'oops',
+      })
+    })
+
+    // NOTE this would only happen in an extension
+    it('should log message to info level if severity is not recognized', () => {
+      setInputFileContents('= Page Title')
+      const messages = captureLogSync(() => {
+        loadAsciiDoc(inputFile)
+        Asciidoctor.LoggerManager.getLogger().$unknown('wat?')
+      })
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'info',
+        name: 'asciidoctor',
+        file: { path: 'modules/module-a/pages/page-a.adoc' },
+        msg: 'wat?',
+      })
+    })
+
+    it('should use message passed as second argument to add method', () => {
+      setInputFileContents('= Page Title')
+      const messages = captureLogSync(() => {
+        loadAsciiDoc(inputFile)
+        Asciidoctor.LoggerManager.getLogger().$add(global.Opal.Logger.Severity.INFO, 'hello')
+      })
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'info',
+        name: 'asciidoctor',
+        file: { path: 'modules/module-a/pages/page-a.adoc' },
+        msg: 'hello',
+      })
+    })
   })
 
   describe('attributes', () => {
@@ -535,25 +689,34 @@ describe('loadAsciiDoc()', () => {
 
   describe('include directive', () => {
     it('should honor optional option on include directive', () => {
-      const contents = heredoc`
+      const inputContents = heredoc`
         = Document Title
 
         include::does-not-exist.adoc[opts=optional]
 
         after
       `
-      const [html, messages] = captureStderr(() => Asciidoctor.convert(contents, { safe: 'safe' }))
+      setInputFileContents(inputContents)
+      const { messages, returnValue: html } = captureLogSync(() => loadAsciiDoc(inputFile).convert()).withReturnValue()
       expect(html).to.not.include('Unresolved directive')
       expect(html).to.not.include('include::does-not-exist.adoc')
       expect(html).to.include('<p>after</p>')
-      expect(messages).to.be.empty()
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'info',
+        name: 'asciidoctor',
+        file: { path: 'modules/module-a/pages/page-a.adoc', line: 3 },
+        msg: 'optional include dropped because include file not found: does-not-exist.adoc',
+      })
     })
 
     it('should skip include directive if target prefixed with {partialsdir} cannot be resolved', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       const inputContents = 'include::{partialsdir}/does-not-exist.adoc[]'
       setInputFileContents(inputContents)
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.getById).to.have.been.called.with({
         component: 'component-a',
         version: 'master',
@@ -561,8 +724,6 @@ describe('loadAsciiDoc()', () => {
         family: 'partial',
         relative: 'does-not-exist.adoc',
       })
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('page-a.adoc: line 1: include target not found: partial$/does-not-exist.adoc')
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -571,13 +732,22 @@ describe('loadAsciiDoc()', () => {
         'include::partial$/does-not-exist.adoc[]',
       ].join(' - ')
       expect(firstBlock.getSourceLines()).to.eql([expectedSource])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'include target not found: partial$/does-not-exist.adoc',
+        file: { path: inputFile.src.path, line: 1 },
+      })
     })
 
     it('should skip include directive if target resource ID cannot be resolved', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       const inputContents = 'include::partial$does-not-exist.adoc[]'
       setInputFileContents(inputContents)
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -587,8 +757,6 @@ describe('loadAsciiDoc()', () => {
           family: 'partial',
           relative: 'does-not-exist.adoc',
         })
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('page-a.adoc: line 1: include target not found: partial$does-not-exist.adoc')
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -597,16 +765,23 @@ describe('loadAsciiDoc()', () => {
         'include::partial$does-not-exist.adoc[]',
       ].join(' - ')
       expect(firstBlock.getSourceLines()).to.eql([expectedSource])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'include target not found: partial$does-not-exist.adoc',
+        file: { path: inputFile.src.path, line: 1 },
+      })
     })
 
     it('should skip include directive if target resource ID has invalid syntax', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       const inputContents = 'include::module-a:partial$$[]'
       setInputFileContents(inputContents)
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.getById).to.not.have.been.called()
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('page-a.adoc: line 1: include target not found: module-a:partial$$')
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -615,13 +790,22 @@ describe('loadAsciiDoc()', () => {
         'include::module-a:partial$$[]',
       ].join(' - ')
       expect(firstBlock.getSourceLines()).to.eql([expectedSource])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'include target not found: module-a:partial$$',
+        file: { path: inputFile.src.path, line: 1 },
+      })
     })
 
     it('should not clobber surrounding lines when include target cannot be resolved', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       const inputContents = 'before\ninclude::partial$does-not-exist.adoc[]\nafter'
       setInputFileContents(inputContents)
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -631,8 +815,6 @@ describe('loadAsciiDoc()', () => {
           family: 'partial',
           relative: 'does-not-exist.adoc',
         })
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('page-a.adoc: line 2: include target not found: partial$does-not-exist.adoc')
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -641,6 +823,13 @@ describe('loadAsciiDoc()', () => {
         'include::partial$does-not-exist.adoc[]',
       ].join(' - ')
       expect(firstBlock.getSourceLines()).to.eql(['before', expectedSource, 'after'])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'include target not found: partial$does-not-exist.adoc',
+        file: { path: inputFile.src.path, line: 2 },
+      })
     })
 
     it('should not remove trailing spaces from lines of a non-AsciiDoc include file', () => {
@@ -916,10 +1105,10 @@ describe('loadAsciiDoc()', () => {
         contents: includeContents,
       }).spyOn('resolveResource')
       setInputFileContents('include::1.1@another-component::greeting.adoc[]')
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.resolveResource).to.not.have.been.called()
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('line 1: include target not found: 1.1@another-component::greeting.adoc')
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -928,6 +1117,13 @@ describe('loadAsciiDoc()', () => {
         'include::1.1@another-component::greeting.adoc[]',
       ].join(' - ')
       expect(firstBlock.getSourceLines()).to.eql([expectedSource])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'include target not found: 1.1@another-component::greeting.adoc',
+        file: { path: inputFile.src.path, line: 1 },
+      })
     })
 
     it('should assume family of target is partial when target is resource ID in separate version', () => {
@@ -939,10 +1135,10 @@ describe('loadAsciiDoc()', () => {
         contents: includeContents,
       }).spyOn('resolveResource')
       setInputFileContents('include::1.1@greeting.adoc[]')
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.resolveResource).to.not.have.been.called()
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('line 1: include target not found: 1.1@greeting.adoc')
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -951,6 +1147,13 @@ describe('loadAsciiDoc()', () => {
         'include::1.1@greeting.adoc[]',
       ].join(' - ')
       expect(firstBlock.getSourceLines()).to.eql([expectedSource])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'include target not found: 1.1@greeting.adoc',
+        file: { path: inputFile.src.path, line: 1 },
+      })
     })
 
     it('should resolve target of nested include relative to current file', () => {
@@ -1000,7 +1203,9 @@ describe('loadAsciiDoc()', () => {
         contents: outerIncludeContents,
       }).spyOn('getById', 'getByPath')
       setInputFileContents('include::{partialsdir}/outer.adoc[]')
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -1017,8 +1222,6 @@ describe('loadAsciiDoc()', () => {
           version: 'master',
           path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
         })
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('outer.adoc: line 1: include target not found: deeply/nested.adoc')
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
@@ -1027,6 +1230,14 @@ describe('loadAsciiDoc()', () => {
         'include::deeply/nested.adoc[]',
       ].join(' - ')
       expect(firstBlock.getSourceLines()).to.eql([expectedSource])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'include target not found: deeply/nested.adoc',
+        file: { path: 'modules/module-a/pages/_partials/outer.adoc', line: 1 },
+        stack: [{ file: { path: inputFile.src.path, line: 1 } }],
+      })
     })
 
     it('should resolve relative target of nested include in separate module relative to current file', () => {
@@ -1255,14 +1466,15 @@ describe('loadAsciiDoc()', () => {
         contents: includeContents,
       }).spyOn('getById')
       setInputFileContents('include::partial$greeting.adoc[]')
-      const [doc, messages] = captureStderr(() =>
+      const { messages, returnValue: doc } = captureLogSync(() =>
         loadAsciiDoc(inputFile, contentCatalog, { attributes: { 'max-include-depth': 0 } })
-      )
+      ).withReturnValue()
       expect(contentCatalog.getById).to.not.have.been.called()
       expect(doc.getBlocks()).to.be.empty()
       expect(messages).to.be.empty()
     })
 
+    // FIXME adapter should not report the same entry in the stack multiple times
     it('should skip include directive if max include depth is exceeded', () => {
       const includeContents = 'greetings!\n\ninclude::partial$greeting.adoc[]'
       const contentCatalog = mockContentCatalog({
@@ -1271,7 +1483,9 @@ describe('loadAsciiDoc()', () => {
         contents: includeContents,
       }).spyOn('getById')
       setInputFileContents('include::partial$greeting.adoc[]')
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -1284,9 +1498,12 @@ describe('loadAsciiDoc()', () => {
       const maxIncludeDepth = doc.getAttribute('max-include-depth')
       expect(doc.getBlocks()).to.have.lengthOf(maxIncludeDepth)
       expect(messages).to.have.lengthOf(1)
-      expect(messages[0].trim()).to.equal(
-        `asciidoctor: ERROR: greeting.adoc: line 3: maximum include depth of ${maxIncludeDepth} exceeded`
-      )
+      expect(messages[0].level).to.equal('error')
+      expect(messages[0].name).to.equal('asciidoctor')
+      expect(messages[0].msg).to.equal(`maximum include depth of ${maxIncludeDepth} exceeded`)
+      expect(messages[0].file).to.eql({ path: 'modules/module-a/pages/_partials/greeting.adoc', line: 3 })
+      const stackSize = messages[0].stack.length
+      expect(messages[0].stack[stackSize - 1]).to.eql({ file: { path: inputFile.src.path, line: 1 } })
     })
 
     it('should honor depth set in include directive', () => {
@@ -1296,7 +1513,9 @@ describe('loadAsciiDoc()', () => {
         { family: 'partial', relative: 'hit-up-for-money.adoc', contents: 'Got some coin for me?' },
       ]).spyOn('getById')
       setInputFileContents('include::partial$greeting.adoc[depth=0]')
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       expect(contentCatalog.getById).to.have.been.called.once()
       expect(contentCatalog.getById)
         .nth(1)
@@ -1309,9 +1528,13 @@ describe('loadAsciiDoc()', () => {
         })
       expect(doc.getBlocks()).to.have.lengthOf(1)
       expect(messages).to.have.lengthOf(1)
-      expect(messages[0].trim()).to.equal(
-        'asciidoctor: ERROR: greeting.adoc: line 3: maximum include depth of 0 exceeded'
-      )
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'maximum include depth of 0 exceeded',
+        file: { path: 'modules/module-a/pages/_partials/greeting.adoc', line: 3 },
+        stack: [{ file: { path: inputFile.src.path, line: 1 } }],
+      })
     })
 
     it('should not register include in document catalog', () => {
@@ -1977,16 +2200,21 @@ describe('loadAsciiDoc()', () => {
         include::{examplesdir}/ruby/greet.rb[tags=hello;goodbye]
         ----
       `)
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      const expectedMessage =
-        "page-a.adoc: line 3: mismatched end tag (expected 'goodbye' but found 'hello')" +
-        ' at line 5 of include file: modules/module-a/examples/ruby/greet.rb'
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include(expectedMessage)
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"', 'puts "Goodbye, World!"'])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'warn',
+        name: 'asciidoctor',
+        msg: "mismatched end tag (expected 'goodbye' but found 'hello') at line 5 of include file",
+        file: { path: 'modules/module-a/examples/ruby/greet.rb', line: 5 },
+        stack: [{ file: { path: inputFile.src.path, line: 3 } }],
+      })
     })
 
     it('should skip redundant end tag in include file', () => {
@@ -2008,16 +2236,21 @@ describe('loadAsciiDoc()', () => {
         include::{examplesdir}/ruby/greet.rb[tag=hello]
         ----
       `)
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      const expectedMessage =
-        "page-a.adoc: line 3: unexpected end tag 'hello' " +
-        'at line 5 of include file: modules/module-a/examples/ruby/greet.rb'
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include(expectedMessage)
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"'])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'warn',
+        name: 'asciidoctor',
+        msg: "unexpected end tag 'hello' at line 5 of include file",
+        file: { path: 'modules/module-a/examples/ruby/greet.rb', line: 5 },
+        stack: [{ file: { path: inputFile.src.path, line: 3 } }],
+      })
     })
 
     it('should warn if include tag is unclosed', () => {
@@ -2037,16 +2270,21 @@ describe('loadAsciiDoc()', () => {
         include::{examplesdir}/ruby/greet.rb[tag=hello]
         ----
       `)
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      const expectedMessage =
-        "page-a.adoc: line 3: detected unclosed tag 'hello' " +
-        'starting at line 2 of include file: modules/module-a/examples/ruby/greet.rb'
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include(expectedMessage)
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"'])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'warn',
+        name: 'asciidoctor',
+        msg: "detected unclosed tag 'hello' starting at line 2 of include file",
+        file: { path: 'modules/module-a/examples/ruby/greet.rb', line: 2 },
+        stack: [{ file: { path: inputFile.src.path, line: 3 } }],
+      })
     })
 
     it('should warn if requested include tag is not found', () => {
@@ -2065,31 +2303,21 @@ describe('loadAsciiDoc()', () => {
         include::{examplesdir}/ruby/greet.rb[tags=hello;yo]
         ----
       `)
-      const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      const expectedMessageText = "tags 'hello, yo' not found in include file: modules/module-a/examples/ruby/greet.rb"
-      const expectedMessage = `page-a.adoc: line 3: ${expectedMessageText}`
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include(expectedMessage)
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql([])
-      const memoryLogger = Asciidoctor.MemoryLogger.$new()
-      Asciidoctor.LoggerManager['$logger='](memoryLogger)
-      loadAsciiDoc(inputFile, contentCatalog)
-      expect(memoryLogger.messages).to.have.lengthOf(1)
-      const message = memoryLogger.messages[0].$$smap
-      expect(message.severity).to.equal('WARN')
-      expect(message).to.have.property('message')
-      const messageDetails = message.message.$$smap
-      expect(messageDetails.text).to.equal(expectedMessageText)
-      expect(messageDetails).to.have.property('source_location')
-      expect(messageDetails.source_location.file.toString()).to.equal('modules/module-a/pages/page-a.adoc')
-      expect(messageDetails.source_location.lineno).to.equal(3)
-      expect(messageDetails).to.have.property('include_location')
-      expect(messageDetails.include_location.file.toString()).to.equal('modules/module-a/examples/ruby/greet.rb')
-      expect(messageDetails.include_location.lineno).to.equal(0)
-      Asciidoctor.LoggerManager['$logger='](null)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'warn',
+        name: 'asciidoctor',
+        msg: "tags 'hello, yo' not found in include file",
+        file: { path: 'modules/module-a/examples/ruby/greet.rb' },
+        stack: [{ file: { path: inputFile.src.path, line: 3 } }],
+      })
     })
 
     it('should include all lines except for tag directives when tag wildcard is specified', () => {

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, heredoc } = require('../../../test/test-utils')
+const { captureLogSync, expect, heredoc } = require('../../../test/test-utils')
 
 const buildNavigation = require('@antora/navigation-builder')
 const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
@@ -1627,6 +1627,30 @@ describe('buildNavigation()', () => {
           urlType: 'internal',
         },
       ],
+    })
+  })
+
+  it('should route Asciidoctor log messages to Antora logger', () => {
+    const navContents = heredoc`
+      * xref:index.adoc[Home]
+      include::no-such-file.adoc[]
+    `
+    const contentCatalog = mockContentCatalog([
+      {
+        family: 'nav',
+        relative: 'nav.adoc',
+        contents: navContents,
+        navIndex: 0,
+      },
+      { family: 'page', relative: 'index.adoc' },
+    ])
+    const messages = captureLogSync(() => buildNavigation(contentCatalog))
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.eql({
+      level: 'error',
+      name: 'asciidoctor',
+      file: { path: 'modules/module-a/nav.adoc', line: 2 },
+      msg: 'include target not found: no-such-file.adoc',
     })
   })
 })

@@ -18,6 +18,7 @@
     "antora": "bin/antora"
   },
   "dependencies": {
+    "@antora/logger": "3.0.0-alpha.5",
     "@antora/playbook-builder": "3.0.0-alpha.5",
     "commander": "~6.2"
   },

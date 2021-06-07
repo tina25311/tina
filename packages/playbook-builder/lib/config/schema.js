@@ -191,6 +191,40 @@ module.exports = {
       default: false,
       arg: 'silent',
     },
+    log: {
+      level: {
+        doc: 'Set the minimum log level of messages that get logged.',
+        format: ['all', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'],
+        default: 'warn',
+        arg: 'log-level',
+        env: 'ANTORA_LOG_LEVEL',
+      },
+      failure_level: {
+        doc: 'Set the log level tolerance that, when exceeded, will cause the application to fail on exit.',
+        format: ['all', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'],
+        default: undefined,
+        arg: 'failure-level',
+        env: 'ANTORA_LOG_FAILURE_LEVEL',
+      },
+      format: new Proxy(
+        {
+          doc: 'Set the format of log messages. (default: structured if CI=true, pretty otherwise)',
+          format: ['pretty', 'structured', 'json'],
+          default: undefined,
+          arg: 'log-format',
+          env: 'ANTORA_LOG_FORMAT',
+        },
+        {
+          get (target, property) {
+            return property === 'default'
+              ? process.env.CI === 'true' || process.env.NODE_ENV === 'test'
+                ? 'structured'
+                : 'pretty'
+              : target[property]
+          },
+        }
+      ),
+    },
   },
   urls: {
     html_extension_style: {

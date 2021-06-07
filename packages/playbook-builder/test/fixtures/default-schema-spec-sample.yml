@@ -1,6 +1,9 @@
 runtime:
   cache_dir: ./.antora-cache
   fetch: true
+  log:
+    level: info
+    failure_level: warn
 site:
   url: https://example.com
   title: Example site

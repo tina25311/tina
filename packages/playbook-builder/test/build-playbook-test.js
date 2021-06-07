@@ -4,6 +4,7 @@
 const { expect } = require('../../../test/test-utils')
 
 const buildPlaybook = require('@antora/playbook-builder')
+const getLogger = require('@antora/logger')
 const ospath = require('path')
 
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
@@ -94,6 +95,7 @@ describe('buildPlaybook()', () => {
   const nullMapSpec = ospath.join(FIXTURES_DIR, 'null-map-spec-sample.yml')
   const invalidDirOrFilesSpec = ospath.join(FIXTURES_DIR, 'invalid-dir-or-files-spec-sample.yml')
   const invalidStringOrBooleanSpec = ospath.join(FIXTURES_DIR, 'invalid-string-or-boolean-spec-sample.yml')
+  const runtimeLogFormatSpec = ospath.join(FIXTURES_DIR, 'runtime-log-format-spec-sample.yml')
   const legacyGitEnsureGitSuffixSpec = ospath.join(FIXTURES_DIR, 'legacy-git-ensure-git-suffix-sample.yml')
   const legacyRuntimePullSpec = ospath.join(FIXTURES_DIR, 'legacy-runtime-pull-sample.yml')
   const legacyUiBundleSpec = ospath.join(FIXTURES_DIR, 'legacy-ui-bundle-sample.yml')
@@ -521,6 +523,9 @@ describe('buildPlaybook()', () => {
     expect(playbook.runtime.fetch).to.equal(true)
     expect(playbook.runtime.quiet).to.equal(false)
     expect(playbook.runtime.silent).to.equal(false)
+    expect(playbook.runtime.log.level).to.equal('info')
+    expect(playbook.runtime.log.failureLevel).to.equal('warn')
+    expect(playbook.runtime.log.format).to.equal('structured')
     expect(playbook.network.httpProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.httpsProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.noProxy).to.equal('example.org,example.com')
@@ -627,6 +632,42 @@ describe('buildPlaybook()', () => {
     )
   })
 
+  it('should not configure logger if runtime.log is not present in schema', () => {
+    const previousRootLogger = getLogger(null)
+    buildPlaybook([], { PLAYBOOK: yamlSpec }, schema)
+    expect(previousRootLogger.closed).to.not.be.true()
+  })
+
+  it('should set log level to silent if runtime.silent is set', () => {
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent', '--failure-level', 'silent'])
+    expect(getLogger(null).noop).to.be.true()
+    expect(playbook.runtime.log.level).to.equal('silent')
+  })
+
+  it('should set runtime.log.format to pretty when run locally', () => {
+    const oldEnv = process.env
+    const previousRootLogger = getLogger(null)
+    try {
+      process.env = Object.assign({}, oldEnv)
+      delete process.env.CI
+      delete process.env.NODE_ENV
+      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec])
+      expect(previousRootLogger.closed).to.be.true()
+      expect(getLogger(null).noop).to.be.false()
+      expect(playbook.runtime.log.format).to.equal('pretty')
+    } finally {
+      process.env = oldEnv
+    }
+  })
+
+  it('should override dynamic default value for log format', () => {
+    const previousRootLogger = getLogger(null)
+    const playbook = buildPlaybook(['--playbook', runtimeLogFormatSpec])
+    expect(previousRootLogger.closed).to.be.true()
+    expect(getLogger(null).noop).to.be.false()
+    expect(playbook.runtime.log.format).to.equal('pretty')
+  })
+
   it('should not accept playbook data that defines git.ensureGitSuffix', () => {
     expect(() => buildPlaybook(['--playbook', legacyGitEnsureGitSuffixSpec], {})).to.throw(/not declared in the schema/)
   })
@@ -649,10 +690,13 @@ describe('buildPlaybook()', () => {
 
   it('should be decoupled from the process environment', () => {
     const oldEnv = process.env
-    process.env = Object.assign({}, oldEnv, { URL: 'https://docs.example.org' })
-    const playbook = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'])
-    expect(playbook.site.url).to.be.undefined()
-    process.env = oldEnv
+    try {
+      process.env = Object.assign({}, oldEnv, { URL: 'https://docs.example.org' })
+      const playbook = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'])
+      expect(playbook.site.url).to.be.undefined()
+    } finally {
+      process.env = oldEnv
+    }
   })
 
   it('should leave the process environment unchanged', () => {

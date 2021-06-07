@@ -248,7 +248,7 @@ describe('cli', function () {
     playbookSpec.asciidoc = { attributes: { idseparator: 1 } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('--stacktrace generate the-site')
-      .assert(/^error: asciidoctor: FAILED: .* - undefined method `length' for 1/)
+      .assert(new RegExp("error: asciidoctor: FAILED: .* - undefined method `length' for 1"))
       .assert(/^at Number\./)
       .done()
   }).timeout(timeoutOverride)
@@ -575,6 +575,54 @@ describe('cli', function () {
       .on('exit', () => rmdirSync(localNodeModules))
       .done()
   })
+
+  it('should exit with status code 0 if log failure level is not reached', async () => {
+    await repoBuilder
+      .open()
+      .then(() => repoBuilder.checkoutBranch('v1.0'))
+      .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/broken.adoc', '= Broken\n\n{no-such-attribute}'))
+      .then(() => repoBuilder.commitAll('add broken'))
+      .then(() => repoBuilder.close('master'))
+    playbookSpec.runtime = { log: { failure_level: 'fatal' } }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora('generate the-site')
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(messages).to.have.lengthOf(1)
+      const message = messages[0]
+      expect(message).to.include('{"')
+      const { time, ...parsedMessage } = JSON.parse(message)
+      expect(parsedMessage.msg).to.eql('skipping reference to missing attribute: no-such-attribute')
+    })
+  }).timeout(timeoutOverride)
+
+  it('should exit with status code 1 if log failure level is reached', async () => {
+    await repoBuilder
+      .open()
+      .then(() => repoBuilder.checkoutBranch('v1.0'))
+      .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/broken.adoc', '= Broken\n\n{no-such-attribute}'))
+      .then(() => repoBuilder.commitAll('add broken'))
+      .then(() => repoBuilder.close('master'))
+    playbookSpec.runtime = { log: { failure_level: 'warn' } }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora('generate the-site')
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.have.lengthOf(1)
+      const message = messages[0]
+      expect(message).to.include('{"')
+      const { time, ...parsedMessage } = JSON.parse(message)
+      expect(parsedMessage.msg).to.eql('skipping reference to missing attribute: no-such-attribute')
+    })
+  }).timeout(timeoutOverride)
 
   it('should preload libraries specified using the require option', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))

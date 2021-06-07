@@ -6,6 +6,7 @@ const cli = require('./commander')
 // Q: can we ask the playbook builder for the config schema?
 const configSchema = require('@antora/playbook-builder/lib/config/schema')
 const convict = require('@antora/playbook-builder/lib/solitary-convict')
+const { finalizeLogger } = require('@antora/logger')
 const ospath = require('path')
 
 const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').replace('\\', '\\\\')}]`)
@@ -85,7 +86,10 @@ cli
     const args = cli.rawArgs.slice(cli.rawArgs.indexOf(command.name()) + 1)
     args.splice(args.indexOf(playbookFile), 0, '--playbook')
     // TODO support passing a preloaded convict config as third option; gets new args and env
-    cli._promise = generateSite(args, process.env).catch((err) => exitWithError(err, cli.stacktrace))
+    cli._promise = generateSite(args, process.env)
+      .then(finalizeLogger)
+      .then((failOnExit) => process.exit(failOnExit ? 1 : process.exitCode))
+      .catch((err) => finalizeLogger().then(() => exitWithError(err, cli.stacktrace)))
   })
   .options.sort((a, b) => a.long.localeCompare(b.long))
 

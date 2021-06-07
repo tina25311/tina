@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, heredoc, spy } = require('../../../test/test-utils')
+const { captureLogSync, expect, heredoc, spy } = require('../../../test/test-utils')
 
 const { convertDocument } = require('@antora/document-converter')
 const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
@@ -123,6 +123,22 @@ describe('convertDocument()', () => {
       </div>
       </div>
     `)
+  })
+
+  it('should route Asciidoctor log messages to Antora logger', () => {
+    inputFile.contents = Buffer.from(heredoc`
+      = Page Title
+
+      2. two
+    `)
+    const messages = captureLogSync(() => convertDocument(inputFile, undefined, asciidocConfig))
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.eql({
+      level: 'warn',
+      name: 'asciidoctor',
+      file: { path: 'modules/module-a/pages/page-a.adoc', line: 3 },
+      msg: 'list item index: expected 1, got 2',
+    })
   })
 
   it('should not throw exception if contents of stem block is empty', () => {

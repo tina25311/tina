@@ -1,0 +1,6 @@
+runtime:
+  log:
+    format: pretty
+ui:
+  bundle:
+    url: ./ui-bundle.zip

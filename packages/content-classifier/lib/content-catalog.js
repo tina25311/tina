@@ -1,6 +1,7 @@
 'use strict'
 
 const File = require('./file')
+const logger = require('./logger')
 const { lookup: resolveMimeType } = require('./mime-types-with-asciidoc')
 const parseResourceId = require('./util/parse-resource-id')
 const { posix: path } = require('path')
@@ -255,9 +256,13 @@ class ContentCatalog {
           this.addFile({ src: Object.assign({}, indexPageId, { family: 'alias' }), rel: startPage })
         }
       } else {
-        console.warn(
-          `Start page specified for ${version}@${name} ${startPage === false ? 'has invalid syntax' : 'not found'}: ` +
-            startPageSpec
+        // TODO pass componentVersion as logObject
+        logger.warn(
+          'Start page specified for %s@%s %s: %s',
+          version,
+          name,
+          startPage === false ? 'has invalid syntax' : 'not found',
+          startPageSpec
         )
         startPage = this.getById(indexPageId)
       }
@@ -293,11 +298,11 @@ class ContentCatalog {
     if (rel) {
       return this.addFile({ src: Object.assign({}, START_ALIAS_ID), rel })
     } else if (rel === false) {
-      console.warn(`Start page specified for site has invalid syntax: ${startPageSpec}`)
+      logger.warn('Start page specified for site has invalid syntax: %s', startPageSpec)
     } else if (~startPageSpec.indexOf(':')) {
-      console.warn(`Start page specified for site not found: ${startPageSpec}`)
+      logger.warn('Start page specified for site not found: %s', startPageSpec)
     } else {
-      console.warn(`Missing component name in start page for site: ${startPageSpec}`)
+      logger.warn('Missing component name in start page for site: %s', startPageSpec)
     }
   }
 

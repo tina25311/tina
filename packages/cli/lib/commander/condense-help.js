@@ -10,6 +10,7 @@ Command.prototype.helpInformation = function () {
   // NOTE override stringify to coerce to string normally
   JSON.stringify = (val) => `${val}`
   const helpInfo = helpInformation.call(this)
+  //const helpInfo = helpInformation.call(this).split('\n').filter((line) => !line.includes('--no-')).join('\n')
   JSON.stringify = stringify
   if (nonTTYColumns) delete process.stdout.columns
   return helpInfo
