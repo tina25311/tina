@@ -2685,7 +2685,10 @@ describe('aggregateContent()', function () {
         if (repoBuilder.remote) {
           expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
         }
-        if (repoBuilder.bare || repoBuilder.remote) {
+        if (repoBuilder.bare) {
+          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+          expectedFileSrc.origin.refhash = refhash
+        } else if (repoBuilder.remote) {
           expectedFileSrc.origin.refhash = refhash
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
@@ -2738,7 +2741,10 @@ describe('aggregateContent()', function () {
         if (repoBuilder.remote) {
           expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
         }
-        if (repoBuilder.bare || repoBuilder.remote) {
+        if (repoBuilder.bare) {
+          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+          expectedFileSrc.origin.refhash = refhash
+        } else if (repoBuilder.remote) {
           expectedFileSrc.origin.refhash = refhash
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, repoBuilder.startPath, expectedFileSrc.path)
@@ -2791,7 +2797,10 @@ describe('aggregateContent()', function () {
         if (repoBuilder.remote) {
           expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
         }
-        if (repoBuilder.bare || repoBuilder.remote) {
+        if (repoBuilder.bare) {
+          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+          expectedFileSrc.origin.refhash = refhash
+        } else if (repoBuilder.remote) {
           expectedFileSrc.origin.refhash = refhash
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
@@ -2863,7 +2872,20 @@ describe('aggregateContent()', function () {
         expect(page.src.origin.url).to.equal(remoteUrlWithoutAuth)
       })
 
-      it('should not set origin url for local repository if remote url not set in git config', async () => {
+      it('should set origin url for local repository if not using worktree and remote url not set in git config', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        await initRepoWithFiles(repoBuilder, {}, 'modules/ROOT/pages/page-one.adoc')
+        playbookSpec.content.sources.push({ url: repoBuilder.url, worktrees: false })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const page = aggregate[0].files[0]
+        expect(page).to.not.be.undefined()
+        const expectedOriginUrl = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+        expect(page.src.origin.url).to.equal(expectedOriginUrl)
+        expect(page.src.origin.worktree).to.be.undefined()
+      })
+
+      it('should not set origin url for local repository if using worktree and remote url not set in git config', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithFiles(repoBuilder, {}, 'modules/ROOT/pages/page-one.adoc')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -2871,7 +2893,8 @@ describe('aggregateContent()', function () {
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
-        expect(page.src.origin.url).to.undefined()
+        expect(page.src.origin.url).to.be.undefined()
+        expect(page.src.origin.worktree).to.not.be.undefined()
       })
 
       it('should generate correct origin data for file taken from repository on GitHub', () => {
