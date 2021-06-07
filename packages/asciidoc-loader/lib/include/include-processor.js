@@ -40,8 +40,9 @@ const IncludeProcessor = (() => {
         startLineNum = 1
       }
       Opal.hash_put(attrs, 'partial-option', '')
-      reader.pushInclude(includeContents, resolvedFile.file, resolvedFile.path, startLineNum, attrs)
-      ;(reader.file = new String(reader.file)).context = resolvedFile.context // eslint-disable-line no-new-wrappers
+      const file = new String(resolvedFile.file) // eslint-disable-line no-new-wrappers
+      file.context = resolvedFile.context
+      reader.pushInclude(includeContents, file, resolvedFile.path, startLineNum, attrs)
     } else {
       if (attrs['$key?']('optional-option')) {
         log('info', `optional include dropped because include file not found: ${target}`, reader)
