@@ -12,6 +12,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Add network category key to playbook with child keys http_proxy, https_proxy, and no_proxy (mapped to environment variables of the same names) to configure proxy settings (#749)
 * *content-aggregator*: Add support for proxy settings to git client (by way of http_proxy, https_proxy, and no_proxy environment variables mapped to the playbook schema) (#749)
 * *ui-loader*: Add support for proxy settings to UI downloader (by way of http_proxy, https_proxy, and no_proxy environment variables mapped to the playbook schema) (#749)
+* *asciidoc-loader*: Report include location in log message when include tag(s) cannot be found (#766)
 
 === Changed
 

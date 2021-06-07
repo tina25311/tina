@@ -181,14 +181,14 @@ function filterLinesByTags (reader, target, file, tags) {
               `mismatched end tag (expected '${activeTag}' but found '${thisTag}') ` +
                 `at line ${lineNum} of include file: ${file.file})`,
               reader,
-              reader.$create_include_cursor(file.file, target, lineNum)
+              createIncludeCursor(reader, file, target, lineNum)
             )
           } else {
             log(
               'warn',
               `unexpected end tag '${thisTag}' at line ${lineNum} of include file: ${file.file}`,
               reader,
-              reader.$create_include_cursor(file.file, target, lineNum)
+              createIncludeCursor(reader, file, target, lineNum)
             )
           }
         }
@@ -210,7 +210,7 @@ function filterLinesByTags (reader, target, file, tags) {
         'warn',
         `detected unclosed tag '${tagName}' starting at line ${tagLineNum} of include file: ${file.file}`,
         reader,
-        reader.$create_include_cursor(file.file, target, tagLineNum)
+        createIncludeCursor(reader, file, target, tagLineNum)
       )
     )
   }
@@ -219,10 +219,17 @@ function filterLinesByTags (reader, target, file, tags) {
     log(
       'warn',
       `tag${tags.size > 1 ? 's' : ''} '${[...tags.keys()].join(', ')}' not found in include file: ${file.file}`,
-      reader
+      reader,
+      createIncludeCursor(reader, file, target, 0)
     )
   }
   return [lines, startLineNum || 1]
+}
+
+function createIncludeCursor (reader, { file, context }, path, lineno) {
+  file = new String(file) // eslint-disable-line no-new-wrappers
+  file.context = context
+  return reader.$create_include_cursor(file, path, lineno)
 }
 
 function log (severity, message, reader, includeCursor = undefined) {
