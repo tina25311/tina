@@ -2035,14 +2035,30 @@ describe('loadAsciiDoc()', () => {
         ----
       `)
       const [doc, messages] = captureStderr(() => loadAsciiDoc(inputFile, contentCatalog))
-      const expectedMessage =
-        "page-a.adoc: line 3: tags 'hello, yo' not found in include file: modules/module-a/examples/ruby/greet.rb"
+      const expectedMessageText = "tags 'hello, yo' not found in include file: modules/module-a/examples/ruby/greet.rb"
+      const expectedMessage = `page-a.adoc: line 3: ${expectedMessageText}`
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include(expectedMessage)
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
       expect(firstBlock.getSourceLines()).to.eql([])
+      const memoryLogger = Asciidoctor.MemoryLogger.$new()
+      Asciidoctor.LoggerManager['$logger='](memoryLogger)
+      loadAsciiDoc(inputFile, contentCatalog)
+      expect(memoryLogger.messages).to.have.lengthOf(1)
+      const message = memoryLogger.messages[0].$$smap
+      expect(message.severity).to.equal('WARN')
+      expect(message).to.have.property('message')
+      const messageDetails = message.message.$$smap
+      expect(messageDetails.text).to.equal(expectedMessageText)
+      expect(messageDetails).to.have.property('source_location')
+      expect(messageDetails.source_location.file.toString()).to.equal('modules/module-a/pages/page-a.adoc')
+      expect(messageDetails.source_location.lineno).to.equal(3)
+      expect(messageDetails).to.have.property('include_location')
+      expect(messageDetails.include_location.file.toString()).to.equal('modules/module-a/examples/ruby/greet.rb')
+      expect(messageDetails.include_location.lineno).to.equal(0)
+      Asciidoctor.LoggerManager['$logger='](null)
     })
 
     it('should include all lines except for tag directives when tag wildcard is specified', () => {

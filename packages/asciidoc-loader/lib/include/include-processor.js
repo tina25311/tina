@@ -219,7 +219,8 @@ function filterLinesByTags (reader, target, file, tags) {
     log(
       'warn',
       `tag${tags.size > 1 ? 's' : ''} '${[...tags.keys()].join(', ')}' not found in include file: ${file.file}`,
-      reader
+      reader,
+      reader.$create_include_cursor(file.file, target, 0)
     )
   }
   return [lines, startLineNum || 1]
