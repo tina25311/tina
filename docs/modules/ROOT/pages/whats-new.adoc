@@ -8,6 +8,51 @@
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-git-antora}/merge_requests
 
+= Antora 3.0.0-alpha.6
+
+_**Release date:** 2021.06.07 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+
+=== Added
+
+Issue {url-issues}/145[#145^]:: Introduce a new component that provides the infrastructure for logging, shaping, and reporting application messages.
++
+All application messages (except for CLI warnings and uncaught errors) are routed through the logger.
+This feature is enabled by default.
+The logger is configured once per run of Antora by the runtime.log category in the playbook.
+Playbook keys include level, failure_level, and format.
++
+Messages are either emitted in a structured (JSON) log format so they can be piped to a separate application for processing/transport or in a pretty format to make them easier for an author to comprehend.
+But default, structured (JSON) messages are logged to stdout if the CI environment variable is set.
+Otherwise, pretty messages are logged to stderr.
++
+As part of this change, messages logged by Asciidoctor are routed to the Antora logger and decorated with additional context from Antora (e.g., file, line, and include stack details).
+
+Issue {url-issues}/749[#749^]:: Add support for proxy settings to the git client and UI downloader.
+Both components now use the same HTTP library (simple-get).
++
+The git client and UI downloader honor proxy settings defined in the network category in the playbook.
+The http_proxy, https_proxy, and no_proxy environment variables are mapped to respective keys in the playbook.
+
+=== Fixed
+
+Issue {url-issues}/765[#765^]:: Add file info to reader before pushing include onto the stack so it stays in sync if file is empty.
++
+This change fixes how the target of an include that follows an empty include is resolved.
+
+Issue {url-issues}/764[#764^]:: Assign file URL to src.origin.url on virtual file if repository has no remote and not using worktree.
++
+This change allows the location of the local git repository to be shown in log messages.
+
+=== Changed
+
+Issue {url-issues}/766[#766^]:: Report include location in log message when include tag(s) cannot be found.
++
+This change allows the location of the include file to be shown in log messages.
+
 = Antora 3.0.0-alpha.5
 
 _**Release date:** 2021.05.14 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
