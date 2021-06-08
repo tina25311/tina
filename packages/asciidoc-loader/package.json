@@ -1,6 +1,6 @@
 {
   "name": "@antora/asciidoc-loader",
-  "version": "3.0.0-alpha.5",
+  "version": "3.0.0-alpha.6",
   "description": "Loads AsciiDoc content into an Asciidoctor Document object (AST) for use in an Antora documentation pipeline.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
@@ -17,7 +17,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@antora/logger": "3.0.0-alpha.5",
+    "@antora/logger": "3.0.0-alpha.6",
     "@asciidoctor/core": "~2.2"
   },
   "engines": {

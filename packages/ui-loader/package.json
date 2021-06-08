@@ -1,6 +1,6 @@
 {
   "name": "@antora/ui-loader",
-  "version": "3.0.0-alpha.5",
+  "version": "3.0.0-alpha.6",
   "description": "Downloads a UI bundle, if necessary, and loads the files into a UI catalog for use in an Antora documentation pipeline.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
@@ -24,8 +24,8 @@
     "hpagent": "~0.1.0",
     "js-yaml": "~4.1",
     "minimatch-all": "~1.1",
-    "simple-concat": "~1.0",
     "should-proxy": "~1.0",
+    "simple-concat": "~1.0",
     "simple-get": "~4.0",
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"
