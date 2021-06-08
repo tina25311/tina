@@ -234,6 +234,11 @@ class RepositoryBuilder {
     return git.resolveRef({ ...this.repository, ref })
   }
 
+  getRefInfo (ref, remote = 'origin') {
+    if (!ref) return
+    return this.remote ? `remotes/${remote}/${ref}` : this.bare ? ref : `${ref} <worktree>`
+  }
+
   async close (branchName = undefined) {
     if (branchName) await git.checkout({ ...this.repository, ref: branchName })
     this.repository = undefined

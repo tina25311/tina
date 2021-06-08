@@ -225,8 +225,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if component descriptor cannot be found', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await repoBuilder.init('the-component').then(() => repoBuilder.close())
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -236,12 +236,12 @@ describe('aggregateContent()', function () {
 
     describe('should throw if component descriptor cannot be parsed', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: 'v1.0' }, () =>
           repoBuilder
             .addToWorktree('antora.yml', ':\nname: the-component\nversion: v1.0\n')
             .then(() => repoBuilder.commitAll('mangle component descriptor'))
         )
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref})`
@@ -253,8 +253,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if component descriptor does not define name key', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { version: 'v1.0' })
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a name in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -264,8 +264,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if component descriptor does not define version key and content source does not define version key', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' })
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -457,8 +457,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if name defined in component descriptor contains a path segment', () => {
       testLocal(async (repoBuilder) => {
-        const ref = 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'foo/bar', version: 'v1.0' })
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage =
           `name in ${COMPONENT_DESC_FILENAME} cannot have path segments: foo/bar` +
@@ -470,8 +470,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if version defined in component descriptor contains a path segment', () => {
       testLocal(async (repoBuilder) => {
-        const ref = 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.1/0' })
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage =
           `version in ${COMPONENT_DESC_FILENAME} cannot have path segments: 1.1/0` +
@@ -525,13 +525,13 @@ describe('aggregateContent()', function () {
 
     describe('should throw if component descriptor at start path cannot be parsed', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         const componentDesc = { name: 'the-component', version: 'v1.0', startPath: 'docs' }
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
           repoBuilder
             .addToWorktree('docs/antora.yml', ':\nname: the-component\nversion: v1.0\n')
             .then(() => repoBuilder.commitAll('mangle component descriptor'))
         )
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'docs' })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref} | path: docs)`
@@ -929,8 +929,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if start path is not found', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'does-not-exist' })
         const expectedMessage = `the start path 'does-not-exist' does not exist in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -940,8 +940,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if start path at reference is not a directory', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'antora.yml' })
         const expectedMessage = `the start path 'antora.yml' is not a directory in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -951,8 +951,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if component descriptor cannot be found at start path', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithFiles(repoBuilder)
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'modules' })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref} | path: modules)`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -968,8 +968,8 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
           repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry))
         )
+        const ref = repoBuilder.getRefInfo('master')
         expect(componentDescEntry).to.exist()
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{more,}docs' })
         const expectedMessage = `the start path 'moredocs' does not exist in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -986,7 +986,7 @@ describe('aggregateContent()', function () {
           repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry))
         )
         expect(componentDescEntry).to.exist()
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc{s}' })
         const expectedMessage = `the start path 'doc{s}' does not exist in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1013,8 +1013,8 @@ describe('aggregateContent()', function () {
 
     describe('should throw if no start paths are resolved', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'does-not-exist-*' })
         const expectedMessage = `no start paths found in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1024,8 +1024,8 @@ describe('aggregateContent()', function () {
 
     describe('should retain unresolved segments in start path if parent directory does not exist', () => {
       testAll(async (repoBuilder) => {
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
+        const ref = repoBuilder.getRefInfo('master')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'does-not-exist/{foo,bar*}' })
         const expectedMessage = new RegExp(
           "^the start path 'does-not-exist/(foo|bar\\*)' does not exist in " +
@@ -2220,7 +2220,7 @@ describe('aggregateContent()', function () {
             repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const ref = repoBuilder.getRefInfo('master')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
           const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
@@ -2241,7 +2241,7 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const ref = repoBuilder.getRefInfo('master')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink2Path) : symlink2Path
           const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
@@ -2262,7 +2262,7 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const ref = repoBuilder.getRefInfo('master')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
           const expectedMessage =
@@ -2285,7 +2285,7 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const ref = repoBuilder.getRefInfo('master')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
           const expectedMessage =
@@ -2308,7 +2308,7 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.commitAll('add symlink'))
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+          const ref = repoBuilder.getRefInfo('master')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink1Path) : symlink1Path
           const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
@@ -2329,7 +2329,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.commitAll('add symlink'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+        const ref = repoBuilder.getRefInfo('master')
         const expectedMessage = new RegExp(
           `^Symbolic link cycle detected at (${symlink1Path}|${symlink2Path}) in ` +
             `${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)$`
@@ -2350,7 +2350,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.commitSelect(['a', 'b', 'b/c.adoc', 'b/d.adoc', 'b/e'], 'add symlink'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const ref = repoBuilder.remote ? 'remotes/origin/master' : repoBuilder.bare ? 'master' : 'master <worktree>'
+        const ref = repoBuilder.getRefInfo('master')
         // NOTE could instead be reported as b/e, but I can't work out how to track the original symlink path
         const expectedPath = 'a/e'
         const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
