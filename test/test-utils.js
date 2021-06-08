@@ -8,6 +8,7 @@ const { Transform } = require('stream')
 const map = (transform) => new Transform({ objectMode: true, transform })
 const ospath = require('path')
 const { removeSync: rimrafSync } = require('fs-extra')
+const { configureLogger } = require('@antora/logger')
 
 chai.use(require('chai-fs'))
 chai.use(require('chai-cheerio'))
@@ -27,6 +28,62 @@ chai.Assertion.addMethod('endWith', function (expected) {
     undefined
   )
 })
+
+beforeEach(() => configureLogger({ level: 'silent' })) // eslint-disable-line no-undef
+
+function captureStandardStream (streamName, fn, transform, cb) {
+  const stream = process[streamName]
+  const streamWrite = stream.write
+  const fsWriteSync = fs.writeSync
+  if (!transform) {
+    transform = function lines (buffer) {
+      return buffer
+        .toString()
+        .trim()
+        .split('\n')
+    }
+  }
+  const data = []
+  const restore = () => {
+    fs.writeSync = fsWriteSync
+    stream.write = streamWrite
+  }
+  try {
+    fs.writeSync = (...[fd, buffer, ...remaining]) => {
+      if (fd === stream.fd) {
+        data.push(...transform(buffer))
+        return buffer.length
+      }
+      return fsWriteSync(fd, buffer, ...remaining)
+    }
+    stream.write = (buffer) => data.push(...transform(buffer))
+    const returnValue = fn()
+    if (cb && returnValue instanceof Promise) {
+      return returnValue
+        .then((actualReturnValue) =>
+          cb(
+            null,
+            Object.defineProperty(data, 'withReturnValue', {
+              get () {
+                return () => ({ [transform.name || 'data']: this, returnValue: actualReturnValue })
+              },
+            })
+          )
+        )
+        .catch(cb)
+        .finally(restore)
+    } else {
+      cb = undefined
+    }
+    return Object.defineProperty(data, 'withReturnValue', {
+      get () {
+        return () => ({ [transform.name || 'data']: this, returnValue })
+      },
+    })
+  } finally {
+    if (!cb) restore()
+  }
+}
 
 function unlinkSync (path_) {
   try {
@@ -96,28 +153,46 @@ module.exports = {
         next(null, file)
       }
     }),
-  captureStdErr: async (fn, ...args) => {
-    const stdErrWrite = process.stderr.write
+  captureLogSync: (fn) => {
     const messages = []
-    try {
-      process.stderr.write = (msg) => messages.push(msg.trim())
-      await fn(...args)
-      return messages
-    } finally {
-      process.stderr.write = stdErrWrite
-    }
+    configureLogger({
+      level: 'all',
+      failureLevel: 'all',
+      destination: {
+        write (messageString) {
+          const { time, ...message } = JSON.parse(messageString)
+          messages.push(message)
+          return messageString.length
+        },
+      },
+    })
+    const returnValue = fn()
+    return Object.defineProperty(messages, 'withReturnValue', {
+      get () {
+        return () => ({ messages: this, returnValue })
+      },
+    })
   },
-  captureStdErrSync: (fn, ...args) => {
-    const stdErrWrite = process.stderr.write
-    const messages = []
-    try {
-      process.stderr.write = (msg) => messages.push(msg.trim())
-      fn(...args)
-      return messages
-    } finally {
-      process.stderr.write = stdErrWrite
-    }
-  },
+  captureStderrSync: (fn) => captureStandardStream('stderr', fn),
+  captureStdoutSync: (fn) => captureStandardStream('stdout', fn),
+  captureStdoutLog: async (fn) =>
+    new Promise((resolve, reject) =>
+      captureStandardStream(
+        'stdout',
+        fn,
+        function messages (buffer) {
+          const { time, ...message } = JSON.parse(buffer)
+          return [message]
+        },
+        (err, result) => (err ? reject(err) : resolve(result))
+      )
+    ),
+  captureStdoutLogSync: (fn) =>
+    captureStandardStream('stdout', fn, function messages (buffer) {
+      const { time, ...message } = JSON.parse(buffer)
+      return [message]
+    }),
+  configureLogger,
   deferExceptions: async (fn, ...args) => {
     let deferredFn
     try {

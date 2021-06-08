@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureStdErrSync, expect } = require('../../../test/test-utils')
+const { captureLogSync, expect } = require('../../../test/test-utils')
 
 const classifyContent = require('@antora/content-classifier')
 const { posix: path } = require('path')
@@ -572,16 +572,18 @@ describe('classifyContent()', () => {
     it('should warn if start page specified for component version cannot be resolved', () => {
       aggregate[0].startPage = 'no-such-page.adoc'
       aggregate[0].files.push(createFile('modules/ROOT/pages/home.adoc'))
-      const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0]).to.match(/Start page .* not found/)
+      const messages = captureLogSync(() => classifyContent(playbook, aggregate))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.match(/Start page .* not found/)
     })
 
     it('should warn if start page specified for component version has invalid syntax', () => {
       aggregate[0].startPage = 'the-component::'
-      const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0]).to.match(/Start page .* has invalid syntax/)
+      const messages = captureLogSync(() => classifyContent(playbook, aggregate))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.match(/Start page .* has invalid syntax/)
     })
 
     it('should set url to index page in ROOT module if found', () => {
@@ -1064,26 +1066,29 @@ describe('classifyContent()', () => {
       playbook.site.startPage = 'the-component::no-such-page.adoc'
       aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
       const expectedMessage = /Start page specified for site not found: the-component::no-such-page\.adoc/
-      const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0]).to.match(expectedMessage)
+      const messages = captureLogSync(() => classifyContent(playbook, aggregate))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.match(expectedMessage)
     })
 
     it('should warn if site start page has invalid syntax', () => {
       playbook.site.startPage = 'the-component::'
       const expectedMessage = /Start page specified for site has invalid syntax: the-component::/
-      const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0]).to.match(expectedMessage)
+      const messages = captureLogSync(() => classifyContent(playbook, aggregate))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.match(expectedMessage)
     })
 
     it('should warn if site start page spec does not specify a component', () => {
       playbook.site.startPage = 'no-such-page.adoc'
       aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
       const expectedMessage = /Missing component name in start page for site: no-such-page\.adoc/
-      const stdErrMessages = captureStdErrSync(classifyContent, playbook, aggregate)
-      expect(stdErrMessages).to.have.lengthOf(1)
-      expect(stdErrMessages[0]).to.match(expectedMessage)
+      const messages = captureLogSync(() => classifyContent(playbook, aggregate))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.match(expectedMessage)
     })
   })
 

@@ -7,6 +7,7 @@ const convertImageRef = require('./image/convert-image-ref')
 const convertPageRef = require('./xref/convert-page-ref')
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
+const LoggerAdapter = require('./logger/adapter')
 const ospath = require('path')
 const { posix: path } = ospath
 const resolveIncludeFile = require('./include/resolve-include-file')
@@ -63,7 +64,8 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   })
   const extensions = config.extensions || []
   if (extensions.length) extensions.forEach((ext) => ext.register(extensionRegistry, { file, contentCatalog, config }))
-  const opts = { attributes, extension_registry: extensionRegistry, safe: 'safe' }
+  const loggerAdapter = LoggerAdapter.logger.noop ? false : LoggerAdapter.$new(file.src)
+  const opts = { attributes, extension_registry: extensionRegistry, safe: 'safe', logger: loggerAdapter }
   if (config.doctype) opts.doctype = config.doctype
   let contents = file.contents
   if (config.headerOnly) {

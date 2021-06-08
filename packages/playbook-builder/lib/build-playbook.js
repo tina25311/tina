@@ -1,6 +1,7 @@
 'use strict'
 
 const camelCaseKeys = require('camelcase-keys')
+const { configureLogger } = require('@antora/logger')
 const convict = require('./solitary-convict')
 const fs = require('fs')
 const { hasOwnProperty } = Object.prototype
@@ -87,6 +88,8 @@ function exportModel (config) {
   const playbook = camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
   playbook.dir = playbook.playbook ? ospath.dirname((playbook.file = playbook.playbook)) : process.cwd()
   delete playbook.playbook
+  const log = (playbook.runtime || {}).log
+  if (log) configureLogger(playbook.runtime.silent ? (log.level = 'silent') && log : log)
   return freeze(playbook)
 }
 

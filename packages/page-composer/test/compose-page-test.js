@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, heredoc, spy } = require('../../../test/test-utils')
+const { captureLogSync, expect, heredoc, spy } = require('../../../test/test-utils')
 const createPageComposer = require('@antora/page-composer')
 const { version: VERSION } = require('@antora/page-composer/package.json')
 
@@ -411,8 +411,14 @@ describe('createPageComposer()', () => {
     it('should use default layout if layout specified in page-layout attribute does not exist', () => {
       file.asciidoc.attributes['page-layout'] = 'does-not-exist'
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
-      composePage(file, contentCatalog, navigationCatalog)
+      const messages = captureLogSync(() => composePage(file, contentCatalog, navigationCatalog))
       expect(file.contents.toString()).to.include('<html class="default">')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'warn',
+        name: '@antora/page-composer',
+        msg: "page layout 'does-not-exist' specified by page not found; using default layout",
+      })
     })
 
     // QUESTION should this be checked in the function generator?

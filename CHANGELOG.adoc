@@ -14,9 +14,15 @@ This project utilizes semantic versioning.
 
 === Added
 
+* *logger*: Introduce new component that provides the logging infrastructure for Antora (#145)
+* *logger*: Log structured (JSON) messages by default to stdout if CI=true; otherwise log pretty messages to stderr (#145)
+* *playbook-builder*: Add log category to configure the logger (level, failure_level, format) (#145)
 * *playbook-builder*: Add network category key to playbook with child keys http_proxy, https_proxy, and no_proxy (mapped to environment variables of the same names) to configure proxy settings (#749)
 * *content-aggregator*: Add support for proxy settings to git client (by way of http_proxy, https_proxy, and no_proxy environment variables mapped to the playbook schema) (#749)
+* *content-classifier*: Route warning messages to the logger (#145)
 * *ui-loader*: Add support for proxy settings to UI downloader (by way of http_proxy, https_proxy, and no_proxy environment variables mapped to the playbook schema) (#749)
+* *asciidoc-loader*: Connect Asciidoctor logger to Antora logger (#145)
+* *asciidoc-loader*: Send file, line, and stack details (if available) to Antora logger when Asciidoctor logs a message (#145)
 
 === Changed
 
