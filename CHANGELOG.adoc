@@ -10,7 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *content-aggregator*: Assign file URL to src.origin.url on virtual file if repository has no remote and not using worktree (#764)
-* *asciidoc-loader*: Add file info to reader before pushing include onto the stack so it stays in sync if file is empty (#765)
+* *asciidoc-loader*: Add file info to reader before pushing include onto the stack so it stays in sync if include file is empty (#765)
 
 === Added
 
@@ -19,7 +19,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Add log category to configure the logger (level, failure_level, format) (#145)
 * *playbook-builder*: Add network category key to playbook with child keys http_proxy, https_proxy, and no_proxy (mapped to environment variables of the same names) to configure proxy settings (#749)
 * *content-aggregator*: Add support for proxy settings to git client (by way of http_proxy, https_proxy, and no_proxy environment variables mapped to the playbook schema) (#749)
-* *content-classifier*: Route warning messages to the logger (#145)
+* *content-classifier*: Send warning messages to the logger (#145)
 * *ui-loader*: Add support for proxy settings to UI downloader (by way of http_proxy, https_proxy, and no_proxy environment variables mapped to the playbook schema) (#749)
 * *asciidoc-loader*: Connect Asciidoctor logger to Antora logger (#145)
 * *asciidoc-loader*: Send file, line, and stack details (if available) to Antora logger when Asciidoctor logs a message (#145)
