@@ -1045,7 +1045,7 @@ describe('aggregateContent()', function () {
           repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry))
         )
         expect(componentDescEntry).to.exist()
-        playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: parseInt(startPath) })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: parseInt(startPath, 10) })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.deep.include(componentDesc)
@@ -4895,7 +4895,7 @@ describe('aggregateContent()', function () {
         let body = 'No dice!'
         let stream
         let [statusCode, scenario] = req.url.split('/').slice(1, 3)
-        statusCode = parseInt(statusCode)
+        statusCode = parseInt(statusCode, 10)
         scenario = scenario.replace(/\.git$/, '')
         if (statusCode === 401) {
           headers['WWW-Authenticate'] = 'Basic realm="example"'

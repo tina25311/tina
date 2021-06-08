@@ -2,7 +2,7 @@
 
 function shoutTreeProcessor () {
   this.process((doc) => {
-    const vol = parseInt(doc.getAttribute('volume', 1))
+    const vol = parseInt(doc.getAttribute('volume', 1), 10)
     doc.findBy({ context: 'paragraph' }).forEach((p) => {
       p.lines = p.lines.map((l) => l.replace(/\.(?= |$)/g, '!'.repeat(vol)))
     })

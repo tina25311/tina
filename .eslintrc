@@ -16,6 +16,7 @@
       "ignoreTemplateLiterals": true
     }],
     "prefer-regex-literals": "off",
-    "spaced-comment": "off"
+    "spaced-comment": "off",
+    "radix": ["error", "always"]
   }
 }
