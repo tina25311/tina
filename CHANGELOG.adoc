@@ -68,8 +68,8 @@ This project utilizes semantic versioning.
 
 === Changed
 
-* *asciidoc-loader*: Upgrade to Asciidoctor.js 2 and allow use of newer patch versions (#522)
 * *content-classifier*: If an alias refers to an unknown component, and the version is not specified, set the version to empty string (#669)
+* *asciidoc-loader*: Upgrade to Asciidoctor.js 2 and allow use of newer patch versions (#522)
 * *infrastructure*: Migrate Windows CI pipeline from AppVeyor CI to GitLab CI (#732)
 * *infrastructure*: Run tests nightly on Node 12 and Node 14 (in addition to Node 10) (#731)
 
