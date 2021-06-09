@@ -1,18 +1,20 @@
 'use strict'
 
 const Opal = global.Opal
-const { $Antora } = require('../constants')
 
+const { $Antora } = require('../constants')
 const DBL_COLON = '::'
 const DBL_SQUARE = '[]'
-
 const NEWLINE_RX = /\r\n?|\n/
 const TAG_DIRECTIVE_RX = /\b(?:tag|(e)nd)::(\S+?)\[\](?=$|[ \r])/m
 
 const IncludeProcessor = (() => {
   const $callback = Symbol('callback')
-  const superclass = Opal.module(null, 'Asciidoctor').Extensions.IncludeProcessor
-  const scope = Opal.klass(Opal.module(null, 'Antora', $Antora), superclass, 'IncludeProcessor')
+  const scope = Opal.klass(
+    Opal.Antora || Opal.module(null, 'Antora', $Antora),
+    Opal.Asciidoctor.Extensions.IncludeProcessor,
+    'IncludeProcessor'
+  )
 
   Opal.defn(scope, '$initialize', function initialize (callback) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize))

@@ -7,8 +7,8 @@ const $imageRefCallback = Symbol('imageRefCallback')
 
 const Html5Converter = (() => {
   const scope = Opal.klass(
-    Opal.module(null, 'Antora', $Antora),
-    Opal.module(null, 'Asciidoctor').Converter.Html5Converter,
+    Opal.Antora || Opal.module(null, 'Antora', $Antora),
+    Opal.Asciidoctor.Converter.Html5Converter,
     'Html5Converter'
   )
 
@@ -44,7 +44,7 @@ const Html5Converter = (() => {
         }
         const attributes = Opal.hash2(Object.keys(attrs), attrs)
         const options = Opal.hash2(['type', 'target', 'attributes'], { type, target, attributes })
-        node = Opal.module(null, 'Asciidoctor').Inline.$new(node.getParent(), 'anchor', content, options)
+        node = Opal.Asciidoctor.Inline.$new(node.getParent(), 'anchor', content, options)
       }
     }
     return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_anchor', convertInlineAnchor), [node])

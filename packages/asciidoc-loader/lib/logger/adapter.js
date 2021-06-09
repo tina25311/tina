@@ -6,11 +6,7 @@ const logger = require('@antora/logger')('asciidoctor')
 const { $Antora } = require('../constants')
 
 const LoggerAdapter = (() => {
-  const scope = Opal.klass(
-    Opal.module(null, 'Antora', $Antora),
-    Opal.const_get_qualified('::', 'Logger'),
-    'LoggerAdapter'
-  )
+  const scope = Opal.klass(Opal.Antora || Opal.module(null, 'Antora', $Antora), Opal.Logger, 'LoggerAdapter')
 
   const severityMap = ((Severity) =>
     new Map(
