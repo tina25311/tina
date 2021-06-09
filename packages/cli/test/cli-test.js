@@ -643,4 +643,22 @@ describe('cli', function () {
         .with.contents.that.match(/<p>Fin!<\/p>/)
     })
   }).timeout(timeoutOverride)
+
+  it('should configure logger with default settings and warning if used before being configured', () => {
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const r1 = ospath.resolve(FIXTURES_DIR, 'use-logger')
+    const args = ['--require', r1, 'generate', 'the-site', '--quiet']
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(args)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(messages).to.have.lengthOf(2)
+      expect(messages[0]).to.include('"level":"warn"')
+      expect(messages[0]).to.include('"msg":"logger not configured;')
+      expect(messages[1]).to.include('"msg":"Let\'s go!"')
+    })
+  })
 })

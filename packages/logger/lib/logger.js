@@ -7,12 +7,13 @@ const {
   pino,
 } = require('pino')
 
+const closedLogger = { closed: true }
 const minLevel = levelLabels[Math.min.apply(null, Object.keys(levelLabels))]
 const noopLogger = pino({ base: null, enabled: false, timestamp: false }, {})
 const rootLoggerHolder = new Map()
 
 function close () {
-  if (rootLoggerHolder.has()) rootLoggerHolder.get().closed = true
+  if (rootLoggerHolder.has()) Object.assign(rootLoggerHolder.get(), closedLogger)
 }
 
 function configure ({ level = 'info', failureLevel = 'silent', format = 'structured', destination } = {}) {
@@ -86,8 +87,8 @@ function get (name) {
   if (name === null) return rootLoggerHolder.get()
   return new Proxy(noopLogger, {
     resolveTarget () {
-      if ((this.ownRootLogger || { closed: true }).closed) {
-        if ((this.ownRootLogger = rootLoggerHolder.get()).closed) {
+      if ((this.ownRootLogger || closedLogger).closed) {
+        if ((this.ownRootLogger = rootLoggerHolder.get() || closedLogger).closed) {
           ;(this.ownRootLogger = configure().get(null)).warn(
             'logger not configured; creating logger with default settings'
           )
