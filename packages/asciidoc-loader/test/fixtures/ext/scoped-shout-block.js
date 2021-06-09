@@ -3,7 +3,12 @@
 function shoutBlock () {
   this.onContext('paragraph')
   this.process((parent, reader) =>
-    this.createBlock(parent, 'paragraph', reader.getLines().map((l) => l.toUpperCase())))
+    this.createBlock(
+      parent,
+      'paragraph',
+      reader.getLines().map((l) => l.toUpperCase())
+    )
+  )
 }
 
 function register (registry) {

@@ -3755,7 +3755,9 @@ describe('aggregateContent()', function () {
       expect(page1v1.contents.toString()).to.have.string('Update received!')
       const page2v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
       expect(page2v1).to.not.exist()
-      const page3v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/topic-a/page-three.adoc')
+      const page3v1 = secondAggregate[0].files.find(
+        (file) => file.path === 'modules/ROOT/pages/topic-a/page-three.adoc'
+      )
       expect(page3v1).to.exist()
       expect(secondAggregate[1]).to.include({ name: 'the-component', version: 'v2.0.0' })
       const page1v2 = secondAggregate[1].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')

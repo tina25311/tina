@@ -11,8 +11,8 @@ async function generateSite (args, env) {
 
 function create418Page () {
   return {
-    title: 'I\'m a teapot',
-    contents: Buffer.from('<html><h1>Teapot</h1><p>I\'m a teapot</p></html>'),
+    title: "I'm a teapot",
+    contents: Buffer.from("<html><h1>Teapot</h1><p>I'm a teapot</p></html>"),
     mediaType: 'text/html',
     src: { stem: '418' },
     out: { path: '418.html' },
