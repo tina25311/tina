@@ -8,7 +8,7 @@ const $imageRefCallback = Symbol('imageRefCallback')
 const Html5Converter = (() => {
   const classDef = Opal.klass(
     Opal.Antora || Opal.module(null, 'Antora', $Antora),
-    Opal.Asciidoctor.Converter.Html5Converter,
+    Opal.Asciidoctor.Converter.$for('html5'),
     'Html5Converter'
   )
 
