@@ -200,6 +200,46 @@ describe('loadAsciiDoc()', () => {
     })
   })
 
+  it('should extend the registered html5 converter', () => {
+    const contents = heredoc`
+    = Page Title
+
+    See xref:other-module:the-page.adoc[page in other module].
+    `
+    setInputFileContents(contents)
+    const contentCatalog = mockContentCatalog({
+      family: 'page',
+      module: 'other-module',
+      relative: 'the-page.adoc',
+      contents: '= Other Page Title',
+    })
+
+    let html = loadAsciiDoc(inputFile, contentCatalog).convert()
+    expect(html).to.include('<div class="paragraph">')
+    expectPageLink(html, '../other-module/the-page.html', 'page in other module')
+
+    const html5Converter = global.Opal.Asciidoctor.Converter.$for('html5')
+    try {
+      ;(() => {
+        const classDef = global.Opal.klass(null, html5Converter, 'CustomHtml5Converter')
+        classDef.$register_for('html5')
+        global.Opal.defn(classDef, '$convert_paragraph', (node) => `<p>${node.getContent()}</p>`)
+      })()
+      html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(html).to.not.include('<div class="paragraph">')
+      expectPageLink(html, '../other-module/the-page.html', 'page in other module')
+    } finally {
+      global.Opal.Object.$remove_const('CustomHtml5Converter')
+      delete global.Opal.Object.CustomHtml5Converter
+      delete global.Opal.CustomHtml5Converter
+      html5Converter.$register_for('html5')
+    }
+
+    html = loadAsciiDoc(inputFile, contentCatalog).convert()
+    expect(html).to.include('<div class="paragraph">')
+    expectPageLink(html, '../other-module/the-page.html', 'page in other module')
+  })
+
   it('should use UTF-8 as the default String encoding', () => {
     expect(String('foo'.encoding)).to.equal('UTF-8')
   })

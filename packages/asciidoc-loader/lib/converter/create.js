@@ -1,6 +1,6 @@
 'use strict'
 
-const Html5Converter = require('./html5')
+const defineHtml5Converter = require('./html5')
 
 /**
  * Creates an HTML5 converter instance with Antora enhancements.
@@ -13,8 +13,8 @@ const Html5Converter = require('./html5')
  *
  * @returns {Converter} An enhanced instance of Asciidoctor's HTML5 converter.
  */
-function createConverter (callbacks) {
-  return Html5Converter.$new('html5', undefined, callbacks)
+function createConverter (callbacks = {}) {
+  return defineHtml5Converter().$new('html5', undefined, callbacks)
 }
 
 module.exports = createConverter
