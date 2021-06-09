@@ -10,18 +10,18 @@ const TAG_DIRECTIVE_RX = /\b(?:tag|(e)nd)::(\S+?)\[\](?=$|[ \r])/m
 
 const IncludeProcessor = (() => {
   const $callback = Symbol('callback')
-  const scope = Opal.klass(
+  const classDef = Opal.klass(
     Opal.Antora || Opal.module(null, 'Antora', $Antora),
     Opal.Asciidoctor.Extensions.IncludeProcessor,
     'IncludeProcessor'
   )
 
-  Opal.defn(scope, '$initialize', function initialize (callback) {
+  Opal.defn(classDef, '$initialize', function initialize (callback) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize))
     this[$callback] = callback
   })
 
-  Opal.defn(scope, '$process', function (doc, reader, target, attrs) {
+  Opal.defn(classDef, '$process', function (doc, reader, target, attrs) {
     if (reader.maxdepth === Opal.nil) return
     const sourceCursor = reader.$cursor_at_prev_line()
     if (reader.$include_depth() >= Opal.hash_get(reader.maxdepth, 'curr')) {
@@ -59,7 +59,7 @@ const IncludeProcessor = (() => {
     }
   })
 
-  return scope
+  return classDef
 })()
 
 function getLines (attrs) {

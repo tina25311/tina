@@ -6,7 +6,7 @@ const logger = require('@antora/logger')('asciidoctor')
 const { $Antora } = require('../constants')
 
 const LoggerAdapter = (() => {
-  const scope = Opal.klass(Opal.Antora || Opal.module(null, 'Antora', $Antora), Opal.Logger, 'LoggerAdapter')
+  const classDef = Opal.klass(Opal.Antora || Opal.module(null, 'Antora', $Antora), Opal.Logger, 'LoggerAdapter')
 
   const severityMap = ((Severity) =>
     new Map(
@@ -25,9 +25,9 @@ const LoggerAdapter = (() => {
           [Infinity, 'silent'],
         ]
       )
-    ))(scope.$superclass().Severity)
+    ))(classDef.$superclass().Severity)
 
-  Opal.defn(scope, '$initialize', function initialize (context) {
+  Opal.defn(classDef, '$initialize', function initialize (context) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), [Opal.nil])
     const delegate = logger.unwrap()
     this.level = severityMap.get(delegate.level) || severityMap.get('info')
@@ -36,7 +36,7 @@ const LoggerAdapter = (() => {
     this.delegate = delegate
   })
 
-  Opal.defn(scope, '$add', function add (severity, message, progname) {
+  Opal.defn(classDef, '$add', function add (severity, message, progname) {
     if (severity < this.level) {
       if (severity >= this.failureLevel) this.delegate.setFailOnExit()
       return true
@@ -81,7 +81,7 @@ const LoggerAdapter = (() => {
     return true
   })
 
-  return scope
+  return classDef
 })()
 
 module.exports = Object.assign(LoggerAdapter, { logger })

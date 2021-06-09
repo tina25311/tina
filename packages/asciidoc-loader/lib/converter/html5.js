@@ -6,19 +6,19 @@ const $pageRefCallback = Symbol('pageRefCallback')
 const $imageRefCallback = Symbol('imageRefCallback')
 
 const Html5Converter = (() => {
-  const scope = Opal.klass(
+  const classDef = Opal.klass(
     Opal.Antora || Opal.module(null, 'Antora', $Antora),
     Opal.Asciidoctor.Converter.Html5Converter,
     'Html5Converter'
   )
 
-  Opal.defn(scope, '$initialize', function initialize (backend, opts, callbacks) {
+  Opal.defn(classDef, '$initialize', function initialize (backend, opts, callbacks) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), [backend, opts])
     this[$pageRefCallback] = callbacks.onPageRef
     this[$imageRefCallback] = callbacks.onImageRef
   })
 
-  Opal.defn(scope, '$convert_inline_anchor', function convertInlineAnchor (node) {
+  Opal.defn(classDef, '$convert_inline_anchor', function convertInlineAnchor (node) {
     if (node.getType() === 'xref') {
       let callback
       let refSpec =
@@ -50,19 +50,19 @@ const Html5Converter = (() => {
     return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_anchor', convertInlineAnchor), [node])
   })
 
-  Opal.defn(scope, '$convert_image', function convertImage (node) {
+  Opal.defn(classDef, '$convert_image', function convertImage (node) {
     return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_image', convertImage), [
       transformImageNode(this, node, node.getAttribute('target')),
     ])
   })
 
-  Opal.defn(scope, '$convert_inline_image', function convertInlineImage (node) {
+  Opal.defn(classDef, '$convert_inline_image', function convertInlineImage (node) {
     return Opal.send(this, Opal.find_super_dispatcher(this, 'convert_inline_image', convertInlineImage), [
       transformImageNode(this, node, node.getTarget()),
     ])
   })
 
-  return scope
+  return classDef
 })()
 
 function transformImageNode (converter, node, imageTarget) {
