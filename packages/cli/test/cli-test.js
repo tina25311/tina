@@ -45,6 +45,9 @@ describe('cli', function () {
         })
       )
       .then((builder) => builder.importFilesFromFixture('the-component'))
+      .then((builder) => builder.checkoutBranch('v1.0-broken'))
+      .then((builder) => builder.addToWorktree('modules/ROOT/pages/broken.adoc', '= Broken\n\n{no-such-attribute}'))
+      .then((builder) => builder.commitAll('add broken'))
       .then((builder) => builder.close('master'))
 
   // NOTE run the antora command from WORK_DIR by default to simulate a typical use case
@@ -577,12 +580,7 @@ describe('cli', function () {
   })
 
   it('should exit with status code 0 if log failure level is not reached', async () => {
-    await repoBuilder
-      .open()
-      .then(() => repoBuilder.checkoutBranch('v1.0'))
-      .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/broken.adoc', '= Broken\n\n{no-such-attribute}'))
-      .then(() => repoBuilder.commitAll('add broken'))
-      .then(() => repoBuilder.close('master'))
+    playbookSpec.content.sources[0].branches = 'v1.0-broken'
     playbookSpec.runtime = { log: { failure_level: 'fatal' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
@@ -601,12 +599,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should exit with status code 1 if log failure level is reached', async () => {
-    await repoBuilder
-      .open()
-      .then(() => repoBuilder.checkoutBranch('v1.0'))
-      .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/broken.adoc', '= Broken\n\n{no-such-attribute}'))
-      .then(() => repoBuilder.commitAll('add broken'))
-      .then(() => repoBuilder.close('master'))
+    playbookSpec.content.sources[0].branches = 'v1.0-broken'
     playbookSpec.runtime = { log: { failure_level: 'warn' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
