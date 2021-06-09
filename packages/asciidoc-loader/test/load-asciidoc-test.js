@@ -9,7 +9,8 @@ const { extractAsciiDocMetadata, resolveAsciiDocConfig } = loadAsciiDoc
 const mockContentCatalog = require('../../../test/mock-content-catalog')
 const ospath = require('path')
 
-const Asciidoctor = global.Opal.Asciidoctor
+const Opal = global.Opal
+const Asciidoctor = Opal.Asciidoctor
 
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 
@@ -343,7 +344,7 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('= Page Title')
       const messages = captureLogSync(() => {
         loadAsciiDoc(inputFile)
-        Asciidoctor.LoggerManager.getLogger().$add(global.Opal.Logger.Severity.INFO, 'hello')
+        Asciidoctor.LoggerManager.getLogger().$add(Opal.Logger.Severity.INFO, 'hello')
       })
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.eql({
@@ -1556,7 +1557,7 @@ describe('loadAsciiDoc()', () => {
           relative: 'greeting.adoc',
         })
       expect(doc.getCatalog().includes['$key?']('greeting')).to.be.true()
-      expect(doc.getCatalog().includes['$[]']('greeting')).to.equal(global.Opal.nil)
+      expect(doc.getCatalog().includes['$[]']('greeting')).to.equal(Opal.nil)
     })
 
     it('should not mangle a page reference if reference matches rootname of include', () => {
@@ -3575,7 +3576,7 @@ describe('loadAsciiDoc()', () => {
           this.createInline(parent, 'anchor', target, {
             type: 'xref',
             target: target + '.adoc',
-            attributes: global.Opal.hash({ refid: target, path: target + '.adoc' }),
+            attributes: Opal.hash({ refid: target, path: target + '.adoc' }),
           })
         )
       }
