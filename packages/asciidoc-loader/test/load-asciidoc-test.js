@@ -650,8 +650,12 @@ describe('loadAsciiDoc()', () => {
       const shoutBlockExtension = function () {
         this.onContext('paragraph')
         this.process((parent, reader) =>
-          this.createBlock(parent, 'paragraph', reader.getLines().map((l) => l.toUpperCase()))
-        ) // prettier-ignore
+          this.createBlock(
+            parent,
+            'paragraph',
+            reader.getLines().map((l) => l.toUpperCase())
+          )
+        )
       }
       shoutBlockExtension.registered = 0
       shoutBlockExtension.register = (registry) => {
