@@ -2,7 +2,11 @@
 
 const fs = require('fs')
 const { promises: fsp } = fs
-const git = require('isomorphic-git')
+const { default: http } = require('isomorphic-git/http/node')
+const git = ((git$1) => {
+  if (!git$1.cores) git$1.cores = new Map()
+  return git$1
+})(require('isomorphic-git').default)
 const ospath = require('path')
 const vfs = require('vinyl-fs')
 const yaml = require('js-yaml')
@@ -33,7 +37,7 @@ class RepositoryBuilder {
       this.url = `${this.gitServerProtocol}//localhost:${this.gitServerPort}/${repoName}.git`
     } else if (this.bare) this.url += ospath.sep + '.git'
     // NOTE create new fs to clear index cache
-    this.repository = { fs: { ...fs }, dir: this.repoPath, gitdir: ospath.join(this.repoPath, '.git') }
+    this.repository = { fs: { ...fs }, http, dir: this.repoPath, gitdir: ospath.join(this.repoPath, '.git') }
     await git.init(this.repository)
     if (opts.empty) return this
     await (await this.addToWorktree('.gitignore')).addToWorktree('.gitattributes', '* text=auto eol=lf')
@@ -69,31 +73,26 @@ class RepositoryBuilder {
     return this
   }
 
-  async clone (clonePath) {
-    // NOTE create new fs to clear index cache
-    return git.clone({ fs: { ...fs }, dir: clonePath, url: this.url })
-  }
-
   async checkoutBranch (branchName) {
-    await git.branch({ ...this.repository, ref: branchName, checkout: true }).catch((e) => {
-      if (e.code === git.E.RefExistsError) {
+    await git.branch({ ...this.repository, ref: branchName, checkout: true }).catch((err) => {
+      if (err instanceof git.Errors.AlreadyExistsError) {
         return git.checkout({ ...this.repository, ref: branchName })
       }
-      throw e
+      throw err
     })
     return this
   }
 
   async checkoutBranch$1 (branchName, ref = 'HEAD') {
     await git.branch({ ...this.repository, ref: branchName })
-    await git.fastCheckout({ ...this.repository, ref, noCheckout: true })
+    await git.checkout({ ...this.repository, ref, noCheckout: true })
     // NOTE isomorphic-git writes oid to HEAD, but we want to test case when it's a ref
     await fsp.writeFile(ospath.join(this.repository.gitdir, 'HEAD'), `ref: refs/heads/${branchName}\n`)
     return this
   }
 
   async config (path, value) {
-    return git.config({ ...this.repository, path, value })
+    return git.setConfig({ ...this.repository, path, value })
   }
 
   async deleteBranch (ref) {
@@ -254,20 +253,25 @@ class RepositoryBuilder {
     )
   }
 
+  static clone (url, toDir) {
+    // NOTE create new fs to clear index cache
+    return git.clone({ fs: { ...fs }, http, dir: toDir, url })
+  }
+
   static getPlugin (name, core = 'default') {
-    return git.cores.create(core).get(name)
+    return git.cores.get(core).get(name)
   }
 
   static hasPlugin (name, core = 'default') {
-    return git.cores.create(core).has(name)
+    return git.cores.get(core).has(name)
   }
 
   static registerPlugin (name, impl, core = 'default') {
-    git.cores.create(core).set(name, impl)
+    git.cores.get(core).set(name, impl)
   }
 
   static unregisterPlugin (name, core = 'default') {
-    git.cores.create(core).delete(name)
+    git.cores.get(core).delete(name)
   }
 }
 

@@ -3,7 +3,7 @@
 const { expand: expandBraces } = require('braces')
 const flattenDeep = require('./flatten-deep')
 const { promises: fsp } = require('fs')
-const git = require('isomorphic-git')
+const git = require('./git-adapter')
 const invariably = { true: () => true, false: () => false, void: () => {}, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 
@@ -123,13 +123,11 @@ function listDirentsFs (base, path) {
 
 function listDirentsGit (repo, treeOid) {
   return git
-    .readObject(Object.assign({ oid: treeOid, filepath: '' }, repo))
-    .catch(() => ({ object: {} }))
-    .then(({ object: { entries } }) =>
-      entries
-        ? entries.map(({ type, oid, path: name }) => ({ name, oid, isDirectory: invariably[type === 'tree'] }))
-        : []
+    .readTree(Object.assign({ oid: treeOid, filepath: '' }, repo))
+    .then(({ tree: entries }) =>
+      entries.map(({ type, oid, path: name }) => ({ name, oid, isDirectory: invariably[type === 'tree'] }))
     )
+    .catch(invariably.emptyArray)
 }
 
 function makeAlternationMatcherRx (patterns) {
