@@ -43,7 +43,9 @@ const VENTILATED_CSV_RX = /\s*,\s+/
 const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name)|path)\}/g
 const GIT_SUFFIX_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
+const HEADS_DIR_RX = /^heads\//
 const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
+const PATH_SEPARATOR_RX = /[/]/g
 const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const SPACE_RX = / /g
 const SUPERFLUOUS_SEPARATORS_RX = /^\/+|\/+$|\/+(?=\/)/g
@@ -366,7 +368,7 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
       ? resolvePathGlobsFs(worktreePath, startPaths)
       : resolvePathGlobsGit(repo, ref.oid, startPaths))
     if (!startPaths.length) {
-      const refInfo = `ref: ${ref.fullname.replace(/^heads\//, '')}${worktreePath ? ' <worktree>' : ''}`
+      const refInfo = `ref: ${ref.fullname.replace(HEADS_DIR_RX, '')}${worktreePath ? ' <worktree>' : ''}`
       throw new Error(`no start paths found in ${displayUrl} (${refInfo})`)
     }
     return Promise.all(
@@ -391,7 +393,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
       return componentVersionBucket
     })
     .catch((err) => {
-      const refInfo = `ref: ${ref.fullname.replace(/^heads\//, '')}${worktreePath ? ' <worktree>' : ''}`
+      const refInfo = `ref: ${ref.fullname.replace(HEADS_DIR_RX, '')}${worktreePath ? ' <worktree>' : ''}`
       const pathInfo = !startPath || err.message.startsWith('the start path ') ? '' : ' | path: ' + startPath
       throw Object.assign(err, { message: `${err.message} in ${repo.url || repo.dir} (${refInfo}${pathInfo})` })
     })
@@ -643,7 +645,7 @@ function loadComponentDescriptor (files, ref, version) {
     if (version === undefined) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a version`)
     version = ''
   } else if (version === true) {
-    version = ref.shortname.replace(/[/]/g, '-')
+    version = ref.shortname.replace(PATH_SEPARATOR_RX, '-')
   } else if (version.constructor === Object) {
     const refname = ref.shortname
     let matched
@@ -662,7 +664,7 @@ function loadComponentDescriptor (files, ref, version) {
     if (matched === '.' || matched === '..') {
       throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${matched}`)
     }
-    version = matched.replace(/[/]/g, '-')
+    version = matched.replace(PATH_SEPARATOR_RX, '-')
   } else if ((version = String(version)) === '.' || version === '..' || ~version.indexOf('/')) {
     throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
   }
