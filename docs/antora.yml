@@ -12,6 +12,7 @@ asciidoc:
     version-node: '12.18.4'
     version-npm: '6.14.8'
     url-node-releases: https://nodejs.org/en/about/releases/
+    url-asciidoc: https://docs.asciidoctor.org/asciidoc/latest
 nav:
 - modules/ROOT/nav-start.adoc
 - modules/install/nav.adoc

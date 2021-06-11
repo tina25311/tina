@@ -38,9 +38,8 @@ Site attributes are applied and available to all of a site's pages according to 
 
 Each site attribute is entered on its own line as a key-value pair under the `attributes` key.
 
-[#ex-hard-set]
 .Declare attributes in the playbook
-[source,yaml]
+[source#ex-hard-set,yaml]
 ----
 asciidoc: # <1>
   attributes: # <2>
@@ -74,9 +73,8 @@ The values of custom attributes, such as `page-team` and `db` can be displayed i
 Soft set site attributes can be overridden from a component version descriptor or page.
 An attribute is soft set in a playbook by attaching the `@` modifier to the end of its value.
 
-[#ex-soft-set]
 .Assign soft set precedence to attributes
-[source,yaml]
+[source#ex-soft-set,yaml]
 ----
 asciidoc:
   attributes:
@@ -95,9 +93,8 @@ Site attributes can also be unset in a playbook.
 Site attributes are hard unset when they're assigned the reserved tilde symbol (`~`) value.
 Each site attribute is entered on its own line as a key-value pair under the `attributes` key.
 
-[#ex-hard-unset]
 .Hard unset site attributes in the playbook
-[source,yaml]
+[source#ex-hard-unset,yaml]
 ----
 asciidoc:
   attributes:
@@ -117,9 +114,8 @@ When a site attribute is hard unset, its behavior is turned off and it isn't ava
 Soft unset site attributes can be overridden from a component version descriptor or page.
 An attribute is soft unset in a playbook by assigning it the reserved value `false`.
 
-[#ex-soft-unset]
 .Assign soft unset precedence to attributes
-[source,yaml]
+[source#ex-soft-unset,yaml]
 ----
 asciidoc:
   attributes:

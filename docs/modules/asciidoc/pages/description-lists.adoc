@@ -1,8 +1,7 @@
 = Description Lists
 :keywords: definition list, association list, labeled list, dl, dt, dd
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-labeled: {url-adoc-manual}/#labeled-list
+:url-labeled: {url-asciidoc}/lists/description/
+:url-continuation: {url-asciidoc}/lists/continuation/
 
 On this page, you'll learn:
 
@@ -26,11 +25,11 @@ Here's an example of a description list with two terms and their content.
 [source]
 ----
 Keyboard::
-Used to enter text or control items on the screen. // <1>
-Mouse:: Used to point to and select items on your computer screen. // <2>
+Used to enter text or control items on the screen. <.>
+Mouse:: Used to point to and select items on your computer screen. <.>
 ----
-<1> The term and its description can be placed on separate lines.
-<2> The term and its description can be placed on the same line as long as there is at least one blank space between the `::` and description content.
+<.> The term and its description can be placed on separate lines.
+<.> The term and its description can be placed on the same line as long as there is at least one blank space between the `::` and description content.
 
 The description of each item is displayed below the term when rendered.
 
@@ -47,7 +46,7 @@ It can even contain other list types.
 Let's look at an example that includes content other than a single paragraph.
 
 .A description list including complex content
-[source]
+[source#ex-complex]
 ----
 term 1::
 This description needs two paragraphs.
@@ -66,7 +65,7 @@ term 3::
 ... another ordered list item
 ----
 
-Here's the result of the example.
+Here's the result of <<ex-complex>>.
 
 term 1::
 This description needs two paragraphs.
@@ -86,5 +85,6 @@ term 3::
 
 Additional xref:ordered-and-unordered-lists.adoc#complex[complex list examples and information about attaching multiple blocks to a list item] are on the ordered and unordered lists page.
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-labeled}[Basic and complex description lists^]
+* {url-continuation}[List continuation^]

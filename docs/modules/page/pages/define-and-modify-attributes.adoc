@@ -1,6 +1,4 @@
 = Define and Modify Attributes
-:xrefstyle: short
-:listing-caption: Example
 
 With the exception of certain intrinsic attributes, which are read-only, any AsciiDoc document attribute (herein [.term]*attributes*) may be defined from the CLI, in the playbook, in the component descriptor, or in the header of a page using an attribute entry.
 The precedence matches that order (higher to lower) unless the precedence has been altered for a given attribute using a modifier.
@@ -25,9 +23,9 @@ This activates, or [.term]*sets*, the attribute so you can use it in your page.
 [source]
 ----
 = Page Title
-:name-of-an-attribute: <1>
+:name-of-an-attribute: <.>
 ----
-<1> The attribute's name is directly preceded with a opening colon (`:`) and directly followed by a closing colon (`:`).
+<.> The attribute's name is directly preceded with a opening colon (`:`) and directly followed by a closing colon (`:`).
 
 In many cases, you explicitly assign a value to an attribute by entering information after its name in the attribute entry.
 The value must be offset from the closing colon (`:`) by at least one space.
@@ -35,9 +33,9 @@ The value must be offset from the closing colon (`:`) by at least one space.
 [source]
 ----
 = Page Title
-:name-of-an-attribute: value of the attribute <1>
+:name-of-an-attribute: value of the attribute <.>
 ----
-<1> An explicitly assigned value is offset from the closing colon (`:`) by at least one blank space.
+<.> An explicitly assigned value is offset from the closing colon (`:`) by at least one blank space.
 At the end of the value, press kbd:[Enter].
 
 [#boolean]
@@ -46,9 +44,9 @@ Some built-in AsciiDoc attributes don't require a value to be explicitly assigne
 [source]
 ----
 = Page Title
-:name-of-an-attribute: <1>
+:name-of-an-attribute: <.>
 ----
-<1> If you don't want to explicitly assign a value to the attribute, press kbd:[Enter] after the closing colon (`:`).
+<.> If you don't want to explicitly assign a value to the attribute, press kbd:[Enter] after the closing colon (`:`).
 
 The values of built-in boolean attributes are always blank because their only accepted value is an _empty string_.
 Other built-in attributes may have a default value.
@@ -64,9 +62,9 @@ The attribute is set by entering its name in an <<attribute-entry,attribute entr
 [source]
 ----
 = Page Title
-:sectanchors: <1>
+:sectanchors: <.>
 ----
-<1> The attribute is set in page header by directly preceding its name, `sectanchors`, with an opening colon (`:`) and directly following it with a closing colon (`:`).
+<.> The attribute is set in page header by directly preceding its name, `sectanchors`, with an opening colon (`:`) and directly following it with a closing colon (`:`).
 
 When set, `sectanchors` adds an anchor to the left of each xref:asciidoc:section-headings.adoc[section title].
 `sectanchors` is a <<boolean,boolean attribute>>, so its value is an _empty string_.
@@ -79,9 +77,9 @@ The attribute `xrefstyle` has three built-in values it can accept, `short`, `ful
 [source]
 ----
 = Page Title
-:xrefstyle: short <1>
+:xrefstyle: short <.>
 ----
-<1> Set `xrefstyle` in the page header and assign it the value `short`.
+<.> Set `xrefstyle` in the page header and assign it the value `short`.
 Explicit values must be offset from the closing colon (`:`) by at least one space.
 
 When the `short` value is assigned to `xrefstyle`, any in-page references to blocks with anchors will display the blocks`' label and number, e.g., _Listing 1_, if no link text is specified in the reference.
@@ -112,9 +110,8 @@ Attribute values can:
 
 In <<ex-custom>>, a custom attribute's name and value are defined using an <<attribute-entry,attribute entry>>.
 
-[#ex-custom]
 .Define a custom attribute using an attribute entry
-[source]
+[source#ex-custom]
 ----
 = Page Title
 :url-repo: https://gitlab.com/antora/demo/docs-site

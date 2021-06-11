@@ -1,7 +1,5 @@
 = Admonitions
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-admonition: {url-adoc-manual}/#admonition
+:url-admonition: {url-asciidoc}/blocks/admonitions/
 
 On this page, you'll learn:
 
@@ -11,8 +9,7 @@ On this page, you'll learn:
 == Admonition styles
 
 An admonition, also known as a notice, helps draw attention to content with a special label or icon.
-
-Asciidoctor comes with five built-in admonition labels.
+There are five built-in admonition labels.
 
 * NOTE
 * TIP
@@ -26,11 +23,11 @@ If the admonition content is not interrupted by blank lines, start the first lin
 The label must be all uppercase and followed by a colon (`:`) and a single blank space.
 
 .Basic admonition syntax
-[source]
+[source#ex-admonitions]
 ----
 CAUTION: Don't stick forks in electric sockets.
 
-TIP: After someone sticks a fork in a socket, you'll need to reset the circuit in the breaker box in the dark and scary basement.
+TIP: After someone sticks a fork in a socket, you'll need to reset the circuit in the dark basement.
 
 WARNING: Never go into the basement.
 
@@ -39,9 +36,11 @@ IMPORTANT: A monster lives in the basement.
 NOTE: If you go into the basement, see if you can find Kenny's parka.
 ----
 
+The result of <<ex-admonitions>> is displayed below.
+
 CAUTION: Don't stick forks in electric sockets.
 
-TIP: After someone sticks a fork in a socket, you'll need to reset the circuit in the breaker box in the dark and scary basement.
+TIP: After someone sticks a fork in a socket, you'll need to reset the circuit in the dark basement.
 
 WARNING: Never go into the basement.
 
@@ -57,7 +56,7 @@ This behavior is referred to as masquerading.
 Place the appropriate label, in all uppercase, on the block in an attribute list (`[]`).
 
 .Complex admonition syntax
-[source]
+[source#ex-masquerade]
 ----
 [IMPORTANT]
 .Optional Title
@@ -71,6 +70,8 @@ Use an example block to create an admonition that contains complex content, such
 ====
 ----
 
+The result of <<ex-masquerade>> is displayed below.
+
 [IMPORTANT]
 .Optional Title
 ====
@@ -82,5 +83,5 @@ Use an example block to create an admonition that contains complex content, such
 * Images
 ====
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-admonition}[Admonition paragraphs and blocks^]

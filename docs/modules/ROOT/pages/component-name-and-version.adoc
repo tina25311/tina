@@ -1,6 +1,4 @@
 = Define a Component Name and Version
-//:listing-caption: Example
-//:xrefstyle: short
 :note-caption: ASSUMPTIONS
 
 [NOTE]

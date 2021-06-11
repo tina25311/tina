@@ -61,9 +61,8 @@ When a page is moved from one module to another module in the same component, th
 In <<ex-module>>, the page `source-1.adoc` has moved from `module-1` to `module-z`.
 Both `module-1` and `module-z` are modules in version `5.0` of `component-1`.
 
-[#ex-module]
 .source-1.adoc
-[source]
+[source#ex-module]
 ----
 = Title of Target Page
 :page-aliases: module-1:source-1.adoc <1>
@@ -75,9 +74,8 @@ Now, Antora will redirect the URL [.path]_\https://base-url.com/component-1/5.0/
 When a page is moved from one component to another component, assign the source page's fully qualified former page ID to `page-aliases`.
 In <<ex-component>>, the page `source-w.adoc` has moved from version `1.4` of `component-8`, `module-u` to version `3.0` of `component-delta`, `ROOT`.
 
-[#ex-component]
 .source-w.adoc
-[source]
+[source#ex-component]
 ----
 = Title of Target Page
 :page-aliases: 1.4@component-8:module-u:source-w.adoc
@@ -99,9 +97,8 @@ You shouldn't create a redirect to a target page that doesn't have much in commo
 
 If it's appropriate to redirect the deleted page's URL to another page, assign the deleted page's ID to the `page-aliases` attribute, making sure to specify the necessary coordinates.
 
-[#ex-deleted]
 .Target page
-[source]
+[source#ex-deleted]
 ----
 = Title of Target Page
 :page-aliases: source-page-filename.adoc

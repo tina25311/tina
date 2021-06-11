@@ -1,9 +1,4 @@
 = Sidebars
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-sidebar: {url-adoc-manual}/#sidebar
-:url-block: {url-adoc-manual}/#blocks
-:url-block-subs: {url-adoc-manual}/#built-in-blocks-summary
 
 On this page, you'll learn:
 
@@ -19,10 +14,14 @@ Normal substitutions are applied to sidebar content.
 If the sidebar content is contiguous, the block name `sidebar` can be placed directly on top of the text in an attribute list (`[]`).
 
 .Sidebar paragraph syntax
+[source#ex-style]
 ----
 [sidebar]
-Sidebars are used to visually separate auxiliary bits of content that supplement the main text.
+Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.
 ----
+
+The result of <<ex-style>> is displayed below.
 
 [sidebar]
 Sidebars are used to visually separate auxiliary bits of content that supplement the main text.
@@ -33,8 +32,25 @@ A sidebar block is delimited by a set of four consecutive asterisks (`pass:[****
 You don't need to set the block name when you use a delimited block.
 
 .Delimited sidebar block syntax
-[source]
+[source#ex-block]
 ....
+.Optional Title
+****
+Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.
+
+TIP: They can contain any type of content.
+
+.Source code block in a sidebar
+[source,js]
+----
+const { expect, expectCalledWith, heredoc } = require('../../../test/test-utils')
+----
+****
+....
+
+The result of <<ex-block>> is displayed below.
+
 .Optional Title
 ****
 Sidebars are used to visually separate auxiliary bits of content that supplement the main text.
@@ -47,22 +63,3 @@ TIP: They can contain any type of content.
 const { expect, expectCalledWith, heredoc } = require('../../../test/test-utils')
 ----
 ****
-....
-
-.Optional Title
-****
-Sidebars are used to visually separate auxiliary bits of content that supplement the main text.
-
-TIP: They can contain any type of content.
-
-.Source code block in a sidebar
-[source,js]
-----
-const { expect, expectCalledWith, heredoc } = require('../../../test/test-utils')
-----
-****
-
-.*Asciidoctor resources*
-* {url-sidebar}[Sidebar blocks^]
-* {url-block}[Block titles and attributes^]
-* {url-block-subs}[Substitutions by block type^]

@@ -2,13 +2,11 @@
 :family: page
 :coordinate: page$
 :ext: .adoc
-:xrefstyle: short
-:listing-caption: Example
 :page-aliases: asciidoc:include-page.adoc
 // URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-tags: {url-adoc-manual}/#by-tagged-regions
-:url-leveloffset: {url-adoc-manual}/#include-partitioning
+:url-include: {url-asciidoc}/directives/include/
+:url-tags: {url-asciidoc}/directives/include-tagged-regions/
+:url-leveloffset: {url-asciidoc}/directives/include-with-leveloffset/
 
 In Antora, the AsciiDoc include directive has been configured to include another page or portion of a page into the current page.
 You can include a page from anywhere in the site, including pages from other docs components.
@@ -17,7 +15,7 @@ include::partial$include-directive.adoc[]
 
 Antora supports filtering the lines of an include file by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
 Filtering by line numbers takes precedence.
-See {url-adoc-manual}/#include-partial[the Asciidoctor documentation] for full details of the `lines` and `tag` or `tags` syntax.
+See the {url-include}[AsciiDoc include directive documentation] for full details about the `lines`, `tag`, and `tags` syntax.
 
 == Include a page using a relative path
 
@@ -67,7 +65,7 @@ All the attributes (e.g., `lines`, `tags`, `leveloffset`, `indent`) on the inclu
 * xref:include-a-partial.adoc[Include a partial]
 * xref:include-an-example.adoc[Include an example]
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-tags}[Select regions of content with tags^]
 * {url-leveloffset}[Offset section headings with leveloffset^]
 

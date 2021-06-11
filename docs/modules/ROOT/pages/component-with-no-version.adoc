@@ -1,6 +1,4 @@
 = Define a Component Version with No Version
-:listing-caption: Example
-:xrefstyle: short
 
 Sometimes the project or process your documenting isn't versioned.
 For example, hosted technology services and team handbooks may only need their content to represent how the service or process works right now.
@@ -24,9 +22,8 @@ Antora *does not* include the version segment in a component version's page URLs
 
 For instance, the component version defined in <<ex-unversioned>> will produce versionless URLs.
 
-[#ex-unversioned]
 .antora.yml for an unversioned component version
-[source,yaml]
+[source#ex-unversioned,yaml]
 ----
 name: tutorials
 version: master

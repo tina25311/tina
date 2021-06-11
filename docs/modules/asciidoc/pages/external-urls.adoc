@@ -1,10 +1,10 @@
 = URLs
 :underscore: _
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-url: {url-adoc-manual}/#url
-:url-prevent-subs: {url-adoc-manual}/#preventing-substitutions
-:url-inline-pass: {url-adoc-manual}/#inline-pass-macro-and-explicit-substitutions
+:url-autolink: {url-asciidoc}/macros/autolinks/
+:url-email: {url-asciidoc}/macros/email-macro/
+:url-macro: {url-asciidoc}/macros/url-macro/
+:url-attributes: {url-asciidoc}/macros/link-macro-ref/
+:url-prevent-subs: {url-asciidoc}/macros/complex-urls/
 :url-peak: https://www.google.com/maps/place/Antora+Peak/@38.3249976,-106.2355882,14z/data=!3m1!4b1!4m5!3m4!1s0x871572433f469bd7:0xd2bdf15e615cd269!8m2!3d38.3249994!4d-106.2180786!5m1!1e4
 
 On this page, you'll learn:
@@ -27,12 +27,12 @@ When you want to link to a page that is part of your documentation site, use the
 To create a link to an external URL, all you need to do is add the URL prefixed with its scheme.
 
 .Raw URL syntax
-[source]
+[source#ex-raw]
 Chat with other documentation writers at https://antora.zulipchat.com.
 
 Links that begin with official schemes, such as `https`, `ftp`, `mailto`, etc., are automatically turned into hyperlinks when they're processed.
+Here's the result of <<ex-raw>>.
 
-.Result
 ====
 Chat with other documentation writers at https://antora.zulipchat.com.
 ====
@@ -40,38 +40,34 @@ Chat with other documentation writers at https://antora.zulipchat.com.
 To attach a URL to text, enclose the text in square brackets (`[]`) at the end of the URL.
 
 .URL with link text syntax
-[source]
+[source#ex-text]
 ----
 Looking for help?
 Visit the https://antora.zulipchat.com[Antora chat room].
 ----
 
-.Result
+The result of <<ex-text>> is displayed below.
+
 ====
 Looking for help?
 Visit the https://antora.zulipchat.com[Antora chat room^].
 ====
-
-.*Asciidoctor resources*
-* {url-url}[URL syntax and attributes^]
 
 == Escape a URL
 
 When you want to display a URL but you don't want it to be active, you can escape it by prepending it with a backslash (`\`).
 
 .Escape syntax
-[source]
+[source#ex-escape]
 ----
 This URL is displayed, \https://gitlab.com, but isn't clickable.
 ----
 
-.Result
+Here's the result of <<ex-escape>>.
+
 ====
 This URL is displayed, \https://gitlab.com, but isn't clickable.
 ====
-
-.*Asciidoctor resources*
-* {url-prevent-subs}[Preventing substitutions^]
 
 == Troubleshooting URLs
 
@@ -90,18 +86,19 @@ Let's make an xref:page:define-and-modify-attributes.adoc#custom-attribute[attri
 Creating an attribute for a URL is also a good strategy when the URL is long; it keeps the source text clean for writers and editors.
 
 .Custom AsciiDoc attribute syntax
-[source]
+[source#ex-attribute]
 ----
 = Page Title
-:url-peak: https://www.google.com/maps/place/Antora+Peak/@38.3249976,-106.2355882,14z/data=!3m1!4b1!4m5!3m4!1s0x871572433f469bd7:0xd2bdf15e615cd269!8m2!3d38.3249994!4d-106.2180786!5m1!1e4 // <1>
+:url-peak: https://www.google.com/maps/place/Antora+Peak/@38.3249976,-106.2355882,14z/data=!3m1!4b1!4m5!3m4!1s0x871572433f469bd7:0xd2bdf15e615cd269!8m2!3d38.3249994!4d-106.2180786!5m1!1e4 <.>
 
-{url-peak}[This URL] was complicated, but a page attribute came to our rescue! // <2>
+{url-peak}[This URL] was complicated, but a page attribute came to our rescue! <.>
 ----
-<1> Create an attribute, with the name of your choice, in the header of your source file.
+<.> Create an attribute, with the name of your choice, in the header of your source file.
 Assign the URL to it.
-<2> When you want to create a link to that URL in your text, use the attribute (i.e., reference that attribute), as you would have used the URL.
+<.> When you want to create a link to that URL in your text, use the attribute (i.e., reference that attribute), as you would have used the URL.
 
-.Result
+The result of <<ex-attribute>> is displayed below.
+
 ====
 {url-peak}[This URL^] was complicated, but a page attribute came to our rescue!
 ====
@@ -120,15 +117,20 @@ pass:macros[URL goes between these brackets]
 Here's a pass macro in action:
 
 .Pass macro with macros substitution syntax
-[source]
+[source#ex-pass]
 ----
 Anyone want to climb this 13er with me? (pass:macros[https://www.14ers.com/13ers/peak.php?peakkey=4740])
 ----
 
-.Result
+The result of <<ex-pass>> is displayed below.
+
 ====
 Anyone want to climb this 13er with me? (pass:macros[https://www.14ers.com/13ers/peak.php?peakkey=4740])
 ====
 
-.*Asciidoctor resources*
-* {url-inline-pass}[Inline pass macro and explicit substitutions^]
+.*AsciiDoc and Asciidoctor resources*
+* {url-autolink}[Autolink syntax^]
+* {url-macro}[URL macro^]
+* {url-email}[Mailto macro^]
+* {url-attributes}[URL attributes^]
+* {url-prevent-subs}[Troubleshooting URLs and preventing substitutions^]

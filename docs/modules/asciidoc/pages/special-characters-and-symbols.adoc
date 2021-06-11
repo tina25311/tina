@@ -1,10 +1,8 @@
 = Special Characters and Symbols
 :table-caption!:
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-special-chars: {url-adoc-manual}/#special-characters
-:url-symbols: {url-adoc-manual}/#replacements
-:url-char-attrs: {url-adoc-manual}/#charref-attributes-table
+:url-special-chars: {url-asciidoc}/subs/special-characters/
+:url-symbols: {url-asciidoc}/subs/replacements/
+:url-char-attrs: {url-asciidoc}/attributes/character-replacement-reference/
 
 On this page, you'll learn:
 
@@ -109,7 +107,7 @@ When flanked by space characters (e.g., `+a -- b+`), the normal spaces are repla
 |
 |===
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-special-chars}[Special characters^]
 * {url-symbols}[HTML, XML, and Unicode symbols^]
 * {url-char-attrs}[Predefined attributes for character replacements^]

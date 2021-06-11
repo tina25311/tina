@@ -2,13 +2,10 @@
 :family: partial
 :coordinate: partial$
 :ext: .adoc
-:xrefstyle: short
-:listing-caption: Example
 :page-aliases: asciidoc:include-partial.adoc
 // URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-tags: {url-adoc-manual}/#by-tagged-regions
-:url-leveloffset: {url-adoc-manual}/#include-partitioning
+:url-tags: {url-asciidoc}/directives/include-tagged-regions/
+:url-leveloffset: {url-asciidoc}/directives/include-with-leveloffset/
 
 A partial can be inserted into any page or another partial in your site using the AsciiDoc include directive and the partial's resource ID.
 
@@ -16,17 +13,18 @@ include::partial$include-directive.adoc[]
 
 === Include directive placement
 
+[listing]
 ----
 A paragraph in the standard page.
 
-include::partial$cli-options.adoc[] // <1>
+include::partial$cli-options.adoc[] <.>
 
 Another paragraph in the standard page.
-include::partial$addendum.adoc[] // <2>
+include::partial$addendum.adoc[] <.>
 ----
-<1> Enter the include on a new line.
+<.> Enter the include on a new line.
 If you want the partial contents to be a standalone block, make sure there's a blank line above and below it.
-<2> To attach the partial to another block, enter it on a new line but don't insert a blank line between the include and the block content.
+<.> To attach the partial to another block, enter it on a new line but don't insert a blank line between the include and the block content.
 
 == Include a partial from another module
 
@@ -61,6 +59,6 @@ Don't specify the version coordinate if you want a page to always reference the 
 * xref:include-a-page.adoc[Include a standard page]
 * xref:resource-id.adoc[Resource IDs]
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-leveloffset}[Offset section headings with leveloffset^]
 * {url-tags}[Select regions of content with tags^]
