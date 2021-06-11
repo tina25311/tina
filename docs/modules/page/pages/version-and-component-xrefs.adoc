@@ -10,9 +10,8 @@ You can also create xrefs between pages that belong to different versions of the
 When the xref:page-id.adoc#current-page[current] and xref:page-id.adoc#target-page[target] pages belong to different docs components, you must, at a minimum, specify the target xref:page-id.adoc#id-coordinates[component, module, and page coordinates].
 You'll almost always specify the target version coordinate, too.
 
-[#ex-component-version-base]
 .current-page.adoc
-[source]
+[source#ex-component-version-base]
 ----
 xref:version@component:module:target-page-filename.adoc[link text]
 ----
@@ -53,9 +52,8 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
 [.path]_index.adoc_ belongs to version `5.2` of the component `colorado`.
 [.path]_elevation.adoc_ belongs to version `1.0` of the component `wyoming`.
 
-[#ex-across-components]
 .index.adoc (current page)
-[source]
+[source#ex-across-components]
 ----
 See xref:1.0@wyoming:sierra-madre:elevation.adoc[How are peaks measured]?
 ----
@@ -65,9 +63,8 @@ When the xref in <<ex-across-components>> is converted, it will become a link to
 In <<ex-across-components-short-root>>, the page [.path]_ranges.adoc_ is referenced from the page [.path]_elevation.adoc_ (current page).
 The target page, [.path]_ranges.adoc_, belongs to the `ROOT` module of the `colorado` component.
 
-[#ex-across-components-short-root]
 .elevation.adoc (current page)
-[source]
+[source#ex-across-components-short-root]
 ----
 xref:5.2@colorado::ranges.adoc[List of ranges by height]
 ----
@@ -92,9 +89,8 @@ The xref is shown below in <<ex-across-components-latest>>.
 [.path]_elevation.adoc_ belongs to version `1.0` of the component `wyoming`.
 Notice that the target page's version coordinate isn't specified.
 
-[#ex-across-components-latest]
 .index.adoc (current page)
-[source]
+[source#ex-across-components-latest]
 ----
 See xref:wyoming:sierra-madre:elevation.adoc[How are peaks measured]?
 ----
@@ -110,18 +106,16 @@ If you don't specify a version and a component in the page ID, Antora assumes th
 
 When the current and target pages belong to the same docs component, but the target page belongs to a different version of that component, you'll specify the target version, module (if it's different), and page coordinates.
 
-[#ex-version-module-base]
 .current-page.adoc
-[source]
+[source#ex-version-module-base]
 ----
 xref:version@module:target-page-filename.adoc[link text]
 ----
 
 If the target and current pages belong to the same module, too, then you only need to specify the target version and page coordinates.
 
-[#ex-version-base]
 .current-page.adoc
-[source]
+[source#ex-version-base]
 ----
 xref:version@target-page-filename.adoc[link text]
 ----
@@ -164,9 +158,8 @@ However, `colorado 6.0` has no such module or page.
 Let's reference the page [.path]_tour.adoc_ (target page), which belongs to `colorado 5.2`, from the page [.path]_cochetopa-pass.adoc_ (current page), which belongs to the `colorado 6.0` component version.
 In <<ex-across-versions>>, the xref specifies the target page's version, module, and page coordinates.
 
-[#ex-across-versions]
 .cochetopa-pass.adoc (current page) in colorado 6.0
-[source]
+[source#ex-across-versions]
 ----
 Last year's xref:5.2@get-started:tour.adoc[excursions] were riveting!
 ----

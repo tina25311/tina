@@ -1,8 +1,7 @@
 = Add a Title and Metadata
 :page-aliases: asciidoc:page-header.adoc
 // URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-author: {url-adoc-manual}/#author-and-email
+:url-author: {url-asciidoc}/document/author-information/
 
 On this page, you'll learn:
 
@@ -59,7 +58,7 @@ First Middle Last <author@email.com>; First Last <author@email.com>
 Author names are output to the HTML `<meta>` tag.
 Whether any author information is also displayed on a published page depends on the site's UI templates.
 
-Refer to the Asciidoctor user manual for {url-author}[additional author attributes^] and methods for specifying author information.
+Refer to the AsciiDoc documentation for {url-author}[additional author attributes^] and methods for specifying author information.
 
 ////
 [source]

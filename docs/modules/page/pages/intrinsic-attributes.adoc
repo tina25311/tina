@@ -136,6 +136,7 @@ Keep in mind that the AsciiDoc processor also assigns numerous intrinsic attribu
 The value of these page attributes can be accessed in the AsciiDoc content using the attribute reference syntax (e.g., `\{page-component-name}`) or via the page UI model using a template variable (e.g., `page.attributes.component-name`).
 
 .Reference the current page's module name, component title, and version
+[listing]
 ----
 This page belongs to the *{page-module}* module in the *{page-component-title} {page-component-version}* component version.
 ----

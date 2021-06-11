@@ -1,15 +1,14 @@
 = Bold
-:example-caption!:
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-bold: {url-adoc-manual}/#bold-and-italic
+:url-bold: {url-asciidoc}/text/bold/
+:url-formatting: {url-asciidoc}/text/#formatting-marks-and-pairs
+:url-constrained: {url-asciidoc}/text/troubleshoot-unconstrained-formatting/
 
 On this page, you'll learn:
 
 * [x] How to make text bold in AsciiDoc.
 * [x] Where to modify your site's bold text styling.
 
-Text that is marked up as bold will stand out against the regular, surrounding text due to the application of a thicker and/or darker font.
+Text that is marked up as bold will stand out against the regular, surrounding text due to the application of a thicker or darker font.
 Bold is useful when the text needs to catch the attention of a site visitor quickly scanning a page.
 
 == Bold syntax
@@ -22,17 +21,18 @@ Bounded characters are characters that are:
 * directly preceded by a non-whitespace character, or
 * directly followed by a non-whitespace character.
 
+You don't need to use double asterisks when an entire word or phrase marked as bold is directly followed by a common punctuation mark, such as `;`, `"`, and `!`.
+
 .Bold inline formatting
-[source]
+[source#ex-bold]
 ----
 A bold *word*, and a bold *phrase of text*.
 
 Bold c**hara**cter**s** within a word.
 ----
 
-You don't need to use double asterisks when an entire word or phrase marked as bold is directly followed by a common punctuation mark, such as `;`, `"`, and `!`.
+The result of <<ex-bold>> is displayed below.
 
-.Results
 ====
 A bold *word*, and a bold *phrase of text*.
 
@@ -44,7 +44,7 @@ Bold c**hara**cter**s** within a word.
 You can add multiple emphasis styles to bold text as long as the syntax is placed in the correct order.
 
 .Order of inline formatting syntax
-[source]
+[source#ex-order]
 ----
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----
@@ -52,7 +52,8 @@ You can add multiple emphasis styles to bold text as long as the syntax is place
 xref:monospace.adoc[Monospace syntax] (`++`++`) must be the outermost formatting set (i.e., outside the bold formatting set).
 xref:italic.adoc[Italic syntax] (`+_+`) is always the innermost formatting set.
 
-.Result
+The result of <<ex-order>> is displayed below.
+
 ====
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ====
@@ -62,5 +63,7 @@ xref:italic.adoc[Italic syntax] (`+_+`) is always the innermost formatting set.
 How bold text appears on your site depends on the fonts loaded by your UI and any CSS styles applied to the `<strong>` HTML tag.
 You can learn more about customizing xref:antora-ui-default::inline-text-styles.adoc#bold[how bold text appears in your site] in the UI documentation.
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-bold}[Bold text formatting^]
+* {url-formatting}[Formatting marks and pairs^]
+* {url-constrained}[Constrained versus unconstrained^]

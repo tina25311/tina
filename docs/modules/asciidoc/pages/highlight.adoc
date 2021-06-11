@@ -1,8 +1,7 @@
 = Highlight
-:hash: #
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-highlight: {url-adoc-manual}/#custom-styling-with-attributes
+:url-highlight: {url-asciidoc}/text/highlight/
+:url-formatting: {url-asciidoc}/text/#formatting-marks-and-pairs
+:url-constrained: {url-asciidoc}/text/troubleshoot-unconstrained-formatting/
 
 On this page, you'll learn:
 
@@ -12,15 +11,16 @@ On this page, you'll learn:
 == Highlight syntax
 
 To highlight (or mark) a word or phrase, place a hash (`+#+`) at the beginning and end of the text you wish to format (constrained formatting).
-To highlight one or more characters bounded by other characters, place two hashes (`+##i+`) before and after the characters (unconstrained formatting).
+To highlight one or more characters bounded by other characters, place two hashes (`+##+`) before and after the characters (unconstrained formatting).
 
 .Highlight inline formatting
-[source]
+[source#ex-highlight]
 ----
 Let's #highlight this phrase# and the i and s in th##is##.
 ----
 
-.Result
+The result of <<ex-highlight>> is displayed below.
+
 ====
 Let's #highlight this phrase# and the i and the s in th##is##.
 ====
@@ -30,5 +30,7 @@ Let's #highlight this phrase# and the i and the s in th##is##.
 How highlighted text appears on your site depends on the CSS styles applied to the `<mark>` HTML tag.
 You can learn more about customizing xref:antora-ui-default::inline-text-styles.adoc#highlight[how highlighted text appears in your site] in the UI documentation.
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-highlight}[Highlighted text formatting^]
+* {url-formatting}[Formatting marks and pairs^]
+* {url-constrained}[Constrained versus unconstrained^]

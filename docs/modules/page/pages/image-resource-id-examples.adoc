@@ -1,6 +1,4 @@
 = Image Resource ID Examples
-:listing-caption: Example
-:xrefstyle: short
 
 You can embed an image into any page in your site, regardless of the module, component, or version the target image file belongs to.
 Remember, don't include the family coordinate in an image's resource ID.
@@ -13,8 +11,8 @@ TIP: If you're looking for examples where the image and page belong to the same 
 
 The target resource's xref:resource-id.adoc#id-module[module coordinate] and xref:resource-id.adoc#id-resource[resource coordinate] are required when the xref:resource-id.adoc#current-page[current page] and xref:resource-id.adoc#target-resource[target resource file] belong to different modules of the same component version.
 
-[#ex-across-module-base]
 .current-page.adoc
+[listing#ex-across-module-base]
 ----
 image::module:target-resource-filename.ext[optional attributes]
 ----
@@ -48,16 +46,16 @@ The component version's source files are stored in the xref:ROOT:standard-direct
 In <<ex-across-modules-inline>>, the image [.path]_peak.svg_ belongs to the `ROOT` module.
 It's used in the page [.path]_cochetopa-pass.adoc_.
 
-[#ex-across-modules-inline]
 .Insert peak.svg (target resource) as an inline image into cochetopa-pass.adoc (current page)
+[listing#ex-across-modules-inline]
 ----
 The elevation is image:ROOT:peak.svg[] 10,067 ft (3,068 m).
 ----
 
 In <<ex-across-modules>>, the [.path]_wilderness-map.jpg_ image belongs to the `la-garita` module and is referenced by a page in the `ROOT` module.
 
-[#ex-across-modules]
 .Insert wilderness-map.jpg (target resource) as a block image into ranges.adoc (current page)
+[listing#ex-across-modules]
 ----
 image::la-garita:wilderness-map.jpg[]
 ----
@@ -68,6 +66,7 @@ image::la-garita:wilderness-map.jpg[]
 When the xref:resource-id.adoc#current-page[current page] and the xref:page:resource-id.adoc#target-resource[target resource] belong to different docs components, you must, at a minimum, specify the target xref:resource-id.adoc#id-coordinates[component, module, and resource coordinates].
 You'll almost always want to specify the target version coordinate, too.
 
+[listing]
 ----
 image::version@component:module:target-resource-filename.ext[]
 ----
@@ -79,7 +78,7 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
 [listing#ex-co-and-wy]
 ----
 📒 repository
-  📄 antora.yml <1>
+  📄 antora.yml <.>
   📂 modules
     📂 la-garita
       📂 pages
@@ -94,7 +93,7 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
 
 📒 repository
   📂 docs
-    📄 antora.yml <2>
+    📄 antora.yml <.>
     📂 modules
       📂 sierra-madre
         📂 images
@@ -102,15 +101,15 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
         📂 pages
           📄 wilderness-areas.adoc
 ----
-<1> Declares files that belong to the colorado 5.2 component version
-<2> Declares files that belong to the wyoming 1.0 component version
+<.> Declares files that belong to the colorado 5.2 component version
+<.> Declares files that belong to the wyoming 1.0 component version
 
 <<ex-across-components-root>> shows an xref:inline-images.adoc[inline image macro].
 The image macro will embed the image [.path]_peak.svg_ (target resource), which belongs to the component version `colorado 5.2`, into the current page.
 The current page, [.path]_wilderness-areas.adoc_, belongs to the component version `wyoming 1.0`.
 
-[#ex-across-components-root]
 .wilderness-areas.adoc (current page)
+[listing#ex-across-components-root]
 ----
 image:5.2@colorado::peak.svg[] Bridger Peak is in the Sierra Madre range.
 ----
@@ -125,8 +124,8 @@ In all other cases where the module coordinate is required, the name of the modu
 Let's reference the image [.path]_panorama.png_ (target resource) from [.path]_ranges.adoc_ (current page) in <<ex-across-components>>.
 [.path]_panorama.png_ belongs to the the `sierra-madre` module of the `wyoming` component.
 
-[#ex-across-components]
 .Insert panorama.png (target resource) as a block image into ranges.adoc (current page)
+[listing#ex-across-components]
 ----
 image::1.0@wyoming:sierra-madre:panorama.png[]
 ----
@@ -148,8 +147,8 @@ The image macro is shown below in <<ex-across-components-latest>>.
 [.path]_panorama.png_ belongs to version `1.0` of the component `wyoming`.
 Notice that the target resource's version coordinate isn't specified.
 
-[#ex-across-components-latest]
 .index.adoc (current page)
+[listing#ex-across-components-latest]
 ----
 image::wyoming:sierra-madre:panorama.png[]
 ----
@@ -165,16 +164,16 @@ If you don't specify a version and a component in the resource ID, Antora assume
 
 When the current page and target resource belong to the same component, but the target resource belongs to a different version of that component, you'll specify the target version, module (if it's different), and resource coordinates.
 
-[#ex-version-module-base]
 .current-page.adoc
+[listing#ex-version-module-base]
 ----
 image::version@module:target-resource-filename.ext[]
 ----
 
 If the target resource and current page belong to the same module, too, then you only need to specify the target version and resource coordinates.
 
-[#ex-version-base]
 .current-page.adoc
+[listing#ex-version-base]
 ----
 image::version@target-resource-filename.ext[]
 ----
@@ -215,8 +214,8 @@ Notice that the `colorado 5.2` component version has an image [.path]_wilderness
 In `colorado 5.0`, no such image file exists, but we can still use the image that belongs to `5.2` in the version `5.0` pages.
 In <<ex-across-versions>> the image [.path]_wilderness-map.jpg_ (target resource) is embedded in the page [.path]_views.adoc_ (current page) that belongs to the `colorado 5.0` component version.
 
-[#ex-across-versions]
 .views.adoc (current page) that belongs to colorado 5.0
+[listing#ex-across-versions]
 ----
 image::5.2@la-garita:wilderness-map.jpg[]
 ----

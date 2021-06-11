@@ -1,6 +1,4 @@
 = Assign Navigation Files to a Component Version
-//:listing-caption: Example
-:xrefstyle: short
 
 On this page, you'll learn:
 

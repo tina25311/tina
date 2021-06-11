@@ -1,5 +1,5 @@
 = AsciiDoc Attributes in Antora
-:url-asciidoc-attribute-catalog: https://asciidoctor.org/docs/user-manual/#attribute-catalog
+:url-attribute-catalog: {url-asciidoc}/attributes/document-attributes-reference/
 
 Like the AsciiDoc processor, Antora uses AsciiDoc document attributes (herein [.term]*attributes*) to circulate information in and out of pages.
 These attributes are used to toggle or configure processing settings, control behavior and styles of the output, pass metadata from the source to the UI templates, and pass down information about the page to the content, among a variety of other uses.
@@ -22,13 +22,13 @@ Each value represents either a predefined behavior or a boundary condition.
 For example, the `xrefstyle` attribute controls the style of the linked text of internal xrefs using the predefined values basic, short, or full.
 The `max-include-depth` attribute specifies how deep includes can be nested.
 
-The AsciiDoc processor defines {url-asciidoc-attribute-catalog}[numerous built-in attributes^] (not all of which apply to Antora).
+The AsciiDoc processor defines {url-attribute-catalog}[numerous built-in attributes^].
 Antora introduces xref:intrinsic-attributes.adoc[additional built-in attributes] that are specific to the Antora environment.
 The purpose of these attributes is to configure the AsciiDoc processor to work with Antora.
 In most cases, these attributes are prefixed with `page-`, which makes them intrinsic <<page-attributes,page attributes>>.
 
 Refer to xref:intrinsic-attributes.adoc[Intrinsic attributes] for a list of the read-only attributes defined by Antora.
-Refer to the {url-asciidoc-attribute-catalog}[AsciiDoc attribute catalog^] for a list of all built-in attributes defined in AsciiDoc (though keep in mind that not all of them are relevant in the Antora environment).
+Refer to the {url-attribute-catalog}[AsciiDoc Document Attributes Reference^] for a list of all built-in attributes defined in AsciiDoc (though keep in mind that not all of them are relevant in the Antora environment).
 
 == Custom attributes
 
