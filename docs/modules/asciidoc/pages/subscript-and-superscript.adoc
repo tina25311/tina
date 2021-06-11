@@ -1,25 +1,25 @@
 = Subscript and Superscript
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-sub-sup: {url-adoc-manual}/#subscript-and-superscript
-:url-stem: {url-adoc-manual}/#activating-stem-support
+:url-stem: {url-asciidoc}/stem/stem/
 
 On this page, you'll learn:
 
 * [x] How to mark up a subscript character or word with AsciiDoc.
 * [x] How to mark up a superscript character or word with AsciiDoc.
 
+TIP: You can write equations and formulas with AsciiDoc {url-stem}[using the stem document attribute^].
+
 == Subscript syntax
 
 Text is subscripted when enclosed in a set of tildes (`{tilde}`).
 
 .Subscript
-[source]
+[source#ex-sub]
 ----
 The chemical formula for water is H~2~O.
 ----
 
-.Result
+The result of <<ex-sub>> is rendered below.
+
 ====
 The chemical formula for water is H~2~O.
 ====
@@ -29,16 +29,13 @@ The chemical formula for water is H~2~O.
 Text is superscripted when enclosed in a set of carets (`{caret}`).
 
 .Superscript
-[source]
+[source#ex-super]
 ----
 What is the answer to E=mc^2^?
 ----
 
-.Result
+The result of <<ex-super>> is rendered below.
+
 ====
 What is the answer to E=mc^2^?
 ====
-
-.*Asciidoctor resources*
-* {url-sub-sup}[Subscript and superscript formatting^]
-* {url-stem}[Using Asciidoctor's stem attribute for equations and formulas^]

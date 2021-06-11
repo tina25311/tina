@@ -18,9 +18,8 @@ Component version attributes are set in a component version's [.path]_antora.yml
 First, the `asciidoc` and `attributes` keys must be set.
 Then, each component version attribute is entered on its own line as a key-value pair under `attributes`.
 
-[#ex-hard-set]
 .Declare attributes in antora.yml
-[source,yaml]
+[source#ex-hard-set,yaml]
 ----
 name: light
 title: Data Light
@@ -59,9 +58,8 @@ To allow a page to modify or unset a component version attribute, you need to <<
 Soft set component version attributes can be overridden from a page.
 An attribute is soft set by attaching the `@` modifier to the end of its value.
 
-[#ex-soft-set]
 .Assign soft set precedence to attributes
-[source,yaml]
+[source#ex-soft-set,yaml]
 ----
 asciidoc:
   attributes:
@@ -80,9 +78,8 @@ Attributes can also be unset.
 Component version attributes are hard unset when they're assigned the reserved tilde symbol (`~`) value.
 Each attribute is entered on its own line as a key-value pair under the `attributes` key.
 
-[#ex-hard-unset]
 .Hard unset attributes
-[source,yaml]
+[source#ex-hard-unset,yaml]
 ----
 asciidoc:
   attributes:
@@ -102,9 +99,8 @@ When a component version attribute is hard unset, its behavior is turned off and
 Soft unset component version attributes can be overridden from a page.
 An attribute is soft unset by assigning it the reserved value `false`.
 
-[#ex-soft-unset]
 .Assign soft unset precedence to attributes
-[source,yaml]
+[source#ex-soft-unset,yaml]
 ----
 asciidoc:
   attributes:

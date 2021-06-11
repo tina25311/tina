@@ -1,6 +1,4 @@
 = Xref Pages in a Component Version
-:xrefstyle: short
-:listing-caption: Example
 
 The majority of your cross references will probably be between pages that belong to the xref:ROOT:module-directories.adoc#module[same module] or to the xref:ROOT:component-version.adoc[same component version].
 
@@ -9,8 +7,8 @@ The majority of your cross references will probably be between pages that belong
 
 Only the xref:page-id.adoc#id-page[page coordinate] of the xref:page-id.adoc#target-page[target page] needs to be entered in the page ID when the xref:page-id.adoc#current-page[current page] and target page belong to the same component version and module.
 
-[#ex-in-module-base]
 .current-page.adoc
+[#ex-in-module-base]
 ----
 xref:target-page-filename.adoc[link text]
 ----
@@ -43,8 +41,8 @@ The simplest xref is when the target and current pages belong to the same module
 <<ex-in-module>> shows an xref in the page [.path]_index.adoc_ (current page) that links to the [.path]_cochetopa-pass.adoc_ page (target page).
 Both pages belong to the `la-garita` module.
 
-[#ex-in-module]
 .index.adoc (current page)
+[#ex-in-module]
 ----
 There are xref:cochetopa-pass.adoc[historic passes] in the range.
 ----
@@ -57,8 +55,8 @@ If the target page is nested in a topic folder, include the [.path]_pages_ famil
 In <<ex-topic>>, an xref in the page [.path]_ranges.adoc_ (current page) links to the [.path]_faqs.adoc_ page (target page).
 Both pages belong to the `ROOT` module, and [.path]_faqs.adoc_ is nested in the topic folder [.path]_terms_.
 
-[#ex-topic]
 .ranges.adoc (current page)
+[#ex-topic]
 ----
 See the xref:terms/faqs.adoc[FAQs].
 ----
@@ -70,8 +68,8 @@ The xref in <<ex-topic>> will become a link to the published site page at [.path
 
 The target page's xref:page-id.adoc#id-module[module coordinate] and page coordinate are required when the current and target pages belong to different modules.
 
-[#ex-across-modules-base]
 .current-page.adoc
+[#ex-across-modules-base]
 ----
 xref:module:target-page-filename.adoc[optional link text]
 ----
@@ -80,8 +78,8 @@ The following examples use the pages that belong to the component version <<ex-c
 As seen in <<ex-across-modules>>, let's create an xref in the page [.path]_ranges.adoc_ (current page) that links to [.path]_cochetopa-pass.adoc_ (target page).
 The _ranges.adoc_ page belongs to the `ROOT` module, while [.path]_cochetopa-pass.adoc_ belongs to the `la-garita` module.
 
-[#ex-across-modules]
 .ranges.adoc (current page)
+[#ex-across-modules]
 ----
 Only xref:la-garita:cochetopa-pass.adoc[one pass is open] in the winter.
 ----
@@ -92,8 +90,8 @@ If the target page is nested in a topic folder, include the [.path]_pages_ famil
 In <<ex-modules-topic>>, an xref in the page [.path]_tour.adoc_ (current page) links to the [.path]_faqs.adoc_ page (target page).
 The page [.path]_tour.adoc_ belongs to the `get-started` module, and [.path]_faqs.adoc_ belongs to the `ROOT` module and is nested in the topic folder [.path]_terms_.
 
-[#ex-modules-topic]
 .tour.adoc (current page)
+[#ex-modules-topic]
 ----
 See the xref:ROOT:terms/faqs.adoc[FAQs].
 ----

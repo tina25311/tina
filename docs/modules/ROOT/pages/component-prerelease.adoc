@@ -1,6 +1,4 @@
 = Identify a Prerelease Version
-:listing-caption: Example
-:xrefstyle: short
 
 The `prerelease` key informs Antora that a component version is a prerelease.
 When generating a site, Antora doesn't apply the default routing rules to component versions designated as prereleases.
@@ -21,9 +19,8 @@ It can contain uppercase letters and a broad range of characters.
 
 The component version defined in <<ex-append-identifier>> is a prerelease.
 
-[#ex-append-identifier]
 .antora.yml with prerelease assigned the identifier -rc.3
-[source,yaml]
+[source#ex-append-identifier,yaml]
 ----
 name: colorado
 title: Colorado ∆
@@ -45,9 +42,8 @@ The computed prerelease version takes the form of `version identifier`.
 Antora separates the identifier from the `version` key's value with one blank space to compute the prerelease version.
 +
 --
-[#ex-compute]
 .antora.yml with prerelease assigned the identifier Beta
-[source,yaml]
+[source#ex-compute,yaml]
 ----
 name: colorado
 title: Colorado ∆
@@ -67,9 +63,8 @@ However, the component version is still <<sort-and-route,sorted according to the
 
 A component version becomes a prerelease when the `prerelease` key is set in [.path]_antora.yml_ and assigned the value `true`.
 
-[#ex-true]
 .antora.yml with prerelease defined as true
-[source,yaml]
+[source#ex-true,yaml]
 ----
 name: colorado
 title: Colorado ∆

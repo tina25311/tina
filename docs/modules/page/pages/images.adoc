@@ -1,7 +1,5 @@
 = Images
 //:page-aliases: asciidoc:insert-image.adoc
-:listing-caption: Example
-:xrefstyle: short
 
 Images are source files, such as photographs, diagrams, and screenshots, that are stored in an xref:ROOT:images-directory.adoc[_images_ family directory].
 An image can be inserted into any page or partial, regardless of the module or component version it belongs to, using an AsciiDoc image macro.
@@ -15,15 +13,15 @@ A xref:block-images.adoc[block image] is displayed as a discrete element on a si
 ----
 This is a paragraph.
 
-image::resource-id[optional attribute] <1>
+image::resource-id[optional attribute] <.>
 ----
-<1> A block image is designated by two colons (`::`) after the macro name.
+<.> A block image is designated by two colons (`::`) after the macro name.
 It's preceded by a blank line, entered on a line by itself, and then followed by blank line.
 
 An xref:inline-images.adoc[inline image] is displayed in the flow of another element, such as a paragraph or sidebar block.
 
 ----
-This sentence contains an inline image:resource-id[optional attribute] image. <1>
+This sentence contains an inline image:resource-id[optional attribute] image. <.>
 ----
-<1> An inline image is entered into the flow of the content.
+<.> An inline image is entered into the flow of the content.
 It's designated by a single colon (`:`) after the macro name.

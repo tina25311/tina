@@ -1,10 +1,7 @@
 = Embed a Video
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
 :url-video-formats: https://developer.mozilla.org/en-US/docs/Web/HTML/Supported_media_formats#Browser_compatibility
-:url-hosted-video: {url-adoc-manual}/#video
-:url-shared-video: {url-adoc-manual}/#youtube-and-vimeo-videos
-:url-video-attrs: {url-adoc-manual}/#supported-attributes
+:url-video: {url-asciidoc}/macros/audio-and-video/
+:url-options: {url-asciidoc}/macros/audio-and-video/#audio-and-video-attributes-and-options
 
 On this page, you'll learn:
 
@@ -42,7 +39,6 @@ video::rPQoq7ThGAU[youtube]
 
 TIP: Insert animated GIFs with the xref:page:images.adoc[image macro].
 
-.*Asciidoctor resources*
-* {url-hosted-video}[The AsciiDoc video macro^]
-* {url-shared-video}[Embed Youtube and Vimeo videos^]
-* {url-video-attrs}[Video macro options and attributes^]
+.*AsciiDoc and Asciidoctor resources*
+* {url-video}[Video macro^]
+* {url-options}[Video macro options and attributes^]

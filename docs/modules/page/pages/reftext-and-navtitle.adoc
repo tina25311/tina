@@ -1,6 +1,4 @@
 = Customize reftext and navtitle
-:listing-caption: Example
-:xrefstyle: short
 
 The `reftext` and `navtitle` attributes are automatically set and assigned default values when Antora runs.
 You can customize the values of these attributes by setting them in the header of a page.
@@ -12,18 +10,16 @@ A target page's `reftext` value is used as the link text in an xref that origina
 By default, Antora assigns a page's title to the `reftext` attribute at runtime.
 In <<ex-page>>, let's reference the [.path]_install-prerequisites.adoc_ file and leave the link text field empty.
 
-[#ex-page]
 .current-page.adoc
-[source]
+[source#ex-page]
 ----
 Make sure you xref:install-prerequisites.adoc[].
 ----
 
 Now, let's look at the header of the [.path]_install-prerequisites.adoc_ file.
 
-[#ex-default-reftext]
 .install-prerequisites.adoc
-[source]
+[source#ex-default-reftext]
 ----
 = Installing and Testing Silver Leaf's Prerequisites
 
@@ -36,9 +32,8 @@ That means its title, _Installing and Testing Silver Leaf's Prerequisites_, will
 If you don't want a page's title to be used as its default `reftext`, assign the attribute a custom value with an attribute entry.
 <<ex-custom-reftext>> shows the `reftext` attribute being assigned a custom value.
 
-[#ex-custom-reftext]
 .Assign a custom reftext value
-[source]
+[source#ex-custom-reftext]
 ----
 = Installing and Testing Silver Leaf's Prerequisites
 :reftext: Install Silver Leaf's Prerequisites
@@ -61,9 +56,8 @@ A <<reftext,page's reftext>> is often automatically assigned the page's title.
 
 In <<ex-nav>>, let's reference the [.path]_get-started.adoc_ file from a navigation file, and leave the link text field empty.
 
-[#ex-nav]
 .nav.adoc
-[source]
+[source#ex-nav]
 ----
 * xref:index.adoc[]
 * xref:get-started.adoc[]
@@ -71,9 +65,8 @@ In <<ex-nav>>, let's reference the [.path]_get-started.adoc_ file from a navigat
 
 Now, let's look at the header of the [.path]_get-started.adoc_ file in <<ex-default-navtitle>>.
 
-[#ex-default-navtitle]
 .get-started.adoc
-[source]
+[source#ex-default-navtitle]
 ----
 = Get Started with Silver Leaf
 
@@ -86,9 +79,8 @@ That means the page's title, _Get Started with Silver Leaf_, will be automatical
 If you don't want a page's default or custom `reftext` value to be assigned as the default `navtitle`, assign the attribute a custom value with an attribute entry.
 <<ex-custom-navtitle>> shows the `navtitle` attribute being assigned a custom value.
 
-[#ex-custom-navtitle]
 .Assign a custom navtitle value
-[source]
+[source#ex-custom-navtitle]
 ----
 = Get Started with Silver Leaf
 :navtitle: Getting Started

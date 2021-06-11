@@ -1,8 +1,7 @@
 = Italic
-:underscore: _
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-italic: {url-adoc-manual}/#bold-and-italic
+:url-italic: {url-asciidoc}/text/italic/
+:url-formatting: {url-asciidoc}/text/#formatting-marks-and-pairs
+:url-constrained: {url-asciidoc}/text/troubleshoot-unconstrained-formatting/
 
 On this page, you'll learn:
 
@@ -23,17 +22,18 @@ Bounded characters are characters that are:
 * directly preceded by a non-whitespace character, or
 * directly followed by a non-whitespace character.
 
+You don't need to use double underscores when an entire word or phrase marked as italic is directly followed by a common punctuation mark, such as `;`, `"`, and `!`.
+
 .Italic inline formatting
-[source]
+[source#ex-italic]
 ----
 An italic _word_, and an italic _phrase of text_.
 
 Italic c__hara__cter__s__ within a word.
 ----
 
-You don't need to use double underscores when an entire word or phrase marked as italic is directly followed by a common punctuation mark, such as `;`, `"`, and `!`.
+The result of <<ex-italic>> is displayed below.
 
-.Results
 ====
 An italic _word_, and an italic _phrase of text_.
 
@@ -45,7 +45,7 @@ Italic c__hara__cter__s__ within a word.
 You can add multiple emphasis styles to italic text as long as the syntax is placed in the correct order.
 
 .Order of inline formatting syntax
-[source]
+[source#ex-order]
 ----
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----
@@ -54,7 +54,8 @@ xref:monospace.adoc[Monospace syntax] (`++`++`) must be the outermost formatting
 xref:bold.adoc[Bold syntax] (`+*+`) must be outside the italics formatting set.
 Italic syntax is always the innermost formatting set.
 
-.Result
+The result of <<ex-order>> is displayed below.
+
 ====
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ====
@@ -64,5 +65,7 @@ Italic syntax is always the innermost formatting set.
 How italic text appears on your site depends on the fonts loaded by your UI and any CSS styles applied to the `<em>` HTML tag.
 You can learn more about customizing xref:antora-ui-default::inline-text-styles.adoc#italic[how italic text appears in your site] in the UI documentation.
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-italic}[Italic text formatting^]
+* {url-formatting}[Formatting marks and pairs^]
+* {url-constrained}[Constrained versus unconstrained^]

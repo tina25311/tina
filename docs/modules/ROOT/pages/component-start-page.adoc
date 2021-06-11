@@ -27,9 +27,8 @@ The `start_page` key must be set in [.path]_antora.yml_ when:
 The `start_page` key accepts a xref:page:page-id.adoc[page ID] that references a page that *belongs to the component version the [.path]_antora.yml_ file describes*.
 The page ID must specify a module coordinate.
 
-[#ex-start]
 .antora.yml
-[source,yaml]
+[source#ex-start,yaml]
 ----
 name: colorado
 title: Colorado ∆

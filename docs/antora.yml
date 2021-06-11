@@ -8,6 +8,7 @@ asciidoc:
     xrefstyle: short@
     listing-caption: Example@
     example-caption: false
+    url-asciidoc: https://docs.asciidoctor.org/asciidoc/latest
 nav:
 - modules/ROOT/nav-start.adoc
 - modules/install/nav.adoc

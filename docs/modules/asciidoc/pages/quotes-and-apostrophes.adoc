@@ -14,14 +14,15 @@ quotation marks.
 If you want to output curved quotation marks, you need to add a set of backticks (`{backtick}`) contained within a set of single quotes (`'`) or double quotes (`"`).
 
 .Single and double curved quotation marks
-[source]
+[source#ex-curved-marks]
 ----
 '`This should be enclosed in curved single quotes when published.`'
 
 "`This should be enclosed in curved double quotes when published.`"
 ----
 
-.Result
+The result of <<ex-curved-marks>> is displayed below.
+
 ====
 '`This should be enclosed in curved single quotes when published.`'
 
@@ -37,7 +38,7 @@ However, an apostrophe directly followed by white space, such as the possessive 
 To output an apostrophe as curved when it is not bound by two characters, mark it as you would a single curved quote.
 
 .Curved apostrophes
-[source]
+[source#ex-curved-apostrophe]
 ----
 The `'80s.
 
@@ -46,7 +47,8 @@ The students`' books.
 I can't find Joey's house.
 ----
 
-.Result
+The result of <<ex-curved-apostrophe>> is displayed below.
+
 ====
 The `'80s.
 
@@ -60,12 +62,13 @@ I can't find Joey's house.
 If you don't want an apostrophe that is bound by two characters to be curved, escape it by preceding it with a backslash (`{backslash}`).
 
 .Escaped curved apostrophe syntax
-[source]
+[source#ex-escape]
 ----
 I can't find Joey\'s house.
 ----
 
-.Result
+The result of <<ex-escape>> is rendered below.
+
 ====
 I can't find Joey\'s house.
 ====

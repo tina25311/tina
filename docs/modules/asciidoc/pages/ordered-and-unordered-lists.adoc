@@ -1,9 +1,8 @@
 = Ordered and Unordered Lists
 :keywords: enumerated sequence, bullet points, bulleted list, ol, ul
-// URLs
-:url-adoc-manual: https://asciidoctor.org/docs/user-manual
-:url-ordered: {url-adoc-manual}/#ordered-lists
-:url-unordered: {url-adoc-manual}/#unordered-lists
+:url-continuation: {url-asciidoc}/lists/continuation/
+:url-ordered: {url-asciidoc}/lists/ordered/
+:url-unordered: {url-asciidoc}/lists/unordered/
 
 On this page, you'll learn:
 
@@ -105,13 +104,13 @@ Let's look at an example that contains a variety of content and list item types.
 [source]
 ....
 * A list item can contain two or more paragraphs or blocks of content.
-+ // <1>
++ <1>
 [source,yaml]
 ----
   artifacts:
     expire_in: 1 week
 ----
-+ // <1>
++ <1>
 ====
 An example block
 ====
@@ -124,7 +123,7 @@ An example block
 ** Unordered list item
 ... Ordered list item
 .... Another ordered list item
-+ // <1>
++ <1>
 term:: A description list term and content.
 ....
 <1> A [.term]_list continuation_ is a plus symbol (`{plus}`) on a line by itself that is immediately adjacent to the block being attached.
@@ -162,11 +161,11 @@ Alternatively, when a list item contains multiple blocks, you can wrap them in a
 Then you only need a single list continuation line to attach the open block to the list item.
 
 .Use an open block instead of multiple list continuations
-[source]
+[source,line-comment=]
 ....
 * A list item that includes several blocks wrapped in an open block.
-+ // <1>
--- // <2>
++ <1>
+-- <2>
 [source,yaml]
 ----
   artifacts:
@@ -178,7 +177,7 @@ An example block
 ====
 
 Another paragraph
--- // <2>
+-- <2>
 ....
 <1> Single list continuation attaching the open block to the list item.
 <2> Open block delimiters wrapping multiple blocks.
@@ -203,6 +202,7 @@ Another paragraph
 
 You can find xref:description-lists.adoc#complex[another complex list example] on the description list page.
 
-.*Asciidoctor resources*
+.*AsciiDoc and Asciidoctor resources*
 * {url-ordered}[Basic and complex ordered lists^]
 * {url-unordered}[Basic and complex unordered lists^]
+* {url-continuation}[List continuation^]
