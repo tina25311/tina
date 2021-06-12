@@ -4339,9 +4339,9 @@ describe('aggregateContent()', function () {
     let proxyServerUrl
     let secureGitServer
     let secureGitServerPort
-
     let serverRequests
     let proxyAuthorizationHeader
+    let userAgentHeader
 
     const ssl = loadSslConfig()
 
@@ -4360,7 +4360,10 @@ describe('aggregateContent()', function () {
           .on('end', () => clientSocket.destroy())
       })
 
-      secureGitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })
+      secureGitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false }).on('info', (info) => {
+        userAgentHeader = info.req.headers['user-agent']
+        info.accept()
+      })
       const secureGitServerStartup = new Promise((resolve, reject) =>
         secureGitServer.listen(0, ssl, (err) => (err ? reject(err) : resolve()))
       )
@@ -4375,6 +4378,7 @@ describe('aggregateContent()', function () {
       process.env = Object.assign({}, (oldEnv = process.env), { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
       serverRequests = []
       proxyAuthorizationHeader = undefined
+      userAgentHeader = undefined
     })
 
     afterEach(() => {
@@ -4391,6 +4395,17 @@ describe('aggregateContent()', function () {
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
+    })
+
+    it('should pass user-agent header when communicating with git server', async () => {
+      const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      expect(userAgentHeader).to.be.undefined()
+      await aggregateContent(playbookSpec)
+      expect(userAgentHeader).to.exist()
+      expect(userAgentHeader).to.startWith('git/isomorphic-git@')
     })
 
     it('should fail to clone repository with https URL if cert is unauthorized', async () => {
