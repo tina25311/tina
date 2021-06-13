@@ -2426,6 +2426,7 @@ describe('aggregateContent()', function () {
             expect(CONTENT_CACHE_DIR).to.be.a.directory()
             expect(ospath.join(CONTENT_CACHE_DIR, repoDir))
               .to.be.a.directory()
+              .and.not.include.subDirs(['.git'])
               .and.include.files(['HEAD', 'valid'])
           } else {
             expect(CONTENT_CACHE_DIR)
