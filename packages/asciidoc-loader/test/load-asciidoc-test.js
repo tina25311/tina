@@ -693,6 +693,19 @@ describe('loadAsciiDoc()', () => {
   })
 
   describe('include directive', () => {
+    const TAGS_EXAMPLE = heredoc`
+      msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }
+      # tag::hello[]
+      puts msgs[:hello]
+      # end::hello[]
+      # tag::goodbye[]
+      puts msgs[:goodbye]
+      # end::goodbye[]
+      # tag::fin[]
+      puts "anything else?"
+      # end::fin[]
+      `
+
     it('should honor optional option on include directive', () => {
       const inputContents = heredoc`
         = Document Title
@@ -1809,11 +1822,7 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should not apply tag filtering to contents of include if tag attribute is empty', () => {
-      const includeContents = heredoc`
-        # tag::hello[]
-        puts "Hello, World!"
-        # end::hello[]
-      `
+      const includeContents = TAGS_EXAMPLE
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
@@ -1833,11 +1842,7 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should not apply tag filtering to contents of include if tags attribute is empty', () => {
-      const includeContents = heredoc`
-        # tag::hello[]
-        puts "Hello, World!"
-        # end::hello[]
-      `
+      const includeContents = TAGS_EXAMPLE
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
@@ -1857,11 +1862,7 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should not apply tag filtering to contents of include if tags attribute has empty values', () => {
-      const includeContents = heredoc`
-        # tag::hello[]
-        puts "Hello, World!"
-        # end::hello[]
-      `
+      const includeContents = TAGS_EXAMPLE
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
@@ -1881,16 +1882,10 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should apply tag filtering to contents of include if tag is specified', () => {
-      const includeContents = heredoc`
-        # greet example
-        # tag::hello[]
-        puts "Hello, World!"
-        # end::hello[]
-      `
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
-        contents: includeContents,
+        contents: TAGS_EXAMPLE,
       })
       setInputFileContents(heredoc`
         [source,ruby]
@@ -1902,7 +1897,7 @@ describe('loadAsciiDoc()', () => {
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
-      expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
+      expect(firstBlock.getSourceLines()).to.eql(['puts msgs[:hello]'])
     })
 
     it('should not drop leading and trailing empty lines inside a tagged region of AsciiDoc include file', () => {
@@ -1964,15 +1959,10 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should apply tag filtering to contents of include if negated tag is specified', () => {
-      const includeContents = heredoc`
-        # tag::hello[]
-        puts "Hello, World!"
-        # end::hello[]
-      `
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
-        contents: includeContents,
+        contents: TAGS_EXAMPLE,
       })
       setInputFileContents(heredoc`
         [source,ruby]
@@ -1984,22 +1974,18 @@ describe('loadAsciiDoc()', () => {
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
-      expect(firstBlock.getSourceLines()).to.be.empty()
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts msgs[:goodbye]',
+        'puts "anything else?"',
+      ])
     })
 
     it('should apply tag filtering to contents of include if tags separated by semi-colons are specified', () => {
-      const includeContents = heredoc`
-        # tag::hello[]
-        puts "Hello, World!"
-        # end::hello[]
-        # tag::goodbye[]
-        puts "Goodbye, World!"
-        # end::goodbye[]
-      `
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
-        contents: includeContents,
+        contents: TAGS_EXAMPLE,
       })
       setInputFileContents(heredoc`
         [source,ruby]
@@ -2011,22 +1997,14 @@ describe('loadAsciiDoc()', () => {
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
-      expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
+      expect(firstBlock.getSourceLines()).to.eql(['puts msgs[:hello]', 'puts msgs[:goodbye]'])
     })
 
     it('should apply tag filtering to contents of include if tags separated by commas are specified', () => {
-      const includeContents = heredoc`
-        # tag::hello[]
-        puts "Hello, World!"
-        # end::hello[]
-        # tag::goodbye[]
-        puts "Goodbye, World!"
-        # end::goodbye[]
-      `
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
-        contents: includeContents,
+        contents: TAGS_EXAMPLE,
       })
       setInputFileContents(heredoc`
         [source,ruby]
@@ -2038,7 +2016,7 @@ describe('loadAsciiDoc()', () => {
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
-      expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').filter((l) => l.charAt() !== '#'))
+      expect(firstBlock.getSourceLines()).to.eql(['puts msgs[:hello]', 'puts msgs[:goodbye]'])
     })
 
     it('should split include tag on comma if present and ignore semi-colons', () => {
@@ -2069,18 +2047,10 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should apply tag filtering to contents of include if negated tags are specified', () => {
-      const includeContents = heredoc`
-        # tag::hello[]
-        puts "Hello, World!"
-        # end::hello[]
-        # tag::goodbye[]
-        puts "Goodbye, World!"
-        # end::goodbye[]
-      `
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
-        contents: includeContents,
+        contents: TAGS_EXAMPLE,
       })
       setInputFileContents(heredoc`
         [source,ruby]
@@ -2092,7 +2062,10 @@ describe('loadAsciiDoc()', () => {
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
-      expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"'])
+      expect(firstBlock.getSourceLines()).to.eql([
+        'puts msgs[:hello]',
+        'puts "anything else?"',
+      ])
     })
 
     it('should include nested tags when applying tag filtering to contents of include', () => {
@@ -2326,19 +2299,10 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should include all lines except for tag directives when tag wildcard is specified', () => {
-      const includeContents = heredoc`
-        msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }
-        # tag::hello[]
-        puts msgs[:hello]
-        # end::hello[]
-        # tag::goodbye[]
-        puts msgs[:goodbye]
-        # end::goodbye[]
-      `
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
-        contents: includeContents,
+        contents: TAGS_EXAMPLE,
       })
       setInputFileContents(heredoc`
         [source,ruby]
@@ -2354,23 +2318,15 @@ describe('loadAsciiDoc()', () => {
         'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
         'puts msgs[:hello]',
         'puts msgs[:goodbye]',
+        'puts "anything else?"',
       ])
     })
 
     it('should include lines outside of tags if tag wildcard is specified along with specific tags', () => {
-      const includeContents = heredoc`
-        msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }
-        # tag::hello[]
-        puts msgs[:hello]
-        # end::hello[]
-        # tag::goodbye[]
-        puts msgs[:goodbye]
-        # end::goodbye[]
-      `
       const contentCatalog = mockContentCatalog({
         family: 'example',
         relative: 'ruby/greet.rb',
-        contents: includeContents,
+        contents: TAGS_EXAMPLE,
       })
       setInputFileContents(heredoc`
         [source,ruby]
@@ -2385,6 +2341,115 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock.getSourceLines()).to.eql([
         'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
         'puts msgs[:goodbye]',
+      ])
+    })
+
+    it('should include lines outside of tags if negated tag wildcard is specified along with specific tags', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=!*;goodbye]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts msgs[:goodbye]',
+      ])
+    })
+
+    it('should not include lines inside tag that has been included then excluded', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=!*;goodbye;!goodbye]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql(['msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }'])
+    })
+
+    it('should include all lines except for negated tag when tags only contains negated tag', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=!hello]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts msgs[:goodbye]',
+        'puts "anything else?"',
+      ])
+    })
+
+    it('should include all lines except for negated tags when tags only contains negated tags', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=!hello;!goodbye]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts "anything else?"',
+      ])
+    })
+
+    it('should recognize tag wildcard if not at start of list of tags', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=hello;**;*;!goodbye]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts msgs[:hello]',
+        'puts "anything else?"',
       ])
     })
 

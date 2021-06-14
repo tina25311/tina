@@ -139,29 +139,20 @@ function filterLinesByLineNumbers (reader, target, file, linenums) {
 }
 
 function filterLinesByTags (reader, target, file, tags, sourceCursor) {
-  let selecting, selectingDefault, wildcard
-  if (tags.has('**')) {
-    if (tags.has('*')) {
-      selectingDefault = selecting = tags.get('**')
-      wildcard = tags.get('*')
-      tags.delete('*')
+  let selectingDefault, selecting, wildcard
+  const star = tags.get('*')
+  const globstar = tags.get('**')
+  if (globstar === undefined) {
+    if (star === undefined) {
+      selectingDefault = selecting = !mapContainsValue(tags, true)
     } else {
-      selectingDefault = selecting = wildcard = tags.get('**')
-    }
-    tags.delete('**')
-  } else {
-    selecting = true
-    for (const v of tags.values()) {
-      if (v === selecting) {
-        selecting = false
-        break
-      }
-    }
-    selectingDefault = selecting
-    if (tags.has('*')) {
-      wildcard = tags.get('*')
       tags.delete('*')
+      selectingDefault = selecting = !(wildcard = star)
     }
+  } else {
+    tags.delete('**')
+    selectingDefault = selecting = globstar
+    wildcard = star === undefined ? globstar : tags.delete('*') && star
   }
 
   const lines = []
@@ -251,6 +242,12 @@ function log (severity, message, reader, sourceCursor, includeCursor = undefined
     ? { source_location: sourceCursor, include_location: includeCursor }
     : { source_location: sourceCursor }
   reader.$logger()['$' + severity](reader.$message_with_context(message, Opal.hash(opts)))
+}
+
+function mapContainsValue (map, value) {
+  for (const v of map.values()) {
+    if (v === value) return true
+  }
 }
 
 module.exports = IncludeProcessor
