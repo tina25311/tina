@@ -150,14 +150,7 @@ function filterLinesByTags (reader, target, file, tags, sourceCursor) {
     }
     tags.delete('**')
   } else {
-    selecting = true
-    for (const v of tags.values()) {
-      if (v === selecting) {
-        selecting = false
-        break
-      }
-    }
-    selectingDefault = selecting
+    selectingDefault = selecting = !mapContainsValue(tags, true)
     if (tags.has('*')) {
       wildcard = tags.get('*')
       tags.delete('*')
@@ -251,6 +244,12 @@ function log (severity, message, reader, sourceCursor, includeCursor = undefined
     ? { source_location: sourceCursor, include_location: includeCursor }
     : { source_location: sourceCursor }
   reader.$logger()['$' + severity](reader.$message_with_context(message, Opal.hash(opts)))
+}
+
+function mapContainsValue (map, value) {
+  for (const v of map.values()) {
+    if (v === value) return true
+  }
 }
 
 module.exports = IncludeProcessor
