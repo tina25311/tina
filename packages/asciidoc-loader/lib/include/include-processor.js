@@ -139,20 +139,20 @@ function filterLinesByLineNumbers (reader, target, file, linenums) {
 }
 
 function filterLinesByTags (reader, target, file, tags, sourceCursor) {
-  let selecting, selectingDefault, wildcard
-  if (tags.has('**')) {
-    if ((wildcard = tags.get('*')) === undefined) {
-      selectingDefault = selecting = wildcard = tags.get('**')
+  let selectingDefault, selecting, wildcard
+  const star = tags.get('*')
+  const globstar = tags.get('**')
+  if (globstar === undefined) {
+    if (star === undefined) {
+      selectingDefault = selecting = !mapContainsValue(tags, true)
     } else {
       tags.delete('*')
-      selectingDefault = selecting = tags.get('**')
+      selectingDefault = selecting = !(wildcard = star)
     }
-    tags.delete('**')
-  } else if ((wildcard = tags.get('*')) === undefined) {
-    selectingDefault = selecting = !mapContainsValue(tags, true)
   } else {
-    tags.delete('*')
-    selectingDefault = selecting = !wildcard
+    tags.delete('**')
+    selectingDefault = selecting = globstar
+    wildcard = star === undefined ? globstar : tags.delete('*') && star
   }
 
   const lines = []
