@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *asciidoc-loader*: Log error message when target of xref is not found (#403)
+
 === Fixed
 
 * *asciidoc-loader*: Port fixes for include tags processing from Asciidoctor (#771)

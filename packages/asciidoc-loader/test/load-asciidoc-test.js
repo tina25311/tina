@@ -1635,6 +1635,37 @@ describe('loadAsciiDoc()', () => {
       expect(doc.convert()).to.include('<a href="greeting.html#message"')
     })
 
+    it('should skip and log unresolved page reference inside include file', () => {
+      const includeContents = 'before\n\nxref:does-not-exist.adoc[broken xref]\n\nafter'
+      const contentCatalog = mockContentCatalog({
+        component: 'another-component',
+        version: '1.1',
+        module: 'ROOT',
+        family: 'partial',
+        relative: 'greeting.adoc',
+        contents: includeContents,
+      }).spyOn('getById')
+      setInputFileContents('include::1.1@another-component::partial$greeting.adoc[]')
+      const messages = captureLogSync(() => loadAsciiDoc(inputFile, contentCatalog).convert())
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'another-component',
+          version: '1.1',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: does-not-exist.adoc',
+        // FIXME the file and line number are wrong unless sourcemap option is enabled on processor
+        file: { path: inputFile.src.path },
+      })
+    })
+
     it('should not apply linenum filtering to contents of include if lines attribute is empty', () => {
       const includeContents = heredoc`
         puts 1
@@ -2514,28 +2545,55 @@ describe('loadAsciiDoc()', () => {
   })
 
   describe('page reference macro', () => {
-    it('should skip invalid page reference with explicit content', () => {
+    it('should skip and log invalid page reference with explicit content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:component-b::.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById).to.not.have.been.called()
       expectUnresolvedPageLink(html, '#component-b::.adoc', 'The Page Title')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: component-b::.adoc',
+        file: { path: inputFile.src.path },
+      })
     })
 
-    it('should skip invalid page reference with fragment and explicit content', () => {
+    it('should skip and log invalid page reference with fragment and explicit content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:component-b::#frag[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById).to.not.have.been.called()
       expectUnresolvedPageLink(html, '#component-b::.adoc#frag', 'The Page Title')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: component-b::.adoc#frag',
+        file: { path: inputFile.src.path },
+      })
     })
 
-    it('should skip invalid page reference with empty content', () => {
+    it('should skip and log invalid page reference with empty content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('xref:component-b::#frag[]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById).to.not.have.been.called()
       expectUnresolvedPageLink(html, '#component-b::.adoc#frag', 'component-b::.adoc#frag')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: component-b::.adoc#frag',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should delegate to built-in converter to process an internal reference', () => {
@@ -2582,10 +2640,13 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, 'https://example.com', 'Example Domain')
     })
 
-    it('should skip unresolved page reference with explicit content', () => {
+    it('should skip and log unresolved page reference with explicit content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const refSpec = '4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc'
+      setInputFileContents(`xref:${refSpec}[The Page Title]`)
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2604,13 +2665,23 @@ describe('loadAsciiDoc()', () => {
           family: 'alias',
           relative: 'topic-foo/topic-bar/the-page.adoc',
         })
-      expectUnresolvedPageLink(html, '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc', 'The Page Title')
+      expectUnresolvedPageLink(html, `#${refSpec}`, 'The Page Title')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: `target of xref not found: ${refSpec}`,
+        file: { path: inputFile.src.path },
+      })
     })
 
-    it('should skip unresolved page reference with empty content', () => {
+    it('should skip and log unresolved page reference with empty content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc[]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const refSpec = '4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc'
+      setInputFileContents(`xref:${refSpec}[]`)
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2629,17 +2700,23 @@ describe('loadAsciiDoc()', () => {
           family: 'alias',
           relative: 'topic-foo/topic-bar/the-page.adoc',
         })
-      expectUnresolvedPageLink(
-        html,
-        '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc',
-        '4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc'
-      )
+      expectUnresolvedPageLink(html, `#${refSpec}`, refSpec)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: `target of xref not found: ${refSpec}`,
+        file: { path: inputFile.src.path },
+      })
     })
 
-    it('should skip unresolved page reference with fragment and explicit content', () => {
+    it('should skip and log unresolved page reference with fragment and explicit content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const refSpec = '4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag'
+      setInputFileContents(`xref:${refSpec}[The Page Title]`)
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2649,17 +2726,23 @@ describe('loadAsciiDoc()', () => {
           family: 'page',
           relative: 'topic-foo/topic-bar/the-page.adoc',
         })
-      expectUnresolvedPageLink(
-        html,
-        '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag',
-        'The Page Title'
-      )
+      expectUnresolvedPageLink(html, `#${refSpec}`, 'The Page Title')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: `target of xref not found: ${refSpec}`,
+        file: { path: inputFile.src.path },
+      })
     })
 
-    it('should skip unresolved page reference with fragment and empty content', () => {
+    it('should skip and log unresolved page reference with fragment and empty content', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
-      setInputFileContents('xref:4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag[]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const refSpec = '4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag'
+      setInputFileContents(`xref:${refSpec}[]`)
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2669,19 +2752,65 @@ describe('loadAsciiDoc()', () => {
           family: 'page',
           relative: 'topic-foo/topic-bar/the-page.adoc',
         })
-      expectUnresolvedPageLink(
-        html,
-        '#4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag',
-        '4.5.6@component-b:module-b:topic-foo/topic-bar/the-page.adoc#frag'
-      )
+      expectUnresolvedPageLink(html, `#${refSpec}`, refSpec)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: `target of xref not found: ${refSpec}`,
+        file: { path: inputFile.src.path },
+      })
     })
 
-    it('should skip page reference with double .adoc file extension', () => {
+    it('should skip and log multiple unresolved page references in same paragraph', () => {
+      const contentCatalog = mockContentCatalog().spyOn('getById')
+      setInputFileContents('See xref:this-missing-page.adoc[this]\nor see xref:that-missing-page.adoc[that].')
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-missing-page.adoc',
+        })
+      expect(contentCatalog.getById)
+        .nth(3)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'that-missing-page.adoc',
+        })
+      expectUnresolvedPageLink(html, '#this-missing-page.adoc', 'this')
+      expectUnresolvedPageLink(html, '#that-missing-page.adoc', 'that')
+      expect(messages).to.have.lengthOf(2)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: this-missing-page.adoc',
+        file: { path: inputFile.src.path },
+      })
+      expect(messages[1]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: that-missing-page.adoc',
+        file: { path: inputFile.src.path },
+      })
+    })
+
+    it('should skip and log page reference with double .adoc file extension', () => {
       const contentCatalog = mockContentCatalog({
         relative: 'the-page.adoc',
       }).spyOn('getById')
       setInputFileContents('xref:the-page.adoc.adoc[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2692,13 +2821,22 @@ describe('loadAsciiDoc()', () => {
           relative: 'the-page.adoc.adoc',
         })
       expectUnresolvedPageLink(html, '#the-page.adoc.adoc', 'The Page Title')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: the-page.adoc.adoc',
+        file: { path: inputFile.src.path },
+      })
     })
 
-    it('should skip page reference to non-publishable file', () => {
+    it('should skip and log page reference to non-publishable file', () => {
       const contentCatalog = mockContentCatalog({ relative: '_hidden.adoc' }).spyOn('getById')
       delete contentCatalog.getPages()[0].pub
       setInputFileContents('xref:_hidden.adoc[Hidden Page]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -2709,6 +2847,13 @@ describe('loadAsciiDoc()', () => {
           relative: '_hidden.adoc',
         })
       expectUnresolvedPageLink(html, '#_hidden.adoc', 'Hidden Page')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: _hidden.adoc',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should convert a page reference with version, component, module, and page', () => {
@@ -3196,13 +3341,15 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, 'the-page.html', 'The Page Title')
     })
 
-    it('should not convert page reference with a version but without a file extension', () => {
+    it('should skip and log page reference with a version but without a file extension', () => {
       const contentCatalog = mockContentCatalog({
         version: '2.0',
         relative: 'the-page.adoc',
       }).spyOn('getById')
       setInputFileContents('xref:2.0@the-page#[The Page Title]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -3213,6 +3360,13 @@ describe('loadAsciiDoc()', () => {
           relative: 'the-page',
         })
       expectUnresolvedPageLink(html, '#2.0@the-page', 'The Page Title')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: 2.0@the-page',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should convert a page reference to a non-AsciiDoc page', () => {
