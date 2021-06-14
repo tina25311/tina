@@ -4302,35 +4302,45 @@ describe('aggregateContent()', function () {
     })
   })
 
-  describe('fs plugin', () => {
-    afterEach(() => {
-      RepositoryBuilder.unregisterPlugin('fs', GIT_CORE)
-    })
-
-    it('should use fs object specified on git core', async () => {
+  describe('plugins', () => {
+    it('should unregister internal git plugins', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
       await initRepoWithFiles(repoBuilder)
-      // see https://isomorphic-git.org/docs/en/0.78.0/plugin_fs#using-the-callback-api
-      const customFs = 'readFile writeFile unlink readdir mkdir rmdir stat lstat readlink symlink'
-        .split(' ')
-        .reduce((proxy, methodName) => {
-          if (methodName === 'readFile') {
-            proxy.readFile = function () {
-              this.readFileCalled = true
-              return fs.readFile(...arguments)
-            }
-          } else {
-            proxy[methodName] = fs[methodName].bind(fs)
-          }
-          return proxy
-        }, new (class FsProxy {})())
-      RepositoryBuilder.registerPlugin('fs', customFs, GIT_CORE)
-      expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
-      expect(customFs.readFileCalled).to.be.true()
-      expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
+      ;['credentialManager', 'fs', 'http'].forEach((pluginName) => {
+        expect(RepositoryBuilder.hasPlugin(pluginName, GIT_CORE)).to.be.false()
+      })
+    })
+
+    it('should use fs object specified on git core', async () => {
+      try {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
+        await initRepoWithFiles(repoBuilder)
+        // see https://isomorphic-git.org/docs/en/0.78.0/plugin_fs#using-the-callback-api
+        const customFs = 'readFile writeFile unlink readdir mkdir rmdir stat lstat readlink symlink'
+          .split(' ')
+          .reduce((proxy, methodName) => {
+            if (methodName === 'readFile') {
+              proxy.readFile = function () {
+                this.readFileCalled = true
+                return fs.readFile(...arguments)
+              }
+            } else {
+              proxy[methodName] = fs[methodName].bind(fs)
+            }
+            return proxy
+          }, new (class FsProxy {})())
+        RepositoryBuilder.registerPlugin('fs', customFs, GIT_CORE)
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(customFs.readFileCalled).to.be.true()
+        expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
+      } finally {
+        RepositoryBuilder.unregisterPlugin('fs', GIT_CORE)
+      }
     })
   })
 
@@ -4426,12 +4436,13 @@ describe('aggregateContent()', function () {
       playbookSpec.network = { httpProxy: proxyServerUrl }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
-      expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.be.undefined()
+      expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
       expect(serverRequests).to.not.be.empty()
       expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${gitServerPort}`)
       expect(proxyAuthorizationHeader).to.be.undefined()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
+      expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
     })
 
     it('should ignore http_proxy setting if URL is excluded by no_proxy setting', async () => {
@@ -4440,7 +4451,7 @@ describe('aggregateContent()', function () {
       playbookSpec.network = { httpProxy: proxyServerUrl, noProxy: 'example.org,localhost' }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
-      expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.be.undefined()
+      expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
       expect(serverRequests).to.be.empty()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
@@ -4453,7 +4464,7 @@ describe('aggregateContent()', function () {
       playbookSpec.network = { httpsProxy: proxyServerUrl }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
-      expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.be.undefined()
+      expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
       expect(serverRequests).to.not.be.empty()
       expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${secureGitServerPort}`)
       expect(proxyAuthorizationHeader).to.be.undefined()
@@ -4468,7 +4479,7 @@ describe('aggregateContent()', function () {
       playbookSpec.network = { httpsProxy: proxyServerUrl, noProxy: 'example.org,localhost' }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
-      expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.be.undefined()
+      expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
       expect(serverRequests).to.be.empty()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
@@ -4516,10 +4527,6 @@ describe('aggregateContent()', function () {
       credentialsSent = undefined
       credentialsVerdict = undefined
       skipAuthenticateIfNoAuth = undefined
-    })
-
-    afterEach(() => {
-      RepositoryBuilder.unregisterPlugin('credentialManager', GIT_CORE)
     })
 
     after(() => {
@@ -4833,70 +4840,82 @@ describe('aggregateContent()', function () {
       })
     })
 
-    it('should use registered credential manager and enhance it with status method', async () => {
-      const credentialManager = {
-        async fill ({ url }) {
-          this.fulfilledUrl = url
-          return { username: 'u', password: 'p' }
-        },
-        async approved ({ url }) {},
-        async rejected ({ url, auth }) {},
-      }
-      RepositoryBuilder.registerPlugin('credentialManager', credentialManager, GIT_CORE)
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(repoBuilder)
-      playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
-      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
-      expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
-      expect(aggregate).to.have.lengthOf(1)
-      expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.not.equal(credentialManager)
-      expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE).fulfilledUrl).to.equal(repoBuilder.url)
-    })
+    describe('custom credential manager', () => {
+      afterEach(() => {
+        RepositoryBuilder.unregisterPlugin('credentialManager', GIT_CORE)
+      })
 
-    it('should not enhance registered credential manager if it already contains a status method', async () => {
-      const credentialManager = {
-        async fill ({ url }) {
-          this.fulfilledUrl = url
-          return { username: 'u', password: 'p' }
-        },
-        async approved ({ url }) {},
-        async rejected ({ url, auth }) {},
-        status ({ url }) {
-          return true
-        },
-      }
-      RepositoryBuilder.registerPlugin('credentialManager', credentialManager, GIT_CORE)
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(repoBuilder)
-      playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
-      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
-      expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
-      expect(aggregate).to.have.lengthOf(1)
-      expect(aggregate[0].files[0].src.origin.private).to.equal('auth-required')
-      expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
-      expect(credentialManager.fulfilledUrl).to.equal(repoBuilder.url)
-    })
+      it('should use registered credential manager and enhance it with status method', async () => {
+        const credentialManager = {
+          async fill ({ url }) {
+            this.fulfilledUrl = url
+            return { username: 'u', password: 'p' }
+          },
+          async approved ({ url }) {},
+          async rejected ({ url, auth }) {},
+        }
+        RepositoryBuilder.registerPlugin('credentialManager', credentialManager, GIT_CORE)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
+        expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
+        expect(aggregate).to.have.lengthOf(1)
+        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.not.equal(credentialManager)
+        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE).fulfilledUrl).to.equal(repoBuilder.url)
+      })
 
-    it('should invoke configure method on custom credential manager if defined', async () => {
-      const credentialManager = {
-        configure () {
-          this.configured = true
-        },
-        async fill ({ url }) {
-          return { username: 'u', password: 'p' }
-        },
-        async approved ({ url }) {},
-        async rejected ({ url, auth }) {},
-      }
-      RepositoryBuilder.registerPlugin('credentialManager', credentialManager, GIT_CORE)
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(repoBuilder)
-      playbookSpec.content.sources.push({ url: repoBuilder.url })
-      await aggregateContent(playbookSpec)
-      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
-      expect(credentialManager.configured).to.be.true()
+      it('should not enhance registered credential manager if it already contains a status method', async () => {
+        const credentialManager = {
+          async fill ({ url }) {
+            this.fulfilledUrl = url
+            return { username: 'u', password: 'p' }
+          },
+          async approved ({ url }) {},
+          async rejected ({ url, auth }) {},
+          status ({ url }) {
+            return true
+          },
+        }
+        RepositoryBuilder.registerPlugin('credentialManager', credentialManager, GIT_CORE)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
+        expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0].files[0].src.origin.private).to.equal('auth-required')
+        // NOTE it's the same because the status method is already defined
+        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
+        expect(credentialManager.fulfilledUrl).to.equal(repoBuilder.url)
+      })
+
+      it('should invoke configure method on custom credential manager if defined', async () => {
+        const credentialManager = {
+          configure () {
+            this.configured = true
+          },
+          async fill ({ url }) {
+            return { username: 'u', password: 'p' }
+          },
+          async approved ({ url }) {},
+          async rejected ({ url, auth }) {},
+        }
+        RepositoryBuilder.registerPlugin('credentialManager', credentialManager, GIT_CORE)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        await aggregateContent(playbookSpec)
+        expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
+        expect(credentialManager.configured).to.be.true()
+        expect(RepositoryBuilder.hasPlugin('credentialManager', GIT_CORE)).to.be.true()
+        const registeredCredentialManager = RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)
+        expect(registeredCredentialManager).to.not.equal(credentialManager)
+        expect(registeredCredentialManager.status).to.be.instanceof(Function)
+        expect(registeredCredentialManager.status()).to.be.undefined()
+      })
     })
   })
 

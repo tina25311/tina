@@ -258,6 +258,10 @@ class RepositoryBuilder {
     return git.cores.create(core).get(name)
   }
 
+  static hasPlugin (name, core = 'default') {
+    return git.cores.create(core).has(name)
+  }
+
   static registerPlugin (name, impl, core = 'default') {
     git.cores.create(core).set(name, impl)
   }
