@@ -2344,6 +2344,115 @@ describe('loadAsciiDoc()', () => {
       ])
     })
 
+    it('should include lines outside of tags if negated tag wildcard is specified along with specific tags', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=!*;goodbye]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts msgs[:goodbye]',
+      ])
+    })
+
+    it('should not include lines inside tag that has been included then excluded', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=!*;goodbye;!goodbye]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql(['msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }'])
+    })
+
+    it('should include all lines except for negated tag when tags only contains negated tag', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=!hello]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts msgs[:goodbye]',
+        'puts "anything else?"',
+      ])
+    })
+
+    it('should include all lines except for negated tags when tags only contains negated tags', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=!hello;!goodbye]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts "anything else?"',
+      ])
+    })
+
+    it('should recognize tag wildcard if not at start of list of tags', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=hello;**;*;!goodbye]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql([
+        'msgs = { hello: "Hello, World!", goodbye: "Goodbye, World!" }',
+        'puts msgs[:hello]',
+        'puts "anything else?"',
+      ])
+    })
+
     it('should resolve top-level include target relative to current page', () => {
       const includeContents = 'changelog'
       const contentCatalog = mockContentCatalog({

@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *asciidoc-loader*: Port fixes for include tags processing from Asciidoctor (#771)
+
 == 3.0.0-alpha.6 (2021-06-08)
 
 === Fixed
