@@ -175,7 +175,7 @@ version: ~
 ----
 
 As expected, when the version key is assigned `~`, Antora doesn't include the version segment in the component version's page URLs (e.g., [.path]_/component-name/module-name/page-name.html_).
-Although rare, if you ever need to refer to a resource in a versionless version, you can do so using the `_` keyword in the resource ID (e.g., `_@page.html`).
+Although rare, if you ever need to refer to a resource in a versionless version, you can do so using the `+_+` keyword in the resource ID (e.g., `+_@page.html+`).
 
 == Resolved issues
 
