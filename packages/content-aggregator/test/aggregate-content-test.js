@@ -4914,7 +4914,7 @@ describe('aggregateContent()', function () {
         const registeredCredentialManager = RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)
         expect(registeredCredentialManager).to.not.equal(credentialManager)
         expect(registeredCredentialManager.status).to.be.instanceof(Function)
-        expect(registeredCredentialManager.status()).to.be.undefined()
+        expect(registeredCredentialManager.status({ url: repoBuilder.url })).to.be.undefined()
       })
     })
   })
