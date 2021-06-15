@@ -3,8 +3,6 @@
 const asciidoctor = require('@asciidoctor/core')()
 const Opal = global.Opal
 const Extensions = asciidoctor.Extensions
-const convertImageRef = require('./image/convert-image-ref')
-const convertPageRef = require('./xref/convert-page-ref')
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
 const LoggerAdapter = require('./logger/adapter')
@@ -77,13 +75,8 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
       if (!doctitleIdx || partialContents[doctitleIdx - 1] === 10) contents = partialContents
     }
   } else if (contentCatalog) {
-    // NOTE relfilesuffix must be set for page-to-page xrefs to work correctly
-    attributes.relfilesuffix = '.adoc'
-    const relativizePageRefs = config.relativizePageRefs !== false
-    opts.converter = createConverter({
-      onImageRef: (resourceSpec) => convertImageRef(resourceSpec, file, contentCatalog),
-      onPageRef: (pageSpec, content) => convertPageRef(pageSpec, content, file, contentCatalog, relativizePageRefs),
-    })
+    attributes.relfilesuffix = '.adoc' // NOTE relfilesuffix must be set for page-to-page xrefs to work correctly
+    opts.converter = createConverter(file, contentCatalog, config)
   }
   const doc = asciidoctor.load(contents.toString(), opts)
   if (extensions.length) freeExtensions()
