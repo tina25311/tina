@@ -2062,10 +2062,7 @@ describe('loadAsciiDoc()', () => {
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('listing')
-      expect(firstBlock.getSourceLines()).to.eql([
-        'puts msgs[:hello]',
-        'puts "anything else?"',
-      ])
+      expect(firstBlock.getSourceLines()).to.eql(['puts msgs[:hello]', 'puts "anything else?"'])
     })
 
     it('should include nested tags when applying tag filtering to contents of include', () => {
