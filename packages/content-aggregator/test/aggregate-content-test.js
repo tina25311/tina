@@ -3983,6 +3983,29 @@ describe('aggregateContent()', function () {
     }
   })
 
+  it('should append missing .git suffix to URL by default', async () => {
+    const fetches = []
+    const recordFetch = (fetch) => {
+      fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
+      fetch.accept()
+    }
+    try {
+      gitServer.on('fetch', recordFetch)
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const urlWithoutGitSuffix = repoBuilder.url.replace('.git', '')
+      playbookSpec.content.sources.push({ url: urlWithoutGitSuffix })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(fetches).to.have.lengthOf(1)
+      expect(fetches[0]).to.equal(repoBuilder.url)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+      expect(aggregate[0].files[0].src.origin.url).to.equal(urlWithoutGitSuffix)
+    } finally {
+      gitServer.off('fetch', recordFetch)
+    }
+  })
+
   if (process.env.CI_COMMIT_REF_NAME === 'releases' && process.platform !== 'win32') {
     it('should clone a remote repository with a large number of branches', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
