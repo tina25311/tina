@@ -10,12 +10,13 @@ let classDef
 
 const defineHtml5Converter = () => {
   const superclass = converterFor('html5')
-  if (classDef && classDef.$superclass() === superclass) return classDef
-  const antoraModule = Opal.Antora || Opal.module(null, 'Antora', $Antora)
-  const className = 'Html5Converter'
-  if (classDef) antoraModule.$remove_const(className)
-
-  classDef = Opal.klass(antoraModule, superclass, className)
+  if (classDef) {
+    if (classDef.$superclass() !== superclass) {
+      Object.setPrototypeOf(classDef.$$prototype, (classDef.$$super = superclass).$$prototype)
+    }
+    return classDef
+  }
+  classDef = Opal.klass(Opal.Antora || Opal.module(null, 'Antora', $Antora), superclass, 'Html5Converter')
 
   Opal.defn(classDef, '$initialize', function initialize (backend, opts, callbacks) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), [backend, opts])
