@@ -2,11 +2,11 @@
 
 const fs = require('fs')
 const { promises: fsp } = fs
-const { default: http } = require('isomorphic-git/http/node')
+const http = require('isomorphic-git/http/node')
 const git = ((git$1) => {
-  if (!git$1.cores) git$1.cores = new Map()
+  if (!(git$1.cores || (git$1.cores = git$1.default.cores))) git$1.cores = git$1.default.cores = new Map()
   return git$1
-})(require('isomorphic-git').default)
+})(require('isomorphic-git'))
 const ospath = require('path')
 const vfs = require('vinyl-fs')
 const yaml = require('js-yaml')
@@ -259,19 +259,19 @@ class RepositoryBuilder {
   }
 
   static getPlugin (name, core = 'default') {
-    return git.cores.get(core).get(name)
+    return (git.cores.get(core) || new Map()).get(name)
   }
 
   static hasPlugin (name, core = 'default') {
-    return git.cores.get(core).has(name)
+    return (git.cores.get(core) || new Map()).has(name)
   }
 
   static registerPlugin (name, impl, core = 'default') {
-    git.cores.get(core).set(name, impl)
+    git.cores.has(core) ? git.cores.get(core).set(name, impl) : git.cores.set(core, new Map().set(name, impl))
   }
 
   static unregisterPlugin (name, core = 'default') {
-    git.cores.get(core).delete(name)
+    if (git.cores.has(core)) git.cores.get(core).delete(name)
   }
 }
 

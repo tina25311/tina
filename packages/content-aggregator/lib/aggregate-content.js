@@ -12,7 +12,7 @@ const fs = require('fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
-const git = require('./git-adapter')
+const git = require('isomorphic-git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
 const invariably = { false: () => false, void: () => {}, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
@@ -94,40 +94,40 @@ function aggregateContent (playbook) {
   )
   const { cacheDir, fetch, silent, quiet } = playbook.runtime
   const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
-  const { ensureGitSuffix, credentials } = Object.assign({ ensureGitSuffix: true }, playbook.git)
-  const credentialManager = registerGitPlugins(credentials, playbook.network || {}, startDir).get('credentialManager')
-  return ensureCacheDir(cacheDir, startDir)
-    .then((resolvedCacheDir) =>
-      Promise.all(
-        [...sourcesByUrl.entries()].map(([url, sources]) =>
-          loadRepository(url, {
-            cacheDir: resolvedCacheDir,
-            credentialManager,
-            fetchTags: tagsSpecified(sources, tags),
-            progress,
-            fetch,
-            startDir,
-            ensureGitSuffix,
-          }).then(({ repo, authStatus }) =>
-            Promise.all(
-              sources.map((source) => {
-                source = Object.assign({ branches, editUrl, tags }, source)
-                // NOTE if repository is managed (has a url), we can assume the remote name is origin
-                // TODO if the repo has no remotes, then remoteName should be undefined
-                const remoteName = repo.url ? 'origin' : source.remote || 'origin'
-                return collectFilesFromSource(source, repo, remoteName, authStatus)
-              })
-            )
+  const gitPlugins = loadGitPlugins(
+    Object.assign({ ensureGitSuffix: true }, playbook.git),
+    playbook.network || {},
+    startDir
+  )
+  return ensureCacheDir(cacheDir, startDir).then((resolvedCacheDir) =>
+    Promise.all(
+      [...sourcesByUrl.entries()].map(([url, sources]) =>
+        loadRepository(url, {
+          cacheDir: resolvedCacheDir,
+          gitPlugins,
+          fetchTags: tagsSpecified(sources, tags),
+          progress,
+          fetch,
+          startDir,
+        }).then(({ repo, authStatus }) =>
+          Promise.all(
+            sources.map((source) => {
+              source = Object.assign({ branches, editUrl, tags }, source)
+              // NOTE if repository is managed (has a url), we can assume the remote name is origin
+              // TODO if the repo has no remotes, then remoteName should be undefined
+              const remoteName = repo.url ? 'origin' : source.remote || 'origin'
+              return collectFilesFromSource(source, repo, remoteName, authStatus)
+            })
           )
         )
       )
-        .then(buildAggregate)
-        .catch((err) => {
-          progress && progress.terminate()
-          throw err
-        })
     )
-    .finally(unregisterGitPlugins)
+      .then(buildAggregate)
+      .catch((err) => {
+        progress && progress.terminate()
+        throw err
+      })
+  )
 }
 
 function buildAggregate (componentVersionBuckets) {
@@ -147,19 +147,20 @@ async function loadRepository (url, opts) {
     let displayUrl
     let credentials
     ;({ displayUrl, url, credentials } = extractCredentials(url))
-    const { cacheDir, credentialManager, ensureGitSuffix, fetch, fetchTags, progress } = opts
+    const { cacheDir, fetch, fetchTags, gitPlugins, progress } = opts
     dir = ospath.join(cacheDir, generateCloneFolderName(displayUrl))
     // NOTE the presence of the url property on the repo object implies the repository is remote
-    repo = { core: GIT_CORE, dir, gitdir: dir, url, noGitSuffix: !ensureGitSuffix, noCheckout: true }
+    repo = { dir, fs, gitdir: dir, noCheckout: true, url }
     const validStateFile = ospath.join(repo.gitdir, VALID_STATE_FILENAME)
     try {
       await fsp.access(validStateFile)
       if (fetch) {
         await fsp.unlink(validStateFile)
-        const fetchOpts = buildFetchOpts(repo, progress, displayUrl, credentials, credentialManager, fetchTags, 'fetch')
+        const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetchTags, 'fetch')
         await git
           .fetch(fetchOpts)
           .then(() => {
+            const credentialManager = gitPlugins.credentialManager
             authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
             return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
           })
@@ -177,11 +178,12 @@ async function loadRepository (url, opts) {
     } catch (gitErr) {
       await rmdir(dir)
       if (gitErr.rethrow) throw transformGitCloneError(gitErr, displayUrl)
-      const fetchOpts = buildFetchOpts(repo, progress, displayUrl, credentials, credentialManager, fetchTags, 'clone')
+      const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetchTags, 'clone')
       await git
         .clone(fetchOpts)
         .then(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)))
         .then(() => {
+          const credentialManager = gitPlugins.credentialManager
           authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
           return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
@@ -195,9 +197,7 @@ async function loadRepository (url, opts) {
         .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
     }
   } else if (await isDirectory((dir = expandPath(url, '~+', opts.startDir)))) {
-    repo = (await isDirectory(ospath.join(dir, '.git')))
-      ? { core: GIT_CORE, dir }
-      : { core: GIT_CORE, dir, gitdir: dir, noCheckout: true }
+    repo = (await isDirectory(ospath.join(dir, '.git'))) ? { dir, fs } : { dir, fs, gitdir: dir, noCheckout: true }
     try {
       await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
     } catch {
@@ -728,11 +728,13 @@ function assignFileProperties (file, origin) {
   return file
 }
 
-function buildFetchOpts (repo, progress, displayUrl, credentialsFromUrl, credentialManager, fetchTags, operation) {
+function buildFetchOptions (repo, progress, displayUrl, credentialsFromUrl, gitPlugins, fetchTags, operation) {
+  const { credentialManager, http, urlRouter } = gitPlugins
   const onAuth = resolveCredentials.bind(credentialManager, new Map().set(undefined, credentialsFromUrl))
   const onAuthFailure = onAuth
   const onAuthSuccess = (url) => credentialManager.approved({ url })
-  const opts = Object.assign({ corsProxy: false, depth: 1, onAuth, onAuthFailure, onAuthSuccess }, repo)
+  const opts = Object.assign({ corsProxy: false, depth: 1, http, onAuth, onAuthFailure, onAuthSuccess }, repo)
+  if (urlRouter) opts.url = urlRouter.ensureGitSuffix(opts.url)
   if (progress) opts.onProgress = createProgressListener(progress, displayUrl, operation)
   if (operation === 'fetch') {
     opts.prune = true
@@ -914,30 +916,20 @@ function tagsSpecified (sources, defaultTags) {
   })
 }
 
-function registerGitPlugins (credentials, network, startDir) {
-  const cores = git.cores
-  const plugins = cores.get(GIT_CORE) || cores.set(GIT_CORE, new Map()).get(GIT_CORE)
-  if (!plugins.has('fs')) plugins.set('fs', Object.assign({ _managed: true }, fs))
-  let credentialManager
-  if (plugins.has('credentialManager')) {
-    credentialManager = plugins.get('credentialManager')
+function loadGitPlugins (gitConfig, networkConfig, startDir) {
+  const plugins = (git.cores || git.default.cores || new Map()).get(GIT_CORE) || new Map()
+  let credentialManager, urlRouter
+  if ((credentialManager = plugins.get('credentialManager'))) {
     if (typeof credentialManager.configure === 'function') {
-      credentialManager.configure({ config: credentials, startDir })
+      credentialManager.configure({ config: gitConfig.credentials, startDir })
     }
-    if (typeof credentialManager.status !== 'function') {
-      plugins.set('credentialManager', Object.assign({}, credentialManager, { status () {} }))
-    }
+    if (typeof credentialManager.status !== 'function') Object.assign(credentialManager, { status () {} })
   } else {
-    credentialManager = new GitCredentialManagerStore().configure({ config: credentials, startDir })
-    credentialManager._managed = true
-    plugins.set('credentialManager', credentialManager)
+    credentialManager = new GitCredentialManagerStore().configure({ config: gitConfig.credentials, startDir })
   }
-  if (!plugins.has('http')) plugins.set('http', Object.assign(createHttpPlugin(network), { _managed: true }))
-  return plugins
-}
-
-function unregisterGitPlugins () {
-  git.cores.get(GIT_CORE).forEach((val, key, map) => val._managed && map.delete(key))
+  if (gitConfig.ensureGitSuffix) urlRouter = { ensureGitSuffix: (url) => (url.endsWith('.git') ? url : url + '.git') }
+  const http = plugins.get('http') || createHttpPlugin(networkConfig, 'git/isomorphic-git@' + git.version())
+  return { credentialManager, http, urlRouter }
 }
 
 /**

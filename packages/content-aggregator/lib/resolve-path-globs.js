@@ -3,7 +3,7 @@
 const { expand: expandBraces } = require('braces')
 const flattenDeep = require('./flatten-deep')
 const { promises: fsp } = require('fs')
-const git = require('./git-adapter')
+const git = require('isomorphic-git')
 const invariably = { true: () => true, false: () => false, void: () => {}, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 

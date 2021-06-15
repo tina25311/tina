@@ -4326,7 +4326,7 @@ describe('aggregateContent()', function () {
   })
 
   describe('plugins', () => {
-    it('should unregister internal git plugins', async () => {
+    it('should not register additional git plugins', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -4341,7 +4341,6 @@ describe('aggregateContent()', function () {
       try {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
         await initRepoWithFiles(repoBuilder)
-        // see https://isomorphic-git.org/docs/en/0.78.0/plugin_fs#using-the-callback-api
         const customFs = 'readFile writeFile unlink readdir mkdir rmdir stat lstat readlink symlink'
           .split(' ')
           .reduce((proxy, methodName) => {
@@ -4359,7 +4358,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
-        expect(customFs.readFileCalled).to.be.true()
+        expect(customFs.readFileCalled).to.be.undefined()
         expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
       } finally {
         RepositoryBuilder.unregisterPlugin('fs', GIT_CORE)
@@ -4915,8 +4914,8 @@ describe('aggregateContent()', function () {
         expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(aggregate).to.have.lengthOf(1)
-        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.not.equal(credentialManager)
-        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE).fulfilledUrl).to.equal(repoBuilder.url)
+        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
+        expect(credentialManager.fulfilledUrl).to.equal(repoBuilder.url)
       })
 
       it('should not enhance registered credential manager if it already contains a status method', async () => {
@@ -4940,7 +4939,6 @@ describe('aggregateContent()', function () {
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0].files[0].src.origin.private).to.equal('auth-required')
-        // NOTE it's the same because the status method is already defined
         expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
         expect(credentialManager.fulfilledUrl).to.equal(repoBuilder.url)
       })
@@ -4964,10 +4962,9 @@ describe('aggregateContent()', function () {
         expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
         expect(credentialManager.configured).to.be.true()
         expect(RepositoryBuilder.hasPlugin('credentialManager', GIT_CORE)).to.be.true()
-        const registeredCredentialManager = RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)
-        expect(registeredCredentialManager).to.not.equal(credentialManager)
-        expect(registeredCredentialManager.status).to.be.instanceof(Function)
-        expect(registeredCredentialManager.status({ url: repoBuilder.url })).to.be.undefined()
+        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
+        expect(credentialManager.status).to.be.instanceof(Function)
+        expect(credentialManager.status({ url: repoBuilder.url })).to.be.undefined()
       })
     })
   })

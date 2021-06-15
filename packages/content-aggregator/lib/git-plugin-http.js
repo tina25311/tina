@@ -25,12 +25,13 @@ async function mergeBuffers (data) {
   return Buffer.from(data.buffer)
 }
 
-module.exports = ({ httpProxy, httpsProxy, noProxy }) => {
+module.exports = ({ httpProxy, httpsProxy, noProxy }, userAgent) => {
   if (httpsProxy || httpProxy) {
     const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
     const shouldProxy = require('should-proxy')
     return {
       async request ({ url, method, headers, body }) {
+        headers['user-agent'] = userAgent
         body = await mergeBuffers(body)
         const proxy = url.startsWith('https:')
           ? { ProxyAgent: HttpsProxyAgent, url: httpsProxy }
@@ -50,6 +51,7 @@ module.exports = ({ httpProxy, httpsProxy, noProxy }) => {
   } else {
     return {
       async request ({ url, method, headers, body }) {
+        headers['user-agent'] = userAgent
         body = await mergeBuffers(body)
         return new Promise((resolve, reject) =>
           get({ url, method, headers, body }, (err, res) => (err ? reject(err) : resolve(distillResponse(res))))
