@@ -61,5 +61,5 @@ The second file, [.path]_.nojekyll_, writes to the root of the published site.
 Since the `contents` key is absent, Antora will create an empty file (the equivalent of the `touch` command from above).
 
 CAUTION: The solution to use the supplemental UI to create the [.path]_.nojekyll_ file at the root of the published site will not work if you configure Antora to read the supplemental UI from a local directory.
-That's becaue, in this case, Antora ignores files that begin with a dot (such as [.path]_.nojekyll_), and thus won't pick them up.
+That's because, in this case, Antora ignores files that begin with a dot (such as [.path]_.nojekyll_), and thus won't pick them up.
 Follow https://gitlab.com/antora/antora/-/issues/627[issue #627] to track the status of this bug.
