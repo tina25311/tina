@@ -731,7 +731,7 @@ function assignFileProperties (file, origin) {
 }
 
 function getFetchOptions (repo, progress, url, credentials, fetchTags, operation) {
-  const opts = Object.assign({ depth: 1 }, credentials, repo)
+  const opts = Object.assign({ corsProxy: false, depth: 1 }, credentials, repo)
   if (progress) opts.emitter = createProgressEmitter(progress, url, operation)
   if (operation === 'fetch') {
     opts.prune = true
