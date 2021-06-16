@@ -50,7 +50,10 @@ const defineHtml5Converter = () => {
           type = 'link'
           if (unresolved) {
             const logger = this[$logger] || (this[$logger] = this.$logger())
-            logger.error('target of xref not found: ' + refSpec)
+            let msg = 'target of xref not found: ' + refSpec
+            const loc = node.getParent().getSourceLocation()
+            if (loc) msg = this.$message_with_context(msg, Opal.hash2(['source_location'], { source_location: loc }))
+            logger.error(msg)
             attrs.role = `page unresolved${attrs.role ? ' ' + attrs.role : ''}`
           } else {
             attrs.role = `page${attrs.role ? ' ' + attrs.role : ''}`
