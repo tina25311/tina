@@ -4654,8 +4654,7 @@ describe('aggregateContent()', function () {
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      const expectedErrorMessage =
-        'Content repository not found or credentials were rejected (url: ' + urlWithoutAuth + ')'
+      const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${urlWithoutAuth})`
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
@@ -4671,8 +4670,7 @@ describe('aggregateContent()', function () {
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      const expectedErrorMessage =
-        'Content repository not found or credentials were rejected (url: ' + urlWithoutAuth + ')'
+      const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${urlWithoutAuth})`
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(CONTENT_CACHE_DIR)
@@ -4819,7 +4817,7 @@ describe('aggregateContent()', function () {
       const customGitCredentialsPath = ospath.join(WORK_DIR, '.custom-git-credentials')
       playbookSpec.git = { credentials: { path: customGitCredentialsPath } }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const expectedMessage = 'Content repository not found or requires credentials (url: ' + repoBuilder.url + ')'
+      const expectedMessage = `Content repository not found or requires credentials (url: ${repoBuilder.url})`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedMessage)
     })
@@ -4855,7 +4853,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + repoBuilder.url + ')'
+      const expectedErrorMessage = `Content repository not found or requires credentials (url: ${repoBuilder.url})`
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.be.undefined()
       expect(credentialsSent).to.be.undefined()
@@ -4879,8 +4877,7 @@ describe('aggregateContent()', function () {
       playbookSpec.runtime.fetch = true
       return withMockStdout(async (lines) => {
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        const expectedErrorMessage =
-          'Content repository not found or credentials were rejected (url: ' + repoBuilder.url + ')'
+        const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${repoBuilder.url})`
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
         expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
@@ -4975,8 +4972,7 @@ describe('aggregateContent()', function () {
       const absInvalidDir = ospath.join(WORK_DIR, invalidDir)
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: invalidDir })
-      const expectedErrorMessage =
-        'Local content source does not exist: ' + absInvalidDir + ' (url: ' + invalidDir + ')'
+      const expectedErrorMessage = `Local content source does not exist: ${absInvalidDir} (url: ${invalidDir})`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
@@ -4984,7 +4980,7 @@ describe('aggregateContent()', function () {
     it('should throw meaningful error if local absolute content directory does not exist', async () => {
       const absInvalidDir = ospath.join(WORK_DIR, 'no-such-directory')
       playbookSpec.content.sources.push({ url: absInvalidDir })
-      const expectedErrorMessage = 'Local content source does not exist: ' + absInvalidDir
+      const expectedErrorMessage = `Local content source does not exist: ${absInvalidDir}`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
@@ -4996,8 +4992,7 @@ describe('aggregateContent()', function () {
       fs.writeFileSync(ospath.join(absRegularDir, 'antora.xml'), 'name: the-component\nversion: 1.0')
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: regularDir })
-      const expectedErrorMessage =
-        'Local content source must be a git repository: ' + absRegularDir + ' (url: ' + regularDir + ')'
+      const expectedErrorMessage = `Local content source must be a git repository: ${absRegularDir} (url: ${regularDir})`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
@@ -5007,7 +5002,7 @@ describe('aggregateContent()', function () {
       fs.mkdirSync(absRegularDir, { recursive: true })
       fs.writeFileSync(ospath.join(absRegularDir, 'antora.xml'), 'name: the-component\nversion: 1.0')
       playbookSpec.content.sources.push({ url: absRegularDir })
-      const expectedErrorMessage = 'Local content source must be a git repository: ' + absRegularDir
+      const expectedErrorMessage = `Local content source must be a git repository: ${absRegularDir}`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
     })
@@ -5073,7 +5068,7 @@ describe('aggregateContent()', function () {
 
     it('should throw meaningful error if repository returns 401 error', async () => {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
-      const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + url + ')'
+      const expectedErrorMessage = `Content repository not found or requires credentials (url: ${url})`
       playbookSpec.content.sources.push({ url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
@@ -5152,7 +5147,7 @@ describe('aggregateContent()', function () {
 
     it('should throw meaningful error if remote repository URL not found', async () => {
       const url = `http://localhost:${serverPort}/404/invalid-repository.git`
-      const expectedErrorMessage = 'Content repository not found (url: ' + url + ')'
+      const expectedErrorMessage = `Content repository not found (url: ${url})`
       playbookSpec.content.sources.push({ url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred)
@@ -5166,7 +5161,7 @@ describe('aggregateContent()', function () {
         await initRepoWithFiles(repoBuilder)
         playbookSpec.git = { ensureGitSuffix: false }
         playbookSpec.content.sources.push({ url: repoBuilder.url.replace(/\.git$/, '') })
-        const expectedErrorMessage = 'Content repository not found (url: ' + repoBuilder.url.replace(/\.git$/, '') + ')'
+        const expectedErrorMessage = `Content repository not found (url: ${repoBuilder.url.replace(/\.git$/, '')})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       })
@@ -5174,7 +5169,7 @@ describe('aggregateContent()', function () {
 
     it('should preserve stack of original git error', async () => {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
-      const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + url + ')'
+      const expectedErrorMessage = `Content repository not found or requires credentials (url: ${url})`
       playbookSpec.content.sources.push({ url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred)
@@ -5186,8 +5181,7 @@ describe('aggregateContent()', function () {
     it('should not show auth information in progress bar label', async () => {
       const url = `http://0123456789@localhost:${serverPort}/401/invalid-repository.git`
       const sanitizedUrl = `http://localhost:${serverPort}/401/invalid-repository.git`
-      const expectedErrorMessage =
-        'Content repository not found or credentials were rejected (url: ' + sanitizedUrl + ')'
+      const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${sanitizedUrl})`
       return withMockStdout(async (lines) => {
         playbookSpec.runtime.quiet = false
         playbookSpec.content.sources.push({ url })
