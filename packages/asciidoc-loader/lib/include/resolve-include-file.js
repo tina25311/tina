@@ -7,7 +7,7 @@ const { EXAMPLES_DIR_TOKEN, PARTIALS_DIR_TOKEN } = require('../constants')
 const RESOURCE_ID_DETECTOR_RX = /[$:@]/
 
 /**
- * Resolves the specified include target to a virtual file in the content catalog.
+ * Resolves the specified target of an include directive to a virtual file in the content catalog.
  *
  * @memberof asciidoc-loader
  *

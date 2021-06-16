@@ -105,14 +105,14 @@ The include processor should not be registered globally, but rather once per `lo
 
 The target of an include should either point to a file in the `partial` family or the `example` family of the current module, or to a file relative to the current document.
 
-If the include target begins with a family reference (i.e., `{partialsdir}` or `{examplesdir}`), for example:
+If the target of an include directive begins with a family reference (i.e., `{partialsdir}` or `{examplesdir}`), for example:
 
  include::{partialsdir}/partial.adoc[]
  include::{examplesdir}/example.json[]
 
 then the included file should be looked up in the content catalog by ID.
 
-Otherwise, if the include target is just a bare path, for example:
+Otherwise, if the target of an include directive is a bare path, for example:
 
  include::sibling.adoc[]
 
@@ -129,7 +129,7 @@ The `src.contents` property is set for any file which is both a page and a parti
 
 The include processor should also perform tag filtering on the contents if either the `tag` or `tags` attribute is set on the include directive.
 
-If the include file cannot be resolved, then the include directive should be left unprocessed and a warning should be added to the file (pending architecture).
+If the include file cannot be resolved, then the include directive should be replaced with a warning and an error should be logged.
 
 === Inputs and outputs
 

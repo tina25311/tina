@@ -1659,7 +1659,7 @@ describe('buildNavigation()', () => {
       level: 'error',
       name: 'asciidoctor',
       file: { path: 'modules/module-a/nav.adoc', line: 2 },
-      msg: 'include target not found: no-such-file.adoc',
+      msg: 'target of include not found: no-such-file.adoc',
     })
   })
 })

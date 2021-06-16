@@ -195,7 +195,7 @@ describe('loadAsciiDoc()', () => {
     expect(messages[0]).to.eql({
       level: 'error',
       name: 'asciidoctor',
-      msg: 'include target not found: partial$intro.adoc',
+      msg: 'target of include not found: partial$intro.adoc',
       file: { path: inputFile.src.path, line: 6 },
     })
   })
@@ -794,7 +794,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages[0]).to.eql({
         level: 'error',
         name: 'asciidoctor',
-        msg: 'include target not found: partial$/does-not-exist.adoc',
+        msg: 'target of include not found: partial$/does-not-exist.adoc',
         file: { path: inputFile.src.path, line: 1 },
       })
     })
@@ -827,7 +827,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages[0]).to.eql({
         level: 'error',
         name: 'asciidoctor',
-        msg: 'include target not found: partial$does-not-exist.adoc',
+        msg: 'target of include not found: partial$does-not-exist.adoc',
         file: { path: inputFile.src.path, line: 1 },
       })
     })
@@ -852,12 +852,12 @@ describe('loadAsciiDoc()', () => {
       expect(messages[0]).to.eql({
         level: 'error',
         name: 'asciidoctor',
-        msg: 'include target not found: module-a:partial$$',
+        msg: 'target of include not found: module-a:partial$$',
         file: { path: inputFile.src.path, line: 1 },
       })
     })
 
-    it('should not clobber surrounding lines when include target cannot be resolved', () => {
+    it('should not clobber surrounding lines when target of include cannot be resolved', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       const inputContents = 'before\ninclude::partial$does-not-exist.adoc[]\nafter'
       setInputFileContents(inputContents)
@@ -885,7 +885,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages[0]).to.eql({
         level: 'error',
         name: 'asciidoctor',
-        msg: 'include target not found: partial$does-not-exist.adoc',
+        msg: 'target of include not found: partial$does-not-exist.adoc',
         file: { path: inputFile.src.path, line: 2 },
       })
     })
@@ -1179,7 +1179,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages[0]).to.eql({
         level: 'error',
         name: 'asciidoctor',
-        msg: 'include target not found: 1.1@another-component::greeting.adoc',
+        msg: 'target of include not found: 1.1@another-component::greeting.adoc',
         file: { path: inputFile.src.path, line: 1 },
       })
     })
@@ -1209,7 +1209,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages[0]).to.eql({
         level: 'error',
         name: 'asciidoctor',
-        msg: 'include target not found: 1.1@greeting.adoc',
+        msg: 'target of include not found: 1.1@greeting.adoc',
         file: { path: inputFile.src.path, line: 1 },
       })
     })
@@ -1292,7 +1292,7 @@ describe('loadAsciiDoc()', () => {
       expect(messages[0]).to.eql({
         level: 'error',
         name: 'asciidoctor',
-        msg: 'include target not found: deeply/nested.adoc',
+        msg: 'target of include not found: deeply/nested.adoc',
         file: { path: 'modules/module-a/pages/_partials/outer.adoc', line: 1 },
         stack: [{ file: { path: inputFile.src.path, line: 1 } }],
       })
@@ -2521,7 +2521,7 @@ describe('loadAsciiDoc()', () => {
       ])
     })
 
-    it('should resolve top-level include target relative to current page', () => {
+    it('should resolve target of top-level include relative to current page', () => {
       const includeContents = 'changelog'
       const contentCatalog = mockContentCatalog({
         family: 'page',
