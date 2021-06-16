@@ -3558,7 +3558,7 @@ describe('aggregateContent()', function () {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
         await initRepoWithFilesAndWorktree(repoBuilder)
         const clonePath = ospath.join(CONTENT_REPOS_DIR, 'clone')
-        await repoBuilder.clone(clonePath)
+        await RepositoryBuilder.clone(repoBuilder.url, clonePath)
         const wipPageContents = heredoc`
           = WIP
 
@@ -4326,7 +4326,7 @@ describe('aggregateContent()', function () {
   })
 
   describe('plugins', () => {
-    it('should unregister internal git plugins', async () => {
+    it('should not register additional git plugins', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -4337,11 +4337,10 @@ describe('aggregateContent()', function () {
       })
     })
 
-    it('should use fs object specified on git core', async () => {
+    it('should not use fs plugin specified on git core', async () => {
       try {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
         await initRepoWithFiles(repoBuilder)
-        // see https://isomorphic-git.org/docs/en/0.78.0/plugin_fs#using-the-callback-api
         const customFs = 'readFile writeFile unlink readdir mkdir rmdir stat lstat readlink symlink'
           .split(' ')
           .reduce((proxy, methodName) => {
@@ -4359,10 +4358,35 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
-        expect(customFs.readFileCalled).to.be.true()
+        expect(customFs.readFileCalled).to.be.undefined()
         expect(RepositoryBuilder.getPlugin('fs', GIT_CORE)).to.equal(customFs)
       } finally {
         RepositoryBuilder.unregisterPlugin('fs', GIT_CORE)
+      }
+    })
+
+    it('should use http plugin specified on git core', async () => {
+      let userAgent
+      const recordFetch = (fetch) => {
+        userAgent = fetch.req.headers['user-agent']
+        fetch.accept()
+      }
+      try {
+        gitServer.on('fetch', recordFetch)
+        const customHttp = require('@antora/content-aggregator/lib/git-plugin-http')({}, 'git/just-git-it@1.0')
+        RepositoryBuilder.registerPlugin('http', customHttp, GIT_CORE)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0].files).to.not.be.empty()
+        expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.true()
+        expect(RepositoryBuilder.getPlugin('http', GIT_CORE)).to.equal(customHttp)
+        expect(userAgent).to.equal('git/just-git-it@1.0')
+      } finally {
+        gitServer.off('fetch', recordFetch)
+        RepositoryBuilder.unregisterPlugin('http', GIT_CORE)
       }
     })
   })
@@ -4630,8 +4654,12 @@ describe('aggregateContent()', function () {
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + urlWithoutAuth + ')'
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      const expectedErrorMessage =
+        'Content repository not found or credentials were rejected (url: ' + urlWithoutAuth + ')'
+      expect(aggregateContentDeferred)
+        .to.throw(expectedErrorMessage)
+        .with.property('stack')
+        .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
     })
 
@@ -4643,7 +4671,8 @@ describe('aggregateContent()', function () {
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + urlWithoutAuth + ')'
+      const expectedErrorMessage =
+        'Content repository not found or credentials were rejected (url: ' + urlWithoutAuth + ')'
       expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(CONTENT_CACHE_DIR)
@@ -4885,8 +4914,8 @@ describe('aggregateContent()', function () {
         expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(aggregate).to.have.lengthOf(1)
-        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.not.equal(credentialManager)
-        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE).fulfilledUrl).to.equal(repoBuilder.url)
+        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
+        expect(credentialManager.fulfilledUrl).to.equal(repoBuilder.url)
       })
 
       it('should not enhance registered credential manager if it already contains a status method', async () => {
@@ -4910,7 +4939,6 @@ describe('aggregateContent()', function () {
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0].files[0].src.origin.private).to.equal('auth-required')
-        // NOTE it's the same because the status method is already defined
         expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
         expect(credentialManager.fulfilledUrl).to.equal(repoBuilder.url)
       })
@@ -4934,10 +4962,9 @@ describe('aggregateContent()', function () {
         expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
         expect(credentialManager.configured).to.be.true()
         expect(RepositoryBuilder.hasPlugin('credentialManager', GIT_CORE)).to.be.true()
-        const registeredCredentialManager = RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)
-        expect(registeredCredentialManager).to.not.equal(credentialManager)
-        expect(registeredCredentialManager.status).to.be.instanceof(Function)
-        expect(registeredCredentialManager.status({ url: repoBuilder.url })).to.be.undefined()
+        expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
+        expect(credentialManager.status).to.be.instanceof(Function)
+        expect(credentialManager.status({ url: repoBuilder.url })).to.be.undefined()
       })
     })
   })
@@ -5044,8 +5071,16 @@ describe('aggregateContent()', function () {
       await once(server.close(), 'close')
     })
 
-    // NOTE this test also verifies that the SSH URL is still shown in the error message
-    it('should throw meaningful error when cannot connect to SSH repository', async () => {
+    it('should throw meaningful error if repository returns 401 error', async () => {
+      const url = `http://localhost:${serverPort}/401/invalid-repository.git`
+      const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + url + ')'
+      playbookSpec.content.sources.push({ url })
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+    })
+
+    // NOTE this test also verifies that the SSH URL is still shown in the progress indicator and error message
+    it('should throw meaningful error when cannot connect to repository defined using SSH protocol', async () => {
       const oldSshAuthSock = process.env.SSH_AUTH_SOCK
       delete process.env.SSH_AUTH_SOCK
       const url = 'git@github.com:invalid-repository.git'
@@ -5068,7 +5103,7 @@ describe('aggregateContent()', function () {
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
-        .that.includes('Caused by: HTTPError: HTTP Error: 500 Internal Server Error')
+        .that.includes('Caused by: HttpError: HTTP Error: 500 Internal Server Error')
     })
 
     it('should throw meaningful error if git client throws exception', async () => {
@@ -5078,7 +5113,7 @@ describe('aggregateContent()', function () {
       const expectedErrorMessage =
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` +
         `but received: 001e# service=git-upload-pack\n0007ref (url: ${url})`
-      const expectedCauseMessage = `RemoteDoesNotSupportSmartHTTP: ${commonErrorMessage}`
+      const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
@@ -5093,7 +5128,7 @@ describe('aggregateContent()', function () {
       const expectedErrorMessage =
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` +
         `but received: 001e# service=git-upload-pack\n0009ref\x00 (url: ${url})`
-      const expectedCauseMessage = `RemoteDoesNotSupportSmartHTTP: ${commonErrorMessage}`
+      const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
@@ -5107,7 +5142,7 @@ describe('aggregateContent()', function () {
       const commonErrorMessage = 'Remote did not reply using the "smart" HTTP protocol.'
       const expectedErrorMessage =
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` + `but received: 0000 (url: ${url})`
-      const expectedCauseMessage = `RemoteDoesNotSupportSmartHTTP: ${commonErrorMessage}`
+      const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
@@ -5123,7 +5158,7 @@ describe('aggregateContent()', function () {
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
-        .that.includes('Caused by: HTTPError: HTTP Error: 404 Not Found')
+        .that.includes('Caused by: HttpError: HTTP Error: 404 Not Found')
     })
 
     describe('should not append .git suffix to URL if git.ensureGitSuffix is disabled in playbook', () => {
@@ -5137,14 +5172,6 @@ describe('aggregateContent()', function () {
       })
     })
 
-    it('should throw meaningful error if credentials are insufficient', async () => {
-      const url = `http://localhost:${serverPort}/401/invalid-repository.git`
-      const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + url + ')'
-      playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
-    })
-
     it('should preserve stack of original git error', async () => {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + url + ')'
@@ -5153,13 +5180,14 @@ describe('aggregateContent()', function () {
       expect(aggregateContentDeferred)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
-        .that.includes('Caused by: HTTPError: HTTP Error: 401 HTTP Basic: Access Denied')
+        .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
     })
 
     it('should not show auth information in progress bar label', async () => {
       const url = `http://0123456789@localhost:${serverPort}/401/invalid-repository.git`
       const sanitizedUrl = `http://localhost:${serverPort}/401/invalid-repository.git`
-      const expectedErrorMessage = 'Content repository not found or requires credentials (url: ' + sanitizedUrl + ')'
+      const expectedErrorMessage =
+        'Content repository not found or credentials were rejected (url: ' + sanitizedUrl + ')'
       return withMockStdout(async (lines) => {
         playbookSpec.runtime.quiet = false
         playbookSpec.content.sources.push({ url })

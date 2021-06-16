@@ -2,6 +2,8 @@
 
 const camelCaseKeys = require('camelcase-keys')
 const { createHash } = require('crypto')
+const createHttpPlugin = require('./git-plugin-http')
+const decodeUint8Data = require('./decode-uint8-data')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
@@ -11,6 +13,7 @@ const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('isomorphic-git')
+const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
 const invariably = { false: () => false, void: () => {}, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 const matcher = require('matcher')
@@ -45,6 +48,7 @@ const GIT_SUFFIX_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
 const HEADS_DIR_RX = /^heads\//
 const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
+const HTTP_ERROR_CODE_RX = new RegExp('^' + git.Errors.HttpError.code + '$', 'i')
 const PATH_SEPARATOR_RX = /[/]/g
 const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const SPACE_RX = / /g
@@ -90,40 +94,40 @@ function aggregateContent (playbook) {
   )
   const { cacheDir, fetch, silent, quiet } = playbook.runtime
   const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
-  const { ensureGitSuffix, credentials } = Object.assign({ ensureGitSuffix: true }, playbook.git)
-  const credentialManager = registerGitPlugins(credentials, playbook.network || {}, startDir).get('credentialManager')
-  return ensureCacheDir(cacheDir, startDir)
-    .then((resolvedCacheDir) =>
-      Promise.all(
-        [...sourcesByUrl.entries()].map(([url, sources]) =>
-          loadRepository(url, {
-            cacheDir: resolvedCacheDir,
-            credentialManager,
-            fetchTags: tagsSpecified(sources, tags),
-            progress,
-            fetch,
-            startDir,
-            ensureGitSuffix,
-          }).then(({ repo, authStatus }) =>
-            Promise.all(
-              sources.map((source) => {
-                source = Object.assign({ branches, editUrl, tags }, source)
-                // NOTE if repository is managed (has a url), we can assume the remote name is origin
-                // TODO if the repo has no remotes, then remoteName should be undefined
-                const remoteName = repo.url ? 'origin' : source.remote || 'origin'
-                return collectFilesFromSource(source, repo, remoteName, authStatus)
-              })
-            )
+  const gitPlugins = loadGitPlugins(
+    Object.assign({ ensureGitSuffix: true }, playbook.git),
+    playbook.network || {},
+    startDir
+  )
+  return ensureCacheDir(cacheDir, startDir).then((resolvedCacheDir) =>
+    Promise.all(
+      [...sourcesByUrl.entries()].map(([url, sources]) =>
+        loadRepository(url, {
+          cacheDir: resolvedCacheDir,
+          gitPlugins,
+          fetchTags: tagsSpecified(sources, tags),
+          progress,
+          fetch,
+          startDir,
+        }).then(({ repo, authStatus }) =>
+          Promise.all(
+            sources.map((source) => {
+              source = Object.assign({ branches, editUrl, tags }, source)
+              // NOTE if repository is managed (has a url), we can assume the remote name is origin
+              // TODO if the repo has no remotes, then remoteName should be undefined
+              const remoteName = repo.url ? 'origin' : source.remote || 'origin'
+              return collectFilesFromSource(source, repo, remoteName, authStatus)
+            })
           )
         )
       )
-        .then(buildAggregate)
-        .catch((err) => {
-          progress && progress.terminate()
-          throw err
-        })
     )
-    .finally(unregisterGitPlugins)
+      .then(buildAggregate)
+      .catch((err) => {
+        progress && progress.terminate()
+        throw err
+      })
+  )
 }
 
 function buildAggregate (componentVersionBuckets) {
@@ -143,57 +147,57 @@ async function loadRepository (url, opts) {
     let displayUrl
     let credentials
     ;({ displayUrl, url, credentials } = extractCredentials(url))
-    dir = ospath.join(opts.cacheDir, generateCloneFolderName(displayUrl))
+    const { cacheDir, fetch, fetchTags, gitPlugins, progress } = opts
+    dir = ospath.join(cacheDir, generateCloneFolderName(displayUrl))
     // NOTE the presence of the url property on the repo object implies the repository is remote
-    repo = { core: GIT_CORE, dir, gitdir: dir, url, noGitSuffix: !opts.ensureGitSuffix, noCheckout: true }
-    const credentialManager = opts.credentialManager
+    repo = { dir, fs, gitdir: dir, noCheckout: true, url }
     const validStateFile = ospath.join(repo.gitdir, VALID_STATE_FILENAME)
     try {
       await fsp.access(validStateFile)
-      if (opts.fetch) {
+      if (fetch) {
         await fsp.unlink(validStateFile)
-        const fetchOpts = getFetchOptions(repo, opts.progress, displayUrl, credentials, opts.fetchTags, 'fetch')
+        const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetchTags, 'fetch')
         await git
           .fetch(fetchOpts)
           .then(() => {
+            const credentialManager = gitPlugins.credentialManager
             authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
-            return git.config(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
+            return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
           })
           .catch((fetchErr) => {
-            fetchOpts.emitter && fetchOpts.emitter.emit('error', fetchErr)
-            if (fetchErr.code === git.E.HTTPError && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
+            if (fetchOpts.onProgress) fetchOpts.onProgress.finish(fetchErr)
+            if (HTTP_ERROR_CODE_RX.test(fetchErr.code) && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
             throw fetchErr
           })
           .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
-          .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
+          .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
       } else {
         // NOTE use cached value from previous fetch
-        authStatus = await git.config(Object.assign({ path: 'remote.origin.private' }, repo))
+        authStatus = await git.getConfig(Object.assign({ path: 'remote.origin.private' }, repo))
       }
     } catch (gitErr) {
       await rmdir(dir)
       if (gitErr.rethrow) throw transformGitCloneError(gitErr, displayUrl)
-      const fetchOpts = getFetchOptions(repo, opts.progress, displayUrl, credentials, opts.fetchTags, 'clone')
+      const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetchTags, 'clone')
       await git
         .clone(fetchOpts)
         .then(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)))
         .then(() => {
+          const credentialManager = gitPlugins.credentialManager
           authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
-          return git.config(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
+          return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
         .catch(async (cloneErr) => {
           await rmdir(dir)
           // FIXME triggering the error handler here causes assertion problems in the test suite
-          //fetchOpts.emitter && fetchOpts.emitter.emit('error', cloneErr)
+          //if (fetchOpts.onProgress) fetchOpts.onProgress.finish(cloneErr)
           throw transformGitCloneError(cloneErr, displayUrl)
         })
         .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
-        .then(() => fetchOpts.emitter && fetchOpts.emitter.emit('complete'))
+        .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
     }
   } else if (await isDirectory((dir = expandPath(url, '~+', opts.startDir)))) {
-    repo = (await isDirectory(ospath.join(dir, '.git')))
-      ? { core: GIT_CORE, dir }
-      : { core: GIT_CORE, dir, gitdir: dir, noCheckout: true }
+    repo = (await isDirectory(ospath.join(dir, '.git'))) ? { dir, fs } : { dir, fs, gitdir: dir, noCheckout: true }
     try {
       await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
     } catch {
@@ -216,8 +220,8 @@ function extractCredentials (url) {
     // BitBucket: x-token-auth:<token>@
     const [, scheme, username, password, rest] = url.match(URL_AUTH_EXTRACTOR_RX)
     const displayUrl = (url = scheme + rest)
-    // NOTE if only username is present, assume it's an oauth token
-    const credentials = username ? (password == null ? { token: username } : { username, password }) : {}
+    // NOTE if only username is present, assume it's an oauth token and set password to empty string
+    const credentials = username ? { username, password: password || '' } : {}
     return { displayUrl, url, credentials }
   } else if (url.startsWith('git@')) {
     return { displayUrl: url, url: 'https://' + url.substr(4).replace(':', '/') }
@@ -475,10 +479,9 @@ function readFilesFromGitTree (repo, oid, startPath) {
 function getGitTreeAtStartPath (repo, oid, startPath) {
   return git
     .readTree(Object.assign({ oid, filepath: startPath }, repo))
-    .catch(({ code }) => {
-      throw new Error(
-        `the start path '${startPath}' ${code === git.E.ResolveTreeError ? 'is not a directory' : 'does not exist'}`
-      )
+    .catch((err) => {
+      const m = err instanceof ObjectTypeError && err.data.expected === 'tree' ? 'is not a directory' : 'does not exist'
+      throw new Error(`the start path '${startPath}' ${m}`)
     })
     .then((result) => Object.assign(result, { dirname: startPath }))
 }
@@ -526,8 +529,8 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
           reads.push(
             readGitSymlink(repo, root, parent, entry, following)
               .catch((err) => {
-                // NOTE this error could be caught after promie chain has already been rejected
-                if (err.code === git.E.TreeOrBlobNotFoundError) {
+                // NOTE this error could be caught after promise chain has already been rejected
+                if (err instanceof NotFoundError) {
                   err.message = `Broken symbolic link detected at ${vfilePath}`
                 } else if (err.code === 'SymbolicLinkCycleError') {
                   err.message = `Symbolic link cycle detected at ${vfilePath}`
@@ -554,7 +557,7 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
 function readGitSymlink (repo, root, parent, { oid }, following) {
   if (following.size !== (following = new Set(following).add(oid)).size) {
     return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: target }) => {
-      target = posixify && process.env.NODE_ENV === 'test' ? posixify(target.toString()) : target.toString()
+      target = posixify && process.env.NODE_ENV === 'test' ? posixify(decodeUint8Data(target)) : decodeUint8Data(target)
       let targetParent
       if (parent.dirname) {
         const dirname = parent.dirname + '/'
@@ -593,13 +596,7 @@ function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
           : Promise.resolve(entry)
     }
   }
-  const err = {
-    name: git.E.TreeOrBlobNotFoundError,
-    code: git.E.TreeOrBlobNotFoundError,
-    oid: parent.oid,
-    filepath: pathSegments.join('/'),
-  }
-  return Promise.reject(Object.assign(new Error(`No file or directory found at "${err.oid}:${err.filepath}".`), err))
+  return Promise.reject(new NotFoundError(`No file or directory found at "${parent.oid}:${pathSegments.join('/')}"`))
 }
 
 /**
@@ -619,7 +616,8 @@ function entryToFile (entry) {
     const stat = new fs.Stats()
     stat.mode = entry.mode
     stat.mtime = undefined
-    stat.size = contents.length
+    stat.size = contents.byteLength
+    contents = Buffer.from(contents.buffer)
     return new File({ path: entry.path, contents, stat })
   })
 }
@@ -730,9 +728,14 @@ function assignFileProperties (file, origin) {
   return file
 }
 
-function getFetchOptions (repo, progress, url, credentials, fetchTags, operation) {
-  const opts = Object.assign({ corsProxy: false, depth: 1 }, credentials, repo)
-  if (progress) opts.emitter = createProgressEmitter(progress, url, operation)
+function buildFetchOptions (repo, progress, displayUrl, credentialsFromUrl, gitPlugins, fetchTags, operation) {
+  const { credentialManager, http, urlRouter } = gitPlugins
+  const onAuth = resolveCredentials.bind(credentialManager, new Map().set(undefined, credentialsFromUrl))
+  const onAuthFailure = onAuth
+  const onAuthSuccess = (url) => credentialManager.approved({ url })
+  const opts = Object.assign({ corsProxy: false, depth: 1, http, onAuth, onAuthFailure, onAuthSuccess }, repo)
+  if (urlRouter) opts.url = urlRouter.ensureGitSuffix(opts.url)
+  if (progress) opts.onProgress = createProgressListener(progress, displayUrl, operation)
   if (operation === 'fetch') {
     opts.prune = true
     if (fetchTags) opts.tags = opts.pruneTags = true
@@ -758,7 +761,7 @@ function createProgress (urls, term) {
   }
 }
 
-function createProgressEmitter (progress, progressLabel, operation) {
+function createProgressListener (progress, progressLabel, operation) {
   const progressBar = progress.newBar(formatProgressBar(progressLabel, progress.maxLabelWidth, operation), {
     complete: '#',
     incomplete: '-',
@@ -769,10 +772,7 @@ function createProgressEmitter (progress, progressLabel, operation) {
   // NOTE leave room for indeterminate progress at end of bar; this isn't strictly needed for a bare clone
   progressBar.scaleFactor = Math.max(0, (ticks - 1) / ticks)
   progressBar.tick(0)
-  return new EventEmitter()
-    .on('progress', onGitProgress.bind(null, progressBar))
-    .on('complete', onGitComplete.bind(null, progressBar))
-    .on('error', onGitComplete.bind(null, progressBar))
+  return Object.assign(onGitProgress.bind(progressBar), { finish: onGitComplete.bind(progressBar) })
 }
 
 function formatProgressBar (label, maxLabelWidth, operation) {
@@ -787,27 +787,44 @@ function formatProgressBar (label, maxLabelWidth, operation) {
   return `[${operation}] ${label}${padding} [:bar]`
 }
 
-function onGitProgress (progressBar, { phase, loaded, total }) {
+function onGitProgress ({ phase, loaded, total }) {
   const phaseIdx = GIT_PROGRESS_PHASES.indexOf(phase)
   if (~phaseIdx) {
-    const scaleFactor = progressBar.scaleFactor
+    const scaleFactor = this.scaleFactor
     let ratio = ((loaded / total) * scaleFactor) / GIT_PROGRESS_PHASES.length
     if (phaseIdx) ratio += (phaseIdx * scaleFactor) / GIT_PROGRESS_PHASES.length
     // NOTE: updates are automatically throttled based on renderThrottle option
-    progressBar.update(ratio > scaleFactor ? scaleFactor : ratio)
+    this.update(ratio > scaleFactor ? scaleFactor : ratio)
   }
 }
 
-function onGitComplete (progressBar, err) {
+function onGitComplete (err) {
   if (err) {
     // TODO: could use progressBar.interrupt() to replace bar with message instead
-    progressBar.chars.incomplete = '?'
-    progressBar.update(0)
+    this.chars.incomplete = '?'
+    this.update(0)
     // NOTE: force progress bar to update regardless of throttle setting
-    progressBar.render(undefined, true)
+    this.render(undefined, true)
   } else {
-    progressBar.update(1)
+    this.update(1)
   }
+}
+
+function resolveCredentials (credentialsFromUrlHolder, url, auth) {
+  const credentialsFromUrl = credentialsFromUrlHolder.get()
+  if ('Authorization' in auth.headers) {
+    if (!credentialsFromUrl) return this.rejected({ url, auth })
+    credentialsFromUrlHolder.clear()
+  } else if (credentialsFromUrl) {
+    return credentialsFromUrl
+  } else {
+    auth = undefined
+  }
+  return this.fill({ url }).then((credentials) =>
+    credentials
+      ? { username: credentials.token || credentials.username, password: credentials.token ? '' : credentials.password }
+      : this.rejected({ url, auth })
+  )
 }
 
 /**
@@ -839,7 +856,7 @@ function generateCloneFolderName (url) {
  * @returns {String} The URL of the specified remote, if present.
  */
 function resolveRemoteUrl (repo, remoteName) {
-  return git.config(Object.assign({ path: 'remote.' + remoteName + '.url' }, repo)).then((url) => {
+  return git.getConfig(Object.assign({ path: 'remote.' + remoteName + '.url' }, repo)).then((url) => {
     if (!url) return posixify ? 'file:///' + posixify(repo.dir) : 'file://' + repo.dir
     if (url.startsWith('https://') || url.startsWith('http://')) {
       return ~url.indexOf('@') ? url.replace(URL_AUTH_CLEANER_RX, '$1') : url
@@ -899,31 +916,20 @@ function tagsSpecified (sources, defaultTags) {
   })
 }
 
-function registerGitPlugins (credentials, network, startDir) {
-  const plugins = git.cores.create(GIT_CORE)
-  if (!plugins.has('fs')) plugins.set('fs', Object.assign({ _managed: true }, fs))
-  let credentialManager
-  if (plugins.has('credentialManager')) {
-    credentialManager = plugins.get('credentialManager')
+function loadGitPlugins (gitConfig, networkConfig, startDir) {
+  const plugins = (git.cores || git.default.cores || new Map()).get(GIT_CORE) || new Map()
+  let credentialManager, urlRouter
+  if ((credentialManager = plugins.get('credentialManager'))) {
     if (typeof credentialManager.configure === 'function') {
-      credentialManager.configure({ config: credentials, startDir })
+      credentialManager.configure({ config: gitConfig.credentials, startDir })
     }
-    if (typeof credentialManager.status !== 'function') {
-      plugins.set('credentialManager', Object.assign({}, credentialManager, { status () {} }))
-    }
+    if (typeof credentialManager.status !== 'function') Object.assign(credentialManager, { status () {} })
   } else {
-    credentialManager = new GitCredentialManagerStore().configure({ config: credentials, startDir })
-    credentialManager._managed = true
-    plugins.set('credentialManager', credentialManager)
+    credentialManager = new GitCredentialManagerStore().configure({ config: gitConfig.credentials, startDir })
   }
-  if (!plugins.has('http') && (network.httpsProxy || network.httpProxy)) {
-    plugins.set('http', Object.assign(require('./git-plugin-http')(network), { _managed: true }))
-  }
-  return plugins
-}
-
-function unregisterGitPlugins () {
-  git.cores.create(GIT_CORE).forEach((val, key, map) => val._managed && map.delete(key))
+  if (gitConfig.ensureGitSuffix) urlRouter = { ensureGitSuffix: (url) => (url.endsWith('.git') ? url : url + '.git') }
+  const http = plugins.get('http') || createHttpPlugin(networkConfig, 'git/isomorphic-git@' + git.version())
+  return { credentialManager, http, urlRouter }
 }
 
 /**
@@ -951,33 +957,35 @@ function ensureCacheDir (preferredCacheDir, startDir) {
 }
 
 function transformGitCloneError (err, displayUrl) {
-  const { code, data, message, name, stack } = err
   let wrappedMsg
   let trimMessage
-  if (code === git.E.HTTPError) {
-    if (data.statusCode === 401) {
-      wrappedMsg = err.rejected
-        ? 'Content repository not found or credentials were rejected'
-        : 'Content repository not found or requires credentials'
-    } else if (data.statusCode === 404) {
-      wrappedMsg = 'Content repository not found'
-    } else {
-      wrappedMsg = message
-      trimMessage = true
+  if (HTTP_ERROR_CODE_RX.test(err.code)) {
+    switch (err.data.statusCode) {
+      case 401:
+        wrappedMsg = err.rejected
+          ? 'Content repository not found or credentials were rejected'
+          : 'Content repository not found or requires credentials'
+        break
+      case 404:
+        wrappedMsg = 'Content repository not found'
+        break
+      default:
+        wrappedMsg = err.message
+        trimMessage = true
     }
-  } else if (code === git.E.RemoteUrlParseError || code === git.E.UnknownTransportError) {
+  } else if (err instanceof UrlParseError || err instanceof UnknownTransportError) {
     wrappedMsg = 'Content source uses an unsupported transport protocol'
-  } else if (code === 'ENOTFOUND') {
-    wrappedMsg = 'Content repository host could not be resolved: ' + err.hostname
+  } else if (err.code === 'ENOTFOUND') {
+    wrappedMsg = `Content repository host could not be resolved: ${err.hostname}`
   } else {
-    wrappedMsg = name + ': ' + message
+    wrappedMsg = `${err.name}: ${err.message}`
     trimMessage = true
   }
   if (trimMessage) {
     wrappedMsg = ~(wrappedMsg = wrappedMsg.trimRight()).indexOf('. ') ? wrappedMsg : wrappedMsg.replace(/\.$/, '')
   }
-  const wrappedErr = new Error(wrappedMsg + ' (url: ' + displayUrl + ')')
-  wrappedErr.stack += '\nCaused by: ' + (stack || 'unknown')
+  const wrappedErr = new Error(`${wrappedMsg} (url: ${displayUrl})`)
+  wrappedErr.stack += `\nCaused by: ${err.stack || 'unknown'}`
   return wrappedErr
 }
 

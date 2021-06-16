@@ -294,13 +294,16 @@ To activate your custom credential manager, first write your implementation in a
 .custom-git-credential-manager.js
 [source,js]
 ----
+'use strict'
+
 const git = require('isomorphic-git')
 
-git.cores.create('antora').set('credentialManager', {
+if (!git.cores) git.cores = new Map()
+git.cores.set('antora', new Map().set('credentialManager', {
   async fill ({ url }) { ... },
   async approved ({ url }) { ... },
   async rejected ({ url, auth }) { ... },
-})
+}))
 ----
 
 Then pass this file to the `-r` option when running Antora:
@@ -326,6 +329,8 @@ Let's start by creating a helper function that interfaces with the system git vi
 
 [source,js]
 ----
+'use strict'
+
 const git = require('isomorphic-git')
 const { spawn } = require('child_process')
 
@@ -355,6 +360,8 @@ Next, let's create a credential manager that uses this function to retrieve the 
 
 [source,js]
 ----
+// ...
+
 const systemGitCredentialManager = {
   configure () {
     this.urls = []
@@ -382,7 +389,10 @@ Finally, we need to register the credential manager with isomorphic-git:
 
 [source,js]
 ----
-git.cores.create('antora').set('credentialManager', systemGitCredentialManager)
+// ...
+
+if (!git.cores) git.cores = new Map()
+git.cores.set('antora', new Map().set('credentialManager', systemGitCredentialManager))
 ----
 
 If we require this script when invoking Antora, Antora will delegate to the system git to fill the credentials:
