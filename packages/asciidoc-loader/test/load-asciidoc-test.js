@@ -59,7 +59,7 @@ describe('loadAsciiDoc()', () => {
     expect(loadAsciiDoc.loadAsciiDoc).to.equal(loadAsciiDoc)
   })
 
-  it('should load document model from AsciiDoc contents', () => {
+  it('should load document model without sourcemap from AsciiDoc contents', () => {
     const contents = heredoc`
       = Document Title
 
@@ -73,8 +73,35 @@ describe('loadAsciiDoc()', () => {
     `
     setInputFileContents(contents)
     const doc = loadAsciiDoc(inputFile)
+    expect(doc.getOptions().sourcemap).to.be.undefined()
     const allBlocks = doc.findBy()
     expect(allBlocks).to.have.lengthOf(8)
+    allBlocks.forEach((block) => {
+      expect(block.getSourceLocation()).to.be.undefined()
+    })
+  })
+
+  it('should enable sourcemap on document if sourcemap option is set in config', () => {
+    const contents = heredoc`
+      = Document Title
+
+      == Section Title
+
+      paragraph
+
+      * list item 1
+      * list item 2
+      * list item 3
+    `
+    setInputFileContents(contents)
+    const doc = loadAsciiDoc(inputFile, undefined, { sourcemap: true })
+    expect(doc.getOptions().sourcemap).to.be.true()
+    const ul = doc.findBy({ context: 'ulist' })[0]
+    expect(ul.getSourceLocation()).to.exist()
+    expect(ul.getSourceLocation().getLineNumber()).to.equal(7)
+    const li = ul.getItems()[1]
+    expect(li.getSourceLocation()).to.exist()
+    expect(li.getSourceLocation().getLineNumber()).to.equal(8)
   })
 
   it('should load document model with only header from AsciiDoc contents if headerOnly option is set', () => {

@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Added
 
+* *playbook-builder*: Add `sourcemap` option to `asciidoc` category, mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor (#776)
 * *asciidoc-loader*: Log error message when target of xref is not found (#403)
 
 === Fixed

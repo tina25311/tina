@@ -65,6 +65,7 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   const loggerAdapter = LoggerAdapter.logger.noop ? false : LoggerAdapter.$new(file.src)
   const opts = { attributes, extension_registry: extensionRegistry, safe: 'safe', logger: loggerAdapter }
   if (config.doctype) opts.doctype = config.doctype
+  if (config.sourcemap) opts.sourcemap = true
   let contents = file.contents
   if (config.headerOnly) {
     opts.parse_header_only = true
@@ -207,6 +208,5 @@ module.exports = Object.assign(loadAsciiDoc, {
   loadAsciiDoc,
   extractAsciiDocMetadata,
   resolveAsciiDocConfig,
-  // @deprecated scheduled to be removed in Antora 4
-  resolveConfig: resolveAsciiDocConfig,
+  resolveConfig: resolveAsciiDocConfig, // @deprecated scheduled to be removed in Antora 4
 })
