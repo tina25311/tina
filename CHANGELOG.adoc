@@ -11,6 +11,11 @@ This project utilizes semantic versioning.
 
 * *asciidoc-loader*: Port fixes for include tags processing from Asciidoctor (#771)
 
+=== Changed
+
+* *asciidoc-loader*: Use Converter.for to look up registered html5 converter instead of referring directly to name of built-in class (#769)
+* *asciidoc-loader*: Detect when registered html5 converter has changed and recreate extended converter to use it (#769)
+
 == 3.0.0-alpha.6 (2021-06-08)
 
 === Fixed

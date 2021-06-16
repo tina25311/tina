@@ -4,13 +4,19 @@ const Opal = global.Opal
 const { $Antora } = require('../constants')
 const $pageRefCallback = Symbol('pageRefCallback')
 const $imageRefCallback = Symbol('imageRefCallback')
+const converterFor = Opal.Asciidoctor.Converter.$for.bind(Opal.Asciidoctor.Converter)
 
-const Html5Converter = (() => {
-  const classDef = Opal.klass(
-    Opal.Antora || Opal.module(null, 'Antora', $Antora),
-    Opal.Asciidoctor.Converter.Html5Converter,
-    'Html5Converter'
-  )
+let classDef
+
+const defineHtml5Converter = () => {
+  const superclass = converterFor('html5')
+  if (classDef) {
+    if (classDef.$superclass() !== superclass) {
+      Object.setPrototypeOf(classDef.$$prototype, (classDef.$$super = superclass).$$prototype)
+    }
+    return classDef
+  }
+  classDef = Opal.klass(Opal.Antora || Opal.module(null, 'Antora', $Antora), superclass, 'Html5Converter')
 
   Opal.defn(classDef, '$initialize', function initialize (backend, opts, callbacks) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), [backend, opts])
@@ -63,7 +69,7 @@ const Html5Converter = (() => {
   })
 
   return classDef
-})()
+}
 
 function transformImageNode (converter, node, imageTarget) {
   if (matchesResourceSpec(imageTarget)) {
@@ -97,4 +103,4 @@ function matchesResourceSpec (target) {
   return !(~target.indexOf(':') && (~target.indexOf('://') || (target.startsWith('data:') && ~target.indexOf(','))))
 }
 
-module.exports = Html5Converter
+module.exports = defineHtml5Converter

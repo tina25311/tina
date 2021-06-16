@@ -654,4 +654,17 @@ describe('cli', function () {
       expect(messages[1]).to.include('"msg":"Let\'s go!"')
     })
   })
+
+  it('should allow require script to replace base html5 converter that Antora extends', () => {
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const r1 = ospath.resolve(FIXTURES_DIR, 'custom-html5-converter')
+    const args = ['--require', r1, 'generate', 'the-site', '--quiet']
+    return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
+        .to.be.a.file()
+        .with.contents.that.match(/<p>See <a href="the-page.html" class="page">the page<\/a>.<\/p>/)
+        .and.with.contents.that.not.match(/<div class="paragraph">/)
+    })
+  }).timeout(timeoutOverride)
 })
