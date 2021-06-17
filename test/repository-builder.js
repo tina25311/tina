@@ -36,8 +36,7 @@ class RepositoryBuilder {
       this.repoPath += '.git'
       this.url = `${this.gitServerProtocol}//localhost:${this.gitServerPort}/${repoName}.git`
     } else if (this.bare) this.url += ospath.sep + '.git'
-    // NOTE create new fs to clear index cache
-    this.repository = { fs: { ...fs }, http, dir: this.repoPath, gitdir: ospath.join(this.repoPath, '.git') }
+    this.repository = { cache: {}, dir: this.repoPath, fs, gitdir: ospath.join(this.repoPath, '.git'), http }
     await git.init(this.repository)
     if (opts.empty) return this
     await (await this.addToWorktree('.gitignore')).addToWorktree('.gitattributes', '* text=auto eol=lf')
@@ -67,8 +66,7 @@ class RepositoryBuilder {
       }
       gitdir = ospath.join(dir, '.git')
     }
-    // NOTE create new fs to clear index cache
-    this.repository = { fs: { ...fs }, dir, gitdir }
+    this.repository = { cache: {}, dir, fs, gitdir }
     await git.resolveRef({ ...this.repository, ref: 'HEAD', depth: 1 })
     return this
   }
@@ -254,8 +252,7 @@ class RepositoryBuilder {
   }
 
   static clone (url, toDir) {
-    // NOTE create new fs to clear index cache
-    return git.clone({ fs: { ...fs }, http, dir: toDir, url })
+    return git.clone({ dir: toDir, fs, http, url })
   }
 
   static getPlugin (name, core = 'default') {
