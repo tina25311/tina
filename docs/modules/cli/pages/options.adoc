@@ -71,6 +71,18 @@ See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>> 
 |<<boolean-value,Boolean>>
 |See xref:playbook:runtime-fetch.adoc[].
 
+|[[failure-level]]`--failure-level`
+|Not set
+a|[%hardbreaks]
+`all`
+`debug`
+`info`
+`warn`
+`error`
+`fatal`
+`silent`
+|See xref:playbook:environment-variables.adoc#failure-level[ANTORA_LOG_FAILURE_LEVEL variable].
+
 |`--generator`
 |`@antora/site-generator-default`
 |Node package name or filesystem path to a script
@@ -108,6 +120,27 @@ See xref:playbook:urls-html-extension-style.adoc[].
 |API key in the form `<name=value>`
 |Can specify multiple times.
 See xref:playbook:site-keys.adoc[] and <<ex-multiple-values>>.
+
+|[[log-format]]`--log-format`
+|`structured` if CI=true or +
+`pretty` in all other environments
+a|[%hardbreaks]
+`pretty`
+`structured`
+`json`
+|See xref:playbook:environment-variables.adoc#log-format[ANTORA_LOG_FORMAT variable].
+
+|[[log-level]]`--log-level`
+|`warn`
+a|[%hardbreaks]
+`all`
+`debug`
+`info`
+`warn`
+`error`
+`fatal`
+`silent`
+|See xref:playbook:environment-variables.adoc#log-level[ANTORA_LOG_LEVEL variable].
 
 |`--quiet`
 |`false`

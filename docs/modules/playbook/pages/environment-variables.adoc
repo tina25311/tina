@@ -1,29 +1,29 @@
 = Environment Variables
 
-Antora recognizes a handful of environment variables that map to keys in the playbook.
+Antora recognizes a number of environment variables that map to keys in the playbook.
 These environment variable can be used to configure Antora for different environments without having to modify the playbook file.
-This page introduces you to these environment variables and how they work.
 
 == What is an environment variable?
 
 An environment variable is a persistent variable (i.e., key=value pair) in your terminal which becomes available to all commands you execute at the prompt.
 This facility allows the behavior of commands to be altered based on which environment they are running in.
-For example, you may use an environment variable in a CI / publishing environment to enable a behavior which may not be enabled by default.
+For example, you may use an environment variable in a continuous integration (CI) or publishing environment to enable a behavior which may not be enabled by default.
 
 You can output the current value of an environment variable using the `echo` command.
-In a Linux and macOS terminal, you'd type:
+In a Linux or macOS terminal, type:
 
  $ echo $PATH
 
-In the Windows command prompt, you'd type:
+In the Windows command prompt, type:
 
  $ echo %PATH%
 
-And in Windows Powershell, you'd type:
+And in Windows Powershell, type:
 
  $ echo $env:PATH
 
-If environment variables are not something you are comfortable using, note that they are not required for using Antora.
+Environment variables are not required for using Antora.
+You can configure these variables using the corresponding command line options or in your playbook with the matching keys.
 
 == Precedence
 
@@ -31,7 +31,7 @@ Environment variables take precedence over keys defined in the xref:index.adoc[p
 
 == Variables and formats
 
-The following table summarizes the environment variables that Antora recognizes and can thus be used to control the operation of Antora.
+The following table summarizes the environment variables you can use to control the operation of Antora.
 
 [cols="4,2,2,4"]
 |===
@@ -42,25 +42,39 @@ The following table summarizes the environment variables that Antora recognizes 
 |[.path]_<user cache>/antora_
 |See xref:runtime-cache-dir.adoc[cache_dir key] and xref:cli:options.adoc#cache-dir[--cache-dir option]
 
+|[[failure-level]]`ANTORA_LOG_FAILURE_LEVEL`
+|String
+|Not set
+|See xref:cli:options.adoc#failure-level[--failure-level option]
+
+|[[log-format]]`ANTORA_LOG_FORMAT`
+|String
+|`structured` if CI=true or +
+`pretty` in all other environments
+|See xref:cli:options.adoc#log-format[--log-format option]
+
+|[[log-level]]`ANTORA_LOG_LEVEL`
+|String
+|`warn`
+|See xref:cli:options.adoc#log-level[--log-level option]
+
 |`GIT_CREDENTIALS`
 |String
-|not set
+|Not set
 |See xref:playbook:private-repository-auth.adoc[]
 
 |`GIT_CREDENTIALS_PATH`
 |String
-|not set
+|Not set
 |See xref:playbook:private-repository-auth.adoc#custom-credential-path[git credentials file path] and xref:cli:options.adoc#git-credentials-path[--git-credentials-path option]
 
 |`GOOGLE_ANALYTICS_KEY`
 |String
-|not set
+|Not set
 |See xref:playbook:site-keys.adoc#google-analytics-key[Google Analytics key] and xref:cli:options.adoc#google-key[--google-analytics-key option]
 
 |[[site-url]]`URL`
 |String
-|not set
+|Not set
 |See xref:site-url.adoc[site url key] and xref:cli:options.adoc#site-url[--url option]
 |===
-
-Support for additional environment variables may be added in a future release.
