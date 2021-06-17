@@ -3782,7 +3782,9 @@ describe('aggregateContent()', function () {
         const page2v2 = secondAggregate[1].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
         expect(page2v2).to.exist()
         expect(secondAggregate[2]).to.include({ name: 'the-component', version: 'v2.0.1' })
-        const page4v2 = secondAggregate[2].files.find((file) => file.path === 'modules/ROOT/pages/topic-b/page-four.adoc')
+        const page4v2 = secondAggregate[2].files.find(
+          (file) => file.path === 'modules/ROOT/pages/topic-b/page-four.adoc'
+        )
         expect(page4v2).to.exist()
       } finally {
         gitServer.off('fetch', recordFetch)
