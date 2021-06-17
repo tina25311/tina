@@ -2439,6 +2439,77 @@ describe('aggregateContent()', function () {
       )
     })
 
+    it('should create bare repository with detached HEAD under cache directory', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      const defaultBranch = 'tip'
+      await initRepoWithFiles(repoBuilder, undefined, undefined, () => repoBuilder.checkoutBranch(defaultBranch))
+      playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
+      let aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
+      expect(CONTENT_CACHE_DIR)
+        .to.be.a.directory()
+        .with.subDirs.have.lengthOf(1)
+      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+      expect(cachedRepoName).to.match(/\.git$/)
+      const clonedRepoBuilder = new RepositoryBuilder(CONTENT_CACHE_DIR, FIXTURES_DIR, { bare: true })
+      await clonedRepoBuilder.open(cachedRepoName)
+      const clonePath = clonedRepoBuilder.repoPath
+      expect(clonePath).to.have.extname('.git')
+      expect(ospath.join(clonePath, 'refs/remotes/origin/HEAD'))
+        .to.be.a.file()
+        .and.have.contents.that.match(new RegExp(`^ref: refs/remotes/origin/${defaultBranch}(?=$|\n)`))
+      expect(ospath.join(clonePath, 'refs/heads')).to.be.a.directory()
+      //.and.empty()
+      // NOTE make sure local HEAD is ignored
+      await clonedRepoBuilder.checkoutBranch$1('local', 'refs/remotes/origin/HEAD')
+      aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
+      // NOTE make sure local HEAD is considered if remote HEAD is missing
+      await fsp.rename(ospath.join(clonePath, 'refs/remotes/origin/HEAD'), ospath.join(clonePath, 'HEAD'))
+      aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
+    })
+
+    it('should clone repository again if valid file is not found in cached repository', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      let aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(CONTENT_CACHE_DIR)
+        .to.be.a.directory()
+        .with.subDirs.have.lengthOf(1)
+      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+      const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
+      expect(cachedRepoDir).to.match(/\.git$/)
+      const validFile = ospath.join(cachedRepoDir, 'valid')
+      const headFile = ospath.join(cachedRepoDir, 'HEAD')
+      expect(validFile)
+        .to.be.a.file()
+        .and.be.empty()
+      expect(headFile)
+        .to.be.a.file()
+        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+      await fsp.writeFile(validFile, 'marker')
+      await fsp.writeFile(headFile, '')
+      await fsp.unlink(validFile)
+      aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(cachedRepoDir).to.be.a.directory()
+      expect(validFile)
+        .to.be.a.file()
+        .and.be.empty()
+      expect(headFile)
+        .to.be.a.file()
+        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+    })
+
     describe('should use custom cache dir with absolute path', () => {
       testAll(async (repoBuilder) => {
         const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
@@ -3631,6 +3702,312 @@ describe('aggregateContent()', function () {
     })
   })
 
+  describe('fetch updates', () => {
+    it('should fetch updates into non-empty cached repository when runtime.fetch option is enabled', async () => {
+      const fetches = []
+      const recordFetch = (fetch) => {
+        fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
+        fetch.accept()
+      }
+      try {
+        gitServer.on('fetch', recordFetch)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
+          repoBuilder.createTag('ignored').then(() => repoBuilder.checkoutBranch('v1.2.x'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', tags: 'release/*' })
+
+        const firstAggregate = await aggregateContent(playbookSpec)
+
+        expect(fetches).to.have.lengthOf(1)
+        expect(fetches[0]).to.equal(repoBuilder.url)
+        fetches.length = 0
+
+        expect(firstAggregate).to.have.lengthOf(1)
+        expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+        let page1v1 = firstAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+        expect(page1v1).to.exist()
+
+        await repoBuilder
+          .open()
+          .then(() => repoBuilder.checkoutBranch('v2.0.x'))
+          .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v2.0.0' }))
+          .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
+          .then(() => repoBuilder.checkoutBranch('2.0.x-releases'))
+          .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v2.0.1' }))
+          .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/topic-b/page-four.adoc'))
+          .then(() => repoBuilder.createTag('release/2.0.1'))
+          .then(() => repoBuilder.checkoutBranch('v1.2.x'))
+          .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One\n\nUpdate received!'))
+          .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/topic-a/page-three.adoc'))
+          .then(() => repoBuilder.close())
+
+        playbookSpec.runtime.fetch = true
+        const secondAggregate = await aggregateContent(playbookSpec)
+
+        expect(fetches).to.have.lengthOf(1)
+        expect(fetches[0]).to.equal(repoBuilder.url)
+        fetches.length = 0
+
+        expect(secondAggregate).to.have.lengthOf(3)
+        sortAggregate(secondAggregate)
+        expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+        page1v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+        expect(page1v1).to.exist()
+        expect(page1v1.contents.toString()).to.have.string('Update received!')
+        const page2v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
+        expect(page2v1).to.not.exist()
+        const page3v1 = secondAggregate[0].files.find(
+          (file) => file.path === 'modules/ROOT/pages/topic-a/page-three.adoc'
+        )
+        expect(page3v1).to.exist()
+        expect(secondAggregate[1]).to.include({ name: 'the-component', version: 'v2.0.0' })
+        const page1v2 = secondAggregate[1].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+        expect(page1v2).to.exist()
+        expect(page1v2.contents.toString()).to.not.have.string('Update received!')
+        const page2v2 = secondAggregate[1].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
+        expect(page2v2).to.exist()
+        expect(secondAggregate[2]).to.include({ name: 'the-component', version: 'v2.0.1' })
+        const page4v2 = secondAggregate[2].files.find((file) => file.path === 'modules/ROOT/pages/topic-b/page-four.adoc')
+        expect(page4v2).to.exist()
+      } finally {
+        gitServer.off('fetch', recordFetch)
+      }
+    })
+
+    it('should fetch updates into partially populated cached repository when runtime.fetch option is enabled', async () => {
+      const fetches = []
+      const recordFetch = (fetch) => {
+        fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
+        fetch.accept()
+      }
+      try {
+        gitServer.on('fetch', recordFetch)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await repoBuilder.init('the-component').then(() => repoBuilder.close())
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        expect(aggregateContentDeferred).to.throw()
+
+        expect(fetches).to.have.lengthOf(1)
+        expect(fetches[0]).to.equal(repoBuilder.url)
+        fetches.length = 0
+
+        await repoBuilder
+          .open()
+          .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v1.0' }))
+          .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-one.adoc'))
+          .then(() => repoBuilder.close())
+
+        playbookSpec.runtime.fetch = true
+        const aggregate = await aggregateContent(playbookSpec)
+
+        expect(fetches).to.have.lengthOf(1)
+        expect(fetches[0]).to.equal(repoBuilder.url)
+        fetches.length = 0
+
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
+        expect(aggregate[0].files).to.have.lengthOf(1)
+        expect(aggregate[0].files[0].path).to.equal('modules/ROOT/pages/page-one.adoc')
+      } finally {
+        gitServer.off('fetch', recordFetch)
+      }
+    })
+
+    it('should fetch tags not reachable from fetched commits when runtime.fetch option is enabled', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
+        repoBuilder.checkoutBranch('v1.2.x')
+      )
+      playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
+
+      const firstAggregate = await aggregateContent(playbookSpec)
+
+      expect(firstAggregate).to.have.lengthOf(1)
+      expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+      let page1v1 = firstAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+      expect(page1v1).to.exist()
+
+      await repoBuilder
+        .open()
+        .then(() => repoBuilder.checkoutBranch('v1.2.x'))
+        .then(() => repoBuilder.createTag('v1.2.3'))
+        .then(() => repoBuilder.checkoutBranch('v2.0.x'))
+        .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v2.0.1' }))
+        .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
+        .then(() => repoBuilder.createTag('v2.0.1'))
+        .then(() => repoBuilder.deleteBranch('v2.0.x'))
+        .then(() => repoBuilder.close())
+
+      playbookSpec.runtime.fetch = true
+      playbookSpec.content.sources[0].branches = 'v2*'
+      // NOTE this also verifies we can fetch tags after not fetching them originally
+      playbookSpec.content.sources[0].tags = 'v*'
+      const secondAggregate = await aggregateContent(playbookSpec)
+
+      expect(secondAggregate).to.have.lengthOf(2)
+      sortAggregate(secondAggregate)
+      expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+      page1v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+      expect(page1v1).to.exist()
+      expect(secondAggregate[1]).to.include({ name: 'the-component', version: 'v2.0.1' })
+      const page2v2 = secondAggregate[1].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
+      expect(page2v2).to.exist()
+    })
+
+    it('should prune branches when runtime.fetch option is enabled', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      const componentDesc = { name: 'the-component', version: '1.2' }
+      await initRepoWithFiles(repoBuilder, componentDesc, 'modules/ROOT/pages/page-one.adoc', () =>
+        repoBuilder
+          .checkoutBranch('v1.2.x')
+          .then(() => repoBuilder.commitAll('create stable version'))
+          .then(() => repoBuilder.checkoutBranch('v1.1.x'))
+          .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: '1.1' }))
+          .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One\n\nPrevious content.'))
+          .then(() => repoBuilder.commitAll('restore previous version'))
+          .then(() => repoBuilder.checkoutBranch('v2.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component', version: '2.0' }))
+          .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\nNew content.'))
+          .then(() => repoBuilder.commitAll('add new version'))
+          .then(() => repoBuilder.checkoutBranch('v1.2.x'))
+      )
+      playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
+
+      const firstAggregate = await aggregateContent(playbookSpec)
+      expect(firstAggregate).to.have.lengthOf(3)
+      sortAggregate(firstAggregate)
+      expect(firstAggregate.map((it) => it.version)).to.have.members(['1.1', '1.2', '2.0'])
+      let page = firstAggregate
+        .find((it) => it.version === '1.1')
+        .files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+      expect(page.contents.toString()).to.have.string('Previous content')
+      page = firstAggregate
+        .find((it) => it.version === '2.0')
+        .files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
+      expect(page.contents.toString()).to.have.string('New content')
+
+      await repoBuilder
+        .open()
+        .then(() => repoBuilder.checkoutBranch('v2.0.x'))
+        .then(() => repoBuilder.deleteBranch('v1.1.x'))
+        .then(() => repoBuilder.deleteBranch('v1.2.x'))
+        .then(() => repoBuilder.close())
+      playbookSpec.runtime.fetch = true
+
+      const secondAggregate = await aggregateContent(playbookSpec)
+      expect(secondAggregate).to.have.lengthOf(1)
+      expect(secondAggregate[0]).to.include({ name: 'the-component', version: '2.0' })
+    })
+
+    it('should prune tags when runtime.fetch option is enabled and source has tags filter', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
+        repoBuilder
+          .checkoutBranch('v1.2.x')
+          .then(() => repoBuilder.checkoutBranch('v1.1.x'))
+          .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v1.1' }))
+          .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One\n\nPrevious content.'))
+          .then(() => repoBuilder.commitAll('restore previous content'))
+          .then(() => repoBuilder.checkoutBranch('releases'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component', version: 'v1.1.0' }))
+          .then(() => repoBuilder.createTag('v1.1.0'))
+          .then(() => repoBuilder.checkoutBranch('v1.2.x'))
+      )
+      playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', tags: 'v*' })
+
+      const firstAggregate = await aggregateContent(playbookSpec)
+      expect(firstAggregate).to.have.lengthOf(3)
+      sortAggregate(firstAggregate)
+      expect(firstAggregate.map((it) => it.version)).to.have.members(['v1.1.0', 'v1.1', 'v1.2.3'])
+      const page = firstAggregate
+        .find((it) => it.version === 'v1.1')
+        .files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+      expect(page.contents.toString()).to.have.string('Previous content')
+
+      await repoBuilder
+        .open()
+        .then(() => repoBuilder.deleteBranch('v1.1.x'))
+        .then(() => repoBuilder.deleteTag('v1.1.0'))
+        .then(() => repoBuilder.close())
+      playbookSpec.runtime.fetch = true
+
+      const secondAggregate = await aggregateContent(playbookSpec)
+      expect(secondAggregate).to.have.lengthOf(1)
+      expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+    })
+
+    it('should not fetch updates into cached repository when runtime.fetch option is not enabled', async () => {
+      const fetches = []
+      const recordFetch = (fetch) => {
+        fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
+        fetch.accept()
+      }
+      try {
+        gitServer.on('fetch', recordFetch)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
+          repoBuilder.checkoutBranch('v1.2.3')
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
+
+        const firstAggregate = await aggregateContent(playbookSpec)
+
+        expect(fetches).to.have.lengthOf(1)
+        expect(fetches[0]).to.equal(repoBuilder.url)
+        fetches.length = 0
+
+        expect(firstAggregate).to.have.lengthOf(1)
+        expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+        let page1v1 = firstAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+        expect(page1v1).to.exist()
+
+        await repoBuilder
+          .open()
+          .then(() => repoBuilder.checkoutBranch('v1.2.3'))
+          .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One\n\nUpdate received!'))
+          .then(() => repoBuilder.commitAll('content updates'))
+          .then(() => repoBuilder.close())
+
+        const secondAggregate = await aggregateContent(playbookSpec)
+
+        expect(fetches).to.be.empty()
+
+        expect(secondAggregate).to.have.lengthOf(1)
+        expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+        page1v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+        expect(page1v1).to.exist()
+        expect(page1v1.contents.toString()).to.not.have.string('Update received!')
+      } finally {
+        gitServer.off('fetch', recordFetch)
+      }
+    })
+  })
+
+  it('should append missing .git suffix to URL by default', async () => {
+    const fetches = []
+    const recordFetch = (fetch) => {
+      fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
+      fetch.accept()
+    }
+    try {
+      gitServer.on('fetch', recordFetch)
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const urlWithoutGitSuffix = repoBuilder.url.replace('.git', '')
+      playbookSpec.content.sources.push({ url: urlWithoutGitSuffix })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(fetches).to.have.lengthOf(1)
+      expect(fetches[0]).to.equal(repoBuilder.url)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+      expect(aggregate[0].files[0].src.origin.url).to.equal(urlWithoutGitSuffix)
+    } finally {
+      gitServer.off('fetch', recordFetch)
+    }
+  })
+
   it('should share cache between git commands', async () => {
     const cacheArgs = new Set()
     const git = require('isomorphic-git')
@@ -3655,381 +4032,6 @@ describe('aggregateContent()', function () {
       expect(sharedCache[Object.getOwnPropertySymbols(sharedCache)[0]]).to.be.instanceOf(Map)
     } finally {
       Object.entries(gitCommands).forEach(([name, fn]) => (git[name] = fn))
-    }
-  })
-
-  it('should create bare repository with detached HEAD under cache directory', async () => {
-    const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-    const defaultBranch = 'tip'
-    await initRepoWithFiles(repoBuilder, undefined, undefined, () => repoBuilder.checkoutBranch(defaultBranch))
-    playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
-    let aggregate = await aggregateContent(playbookSpec)
-    expect(aggregate).to.have.lengthOf(1)
-    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
-    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
-    expect(CONTENT_CACHE_DIR)
-      .to.be.a.directory()
-      .with.subDirs.have.lengthOf(1)
-    const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
-    expect(cachedRepoName).to.match(/\.git$/)
-    const clonedRepoBuilder = new RepositoryBuilder(CONTENT_CACHE_DIR, FIXTURES_DIR, { bare: true })
-    await clonedRepoBuilder.open(cachedRepoName)
-    const clonePath = clonedRepoBuilder.repoPath
-    expect(clonePath).to.have.extname('.git')
-    expect(ospath.join(clonePath, 'refs/remotes/origin/HEAD'))
-      .to.be.a.file()
-      .and.have.contents.that.match(new RegExp(`^ref: refs/remotes/origin/${defaultBranch}(?=$|\n)`))
-    expect(ospath.join(clonePath, 'refs/heads')).to.be.a.directory()
-    //.and.empty()
-    // NOTE make sure local HEAD is ignored
-    await clonedRepoBuilder.checkoutBranch$1('local', 'refs/remotes/origin/HEAD')
-    aggregate = await aggregateContent(playbookSpec)
-    expect(aggregate).to.have.lengthOf(1)
-    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
-    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
-    // NOTE make sure local HEAD is considered if remote HEAD is missing
-    await fsp.rename(ospath.join(clonePath, 'refs/remotes/origin/HEAD'), ospath.join(clonePath, 'HEAD'))
-    aggregate = await aggregateContent(playbookSpec)
-    expect(aggregate).to.have.lengthOf(1)
-    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
-    expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
-  })
-
-  it('should clone repository again if valid file is not found in cached repository', async () => {
-    const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-    await initRepoWithFiles(repoBuilder)
-    playbookSpec.content.sources.push({ url: repoBuilder.url })
-    let aggregate = await aggregateContent(playbookSpec)
-    expect(aggregate).to.have.lengthOf(1)
-    expect(CONTENT_CACHE_DIR)
-      .to.be.a.directory()
-      .with.subDirs.have.lengthOf(1)
-    const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
-    const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
-    expect(cachedRepoDir).to.match(/\.git$/)
-    const validFile = ospath.join(cachedRepoDir, 'valid')
-    const headFile = ospath.join(cachedRepoDir, 'HEAD')
-    expect(validFile)
-      .to.be.a.file()
-      .and.be.empty()
-    expect(headFile)
-      .to.be.a.file()
-      .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
-    await fsp.writeFile(validFile, 'marker')
-    await fsp.writeFile(headFile, '')
-    await fsp.unlink(validFile)
-    aggregate = await aggregateContent(playbookSpec)
-    expect(aggregate).to.have.lengthOf(1)
-    expect(cachedRepoDir).to.be.a.directory()
-    expect(validFile)
-      .to.be.a.file()
-      .and.be.empty()
-    expect(headFile)
-      .to.be.a.file()
-      .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
-  })
-
-  it('should fetch updates into non-empty cached repository when runtime.fetch option is enabled', async () => {
-    const fetches = []
-    const recordFetch = (fetch) => {
-      fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
-      fetch.accept()
-    }
-    try {
-      gitServer.on('fetch', recordFetch)
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
-        repoBuilder.createTag('ignored').then(() => repoBuilder.checkoutBranch('v1.2.x'))
-      )
-      playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', tags: 'release/*' })
-
-      const firstAggregate = await aggregateContent(playbookSpec)
-
-      expect(fetches).to.have.lengthOf(1)
-      expect(fetches[0]).to.equal(repoBuilder.url)
-      fetches.length = 0
-
-      expect(firstAggregate).to.have.lengthOf(1)
-      expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-      let page1v1 = firstAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-      expect(page1v1).to.exist()
-
-      await repoBuilder
-        .open()
-        .then(() => repoBuilder.checkoutBranch('v2.0.x'))
-        .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v2.0.0' }))
-        .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
-        .then(() => repoBuilder.checkoutBranch('2.0.x-releases'))
-        .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v2.0.1' }))
-        .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/topic-b/page-four.adoc'))
-        .then(() => repoBuilder.createTag('release/2.0.1'))
-        .then(() => repoBuilder.checkoutBranch('v1.2.x'))
-        .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One\n\nUpdate received!'))
-        .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/topic-a/page-three.adoc'))
-        .then(() => repoBuilder.close())
-
-      playbookSpec.runtime.fetch = true
-      const secondAggregate = await aggregateContent(playbookSpec)
-
-      expect(fetches).to.have.lengthOf(1)
-      expect(fetches[0]).to.equal(repoBuilder.url)
-      fetches.length = 0
-
-      expect(secondAggregate).to.have.lengthOf(3)
-      sortAggregate(secondAggregate)
-      expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-      page1v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-      expect(page1v1).to.exist()
-      expect(page1v1.contents.toString()).to.have.string('Update received!')
-      const page2v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
-      expect(page2v1).to.not.exist()
-      const page3v1 = secondAggregate[0].files.find(
-        (file) => file.path === 'modules/ROOT/pages/topic-a/page-three.adoc'
-      )
-      expect(page3v1).to.exist()
-      expect(secondAggregate[1]).to.include({ name: 'the-component', version: 'v2.0.0' })
-      const page1v2 = secondAggregate[1].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-      expect(page1v2).to.exist()
-      expect(page1v2.contents.toString()).to.not.have.string('Update received!')
-      const page2v2 = secondAggregate[1].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
-      expect(page2v2).to.exist()
-      expect(secondAggregate[2]).to.include({ name: 'the-component', version: 'v2.0.1' })
-      const page4v2 = secondAggregate[2].files.find((file) => file.path === 'modules/ROOT/pages/topic-b/page-four.adoc')
-      expect(page4v2).to.exist()
-    } finally {
-      gitServer.off('fetch', recordFetch)
-    }
-  })
-
-  it('should fetch updates into partially populated cached repository when runtime.fetch option is enabled', async () => {
-    const fetches = []
-    const recordFetch = (fetch) => {
-      fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
-      fetch.accept()
-    }
-    try {
-      gitServer.on('fetch', recordFetch)
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await repoBuilder.init('the-component').then(() => repoBuilder.close())
-      playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw()
-
-      expect(fetches).to.have.lengthOf(1)
-      expect(fetches[0]).to.equal(repoBuilder.url)
-      fetches.length = 0
-
-      await repoBuilder
-        .open()
-        .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v1.0' }))
-        .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-one.adoc'))
-        .then(() => repoBuilder.close())
-
-      playbookSpec.runtime.fetch = true
-      const aggregate = await aggregateContent(playbookSpec)
-
-      expect(fetches).to.have.lengthOf(1)
-      expect(fetches[0]).to.equal(repoBuilder.url)
-      fetches.length = 0
-
-      expect(aggregate).to.have.lengthOf(1)
-      expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
-      expect(aggregate[0].files).to.have.lengthOf(1)
-      expect(aggregate[0].files[0].path).to.equal('modules/ROOT/pages/page-one.adoc')
-    } finally {
-      gitServer.off('fetch', recordFetch)
-    }
-  })
-
-  it('should fetch tags not reachable from fetched commits when runtime.fetch option is enabled', async () => {
-    const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-    await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
-      repoBuilder.checkoutBranch('v1.2.x')
-    )
-    playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
-
-    const firstAggregate = await aggregateContent(playbookSpec)
-
-    expect(firstAggregate).to.have.lengthOf(1)
-    expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-    let page1v1 = firstAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-    expect(page1v1).to.exist()
-
-    await repoBuilder
-      .open()
-      .then(() => repoBuilder.checkoutBranch('v1.2.x'))
-      .then(() => repoBuilder.createTag('v1.2.3'))
-      .then(() => repoBuilder.checkoutBranch('v2.0.x'))
-      .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v2.0.1' }))
-      .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
-      .then(() => repoBuilder.createTag('v2.0.1'))
-      .then(() => repoBuilder.deleteBranch('v2.0.x'))
-      .then(() => repoBuilder.close())
-
-    playbookSpec.runtime.fetch = true
-    playbookSpec.content.sources[0].branches = 'v2*'
-    // NOTE this also verifies we can fetch tags after not fetching them originally
-    playbookSpec.content.sources[0].tags = 'v*'
-    const secondAggregate = await aggregateContent(playbookSpec)
-
-    expect(secondAggregate).to.have.lengthOf(2)
-    sortAggregate(secondAggregate)
-    expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-    page1v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-    expect(page1v1).to.exist()
-    expect(secondAggregate[1]).to.include({ name: 'the-component', version: 'v2.0.1' })
-    const page2v2 = secondAggregate[1].files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
-    expect(page2v2).to.exist()
-  })
-
-  it('should prune branches when runtime.fetch option is enabled', async () => {
-    const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-    const componentDesc = { name: 'the-component', version: '1.2' }
-    await initRepoWithFiles(repoBuilder, componentDesc, 'modules/ROOT/pages/page-one.adoc', () =>
-      repoBuilder
-        .checkoutBranch('v1.2.x')
-        .then(() => repoBuilder.commitAll('create stable version'))
-        .then(() => repoBuilder.checkoutBranch('v1.1.x'))
-        .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: '1.1' }))
-        .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One\n\nPrevious content.'))
-        .then(() => repoBuilder.commitAll('restore previous version'))
-        .then(() => repoBuilder.checkoutBranch('v2.0.x'))
-        .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component', version: '2.0' }))
-        .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\nNew content.'))
-        .then(() => repoBuilder.commitAll('add new version'))
-        .then(() => repoBuilder.checkoutBranch('v1.2.x'))
-    )
-    playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
-
-    const firstAggregate = await aggregateContent(playbookSpec)
-    expect(firstAggregate).to.have.lengthOf(3)
-    sortAggregate(firstAggregate)
-    expect(firstAggregate.map((it) => it.version)).to.have.members(['1.1', '1.2', '2.0'])
-    let page = firstAggregate
-      .find((it) => it.version === '1.1')
-      .files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-    expect(page.contents.toString()).to.have.string('Previous content')
-    page = firstAggregate
-      .find((it) => it.version === '2.0')
-      .files.find((file) => file.path === 'modules/ROOT/pages/page-two.adoc')
-    expect(page.contents.toString()).to.have.string('New content')
-
-    await repoBuilder
-      .open()
-      .then(() => repoBuilder.checkoutBranch('v2.0.x'))
-      .then(() => repoBuilder.deleteBranch('v1.1.x'))
-      .then(() => repoBuilder.deleteBranch('v1.2.x'))
-      .then(() => repoBuilder.close())
-    playbookSpec.runtime.fetch = true
-
-    const secondAggregate = await aggregateContent(playbookSpec)
-    expect(secondAggregate).to.have.lengthOf(1)
-    expect(secondAggregate[0]).to.include({ name: 'the-component', version: '2.0' })
-  })
-
-  it('should prune tags when runtime.fetch option is enabled and source has tags filter', async () => {
-    const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-    await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
-      repoBuilder
-        .checkoutBranch('v1.2.x')
-        .then(() => repoBuilder.checkoutBranch('v1.1.x'))
-        .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v1.1' }))
-        .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One\n\nPrevious content.'))
-        .then(() => repoBuilder.commitAll('restore previous content'))
-        .then(() => repoBuilder.checkoutBranch('releases'))
-        .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component', version: 'v1.1.0' }))
-        .then(() => repoBuilder.createTag('v1.1.0'))
-        .then(() => repoBuilder.checkoutBranch('v1.2.x'))
-    )
-    playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', tags: 'v*' })
-
-    const firstAggregate = await aggregateContent(playbookSpec)
-    expect(firstAggregate).to.have.lengthOf(3)
-    sortAggregate(firstAggregate)
-    expect(firstAggregate.map((it) => it.version)).to.have.members(['v1.1.0', 'v1.1', 'v1.2.3'])
-    const page = firstAggregate
-      .find((it) => it.version === 'v1.1')
-      .files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-    expect(page.contents.toString()).to.have.string('Previous content')
-
-    await repoBuilder
-      .open()
-      .then(() => repoBuilder.deleteBranch('v1.1.x'))
-      .then(() => repoBuilder.deleteTag('v1.1.0'))
-      .then(() => repoBuilder.close())
-    playbookSpec.runtime.fetch = true
-
-    const secondAggregate = await aggregateContent(playbookSpec)
-    expect(secondAggregate).to.have.lengthOf(1)
-    expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-  })
-
-  it('should not fetch updates into cached repository when runtime.fetch option is not enabled', async () => {
-    const fetches = []
-    const recordFetch = (fetch) => {
-      fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
-      fetch.accept()
-    }
-    try {
-      gitServer.on('fetch', recordFetch)
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc', () =>
-        repoBuilder.checkoutBranch('v1.2.3')
-      )
-      playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
-
-      const firstAggregate = await aggregateContent(playbookSpec)
-
-      expect(fetches).to.have.lengthOf(1)
-      expect(fetches[0]).to.equal(repoBuilder.url)
-      fetches.length = 0
-
-      expect(firstAggregate).to.have.lengthOf(1)
-      expect(firstAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-      let page1v1 = firstAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-      expect(page1v1).to.exist()
-
-      await repoBuilder
-        .open()
-        .then(() => repoBuilder.checkoutBranch('v1.2.3'))
-        .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One\n\nUpdate received!'))
-        .then(() => repoBuilder.commitAll('content updates'))
-        .then(() => repoBuilder.close())
-
-      const secondAggregate = await aggregateContent(playbookSpec)
-
-      expect(fetches).to.be.empty()
-
-      expect(secondAggregate).to.have.lengthOf(1)
-      expect(secondAggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-      page1v1 = secondAggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
-      expect(page1v1).to.exist()
-      expect(page1v1.contents.toString()).to.not.have.string('Update received!')
-    } finally {
-      gitServer.off('fetch', recordFetch)
-    }
-  })
-
-  it('should append missing .git suffix to URL by default', async () => {
-    const fetches = []
-    const recordFetch = (fetch) => {
-      fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
-      fetch.accept()
-    }
-    try {
-      gitServer.on('fetch', recordFetch)
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(repoBuilder)
-      const urlWithoutGitSuffix = repoBuilder.url.replace('.git', '')
-      playbookSpec.content.sources.push({ url: urlWithoutGitSuffix })
-      const aggregate = await aggregateContent(playbookSpec)
-      expect(fetches).to.have.lengthOf(1)
-      expect(fetches[0]).to.equal(repoBuilder.url)
-      expect(aggregate).to.have.lengthOf(1)
-      expect(aggregate[0].files).to.not.be.empty()
-      expect(aggregate[0].files[0].src.origin.url).to.equal(urlWithoutGitSuffix)
-    } finally {
-      gitServer.off('fetch', recordFetch)
     }
   })
 
