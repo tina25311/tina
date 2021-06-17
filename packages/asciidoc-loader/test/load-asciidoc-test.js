@@ -2607,6 +2607,41 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, '#section-a', 'Section A')
     })
 
+    it('should break circular reference by delegating to built-in converter to process an internal reference', () => {
+      const contentCatalog = mockContentCatalog({ family: 'page', relative: 'page-a.adoc' }).spyOn('getById')
+      const contents = heredoc`
+      = Document Title
+
+      [#a]
+      == A xref:page$page-a.adoc#b[]
+
+      [#b]
+      == B xref:page$page-a.adoc#a[]
+      `
+      setInputFileContents(contents)
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'page-a.adoc',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'page-a.adoc',
+        })
+      expect(html).to.include('<h2 id="a">A <a href="#b">B [a]</a></h2>')
+      expect(html).to.include('<h2 id="b">B <a href="#a">[a]</a></h2>')
+    })
+
     it('should not allow path document attribute to interfere with internal reference', () => {
       const contents = heredoc`
       = Document Title

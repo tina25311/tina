@@ -452,6 +452,21 @@ describe('convertDocuments()', () => {
     expectPageLink(convertedContents, 'here.html', 'Document Title')
   })
 
+  // NOTE currently a negative test
+  it('should not process resource ID in xref inside page title when resolving xreftext', () => {
+    const contentsA = Buffer.from('= Page A xref:page$b.adoc[]\n\nContents of page A.')
+    const contentsB = Buffer.from('= Page B xref:page$a.adoc[]\n\nContents of page B.')
+    const contentCatalog = mockContentCatalog([
+      { relative: 'page-a.adoc', contents: contentsA, mediaType: 'text/asciidoc' },
+      { relative: 'page-b.adoc', contents: contentsB, mediaType: 'text/asciidoc' },
+    ])
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    const xreftextA = pages.find((it) => it.src.relative === 'page-a.adoc').asciidoc.xreftext
+    const xreftextB = pages.find((it) => it.src.relative === 'page-b.adoc').asciidoc.xreftext
+    expect(xreftextA).to.equal('Page A <a href="page$b.html">page$b.html</a>')
+    expect(xreftextB).to.equal('Page B <a href="page$a.html">page$a.html</a>')
+  })
+
   it('should be able to reference page alias as target of xref', () => {
     const contentsA = Buffer.from(heredoc`
       = The Page
