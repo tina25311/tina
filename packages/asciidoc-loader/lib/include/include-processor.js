@@ -53,7 +53,7 @@ const IncludeProcessor = (() => {
       if (attrs['$key?']('optional-option')) {
         log('info', `optional include dropped because include file not found: ${target}`, reader, sourceCursor)
       } else {
-        log('error', `include target not found: ${target}`, reader, sourceCursor)
+        log('error', `target of include not found: ${target}`, reader, sourceCursor)
         reader.$unshift(`Unresolved include directive in ${sourceCursor.file} - include::${target}[]`)
       }
     }

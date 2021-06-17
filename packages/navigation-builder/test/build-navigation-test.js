@@ -305,7 +305,9 @@ describe('buildNavigation()', () => {
         navIndex: 0,
       },
     ])
-    const navCatalog = buildNavigation(contentCatalog)
+    const { messages, returnValue: navCatalog } = captureLogSync(() =>
+      buildNavigation(contentCatalog, resolveAsciiDocConfig())
+    ).withReturnValue()
     const menu = navCatalog.getNavigation('component-a', 'master')
     expect(menu).to.exist()
     expect(menu[0]).to.eql({
@@ -319,6 +321,13 @@ describe('buildNavigation()', () => {
           unresolved: true,
         },
       ],
+    })
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.eql({
+      level: 'error',
+      name: 'asciidoctor',
+      msg: 'target of xref not found: page-to-nowhere.adoc',
+      file: { path: 'modules/module-a/nav.adoc' },
     })
   })
 
@@ -1650,7 +1659,7 @@ describe('buildNavigation()', () => {
       level: 'error',
       name: 'asciidoctor',
       file: { path: 'modules/module-a/nav.adoc', line: 2 },
-      msg: 'include target not found: no-such-file.adoc',
+      msg: 'target of include not found: no-such-file.adoc',
     })
   })
 })

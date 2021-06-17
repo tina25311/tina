@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *asciidoc-loader*: Log error message when target of xref is not found (#403)
+
 === Fixed
 
 * *asciidoc-loader*: Port fixes for include tags processing from Asciidoctor (#771)
@@ -17,6 +21,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Use internal implementation of the http plugin for all clone and fetch operations (#774)
 * *asciidoc-loader*: Use Converter.for to look up registered html5 converter instead of referring directly to name of built-in class (#769)
 * *asciidoc-loader*: Detect when registered html5 converter has changed and recreate extended converter to use it (#769)
+* *asciidoc-loader*: Change "include target" to "target of include" in error message for missing include (#403)
 
 == 3.0.0-alpha.6 (2021-06-08)
 

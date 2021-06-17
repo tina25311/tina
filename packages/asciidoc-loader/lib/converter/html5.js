@@ -2,8 +2,9 @@
 
 const Opal = global.Opal
 const { $Antora } = require('../constants')
-const $pageRefCallback = Symbol('pageRefCallback')
+const $logger = Symbol('logger')
 const $imageRefCallback = Symbol('imageRefCallback')
+const $pageRefCallback = Symbol('pageRefCallback')
 const converterFor = Opal.Asciidoctor.Converter.$for.bind(Opal.Asciidoctor.Converter)
 
 let classDef
@@ -16,6 +17,7 @@ const defineHtml5Converter = () => {
     }
     return classDef
   }
+
   classDef = Opal.klass(Opal.Antora || Opal.module(null, 'Antora', $Antora), superclass, 'Html5Converter')
 
   Opal.defn(classDef, '$initialize', function initialize (backend, opts, callbacks) {
@@ -46,7 +48,13 @@ const defineHtml5Converter = () => {
           attrs.fragment = attrs.refid = fragment
         } else {
           type = 'link'
-          attrs.role = `page${unresolved ? ' unresolved' : ''}${attrs.role ? ' ' + attrs.role : ''}`
+          if (unresolved) {
+            const logger = this[$logger] || (this[$logger] = this.$logger())
+            logger.error('target of xref not found: ' + refSpec)
+            attrs.role = `page unresolved${attrs.role ? ' ' + attrs.role : ''}`
+          } else {
+            attrs.role = `page${attrs.role ? ' ' + attrs.role : ''}`
+          }
         }
         const attributes = Opal.hash2(Object.keys(attrs), attrs)
         const options = Opal.hash2(['type', 'target', 'attributes'], { type, target, attributes })
