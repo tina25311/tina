@@ -2408,213 +2408,6 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should clone repository into cache folder', () => {
-      testAll(
-        async (repoBuilder) => {
-          await initRepoWithFiles(repoBuilder)
-          if (repoBuilder.remote && repoBuilder.bare) repoBuilder.url += '/.git'
-          playbookSpec.content.sources.push({ url: repoBuilder.url })
-          await aggregateContent(playbookSpec)
-          if (repoBuilder.remote) {
-            const normalizedUrl = repoBuilder.url
-              .toLowerCase()
-              .replace(/\\/g, '/')
-              .replace(/(?:(?:(?:\.git)?\/)?\.git|\/)$/, '')
-            const hash = createHash('sha1')
-            hash.update(normalizedUrl)
-            const repoDir = `${ospath.basename(normalizedUrl)}-${hash.digest('hex')}.git`
-            expect(CONTENT_CACHE_DIR).to.be.a.directory()
-            expect(ospath.join(CONTENT_CACHE_DIR, repoDir))
-              .to.be.a.directory()
-              .and.not.include.subDirs(['.git'])
-              .and.include.files(['HEAD', 'valid'])
-          } else {
-            expect(CONTENT_CACHE_DIR)
-              .to.be.a.directory()
-              .and.be.empty()
-          }
-        },
-        1,
-        true
-      )
-    })
-
-    it('should create bare repository with detached HEAD under cache directory', async () => {
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      const defaultBranch = 'tip'
-      await initRepoWithFiles(repoBuilder, undefined, undefined, () => repoBuilder.checkoutBranch(defaultBranch))
-      playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
-      let aggregate = await aggregateContent(playbookSpec)
-      expect(aggregate).to.have.lengthOf(1)
-      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
-      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
-      expect(CONTENT_CACHE_DIR)
-        .to.be.a.directory()
-        .with.subDirs.have.lengthOf(1)
-      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
-      expect(cachedRepoName).to.match(/\.git$/)
-      const clonedRepoBuilder = new RepositoryBuilder(CONTENT_CACHE_DIR, FIXTURES_DIR, { bare: true })
-      await clonedRepoBuilder.open(cachedRepoName)
-      const clonePath = clonedRepoBuilder.repoPath
-      expect(clonePath).to.have.extname('.git')
-      expect(ospath.join(clonePath, 'refs/remotes/origin/HEAD'))
-        .to.be.a.file()
-        .and.have.contents.that.match(new RegExp(`^ref: refs/remotes/origin/${defaultBranch}(?=$|\n)`))
-      expect(ospath.join(clonePath, 'refs/heads')).to.be.a.directory()
-      //.and.empty()
-      // NOTE make sure local HEAD is ignored
-      await clonedRepoBuilder.checkoutBranch$1('local', 'refs/remotes/origin/HEAD')
-      aggregate = await aggregateContent(playbookSpec)
-      expect(aggregate).to.have.lengthOf(1)
-      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
-      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
-      // NOTE make sure local HEAD is considered if remote HEAD is missing
-      await fsp.rename(ospath.join(clonePath, 'refs/remotes/origin/HEAD'), ospath.join(clonePath, 'HEAD'))
-      aggregate = await aggregateContent(playbookSpec)
-      expect(aggregate).to.have.lengthOf(1)
-      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
-      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
-    })
-
-    it('should clone repository again if valid file is not found in cached repository', async () => {
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(repoBuilder)
-      playbookSpec.content.sources.push({ url: repoBuilder.url })
-      let aggregate = await aggregateContent(playbookSpec)
-      expect(aggregate).to.have.lengthOf(1)
-      expect(CONTENT_CACHE_DIR)
-        .to.be.a.directory()
-        .with.subDirs.have.lengthOf(1)
-      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
-      const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
-      expect(cachedRepoDir).to.match(/\.git$/)
-      const validFile = ospath.join(cachedRepoDir, 'valid')
-      const headFile = ospath.join(cachedRepoDir, 'HEAD')
-      expect(validFile)
-        .to.be.a.file()
-        .and.be.empty()
-      expect(headFile)
-        .to.be.a.file()
-        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
-      await fsp.writeFile(validFile, 'marker')
-      await fsp.writeFile(headFile, '')
-      await fsp.unlink(validFile)
-      aggregate = await aggregateContent(playbookSpec)
-      expect(aggregate).to.have.lengthOf(1)
-      expect(cachedRepoDir).to.be.a.directory()
-      expect(validFile)
-        .to.be.a.file()
-        .and.be.empty()
-      expect(headFile)
-        .to.be.a.file()
-        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
-    })
-
-    describe('should use custom cache dir with absolute path', () => {
-      testAll(async (repoBuilder) => {
-        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
-        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
-        await initRepoWithFiles(repoBuilder)
-        playbookSpec.runtime.cacheDir = customCacheDir
-        playbookSpec.content.sources.push({ url: repoBuilder.url })
-        await aggregateContent(playbookSpec)
-        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
-        if (repoBuilder.remote) {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.not.be.empty()
-        } else {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.be.empty()
-        }
-      })
-    })
-
-    describe('should use custom cache dir relative to cwd', () => {
-      testAll(async (repoBuilder) => {
-        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
-        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
-        await initRepoWithFiles(repoBuilder)
-        playbookSpec.runtime.cacheDir = '.antora-cache'
-        playbookSpec.content.sources.push({ url: repoBuilder.url })
-        await aggregateContent(playbookSpec)
-        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
-        if (repoBuilder.remote) {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.not.be.empty()
-        } else {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.be.empty()
-        }
-      })
-    })
-
-    describe('should use custom cache dir relative to directory of playbook file', () => {
-      testAll(async (repoBuilder) => {
-        process.chdir(CWD)
-        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
-        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
-        await initRepoWithFiles(repoBuilder)
-        playbookSpec.dir = WORK_DIR
-        playbookSpec.runtime.cacheDir = './.antora-cache'
-        playbookSpec.content.sources.push({ url: repoBuilder.url })
-        await aggregateContent(playbookSpec)
-        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
-        if (repoBuilder.remote) {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.not.be.empty()
-        } else {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.be.empty()
-        }
-      })
-    })
-
-    describe('should use custom cache dir relative to user home', () => {
-      testAll(async (repoBuilder) => {
-        process.chdir(CWD)
-        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
-        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
-        await initRepoWithFiles(repoBuilder)
-        playbookSpec.runtime.cacheDir = prefixPath(
-          '~',
-          ospath.relative(os.homedir(), ospath.join(WORK_DIR, '.antora-cache'))
-        )
-        playbookSpec.content.sources.push({ url: repoBuilder.url })
-        await aggregateContent(playbookSpec)
-        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
-        if (repoBuilder.remote) {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.not.be.empty()
-        } else {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.be.empty()
-        }
-      })
-    })
-
-    describe('should show sensible error message if cache directory cannot be created', () => {
-      testAll(async (repoBuilder) => {
-        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
-        // NOTE: put a file at the location of the cache directory
-        await fsp.writeFile(customCacheDir, '')
-        await initRepoWithFiles(repoBuilder)
-        playbookSpec.runtime.cacheDir = customCacheDir
-        playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
-        const expectedMessage = `Failed to create content cache directory: ${customContentCacheDir};`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
-      })
-    })
-
     describe('should skip dotfiles, extensionless files, and directories that contain a dot', () => {
       testAll(async (repoBuilder) => {
         const fixturePaths = [
@@ -3702,6 +3495,227 @@ describe('aggregateContent()', function () {
     })
   })
 
+  describe('content cache', () => {
+    describe('should clone repository into cache folder', () => {
+      testAll(
+        async (repoBuilder) => {
+          await initRepoWithFiles(repoBuilder)
+          if (repoBuilder.remote && repoBuilder.bare) repoBuilder.url += '/.git'
+          playbookSpec.content.sources.push({ url: repoBuilder.url })
+          await aggregateContent(playbookSpec)
+          if (repoBuilder.remote) {
+            const normalizedUrl = repoBuilder.url
+              .toLowerCase()
+              .replace(/\\/g, '/')
+              .replace(/(?:(?:(?:\.git)?\/)?\.git|\/)$/, '')
+            const hash = createHash('sha1')
+            hash.update(normalizedUrl)
+            const repoDir = `${ospath.basename(normalizedUrl)}-${hash.digest('hex')}.git`
+            expect(CONTENT_CACHE_DIR).to.be.a.directory()
+            expect(ospath.join(CONTENT_CACHE_DIR, repoDir))
+              .to.be.a.directory()
+              .and.not.include.subDirs(['.git'])
+              .and.include.files(['HEAD', 'valid'])
+          } else {
+            expect(CONTENT_CACHE_DIR)
+              .to.be.a.directory()
+              .and.be.empty()
+          }
+        },
+        1,
+        true
+      )
+    })
+
+    it('should create bare repository with detached HEAD under cache directory', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      const defaultBranch = 'tip'
+      await initRepoWithFiles(repoBuilder, undefined, undefined, () => repoBuilder.checkoutBranch(defaultBranch))
+      playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
+      let aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
+      expect(CONTENT_CACHE_DIR)
+        .to.be.a.directory()
+        .with.subDirs.have.lengthOf(1)
+      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+      expect(cachedRepoName).to.match(/\.git$/)
+      const clonedRepoBuilder = new RepositoryBuilder(CONTENT_CACHE_DIR, FIXTURES_DIR, { bare: true })
+      await clonedRepoBuilder.open(cachedRepoName)
+      const clonePath = clonedRepoBuilder.repoPath
+      expect(clonePath).to.have.extname('.git')
+      expect(ospath.join(clonePath, 'refs/remotes/origin/HEAD'))
+        .to.be.a.file()
+        .and.have.contents.that.match(new RegExp(`^ref: refs/remotes/origin/${defaultBranch}(?=$|\n)`))
+      expect(ospath.join(clonePath, 'refs/heads')).to.be.a.directory()
+      //.and.empty()
+      // NOTE make sure local HEAD is ignored
+      await clonedRepoBuilder.checkoutBranch$1('local', 'refs/remotes/origin/HEAD')
+      aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
+      // NOTE make sure local HEAD is considered if remote HEAD is missing
+      await fsp.rename(ospath.join(clonePath, 'refs/remotes/origin/HEAD'), ospath.join(clonePath, 'HEAD'))
+      aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
+      expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
+    })
+
+    it('should clone repository again if valid file is not found in cached repository', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      let aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(CONTENT_CACHE_DIR)
+        .to.be.a.directory()
+        .with.subDirs.have.lengthOf(1)
+      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+      const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
+      expect(cachedRepoDir).to.match(/\.git$/)
+      const validFile = ospath.join(cachedRepoDir, 'valid')
+      const headFile = ospath.join(cachedRepoDir, 'HEAD')
+      expect(validFile)
+        .to.be.a.file()
+        .and.be.empty()
+      expect(headFile)
+        .to.be.a.file()
+        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+      await fsp.writeFile(validFile, 'marker')
+      await fsp.writeFile(headFile, '')
+      await fsp.unlink(validFile)
+      aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(cachedRepoDir).to.be.a.directory()
+      expect(validFile)
+        .to.be.a.file()
+        .and.be.empty()
+      expect(headFile)
+        .to.be.a.file()
+        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+    })
+
+    describe('should use custom cache dir with absolute path', () => {
+      testAll(async (repoBuilder) => {
+        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.runtime.cacheDir = customCacheDir
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        await aggregateContent(playbookSpec)
+        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
+        if (repoBuilder.remote) {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.not.be.empty()
+        } else {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.be.empty()
+        }
+      })
+    })
+
+    describe('should use custom cache dir relative to cwd', () => {
+      testAll(async (repoBuilder) => {
+        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.runtime.cacheDir = '.antora-cache'
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        await aggregateContent(playbookSpec)
+        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
+        if (repoBuilder.remote) {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.not.be.empty()
+        } else {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.be.empty()
+        }
+      })
+    })
+
+    describe('should use custom cache dir relative to directory of playbook file', () => {
+      testAll(async (repoBuilder) => {
+        process.chdir(CWD)
+        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.dir = WORK_DIR
+        playbookSpec.runtime.cacheDir = './.antora-cache'
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        await aggregateContent(playbookSpec)
+        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
+        if (repoBuilder.remote) {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.not.be.empty()
+        } else {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.be.empty()
+        }
+      })
+    })
+
+    describe('should use custom cache dir relative to user home', () => {
+      testAll(async (repoBuilder) => {
+        process.chdir(CWD)
+        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.runtime.cacheDir = prefixPath(
+          '~',
+          ospath.relative(os.homedir(), ospath.join(WORK_DIR, '.antora-cache'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        await aggregateContent(playbookSpec)
+        expect(CONTENT_CACHE_DIR).to.not.be.a.path()
+        if (repoBuilder.remote) {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.not.be.empty()
+        } else {
+          expect(customContentCacheDir)
+            .to.be.a.directory()
+            .and.be.empty()
+        }
+      })
+    })
+
+    describe('should show sensible error message if cache directory cannot be created', () => {
+      testAll(async (repoBuilder) => {
+        const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+        // NOTE: put a file at the location of the cache directory
+        await fsp.writeFile(customCacheDir, '')
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.runtime.cacheDir = customCacheDir
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
+        const expectedMessage = `Failed to create content cache directory: ${customContentCacheDir};`
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        expect(aggregateContentDeferred).to.throw(expectedMessage)
+      })
+    })
+
+    // technically, we don't know what it did w/ the remote we specified, but it should work regardless
+    it('should ignore remote on cached repository', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+
+      playbookSpec.content.sources.push({ url: repoBuilder.url, remote: 'upstream' })
+
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+    })
+  })
+
   describe('fetch updates', () => {
     it('should fetch updates into non-empty cached repository when runtime.fetch option is enabled', async () => {
       const fetches = []
@@ -3985,6 +3999,33 @@ describe('aggregateContent()', function () {
     })
   })
 
+  describe('should fail to read start path located at submodule', () => {
+    testLocal(async (repoBuilder) => {
+      const contentRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(contentRepoBuilder)
+      const addSubmodule = (cwd) =>
+        new Promise((resolve, reject) => {
+          execFile(
+            'git',
+            ['submodule', 'add', contentRepoBuilder.url],
+            { cwd, windowsHide: true },
+            (err, stdout, stderr) => (err ? reject(err) : resolve())
+          )
+        })
+      await repoBuilder
+        .init('delegate-component')
+        .then(() => addSubmodule(repoBuilder.repoPath))
+        .then(() => repoBuilder.commitAll('add submodule'))
+        .then(() => repoBuilder.checkoutBranch('other'))
+        .then(() => repoBuilder.close())
+      playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'master' })
+      // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
+      const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: master)`
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      expect(aggregateContentDeferred).to.throw(expectedMessage)
+    })
+  })
+
   it('should append missing .git suffix to URL by default', async () => {
     const fetches = []
     const recordFetch = (fetch) => {
@@ -4128,51 +4169,12 @@ describe('aggregateContent()', function () {
     expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
   })
 
-  // technically, we don't know what it did w/ the remote we specified, but it should work regardless
-  it('should ignore remote on cached repository', async () => {
-    const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-    await initRepoWithFiles(repoBuilder)
-
-    playbookSpec.content.sources.push({ url: repoBuilder.url, remote: 'upstream' })
-
-    const aggregate = await aggregateContent(playbookSpec)
-    expect(aggregate).to.have.lengthOf(1)
-    expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-  })
-
   describe('should support IPv6 hostname', () => {
     testRemote(async (repoBuilder) => {
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url.replace('//localhost:', '//[::1]:') })
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
-    })
-  })
-
-  describe('should fail to read start path located at submodule', () => {
-    testLocal(async (repoBuilder) => {
-      const contentRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(contentRepoBuilder)
-      const addSubmodule = (cwd) =>
-        new Promise((resolve, reject) => {
-          execFile(
-            'git',
-            ['submodule', 'add', contentRepoBuilder.url],
-            { cwd, windowsHide: true },
-            (err, stdout, stderr) => (err ? reject(err) : resolve())
-          )
-        })
-      await repoBuilder
-        .init('delegate-component')
-        .then(() => addSubmodule(repoBuilder.repoPath))
-        .then(() => repoBuilder.commitAll('add submodule'))
-        .then(() => repoBuilder.checkoutBranch('other'))
-        .then(() => repoBuilder.close())
-      playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'master' })
-      // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
-      const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: master)`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedMessage)
     })
   })
 
