@@ -3631,6 +3631,33 @@ describe('aggregateContent()', function () {
     })
   })
 
+  it('should share cache between git commands', async () => {
+    const cacheArgs = new Set()
+    const git = require('isomorphic-git')
+    const gitCommands = ['clone', 'readBlob', 'readTree', 'resolveRef'].reduce((accum, name) => {
+      git[name] = new Proxy((accum[name] = git[name]), {
+        apply (target, self, args) {
+          cacheArgs.add(args[0].cache)
+          return Reflect.apply(target, self, args)
+        },
+      })
+      return accum
+    }, {})
+    try {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(cacheArgs).to.have.lengthOf(1)
+      const sharedCache = [...cacheArgs][0]
+      expect(sharedCache).to.exist()
+      expect(sharedCache[Object.getOwnPropertySymbols(sharedCache)[0]]).to.be.instanceOf(Map)
+    } finally {
+      Object.entries(gitCommands).forEach(([name, fn]) => (git[name] = fn))
+    }
+  })
+
   it('should create bare repository with detached HEAD under cache directory', async () => {
     const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
     const defaultBranch = 'tip'
