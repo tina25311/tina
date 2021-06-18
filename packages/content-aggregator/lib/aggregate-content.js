@@ -94,7 +94,6 @@ function aggregateContent (playbook) {
   )
   const { cacheDir, fetch, silent, quiet } = playbook.runtime
   const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
-  const gitCache = {}
   const gitPlugins = loadGitPlugins(
     Object.assign({ ensureGitSuffix: true }, playbook.git),
     playbook.network || {},
@@ -105,7 +104,6 @@ function aggregateContent (playbook) {
       [...sourcesByUrl.entries()].map(([url, sources]) =>
         loadRepository(url, {
           cacheDir: resolvedCacheDir,
-          gitCache,
           gitPlugins,
           fetchTags: tagsSpecified(sources, tags),
           progress,
@@ -149,10 +147,10 @@ async function loadRepository (url, opts) {
     let displayUrl
     let credentials
     ;({ displayUrl, url, credentials } = extractCredentials(url))
-    const { cacheDir, fetch, fetchTags, gitCache, gitPlugins, progress } = opts
+    const { cacheDir, fetch, fetchTags, gitPlugins, progress } = opts
     dir = ospath.join(cacheDir, generateCloneFolderName(displayUrl))
     // NOTE the presence of the url property on the repo object implies the repository is remote
-    repo = { cache: gitCache, dir, fs, gitdir: dir, noCheckout: true, url }
+    repo = { cache: {}, dir, fs, gitdir: dir, noCheckout: true, url }
     const validStateFile = ospath.join(dir, VALID_STATE_FILENAME)
     try {
       await fsp.access(validStateFile)
@@ -199,8 +197,8 @@ async function loadRepository (url, opts) {
     }
   } else if (await isDirectory((dir = expandPath(url, '~+', opts.startDir)))) {
     repo = (await isDirectory(ospath.join(dir, '.git')))
-      ? { cache: opts.gitCache, dir, fs }
-      : { cache: opts.gitCache, dir, fs, gitdir: dir, noCheckout: true }
+      ? { cache: {}, dir, fs }
+      : { cache: {}, dir, fs, gitdir: dir, noCheckout: true }
     try {
       await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
     } catch {
