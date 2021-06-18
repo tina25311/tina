@@ -88,19 +88,19 @@ const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)
 function aggregateContent (playbook) {
   const startDir = playbook.dir || '.'
   const { branches, editUrl, tags, sources } = playbook.content
-  const sourcesByUrl = sources.reduce(
-    (accum, source) => accum.set(source.url, [...(accum.get(source.url) || []), source]),
-    new Map()
-  )
   const { cacheDir, fetch, silent, quiet } = playbook.runtime
-  const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
-  const gitPlugins = loadGitPlugins(
-    Object.assign({ ensureGitSuffix: true }, playbook.git),
-    playbook.network || {},
-    startDir
-  )
-  return ensureCacheDir(cacheDir, startDir).then((resolvedCacheDir) =>
-    Promise.all(
+  return ensureCacheDir(cacheDir, startDir).then((resolvedCacheDir) => {
+    const gitPlugins = loadGitPlugins(
+      Object.assign({ ensureGitSuffix: true }, playbook.git),
+      playbook.network || {},
+      startDir
+    )
+    const sourcesByUrl = sources.reduce(
+      (accum, source) => accum.set(source.url, [...(accum.get(source.url) || []), source]),
+      new Map()
+    )
+    const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
+    return Promise.all(
       [...sourcesByUrl.entries()].map(([url, sources]) =>
         loadRepository(url, {
           cacheDir: resolvedCacheDir,
@@ -127,7 +127,7 @@ function aggregateContent (playbook) {
         progress && progress.terminate()
         throw err
       })
-  )
+  })
 }
 
 function buildAggregate (componentVersionBuckets) {
