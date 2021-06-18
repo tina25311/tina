@@ -191,7 +191,7 @@ describe('generateSite()', function () {
       .with.contents.that.match(/<meta http-equiv="refresh" content="0; url=the-component\/2.0\/index.html">/)
   }).timeout(timeoutOverride)
 
-  it('should log warning message if start page is missing .adoc file extension', async () => {
+  it('should log warning message if site start page is missing .adoc file extension', async () => {
     playbookSpec.site.start_page = 'the-component::index'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
@@ -203,7 +203,7 @@ describe('generateSite()', function () {
     })
   }).timeout(timeoutOverride)
 
-  it('should log warning message if start page cannot be resolved', async () => {
+  it('should log warning message if site start page cannot be resolved', async () => {
     playbookSpec.site.start_page = 'unknown-component::index.adoc'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
@@ -213,6 +213,32 @@ describe('generateSite()', function () {
       name: '@antora/content-classifier',
       msg: 'Start page specified for site not found: unknown-component::index.adoc',
     })
+  }).timeout(timeoutOverride)
+
+  it('should log warning message if component version start page cannot be resolved and use index page instead', async () => {
+    await repoBuilder
+      .open()
+      .then(() => repoBuilder.checkoutBranch('v2.0'))
+      .then(() =>
+        repoBuilder.addComponentDescriptorToWorktree({
+          name: 'the-component',
+          version: '2.0',
+          start_page: 'unknown-page.adoc',
+          nav: ['modules/ROOT/nav.adoc'],
+        })
+      )
+      .then(() => repoBuilder.commitAll())
+      .then(() => repoBuilder.close('master'))
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.include({
+      level: 'warn',
+      name: '@antora/content-classifier',
+      msg: 'Start page specified for 2.0@the-component not found: unknown-page.adoc',
+    })
+    $ = loadHtmlFile('the-component/2.0/the-page.html')
+    expect($('.nav-panel-explore .component.is-current .versions a').eq(0)).to.have.attr('href', 'index.html')
   }).timeout(timeoutOverride)
 
   it('should log error message if xref cannot be resolved', async () => {
@@ -764,7 +790,6 @@ describe('generateSite()', function () {
   // to test:
   // - don't pass environment variable map to generateSite
   // - pass environment variable override to generateSite
-  // - test if component start page is missing (current throws an error because its undefined)
   // - path to images from topic dir
   // - html URL extension style
   // - ui.yml is not published
