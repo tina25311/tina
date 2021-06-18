@@ -191,7 +191,7 @@ describe('generateSite()', function () {
       .with.contents.that.match(/<meta http-equiv="refresh" content="0; url=the-component\/2.0\/index.html">/)
   }).timeout(timeoutOverride)
 
-  it('should emit warning if start page is missing .adoc file extension', async () => {
+  it('should log warning message if start page is missing .adoc file extension', async () => {
     playbookSpec.site.start_page = 'the-component::index'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
@@ -203,7 +203,7 @@ describe('generateSite()', function () {
     })
   }).timeout(timeoutOverride)
 
-  it('should emit warning if start page cannot be resolved', async () => {
+  it('should log warning message if start page cannot be resolved', async () => {
     playbookSpec.site.start_page = 'unknown-component::index.adoc'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
@@ -212,6 +212,28 @@ describe('generateSite()', function () {
       level: 'warn',
       name: '@antora/content-classifier',
       msg: 'Start page specified for site not found: unknown-component::index.adoc',
+    })
+  }).timeout(timeoutOverride)
+
+  it('should log error message if xref cannot be resolved', async () => {
+    await repoBuilder
+      .open()
+      .then(() => repoBuilder.checkoutBranch('v2.0'))
+      .then(() => repoBuilder.removeFromWorktree('modules/ROOT/pages/new-page.adoc'))
+      .then(() => repoBuilder.commitAll())
+      .then(() => repoBuilder.close('master'))
+    playbookSpec.content.sources[0].url = repoBuilder.url
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
+    expect(messages).to.have.lengthOf(2)
+    ;['the-freshness.adoc', '2.0@the-freshness.adoc'].forEach((refSpec, idx) => {
+      expect(messages[idx]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: `target of xref not found: ${refSpec}`,
+        file: { path: 'modules/ROOT/pages/index.adoc' },
+        source: { refname: 'v2.0', url: repoBuilder.url },
+      })
     })
   }).timeout(timeoutOverride)
 
@@ -491,6 +513,7 @@ describe('generateSite()', function () {
       )
       .then(() => repoBuilder.close('master'))
     playbookSpec.content.sources[0].branches = ['v2.0', 'v1.0']
+    playbookSpec.runtime.log = { level: 'silent' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component'))
@@ -559,7 +582,6 @@ describe('generateSite()', function () {
         })
       )
       .then(() => repoBuilder.close('master'))
-
     await repoBuilder
       .init('the-other-component')
       .then(() =>
@@ -588,6 +610,7 @@ describe('generateSite()', function () {
       url: repoBuilder.repoPath,
       branches: ['master', 'v1.0'],
     })
+    playbookSpec.runtime.log = { level: 'silent' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-other-component')).to.be.a.directory()
