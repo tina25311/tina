@@ -127,14 +127,20 @@ describe('cli', function () {
   })
 
   it('should output list of common options when invoked with "-h"', () => {
-    return runAntora('-h', { COLUMNS: 90 })
+    // NOTE kapok removes leading spaces from output lines
+    return runAntora('-h', { COLUMNS: 82 })
       .ignoreUntil(/^Options:/)
-      .assert(/^ *-v, --version +Output the version number\./)
-      .assert(/^ *-r, --require .*/)
-      .assert(/^executing command\.$/)
-      .assert(/^ *--stacktrace .*/)
-      .assert(/^fails\.$/)
-      .assert(/^ *-h, --help +Output usage information\./)
+      .assert(/^-v, --version +Output the version number\.$/)
+      .assert(/^-r, --require /)
+      .assert(/^before executing command\.$/)
+      .assert(/^--stacktrace /)
+      .assert(/^application fails\.$/)
+      .assert(/^-h, --help +Output usage information\.$/)
+      .assert(/^Commands:/)
+      .assert(/^generate /)
+      .assert(/^<playbook>\.$/)
+      .ignoreUntil(/^Run /)
+      .assert(/^antora generate --help\)\./) // verifies help text trailer is wrapped
       .done()
   })
 
@@ -201,8 +207,10 @@ describe('cli', function () {
           expect(optionForms).to.include('--url <url>')
           expect(optionForms).to.include('--html-url-extension-style <option>')
           expect(options['--html-url-extension-style <option>']).to.have.string('(options: default, drop, or indexify)')
+          // NOTE this assertion verifies the default value for an option from convict is not quoted
           expect(options['--html-url-extension-style <option>']).to.have.string('(default: default)')
           expect(optionForms).to.include('--generator <library>')
+          // NOTE this assertion verifies the default value for an option defined in cli.js is not quoted
           expect(options['--generator <library>']).to.have.string('(default: @antora/site-generator-default)')
           // check options are sorted, except drop -h as we know it always comes last
           expect(optionForms.slice(0, -1)).to.eql(
@@ -220,13 +228,13 @@ describe('cli', function () {
       .done()
   })
 
-  it('should show error message if generate command is run with unknown argument', () => {
+  it('should show error message if generate command is run with unknown option', () => {
     return runAntora('generate does-not-exist.json --unknown')
       .assert(/unknown option '--unknown'/)
       .done()
   })
 
-  it('should show error message if default command is run with unknown argument', () => {
+  it('should show error message if default command is run with unknown option', () => {
     return runAntora('--unknown the-site')
       .assert(/unknown option '--unknown'/)
       .done()

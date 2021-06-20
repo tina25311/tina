@@ -6,7 +6,8 @@ Command.prototype.optionsFromConvict = function (convictConfig, opts = {}) {
   let exclude = opts.exclude
   if (exclude && !Array.isArray(exclude)) exclude = [exclude]
   getOptions(convictConfig).forEach((option) => {
-    if (!(exclude && exclude.includes(option.name))) this.option(option.form, option.description, option.default)
+    if (exclude && exclude.includes(option.name)) return
+    this.addOption(this.createOption(option.form, option.description).default(option.default, option.default))
   })
   return this
 }

@@ -23,6 +23,8 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Use Converter.for to look up registered html5 converter instead of referring directly to name of built-in class (#769)
 * *asciidoc-loader*: Detect when registered html5 converter has changed and recreate extended converter to use it (#769)
 * *asciidoc-loader*: Change "include target" to "target of include" in error message for missing include (#403)
+* *cli*: Upgrade cli library to commander.js 7.2 (#733)
+* *cli*: Always honor value of COLUMNS environment variable when determining width of help text (#733)
 
 == 3.0.0-alpha.6 (2021-06-08)
 

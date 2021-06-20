@@ -20,7 +20,7 @@
   "dependencies": {
     "@antora/logger": "3.0.0-alpha.6",
     "@antora/playbook-builder": "3.0.0-alpha.6",
-    "commander": "~6.2"
+    "commander": "~7.2"
   },
   "devDependencies": {
     "@antora/site-publisher": "3.0.0-alpha.6",

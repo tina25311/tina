@@ -30,6 +30,7 @@ describe('commander', () => {
 
     const createCli = (name, defaultCommand = undefined) =>
       new Command()
+        .storeOptionsAsProperties()
         .name(name)
         .option('--silent', 'Silence is golden')
         .command('sync', { isDefault: defaultCommand === 'sync' })
