@@ -5,9 +5,15 @@ const { Command } = require('commander')
 Command.prototype.optionsFromConvict = function (convictConfig, opts = {}) {
   let exclude = opts.exclude
   if (exclude && !Array.isArray(exclude)) exclude = [exclude]
-  getOptions(convictConfig).forEach((option) => {
-    if (exclude && exclude.includes(option.name)) return
-    this.addOption(this.createOption(option.form, option.description).default(option.default, option.default))
+  getOptions(convictConfig).forEach(({ name, form, description, default: default_, choices }) => {
+    if (exclude && exclude.includes(name)) return
+    this.addOption(
+      choices
+        ? this.createOption(form, description)
+          .default(default_, default_)
+          .choices(choices)
+        : this.createOption(form, description).default(default_, default_)
+    )
   })
   return this
 }
@@ -25,9 +31,8 @@ function collectOptions (props, context = undefined) {
       const { arg, format, default: default_ } = value
       const option = { name: arg, form: `--${arg}`, description: value.doc, format: format }
       if (Array.isArray(format)) {
-        option.form += ' <option>'
-        const last = format.length - 1
-        option.description += ` (options: ${format.slice(0, last).join(', ')}${last > 1 ? ',' : ''} or ${format[last]})`
+        option.form += ' <choice>'
+        option.choices = Object.defineProperty(format.slice(0), 'map', { value: () => format })
       } else if (format !== 'boolean') {
         option.form += ` <${arg.substr(arg.lastIndexOf('-') + 1, arg.length)}>`
       }

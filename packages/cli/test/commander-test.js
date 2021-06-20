@@ -264,14 +264,19 @@ describe('commander', () => {
           format: ['default', 'drop', 'indexify'],
         },
       }
-      const options = createCli(configSchema).options
+      const cli = createCli(configSchema)
+      const options = cli.options
       expect(options).to.have.lengthOf(1)
       expect(options[0]).to.include({
         long: '--url-strategy',
-        flags: '--url-strategy <option>',
-        description: 'URL strategy (options: default, drop, or indexify)',
+        flags: '--url-strategy <choice>',
+        description: 'URL strategy',
         defaultValue: 'default',
       })
+      expect(options[0].argChoices).to.eql(['default', 'drop', 'indexify'])
+      expect(cli.createHelp().optionDescription(options[0])).to.equal(
+        'URL strategy (choices: default, drop, indexify, default: default)'
+      )
     })
 
     it('should import multiple options from convict config', () => {

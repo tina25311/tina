@@ -34,6 +34,9 @@ This project utilizes semantic versioning.
 * *cli*: Rename `--failure-level` option to `--log-failure-level` (#785)
 * *cli*: Upgrade cli library to commander.js 7.2 (#733)
 * *cli*: Always honor value of COLUMNS environment variable when determining width of help text (#733)
+* *cli*: Configure CLI to recognize options that accept a fixed set of values and validate value before proceeding (#778)
+* *cli*: Rename options to choices in help text (#778)
+* *cli*: Combine choices and default value together in help text for option that accepts a fixed set of values (#778)
 
 == 3.0.0-alpha.6 (2021-06-08)
 
