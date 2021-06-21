@@ -122,11 +122,9 @@ See xref:playbook:urls-html-extension-style.adoc[].
 See xref:playbook:site-keys.adoc[] and <<ex-multiple-values>>.
 
 |[[log-format]]`--log-format`
-|`structured` if CI=true or +
-`pretty` in all other environments
+|`json` if CI=true, otherwise `pretty`
 a|[%hardbreaks]
 `pretty`
-`structured`
 `json`
 |See xref:playbook:environment-variables.adoc#log-format[ANTORA_LOG_FORMAT variable].
 
@@ -140,7 +138,7 @@ a|[%hardbreaks]
 `error`
 `fatal`
 `silent`
-|See xref:playbook:environment-variables.adoc#log-level[ANTORA_LOG_LEVEL variable].
+|See xref:playbook:runtime-log-level.adoc[] and xref:playbook:environment-variables.adoc#log-level[ANTORA_LOG_LEVEL variable].
 
 |`--quiet`
 |`false`

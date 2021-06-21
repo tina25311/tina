@@ -1,25 +1,55 @@
 = Runtime Keys
 
-The playbook keys configured under `runtime` manage the console output, resource update behavior, and cache location.
+The playbook keys configured under the `runtime` key manage Antora's logger, as well as its console output, caching, and remote repository update behavior.
 
 [#runtime-key]
 == runtime key
 
-The `runtime` key specifies the cache directory location and when the cache is updated.
+The global log, console output, fetch, and cache directory properties are defined under the `runtime` key in a playbook file.
+These settings are applied to the Antora pipeline when it starts.
 
 .antora-playbook.yml
 [source,yaml]
 ----
-runtime: # <1>
-  cache_dir: ./.cache/antora # <2>
-  fetch: true # <3>
+runtime: # <.>
+  cache_dir: ./.cache/antora # <.>
+  fetch: true # <.>
+  log: # <.>
+    level: error # <.>
 ----
-<1> Optional `runtime` key
-<2> Optional `cache_dir` key
-<3> Optional `fetch` key
+<.> Optional `runtime` key
+<.> Optional `cache_dir` key
+<.> Optional `fetch` key
+<.> Optional `log` key
+<.> Optional `level` key
 
 The `runtime` key and the key-value pairs it accepts are optional.
-When `runtime` isn't set in a playbook, Antora uses the default cache directory and fetch settings.
+If `runtime` isn't set in the playbook, Antora uses the default cache directory, fetch, and log settings.
+Alternatively, these keys can be assigned from the xref:cli:options.adoc#generate-options[CLI] or, except for `fetch`, using xref:playbook:environment-variables.adoc[environment variables].
+
+[#log-key]
+== log key
+
+The `log` key is optional.
+If you do set it in a playbook, you must nest it under the <<runtime-key,runtime key>>.
+The `log` key accepts a list of built-in key-value pairs that configure the log level (`level`), failure level (`failure_level`), and display format (`format`).
+
+.antora-playbook.yml
+[source,yaml]
+----
+runtime:
+  log: # <.>
+    format: pretty # <.>
+    failure_level: warn # <.>
+    level: all # <.>
+----
+<.> The optional `log` key is nested under the `runtime` key.
+<.> The optional, built-in `format` key is nested under the `log` key.
+<.> The optional, built-in `failure_level` key is nested under the `log` key.
+<.> The optional, built-in `level` key is nested under the `log` key.
+
+If `level`, `failure_level`, or `format` are set in the playbook, they must be nested under the `log` key.
+The xref:runtime-log-level.adoc#default[level] and `format` keys have built-in values that are automatically applied when Antora runs if they're not explicitly defined in the playbook or using the corresponding the xref:cli:options.adoc#generate-options[command line options] or xref:playbook:environment-variables.adoc[environment variables].
 
 [#runtime-reference]
 == Available runtime keys
@@ -32,7 +62,26 @@ When `runtime` isn't set in a playbook, Antora uses the default cache directory 
 |Specifies the directory where the remote content sources git repositories and UI bundles are cached.
 |No
 
+//xref:runtime-log-failure-level.adoc[log.failure_level]
+|log.failure_level
+|Sets the log level tolerance that, when exceeded, will cause the application to fail on exit.
+Accepts the values `all`, `debug`, `info`, `warn`, `error`, `fatal`, and `silent`.
+|No
+
 |xref:runtime-fetch.adoc[fetch]
 |When set to `true`, the `fetch` key refreshes the files in the cache each time Antora runs.
+|No
+
+//xref:runtime-log-format.adoc[log.format]
+|log.format
+|Sets the format of log messages.
+Accepts the values `pretty` and `json`.
+The default value is `json` in a CI environment and `pretty` in all other environments.
+|No
+
+|xref:runtime-log-level.adoc[log.level]
+|Sets the minimum log level of messages that get logged.
+Accepts the values `all`, `debug`, `info`, `warn`, `error`, `fatal`, and `silent`.
+The default value is `warn`.
 |No
 |===

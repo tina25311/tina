@@ -49,14 +49,14 @@ The following table summarizes the environment variables you can use to control 
 
 |[[log-format]]`ANTORA_LOG_FORMAT`
 |String
-|`structured` if CI=true or +
-`pretty` in all other environments
+|`json` if CI=true, otherwise
+`pretty`
 |See xref:cli:options.adoc#log-format[--log-format option]
 
 |[[log-level]]`ANTORA_LOG_LEVEL`
 |String
 |`warn`
-|See xref:cli:options.adoc#log-level[--log-level option]
+|See xref:runtime-log-level.adoc[level key] and xref:cli:options.adoc#log-level[--log-level option]
 
 |`GIT_CREDENTIALS`
 |String
