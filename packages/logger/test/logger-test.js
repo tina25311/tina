@@ -75,6 +75,15 @@ describe('logger', () => {
       expect(message).to.eql({ level: 'info', name: 'antora', msg: 'love is the message' })
     })
 
+    it('should format log level as number of levelFormat is number', () => {
+      const logger = configure({ levelFormat: 'number' }).get(null)
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
+      const { time, ...message } = JSON.parse(lines[0])
+      expect(typeof time).to.equal('number')
+      expect(message).to.eql({ level: 30, name: 'antora', msg: 'love is the message' })
+    })
+
     it('should configure root logger using specified level', () => {
       const logger = configure({ level: 'debug' }).get(null)
       expect(logger.level).to.equal('debug')
@@ -106,7 +115,7 @@ describe('logger', () => {
     })
 
     it('should configure root logger using structured (JSON) format if format is unrecognized', () => {
-      const logger = configure({ format: 'fancy' }).get(null)
+      const logger = configure({ format: 'structured' }).get(null)
       expect(getStream(logger).constructor.name).to.equal('SonicBoom')
       const lines = captureStdoutSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
@@ -397,7 +406,14 @@ describe('logger', () => {
       const logger = configure({ format: 'pretty' }).get()
       const lines = captureStderrSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
-      //const expectedLine = /^\[.+\] \u001b\[32mINFO\u001b\[39m \(antora\): \u001b\[36mlove is the message\u001b\[39m$/
+      const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
+      expect(lines[0]).to.match(expectedLine)
+    })
+
+    it('should ignore levelFormat setting when format is pretty', () => {
+      const logger = configure({ format: 'pretty', levelFormat: 'number' }).get()
+      const lines = captureStderrSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
       const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
       expect(lines[0]).to.match(expectedLine)
     })

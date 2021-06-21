@@ -16,7 +16,7 @@ function close () {
   if (rootLoggerHolder.has()) Object.assign(rootLoggerHolder.get(), closedLogger)
 }
 
-function configure ({ level = 'info', failureLevel = 'silent', format = 'json', destination } = {}) {
+function configure ({ level = 'info', levelFormat = 'label', failureLevel = 'silent', format, destination } = {}) {
   if (levelValues[level] === Infinity && levelValues[failureLevel] === Infinity &&
       (rootLoggerHolder.get() || {}).noop) {
     return module.exports
@@ -33,7 +33,7 @@ function configure ({ level = 'info', failureLevel = 'silent', format = 'json', 
           name: 'antora',
           base: {},
           level,
-          formatters: { level: (level) => ({ level }) },
+          formatters: { level: levelFormat === 'label' ? (level) => ({ level }) : (_, level) => ({ level }) },
           hooks: {
             // NOTE logMethod only called if log level is enabled
             logMethod (args, method) {

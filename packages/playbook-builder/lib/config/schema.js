@@ -205,6 +205,13 @@ module.exports = {
         arg: 'log-level',
         env: 'ANTORA_LOG_LEVEL',
       },
+      level_format: {
+        doc: 'Set the format to use for the log level in structured log messages.',
+        format: ['number', 'label'],
+        default: 'label',
+        arg: 'log-level-format',
+        env: 'ANTORA_LOG_LEVEL_FORMAT',
+      },
       failure_level: {
         doc: 'Set the log level tolerance that, when exceeded, will cause the application to fail on exit.',
         format: ['all', 'debug', 'info', 'warn', 'error', 'fatal', 'none'],

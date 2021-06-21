@@ -3,6 +3,7 @@ runtime:
   fetch: true
   log:
     level: info
+    level_format: number
     failure_level: warn
 site:
   url: https://example.com
