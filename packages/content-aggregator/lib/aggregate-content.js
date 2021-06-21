@@ -417,8 +417,12 @@ function readFilesFromWorktree (worktreePath, startPath) {
         vfs
           .src(CONTENT_GLOB, { cwd, follow: true, removeBOM: false })
           .on('error', (err) => {
-            if (err.code === 'ENOENT') {
-              err.message = `Broken symbolic link detected at ${ospath.relative(cwd, err.path)}`
+            if (err.code === 'ENOENT' && err.syscall === 'stat') {
+              try {
+                if (fs.lstatSync(err.path).isSymbolicLink()) {
+                  err.message = `Broken symbolic link detected at ${ospath.relative(cwd, err.path)}`
+                }
+              } catch {}
             } else if (err.code === 'ELOOP') {
               err.message = `Symbolic link cycle detected at ${ospath.relative(cwd, err.path)}`
             }
