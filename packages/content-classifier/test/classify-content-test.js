@@ -452,7 +452,13 @@ describe('classifyContent()', () => {
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
-    it('should classify a page', () => {
+    it('should not classify page if it does not have the .adoc file extension', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.asc'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(0)
+    })
+
+    it('should classify a page with the .adoc file extension', () => {
       aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.adoc'))
       const files = classifyContent(playbook, aggregate).getFiles()
       expect(files).to.have.lengthOf(1)
@@ -619,7 +625,28 @@ describe('classifyContent()', () => {
       expect(component.versions[1].url).to.equal('/the-component/v1.2.3/index.html')
     })
 
-    it('should classify a partial page in pages/_partials', () => {
+    it('should classify a partial page without a file extension in pages/_partials', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/_partials/LICENSE'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('modules/ROOT/pages/_partials/LICENSE')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'partial',
+        relative: 'LICENSE',
+        basename: 'LICENSE',
+        mediaType: undefined,
+        moduleRootPath: '../..',
+      })
+      expect(file.mediaType).to.be.undefined()
+      expect(file.out).to.not.exist()
+      expect(file.pub).to.not.exist()
+    })
+
+    it('should classify a partial page with a file extension in pages/_partials', () => {
       aggregate[0].files.push(createFile('modules/ROOT/pages/_partials/foo.adoc'))
       const files = classifyContent(playbook, aggregate).getFiles()
       expect(files).to.have.lengthOf(1)
@@ -640,7 +667,28 @@ describe('classifyContent()', () => {
       expect(file.pub).to.not.exist()
     })
 
-    it('should classify a partial page in partials', () => {
+    it('should classify a partial page without a file extension in partials', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/partials/LICENSE'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('modules/ROOT/partials/LICENSE')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'partial',
+        relative: 'LICENSE',
+        basename: 'LICENSE',
+        mediaType: undefined,
+        moduleRootPath: '..',
+      })
+      expect(file.mediaType).to.be.undefined()
+      expect(file.out).to.not.exist()
+      expect(file.pub).to.not.exist()
+    })
+
+    it('should classify a partial page with a file extension in partials', () => {
       aggregate[0].files.push(createFile('modules/ROOT/partials/foo.adoc'))
       const files = classifyContent(playbook, aggregate).getFiles()
       expect(files).to.have.lengthOf(1)
@@ -653,8 +701,10 @@ describe('classifyContent()', () => {
         family: 'partial',
         relative: 'foo.adoc',
         basename: 'foo.adoc',
+        mediaType: 'text/asciidoc',
         moduleRootPath: '..',
       })
+      expect(file.mediaType).to.equal('text/asciidoc')
       expect(file.out).to.not.exist()
       expect(file.pub).to.not.exist()
     })
@@ -672,7 +722,13 @@ describe('classifyContent()', () => {
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
-    it('should classify an image', () => {
+    it('should not classify an image without a file extension', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/images/image'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(0)
+    })
+
+    it('should classify an image with a file extension', () => {
       aggregate[0].files.push(createFile('modules/ROOT/images/foo.png'))
       const files = classifyContent(playbook, aggregate).getFiles()
       expect(files).to.have.lengthOf(1)
@@ -724,7 +780,13 @@ describe('classifyContent()', () => {
       })
     })
 
-    it('should classify an attachment', () => {
+    it('should not classify an attachment without a file extension', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/attachments/example'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(0)
+    })
+
+    it('should classify an attachment with a file extension', () => {
       aggregate[0].files.push(createFile('modules/ROOT/attachments/example.zip'))
       const files = classifyContent(playbook, aggregate).getFiles()
       expect(files).to.have.lengthOf(1)
@@ -803,7 +865,28 @@ describe('classifyContent()', () => {
       })
     })
 
-    it('should classify an example', () => {
+    it('should classify an example without a file extension', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/examples/Dockerfile'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('modules/ROOT/examples/Dockerfile')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'example',
+        relative: 'Dockerfile',
+        basename: 'Dockerfile',
+        mediaType: undefined,
+        moduleRootPath: '..',
+      })
+      expect(file.mediaType).to.be.undefined()
+      expect(file.out).to.not.exist()
+      expect(file.pub).to.not.exist()
+    })
+
+    it('should classify an example with a file extension', () => {
       aggregate[0].files.push(createFile('modules/ROOT/examples/foo.xml'))
       const files = classifyContent(playbook, aggregate).getFiles()
       expect(files).to.have.lengthOf(1)
@@ -939,6 +1022,13 @@ describe('classifyContent()', () => {
       aggregate[0].nav = ['modules/ROOT/no-such-file.adoc']
       aggregate[0].files.push(createFile('modules/ROOT/pages/the-page.adoc'))
       aggregate[0].files.push(createFile('modules/ROOT/nav.adoc'))
+      const contentCatalog = classifyContent(playbook, aggregate)
+      expect(contentCatalog.findBy({ family: 'nav' })).to.have.lengthOf(0)
+    })
+
+    it('should not register navigation file that does not have .adoc file extension', () => {
+      aggregate[0].nav = ['modules/ROOT/nav.asc']
+      aggregate[0].files.push(createFile('modules/ROOT/nav.asc'))
       const contentCatalog = classifyContent(playbook, aggregate)
       expect(contentCatalog.findBy({ family: 'nav' })).to.have.lengthOf(0)
     })
