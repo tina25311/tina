@@ -207,9 +207,9 @@ module.exports = {
       },
       failure_level: {
         doc: 'Set the log level tolerance that, when exceeded, will cause the application to fail on exit.',
-        format: ['all', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'],
-        default: undefined,
-        arg: 'failure-level',
+        format: ['all', 'debug', 'info', 'warn', 'error', 'fatal', 'none'],
+        default: 'none',
+        arg: 'log-failure-level',
         env: 'ANTORA_LOG_FAILURE_LEVEL',
       },
       format: new Proxy(

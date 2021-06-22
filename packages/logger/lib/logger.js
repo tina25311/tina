@@ -17,7 +17,10 @@ function close () {
 }
 
 function configure ({ level = 'info', failureLevel = 'silent', format = 'json', destination } = {}) {
-  if (level === 'silent' && failureLevel === 'silent' && (rootLoggerHolder.get() || {}).noop) return module.exports
+  if (levelValues[level] === Infinity && levelValues[failureLevel] === Infinity &&
+      (rootLoggerHolder.get() || {}).noop) {
+    return module.exports
+  }
   close()
   const prettyPrint = format === 'pretty'
   if (level === 'all') level = minLevel
