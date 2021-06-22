@@ -9,7 +9,9 @@ This project utilizes semantic versioning.
 
 === Added
 
+* *logger*: Use numeric log level in JSON log message if log level format is number (#780)
 * *playbook-builder*: Add `sourcemap` option to `asciidoc` category, mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor (#776)
+* *playbook-builder*: Add `level_format` to `log` category (default: label), mapped to `--log-level-format` CLI option, to allow log level format to be configured (#780)
 * *asciidoc-loader*: Log error message when target of xref is not found (#403)
 
 === Fixed
