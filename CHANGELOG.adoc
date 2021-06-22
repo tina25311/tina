@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Added
 
+* *playbook-builder*: Add `sourcemap` option to `asciidoc` category, mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor (#776)
 * *asciidoc-loader*: Log error message when target of xref is not found (#403)
 
 === Fixed
@@ -23,6 +24,7 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Use Converter.for to look up registered html5 converter instead of referring directly to name of built-in class (#769)
 * *asciidoc-loader*: Detect when registered html5 converter has changed and recreate extended converter to use it (#769)
 * *asciidoc-loader*: Change "include target" to "target of include" in error message for missing include (#403)
+* *asciidoc-loader*: Include line number and correct file in xref error message when sourcemap is enabled on AsciiDoc processor (#776)
 * *cli*: Upgrade cli library to commander.js 7.2 (#733)
 * *cli*: Always honor value of COLUMNS environment variable when determining width of help text (#733)
 

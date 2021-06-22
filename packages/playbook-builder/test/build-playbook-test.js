@@ -557,6 +557,7 @@ describe('buildPlaybook()', () => {
       'uri-project': 'https://antora.org',
     })
     expect(playbook.asciidoc.extensions).to.eql(['asciidoctor-plantuml', './lib/shout-block'])
+    expect(playbook.asciidoc.sourcemap).to.be.false()
     expect(playbook.git.credentials.path).to.equal('./.git-credentials')
     expect(playbook.git.ensureGitSuffix).to.equal(true)
     expect(playbook.urls.htmlExtensionStyle).to.equal('indexify')

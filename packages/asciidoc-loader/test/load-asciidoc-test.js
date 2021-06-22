@@ -59,7 +59,7 @@ describe('loadAsciiDoc()', () => {
     expect(loadAsciiDoc.loadAsciiDoc).to.equal(loadAsciiDoc)
   })
 
-  it('should load document model from AsciiDoc contents', () => {
+  it('should load document model without sourcemap from AsciiDoc contents', () => {
     const contents = heredoc`
       = Document Title
 
@@ -73,8 +73,35 @@ describe('loadAsciiDoc()', () => {
     `
     setInputFileContents(contents)
     const doc = loadAsciiDoc(inputFile)
+    expect(doc.getOptions().sourcemap).to.be.undefined()
     const allBlocks = doc.findBy()
     expect(allBlocks).to.have.lengthOf(8)
+    allBlocks.forEach((block) => {
+      expect(block.getSourceLocation()).to.be.undefined()
+    })
+  })
+
+  it('should enable sourcemap on document if sourcemap option is set in config', () => {
+    const contents = heredoc`
+      = Document Title
+
+      == Section Title
+
+      paragraph
+
+      * list item 1
+      * list item 2
+      * list item 3
+    `
+    setInputFileContents(contents)
+    const doc = loadAsciiDoc(inputFile, undefined, { sourcemap: true })
+    expect(doc.getOptions().sourcemap).to.be.true()
+    const ul = doc.findBy({ context: 'ulist' })[0]
+    expect(ul.getSourceLocation()).to.exist()
+    expect(ul.getSourceLocation().getLineNumber()).to.equal(7)
+    const li = ul.getItems()[1]
+    expect(li.getSourceLocation()).to.exist()
+    expect(li.getSourceLocation().getLineNumber()).to.equal(8)
   })
 
   it('should load document model with only header from AsciiDoc contents if headerOnly option is set', () => {
@@ -1635,7 +1662,7 @@ describe('loadAsciiDoc()', () => {
       expect(doc.convert()).to.include('<a href="greeting.html#message"')
     })
 
-    it('should skip and log unresolved page reference inside include file', () => {
+    it('should skip and log unresolved page reference inside include file, citing top-level file if sourcemap not enabled', () => {
       const includeContents = 'before\n\nxref:does-not-exist.adoc[broken xref]\n\nafter'
       const contentCatalog = mockContentCatalog({
         component: 'another-component',
@@ -1661,8 +1688,57 @@ describe('loadAsciiDoc()', () => {
         level: 'error',
         name: 'asciidoctor',
         msg: 'target of xref not found: does-not-exist.adoc',
-        // FIXME the file and line number are wrong unless sourcemap option is enabled on processor
+        // NOTE the file and line number are wrong because the sourcemap option is not enabled on processor
         file: { path: inputFile.src.path },
+      })
+    })
+
+    it('should log unresolved page reference inside include file, citing correct file and line when sourcemap is enabled', () => {
+      const includeContents = 'before\n\nxref:does-not-exist.adoc[broken xref]\n\nafter'
+      inputFile.src.origin = {
+        type: 'git',
+        url: 'https://git.example.org/repo-a.git',
+        startPath: '',
+        refname: 'main',
+      }
+      const contentCatalog = mockContentCatalog({
+        component: 'another-component',
+        version: '1.1',
+        module: 'ROOT',
+        family: 'partial',
+        relative: 'greeting.adoc',
+        contents: includeContents,
+      }).spyOn('getById')
+      contentCatalog.getFiles()[0].src.origin = {
+        type: 'git',
+        url: 'https://git.example.org/repo-b.git',
+        startPath: 'docs',
+        refname: 'v4.5.x',
+      }
+      setInputFileContents('include::1.1@another-component::partial$greeting.adoc[]')
+      const messages = captureLogSync(() => loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert())
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'another-component',
+          version: '1.1',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'greeting.adoc',
+        })
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: does-not-exist.adoc',
+        file: { path: 'docs/modules/ROOT/pages/_partials/greeting.adoc', line: 3 },
+        source: { refname: 'v4.5.x', startPath: 'docs', url: 'https://git.example.org/repo-b.git' },
+        stack: [
+          {
+            file: { path: inputFile.src.path, line: 1 },
+            source: { refname: 'main', url: 'https://git.example.org/repo-a.git' },
+          },
+        ],
       })
     })
 
@@ -2707,6 +2783,98 @@ describe('loadAsciiDoc()', () => {
         name: 'asciidoctor',
         msg: `target of xref not found: ${refSpec}`,
         file: { path: inputFile.src.path },
+      })
+    })
+
+    it('should log line number where paragraph with unresolved page reference starts when sourcemap is enabled', () => {
+      const contentCatalog = mockContentCatalog()
+      const inputContents = heredoc`
+        = Document Title
+
+        This is a paragraph with multiple sentences.
+        Each sentence is placed on it's own line.
+        The last line has an xref:invalid-xref.adoc[invalid xref].
+      `
+      setInputFileContents(inputContents)
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert()
+      ).withReturnValue()
+      expectUnresolvedPageLink(html, '#invalid-xref.adoc', 'invalid xref')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: invalid-xref.adoc',
+        file: { path: inputFile.src.path, line: 3 },
+      })
+    })
+
+    it('should log line number of list item with unresolved page reference when sourcemap is enabled', () => {
+      const contentCatalog = mockContentCatalog()
+      const inputContents = heredoc`
+        = Document Title
+
+        * This is an unordered list.
+        * Each item is placed on it's own line and preceded with a list marker.
+        * The last item has an xref:invalid-xref.adoc[invalid xref].
+      `
+      setInputFileContents(inputContents)
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert()
+      ).withReturnValue()
+      expectUnresolvedPageLink(html, '#invalid-xref.adoc', 'invalid xref')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: invalid-xref.adoc',
+        file: { path: inputFile.src.path, line: 5 },
+      })
+    })
+
+    it('should log line number of unresolved page reference in section title when sourcemap is enabled', () => {
+      const contentCatalog = mockContentCatalog()
+      const inputContents = heredoc`
+        = Document Title
+
+        == xref:missing-page.adoc[runtime] keys
+
+        This category is for configuring the runtime settings.
+      `
+      setInputFileContents(inputContents)
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert()
+      ).withReturnValue()
+      expectUnresolvedPageLink(html, '#missing-page.adoc', 'runtime')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: missing-page.adoc',
+        file: { path: inputFile.src.path, line: 3 },
+      })
+    })
+
+    it('should log line number of unresolved page reference in header as line 1 when sourcemap is enabled', () => {
+      const contentCatalog = mockContentCatalog()
+      const inputContents = heredoc`
+        = Document Title
+        :attr-name: attr-value
+        :invalid-xref: pass:n[xref:invalid-xref.adoc[invalid xref]]
+
+        Behold, an {invalid-xref} lies here.
+      `
+      setInputFileContents(inputContents)
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert()
+      ).withReturnValue()
+      expectUnresolvedPageLink(html, '#invalid-xref.adoc', 'invalid xref')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref not found: invalid-xref.adoc',
+        file: { path: inputFile.src.path, line: 1 },
       })
     })
 

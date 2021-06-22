@@ -119,6 +119,12 @@ module.exports = {
       format: Array,
       default: [],
     },
+    sourcemap: {
+      doc: 'Enables the sourcemap option on the AsciiDoc processor, which adds file and line information to blocks.',
+      format: Boolean,
+      default: false,
+      arg: 'asciidoc-sourcemap',
+    },
   },
   git: {
     credentials: {
