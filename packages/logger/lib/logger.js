@@ -6,6 +6,7 @@ const {
   levels: { labels: levelLabels, values: levelValues },
   pino,
 } = require('pino')
+const INF = Infinity
 
 const closedLogger = { closed: true }
 const minLevel = levelLabels[Math.min.apply(null, Object.keys(levelLabels))]
@@ -17,8 +18,7 @@ function close () {
 }
 
 function configure ({ level = 'info', levelFormat = 'label', failureLevel = 'silent', format, destination } = {}) {
-  if (levelValues[level] === Infinity && levelValues[failureLevel] === Infinity &&
-      (rootLoggerHolder.get() || {}).noop) {
+  if (levelValues[level] === INF && levelValues[failureLevel] === INF && (rootLoggerHolder.get() || {}).noop) {
     return module.exports
   }
   close()
@@ -135,7 +135,7 @@ function addFailOnExitHooks (logger, failureLevel = undefined) {
   if (failureLevel === undefined) {
     failureLevelVal = logger.failureLevelVal
   } else {
-    logger.failureLevelVal = failureLevelVal = levelValues[failureLevel] || Infinity
+    logger.failureLevelVal = failureLevelVal = levelValues[failureLevel] || INF
     Object.defineProperty(logger, 'failureLevel', {
       enumerable: true,
       get () {
@@ -151,10 +151,10 @@ function addFailOnExitHooks (logger, failureLevel = undefined) {
   Object.defineProperty(logger, 'noop', {
     enumerable: true,
     get () {
-      return this.levelVal === Infinity && this.failureLevelVal === Infinity
+      return this.levelVal === INF && this.failureLevelVal === INF
     },
   })
-  if (failureLevelVal === Infinity) return logger
+  if (failureLevelVal === INF) return logger
   for (const [levelName, levelVal] of Object.entries(levelValues)) {
     if (levelVal >= failureLevelVal) logger[levelName] = decorateWithSetFailOnExit(logger[levelName])
   }
