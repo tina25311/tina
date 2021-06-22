@@ -16,7 +16,7 @@ function close () {
   if (rootLoggerHolder.has()) Object.assign(rootLoggerHolder.get(), closedLogger)
 }
 
-function configure ({ level = 'info', failureLevel = 'silent', format = 'structured', destination } = {}) {
+function configure ({ level = 'info', failureLevel = 'silent', format = 'json', destination } = {}) {
   if (level === 'silent' && failureLevel === 'silent' && (rootLoggerHolder.get() || {}).noop) return module.exports
   close()
   const prettyPrint = format === 'pretty'

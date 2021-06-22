@@ -525,7 +525,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.runtime.silent).to.equal(false)
     expect(playbook.runtime.log.level).to.equal('info')
     expect(playbook.runtime.log.failureLevel).to.equal('warn')
-    expect(playbook.runtime.log.format).to.equal('structured')
+    expect(playbook.runtime.log.format).to.equal('json')
     expect(playbook.network.httpProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.httpsProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.noProxy).to.equal('example.org,example.com')

@@ -214,19 +214,16 @@ module.exports = {
       },
       format: new Proxy(
         {
-          doc: 'Set the format of log messages. (default: structured if CI=true, pretty otherwise)',
-          format: ['pretty', 'structured', 'json'],
+          doc: 'Set the format of log messages. Defaults to json if CI=true, pretty otherwise.',
+          format: ['json', 'pretty'],
           default: undefined,
           arg: 'log-format',
           env: 'ANTORA_LOG_FORMAT',
         },
         {
           get (target, property) {
-            return property === 'default'
-              ? process.env.CI === 'true' || process.env.NODE_ENV === 'test'
-                ? 'structured'
-                : 'pretty'
-              : target[property]
+            if (property !== 'default') return target[property]
+            return process.env.CI === 'true' || process.env.NODE_ENV === 'test' ? 'json' : 'pretty'
           },
         }
       ),
