@@ -18,6 +18,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *playbook-builder*: Change silent value on runtime.log.failure_level to none (#785)
 * *playbook-builder*: Remove `structured` as possible value of `log.format`, preferring `json` instead (#784)
 * *content-aggregator*: Upgrade git client to isomorphic-git 1.8.x and update code to accomodate changes to its API (#774)
 * *content-aggregator*: Use internal implementation of the http plugin for all clone and fetch operations (#774)
@@ -26,6 +27,7 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Detect when registered html5 converter has changed and recreate extended converter to use it (#769)
 * *asciidoc-loader*: Change "include target" to "target of include" in error message for missing include (#403)
 * *asciidoc-loader*: Include line number and correct file in xref error message when sourcemap is enabled on AsciiDoc processor (#776)
+* *cli*: Rename `--failure-level` option to `--log-failure-level` (#785)
 * *cli*: Upgrade cli library to commander.js 7.2 (#733)
 * *cli*: Always honor value of COLUMNS environment variable when determining width of help text (#733)
 

@@ -640,9 +640,10 @@ describe('buildPlaybook()', () => {
   })
 
   it('should set log level to silent if runtime.silent is set', () => {
-    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent', '--failure-level', 'silent'])
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent', '--log-failure-level', 'none'])
     expect(getLogger(null).noop).to.be.true()
     expect(playbook.runtime.log.level).to.equal('silent')
+    expect(playbook.runtime.log.failureLevel).to.equal('none')
   })
 
   it('should set runtime.log.format to pretty when run locally', () => {

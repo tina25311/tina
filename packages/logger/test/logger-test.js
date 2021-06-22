@@ -771,7 +771,7 @@ describe('logger', () => {
     })
 
     it('should set the failure level value on root logger to Infinity if specified failure level is unknown', () => {
-      const logger = configure({ failureLevel: 'wat?' }).get(null)
+      const logger = configure({ failureLevel: 'none' }).get(null)
       expect(logger.failureLevel).to.equal('silent')
       expect(logger.failureLevelVal).to.equal(Infinity)
     })
