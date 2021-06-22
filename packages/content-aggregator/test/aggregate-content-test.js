@@ -2408,34 +2408,32 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should skip dotfiles, extensionless files, and directories that contain a dot', () => {
+    describe('should skip files and directories and directories that begin with a dot, but not extensionless files', () => {
       testAll(async (repoBuilder) => {
         const fixturePaths = [
           // directory with extension
-          'modules/ROOT/pages/ignore.me/page.adoc',
+          'modules/ROOT/pages/keep.me/page.adoc',
           // extensionless file
-          'modules/ROOT/pages/ignore-me',
+          'modules/ROOT/pages/extensionless',
           // dotfile
           'modules/ROOT/pages/.ignore-me',
           // dotfile with extension
           'modules/ROOT/pages/.ignore-me.txt',
-          // dotdirectory
+          // dotdir
           'modules/ROOT/pages/.ignore-it/page.adoc',
-          // dotdirectory with extension
+          // dotdir with extension
           'modules/ROOT/pages/.ignore.rc/page.adoc',
           // dotfile at root
           '.ignore-me',
           // dotfile with extension at root
           '.ignore-me.txt',
-          // dotdirectory at root
+          // dotdir at root
           '.ignore-it/run.sh',
-          // dotdirectory with extension at root
+          // dotdir with extension at root
           '.ignore.rc/run.sh',
         ]
         const ignoredPaths = fixturePaths.filter(
-          (path_) =>
-            // the file is allowed, just make sure the directory isn't stored
-            path_ !== 'modules/ROOT/pages/ignore.me/page.adoc'
+          (path_) => !(path_ === 'modules/ROOT/pages/keep.me/page.adoc' || path_ === 'modules/ROOT/pages/extensionless')
         )
         await initRepoWithFiles(repoBuilder, {}, undefined, () => repoBuilder.addFilesFromFixture(fixturePaths))
         playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -2444,6 +2442,7 @@ describe('aggregateContent()', function () {
         const files = aggregate[0].files
         const paths = files.map((f) => f.path)
         ignoredPaths.forEach((ignoredPath) => expect(paths).to.not.include(ignoredPath))
+        // make sure there is no entry for directory with file extension
         files.forEach((file) => expect(file.isDirectory()).to.be.false())
       })
     })

@@ -605,15 +605,13 @@ function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
 }
 
 /**
- * Returns true if the entry should be processed or false if it should be skipped.
- * Ignores files that begin with dot ('.') (entry.path is a basename) or that do
- * not have a file extension.
+ * Returns true (or 'treeOnly' if the entry is a symlink tree) if the entry
+ * should be processed or false if it should be skipped. An entry with a path
+ * (basename) that begins with dot ('.') is marked as skipped.
  */
 function filterGitEntry (entry) {
-  return (
-    entry.path.charAt() !== '.' &&
-    (entry.type !== 'blob' || entry.path.indexOf('.') > 0 || (entry.mode === SYMLINK_FILE_MODE ? 'treeOnly' : false))
-  )
+  if (entry.path.charAt() === '.') return false
+  return entry.type === 'blob' || entry.mode !== SYMLINK_FILE_MODE ? true : 'treeOnly'
 }
 
 function entryToFile (entry) {
