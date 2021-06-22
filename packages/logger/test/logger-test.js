@@ -65,7 +65,7 @@ describe('logger', () => {
       expect(logger.closed).to.be.true()
     })
 
-    it('should write structured log message to stdout by default', () => {
+    it('should write structured (JSON) log message to stdout by default', () => {
       const logger = configure().get(null)
       expect(getStream(logger).constructor.name).to.equal('SonicBoom')
       const lines = captureStdoutSync(() => logger.info('love is the message'))
@@ -105,7 +105,7 @@ describe('logger', () => {
       expect(lines[0]).to.include('INFO (antora): love is the message')
     })
 
-    it('should configure root logger using structured format if format is unrecognized', () => {
+    it('should configure root logger using structured (JSON) format if format is unrecognized', () => {
       const logger = configure({ format: 'fancy' }).get(null)
       expect(getStream(logger).constructor.name).to.equal('SonicBoom')
       const lines = captureStdoutSync(() => logger.info('love is the message'))
@@ -420,7 +420,7 @@ describe('logger', () => {
       configure()
       const name = 'name-of-logger'
       const logger = get(name)
-      ;['structured', 'pretty', 'structured', 'pretty'].forEach((format) => {
+      ;['json', 'pretty', 'json', 'pretty'].forEach((format) => {
         configure({ format })
         if (format === 'pretty') {
           const lines = captureStderrSync(() => logger.info('love is the message'))
