@@ -2301,6 +2301,34 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock.getSourceLines()).to.eql([])
     })
 
+    it('should exclude nested tags if tag is followed by negated wildcard', () => {
+      const includeContents = heredoc`
+        puts "Please stand by..."
+        # tag::hello[]
+        puts "Hello, World!"
+        # tag::go[]
+        puts "Let's go!"
+        # end::go[]
+        # end::hello[]
+      `
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: includeContents,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=hello;!*]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql(['puts "Hello, World!"'])
+    })
+
     it('should handle mismatched end tag in include file', () => {
       const includeContents = heredoc`
         puts "Please stand by..."
@@ -2464,6 +2492,25 @@ describe('loadAsciiDoc()', () => {
         'puts msgs[:goodbye]',
         'puts "anything else?"',
       ])
+    })
+
+    it('should include all regions marked with tags when only tag wildcard is specified', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: TAGS_EXAMPLE,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=*]
+        ----
+      `)
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql(['puts msgs[:hello]', 'puts msgs[:goodbye]', 'puts "anything else?"'])
     })
 
     it('should include lines outside of tags if tag wildcard is specified along with specific tags', () => {
