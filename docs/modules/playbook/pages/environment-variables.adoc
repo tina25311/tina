@@ -45,7 +45,7 @@ The following table summarizes the environment variables you can use to control 
 |[[failure-level]]`ANTORA_LOG_FAILURE_LEVEL`
 |String
 |Not set
-|See xref:cli:options.adoc#failure-level[--failure-level option]
+|See xref:runtime-log-failure-level.adoc[failure_level key] and xref:cli:options.adoc#failure-level[--log-failure-level option]
 
 |[[log-format]]`ANTORA_LOG_FORMAT`
 |String
