@@ -58,6 +58,7 @@ function requireLibrary (requirePath, cwd = process.cwd()) {
 }
 
 cli
+  .allowExcessArguments(false)
   .configureOutput({ getOutHelpWidth: getTTYColumns, getErrHelpWidth: getTTYColumns })
   .storeOptionsAsProperties()
   .name('antora')

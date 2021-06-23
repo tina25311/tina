@@ -205,10 +205,11 @@ describe('cli', function () {
           expect(optionForms).to.not.be.empty()
           expect(optionForms).to.include('--title <title>')
           expect(optionForms).to.include('--url <url>')
-          expect(optionForms).to.include('--html-url-extension-style <option>')
-          expect(options['--html-url-extension-style <option>']).to.have.string('(options: default, drop, or indexify)')
+          expect(optionForms).to.include('--html-url-extension-style <choice>')
           // NOTE this assertion verifies the default value for an option from convict is not quoted
-          expect(options['--html-url-extension-style <option>']).to.have.string('(default: default)')
+          expect(options['--html-url-extension-style <choice>']).to.have.string(
+            '(choices: default, drop, indexify, default: default)'
+          )
           expect(optionForms).to.include('--generator <library>')
           // NOTE this assertion verifies the default value for an option defined in cli.js is not quoted
           expect(options['--generator <library>']).to.have.string('(default: @antora/site-generator-default)')
@@ -228,6 +229,12 @@ describe('cli', function () {
       .done()
   })
 
+  it('should show error message if generate command is run with multiple arguments', () => {
+    return runAntora('generate the-site extra-cruft')
+      .assert(/too many arguments for 'generate'/)
+      .done()
+  })
+
   it('should show error message if generate command is run with unknown option', () => {
     return runAntora('generate does-not-exist.json --unknown')
       .assert(/unknown option '--unknown'/)
@@ -237,6 +244,15 @@ describe('cli', function () {
   it('should show error message if default command is run with unknown option', () => {
     return runAntora('--unknown the-site')
       .assert(/unknown option '--unknown'/)
+      .done()
+  })
+
+  it('should show error message if generate command is run with unknown option value', () => {
+    const expected =
+      "error: option '--html-url-extension-style <choice>' argument 'none' is invalid. " +
+      'Allowed choices are default, drop, indexify.'
+    return runAntora('generate antora-playbook.yml --html-url-extension-style=none')
+      .assert(expected)
       .done()
   })
 
@@ -499,7 +515,7 @@ describe('cli', function () {
   it('should show error message if custom generator fails to load', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
-    return runAntora('--generator no-such-module generate the-site')
+    return runAntora('generate --generator=no-such-module the-site')
       .assert(/error: Generator not found or failed to load. Try installing the 'no-such-module' package./i)
       .done()
   })
