@@ -14,6 +14,12 @@ describe('logger', () => {
 
   const getStream = (logger) => logger[findOwnPropertySymbol(logger, 'pino.stream')]
 
+  const supportsColor = () => {
+    let verdict
+    require('pino')({ prettyPrint: true }, { write: (msg) => (verdict = msg.includes('\u001b[39m')) }).info('message')
+    return verdict
+  }
+
   describe('configure()', () => {
     const getHooks = (logger) => logger[findOwnPropertySymbol(logger, 'pino.hooks')]
 
@@ -424,6 +430,22 @@ describe('logger', () => {
       const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
       expect(lines[0]).to.match(expectedLine)
     })
+
+    if (supportsColor()) {
+      it('should colorize pretty log message if supported by environment', () => {
+        const nodeEnv = process.env.NODE_ENV
+        try {
+          delete process.env.NODE_ENV
+          const logger = configure({ format: 'pretty' }).get()
+          const lines = captureStderrSync(() => logger.info('love is the message'))
+          expect(lines).to.have.lengthOf(1)
+          const expectedLine = '\u001b[32mINFO\u001b[39m (antora): \u001b[36mlove is the message\u001b[39m'
+          expect(lines[0]).to.include(expectedLine)
+        } finally {
+          process.env.NODE_ENV = nodeEnv
+        }
+      })
+    }
 
     it('should ignore levelFormat setting when format is pretty', () => {
       const logger = configure({ format: 'pretty', levelFormat: 'number' }).get()
