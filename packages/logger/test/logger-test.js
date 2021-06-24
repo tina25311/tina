@@ -864,7 +864,7 @@ describe('logger', () => {
   })
 
   describe('destination', () => {
-    it('should allow custom destination to be specified', () => {
+    it('should allow custom destination with write method to be specified', () => {
       const destination = new (class {
         constructor () {
           this.messages = []
@@ -884,6 +884,13 @@ describe('logger', () => {
       const { time, ...message } = JSON.parse(messages[0])
       expect(typeof time).to.equal('number')
       expect(message).to.eql({ name: 'antora', level: 'info', msg: 'love is the message' })
+    })
+
+    it('should ignore custom destination if empty', () => {
+      const logger = configure({ destination: {} }).get(null)
+      expect(getStream(logger).write).to.be.instanceOf(Function)
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
     })
   })
 

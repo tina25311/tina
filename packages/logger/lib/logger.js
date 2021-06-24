@@ -17,7 +17,7 @@ function close () {
   if (rootLoggerHolder.has()) Object.assign(rootLoggerHolder.get(), closedLogger)
 }
 
-function configure ({ level = 'info', levelFormat, failureLevel = 'silent', format, destination } = {}) {
+function configure ({ level = 'info', levelFormat, failureLevel = 'silent', format, destination = {} } = {}) {
   const silent = (levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF
   if (silent && (levelValues[failureLevel] || INF) === INF && (rootLoggerHolder.get() || {}).noop) return module.exports
   close()
@@ -75,7 +75,7 @@ function configure ({ level = 'info', levelFormat, failureLevel = 'silent', form
             ...(process.env.NODE_ENV === 'test' && { colorize: false }),
           },
         },
-        destination || buildDest(prettyPrint ? 2 : 1)
+        destination.write instanceof Function ? destination : buildDest(prettyPrint ? 2 : 1)
       ),
     failureLevel
   )
