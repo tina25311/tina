@@ -55,6 +55,14 @@ describe('logger', () => {
       })
     })
 
+    it('should reuse previous root logger when configure is called if both new and old are noop', () => {
+      const oldLogger = get(null)
+      expect(oldLogger.noop).to.be.true()
+      const newLogger = configure({ level: 'silent' }).get(null)
+      expect(newLogger.noop).to.be.true()
+      expect(newLogger).to.equal(oldLogger)
+    })
+
     it('should close previous root logger when configure is called', () => {
       const logger = configure().get(null)
       expect(logger.closed).to.be.undefined()
