@@ -745,7 +745,7 @@ describe('generateSite()', function () {
     }).timeout(timeoutOverride)
 
     // NOTE we can't test this in the cli tests since child_process.spawn does not allocate a tty
-    it('should report progress of repository clone operation if runtime.quiet is false', async () => {
+    it('should report progress of repository clone and fetch operations if runtime.quiet is false', async () => {
       playbookSpec.runtime.quiet = false
       playbookSpec.content.sources[0].url = repoBuilder.url
       playbookSpec.output.destinations = []
@@ -781,6 +781,35 @@ describe('generateSite()', function () {
         expect(progressLines[0]).to.include('[fetch] ' + repoBuilder.url)
         expect(progressLines[0]).to.match(/ \[-+\]/)
         expect(progressLines[progressLines.length - 1]).to.match(/ \[#+\]/)
+      } finally {
+        Object.assign(process.stdout, defaultStdout)
+      }
+    }).timeout(timeoutOverride)
+
+    // NOTE we can't test this in the cli tests since child_process.spawn does not allocate a tty
+    it('should report completion message if runtime.quiet is false', async () => {
+      playbookSpec.runtime.quiet = false
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const defaultStdout = 'clearLine columns cursorTo isTTY moveCursor write'.split(' ').reduce((accum, name) => {
+        accum[name] = process.stdout[name]
+        return accum
+      }, {})
+      const columns = 9 + repoBuilder.url.length * 2
+      const messages = []
+      try {
+        Object.assign(process.stdout, {
+          clearLine: () => {},
+          columns,
+          cursorTo: () => {},
+          isTTY: true,
+          moveCursor: () => {},
+          write: (line) => messages.push(line),
+        })
+        await generateSite(['--playbook', playbookFile], env)
+        expect(messages).to.have.lengthOf(2)
+        expect(messages[0]).to.equal('Site generation complete!\n')
+        const expectedFileUri = `file://${ospath.sep === '\\' ? '/' + absDestDir.replace(/\\/g, '/') : absDestDir}`
+        expect(messages[1]).to.equal(`View the site by visiting ${expectedFileUri} in a browser.\n`)
       } finally {
         Object.assign(process.stdout, defaultStdout)
       }
