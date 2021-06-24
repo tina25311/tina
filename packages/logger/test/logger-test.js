@@ -138,28 +138,6 @@ describe('logger', () => {
       expect(lines[0]).to.include('{')
       expect(lines[0]).to.include('"msg":"love is the message"')
     })
-
-    it('should allow custom destination to be specified', () => {
-      const destination = new (class {
-        constructor () {
-          this.messages = []
-        }
-
-        write (message) {
-          this.messages.push(message)
-          return message.length
-        }
-      })()
-      const logger = configure({ destination }).get(null)
-      const lines = captureStdoutSync(() => logger.info('love is the message'))
-      expect(lines).to.be.empty()
-      const messages = destination.messages
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('{"')
-      const { time, ...message } = JSON.parse(messages[0])
-      expect(typeof time).to.equal('number')
-      expect(message).to.eql({ name: 'antora', level: 'info', msg: 'love is the message' })
-    })
   })
 
   describe('get()', () => {
@@ -882,6 +860,30 @@ describe('logger', () => {
       expect(rootLogger.failOnExit).to.be.undefined()
       get('foobar').setFailOnExit()
       expect(rootLogger.failOnExit).to.be.true()
+    })
+  })
+
+  describe('destination', () => {
+    it('should allow custom destination to be specified', () => {
+      const destination = new (class {
+        constructor () {
+          this.messages = []
+        }
+
+        write (message) {
+          this.messages.push(message)
+          return message.length
+        }
+      })()
+      const logger = configure({ destination }).get(null)
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.be.empty()
+      const messages = destination.messages
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include('{"')
+      const { time, ...message } = JSON.parse(messages[0])
+      expect(typeof time).to.equal('number')
+      expect(message).to.eql({ name: 'antora', level: 'info', msg: 'love is the message' })
     })
   })
 
