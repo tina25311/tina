@@ -6,9 +6,9 @@ const {
   levels: { labels: levelLabels, values: levelValues },
   pino,
 } = require('pino')
-const INF = Infinity
 
 const closedLogger = { closed: true }
+const INF = Infinity
 const minLevel = levelLabels[Math.min.apply(null, Object.keys(levelLabels))]
 const noopLogger = pino({ base: null, enabled: false, timestamp: false }, {})
 const rootLoggerHolder = new Map()
@@ -18,15 +18,13 @@ function close () {
 }
 
 function configure ({ level = 'info', levelFormat = 'label', failureLevel = 'silent', format, destination } = {}) {
-  if (levelValues[level] === INF && levelValues[failureLevel] === INF && (rootLoggerHolder.get() || {}).noop) {
-    return module.exports
-  }
+  const silent = (levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF
+  const lenient = (levelValues[failureLevel] || (failureLevel === 'all' ? (failureLevel = minLevel) : INF)) === INF
+  if (silent && lenient && (rootLoggerHolder.get() || {}).noop) return module.exports
   close()
   const prettyPrint = format === 'pretty'
-  if (level === 'all') level = minLevel
-  if (failureLevel === 'all') failureLevel = minLevel
   const logger = addFailOnExitHooks(
-    level === 'silent'
+    silent
       ? Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
       : pino(
         {

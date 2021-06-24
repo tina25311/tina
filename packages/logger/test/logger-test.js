@@ -92,6 +92,13 @@ describe('logger', () => {
       expect(logger.isLevelEnabled('trace')).to.be.false()
     })
 
+    it('should configure root logger as silent if level is unknown', () => {
+      const logger = configure({ level: 'superfine' }).get(null)
+      expect(logger.level).to.equal('silent')
+      expect(logger.levelVal).to.equal(Infinity)
+      expect(getStream(logger)).to.eql({})
+    })
+
     it('should configure root logger using minimum level if level is all', () => {
       const logger = configure({ level: 'all' }).get(null)
       expect(logger.level).to.equal('trace')
@@ -786,7 +793,7 @@ describe('logger', () => {
       expect(logger.failureLevelVal).to.equal(40)
     })
 
-    it('should set the failure level value on root logger to Infinity if specified failure level is unknown', () => {
+    it('should set the failure level on root logger to silent if specified failure level is unknown', () => {
       const logger = configure({ failureLevel: 'none' }).get(null)
       expect(logger.failureLevel).to.equal('silent')
       expect(logger.failureLevelVal).to.equal(Infinity)
