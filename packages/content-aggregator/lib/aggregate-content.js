@@ -74,10 +74,8 @@ const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)
  * @param {String} [playbook.runtime.cacheDir=undefined] - The base cache directory.
  * @param {Boolean} [playbook.runtime.fetch=undefined] - Whether to fetch
  * updates from managed git repositories.
- * @param {Boolean} [playbook.runtime.silent=false] - Whether to be silent
- * (suppresses progress bars and warnings).
- * @param {Boolean} [playbook.runtime.quiet=false] - Whether to be quiet
- * (suppresses progress bars).
+ * @param {Boolean} [playbook.runtime.quiet=false] - Whether to be suppress progress
+ * bars that show progress of clone and fetch operations.
  * @param {Array} playbook.git - The git configuration object for Antora.
  * @param {Boolean} [playbook.git.ensureGitSuffix=true] - Whether the .git
  * suffix is automatically appended to each repository URL, if missing.
@@ -88,7 +86,7 @@ const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)
 function aggregateContent (playbook) {
   const startDir = playbook.dir || '.'
   const { branches, editUrl, tags, sources } = playbook.content
-  const { cacheDir, fetch, silent, quiet } = playbook.runtime
+  const { cacheDir, fetch, quiet } = playbook.runtime
   return ensureCacheDir(cacheDir, startDir).then((resolvedCacheDir) => {
     const gitPlugins = loadGitPlugins(
       Object.assign({ ensureGitSuffix: true }, playbook.git),
@@ -99,7 +97,7 @@ function aggregateContent (playbook) {
       (accum, source) => accum.set(source.url, [...(accum.get(source.url) || []), source]),
       new Map()
     )
-    const progress = !quiet && !silent && createProgress(sourcesByUrl.keys(), process.stdout)
+    const progress = !quiet && createProgress(sourcesByUrl.keys(), process.stdout)
     return Promise.all(
       [...sourcesByUrl.entries()].map(([url, sources]) =>
         loadRepository(url, {

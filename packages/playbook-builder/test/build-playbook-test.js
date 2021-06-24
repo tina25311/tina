@@ -520,9 +520,9 @@ describe('buildPlaybook()', () => {
   it('should use default schema if no schema is specified', () => {
     const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
     expect(playbook.runtime.cacheDir).to.equal('./.antora-cache')
-    expect(playbook.runtime.fetch).to.equal(true)
-    expect(playbook.runtime.quiet).to.equal(false)
-    expect(playbook.runtime.silent).to.equal(false)
+    expect(playbook.runtime.fetch).to.be.true()
+    expect(playbook.runtime.quiet).to.be.false()
+    expect(playbook.runtime.silent).to.be.false()
     expect(playbook.runtime.log.level).to.equal('info')
     expect(playbook.runtime.log.levelFormat).to.equal('number')
     expect(playbook.runtime.log.failureLevel).to.equal('warn')
@@ -560,7 +560,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.asciidoc.extensions).to.eql(['asciidoctor-plantuml', './lib/shout-block'])
     expect(playbook.asciidoc.sourcemap).to.be.false()
     expect(playbook.git.credentials.path).to.equal('./.git-credentials')
-    expect(playbook.git.ensureGitSuffix).to.equal(true)
+    expect(playbook.git.ensureGitSuffix).to.be.true()
     expect(playbook.urls.htmlExtensionStyle).to.equal('indexify')
     expect(playbook.urls.redirectFacility).to.equal('nginx')
     expect(playbook.urls.latestVersionSegmentStrategy).to.equal('redirect:to')
@@ -640,9 +640,10 @@ describe('buildPlaybook()', () => {
     expect(previousRootLogger.closed).to.not.be.true()
   })
 
-  it('should set log level to silent if runtime.silent is set', () => {
+  it('should set quiet to true and log level to silent if runtime.silent is set', () => {
     const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent', '--log-failure-level', 'none'])
     expect(getLogger(null).noop).to.be.true()
+    expect(playbook.runtime.quiet).to.be.true()
     expect(playbook.runtime.log.level).to.equal('silent')
     expect(playbook.runtime.log.failureLevel).to.equal('none')
   })
@@ -710,7 +711,7 @@ describe('buildPlaybook()', () => {
     const playbook = buildPlaybook(args, env, schema)
     expect(playbook.one.one).to.equal('the-args-value')
     expect(playbook.two).to.equal(99)
-    expect(playbook.three).to.equal(false)
+    expect(playbook.three).to.be.false()
     expect(process.argv).to.equal(processArgv)
     expect(process.env).to.equal(processEnv)
   })

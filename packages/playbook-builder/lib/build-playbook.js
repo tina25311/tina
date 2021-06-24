@@ -87,9 +87,16 @@ function exportModel (config) {
   }
   const playbook = camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
   playbook.dir = playbook.playbook ? ospath.dirname((playbook.file = playbook.playbook)) : process.cwd()
+  const runtime = (playbook.runtime || false).constructor === Object && playbook.runtime
+  if (runtime) {
+    const log = (runtime.log || false).constructor === Object && runtime.log
+    if (runtime.silent) {
+      if (runtime.quiet === false) runtime.quiet = true
+      if (log && 'level' in log) log.level = 'silent'
+    }
+    if (log) configureLogger(log)
+  }
   delete playbook.playbook
-  const log = (playbook.runtime || {}).log
-  if (log) configureLogger(playbook.runtime.silent ? (log.level = 'silent') && log : log)
   return freeze(playbook)
 }
 

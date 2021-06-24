@@ -4328,15 +4328,6 @@ describe('aggregateContent()', function () {
       })
     })
 
-    it('should not show progress bar if playbook runtime is silent', async () => {
-      return withMockStdout(async (lines) => {
-        playbookSpec.runtime = { silent: true }
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(lines).to.have.lengthOf(0)
-      })
-    })
-
     it('should not show progress bar if repository is local', async () => {
       return withMockStdout(async (lines) => {
         playbookSpec.content.sources[0].url = repoBuilder.repoPath

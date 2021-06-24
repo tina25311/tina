@@ -407,10 +407,11 @@ describe('cli', function () {
   })
 
   it('should allow CLI option to override properties set in playbook file', () => {
+    playbookSpec.runtime = { quiet: false, silent: false }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) =>
-      runAntora(['generate', 'the-site', '--title', 'Awesome Docs', '--quiet']).on('exit', resolve)
+      runAntora(['generate', 'the-site', '--title', 'Awesome Docs', '--silent']).on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
