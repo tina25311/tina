@@ -48,6 +48,11 @@ The options in the table below apply only to the `generate` command.
 |===
 |Option |Default |Values |Notes
 
+|[[sourcemap]]`--asciidoc-sourcemap`
+|`false`
+|<<boolean-value,Boolean>>
+|See xref:playbook:asciidoc-sourcemap.adoc[].
+
 |[[attribute]]`--attribute`
 |Not set
 |AsciiDoc attribute in the form `<name>` or `<name=value>`
