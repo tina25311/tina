@@ -119,11 +119,6 @@ describe('logger', () => {
       expect(logger.isLevelEnabled('trace')).to.be.true()
     })
 
-    it('should configure root logger using minimum failure level if failure level is all', () => {
-      const logger = configure({ failureLevel: 'all' }).get(null)
-      expect(logger.failureLevel).to.equal('trace')
-    })
-
     it('should configure root logger using specified format', () => {
       const logger = configure({ format: 'pretty' }).get(null)
       const stream = getStream(logger)
@@ -893,7 +888,7 @@ describe('logger', () => {
   describe('finalize()', () => {
     it('should close logger and return Promise to resolves to failOnExit value', async () => {
       ;[Logger.finalize, finalizeLogger].forEach(async (fn) => {
-        const logger = configure({ failureLevel: 'all' }).get()
+        const logger = configure({ failureLevel: 'warn' }).get()
         captureStdoutSync(() => logger.fatal('a tree falling in the forest'))
         const failOnExit = await fn()
         expect(getLogger(null).closed).to.be.true()

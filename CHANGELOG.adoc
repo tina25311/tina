@@ -23,7 +23,7 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Remove `structured` as possible value of `log.format`, preferring `json` instead (#784)
 * *playbook-builder*: Rename silent value on runtime.log.failure_level to none (#785)
-* *playbook-builder*: Set fatal as default value for runtime.log.failure_level
+* *playbook-builder*: Set fatal as default value for runtime.log.failure_level; remove all, debug, and info from allowable set of values
 * *content-aggregator*: Upgrade git client to isomorphic-git 1.8.x and update code to accomodate changes to its API (#774)
 * *content-aggregator*: Use internal implementation of the http plugin for all clone and fetch operations (#774)
 * *content-aggregator*: Only cache packfile and index for a git repository while scanning it instead of across the entire Antora run

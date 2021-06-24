@@ -19,8 +19,7 @@ function close () {
 
 function configure ({ level = 'info', levelFormat = 'label', failureLevel = 'silent', format, destination } = {}) {
   const silent = (levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF
-  const lenient = (levelValues[failureLevel] || (failureLevel === 'all' ? (failureLevel = minLevel) : INF)) === INF
-  if (silent && lenient && (rootLoggerHolder.get() || {}).noop) return module.exports
+  if (silent && (levelValues[failureLevel] || INF) === INF && (rootLoggerHolder.get() || {}).noop) return module.exports
   close()
   const prettyPrint = format === 'pretty'
   const logger = addFailOnExitHooks(
