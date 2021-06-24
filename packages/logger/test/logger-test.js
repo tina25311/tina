@@ -147,7 +147,7 @@ describe('logger', () => {
   })
 
   describe('get()', () => {
-    beforeEach(() => configure())
+    beforeEach(configure)
 
     // NOTE this test also verifies the behavior of the close function
     it('should create logger with default settings and warn if logger is used before configure() is called', () => {
@@ -205,7 +205,7 @@ describe('logger', () => {
   })
 
   describe('object shaping', () => {
-    beforeEach(() => configure())
+    beforeEach(configure)
 
     it('should not reshape object if file property is missing', () => {
       const logObject = { foo: { bar: 'baz' } }
@@ -866,7 +866,7 @@ describe('logger', () => {
   })
 
   describe('unwrap()', () => {
-    beforeEach(() => configure())
+    beforeEach(configure)
 
     it('should intercept call to unwrap return logger without proxy', () => {
       const logger = get('foobar')
