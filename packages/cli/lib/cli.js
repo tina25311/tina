@@ -13,10 +13,8 @@ const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').rep
 const { version: VERSION } = require('../package.json')
 
 async function run (argv = process.argv) {
-  const result = cli.parse(argv.length < 3 ? [...argv, 'help'] : argv)
-  /* istanbul ignore else */
-  if (cli._promise) await cli._promise
-  return result
+  const args = argv.slice(2)
+  return cli.parseAsync(args.length ? args : ['help'], { from: 'user' })
 }
 
 function exitWithError (err, showStack, msg = undefined) {
@@ -108,7 +106,7 @@ cli
     const args = cli.rawArgs.slice(cli.rawArgs.indexOf(command.name()) + 1)
     args.splice(args.indexOf(playbookFile), 0, '--playbook')
     // TODO support passing a preloaded convict config as third option; gets new args and env
-    cli._promise = generateSite(args, process.env)
+    return generateSite(args, process.env)
       .then(finalizeLogger)
       .then((failOnExit) => process.exit(failOnExit ? 1 : process.exitCode))
       .catch((err) => finalizeLogger().then(() => exitWithError(err, cli.stacktrace)))
