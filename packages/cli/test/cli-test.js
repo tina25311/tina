@@ -23,7 +23,9 @@ const ANTORA_CACHE_DIR = ospath.join(WORK_DIR, '.antora/cache')
 Kapok.config.shouldShowLog = false
 
 describe('cli', function () {
+  let absBuildDir
   let absDestDir
+  let buildDir
   let destDir
   let playbookSpec
   let playbookFile
@@ -66,7 +68,9 @@ describe('cli', function () {
       })
     )
     await createContentRepository(gitServerPort)
-    destDir = 'build/site'
+    buildDir = 'build'
+    absBuildDir = ospath.join(WORK_DIR, buildDir)
+    destDir = ospath.join(buildDir, 'site')
     absDestDir = ospath.join(WORK_DIR, destDir)
     playbookFile = ospath.join(WORK_DIR, 'the-site.json')
     uiBundleUri = UI_BUNDLE_URI
@@ -80,7 +84,7 @@ describe('cli', function () {
       if (ioe.code !== 'ENOENT') throw ioe
     }
     // NOTE keep the default cache folder between tests
-    rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
+    rmdirSync(absBuildDir)
     rmdirSync(ospath.join(WORK_DIR, '.antora-cache-override'))
     playbookSpec = {
       site: { title: 'The Site' },
@@ -95,7 +99,7 @@ describe('cli', function () {
     await once(gitServer.server.close(), 'close')
     rmdirSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
-      rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
+      rmdirSync(absBuildDir)
       fs.unlinkSync(playbookFile)
     } else {
       rmdirSync(WORK_DIR)
