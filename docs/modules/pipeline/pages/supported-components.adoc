@@ -63,6 +63,12 @@ It loads AsciiDoc content into an AsciiDoc Document object (AST).
 |
 |{url-antora-lcs}[MPL-2.0^]
 
+|Logger
+|Provides the infrastructure for logging, shaping, and reporting application messages.
+|&#10003;
+|
+|{url-antora-lcs}[MPL-2.0^]
+
 |Navigation Builder
 |Builds a navigation catalog sourced from navigation files.
 This navigation catalog can be used to add site navigation to pages.
