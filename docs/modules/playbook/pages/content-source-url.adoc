@@ -58,12 +58,12 @@ Antora permits the value of `url` to be a relative or absolute filesystem path.
 ----
 content:
   sources:
-  - url: /absolute/path/to/local-repo # <1>
+  - url: /absolute/path/to/local-repo # <.>
   - url: https://git-service.com/org/repo-z.git
-  - url: ./another-local-repo # <2>
+  - url: ./another-local-repo # <.>
 ----
-<1> Absolute path to git repository
-<2> Relative path to git repository (starting from the directory of the playbook)
+<.> Absolute path to git repository
+<.> Relative path to git repository (starting from the directory of the playbook)
 
 include::partial$relative-path-rules.adoc[]
 

@@ -1,6 +1,4 @@
 = Single Start Path
-:xrefstyle: short
-:listing-caption: Example
 
 The `start_path` key identifies where the [.path]_antora.yml_ file is located in a repository or local worktree relative to the root of the repository.
 This key doesn't need to be set on a `url` if the content source root and root of the repository are the same.
@@ -39,31 +37,30 @@ Let's define a `start_path` value for the repository shown in <<ex-root>>.
 .Content source root isn't located at the repository root
 [listing#ex-root]
 ----
-📒 repository <1>
+📒 repository <.>
   📂 packages
-    📂 docs <2>
-      📄 antora.yml <3>
+    📂 docs <.>
+      📄 antora.yml <.>
       📂 modules
         📂 a-named-module
         📂 ROOT
 ----
-<1> Root of a content source repository
-<2> Content source root
-<3> _antora.yml_ file stored at the content source root
+<.> Root of a content source repository
+<.> Content source root
+<.> _antora.yml_ file stored at the content source root
 
 In order for Antora to locate the content source root in <<ex-root>>, the value of the `start_path` key needs to point to the directory where [.path]_antora.yml_ is located.
 
-[#ex-root-start]
 .Assign start_path value
-[source,yaml]
+[source#ex-root-start,yaml]
 ----
 content:
   sources:
   - url: https://gitlab.com/org/repo.git
     branches: [v1.0, v2.6]
-    start_path: packages/docs # <1>
+    start_path: packages/docs # <.>
 ----
-<1> Repository relative path to the content source root
+<.> Repository relative path to the content source root
 
 Using the `start_path` specified in <<ex-root-start>>, Antora would use the path _\https://gitlab.com/org/repo/-/tree/vx.x/packages/docs_ per branch to locate the content source root.
 

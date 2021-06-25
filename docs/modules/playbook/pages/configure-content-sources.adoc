@@ -88,16 +88,16 @@ With the exception of the `sources` key, which contains the source entries thems
 
 |xref:content-edit-url.adoc[edit_url]
 |Accepts a URL pattern for building the URL that maps to the source view for the current page.
-Accomodates the following placeholder segments: `+{web_url}+`, `+{refname}+`, and `+{path}+`.
-|No
-
-|xref:content-tags.adoc[tags]
-|Accepts a list of tag names or glob patterns to use from the repository specified in the content source.
+Accommodates the following placeholder segments: `+{web_url}+`, `+{refname}+`, and `+{path}+`.
 |No
 
 |xref:content-source-url.adoc[sources]
 |Accepts a list of content source entries that specify which repositories and repository references to use as content.
 |Yes
+
+|xref:content-tags.adoc[tags]
+|Accepts a list of tag names or glob patterns to use from the repository specified in the content source.
+|No
 |===
 
 [#content-source-reference]
@@ -114,7 +114,7 @@ If not specified, defaults to the value of the `branches` key defined on the `co
 
 |xref:content-edit-url.adoc[edit_url]
 |Accepts a URL pattern for building the URL that maps to the source view for the current page.
-Accomodates the following placeholder segments: `+{web_url}+`, `+{refname}+`, and `+{path}+`.
+Accommodates the following placeholder segments: `+{web_url}+`, `+{refname}+`, and `+{path}+`.
 |No
 
 |xref:content-source-start-path.adoc[start_path]

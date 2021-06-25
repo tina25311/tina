@@ -28,7 +28,7 @@ ui: # <1>
 
 The `ui`, `bundle`, and `url` keys are required.
 Alternatively, the `url` key can be assigned from the xref:cli:options.adoc#ui-bundle[CLI].
-The other keys are optional; Antora will use their default values if they're not specified.
+The other keys are optional; Antora uses their default values if they're not specified.
 
 [#ui-reference]
 == Available UI keys
