@@ -3,10 +3,74 @@
 :url-releases-asciidoctor: https://github.com/asciidoctor/asciidoctor/releases
 :url-releases-asciidoctorjs: https://github.com/asciidoctor/asciidoctor.js/releases
 :url-gitlab: https://gitlab.com
-:url-git-antora: {url-gitlab}/antora/antora
-:url-issues: {url-git-antora}/issues
+:url-issues: {url-repo}/issues
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
-:url-mr: {url-git-antora}/merge_requests
+:url-mr: {url-repo}/merge_requests
+
+= Antora 3.0.0-alpha.7
+
+_**Release date:** 2021.06.26 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Deprecations and breaking changes notice
+
+The following deprecations and breaking changes will be final with the release of Antora 3.0.
+
+=== Custom git credential manager
+
+Upgrading isomorphic-git forced a change to how a custom git credential manager must be registered.
+Previously, this was done using `git.cores.create('antora').set('credentialManager', customCredentialManager)`.
+However, isomorphic-git no longer includes the `cores` (aka plugin) API, so this call is going to fail.
+Antora still honors the `cores` API, but the call to register the credential manager is now responsible for creating it (since it runs before Antora loads).
+Refer to xref:playbook:private-repository-auth.adoc#custom-manager[Configure a custom credential manager] for the latest instructions.
+
+== New documentation
+
+Preliminary documentation for the following new features is now available:
+
+* The xref:playbook:runtime-log-level.adoc[log level playbook key] specifies a severity threshold, such as `debug` or `error`, that must be met for a message to be logged.
+* The xref:playbook:runtime-log-failure-level.adoc[log failure_level playbook key] specifies the severity threshold that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
+* The xref:playbook:asciidoc-sourcemap.adoc[sourcemap key] provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor.
+
+=== Asciidoctor 2 feature changes and suggested fixes
+
+In the <<alpha3-dependencies,previous Antora 3.0.0-alpha.3 release>>, support for Asciidoctor.js 1.5.9 was dropped and Antora switched to depending on the latest patch version of Asciidoctor.js 2.2.
+
+Asciidoctor 2 introduces a few substantive changes to existing features that may impact your documentation source content or UI.
+See xref:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora 3.
+
+To test your documentation for AsciiDoc syntax problems or try out Antora's new features before Antora 3 is final, see xref:install:upgrade-antora.adoc[] for instructions on how to upgrade to the latest prerelease of Antora.
+
+== Resolved issues
+
+IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+
+=== Added
+
+Issue {url-issues}/780[#780^]:: Add `level_format` key to `log` category (default: `label`), mapped to `--log-level-format` CLI option, to allow log level format to be configured.
+Use numeric log level in JSON log message if log level format is `number`.
+Issue {url-issues}/776[#776^]:: Add xref:playbook:asciidoc-sourcemap.adoc[sourcemap key] to `asciidoc` category (default: `false`), mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor.
+Issue {url-issues}/403[#403^]:: Log error message when target of xref is not found.
+Issue {url-issues}/368[#368^]:: Catalog example and partial files that do not have a file extension.
+
+=== Fixed
+
+Issue {url-issues}/771[#771^]:: Port fixes for include tags processing from Asciidoctor.
+
+=== Changed
+
+Antora logger:: Don't set name on root logger so it isn't included in raw JSON message.
+Set `fatal` as default value for `runtime.log.failure_level`; remove `all`, `debug`, and `info` from allowable set of values.
+Issue {url-issues}/785[#785^]:: Rename `--failure-level` option to `--log-failure-level`.
+Rename `silent` value on `runtime.log.failure_level` to `none`.
+Issue {url-issues}/784[#784^]:: Remove `structured` as possible value of `log.format`, preferring `json` instead.
+Issue {url-issues}/778[#778^]:: Configure CLI to recognize options that accept a fixed set of values and validate value before proceeding.
+Rename options to choices in help text.
+Combine choices and default value together in help text for option that accepts a fixed set of values.
+Issue {url-issues}/776[#776^]:: Include line number and correct file in xref error message when `sourcemap` is enabled on AsciiDoc processor.
+Issue {url-issues}/774[#774^]:: Upgrade git client to isomorphic-git 1.8.x and update code to accommodate changes to its API.
+Issue {url-issues}/769[#769^]:: Detect when registered html5 converter has changed and recreate extended converter to use it.
+Issue {url-issues}/733[#733^]:: Upgrade CLI library to commander.js 7.2.
+Issue {url-issues}/403[#403^]:: Change "include target" to "target of include" in error message for missing include.
 
 = Antora 3.0.0-alpha.6
 
@@ -23,7 +87,6 @@ Issue {url-issues}/145[#145^]:: Introduce a new component that provides the infr
 All application messages (except for CLI warnings and uncaught errors) are routed through the logger.
 This feature is enabled by default.
 The logger is configured once per run of Antora by the runtime.log category in the playbook.
-Playbook keys include level, failure_level, and format.
 +
 Messages are either emitted in a structured (JSON) log format so they can be piped to a separate application for processing/transport or in a pretty format to make them easier for an author to comprehend.
 But default, structured (JSON) messages are logged to stdout if the CI environment variable is set.
@@ -34,8 +97,8 @@ As part of this change, messages logged by Asciidoctor are routed to the Antora 
 Issue {url-issues}/749[#749^]:: Add support for proxy settings to the git client and UI downloader.
 Both components now use the same HTTP library (simple-get).
 +
-The git client and UI downloader honor proxy settings defined in the network category in the playbook.
-The http_proxy, https_proxy, and no_proxy environment variables are mapped to respective keys in the playbook.
+The git client and UI downloader honor proxy settings defined in the `network` category in the playbook.
+The `http_proxy`, `https_proxy`, and `no_proxy` environment variables are mapped to respective keys in the playbook.
 
 === Fixed
 
@@ -43,7 +106,7 @@ Issue {url-issues}/765[#765^]:: Add file info to reader before pushing include o
 +
 This change fixes how the target of an include that follows an empty include is resolved.
 
-Issue {url-issues}/764[#764^]:: Assign file URL to src.origin.url on virtual file if repository has no remote and not using worktree.
+Issue {url-issues}/764[#764^]:: Assign file URL to `src.origin.url` on virtual file if repository has no remote and not using worktree.
 +
 This change allows the location of the local git repository to be shown in log messages.
 
@@ -77,7 +140,7 @@ If no pattern is matched, or the value of version is `true`, the refname will be
 Issue {url-issues}/747[#747^]:: Add full support for resolving symlinks that originate from the worktree of a local content source.
 Provide a clear error message when a broken symlink or symlink cycle is detected in worktree.
 
-NOTE: All symlink tests are now verified on Windows in additional to Linux.
+NOTE: All symlink tests are now verified on Windows in addition to Linux.
 
 === Changed
 
@@ -150,6 +213,7 @@ _**Release date:** 2021.04.15 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 The following deprecations and breaking changes will be final with the release of Antora 3.0.
 
+[#alpha3-dependencies]
 === Dependencies
 
 Antora now automatically depends on the latest patch version of Asciidoctor.js 2.2 (e.g., 2.2.3).
