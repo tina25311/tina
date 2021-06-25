@@ -4748,6 +4748,20 @@ describe('aggregateContent()', function () {
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
     })
 
+    it('should read credentials for URL path from git credential store if auth is required', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      // NOTE include '=' and '@' in value to validate characters are not URL encoded
+      const credentials = ['invalid URL', repoBuilder.url.replace('//', '//u@=:p%23=@')]
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials.join('\n') + '\n')
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u@=:p#=').toString('base64'))
+      expect(credentialsSent).to.eql({ username: 'u@=', password: 'p#=' })
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
+    })
+
     it('should mark origin that requires auth with private=auth-required if not fetching updates', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
