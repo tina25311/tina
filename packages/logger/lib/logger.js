@@ -71,6 +71,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
                   ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
                   : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
             },
+            suppressFlushSyncWarning: true,
             translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
             ...(process.env.NODE_ENV === 'test' && { colorize: false }),
           },
