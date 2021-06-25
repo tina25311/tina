@@ -152,9 +152,10 @@ function addFailOnExitHooks (logger, failureLevel = undefined) {
       return this.levelVal === INF && this.failureLevelVal === INF
     },
   })
-  if (failureLevelVal === INF) return logger
-  for (const [levelName, levelVal] of Object.entries(levelValues)) {
-    if (levelVal >= failureLevelVal) logger[levelName] = decorateWithSetFailOnExit(logger[levelName])
+  if (failureLevelVal !== INF) {
+    for (const [levelName, levelVal] of Object.entries(levelValues)) {
+      if (levelVal >= failureLevelVal) logger[levelName] = decorateWithSetFailOnExit(logger[levelName])
+    }
   }
   return logger
 }
