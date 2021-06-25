@@ -443,6 +443,10 @@ Antora has added the _.adoc_ file extension to a xref:page:page-id.adoc#id-coord
 This fallback mechanism will be deprecated in Antora 3.0 to make way for using non-AsciiDoc pages in the xref facility.
 You should review the page IDs in your xrefs and `page-aliases` attributes to ensure the _.adoc_ extension is specified.
 
+The intrinsic page attribute `page-relative` has been renamed to `page-relative-src-path`.
+The old `page-relative` attribute still remains, but will be removed in Antora 3.0.
+You should update pages that rely on this attribute to use `page-relative-src-path` instead.
+
 The `classifyContent` function will expect the site-wide AsciiDoc config as the third argument.
 
 The following deprecated methods will be removed from the `ContentCatalog`: `getComponentMap`, `getComponentMapSortedBy`, and `getFiles`.
