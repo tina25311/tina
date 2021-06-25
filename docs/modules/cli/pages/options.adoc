@@ -120,9 +120,6 @@ a|[%hardbreaks]
 `fatal`
 `error`
 `warn`
-`info`
-`debug`
-`all`
 `none`
 |See xref:playbook:runtime-log-failure-level.adoc[] and xref:playbook:environment-variables.adoc#failure-level[ANTORA_LOG_FAILURE_LEVEL variable].
 

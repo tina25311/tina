@@ -6,7 +6,7 @@ The `failure_level` key specifies the severity threshold that, when met or excee
 == Default failure level
 
 Explicitly assigning a value to the `failure_level` key is optional.
-If it isn't set in the playbook or specified using the <<failure-level-option,--log-failure-level option>> or xref:playbook:environment-variables.adoc#failure-level[ANTORA_LOG_FAILURE_LEVEL variable], Antora assigns the value `fatal` to the key at runtime .
+If it isn't set in the playbook or specified using the <<failure-level-option,--log-failure-level option>> or xref:playbook:environment-variables.adoc#failure-level[ANTORA_LOG_FAILURE_LEVEL variable], Antora assigns the value `fatal` to the key at runtime.
 If a logged message meets the `fatal` severity threshold, Antora will exit with a non-zero exit code.
 
 [#failure-level-key]
@@ -27,9 +27,6 @@ The key accepts the following built-in values:
 * `fatal` (default)
 * `error`
 * `warn`
-* `info`
-* `debug`
-* `all`
 * `none`
 
 These values correspond to the xref:runtime-log-level.adoc#severity-levels[severity levels] Antora assigns to log messages.
@@ -37,6 +34,9 @@ Except when the value is `none`, Antora exits with a non-zero exit code if a mes
 Note that when Antora's logger is turned off, the `failure_level` key and its value aren't applied.
 
 === Force zero exit code
+
+NOTE: The behavior of `none`, described in this section, hasn't been implemented yet.
+See https://gitlab.com/antora/antora/-/issues/788[issue #788] for updates.
 
 When the `failure_level` key is assigned the value `none`, Antora always exits with the exit code zero (0), even if a fatal error is encountered.
 

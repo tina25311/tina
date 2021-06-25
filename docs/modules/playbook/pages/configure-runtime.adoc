@@ -64,7 +64,7 @@ The xref:runtime-log-level.adoc#default[level], xref:runtime-log-failure-level.a
 
 |xref:runtime-log-failure-level.adoc[log.failure_level]
 |Sets the log level tolerance that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
-Accepts the values `all`, `debug`, `info`, `warn`, `error`, `fatal`, and `none`.
+Accepts the values `warn`, `error`, `fatal`, and `none`.
 The default value is `fatal`.
 The value `none` causes Antora to always exit with a zero exit code.
 |No
