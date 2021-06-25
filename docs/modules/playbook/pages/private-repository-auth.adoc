@@ -21,6 +21,7 @@ HTTP Basic authentication requires sending credentials to the server (over HTTPS
 Authentication credentials consist of either a username/password pair or an access (OAuth 2.0) token.
 
 The username/password pair is usually what you use to log in to the service (GitHub, GitLab, etc.) where the repository is hosted.
+If the username or password contains characters which have special meaning in a URL, such as `#` and `:`, these characters must be URL encoded so they aren't misinterpreted by the URL parser.
 Keep in mind that while some git hosts support this means of authentication, others do not.
 You may have better luck using an access token.
 
@@ -70,6 +71,16 @@ https://<credentials>@<hostname>
 
 `<credentials>` is either a username/password pair (`username:password`) or an access token (`token:`).
 `<hostname>` is the address of the git server (e.g., `github.com`).
+
+[IMPORTANT]
+====
+If the username or password contains characters which have special meaning in a URL, such as `#` or `:`, these characters must be URL encoded.
+It's usually safe to always URL encode the username and password components in the URL.
+
+To URL encode a component, open the JavaScript console in your browser, and run `encodeURIComponent('<component>')`, where `<component>` is the username or password value.
+Use the printed result in place of your username or password, if different.
+For example, the URL encoded version of `my#password` is `my%23password`.
+====
 
 You can populate the credential store interactively using the system `git` command or by editing the credential store directly.
 Let's start with the interactive approach.
