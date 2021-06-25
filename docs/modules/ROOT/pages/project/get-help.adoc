@@ -1,8 +1,6 @@
 = Get Help
 // URLs
-:url-repo: https://gitlab.com/antora/antora
 :url-issues: {url-repo}/issues
-:url-chat: https://antora.zulipchat.com
 :url-twitter: https://twitter.com/antoraproject
 :url-twitter-hash: https://twitter.com/hashtag/antora?src=hash
 :url-contributing: https://gitlab.com/antora/antora/blob/master/contributing.adoc
