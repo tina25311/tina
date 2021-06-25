@@ -302,6 +302,8 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('= Page Title\n\n2. two')
       loadAsciiDoc(inputFile).convert()
       expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include('"name":"asciidoctor"')
+      expect(messages[0]).to.not.include('"name":"antora"')
       expect(rootLogger.failOnExit).to.be.true()
     })
 

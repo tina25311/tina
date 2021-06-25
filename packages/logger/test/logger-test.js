@@ -55,10 +55,15 @@ describe('logger', () => {
         expect(logger.failureLevel).to.equal('silent')
         expect(logger.failureLevelVal).to.equal(Infinity)
         expect(logger.noop).to.be.false()
-        expect(logger.bindings()).to.eql({ name: 'antora' })
+        expect(logger.bindings()).to.eql({})
         expect(getStream(logger).constructor.name).to.equal('SonicBoom')
         expect(getHooks(logger).logMethod).to.be.instanceOf(Function)
       })
+    })
+
+    it('should set name on root logger if passed to configure', () => {
+      const logger = configure({ name: 'antora' }).get(null)
+      expect(logger.bindings()).to.eql({ name: 'antora' })
     })
 
     it('should reuse previous root logger when configure is called if both new and old are noop', () => {
@@ -86,7 +91,7 @@ describe('logger', () => {
       expect(lines).to.have.lengthOf(1)
       const { time, ...message } = JSON.parse(lines[0])
       expect(typeof time).to.equal('number')
-      expect(message).to.eql({ level: 'info', name: 'antora', msg: 'love is the message' })
+      expect(message).to.eql({ level: 'info', msg: 'love is the message' })
     })
 
     it('should format log level as number of levelFormat is number', () => {
@@ -95,7 +100,7 @@ describe('logger', () => {
       expect(lines).to.have.lengthOf(1)
       const { time, ...message } = JSON.parse(lines[0])
       expect(typeof time).to.equal('number')
-      expect(message).to.eql({ level: 30, name: 'antora', msg: 'love is the message' })
+      expect(message).to.eql({ level: 30, msg: 'love is the message' })
     })
 
     it('should configure root logger using specified level', () => {
@@ -127,7 +132,7 @@ describe('logger', () => {
       const lines = captureStderrSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.not.include('{')
-      expect(lines[0]).to.include('INFO (antora): love is the message')
+      expect(lines[0]).to.include('INFO: love is the message')
     })
 
     it('should configure root logger using structured (JSON) format if format is unrecognized', () => {
@@ -156,6 +161,7 @@ describe('logger', () => {
     })
 
     it('should return proxy of the root logger if no name is specified', () => {
+      configure({ name: 'antora' })
       ;[Logger, get, getLogger].forEach((fn) => {
         const logger = fn()
         expect(types.isProxy(logger)).to.be.true()
@@ -199,7 +205,7 @@ describe('logger', () => {
   })
 
   describe('object shaping', () => {
-    beforeEach(configure)
+    beforeEach(() => configure({ name: 'antora' }))
 
     it('should not reshape object if file property is missing', () => {
       const logObject = { foo: { bar: 'baz' } }
@@ -397,7 +403,7 @@ describe('logger', () => {
 
   describe('pretty print', () => {
     it('should write pretty log message to stderr when format is pretty', () => {
-      const logger = configure({ format: 'pretty' }).get()
+      const logger = configure({ name: 'antora', format: 'pretty' }).get()
       const lines = captureStderrSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
       const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
@@ -409,7 +415,7 @@ describe('logger', () => {
         const nodeEnv = process.env.NODE_ENV
         try {
           delete process.env.NODE_ENV
-          const logger = configure({ format: 'pretty' }).get()
+          const logger = configure({ name: 'antora', format: 'pretty' }).get()
           const lines = captureStderrSync(() => logger.info('love is the message'))
           expect(lines).to.have.lengthOf(1)
           const expectedLine = '\u001b[32mINFO\u001b[39m (antora): \u001b[36mlove is the message\u001b[39m'
@@ -421,7 +427,7 @@ describe('logger', () => {
     }
 
     it('should ignore levelFormat setting when format is pretty', () => {
-      const logger = configure({ format: 'pretty', levelFormat: 'number' }).get()
+      const logger = configure({ name: 'antora', format: 'pretty', levelFormat: 'number' }).get()
       const lines = captureStderrSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
       const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
@@ -883,7 +889,7 @@ describe('logger', () => {
       expect(messages[0]).to.include('{"')
       const { time, ...message } = JSON.parse(messages[0])
       expect(typeof time).to.equal('number')
-      expect(message).to.eql({ name: 'antora', level: 'info', msg: 'love is the message' })
+      expect(message).to.eql({ level: 'info', msg: 'love is the message' })
     })
 
     it('should ignore custom destination if empty', () => {

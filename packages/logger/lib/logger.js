@@ -17,7 +17,7 @@ function close () {
   if (rootLoggerHolder.has()) Object.assign(rootLoggerHolder.get(), closedLogger)
 }
 
-function configure ({ level = 'info', levelFormat, failureLevel = 'silent', format, destination = {} } = {}) {
+function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent', format, destination = {} } = {}) {
   const silent = (levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF
   if (silent && (levelValues[failureLevel] || INF) === INF && (rootLoggerHolder.get() || {}).noop) return module.exports
   close()
@@ -27,7 +27,7 @@ function configure ({ level = 'info', levelFormat, failureLevel = 'silent', form
       ? Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
       : pino(
         {
-          name: 'antora',
+          name,
           base: {},
           level,
           formatters: { level: levelFormat === 'number' ? (_, level) => ({ level }) : (level) => ({ level }) },

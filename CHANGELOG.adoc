@@ -21,6 +21,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *logger*: Don't set name on root logger so it isn't included in raw JSON message
 * *playbook-builder*: Remove `structured` as possible value of `log.format`, preferring `json` instead (#784)
 * *playbook-builder*: Rename silent value on runtime.log.failure_level to none (#785)
 * *playbook-builder*: Set fatal as default value for runtime.log.failure_level; remove all, debug, and info from allowable set of values
