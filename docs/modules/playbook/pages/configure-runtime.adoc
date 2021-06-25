@@ -49,7 +49,7 @@ runtime:
 <.> The optional, built-in `level` key is nested under the `log` key.
 
 If `level`, `failure_level`, or `format` are set in the playbook, they must be nested under the `log` key.
-The xref:runtime-log-level.adoc#default[level] and `format` keys have built-in values that are automatically applied when Antora runs if they're not explicitly defined in the playbook or using the corresponding the xref:cli:options.adoc#generate-options[command line options] or xref:playbook:environment-variables.adoc[environment variables].
+The xref:runtime-log-level.adoc#default[level], xref:runtime-log-failure-level.adoc#default[failure_level], and `format` keys have default values that are automatically applied when Antora runs if they're not explicitly defined in the playbook or using the corresponding the xref:cli:options.adoc#generate-options[command line options] or xref:playbook:environment-variables.adoc[environment variables].
 
 [#runtime-reference]
 == Available runtime keys
@@ -62,10 +62,11 @@ The xref:runtime-log-level.adoc#default[level] and `format` keys have built-in v
 |Specifies the directory where the remote content sources git repositories and UI bundles are cached.
 |No
 
-//xref:runtime-log-failure-level.adoc[log.failure_level]
-|log.failure_level
-|Sets the log level tolerance that, when exceeded, will cause the application to fail on exit.
-Accepts the values `all`, `debug`, `info`, `warn`, `error`, `fatal`, and `silent`.
+|xref:runtime-log-failure-level.adoc[log.failure_level]
+|Sets the log level tolerance that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
+Accepts the values `warn`, `error`, `fatal`, and `none`.
+The default value is `fatal`.
+The value `none` causes Antora to always exit with a zero exit code.
 |No
 
 |xref:runtime-fetch.adoc[fetch]
@@ -80,8 +81,9 @@ The default value is `json` in a CI environment and `pretty` in all other enviro
 |No
 
 |xref:runtime-log-level.adoc[log.level]
-|Sets the minimum log level of messages that get logged.
+|Sets the minimum severity threshold level that must be met for a message to be logged.
 Accepts the values `all`, `debug`, `info`, `warn`, `error`, `fatal`, and `silent`.
 The default value is `warn`.
+The value `silent` turns the logger off.
 |No
 |===
