@@ -432,7 +432,7 @@ Yoginth:: For fixing typos in the package comments, test cases, and releasing gu
 {url-mr}/433[!433^]
 
 [#deprecation]
-== Deprecations scheduled for Antora 3.0
+== Deprecations scheduled for removal in Antora 3.0
 
 Per the normal xref:install:supported-platforms.adoc[supported platforms policy], support for Node 8, and likely Node 10 as well, will be dropped.
 
