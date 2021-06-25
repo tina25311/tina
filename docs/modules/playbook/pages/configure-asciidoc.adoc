@@ -32,11 +32,6 @@ asciidoc: # <.>
 |===
 |AsciiDoc Keys |Description |Required
 
-|xref:asciidoc-sourcemap.adoc[sourcemap]
-|When `true`, provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor extensions.
-The default value is `false`.
-|No
-
 |xref:asciidoc-attributes.adoc[attributes]
 |Accepts a map of built-in, custom, and page attributes that are applied to and made available to all of the site's pages.
 |No
@@ -44,5 +39,10 @@ The default value is `false`.
 |xref:asciidoc-extensions.adoc[extensions]
 |Accepts a list of Asciidoctor extensions.
 Depending on the capabilities of the extension, the extension will either be registered globally or be scoped to the AsciiDoc processor instance for a page.
+|No
+
+|xref:asciidoc-sourcemap.adoc[sourcemap]
+|When `true`, provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor extensions.
+The default value is `false`.
 |No
 |===
