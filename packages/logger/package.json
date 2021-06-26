@@ -16,7 +16,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "pino": "~6.11",
-    "pino-pretty": "~4.8"
+    "pino-pretty": "~5.1"
   },
   "engines": {
     "node": ">=10.17.0"
