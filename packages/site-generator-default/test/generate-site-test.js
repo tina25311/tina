@@ -354,7 +354,7 @@ describe('generateSite()', function () {
 
   it('should pass AsciiDoc attributes defined in component descriptor to AsciiDoc processor', async () => {
     playbookSpec.asciidoc = {
-      attributes: { sectanchors: null, description: 'Site description@' },
+      attributes: { sectanchors: null, description: false },
     }
     await repoBuilder
       .open()
@@ -369,9 +369,21 @@ describe('generateSite()', function () {
           },
         })
       )
+      .then(() => repoBuilder.checkoutBranch('v1.0'))
+      .then(() =>
+        repoBuilder.addComponentDescriptor({
+          name: 'the-component',
+          version: '1.0',
+          nav: ['modules/ROOT/nav.adoc'],
+        })
+      )
       .then(() => repoBuilder.close('master'))
+    playbookSpec.content.sources[0].branches = ['v2.0', 'v1.0']
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
+    expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html')).to.be.a.file()
+    $ = loadHtmlFile('the-component/1.0/the-page.html')
+    expect($('head meta[name=description]')).to.not.exist()
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('head meta[name=description]')).to.have.attr('content', 'Component description')

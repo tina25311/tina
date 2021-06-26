@@ -406,6 +406,7 @@ describe('classifyContent()', () => {
           'hard-unset': null,
           'soft-set': '@',
           'soft-unset': false,
+          'soft-unset-to-soft-set': false,
           'soft-reset': 'foo@',
         },
       }
@@ -416,6 +417,7 @@ describe('classifyContent()', () => {
           'hard-unset': 'override',
           'soft-set': 'override',
           'soft-unset': 'override',
+          'soft-unset-to-soft-set': 'override@',
           'soft-reset': 'bar@',
         },
       }
@@ -433,6 +435,7 @@ describe('classifyContent()', () => {
         'hard-unset': null,
         'soft-set': 'override',
         'soft-unset': 'override',
+        'soft-unset-to-soft-set': 'override@',
         'soft-reset': 'bar@',
       })
     })
