@@ -56,7 +56,6 @@ Issue {url-issues}/368[#368^]:: Catalog example and partial files that do not ha
 Issue {url-issues}/220[#220^]:: Add completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set).
 Issue {url-issues}/706[#706^]:: Ignore backup files (files that end with `+~+`) when scanning content source.
 
-
 === Fixed
 
 Issue {url-issues}/771[#771^]:: Port fixes for include tags processing from Asciidoctor.
