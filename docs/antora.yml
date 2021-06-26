@@ -8,10 +8,12 @@ asciidoc:
     xrefstyle: short@
     listing-caption: Example@
     example-caption: false
-    version-node-major: '12'
-    version-node: '12.18.4'
-    version-npm: '6.14.8'
+    version-node-major: '14'
+    version-node: '14.17.0'
+    version-npm: '6.14.18'
     url-node-releases: https://nodejs.org/en/about/releases/
+    url-chat: https://antora.zulipchat.com
+    url-repo: https://gitlab.com/antora/antora
     url-asciidoc: https://docs.asciidoctor.org/asciidoc/latest
 nav:
 - modules/ROOT/nav-start.adoc

@@ -1,6 +1,4 @@
 = Multiple Start Paths
-:listing-caption: Example
-:xrefstyle: short
 //The `start_paths` feature lets you register more than one Antora component version within a single repository.
 //If one repository branch or tag contains multiple [.path]_antora.yml_ component descriptors, you can specify the multiple start paths for a single repository URL using the `start_paths` key.
 
@@ -103,20 +101,20 @@ If you only have a couple of paths to register, you might find that using exact 
 content:
   sources:
   - url: https://github.com/org/repo1
-    start_paths: docs # <1>
+    start_paths: docs # <.>
   - url: https://github.com/org/repo2
-    start_paths: docs, more-docs # <2>
+    start_paths: docs, more-docs # <.>
   - url: https://github.com/org/repo3
-    start_paths: [docs, more-docs] # <3>
+    start_paths: [docs, more-docs] # <.>
   - url: https://github.com/org/repo4
     start_paths:
-    - docs # <4>
+    - docs # <.>
     - more-docs
 ----
-<1> A single path (which is equivalent to using `start_path`).
-<2> A comma-separated list of exact path values.
-<3> An array on a single line, delimited by square brackets (`+[]+`).
-<4> An array on multiple lines, each delimited by a leading `-`.
+<.> A single path (which is equivalent to using `start_path`).
+<.> A comma-separated list of exact path values.
+<.> An array on a single line, delimited by square brackets (`+[]+`).
+<.> An array on multiple lines, each delimited by a leading `-`.
 
 [#path-globbing]
 == Path globbing
@@ -145,9 +143,8 @@ A glob matches a single level in the hierarchy.
 Wildcard matching reduces the number of values you need to assign to a `start_paths` key.
 For instance, if you have multiple components stored in a branch, you could list them all in a comma-separated list like the one shown in <<ex-no-wildcard>>.
 
-[#ex-no-wildcard]
 .antora-playbook.yml
-[source,yaml]
+[source#ex-no-wildcard,yaml]
 ----
 content:
   sources:
@@ -158,9 +155,8 @@ content:
 
 Or, as shown in <<ex-wildcard>>, you could use a wildcard segment and reduce the number of values you need to declare.
 
-[#ex-wildcard]
 .antora-playbook.yml
-[source,yaml]
+[source#ex-wildcard,yaml]
 ----
 content:
   sources:
@@ -169,7 +165,7 @@ content:
     start_paths: docs/product-*
 ----
 
-Wildcard matching offers the possiblity of registering new content source roots as you add them, providing you keep the pattern consistent.
+Wildcard matching offers the possibility of registering new content source roots as you add them, providing you keep the pattern consistent.
 
 === Braces
 
@@ -200,9 +196,8 @@ content:
 
 You can also use wildcards in brace expressions to help expand values.
 
-[#ex-wild-braces]
 .antora-playbook.yml
-[source,yaml]
+[source#ex-wild-braces,yaml]
 ----
 content:
   sources:
@@ -233,9 +228,9 @@ content:
     start_paths:
     - docs/user/*
     - docs/dev/*
-    - !**/*-beta.* # <1>
+    - !**/*-beta.* # <.>
 ----
-<1> Negated path globbing patterns must follow any path inclusions, and must be declared after locations that have already been matched.
+<.> Negated path globbing patterns must follow any path inclusions, and must be declared after locations that have already been matched.
 
 == Ignored directories
 

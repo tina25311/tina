@@ -18,7 +18,7 @@ urls: # <1>
 <3> Optional `redirect_facility` key
 
 These keys are optional; Antora will use their default values if they're not specified.
-The `html_extension_style` and `redirect_facility` keys can also be configured from the xref:cli:index.adoc[Antora CLI].
+The `html_extension_style` and `redirect_facility` keys can also be configured from the xref:cli:options.adoc[Antora CLI].
 
 [#urls-reference]
 == Available urls keys

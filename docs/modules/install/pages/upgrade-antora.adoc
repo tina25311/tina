@@ -44,7 +44,7 @@ If you installed the Antora CLI and default site generator globally, you can upg
 In a terminal, run:
 
 [subs=attributes+]
- $ npm i -g @antora/cli@{page-component-version} @antora/site-generator-default@{page-component-version}
+ $ npm i -g @antora/cli@{page-component-display-version} @antora/site-generator-default@{page-component-display-version}
 
 npm will automatically install the latest version of Antora.
 
@@ -77,7 +77,7 @@ If you have installed the Antora CLI globally, but the Antora site generator in 
 . Upgrade the CLI globally by typing:
 +
 [subs=attributes+]
- $ npm i -g @antora/cli@{page-component-version}
+ $ npm i -g @antora/cli@{page-component-display-version}
 
 . Change to your local project directory.
 This is typically where your Antora playbook file, [.path]_antora-playbook.yml_, is stored.
@@ -91,7 +91,7 @@ We recommend specifying a partial version number (major.minor) so that you recei
 ----
 {
   "dependencies": {
-    "@antora/site-generator-default": "{page-component-version}"
+    "@antora/site-generator-default": "{page-component-display-version}"
   }
 }
 ----

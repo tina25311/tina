@@ -1,6 +1,4 @@
 = Output Directory
-:xrefstyle: short
-:listing-caption: Example
 
 The `dir` key specifies the directory where the generated site files are published.
 It provides a simpler way to use the default `fs` provider without having to set the more formal `destinations` and `provider` keys.
@@ -28,9 +26,8 @@ When the output directory is specified from the CLI using the xref:cli:options.a
 
 In <<ex-rel>>, the site will be published to a folder named [.path]_launch_ relative to the playbook file.
 
-[#ex-rel]
 .Assign a relative path to the dir key
-[source,yaml]
+[source#ex-rel,yaml]
 ----
 output:
   dir: ./launch
@@ -41,9 +38,8 @@ output:
 
 In <<ex-abs>>, the site will be published to [.path]_home/dev/docs-site/beta_, regardless of where the playbook is located.
 
-[#ex-abs]
 .Assign an absolute path to the dir key
-[source,yaml]
+[source#ex-abs,yaml]
 ----
 output:
   dir: /home/dev/docs-site/beta
@@ -55,14 +51,13 @@ output:
 The `clean` key is optional and is deactivated (assigned the value `false`) by default.
 When it's assigned the value `true` in a playbook, it removes the path assigned to `dir` recursively before generating the site.
 
-[#ex-clean]
 .Activate the clean key
-[source,yaml]
+[source#ex-clean,yaml]
 ----
 output:
-  clean: true # <1>
+  clean: true # <.>
 ----
-<1> `clean` is activated with the value `true` and deactivated with `false`.
+<.> `clean` is activated with the value `true` and deactivated with `false`.
 
 This key only applies to the filesystem provider.
 

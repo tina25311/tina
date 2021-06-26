@@ -1,6 +1,4 @@
 = Archive Provider
-:xrefstyle: short
-:listing-caption: Example
 :url-zip-file-format: https://en.wikipedia.org/wiki/Zip_(file_format)
 
 In order to publish a site's files as a ZIP archive, your playbook must set the `output`, `destinations` and `provider` keys.
@@ -14,11 +12,11 @@ The `provider` value `archive` publishes a site to a {url-zip-file-format}[ZIP] 
 [source,yaml]
 ----
 output:
-  destinations: # <1>
-  - provider: archive # <2>
+  destinations: # <.>
+  - provider: archive # <.>
 ----
-<1> The `provider` key must be configured under the `destinations` key.
-<2> Under `destinations`, type a hyphen (`-`) and a blank space, then the key name `provider`, followed by a colon (`:`).
+<.> The `provider` key must be configured under the `destinations` key.
+<.> Under `destinations`, type a hyphen (`-`) and a blank space, then the key name `provider`, followed by a colon (`:`).
 After the colon, enter a blank space, and then the built-in value name `archive`.
 
 Unless the `path` key is specified, the default output target for the `archive` provider is [.path]_build/site.zip_.
@@ -39,9 +37,8 @@ include::partial$relative-path-rules.adoc[]
 In <<ex-rel>>, the site will be published to
 the target file [.path]_blue.zip_ relative to the playbook file.
 
-[#ex-rel]
 .Assign a relative path to the path key
-[source,yaml]
+[source#ex-rel,yaml]
 ----
 output:
   destinations:
@@ -54,9 +51,8 @@ output:
 
 In <<ex-abs>>, the site will be published to [.path]_/home/user/projects/launch/blue.zip_, regardless of where the playbook is located.
 
-[#ex-abs]
 .Assign an absolute path to the path key
-[source,yaml]
+[source#ex-abs,yaml]
 ----
 output:
   destinations:
@@ -70,9 +66,8 @@ output:
 
 In <<ex-multiple>>, Antora is running on a playbook file in the [.path]_tmp_ directory and publishing the site to two locations, one relative and one absolute.
 
-[#ex-multiple]
 .Specify multiple providers
-[source,yaml]
+[source#ex-multiple,yaml]
 ----
 output:
   destinations:

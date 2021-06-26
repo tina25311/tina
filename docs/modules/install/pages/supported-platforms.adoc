@@ -1,11 +1,9 @@
 = Supported Platforms and System Requirements
 :navtitle: Supported Platforms
-:test-count: over 1345
+:test-count: over 1650
 :test-coverage: 99%
 // URLs
-:url-repo: https://gitlab.com/antora/antora
 :url-issues: {url-repo}/issues
-:url-chat-dev: https://gitter.im/antora/dev
 
 Antora runs on Linux, macOS, and Windows.
 Thanks to this broad platform support, Antora is also used on many cloud platforms and continuous integration and delivery servers.
@@ -21,24 +19,24 @@ When a platform version reaches the end of active support by its maintainers or 
 |Supported Platform |Supported Version(s)
 
 |Alpine Linux
-|&#8805; 3.10
+|&#8805; 3.11
 
 |Debian
-|&#8805; 10.6
+|&#8805; 10.10
 
 |Fedora
-|&#8805; 31
+|&#8805; 33
 
 |Ubuntu
 |[%hardbreaks]
-16.04 LTS
 18.04 LTS
+20.04 LTS
 
 |macOS
 |[%hardbreaks]
-High Sierra
 Mojave
 Catalina
+Big Sur
 
 |Microsoft
 |[%hardbreaks]
@@ -52,17 +50,15 @@ Windows Server 2019
 |Firefox
 |Latest stable version
 
-|Internet Explorer
-|11
-
 |MS Edge
 |Latest stable version
 
 |Node.js
 |[%hardbreaks]
-&#8805; 10.22.1
+&#8805; 10.24.0
 12
 14
+16
 |===
 
 .About the Antora Test Suite
@@ -75,7 +71,7 @@ You could say we're just a teeny-tiny bit obsessed with writing high quality tes
 
 Antora should operate as designed on common cloud platforms.
 How you provision your cloud instance depends on your workload requirements and remote git repository sizes.
-If you're running Antora on a cloud platform, we would love to hear about your experience (open a {url-issues}[new issue^] or join us in the {url-chat-dev}[development channel^]).
+If you're running Antora on a cloud platform, we would love to hear about your experience (open a {url-issues}[new issue^] or join us in Antora's {url-chat}[community chat^]).
 
 == Hardware recommendations
 
@@ -111,17 +107,18 @@ On subsequent runs, Antora only reconnects to the remote repositories if the xre
 ////
 OS Release schedule links
 
-Alpine: https://wiki.alpinelinux.org/wiki/Alpine_Linux:Releases
-- 3.8 ends 2020-5-01, 3.9 ends 2020-11
+Alpine: https://alpinelinux.org/releases/
+3.11 ends on 2021-11-01
 
 Arch: https://www.archlinux.org/releng/releases/
 
 Arch Linux releases once a month, with only the 3 most recent distros being officially available
 
-Debian: https://www.debian.org/releases/stable/
+Debian: https://www.debian.org/releases/
 
 Fedora: https://fedoraproject.org/wiki/Releases
-estimated EOL of 31 is 11-17-2020
+EOL of 33 is 2021-11-16
+
 Ubuntu Linux: https://wiki.ubuntu.com/Releases
 
 openSUSE: https://en.opensuse.org/Portal:42.3
@@ -135,7 +132,6 @@ Windows Server 2016: Mainstream support: Until January 11, 2022
 Windows 10: TBD
 
 MacOS https://en.wikipedia.org/wiki/MacOS_version_history
-High Sierra EOL Sept 2020
 Mojave EOL Sept 2021
 
 MS Edge: replaces IE 11 which is not being developed further; it is the default browser for Windows 10/Server 2016

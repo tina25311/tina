@@ -1,6 +1,6 @@
-= Asciidoctor Upgrade Nodes
+= Asciidoctor Upgrade Notes
 
-Antora 3 uses Asciidoctor 2 instead of Asciidoctor 1.5.8 to process content files.
+Antora 3 uses Asciidoctor.js 2.2.x (Asciidoctor 2.0.x) instead of Asciidoctor.js 1.5.9 (Asciidoctor 1.5.8) to process content files.
 Asciidoctor 2 introduces many new features and a few substantive changes to existing features.
 
 == Asciidoctor 2 feature changes
@@ -95,5 +95,5 @@ Now, spaces are encoded as a plus sign (`{plus}`) in email addresses to comply w
 
 == Semantic versioning and Asciidoctor 2
 
-Starting with version 2.0.0, Asciidoctor switched to semantic versioning.
+Starting with version 2.0.0, Asciidoctor and Asciidoctor.js switched to semantic versioning.
 This allows Antora to automatically pick up newer patch versions of Asciidoctor.js without making a new Antora release.

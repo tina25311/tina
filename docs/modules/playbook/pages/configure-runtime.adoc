@@ -62,15 +62,15 @@ The xref:runtime-log-level.adoc#default[level], xref:runtime-log-failure-level.a
 |Specifies the directory where the remote content sources git repositories and UI bundles are cached.
 |No
 
+|xref:runtime-fetch.adoc[fetch]
+|When set to `true`, the `fetch` key refreshes the files in the cache each time Antora runs.
+|No
+
 |xref:runtime-log-failure-level.adoc[log.failure_level]
 |Sets the log level tolerance that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
 Accepts the values `warn`, `error`, `fatal`, and `none`.
 The default value is `fatal`.
 The value `none` causes Antora to always exit with a zero exit code.
-|No
-
-|xref:runtime-fetch.adoc[fetch]
-|When set to `true`, the `fetch` key refreshes the files in the cache each time Antora runs.
 |No
 
 //xref:runtime-log-format.adoc[log.format]
