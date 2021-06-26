@@ -14,7 +14,7 @@ const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('isomorphic-git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
-const invariably = { false: () => false, void: () => {}, emptyArray: () => [] }
+const invariably = { false: () => false, void: () => undefined, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 const matcher = require('matcher')
 const MultiProgress = require('multi-progress')

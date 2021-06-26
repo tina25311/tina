@@ -4,7 +4,7 @@ const { expand: expandBraces } = require('braces')
 const flattenDeep = require('./flatten-deep')
 const { promises: fsp } = require('fs')
 const git = require('isomorphic-git')
-const invariably = { true: () => true, false: () => false, void: () => {}, emptyArray: () => [] }
+const invariably = { true: () => true, false: () => false, void: () => undefined, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 
 const RX_ESCAPE_EXCEPT_GLOB = /[.+?^${}()|[\]\\]/g
