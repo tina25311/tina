@@ -17,7 +17,7 @@ The following deprecations and breaking changes will be final with the release o
 
 === Custom git credential manager
 
-Upgrading isomorphic-git forced a change to how a custom git credential manager must be registered.
+Upgrading isomorphic-git forced a change to how a custom git credential manager is registered.
 Previously, this was done using `git.cores.create('antora').set('credentialManager', customCredentialManager)`.
 However, isomorphic-git no longer includes the `cores` (aka plugin) API, so this call is going to fail.
 Antora still honors the `cores` API, but the call to register the credential manager is now responsible for creating it (since it runs before Antora loads).
@@ -27,13 +27,13 @@ Refer to xref:playbook:private-repository-auth.adoc#custom-manager[Configure a c
 
 Preliminary documentation for the following new features is now available:
 
-* The xref:playbook:runtime-log-level.adoc[log level playbook key] specifies a severity threshold, such as `debug` or `error`, that must be met for a message to be logged.
-* The xref:playbook:runtime-log-failure-level.adoc[log failure_level playbook key] specifies the severity threshold that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
-* The xref:playbook:asciidoc-sourcemap.adoc[sourcemap key] provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor.
+* The xref:playbook:runtime-log-level.adoc[log.level playbook key] specifies a severity threshold, such as `debug` or `error`, that must be met for a message to be logged.
+* The xref:playbook:runtime-log-failure-level.adoc[log.failure_level playbook key] specifies the severity threshold that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
+* The xref:playbook:asciidoc-sourcemap.adoc[asciidoc.sourcemap key] provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor extensions.
 
 === Asciidoctor 2 feature changes and suggested fixes
 
-In the <<alpha3-dependencies,previous Antora 3.0.0-alpha.3 release>>, support for Asciidoctor.js 1.5.9 was dropped and Antora switched to depending on the latest patch version of Asciidoctor.js 2.2.
+In the <<alpha3-dependencies,previous Antora 3.0.0-alpha.3 release>>, support for Asciidoctor.js 1.5.9 (which provides Asciidoctor 1.5.8) was dropped and Antora switched to depending on the latest patch version of Asciidoctor.js 2.2 (which provides Asciidoctor 2.0.x).
 
 Asciidoctor 2 introduces a few substantive changes to existing features that may impact your documentation source content or UI.
 See xref:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora 3.
@@ -46,16 +46,14 @@ IMPORTANT: The added features and changes described below are in *ALPHA* and sub
 
 === Added
 
-Issue {url-issues}/780[#780^]:: Add `level_format` key to `log` category (default: `label`), mapped to `--log-level-format` CLI option, to allow log level format to be configured.
-Use numeric log level in JSON log message if log level format is `number`.
 Issue {url-issues}/767[#767^]:: Add built-in support for writing log messages to a file or standard stream, configured using the `runtime.log.destination` category in the playbook, with additional settings for buffer size, sync, and append.
 Map the `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `runtime.log.destination.file` key in playbook.
+Issue {url-issues}/780[#780^]:: Add `level_format` key to `log` category (default: `label`), mapped to `--log-level-format` CLI option, to allow log level format to be configured.
+Use numeric log level in JSON log message if log level format is `number`.
 Issue {url-issues}/776[#776^]:: Add xref:playbook:asciidoc-sourcemap.adoc[sourcemap key] to `asciidoc` category (default: `false`), mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor.
-Issue {url-issues}/767[#767^]:: Add built-in support for logging messages to a file with an optional sync or async buffer.
-Map `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `runtime.log.destination.file` key in playbook.
 Issue {url-issues}/403[#403^]:: Log error message when target of xref is not found.
-Issue {url-issues}/368[#368^]:: Catalog example and partial files that do not have a file extension.
-Issue {url-issues}/220[#220^]:: Add completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set).
+Issue {url-issues}/368[#368^]:: Catalog example and partial files that do not have a file extension (e.g., Dockerfile).
+Issue {url-issues}/220[#220^]:: Add a completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set).
 
 === Fixed
 
@@ -63,8 +61,8 @@ Issue {url-issues}/771[#771^]:: Port fixes for include tags processing from Asci
 
 === Changed
 
-Antora logger:: Don't set name on root logger so it isn't included in raw JSON message.
-Set `fatal` as default value for `runtime.log.failure_level`; remove `all`, `debug`, and `info` from allowable set of values.
+Antora logger:: Set `fatal` as default value for `runtime.log.failure_level`; remove `all`, `debug`, and `info` from allowable set of values.
+Don't set name on root logger so it isn't included in raw JSON message.
 Issue {url-issues}/785[#785^]:: Rename `--failure-level` option to `--log-failure-level`.
 Rename `silent` value on `runtime.log.failure_level` to `none`.
 Issue {url-issues}/784[#784^]:: Remove `structured` as possible value of `log.format`, preferring `json` instead.
@@ -73,11 +71,11 @@ Rename options to choices in help text.
 Combine choices and default value together in help text for option that accepts a fixed set of values.
 Issue {url-issues}/776[#776^]:: Include line number and correct file in xref error message when `sourcemap` is enabled on AsciiDoc processor.
 Issue {url-issues}/774[#774^]:: Upgrade git client to isomorphic-git 1.8.x and update code to accommodate changes to its API.
-Issue {url-issues}/706[#706^]:: Ignore backup files (files that end with `+~+`) when scanning content source
-Issue {url-issues}/769[#769^]:: Detect when registered html5 converter has changed and recreate extended converter to use it.
+Issue {url-issues}/706[#706^]:: Ignore backup files (files that end with `+~+`) when scanning content source.
+Issue {url-issues}/769[#769^]:: Use converter registered for the html5 backend instead of always using the built-in HTML5 converter.
+Detect when registered html5 converter has changed and recreate extended converter to use it.
 Issue {url-issues}/733[#733^]:: Upgrade CLI library to commander.js 7.2.
 Issue {url-issues}/403[#403^]:: Change "include target" to "target of include" in error message for missing include.
-Issue {url-issues}/706[#706^]:: Ignore backup files (files that end with `+~+`) when scanning content source.
 
 = Antora 3.0.0-alpha.6
 
