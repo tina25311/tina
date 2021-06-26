@@ -2408,13 +2408,15 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should skip files and directories and directories that begin with a dot, but not extensionless files', () => {
+    describe('should skip files and directories and directories that begin with a dot or end with a tilde', () => {
       testAll(async (repoBuilder) => {
         const fixturePaths = [
           // directory with extension
           'modules/ROOT/pages/keep.me/page.adoc',
           // extensionless file
-          'modules/ROOT/pages/extensionless',
+          'modules/ROOT/examples/noext',
+          // backup file
+          'modules/ROOT/pages/index.adoc~',
           // dotfile
           'modules/ROOT/pages/.ignore-me',
           // dotfile with extension
@@ -2433,7 +2435,7 @@ describe('aggregateContent()', function () {
           '.ignore.rc/run.sh',
         ]
         const ignoredPaths = fixturePaths.filter(
-          (path_) => !(path_ === 'modules/ROOT/pages/keep.me/page.adoc' || path_ === 'modules/ROOT/pages/extensionless')
+          (path_) => !(path_ === 'modules/ROOT/pages/keep.me/page.adoc' || path_ === 'modules/ROOT/examples/noext')
         )
         await initRepoWithFiles(repoBuilder, {}, undefined, () => repoBuilder.addFilesFromFixture(fixturePaths))
         playbookSpec.content.sources.push({ url: repoBuilder.url })

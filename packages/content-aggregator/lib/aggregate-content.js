@@ -608,8 +608,10 @@ function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
  * (basename) that begins with dot ('.') is marked as skipped.
  */
 function filterGitEntry (entry) {
-  if (entry.path.charAt() === '.') return false
-  return entry.type === 'blob' || entry.mode !== SYMLINK_FILE_MODE ? true : 'treeOnly'
+  const entryPath = entry.path
+  if (entryPath.charAt() === '.') return false
+  if (entry.type === 'tree') return entry.mode === SYMLINK_FILE_MODE ? 'treeOnly' : true
+  return entryPath.charAt(entryPath.length - 1) !== '~'
 }
 
 function entryToFile (entry) {

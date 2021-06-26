@@ -30,6 +30,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Use internal implementation of the http plugin for all clone and fetch operations (#774)
 * *content-aggregator*: Only cache packfile and index for a git repository while scanning it instead of across the entire Antora run
 * *asciidoc-loader*: Use `Converter.for` to look up registered html5 converter instead of referring directly to name of built-in class (#769)
+* *content-aggregator*: Ignore backup files (files that end with `+~+`) when scanning content source (#706)
 * *asciidoc-loader*: Detect when registered html5 converter has changed and recreate extended converter to use it (#769)
 * *asciidoc-loader*: Change "include target" to "target of include" in error message for missing include (#403)
 * *asciidoc-loader*: Include line number and correct file in xref error message when sourcemap is enabled on AsciiDoc processor (#776)

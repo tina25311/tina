@@ -3,7 +3,7 @@
 module.exports = Object.freeze({
   COMPONENT_DESC_FILENAME: 'antora.yml',
   CONTENT_CACHE_FOLDER: 'content/2',
-  CONTENT_GLOB: '**/*',
+  CONTENT_GLOB: '**/*[!~]',
   FILE_MODES: { 100644: 0o100666 & ~process.umask(), 100755: 0o100777 & ~process.umask() },
   GIT_CORE: 'antora',
   GIT_OPERATION_LABEL_LENGTH: 8,
