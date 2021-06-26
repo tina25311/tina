@@ -42,7 +42,7 @@
 :url-eslint-ide: https://eslint.org/docs/user-guide/integrations#editors
 :url-git: https://git-scm.com
 :url-git-dl: {url-git}/downloads
-:url-gitter-antora-dev: https://gitter.im/antora/dev
+:url-chat: https://antora.zulipchat.com
 :url-gulp: https://gulpjs.com
 :url-istanbul: https://istanbul.js.org/
 :url-lerna: https://lerna.js.org
@@ -165,10 +165,6 @@ If you forget, you can fix it by clicking the Edit button on the MR page.
 == Fork, Branch, Commit, and Merge Request Rules
 
 To contribute to the project:
-
-. *Join the project.*
-Post to the {url-gitter-antora-dev}[gitter antora/dev channel] requesting to be added to the GitLab project as a {url-members}[members].
-Please communicate your GitLab ID in the message.
 
 . *Fork the project.*
 We do not accept merge requests that do not come from a dedicated branch in a fork.
