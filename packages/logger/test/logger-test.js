@@ -930,10 +930,8 @@ describe('logger', () => {
   })
 
   describe('unwrap()', () => {
-    beforeEach(configure)
-
     it('should intercept call to unwrap return logger without proxy', () => {
-      const logger = get('foobar')
+      const logger = configure().get('foobar')
       expect(types.isProxy(logger)).to.be.true()
       const rawLogger = logger.unwrap()
       expect(rawLogger).to.not.equal(logger)
