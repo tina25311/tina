@@ -3,8 +3,9 @@
 [#url-key]
 == url key
 
-The `url` key for the site, defined under the xref:configure-site.adoc[site key] in the playbook, is recommended.
+The `url` key for the site, defined under the xref:configure-site.adoc[site key] in the playbook, is optional, but recommended.
 If this key is not set, certain features of the site that relate to publishing will be disabled.
+See <<when-should-the-site-url-be-set>> for details.
 
 .antora-playbook.yml
 [source,yaml]
@@ -56,6 +57,7 @@ You might use a root-relative path instead of an absolute URL if the same conten
 By using a root-relative value, you're still able to take advantage of most of the benefits of assigning a site URL without coupling your site to a specific domain.
 However, any feature that depends on absolute URLs, such as the sitemap and canonical URL, must be implicitly disabled.
 
+[#when-should-the-site-url-be-set]
 == When should the site URL be set?
 
 An Antora site is designed to be viewable offline and from a local filesystem.

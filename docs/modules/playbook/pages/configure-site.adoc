@@ -20,14 +20,16 @@ site: # <1>
 ----
 <1> Required `site` key
 <2> Required `title` key
-<3> Required `url` key
+<3> Optional `url` key
 <4> Optional `start_page` key
 <5> Optional `robots` key
 <6> Optional `keys` key
 <7> Example `google_analytics` key
 
-The `site`, `title`, and `url` keys are required.
-The other keys are optional; Antora will use their default values if they're not specified.
+The `title` key in the `site` category is required.
+The `url` key is optional, but recommended.
+See xref:site-url.adoc#when-should-the-site-url-be-set[When should the site URL be set?] for details.
+The other keys are optional; Antora will use default values if they're not specified.
 
 NOTE: Some of these keys can be overridden from the xref:cli:options.adoc[command line] or with xref:environment-variables.adoc[environment variables].
 
@@ -59,5 +61,5 @@ Ignored if the sibling `url` key is not set.
 
 |xref:site-url.adoc[url]
 |Specifies the base URL of a site.
-|Yes
+|No
 |===
