@@ -10,8 +10,8 @@ This project utilizes semantic versioning.
 === Added
 
 * *logger*: Use numeric log level in JSON log message if log level format is number (#780)
-* *playbook-builder*: Add `sourcemap` option to `asciidoc` category, mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor (#776)
 * *playbook-builder*: Add `level_format` to `log` category (default: label), mapped to `--log-level-format` CLI option, to allow log level format to be configured (#780)
+* *playbook-builder*: Add `sourcemap` option to `asciidoc` category, mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor (#776)
 * *asciidoc-loader*: Log error message when target of xref is not found (#403)
 * *content-classifier*: Catalog example and partial files that do not have a file extension (#368)
 * *site-generator-default*: Add completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set) (#220)
@@ -24,17 +24,17 @@ This project utilizes semantic versioning.
 
 * *logger*: Don't set name on root logger so it isn't included in raw JSON message
 * *playbook-builder*: Remove `structured` as possible value of `log.format`, preferring `json` instead (#784)
-* *playbook-builder*: Rename silent value on runtime.log.failure_level to none (#785)
-* *playbook-builder*: Set fatal as default value for runtime.log.failure_level; remove all, debug, and info from allowable set of values
-* *content-aggregator*: Upgrade git client to isomorphic-git 1.8.x and update code to accomodate changes to its API (#774)
+* *playbook-builder*: Rename `silent` value on `runtime.log.failure_level` to `none` (#785)
+* *playbook-builder*: Set `fatal` as default value for `runtime.log.failure_level`; remove `all`, `debug`, and `info` from allowable set of values
+* *content-aggregator*: Upgrade git client to isomorphic-git 1.8.x and update code to accommodate changes to its API (#774)
 * *content-aggregator*: Use internal implementation of the http plugin for all clone and fetch operations (#774)
 * *content-aggregator*: Only cache packfile and index for a git repository while scanning it instead of across the entire Antora run
-* *asciidoc-loader*: Use Converter.for to look up registered html5 converter instead of referring directly to name of built-in class (#769)
+* *asciidoc-loader*: Use `Converter.for` to look up registered html5 converter instead of referring directly to name of built-in class (#769)
 * *asciidoc-loader*: Detect when registered html5 converter has changed and recreate extended converter to use it (#769)
 * *asciidoc-loader*: Change "include target" to "target of include" in error message for missing include (#403)
 * *asciidoc-loader*: Include line number and correct file in xref error message when sourcemap is enabled on AsciiDoc processor (#776)
 * *cli*: Rename `--failure-level` option to `--log-failure-level` (#785)
-* *cli*: Upgrade cli library to commander.js 7.2 (#733)
+* *cli*: Upgrade CLI library to commander.js 7.2 (#733)
 * *cli*: Always honor value of COLUMNS environment variable when determining width of help text (#733)
 * *cli*: Configure CLI to recognize options that accept a fixed set of values and validate value before proceeding (#778)
 * *cli*: Rename options to choices in help text (#778)
