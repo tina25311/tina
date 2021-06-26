@@ -59,7 +59,7 @@ class ContentCatalog {
     Object.defineProperty(componentVersion, 'name', { value: name, enumerable: true })
     if (prerelease) {
       componentVersion.prerelease = prerelease
-      if (!displayVersion && (typeof prerelease === 'string' || prerelease instanceof String)) {
+      if (!displayVersion && prerelease.constructor === String) {
         if (version) {
           const ch0 = prerelease.charAt()
           componentVersion.displayVersion = `${version}${ch0 === '-' || ch0 === '.' ? '' : ' '}${prerelease}`
