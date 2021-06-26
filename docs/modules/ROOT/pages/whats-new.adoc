@@ -71,6 +71,7 @@ Rename options to choices in help text.
 Combine choices and default value together in help text for option that accepts a fixed set of values.
 Issue {url-issues}/776[#776^]:: Include line number and correct file in xref error message when `sourcemap` is enabled on AsciiDoc processor.
 Issue {url-issues}/774[#774^]:: Upgrade git client to isomorphic-git 1.8.x and update code to accommodate changes to its API.
+Issue {url-issues}/706[#706^]:: Ignore backup files (files that end with `+~+`) when scanning content source
 Issue {url-issues}/769[#769^]:: Detect when registered html5 converter has changed and recreate extended converter to use it.
 Issue {url-issues}/733[#733^]:: Upgrade CLI library to commander.js 7.2.
 Issue {url-issues}/403[#403^]:: Change "include target" to "target of include" in error message for missing include.
