@@ -666,6 +666,67 @@ describe('cli', function () {
     })
   }).timeout(timeoutOverride)
 
+  it('should flush log buffer and close log file for logger on normal exit', () => {
+    playbookSpec.site.start_page = 'no-such-component::index.adoc'
+    playbookSpec.runtime = {
+      log: {
+        failure_level: 'warn',
+        destination: {
+          file: '.' + ospath.sep + buildDir + ospath.sep + 'antora.log',
+          buffer_size: 4096,
+          sync: false,
+        },
+      },
+    }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const args = ['generate', 'the-site']
+    const messages = []
+    const logFile = ospath.join(WORK_DIR, buildDir, 'antora.log')
+    return new Promise((resolve) =>
+      runAntora(args)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.be.empty()
+      expect(logFile)
+        .to.be.a.file()
+        .with.json()
+        .and.have.contents.that.match(/"msg":"Start page specified for site not found: .+"/)
+    })
+  })
+
+  it('should flush log buffer and close log file for logger on unexpected exit', () => {
+    playbookSpec.site.start_page = 'no-such-component::index.adoc'
+    playbookSpec.runtime = {
+      log: {
+        destination: {
+          file: '.' + ospath.sep + buildDir + ospath.sep + 'antora.log',
+          buffer_size: 4096,
+          sync: false,
+        },
+      },
+    }
+    playbookSpec.output = { destinations: [{ provider: 's3' }] }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const args = ['generate', 'the-site']
+    const messages = []
+    const logFile = ospath.join(WORK_DIR, buildDir, 'antora.log')
+    return new Promise((resolve) =>
+      runAntora(args)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include('Unsupported destination provider')
+      expect(logFile)
+        .to.be.a.file()
+        .with.json()
+        .and.have.contents.that.match(/"msg":"Start page specified for site not found: .+"/)
+    })
+  })
+
   it('should configure logger with default settings and warning if used before being configured', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const r1 = ospath.resolve(FIXTURES_DIR, 'use-logger')

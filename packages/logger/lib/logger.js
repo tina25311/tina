@@ -1,27 +1,56 @@
 'use strict'
 
-const { posix: path } = require('path')
+const { EventEmitter, once } = require('events')
+const expandPath = require('@antora/expand-path-helper')
+const fs = require('fs')
+const ospath = require('path')
+const { posix: path } = ospath
 const {
   destination: buildDest,
   levels: { labels: levelLabels, values: levelValues },
+  symbols: { streamSym },
   pino,
 } = require('pino')
 
 const closedLogger = { closed: true }
+const finalizers = []
 const INF = Infinity
 const minLevel = levelLabels[Math.min.apply(null, Object.keys(levelLabels))]
 const noopLogger = pino({ base: null, enabled: false, timestamp: false }, {})
 const rootLoggerHolder = new Map()
+const standardStreams = { 1: 'stdout', 2: 'stderr', stderr: 2, stdout: 1 }
 
 function close () {
-  if (rootLoggerHolder.has()) Object.assign(rootLoggerHolder.get(), closedLogger)
+  const rootLogger = rootLoggerHolder.get() || closedLogger
+  if (rootLogger.closed) return
+  const strm = Object.assign(rootLogger, closedLogger)[streamSym]
+  if (strm instanceof EventEmitter && typeof strm.end === 'function' && (strm._buf || !(strm.fd in standardStreams))) {
+    const waitForClose = once(strm, 'close').catch(() => undefined)
+    strm.end()
+    finalizers.push(waitForClose)
+  }
 }
 
-function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent', format, destination = {} } = {}) {
+function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent', format, destination } = {}, baseDir) {
   const silent = (levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF
   if (silent && (levelValues[failureLevel] || INF) === INF && (rootLoggerHolder.get() || {}).noop) return module.exports
   close()
   const prettyPrint = format === 'pretty'
+  let colorize, dest
+  if (!(silent || typeof (destination || (destination = {})).write === 'function')) {
+    const { file, append = true, bufferSize, ...destOpts } = destination
+    if (bufferSize != null) destOpts.minLength = bufferSize
+    if (file && !(dest = standardStreams[file])) {
+      dest = expandPath(file, '~+', baseDir)
+      try {
+        fs.mkdirSync(ospath.dirname(dest), { recursive: true })
+        if (!append) fs.unlinkSync(dest)
+      } catch {}
+    } else if (process.env.NODE_ENV !== 'test') {
+      colorize = true
+    }
+    destination = buildDest(prettyPrint ? dest || 2 : Object.assign({ sync: true }, destOpts, { dest: dest || 1 }))
+  }
   const logger = addFailOnExitHooks(
     silent
       ? Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
@@ -73,10 +102,10 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
             },
             suppressFlushSyncWarning: true,
             translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
-            ...(process.env.NODE_ENV === 'test' && { colorize: false }),
+            ...(colorize ? undefined : { colorize: false }),
           },
         },
-        destination.write instanceof Function ? destination : buildDest(prettyPrint ? 2 : 1)
+        destination
       ),
     failureLevel
   )
@@ -110,7 +139,7 @@ function get (name) {
 
 function finalize () {
   close()
-  return Promise.resolve((rootLoggerHolder.get() || {}).failOnExit)
+  return Promise.all(finalizers.splice(0, finalizers.length)).then(() => (rootLoggerHolder.get() || {}).failOnExit)
 }
 
 function reshapeFileForLog ({ file: { abspath, origin, path: vpath }, line, stack }) {

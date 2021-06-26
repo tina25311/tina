@@ -1,10 +1,21 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureStderrSync, captureStdoutSync, captureStdoutLogSync, expect } = require('../../../test/test-utils')
+const {
+  captureStdoutLog,
+  captureStderrSync,
+  captureStdoutSync,
+  captureStdoutLogSync,
+  emptyDirSync,
+  expect,
+  rmdirSync,
+} = require('../../../test/test-utils')
 const Logger = require('@antora/logger')
 const { configure, configureLogger, finalizeLogger, get, getLogger } = Logger
+const ospath = require('path')
 const { types } = require('util')
+
+const WORK_DIR = ospath.join(__dirname, 'work')
 
 describe('logger', () => {
   const findOwnPropertySymbol = (object, key) => {
@@ -887,6 +898,16 @@ describe('logger', () => {
   })
 
   describe('destination', () => {
+    beforeEach(() => {
+      rmdirSync(WORK_DIR)
+    })
+
+    afterEach(finalizeLogger)
+
+    after(() => {
+      rmdirSync(WORK_DIR)
+    })
+
     it('should allow custom destination with write method to be specified', () => {
       const destination = new (class {
         constructor () {
@@ -914,6 +935,206 @@ describe('logger', () => {
       expect(getStream(logger).write).to.be.instanceOf(Function)
       const lines = captureStdoutSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
+    })
+
+    it('should write structured (JSON) log message to stderr if value of destination.file is stderr', () => {
+      const logger = configure({ destination: { file: 'stderr' } }).get(null)
+      const lines = captureStderrSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
+      const { time, ...message } = JSON.parse(lines[0])
+      expect(typeof time).to.equal('number')
+      expect(message).to.eql({ level: 'info', msg: 'love is the message' })
+    })
+
+    it('should write pretty log message to stdout if value of destination.file is stdout', () => {
+      const logger = configure({ name: 'antora', format: 'pretty', destination: { file: 'stdout' } }).get(null)
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
+      const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
+      expect(lines[0]).to.match(expectedLine)
+    })
+
+    it('should write to file specified by destination.file, creating directory if needed', () => {
+      expect(WORK_DIR).to.not.be.a.path()
+      const logger = configure({ destination: { file: './antora.log' } }, WORK_DIR).get(null)
+      expect(WORK_DIR).to.be.a.directory()
+      const logFile = ospath.join(WORK_DIR, 'antora.log')
+      const stream = getStream(logger)
+      expect(stream).to.have.property('sync', true)
+      expect(stream).to.have.property('minLength', 0)
+      expect(stream).to.have.property('file', logFile)
+      logger.info('love is the message')
+      // NOTE in this case, there's no need to wait for call to finalize
+      expect(logFile)
+        .to.be.a.file()
+        .with.json()
+        .and.have.contents.that.match(/"msg":"love is the message"/)
+    })
+
+    it('should resolve destination file relative to current directory if baseDir is not specified', async () => {
+      const cwd = process.cwd()
+      try {
+        emptyDirSync(WORK_DIR)
+        process.chdir(WORK_DIR)
+        const logger = configure({ destination: { file: './antora.log' } }).get(null)
+        const logFile = ospath.join(WORK_DIR, 'antora.log')
+        const stream = getStream(logger)
+        expect(stream).to.have.property('file', logFile)
+        logger.info('love is the message')
+        expect(logFile)
+          .to.be.a.file()
+          .with.json()
+          .and.have.contents.that.match(/"msg":"love is the message"/)
+      } finally {
+        process.chdir(cwd)
+      }
+    })
+
+    it('should write to file specified by destination.file when logger is finalized if bufferSize is non-zero', async () => {
+      const bufferSize = 4096
+      const logger = configure({ destination: { file: './antora.log', bufferSize } }, WORK_DIR).get(null)
+      const logFile = ospath.join(WORK_DIR, 'antora.log')
+      const stream = getStream(logger)
+      expect(stream).to.have.property('sync', true)
+      expect(stream).to.have.property('minLength', bufferSize)
+      expect(stream).to.have.property('file', logFile)
+      logger.info('love is the message')
+      expect(logFile)
+        .to.be.a.file()
+        .and.be.empty()
+      await finalizeLogger()
+      expect(logFile)
+        .to.be.a.file()
+        .with.json()
+        .and.have.contents.that.match(/"msg":"love is the message"/)
+    })
+
+    it('should write to file specified by destination.file when logger is finalized if sync is false', async () => {
+      const logger = configure({ destination: { file: './antora.log', sync: false } }, WORK_DIR).get(null)
+      const logFile = ospath.join(WORK_DIR, 'antora.log')
+      const stream = getStream(logger)
+      expect(stream).to.have.property('sync', false)
+      expect(stream).to.have.property('minLength', 0)
+      expect(stream).to.have.property('file', null)
+      logger.info('love is the message')
+      await finalizeLogger()
+      expect(logFile)
+        .to.be.a.file()
+        .with.json()
+        .and.have.contents.that.match(/"msg":"love is the message"/)
+    })
+
+    it('should write to file specified by destination.file when logger is finalized if sync is false and bufferSize is non-zero', async () => {
+      const bufferSize = 4096
+      const logger = configure({ destination: { file: './antora.log', sync: false, bufferSize } }, WORK_DIR).get(null)
+      const logFile = ospath.join(WORK_DIR, 'antora.log')
+      const stream = getStream(logger)
+      expect(stream).to.have.property('sync', false)
+      expect(stream).to.have.property('minLength', bufferSize)
+      expect(stream).to.have.property('file', null)
+      logger.info('love is the message')
+      await finalizeLogger()
+      expect(logFile)
+        .to.be.a.file()
+        .with.json()
+        .and.have.contents.that.match(/"msg":"love is the message"/)
+    })
+
+    it('should write to standard stream specified by destination.file when logger is finalized if bufferSize is non-zero', async () => {
+      const bufferSize = 4096
+      const logger = configure({ destination: { file: 'stdout', bufferSize } }, WORK_DIR).get(null)
+      const stream = getStream(logger)
+      expect(stream).to.have.property('sync', true)
+      expect(stream).to.have.property('minLength', bufferSize)
+      expect(stream).to.have.property('fd', 1)
+      const messages = await captureStdoutLog(() => {
+        logger.info('love is the message')
+        return finalizeLogger()
+      })
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].msg).to.equal('love is the message')
+    })
+
+    it('should write to standard stream specified by destination.file when logger is finalized if sync is false and bufferSize is non-zero', async () => {
+      const bufferSize = 4096
+      const logger = configure({ destination: { file: 'stdout', sync: false, bufferSize } }, WORK_DIR).get(null)
+      const stream = getStream(logger)
+      expect(stream).to.have.property('sync', false)
+      expect(stream).to.have.property('minLength', bufferSize)
+      expect(stream).to.have.property('fd', 1)
+      const messages = await captureStdoutLog(() => {
+        logger.info('love is the message')
+        return finalizeLogger()
+      })
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].msg).to.equal('love is the message')
+    })
+
+    it('should ignore bufferSize option when format is pretty', async () => {
+      const bufferSize = 4096
+      const logger = configure({ format: 'pretty', destination: { file: 'stdout', bufferSize } }, WORK_DIR).get(null)
+      const stream = getStream(logger)
+      expect(stream).to.not.have.property('minLength')
+      expect(stream).to.not.have.property('fd')
+      // notice there is no call to finalizeLogger
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
+      const expectedLine = /^\[.+\] INFO: love is the message$/
+      expect(lines[0]).to.match(expectedLine)
+    })
+
+    it('should ignore sync option when format is pretty', async () => {
+      const logger = configure({ format: 'pretty', destination: { file: 'stdout', sync: false } }, WORK_DIR).get(null)
+      const stream = getStream(logger)
+      expect(stream).to.not.have.property('minLength')
+      expect(stream).to.not.have.property('fd')
+      // notice there is no call to finalizeLogger
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
+      const expectedLine = /^\[.+\] INFO: love is the message$/
+      expect(lines[0]).to.match(expectedLine)
+    })
+
+    it('should append to file specified by destination.file by default', async () => {
+      let logger = configure({ destination: { file: './antora.log' } }, WORK_DIR).get(null)
+      const logFile = ospath.join(WORK_DIR, 'antora.log')
+      logger.info('love is the message')
+      await finalizeLogger()
+      logger = configure({ destination: { file: './antora.log' } }, WORK_DIR).get(null)
+      logger.info('music all life long')
+      expect(logFile)
+        .to.be.a.file()
+        .and.have.contents.that.match(/"msg":"music all life long"/)
+        .and.have.contents.that.match(/"msg":"love is the message"/)
+    })
+
+    it('should not append to file specified by destination.file if append is false', async () => {
+      let logger = configure({ destination: { file: './antora.log', append: false } }, WORK_DIR).get(null)
+      const logFile = ospath.join(WORK_DIR, 'antora.log')
+      logger.info('love is the message')
+      await finalizeLogger()
+      logger = configure({ destination: { file: './antora.log', append: false } }, WORK_DIR).get(null)
+      logger.info('music all life long')
+      expect(logFile)
+        .to.be.a.file()
+        .and.have.contents.that.match(/"msg":"music all life long"/)
+        .and.not.have.contents.that.match(/"msg":"love is the message"/)
+    })
+
+    it('should not colorize pretty log message when writing to a file', () => {
+      const nodeEnv = process.env.NODE_ENV
+      try {
+        delete process.env.NODE_ENV
+        const destination = { file: './antora.log' }
+        const logger = configure({ name: 'antora', format: 'pretty', destination }, WORK_DIR).get(null)
+        const logFile = ospath.join(WORK_DIR, 'antora.log')
+        logger.info('love is the message')
+        expect(logFile)
+          .to.be.a.file()
+          .and.have.contents.that.match(/ INFO \(antora\): love is the message/)
+      } finally {
+        process.env.NODE_ENV = nodeEnv
+      }
     })
   })
 

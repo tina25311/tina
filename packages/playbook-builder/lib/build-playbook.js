@@ -94,7 +94,7 @@ function exportModel (config) {
       if (runtime.quiet === false) runtime.quiet = true
       if (log && 'level' in log) log.level = 'silent'
     }
-    if (log) configureLogger(log)
+    if (log) configureLogger(log, playbook.dir)
   }
   delete playbook.playbook
   return freeze(playbook)

@@ -5,6 +5,11 @@ runtime:
     level: info
     level_format: number
     failure_level: warn
+    destination:
+      file: stdout
+      buffer_size: 4096
+      sync: false
+      append: false
 site:
   url: https://example.com
   title: Example site

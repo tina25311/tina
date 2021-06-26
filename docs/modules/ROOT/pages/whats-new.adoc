@@ -48,6 +48,8 @@ IMPORTANT: The added features and changes described below are in *ALPHA* and sub
 
 Issue {url-issues}/780[#780^]:: Add `level_format` key to `log` category (default: `label`), mapped to `--log-level-format` CLI option, to allow log level format to be configured.
 Use numeric log level in JSON log message if log level format is `number`.
+Issue {url-issues}/767[#767^]:: Add built-in support for writing log messages to a file or standard stream, configured using the `runtime.log.destination` category in the playbook, with additional settings for buffer size, sync, and append.
+Map the `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `runtime.log.destination.file` key in playbook.
 Issue {url-issues}/776[#776^]:: Add xref:playbook:asciidoc-sourcemap.adoc[sourcemap key] to `asciidoc` category (default: `false`), mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor.
 Issue {url-issues}/767[#767^]:: Add built-in support for logging messages to a file with an optional sync or async buffer.
 Map `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `runtime.log.destination.file` key in playbook.

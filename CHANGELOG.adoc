@@ -10,11 +10,13 @@ This project utilizes semantic versioning.
 === Added
 
 * *logger*: Use numeric log level in JSON log message if log level format is number (#780)
+* *logger*: Add built-in support for writing log messages to a file or standard stream with additional settings for buffer size, sync, and append (#767)
 * *playbook-builder*: Add `level_format` to `log` category (default: label), mapped to `--log-level-format` CLI option, to allow log level format to be configured (#780)
 * *playbook-builder*: Add `sourcemap` option to `asciidoc` category, mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor (#776)
 * *asciidoc-loader*: Log error message when target of xref is not found (#403)
 * *content-classifier*: Catalog example and partial files that do not have a file extension (#368)
 * *site-generator-default*: Add completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set) (#220)
+* *cli*: Map `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `runtime.log.destination.file` key in playbook (#767)
 
 === Fixed
 
