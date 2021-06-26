@@ -785,7 +785,7 @@ describe('generateSite()', function () {
 
         progressLines.length = 0
         await generateSite(['--playbook', playbookFile], env)
-        expect(progressLines).to.have.lengthOf(0)
+        expect(progressLines).to.be.empty()
 
         // TODO assert that the UI was downloaded again
         await generateSite(['--playbook', playbookFile, '--fetch'], env)

@@ -49,7 +49,7 @@ describe('ContentCatalog', () => {
       const url = '/the-component/1.0.0/index.html'
       const contentCatalog = new ContentCatalog()
       const descriptor = { title, startPage: true }
-      expect(contentCatalog.getComponents()).to.have.lengthOf(0)
+      expect(contentCatalog.getComponents()).to.be.empty()
       contentCatalog.addFile({
         src: {
           component: name,

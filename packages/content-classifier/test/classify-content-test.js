@@ -458,7 +458,7 @@ describe('classifyContent()', () => {
     it('should not classify page if it does not have the .adoc file extension', () => {
       aggregate[0].files.push(createFile('modules/ROOT/pages/page-one.asc'))
       const files = classifyContent(playbook, aggregate).getFiles()
-      expect(files).to.have.lengthOf(0)
+      expect(files).to.be.empty()
     })
 
     it('should classify a page with the .adoc file extension', () => {
@@ -728,7 +728,7 @@ describe('classifyContent()', () => {
     it('should not classify an image without a file extension', () => {
       aggregate[0].files.push(createFile('modules/ROOT/images/image'))
       const files = classifyContent(playbook, aggregate).getFiles()
-      expect(files).to.have.lengthOf(0)
+      expect(files).to.be.empty()
     })
 
     it('should classify an image with a file extension', () => {
@@ -786,7 +786,7 @@ describe('classifyContent()', () => {
     it('should not classify an attachment without a file extension', () => {
       aggregate[0].files.push(createFile('modules/ROOT/attachments/example'))
       const files = classifyContent(playbook, aggregate).getFiles()
-      expect(files).to.have.lengthOf(0)
+      expect(files).to.be.empty()
     })
 
     it('should classify an attachment with a file extension', () => {
@@ -1017,7 +1017,7 @@ describe('classifyContent()', () => {
     it('should not classify a navigation file if not in nav list', () => {
       aggregate[0].files.push(createFile('modules/ROOT/nav.adoc'))
       const files = classifyContent(playbook, aggregate).getFiles()
-      expect(files).to.have.lengthOf(0)
+      expect(files).to.be.empty()
     })
 
     // QUESTION should we throw an error or warning?
@@ -1026,14 +1026,14 @@ describe('classifyContent()', () => {
       aggregate[0].files.push(createFile('modules/ROOT/pages/the-page.adoc'))
       aggregate[0].files.push(createFile('modules/ROOT/nav.adoc'))
       const contentCatalog = classifyContent(playbook, aggregate)
-      expect(contentCatalog.findBy({ family: 'nav' })).to.have.lengthOf(0)
+      expect(contentCatalog.findBy({ family: 'nav' })).to.be.empty()
     })
 
     it('should not register navigation file that does not have .adoc file extension', () => {
       aggregate[0].nav = ['modules/ROOT/nav.asc']
       aggregate[0].files.push(createFile('modules/ROOT/nav.asc'))
       const contentCatalog = classifyContent(playbook, aggregate)
-      expect(contentCatalog.findBy({ family: 'nav' })).to.have.lengthOf(0)
+      expect(contentCatalog.findBy({ family: 'nav' })).to.be.empty()
     })
 
     it('should assign a nav.index property to navigation file according to order listed in component descriptor', () => {
@@ -1075,7 +1075,7 @@ describe('classifyContent()', () => {
         ]
       )
       const files = classifyContent(playbook, aggregate).getFiles()
-      expect(files).to.have.lengthOf(0)
+      expect(files).to.be.empty()
     })
 
     it('should classify files from multiple components and versions', () => {

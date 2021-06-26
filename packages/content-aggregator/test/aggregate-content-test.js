@@ -1247,7 +1247,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(0)
+        expect(aggregate).to.be.empty()
       })
     })
 
@@ -1256,7 +1256,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: undefined })
         const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(0)
+        expect(aggregate).to.be.empty()
       })
     })
 
@@ -1728,7 +1728,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: 'z*' })
         const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(0)
+        expect(aggregate).to.be.empty()
       })
     })
 
@@ -1780,7 +1780,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.tags = 'v*'
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: undefined })
         const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(0)
+        expect(aggregate).to.be.empty()
       })
     })
 
@@ -1916,7 +1916,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.close())
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
         const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(0)
+        expect(aggregate).to.be.empty()
       })
     })
 
@@ -4305,7 +4305,7 @@ describe('aggregateContent()', function () {
       return withMockStdout(async (lines) => {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
-        expect(lines).to.have.lengthOf(0)
+        expect(lines).to.be.empty()
       }, 40)
     })
 
@@ -4314,7 +4314,7 @@ describe('aggregateContent()', function () {
         async (lines) => {
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
-          expect(lines).to.have.lengthOf(0)
+          expect(lines).to.be.empty()
         },
         120,
         false
@@ -4326,7 +4326,7 @@ describe('aggregateContent()', function () {
         playbookSpec.runtime = { quiet: true }
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
-        expect(lines).to.have.lengthOf(0)
+        expect(lines).to.be.empty()
       })
     })
 
@@ -4335,7 +4335,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources[0].url = repoBuilder.repoPath
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
-        expect(lines).to.have.lengthOf(0)
+        expect(lines).to.be.empty()
       })
     })
 
@@ -4921,7 +4921,7 @@ describe('aggregateContent()', function () {
         expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(credentialsRequestCount).to.equal(1)
-        expect(lines.filter((l) => l.startsWith('[clone]'))).to.have.lengthOf(0)
+        expect(lines.filter((l) => l.startsWith('[clone]'))).to.be.empty()
         expect(CONTENT_CACHE_DIR)
           .to.be.a.directory()
           .and.be.empty()

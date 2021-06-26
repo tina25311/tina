@@ -37,7 +37,7 @@ describe('produceRedirects()', () => {
   it('should run on all files in the alias family', () => {
     const emptyContentCatalog = mockContentCatalog().spyOn('findBy')
     const result = produceRedirects(playbook, emptyContentCatalog)
-    expect(result).to.have.lengthOf(0)
+    expect(result).to.be.empty()
     expect(emptyContentCatalog.findBy)
       .nth(1)
       .called.with({ family: 'alias' })
@@ -50,7 +50,7 @@ describe('produceRedirects()', () => {
 
     it('should populate contents of files in alias family with static redirect page', () => {
       const result = produceRedirects(playbook, contentCatalog)
-      expect(result).to.have.lengthOf(0)
+      expect(result).to.be.empty()
       const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/the-target.html'
       const expectedRelativeUrls = {
         'alias-a.adoc': 'the-target.html',
@@ -90,7 +90,7 @@ describe('produceRedirects()', () => {
       const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/the-target.html'
       const expectedRelativeUrls = { 'alias-a.adoc': 'the-target.html' }
       const result = produceRedirects(playbook, contentCatalog)
-      expect(result).to.have.lengthOf(0)
+      expect(result).to.be.empty()
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         if (file.src.relative) {
           const expectedRelativeUrl = expectedRelativeUrls[file.src.relative]
@@ -115,7 +115,7 @@ describe('produceRedirects()', () => {
       ])
       contentCatalog.findBy({ family: 'alias' })[0].rel = contentCatalog.getPages()[0]
       const result = produceRedirects(playbook, contentCatalog)
-      expect(result).to.have.lengthOf(0)
+      expect(result).to.be.empty()
       const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/target%20with%20spaces.html'
       const expectedRelativeUrls = {
         'alias with spaces.adoc': 'target%20with%20spaces.html',
@@ -626,7 +626,7 @@ describe('produceRedirects()', () => {
 
     it('should remove out property from files in alias family', () => {
       const result = produceRedirects(playbook, contentCatalog)
-      expect(result).to.have.lengthOf(0)
+      expect(result).to.be.empty()
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         expect(file).to.not.have.property('out')
       })

@@ -119,7 +119,7 @@ describe('loadAsciiDoc()', () => {
     `
     setInputFileContents(contents)
     const doc = loadAsciiDoc(inputFile, undefined, { headerOnly: true })
-    expect(doc.getBlocks()).to.have.lengthOf(0)
+    expect(doc.getBlocks()).to.be.empty()
     expect(doc.getDocumentTitle()).to.eql('Document Title')
     expect(doc.getAttribute('page-layout')).to.eql('home')
   })
@@ -141,7 +141,7 @@ describe('loadAsciiDoc()', () => {
     `
     setInputFileContents(contents)
     const doc = loadAsciiDoc(inputFile, undefined, { headerOnly: true })
-    expect(doc.getBlocks()).to.have.lengthOf(0)
+    expect(doc.getBlocks()).to.be.empty()
     expect(doc.getDocumentTitle()).to.eql('Document Title')
     expect(doc.getId()).to.eql('docid')
     expect(doc.getAttribute('page-layout')).to.eql('home')
@@ -316,7 +316,7 @@ describe('loadAsciiDoc()', () => {
       }).get(null)
       setInputFileContents('= Page Title\n\n2. two')
       loadAsciiDoc(inputFile).convert()
-      expect(messages).to.have.lengthOf(0)
+      expect(messages).to.be.empty()
       expect(rootLogger.failOnExit).to.be.true()
     })
 
@@ -329,7 +329,7 @@ describe('loadAsciiDoc()', () => {
       }).get(null)
       setInputFileContents('= Page Title\n\n2. two')
       loadAsciiDoc(inputFile).convert()
-      expect(messages).to.have.lengthOf(0)
+      expect(messages).to.be.empty()
       expect(rootLogger.failOnExit).to.be.undefined()
     })
 
@@ -4615,7 +4615,7 @@ describe('loadAsciiDoc()', () => {
       expect(config.extensions[0]).to.be.instanceOf(Function)
       const Extensions = Asciidoctor.Extensions
       const extensionGroupNames = Object.keys(Extensions.getGroups())
-      expect(extensionGroupNames).to.have.lengthOf(0)
+      expect(extensionGroupNames).to.be.empty()
     })
 
     it('should load global extension and register it globally', () => {
