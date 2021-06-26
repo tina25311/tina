@@ -49,8 +49,11 @@ IMPORTANT: The added features and changes described below are in *ALPHA* and sub
 Issue {url-issues}/780[#780^]:: Add `level_format` key to `log` category (default: `label`), mapped to `--log-level-format` CLI option, to allow log level format to be configured.
 Use numeric log level in JSON log message if log level format is `number`.
 Issue {url-issues}/776[#776^]:: Add xref:playbook:asciidoc-sourcemap.adoc[sourcemap key] to `asciidoc` category (default: `false`), mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor.
+Issue {url-issues}/767[#767^]:: Add built-in support for logging messages to a file with an optional sync or async buffer.
+Map `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `runtime.log.destination.file` key in playbook.
 Issue {url-issues}/403[#403^]:: Log error message when target of xref is not found.
 Issue {url-issues}/368[#368^]:: Catalog example and partial files that do not have a file extension.
+Issue {url-issues}/220[#220^]:: Add completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set).
 
 === Fixed
 
