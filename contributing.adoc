@@ -814,6 +814,28 @@ Then you can run:
 You can instruct your shell to register this alias automatically by defining it in your shell profile (e.g., $HOME/.bash_profile).
 ====
 
+=== Install a prerelease version
+
+If you want to test the most release prerelease version which has been published to the npm registry, you need to refer to the keyword `testing` when installing a package.
+Otherwise, the `npm` command (or `yarn` command) will not pick up the prerelease.
+
+If you install packages globally using the `npm i -g` command, append `@testing` to the name of each package:
+
+ $ npm i -g @antora/cli@testing @antora/site-generator-default@testing
+
+If you install packages from [.path]_package.json_ using the `npm` command, use the keyword `testing` as the version for each entry:
+
+----
+"@antora/cli": "testing",
+"@antora/site-generator-default": "testing",
+----
+
+Once install, you can run Antora in the normal way.
+
+Alternately, you can use the exact version of the prerelease (e.g., `3.0.0-alpha.7`) in place of the `testing` keyword.
+
+For more detailed instructions for how to install a prerelease, refer to the https://docs.antora.org/antora/latest/install/install-antora[installation guide], then switch to the prerelease version.
+
 === Continuous Integration
 
 Both the linter and the test suite are run in a continuous integration (CI) environment on every commit to master and on every merge request.
