@@ -46,6 +46,7 @@ beforeEach(() => configureLogger({ level: 'silent' })) // eslint-disable-line no
 function captureStandardStream (streamName, fn, transform, cb) {
   const stream = process[streamName]
   const streamWrite = stream.write
+  const fsWrite = fs.write
   const fsWriteSync = fs.writeSync
   if (!transform) {
     transform = function lines (buffer) {
@@ -57,10 +58,21 @@ function captureStandardStream (streamName, fn, transform, cb) {
   }
   const data = []
   const restore = () => {
+    if (cb) fs.write = fsWrite
     fs.writeSync = fsWriteSync
     stream.write = streamWrite
   }
   try {
+    if (cb) {
+      fs.write = (...[fd, buffer, ...remaining]) => {
+        const callback = remaining.pop()
+        if (fd === stream.fd) {
+          data.push(...transform(buffer))
+          return callback(null, buffer.length, buffer)
+        }
+        return fsWrite(fd, buffer, ...remaining)
+      }
+    }
     fs.writeSync = (...[fd, buffer, ...remaining]) => {
       if (fd === stream.fd) {
         data.push(...transform(buffer))
