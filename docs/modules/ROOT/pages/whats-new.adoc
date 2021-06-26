@@ -54,6 +54,8 @@ Map `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `r
 Issue {url-issues}/403[#403^]:: Log error message when target of xref is not found.
 Issue {url-issues}/368[#368^]:: Catalog example and partial files that do not have a file extension.
 Issue {url-issues}/220[#220^]:: Add completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set).
+Issue {url-issues}/706[#706^]:: Ignore backup files (files that end with `+~+`) when scanning content source.
+
 
 === Fixed
 
