@@ -94,6 +94,15 @@ describe('logger', () => {
       expect(message).to.eql({ level: 'info', msg: 'love is the message' })
     })
 
+    it('should allow fatal message to be logged', () => {
+      const logger = configure().get(null)
+      const lines = captureStdoutSync(() => logger.fatal("You've sunk my battleship!"))
+      expect(lines).to.have.lengthOf(1)
+      const { time, ...message } = JSON.parse(lines[0])
+      expect(typeof time).to.equal('number')
+      expect(message).to.eql({ level: 'fatal', msg: "You've sunk my battleship!" })
+    })
+
     it('should format log level as number of levelFormat is number', () => {
       const logger = configure({ levelFormat: 'number' }).get(null)
       const lines = captureStdoutSync(() => logger.info('love is the message'))
@@ -426,6 +435,14 @@ describe('logger', () => {
       })
     }
 
+    it('should not log warning about call to flushSync when fatal message is logged', () => {
+      const logger = configure({ format: 'pretty' }).get()
+      const lines = captureStderrSync(() => logger.fatal("You've sunk my battleship!"))
+      expect(lines).to.have.lengthOf(1)
+      const expectedLine = /^\[.+\] FATAL: You've sunk my battleship!$/
+      expect(lines[0]).to.match(expectedLine)
+    })
+
     it('should ignore levelFormat setting when format is pretty', () => {
       const logger = configure({ name: 'antora', format: 'pretty', levelFormat: 'number' }).get()
       const lines = captureStderrSync(() => logger.info('love is the message'))
@@ -447,7 +464,7 @@ describe('logger', () => {
       expect(data.name).to.equal('name-of-logger')
     })
 
-    // NOTE this test verifies the proxy intercepts property assignments
+    // NOTE this test verifies the proxy still intercepts property assignments after logger is reconfigured
     it('should retain name of logger in message after logger is reconfigured', () => {
       configure()
       const name = 'name-of-logger'
