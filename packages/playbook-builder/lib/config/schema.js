@@ -234,6 +234,30 @@ module.exports = {
           },
         }
       ),
+      destination: {
+        file: {
+          doc: 'Write log messages to this file or stream. Defaults to stderr if format is pretty, stdout otherwise.',
+          format: String,
+          default: undefined,
+          arg: 'log-file',
+          env: 'ANTORA_LOG_FILE',
+        },
+        append: {
+          doc: 'Whether to append messages to the log file if it already exists.',
+          format: Boolean,
+          default: true,
+        },
+        buffer_size: {
+          doc: 'The size of the log buffer that must be exceeded before writing a chunk to the destination.',
+          format: Number,
+          default: 0,
+        },
+        sync: {
+          doc: 'Whether to immediately flush messages to the destination when the buffer size is exceeded.',
+          format: Boolean,
+          default: true,
+        },
+      },
     },
   },
   urls: {
