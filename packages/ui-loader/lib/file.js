@@ -18,6 +18,10 @@ class File extends Vinyl {
   get relative () {
     return this.history[this.history.length - 1]
   }
+
+  isDot () {
+    return ('/' + this.history[this.history.length - 1]).indexOf('/.') > -1
+  }
 }
 
 class MemoryFile extends File {

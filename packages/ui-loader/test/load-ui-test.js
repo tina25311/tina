@@ -2,6 +2,7 @@
 'use strict'
 
 const { deferExceptions, expect, loadSslConfig, rmdirSync } = require('../../../test/test-utils')
+const RepositoryBuilder = require('../../../test/repository-builder')
 
 const fs = require('fs')
 const { promises: fsp } = fs
@@ -721,7 +722,7 @@ describe('loadUi()', () => {
     })
 
     describe('should differentiate static files from assets', () => {
-      testAll('the-ui-bundle-with-static-files.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         const uiCatalog = await loadUi(playbook)
         const filepaths = uiCatalog.getFiles().map((file) => file.path)
         expect(filepaths).to.not.include('ui.yml')
@@ -741,8 +742,10 @@ describe('loadUi()', () => {
         const staticFiles = uiCatalog.findByType('static')
         staticFiles.forEach(({ type }) => expect(type).to.equal('static'))
         const staticFilePaths = staticFiles.map((file) => file.path)
-        expect(staticFilePaths).to.have.members(['foo/two.xml', 'foo/bar/one.xml', 'humans.txt'])
-      })
+        expect(staticFilePaths).to.have.members(['foo/two.xml', 'foo/bar/one.xml', 'humans.txt', '.nojekyll'])
+      }
+      testAll('the-ui-bundle-with-static-files.zip', testBlock)
+      testAll('the-ui-bundle-with-static-files', testBlock)
     })
 
     describe('should discover static files when specified with single glob string', () => {
@@ -755,6 +758,49 @@ describe('loadUi()', () => {
         const staticFilePaths = staticFiles.map((file) => file.path)
         expect(staticFilePaths).to.have.members(['foo/two.xml', 'foo/bar/one.xml'])
       })
+    })
+
+    describe('should ignore dot files which are not listed as static files', () => {
+      const testBlock = async (playbook) => {
+        const uiBundleUrl = playbook.ui.bundle.url
+        if (!ospath.extname(uiBundleUrl)) {
+          // NOTE make sure .git folder is implicitly ignored
+          const uiDescContents = (await fsp.readFile(ospath.join(uiBundleUrl, 'ui.yml'), 'utf8')) + '- .git/*\n'
+          await new RepositoryBuilder(WORK_DIR, FIXTURES_DIR)
+            .init('the-ui-bundle-with-static-files')
+            .then((repoBuilder) => repoBuilder.importFilesFromFixture('the-ui-bundle-with-static-files'))
+            .then((repoBuilder) => repoBuilder.addToWorktree('ui.yml', uiDescContents))
+            .then((repoBuilder) => repoBuilder.commitAll())
+            .then((repoBuilder) => {
+              playbook.ui.bundle.url =
+                uiBundleUrl.charAt() === '.'
+                  ? prefixPath('.', ospath.relative(WORK_DIR, repoBuilder.repoPath))
+                  : repoBuilder.repoPath
+            })
+        }
+        const uiCatalog = await loadUi(playbook)
+        const filepaths = uiCatalog.getFiles().map((file) => file.path)
+        expect(filepaths).to.not.include('ui.yml')
+        const uiAssets = uiCatalog.findByType('asset')
+        uiAssets.forEach(({ type }) => expect(type).to.equal('asset'))
+        const uiAssetPaths = uiAssets.map((file) => file.path)
+        expect(uiAssetPaths).to.have.members([
+          'css/one.css',
+          'css/two.css',
+          'fonts/Roboto-Medium.ttf',
+          'foo/bar/hello.json',
+          'images/close.svg',
+          'images/search.svg',
+          'scripts/01-one.js',
+          'scripts/02-two.js',
+        ])
+        const staticFiles = uiCatalog.findByType('static')
+        staticFiles.forEach(({ type }) => expect(type).to.equal('static'))
+        const staticFilePaths = staticFiles.map((file) => file.path)
+        expect(staticFilePaths).to.have.members(['foo/two.xml', 'foo/bar/one.xml', 'humans.txt', '.nojekyll'])
+      }
+      //testAll('the-ui-bundle-with-static-files.zip', testBlock)
+      testAll('the-ui-bundle-with-static-files', testBlock)
     })
   })
 

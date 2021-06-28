@@ -337,7 +337,7 @@ function classifyFile (file, config) {
   if (config.staticFiles && isStaticFile(file, config.staticFiles)) {
     file.type = 'static'
     file.out = resolveOut(file, '')
-  } else if (file.local && ~('/' + file.relative).indexOf('/.')) {
+  } else if (file.isDot()) {
     file = undefined
   } else if ((file.type = resolveType(file)) === 'asset') {
     file.out = resolveOut(file, config.outputDir)
