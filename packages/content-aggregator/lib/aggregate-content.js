@@ -30,7 +30,8 @@ const yaml = require('js-yaml')
 const {
   COMPONENT_DESC_FILENAME,
   CONTENT_CACHE_FOLDER,
-  CONTENT_GLOB,
+  CONTENT_SRC_GLOB,
+  CONTENT_SRC_OPTS,
   FILE_MODES,
   GIT_CORE,
   GIT_OPERATION_LABEL_LENGTH,
@@ -413,7 +414,7 @@ function readFilesFromWorktree (worktreePath, startPath) {
       if (!stat.isDirectory()) throw new Error(`the start path '${startPath}' is not a directory`)
       return new Promise((resolve, reject) =>
         vfs
-          .src(CONTENT_GLOB, { cwd, follow: true, removeBOM: false })
+          .src(CONTENT_SRC_GLOB, Object.assign({ cwd }, CONTENT_SRC_OPTS))
           .on('error', (err) => {
             if (err.code === 'ENOENT' && err.syscall === 'stat') {
               try {

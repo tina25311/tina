@@ -19,7 +19,7 @@ const yaml = require('js-yaml')
 const vfs = require('vinyl-fs')
 const vzip = require('gulp-vinyl-zip')
 
-const { UI_CACHE_FOLDER, UI_DESC_FILENAME, SUPPLEMENTAL_FILES_GLOB } = require('./constants')
+const { UI_CACHE_FOLDER, UI_DESC_FILENAME, UI_SRC_GLOB, UI_SRC_OPTS } = require('./constants')
 const URI_SCHEME_RX = /^https?:\/\//
 const EXT_RX = /\.[a-z]{2,3}$/
 
@@ -95,7 +95,7 @@ async function loadUi (playbook) {
       new Promise((resolve, reject) =>
         bundleFile.isDirectory()
           ? vfs
-            .src('**/*', { cwd: bundleFile.path, removeBOM: false })
+            .src(UI_SRC_GLOB, Object.assign({ cwd: bundleFile.path }, UI_SRC_OPTS))
             .on('error', reject)
             .pipe(relativizeFiles())
             .pipe(collectFiles(resolve))
@@ -289,7 +289,7 @@ function srcSupplementalFiles (filesSpec, startDir) {
         () =>
           new Promise((resolve, reject) =>
             vfs
-              .src(SUPPLEMENTAL_FILES_GLOB, { cwd, dot: true, removeBOM: false })
+              .src(UI_SRC_GLOB, Object.assign({ cwd, dot: true }, UI_SRC_OPTS))
               .on('error', reject)
               .pipe(relativizeFiles())
               .pipe(collectFiles(resolve))
