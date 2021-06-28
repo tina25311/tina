@@ -59,7 +59,7 @@ describe('loadUi()', () => {
   const zipDir = (dir) =>
     new Promise((resolve, reject) =>
       vfs
-        .src('**/*', { cwd: dir })
+        .src('**/*', { buffer: false, cwd: dir, dot: true, removeBOM: false })
         // NOTE set stable file permissions
         .pipe(
           map((file, _, next) => {
