@@ -1123,33 +1123,36 @@ describe('logger', () => {
         .and.not.have.contents.that.match(/"msg":"love is the message"/)
     })
 
-    it('should append to file specified by destination.file by default when format is pretty', async () => {
-      const opts = { format: 'pretty', destination: { file: './antora.log' } }
-      let logger = configure(opts, WORK_DIR).get(null)
-      const logFile = ospath.join(WORK_DIR, 'antora.log')
-      logger.info('love is the message')
-      await finalizeLogger()
-      logger = configure(opts, WORK_DIR).get(null)
-      logger.info('music all life long')
-      expect(logFile)
-        .to.be.a.file()
-        .and.have.contents.that.match(/love is the message/)
-        .and.have.contents.that.match(/music all life long/)
-    })
+    // NOTE these tests don't work on Windows because finalize doesn't close log file
+    if (process.platform !== 'win32') {
+      it('should append to file specified by destination.file by default when format is pretty', async () => {
+        const opts = { format: 'pretty', destination: { file: './antora.log' } }
+        let logger = configure(opts, WORK_DIR).get(null)
+        const logFile = ospath.join(WORK_DIR, 'antora.log')
+        logger.info('love is the message')
+        await finalizeLogger()
+        logger = configure(opts, WORK_DIR).get(null)
+        logger.info('music all life long')
+        expect(logFile)
+          .to.be.a.file()
+          .and.have.contents.that.match(/love is the message/)
+          .and.have.contents.that.match(/music all life long/)
+      })
 
-    it('should not append to file specified by destination.file if append is false and format is pretty', async () => {
-      const opts = { format: 'pretty', destination: { file: './antora.log', append: false } }
-      let logger = configure(opts, WORK_DIR).get(null)
-      const logFile = ospath.join(WORK_DIR, 'antora.log')
-      logger.info('love is the message')
-      await finalizeLogger()
-      logger = configure(opts, WORK_DIR).get(null)
-      logger.info('music all life long')
-      expect(logFile)
-        .to.be.a.file()
-        .and.have.contents.that.match(/music all life long/)
-        .and.not.have.contents.that.match(/love is the message/)
-    })
+      it('should not append to file specified by destination.file if append is false and format is pretty', async () => {
+        const opts = { format: 'pretty', destination: { file: './antora.log', append: false } }
+        let logger = configure(opts, WORK_DIR).get(null)
+        const logFile = ospath.join(WORK_DIR, 'antora.log')
+        logger.info('love is the message')
+        await finalizeLogger()
+        logger = configure(opts, WORK_DIR).get(null)
+        logger.info('music all life long')
+        expect(logFile)
+          .to.be.a.file()
+          .and.have.contents.that.match(/music all life long/)
+          .and.not.have.contents.that.match(/love is the message/)
+      })
+    }
 
     it('should not colorize pretty log message when writing to a file', () => {
       const nodeEnv = process.env.NODE_ENV
