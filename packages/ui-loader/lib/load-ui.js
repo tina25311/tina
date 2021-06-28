@@ -344,9 +344,8 @@ function classifyFile (file, config) {
     file.out = resolveOut(file, '')
   } else if (file.local && ~('/' + file.relative).indexOf('/.')) {
     file = undefined
-  } else {
-    file.type = resolveType(file)
-    if (file.type === 'asset') file.out = resolveOut(file, config.outputDir)
+  } else if ((file.type = resolveType(file)) === 'asset') {
+    file.out = resolveOut(file, config.outputDir)
   }
   return file
 }
@@ -357,15 +356,10 @@ function isStaticFile (file, staticFiles) {
 
 function resolveType (file) {
   const firstPathSegment = file.path.split('/', 1)[0]
-  if (firstPathSegment === 'layouts') {
-    return 'layout'
-  } else if (firstPathSegment === 'helpers') {
-    return 'helper'
-  } else if (firstPathSegment === 'partials') {
-    return 'partial'
-  } else {
-    return 'asset'
-  }
+  if (firstPathSegment === 'layouts') return 'layout'
+  if (firstPathSegment === 'helpers') return 'helper'
+  if (firstPathSegment === 'partials') return 'partial'
+  return 'asset'
 }
 
 function resolveOut (file, outputDir = '_') {
