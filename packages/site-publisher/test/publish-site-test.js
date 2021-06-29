@@ -54,7 +54,7 @@ describe('publishSite()', () => {
         .pipe(bufferizeContents())
         .on('data', (file) => files.push(file))
         .on('error', reject)
-        .on('end', () => resolve(files))
+        .on('end', resolve.bind(null, files))
     })
 
   const verifyArchiveOutput = (destFile) => {
