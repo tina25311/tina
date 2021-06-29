@@ -23,10 +23,10 @@ const standardStreams = { 1: 'stdout', 2: 'stderr', stderr: 2, stdout: 1 }
 function close () {
   const rootLogger = rootLoggerHolder.get() || closedLogger
   if (rootLogger.closed) return
-  const strm = Object.assign(rootLogger, closedLogger)[streamSym].stream || rootLogger[streamSym]
-  if (strm instanceof EventEmitter && typeof strm.end === 'function' && (strm._buf || !(strm.fd in standardStreams))) {
-    finalizers.push(once(strm, 'close').catch(() => undefined))
-    strm.end()
+  const dest = Object.assign(rootLogger, closedLogger)[streamSym].stream || rootLogger[streamSym]
+  if (dest instanceof EventEmitter && typeof dest.end === 'function' && (dest._buf || !(dest.fd in standardStreams))) {
+    finalizers.push(once(dest, 'close').catch(() => undefined))
+    dest.end()
   }
 }
 
