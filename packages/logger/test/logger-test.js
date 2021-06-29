@@ -14,25 +14,21 @@ const Logger = require('@antora/logger')
 const { configure, configureLogger, finalizeLogger, get, getLogger } = Logger
 const ospath = require('path')
 const { types } = require('util')
+const pino = require('pino')
 
 const WORK_DIR = ospath.join(__dirname, 'work')
 
 describe('logger', () => {
-  const findOwnPropertySymbol = (object, key) => {
-    const target = `Symbol(${key})`
-    return Object.getOwnPropertySymbols(object).find((it) => it.toString() === target)
-  }
-
-  const getStream = (logger) => logger[findOwnPropertySymbol(logger, 'pino.stream')]
+  const getStream = (logger) => logger[pino.symbols.streamSym]
 
   const supportsColor = () => {
     let verdict
-    require('pino')({ prettyPrint: true }, { write: (msg) => (verdict = msg.includes('\u001b[39m')) }).info('message')
+    pino({ prettyPrint: true }, { write: (msg) => (verdict = msg.includes('\u001b[39m')) }).info('message')
     return verdict
   }
 
   describe('configure()', () => {
-    const getHooks = (logger) => logger[findOwnPropertySymbol(logger, 'pino.hooks')]
+    const getHooks = (logger) => logger[pino.symbols.hooksSym]
 
     // NOTE this also verifies that the logger is silent by default in the test suite
     it('should add logging interface to silent logger', () => {
@@ -928,6 +924,16 @@ describe('logger', () => {
       const { time, ...message } = JSON.parse(messages[0])
       expect(typeof time).to.equal('number')
       expect(message).to.eql({ level: 'info', msg: 'love is the message' })
+    })
+
+    it('should support custom destination created by pino.destination', () => {
+      const destination = pino.destination({ dest: 1, sync: true })
+      const logger = configure({ destination }).get(null)
+      const stream = getStream(logger)
+      expect(stream).to.equal(destination)
+      const messages = captureStdoutLogSync(() => logger.info('love is the message'))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include({ level: 'info', msg: 'love is the message' })
     })
 
     it('should ignore custom destination if empty', () => {
