@@ -31,85 +31,85 @@ function close () {
 }
 
 function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent', format, destination } = {}, baseDir) {
-  const silent = (levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF
-  if (silent && (levelValues[failureLevel] || INF) === INF && (rootLoggerHolder.get() || {}).noop) return module.exports
-  close()
-  const prettyPrint = format === 'pretty' && !silent
-  let colorize, dest
-  if (!(silent || typeof (destination || (destination = {})).write === 'function')) {
-    const { file, append = true, bufferSize, ...destOpts } = destination
-    if (bufferSize != null) destOpts.minLength = bufferSize
-    if (file && !(dest = standardStreams[file])) {
-      dest = expandPath(file, '~+', baseDir)
-      try {
-        fs.mkdirSync(ospath.dirname(dest), { recursive: true })
-        if (!append) fs.unlinkSync(dest)
-      } catch {}
-    } else if (process.env.NODE_ENV !== 'test') {
-      colorize = true
+  let logger
+  if ((levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF) {
+    if ((levelValues[failureLevel] || INF) === INF && (rootLoggerHolder.get() || {}).noop) return module.exports
+    close()
+    logger = Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
+  } else {
+    const prettyPrint = format === 'pretty'
+    let colorize, dest
+    if (typeof (destination || (destination = {})).write !== 'function') {
+      const { file, append = true, bufferSize, ...destOpts } = destination
+      if (bufferSize != null) destOpts.minLength = bufferSize
+      if (file && !(dest = standardStreams[file])) {
+        dest = expandPath(file, '~+', baseDir)
+        try {
+          fs.mkdirSync(ospath.dirname(dest), { recursive: true })
+          if (!append) fs.unlinkSync(dest)
+        } catch {}
+      } else if (process.env.NODE_ENV !== 'test') {
+        colorize = true
+      }
+      destination = buildDest(Object.assign({ sync: true }, destOpts, { dest: dest || (prettyPrint ? 2 : 1) }))
     }
-    destination = buildDest(Object.assign({ sync: true }, destOpts, { dest: dest || (prettyPrint ? 2 : 1) }))
-  }
-  const logger = addFailOnExitHooks(
-    silent
-      ? Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
-      : pino(
-        {
-          name,
-          base: {},
-          level,
-          formatters: { level: levelFormat === 'number' ? (_, level) => ({ level }) : (level) => ({ level }) },
-          hooks: {
-            // NOTE logMethod only called if log level is enabled
-            logMethod (args, method) {
-              const arg0 = args[0]
-              if (arg0.constructor === Object) {
-                const { file, line, stack, ...obj } = arg0
-                // NOTE we assume file key is a file.src object
-                args[0] = file ? Object.assign(obj, reshapeFileForLog(arg0)) : obj
-              }
-              method.apply(this, args)
-            },
-          },
-          prettyPrint: prettyPrint && {
-            customPrettifiers: {
-              file: ({ path: path_, line }) => (line == null ? path_ : `${path_}:${line}`),
-              stack: (stack, _, log) => {
-                let prevSource = log.source
-                return stack
-                  .map(({ file: { path: path_, line }, source }) => {
-                    const file = `${path_}:${line}`
-                    const repeatSource =
-                        prevSource &&
-                        source.url === prevSource.url &&
-                        source.refname === prevSource.refname &&
-                        source.startPath === prevSource.startPath
-                    prevSource = source
-                    if (repeatSource) return `\n    file: ${file}`
-                    const { url, worktree, refname, startPath } = source
-                    source = worktree
-                      ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
-                      : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`
-                    return `\n    file: ${file}\n    source: ${source}`
-                  })
-                  .join('')
-              },
-              source: ({ url, worktree, refname, startPath }) =>
-                worktree
-                  ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
-                  : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
-            },
-            suppressFlushSyncWarning: true,
-            translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
-            ...(colorize ? undefined : { colorize: false }),
+    close()
+    logger = pino(
+      {
+        name,
+        base: {},
+        level,
+        formatters: { level: levelFormat === 'number' ? (_, level) => ({ level }) : (level) => ({ level }) },
+        hooks: {
+          // NOTE logMethod only called if log level is enabled
+          logMethod (args, method) {
+            const arg0 = args[0]
+            if (arg0.constructor === Object) {
+              const { file, line, stack, ...obj } = arg0
+              // NOTE we assume file key is a file.src object
+              args[0] = file ? Object.assign(obj, reshapeFileForLog(arg0)) : obj
+            }
+            method.apply(this, args)
           },
         },
-        destination
-      ),
-    failureLevel
-  )
-  if (prettyPrint) logger[streamSym].stream = destination
-  rootLoggerHolder.set(undefined, logger)
+        prettyPrint: prettyPrint && {
+          customPrettifiers: {
+            file: ({ path: path_, line }) => (line == null ? path_ : `${path_}:${line}`),
+            stack: (stack, _, log) => {
+              let prevSource = log.source
+              return stack
+                .map(({ file: { path: path_, line }, source }) => {
+                  const file = `${path_}:${line}`
+                  const repeatSource =
+                    prevSource &&
+                    source.url === prevSource.url &&
+                    source.refname === prevSource.refname &&
+                    source.startPath === prevSource.startPath
+                  prevSource = source
+                  if (repeatSource) return `\n    file: ${file}`
+                  const { url, worktree, refname, startPath } = source
+                  source = worktree
+                    ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
+                    : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`
+                  return `\n    file: ${file}\n    source: ${source}`
+                })
+                .join('')
+            },
+            source: ({ url, worktree, refname, startPath }) =>
+              worktree
+                ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
+                : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
+          },
+          suppressFlushSyncWarning: true,
+          translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
+          ...(colorize ? undefined : { colorize: false }),
+        },
+      },
+      destination
+    )
+    if (prettyPrint) logger[streamSym].stream = destination
+  }
+  rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))
   return module.exports
 }
 
