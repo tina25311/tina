@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *logger*: End destination stream for logger in finalize call when log format is pretty (#795)
+
 == 3.0.0-alpha.7 (2021-06-26)
 
 === Added
