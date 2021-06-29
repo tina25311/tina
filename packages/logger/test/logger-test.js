@@ -2,9 +2,9 @@
 'use strict'
 
 const {
-  captureStdoutLog,
   captureStderrSync,
   captureStdoutSync,
+  captureStdoutLog,
   captureStdoutLogSync,
   emptyDirSync,
   expect,
@@ -422,7 +422,7 @@ describe('logger', () => {
   })
 
   describe('pretty print', () => {
-    it('should write pretty log message to stderr when format is pretty', () => {
+    it('should write pretty log message to stderr by default when format is pretty', () => {
       const logger = configure({ name: 'antora', format: 'pretty' }).get()
       const lines = captureStderrSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
@@ -1047,10 +1047,9 @@ describe('logger', () => {
       expect(stream).to.have.property('sync', true)
       expect(stream).to.have.property('minLength', bufferSize)
       expect(stream).to.have.property('fd', 1)
-      const messages = await captureStdoutLog(() => {
-        logger.info('love is the message')
-        return finalizeLogger()
-      })
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.be.empty()
+      const messages = await captureStdoutLog(finalizeLogger)
       expect(messages).to.have.lengthOf(1)
       expect(messages[0].msg).to.equal('love is the message')
     })
@@ -1062,10 +1061,9 @@ describe('logger', () => {
       expect(stream).to.have.property('sync', false)
       expect(stream).to.have.property('minLength', bufferSize)
       expect(stream).to.have.property('fd', 1)
-      const messages = await captureStdoutLog(() => {
-        logger.info('love is the message')
-        return finalizeLogger()
-      })
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.be.empty()
+      const messages = await captureStdoutLog(finalizeLogger)
       expect(messages).to.have.lengthOf(1)
       expect(messages[0].msg).to.equal('love is the message')
     })
