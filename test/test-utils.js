@@ -198,6 +198,10 @@ module.exports = {
     })
   },
   captureStderrSync: (fn) => captureStandardStream('stderr', fn),
+  captureStdout: (fn) =>
+    new Promise((resolve, reject) =>
+      captureStandardStream('stdout', fn, undefined, (err, result) => (err ? reject(err) : resolve(result)))
+    ),
   captureStdoutSync: (fn) => captureStandardStream('stdout', fn),
   captureStdoutLog: (fn) =>
     new Promise((resolve, reject) =>

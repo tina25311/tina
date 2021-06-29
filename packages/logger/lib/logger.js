@@ -23,7 +23,7 @@ const standardStreams = { 1: 'stdout', 2: 'stderr', stderr: 2, stdout: 1 }
 function close () {
   const rootLogger = rootLoggerHolder.get() || closedLogger
   if (rootLogger.closed) return
-  const strm = Object.assign(rootLogger, closedLogger)[streamSym]
+  const strm = Object.assign(rootLogger, closedLogger)[streamSym].stream || rootLogger[streamSym]
   if (strm instanceof EventEmitter && typeof strm.end === 'function' && (strm._buf || !(strm.fd in standardStreams))) {
     finalizers.push(once(strm, 'close').catch(() => undefined))
     strm.end()
@@ -34,7 +34,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
   const silent = (levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF
   if (silent && (levelValues[failureLevel] || INF) === INF && (rootLoggerHolder.get() || {}).noop) return module.exports
   close()
-  const prettyPrint = format === 'pretty'
+  const prettyPrint = format === 'pretty' && !silent
   let colorize, dest
   if (!(silent || typeof (destination || (destination = {})).write === 'function')) {
     const { file, append = true, bufferSize, ...destOpts } = destination
@@ -48,7 +48,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     } else if (process.env.NODE_ENV !== 'test') {
       colorize = true
     }
-    destination = buildDest(prettyPrint ? dest || 2 : Object.assign({ sync: true }, destOpts, { dest: dest || 1 }))
+    destination = buildDest(Object.assign({ sync: true }, destOpts, { dest: dest || (prettyPrint ? 2 : 1) }))
   }
   const logger = addFailOnExitHooks(
     silent
@@ -108,6 +108,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
       ),
     failureLevel
   )
+  if (prettyPrint) logger[streamSym].stream = destination
   rootLoggerHolder.set(undefined, logger)
   return module.exports
 }
