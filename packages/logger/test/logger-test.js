@@ -144,6 +144,19 @@ describe('logger', () => {
       expect(logger.isLevelEnabled('trace')).to.be.true()
     })
 
+    // NOTE this test verifies the proxy intercepts property assignments
+    it('should retain level set on named logger', () => {
+      configure({ level: 'warn' })
+      const logger = get('name-of-logger')
+      logger.level = 'info'
+      expect(logger.level).to.equal('info')
+      const messages = captureStdoutLogSync(() => logger.info('love is the message'))
+      expect(messages).to.have.lengthOf(1)
+      const data = messages[0]
+      expect(data.level).to.equal('info')
+      expect(data.name).to.equal('name-of-logger')
+    })
+
     it('should configure root logger using specified format', () => {
       const logger = configure({ format: 'pretty' }).get(null)
       const stream = getStream(logger)
@@ -460,19 +473,6 @@ describe('logger', () => {
       expect(lines).to.have.lengthOf(1)
       const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
       expect(lines[0]).to.match(expectedLine)
-    })
-
-    // NOTE this test verifies the proxy intercepts property assignments
-    it('should retain level set on named logger', () => {
-      configure({ level: 'warn' })
-      const logger = get('name-of-logger')
-      logger.level = 'info'
-      expect(logger.level).to.equal('info')
-      const messages = captureStdoutLogSync(() => logger.info('love is the message'))
-      expect(messages).to.have.lengthOf(1)
-      const data = messages[0]
-      expect(data.level).to.equal('info')
-      expect(data.name).to.equal('name-of-logger')
     })
 
     // NOTE this test verifies the proxy still intercepts property assignments after logger is reconfigured
