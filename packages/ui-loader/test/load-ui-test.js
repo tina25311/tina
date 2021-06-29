@@ -237,6 +237,18 @@ describe('loadUi()', () => {
     testAll('the-ui-bundle', testBlock)
   })
 
+  describe('should ignore backup files when reading bundle from directory', () => {
+    const testBlock = async (playbook) => {
+      const uiCatalog = await loadUi(playbook)
+      const files = uiCatalog.getFiles()
+      const paths = files.map((file) => file.path)
+      expect(paths).to.have.members(['css/site.css', 'layouts/default~home.hbs', 'js/site.js'])
+      const relativePaths = files.map((file) => file.relative)
+      expect(paths).to.eql(relativePaths)
+    }
+    testAll('the-ui-bundle-with-backup-files', testBlock)
+  })
+
   describe('should map getAll as alias for getFiles', () => {
     testAll('the-ui-bundle.zip', async (playbook) => {
       const uiCatalog = await loadUi(playbook)
