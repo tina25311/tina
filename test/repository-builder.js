@@ -209,7 +209,7 @@ class RepositoryBuilder {
 
   async addRemote (name, url, fetch = true) {
     await git.addRemote({ ...this.repository, remote: name, url })
-    if (fetch) await git.fetch({ ...this.repository, remote: name })
+    if (fetch) await git.fetch({ ...this.repository, corsProxy: false, remote: name })
     return this
   }
 
@@ -252,7 +252,7 @@ class RepositoryBuilder {
   }
 
   static clone (url, toDir) {
-    return git.clone({ dir: toDir, fs, http, url })
+    return git.clone({ dir: toDir, fs, http, corsProxy: false, url })
   }
 
   static getPlugin (name, core = 'default') {
