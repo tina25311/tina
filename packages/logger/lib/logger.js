@@ -25,9 +25,8 @@ function close () {
   if (rootLogger.closed) return
   const strm = Object.assign(rootLogger, closedLogger)[streamSym]
   if (strm instanceof EventEmitter && typeof strm.end === 'function' && (strm._buf || !(strm.fd in standardStreams))) {
-    const waitForClose = once(strm, 'close').catch(() => undefined)
+    finalizers.push(once(strm, 'close').catch(() => undefined))
     strm.end()
-    finalizers.push(waitForClose)
   }
 }
 
