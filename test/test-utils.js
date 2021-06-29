@@ -199,7 +199,7 @@ module.exports = {
   },
   captureStderrSync: (fn) => captureStandardStream('stderr', fn),
   captureStdoutSync: (fn) => captureStandardStream('stdout', fn),
-  captureStdoutLog: async (fn) =>
+  captureStdoutLog: (fn) =>
     new Promise((resolve, reject) =>
       captureStandardStream(
         'stdout',
