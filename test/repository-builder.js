@@ -161,7 +161,11 @@ class RepositoryBuilder {
       vfs
         .src('**/*.*', { cwd, dot: true, nomount: true, nosort: true, nounique: true, read: false, uniqueBy: (m) => m })
         .on('data', (file) => (exclude && exclude.includes(file.relative) ? null : paths.push(file.relative)))
-        .on('end', () => this.addFilesFromFixture(paths, fixtureName).then(resolve).catch(reject))
+        .on('end', () =>
+          this.addFilesFromFixture(paths, fixtureName)
+            .then(resolve)
+            .catch(reject)
+        )
     })
   }
 
