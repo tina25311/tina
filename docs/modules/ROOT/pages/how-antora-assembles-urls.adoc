@@ -1,0 +1,34 @@
+= How Antora Assembles URLs
+
+Antora assembles the URL for each publishable page using values specified in the playbook, the xref:ROOT:component-version-descriptor.adoc[_antora.yml_ file] that defines the component version a page belongs to, the xref:ROOT:standard-directories.adoc[standard directory set], and the file name of a page's source file.
+
+The segments of a published page's URL are organized into the sequence shown in the following diagram.
+
+image::ROOT:url-segments.svg[Diagram of the URL segments assembled by Antora]
+
+base segment:: The base segment of the URL is the common domain shared by all of the published pages.
+This segment is defined in the playbook by the xref:playbook:site-url.adoc[url key].
+The `url` key's value may be an absolute URL (e.g., _\https://docs.example.com_) with an optional path segment (e.g., _\https://example.com/docs_) or a root-relative path (e.g., _/docs_).
+
+component segment:: The component segment of the URL is the name of the component the published page belongs to.
+A component name is specified by the xref:ROOT:component-name-and-version.adoc#name-key[name key] in an xref:ROOT:component-version-descriptor.adoc[_antora.yml_ file].
+
+version segment:: The version segment of the URL is the true version or symbolic version of the component version the published page belongs to.
+The [.term]*true version* is the value assigned to the xref:ROOT:component-name-and-version.adoc#version-key[version key] in component version's xref:ROOT:component-version-descriptor.adoc[_antora.yml_ file] or to the `version` key for a content source that's specified in the playbook.
+All component versions have a true version, though that version may be defined as unversioned.
+When a component version is xref:ROOT:component-with-no-version.adoc[defined as unversioned], the version segment is dropped from the URLs of the pages that belong to the unversioned component version.
++
+The [.term]*symbolic version* is an optional configuration setting that only applies to the version segment if the published page belongs to the latest version or latest prerelease version of a component.
+The symbolic version replaces or cloaks the true version in the URL.
+A symbolic version name is defined using the `latest_version_segment` key in the playbook.
+
+module segment:: Antora derives the module segment of the URL from the xref:ROOT:module-directories.adoc#module[module directory name] where the page's source file is stored.
+When the module directory name is [.path]_ROOT_, the module segment is dropped.
+See xref:ROOT:module-url-segment.adoc[] for more information.
+
+page segment:: The page segment of the URL is derived from the path relative to the xref:ROOT:pages-directory.adoc[_pages_ family directory] and file name of the page's source file.
+The source file's _.adoc_ extension is dropped and replaced with the specified html extension style.
+
+html extension:: By default, Antora appends the _.html_ extension to page URLs.
+The playbook key xref:playbook:urls-html-extension-style.adoc[html_extension_style] can modify this behavior.
+The extension can be dropped (`drop`) from the end of the published page URLs or dropped and a forward slash (`/`) appended (`indexify`) to the end of the published page URLs.
