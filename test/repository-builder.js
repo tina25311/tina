@@ -154,13 +154,14 @@ class RepositoryBuilder {
   }
 
   async importFilesFromFixture (fixtureName = '', opts = {}) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const exclude = opts.exclude && opts.exclude.map((path_) => ospath.normalize(path_))
       const paths = []
+      const cwd = ospath.join(this.fixtureBase, fixtureName)
       vfs
-        .src('**/*.*', { cwd: ospath.join(this.fixtureBase, fixtureName), cwdbase: true, read: false })
+        .src('**/*.*', { cwd, dot: true, nomount: true, nosort: true, nounique: true, read: false, uniqueBy: (m) => m })
         .on('data', (file) => (exclude && exclude.includes(file.relative) ? null : paths.push(file.relative)))
-        .on('end', async () => resolve(this.addFilesFromFixture(paths, fixtureName)))
+        .on('end', () => this.addFilesFromFixture(paths, fixtureName).then(resolve).catch(reject))
     })
   }
 
