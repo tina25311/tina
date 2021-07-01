@@ -3,7 +3,7 @@
 const camelCaseKeys = require('camelcase-keys')
 const { createHash } = require('crypto')
 const createHttpPlugin = require('./git-plugin-http')
-const decodeUint8Data = require('./decode-uint8-data')
+const decodeUint8Array = require('./decode-uint8-array')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
@@ -561,7 +561,7 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
 function readGitSymlink (repo, root, parent, { oid }, following) {
   if (following.size !== (following = new Set(following).add(oid)).size) {
     return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: target }) => {
-      target = posixify && process.env.NODE_ENV === 'test' ? posixify(decodeUint8Data(target)) : decodeUint8Data(target)
+      target = decodeUint8Array(target)
       let targetParent
       if (parent.dirname) {
         const dirname = parent.dirname + '/'
