@@ -10,7 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *logger*: End destination stream for logger in finalize call when log format is pretty (#795)
-* *content-aggregator*: remove unnecessary patch to symlink path read from git repository on Windows (#769)
+* *content-aggregator*: remove unnecessary patch to symlink path read from git repository on Windows (#796)
 
 === Changed
 
