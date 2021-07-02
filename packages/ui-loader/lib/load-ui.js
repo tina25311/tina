@@ -160,15 +160,11 @@ function ensureCacheDir (customCacheDir, startDir) {
 function createAgent (url, { httpProxy, httpsProxy, noProxy }) {
   if (httpsProxy || httpProxy) {
     const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
+    const shouldProxy = require('should-proxy')
     const proxy = url.startsWith('https:')
-      ? { ProxyAgent: HttpsProxyAgent, url: httpsProxy }
-      : { ProxyAgent: HttpProxyAgent, url: httpProxy }
-    if (proxy.url && require('should-proxy')(url, { no_proxy: noProxy })) {
-      // see https://github.com/delvedor/hpagent/issues/18
-      const { protocol, hostname, port, username, password } = new URL(proxy.url)
-      const proxyUrl = { protocol, hostname, port, username: username || null, password: password || null }
-      return new proxy.ProxyAgent({ proxy: proxyUrl })
-    }
+      ? { Agent: HttpsProxyAgent, url: httpsProxy }
+      : { Agent: HttpProxyAgent, url: httpProxy }
+    if (proxy.url && shouldProxy(url, { no_proxy: noProxy })) return new proxy.Agent({ proxy: proxy.url })
   }
 }
 

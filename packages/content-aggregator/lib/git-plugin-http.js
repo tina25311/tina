@@ -34,29 +34,23 @@ module.exports = ({ httpProxy, httpsProxy, noProxy }, userAgent) => {
         headers['user-agent'] = userAgent
         body = await mergeBuffers(body)
         const proxy = url.startsWith('https:')
-          ? { ProxyAgent: HttpsProxyAgent, url: httpsProxy }
-          : { ProxyAgent: HttpProxyAgent, url: httpProxy }
-        let agent
-        if (proxy.url && shouldProxy(url, { no_proxy: noProxy })) {
-          // see https://github.com/delvedor/hpagent/issues/18
-          const { protocol, hostname, port, username, password } = new URL(proxy.url)
-          const proxyUrl = { protocol, hostname, port, username: username || null, password: password || null }
-          agent = new proxy.ProxyAgent({ proxy: proxyUrl })
-        }
+          ? { Agent: HttpsProxyAgent, url: httpsProxy }
+          : { Agent: HttpProxyAgent, url: httpProxy }
+        const agent =
+          proxy.url && shouldProxy(url, { no_proxy: noProxy }) ? new proxy.Agent({ proxy: proxy.url }) : undefined
         return new Promise((resolve, reject) =>
           get({ url, method, agent, headers, body }, (err, res) => (err ? reject(err) : resolve(distillResponse(res))))
         )
       },
     }
-  } else {
-    return {
-      async request ({ url, method, headers, body }) {
-        headers['user-agent'] = userAgent
-        body = await mergeBuffers(body)
-        return new Promise((resolve, reject) =>
-          get({ url, method, headers, body }, (err, res) => (err ? reject(err) : resolve(distillResponse(res))))
-        )
-      },
-    }
+  }
+  return {
+    async request ({ url, method, headers, body }) {
+      headers['user-agent'] = userAgent
+      body = await mergeBuffers(body)
+      return new Promise((resolve, reject) =>
+        get({ url, method, headers, body }, (err, res) => (err ? reject(err) : resolve(distillResponse(res))))
+      )
+    },
   }
 }
