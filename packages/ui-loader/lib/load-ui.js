@@ -231,11 +231,10 @@ function bufferizeContents () {
     if (file.isStream()) {
       concat(file.contents, (err, contents) => {
         if (err) return next(err)
-        file.stat.size = (file.contents = contents).length
+        file.contents = contents
         next(null, file)
       })
     } else {
-      file.stat.size = file.contents.length
       next(null, file)
     }
   })
