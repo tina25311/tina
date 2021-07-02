@@ -617,11 +617,8 @@ function filterGitEntry (entry) {
 
 function entryToFile (entry) {
   return git.readBlob(entry).then(({ blob: contents }) => {
-    const stat = new fs.Stats()
-    stat.mode = entry.mode
-    stat.mtime = undefined
-    stat.size = contents.byteLength
     contents = Buffer.from(contents.buffer)
+    const stat = Object.assign(new fs.Stats(), { mode: entry.mode, mtime: undefined, size: contents.byteLength })
     return new File({ path: entry.path, contents, stat })
   })
 }
