@@ -161,6 +161,49 @@ describe('loadAsciiDoc()', () => {
     expect(doc.getBlocks()[0].getStyle()).to.eql('source')
   })
 
+  it('should load AsciiDoc contents with BOM encoded as UTF-8 characters', () => {
+    const contents = heredoc`
+      \xEF\xBB\xBF= Document Title
+
+      == Section Title
+
+      paragraph
+
+      * list item 1
+      * list item 2
+      * list item 3
+    `
+    expect(contents.charCodeAt(0)).to.equal(239)
+    expect(contents.charCodeAt(1)).to.equal(187)
+    expect(contents.charCodeAt(2)).to.equal(191)
+    expect(contents.charCodeAt(3)).to.equal(61)
+    setInputFileContents(contents)
+    const doc = loadAsciiDoc(inputFile)
+    expect(doc.hasHeader()).to.be.true()
+    expect(doc.getDocumentTitle()).to.equal('Document Title')
+  })
+
+  // FIXME reenable once the fix for https://github.com/asciidoctor/asciidoctor.js/issues/1344 is released
+  it.skip('should load AsciiDoc contents with BOM encoded as UTF-16 character', () => {
+    const contents = heredoc`
+      \uFEFF= Document Title
+
+      == Section Title
+
+      paragraph
+
+      * list item 1
+      * list item 2
+      * list item 3
+    `
+    expect(contents.charCodeAt(0)).to.equal(65279)
+    expect(contents.charCodeAt(1)).to.equal(61)
+    setInputFileContents(contents)
+    const doc = loadAsciiDoc(inputFile)
+    expect(doc.hasHeader()).to.be.true()
+    expect(doc.getDocumentTitle()).to.equal('Document Title')
+  })
+
   it('should not hang on mismatched passthrough syntax', () => {
     const contents = 'Link the system library `+libconfig++.so.9+` located at `+/usr/lib64/libconfig++.so.9+`.'
     const html = Asciidoctor.convert(contents, { safe: 'safe' })
