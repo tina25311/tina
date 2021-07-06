@@ -3565,6 +3565,21 @@ describe('aggregateContent()', function () {
       expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
     })
 
+    it('should remove bare repository if clone fails to complete', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
+      const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
+      // create an unclonable repository
+      await initRepoWithFiles(repoBuilder, {}, [], () => repoBuilder.deleteBranch('master'))
+      playbookSpec.runtime.cacheDir = customCacheDir
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+      expect(aggregateContentDeferred).to.throw()
+      expect(customContentCacheDir)
+        .to.be.a.directory()
+        .with.subDirs.empty()
+    })
+
     it('should clone repository again if valid file is not found in cached repository', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
@@ -3830,6 +3845,33 @@ describe('aggregateContent()', function () {
       } finally {
         gitServer.off('fetch', recordFetch)
       }
+    })
+
+    it('should remove bare repository and reclone if fetch fails to complete', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      let aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(CONTENT_CACHE_DIR)
+        .to.be.a.directory()
+        .with.subDirs.have.lengthOf(1)
+      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+      const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
+      const headFile = ospath.join(cachedRepoDir, 'HEAD')
+      expect(headFile)
+        .to.be.a.file()
+        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+      // NOTE corrupt the cloned repository
+      await fsp.unlink(headFile)
+      await fsp.writeFile(ospath.join(cachedRepoDir, 'config'), '')
+      playbookSpec.runtime.fetch = true
+      aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(cachedRepoDir).to.be.a.directory()
+      expect(headFile)
+        .to.be.a.file()
+        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
     })
 
     it('should fetch tags not reachable from fetched commits when runtime.fetch option is enabled', async () => {

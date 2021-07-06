@@ -186,7 +186,7 @@ async function loadRepository (url, opts) {
           return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
         .catch(async (cloneErr) => {
-          await rmdir(dir)
+          await rmdir(dir) // TODO remove once https://github.com/isomorphic-git/isomorphic-git/issues/1383 is fixed
           // FIXME triggering the error handler here causes assertion problems in the test suite
           //if (fetchOpts.onProgress) fetchOpts.onProgress.finish(cloneErr)
           throw transformGitCloneError(cloneErr, displayUrl)
