@@ -556,8 +556,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should discover locally installed default site generator', () => {
-    const runCwd = ospath.join(WORK_DIR, 'some-other-folder')
-    fs.mkdirSync(runCwd, { recursive: true })
+    const runCwd = __dirname
     const globalModulePath = require.resolve('@antora/site-generator-default')
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
     const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
