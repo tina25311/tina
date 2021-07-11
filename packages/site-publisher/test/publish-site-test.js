@@ -494,10 +494,24 @@ describe('publishSite()', () => {
     await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
     await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
     playbook.site = { title: 'The Site' }
-    playbook.output.destinations.push({ provider: './reporter-rel', path: destFile })
+    playbook.output.destinations.push({ provider: './reporter-rel.js', path: destFile })
     await publishSite(playbook, catalogs)
     expect(ospath.resolve(playbook.dir, DEFAULT_DEST_FS)).to.not.be.a.path()
     expect(ospath.resolve(playbook.dir, destFile))
+      .to.be.a.file()
+      .with.contents('published 6 files for The Site')
+  })
+
+  it('should load custom provider from relative path resolved from cwd', async () => {
+    process.chdir(WORK_DIR)
+    const destFile = 'report.txt'
+    await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), 'reporter-rel.js')
+    delete playbook.dir
+    playbook.site = { title: 'The Site' }
+    playbook.output.destinations.push({ provider: '~+/reporter-rel.js', path: destFile })
+    await publishSite(playbook, catalogs)
+    expect(DEFAULT_DEST_FS).to.not.be.a.path()
+    expect(destFile)
       .to.be.a.file()
       .with.contents('published 6 files for The Site')
   })
@@ -537,7 +551,7 @@ describe('publishSite()', () => {
     await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
     await fsp.copyFile(ospath.join(FIXTURES_DIR, 'reporter.js'), absProviderPath)
     playbook.site = { title: 'The Site' }
-    playbook.output.destinations.push({ provider: './reporter-multi', path: destFile })
+    playbook.output.destinations.push({ provider: './reporter-multi.js', path: destFile })
     playbook.output.destinations.push({ provider: './reporter-multi', path: destFile })
     await publishSite(playbook, catalogs)
     expect(ospath.resolve(playbook.dir, DEFAULT_DEST_FS)).to.not.be.a.path()

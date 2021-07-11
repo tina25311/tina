@@ -16,6 +16,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "@antora/expand-path-helper": "~1.0",
+    "@antora/user-require-helper": "~1.0",
     "gulp-vinyl-zip": "~2.5",
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"

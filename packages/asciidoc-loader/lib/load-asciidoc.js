@@ -6,13 +6,12 @@ const Extensions = asciidoctor.Extensions
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
 const LoggerAdapter = require('./logger/adapter')
-const ospath = require('path')
-const { posix: path } = ospath
+const { posix: path } = require('path')
 const resolveIncludeFile = require('./include/resolve-include-file')
+const userRequire = require('@antora/user-require-helper')
 
 const BLANK_LINE_BUF = Buffer.from('\n\n')
 const DOCTITLE_MARKER_BUF = Buffer.from('= ')
-const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').replace('\\', '\\\\')}]`)
 const { EXAMPLES_DIR_TOKEN, PARTIALS_DIR_TOKEN } = require('./constants')
 const EXTENSION_DSL_TYPES = Extensions.$constants(false).filter((name) => name.endsWith('Dsl'))
 
@@ -170,16 +169,9 @@ function resolveAsciiDocConfig (playbook = {}) {
     attributes: Object.assign(attributes, playbook.asciidoc.attributes),
   })
   if (extensions && extensions.length) {
+    const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || process.cwd(), __dirname] }
     const scopedExtensions = extensions.reduce((accum, extensionPath) => {
-      if (extensionPath.charAt() === '.' && DOT_RELATIVE_RX.test(extensionPath)) {
-        // NOTE require resolves a dot-relative path relative to current file; resolve relative to playbook dir instead
-        extensionPath = ospath.resolve(playbook.dir || '.', extensionPath)
-      } else if (!ospath.isAbsolute(extensionPath)) {
-        // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
-        const paths = [playbook.dir || '.', ospath.dirname(__dirname)].map((root) => ospath.join(root, 'node_modules'))
-        extensionPath = require.resolve(extensionPath, { paths })
-      }
-      const extension = require(extensionPath)
+      const extension = userRequire(extensionPath, userRequireContext)
       if ('register' in extension) {
         accum.push(extension)
       } else if (!isExtensionRegistered(extension, Extensions)) {

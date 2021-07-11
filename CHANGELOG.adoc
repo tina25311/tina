@@ -16,6 +16,9 @@ This project utilizes semantic versioning.
 === Changed
 
 * *ui-loader*: Ignore backup files (files that end with `+~+`) when reading supplemental UI files and UI bundle from directory (#793)
+* *asciidoc-loader*: Integrate @antora/user-require-helper to require Asciidoctor extensions (#802)
+* *site-publisher*: Integrate @antora/user-require-helper to require custom providers (#802)
+* *cli*: Integrate @antora/user-require-helper to require user scripts and the custom generator (#802)
 
 == 3.0.0-alpha.7 (2021-06-26)
 
