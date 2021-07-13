@@ -17,6 +17,7 @@ fi
 if [ -z $RELEASE_BRANCH ]; then RELEASE_BRANCH=master; fi
 
 # make sure the release branch exists as a local branch
+git fetch origin
 git branch -f $RELEASE_BRANCH origin/$RELEASE_BRANCH
 
 # don't run if this branch is behind the branch from which we're releasing
