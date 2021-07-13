@@ -1,0 +1,75 @@
+= ADR 0015: Create user require helper
+:revdate: 2021-07-10
+
+== Status
+
+Accepted
+
+== Context
+
+There are several places in Antora (with more on the way) that need to require code provided by the user.
+One such example is an Asciidoctor extension.
+The location of the code to require is specified by the user either in the form of an installed module name (e.g., `name-of-extension`) or a loose script on the filesystem (e.g., `./lib/name-of-extension.js`).
+
+It's not sufficient for Antora to use the `require` function from Node.js alone to require the user's code.
+The `require` function resolves module names and paths in the environment of the calling script (i.e., Antora).
+This assumption of the `require` function is not well suited for user-supplied code.
+It will not, on its own, find modules located in the local _node_modules_ folder (unless Antora happens to be located inside that folder too) or at local relative paths.
+
+This behavior can be altered with the help of the `require.resolve` function, which allows the search path to be altered using the `paths` argument.
+Antora applies additional logic that leverages this function to resolve the location of the user's code in front of the call to `require`.
+Currently, this logic is replicated each time Antora needs to use it.
+This approach is not maintainable and introduces risk that it's not done consistently.
+
+This logic should be extracted into a helper module so it can be reused, centrally maintained, and thoroughly tested.
+The purpose of the function provided by this helper module is to require a JavaScript module (specified as either a module name or path request) from the user's environment.
+
+== Decision
+
+Create a new project named *@antora/user-require-helper* to publish a node module (i.e., package) that exports a function to resolve and require a JavaScript module from the user's environment.
+The name was chosen to match the primary purpose of this helper, which is to require user code.
+Antora should use this function (mapped as `userRequire`) anytime it needs to resolve and require code from the user's environment.
+Antora should only have to provide the context for the augmented `require.resolve` call.
+The rest should be done by the helper.
+
+[,js]
+----
+const userRequire = require('@antora/user-require-helper')
+
+userRequire('my-extension', { dot: playbook.dir, paths: [playbook.dir, __dirname] })
+----
+
+The function accepts two primary arguments, the request and the context.
+A request is defined as either a module name or a path.
+Before doing the require, the helper needs to resolve the request to an absolute path on the filesystem.
+That's where the context comes in.
+The context configures the search path for the request.
+
+If the request has a file extension (e.g., `script.js`), the helper assumes it's a path and resolves it as such.
+Additionally, if the request argument begins with a dot (`./`) or dot dot (`../`) segment, and it does not contain a colon (`:`), the helper resolves it as a path, _even if it doesn't have a file extension_.
+The helper resolves a path using the https://gitlab.com/antora/expand-path-helper#usage[@antora/expand-path-helper].
+Antora will set the dot argument to the playbook directory and leave the start argument unset (which means it defaults to the working directory).
+
+Otherwise, the helper assumes the request is a module name (e.g., `module-name`) with an optional prefix (`~+:module-name`).
+A module name is resolved using `require.resolve` and, when appropriate, its `paths` argument.
+
+The module name can have a prefix, which alters the search path (i.e., anchors module resolution to the specified context).
+The prefix and module name are separated by a colon, where the prefix is everything to the left of the colon (e.g., `~+:module-name`).
+(This extends a convention introduced in Node.js 16, where the `node:` prefix is used to force the module name to be resolved as a built-in module).
+The possible prefixes are those recognized by the https://gitlab.com/antora/expand-path-helper#usage[@antora/expand-path-helper], with the addition of `^`, which resolves the module relative to the calling script (effectively matching the behavior of the `require` function).
+
+If no prefix is specified on the request for a module name, the helper will pass the `paths` argument specified on the function call to `require.resolve`.
+This gives Antora the opportunity to provide reasonable defaults when the user isn't specific about where the module is located.
+Antora will first look in the _node_modules_ folder in the playbook directory, then in the location where Antora is installed (which could be the same location).
+
+== Consequences
+
+This helper is intended to be a drop-in replacement for the existing functionality in Antora to require user code.
+However, there are some important changes to emphasize.
+
+First, although the helper will permit omitting the file extension when referencing a path (e.g., `./lib/my-extension`), this syntax should be considered deprecated.
+Second, the helper will support adding a prefix to the module name to alter the module search path (e.g., `~+:my-extension`).
+Third, if the name of the module ends in a file extension (e.g., `highlight.js`), the user must append a trailing slash to force it to be recognized as a module name and not a path (e.g., `highlight.js/`).
+Finally, we may reconsider how a bare module name is resolved.
+Currently, a module name is resolved relative to the playbook directory, then the location where Antora installed (if different).
+The helper gives us the opportunity to tune this search path in the future.
