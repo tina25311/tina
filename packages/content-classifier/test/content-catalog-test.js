@@ -1696,6 +1696,17 @@ describe('ContentCatalog', () => {
       expect(() => contentCatalog.registerPageAlias('ROOT:alias.adoc', targetPage)).to.throw(expectedError)
     })
 
+    it('should not allow alias for page in unknown component to be registered multiple times', () => {
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
+      targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
+      const expectedError =
+        'Duplicate alias: next@unknown::alias.adoc (specified as: next@unknown:ROOT:alias.adoc)\n' +
+        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+      expect(() => contentCatalog.registerPageAlias('next@unknown::alias.adoc', targetPage)).to.not.throw()
+      expect(() => contentCatalog.registerPageAlias('next@unknown:ROOT:alias.adoc', targetPage)).to.throw(expectedError)
+    })
+
     it('should register an alias correctly when the HTML URL extension style is indexify', () => {
       contentCatalog = new ContentCatalog({ urls: { htmlExtensionStyle: 'indexify' } })
       contentCatalog.registerComponentVersion('the-component', '1.2.3', { title: 'The Component' })

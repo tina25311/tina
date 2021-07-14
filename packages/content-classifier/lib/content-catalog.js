@@ -328,18 +328,17 @@ class ContentCatalog {
               `  existing page: ${getFileLocation(existingPage)}`
         )
       }
-      const existingAlias = this.getById(Object.assign({}, src, { family: 'alias' }))
-      if (existingAlias) {
-        throw new Error(
-          `Duplicate alias: ${generateResourceSpec(src)} (specified as: ${spec})\n` +
-            `  source: ${getFileLocation(target)}`
-        )
-      }
     } else if (src.version == null) {
       // QUESTION should we skip registering alias in this case?
       src.version = ''
     }
     src.family = 'alias'
+    const existingAlias = this.getById(src)
+    if (existingAlias) {
+      throw new Error(
+        `Duplicate alias: ${generateResourceSpec(src)} (specified as: ${spec})\n  source: ${getFileLocation(target)}`
+      )
+    }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
     const alias = this.addFile({ src, rel: target })
     // NOTE record the first alias this target claims as the preferred one
