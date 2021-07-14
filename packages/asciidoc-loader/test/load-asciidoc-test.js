@@ -4662,26 +4662,32 @@ describe('loadAsciiDoc()', () => {
     })
 
     it('should load global extension and register it globally', () => {
-      const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
-      const config = resolveAsciiDocConfig(playbook)
-      expect(config.extensions).to.not.exist()
       const Extensions = Asciidoctor.Extensions
-      const extensionGroupNames = Object.keys(Extensions.getGroups())
-      expect(extensionGroupNames).to.have.lengthOf(1)
-      Extensions.unregisterAll()
+      try {
+        const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
+        const config = resolveAsciiDocConfig(playbook)
+        expect(config.extensions).to.not.exist()
+        const extensionGroupNames = Object.keys(Extensions.getGroups())
+        expect(extensionGroupNames).to.have.lengthOf(1)
+      } finally {
+        Extensions.unregisterAll()
+      }
     })
 
     it('should only register a global extension once', () => {
-      const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
-      resolveAsciiDocConfig(playbook)
-      resolveAsciiDocConfig(playbook)
       const Extensions = Asciidoctor.Extensions
-      const extensionGroupNames = Object.keys(Extensions.getGroups())
-      expect(extensionGroupNames).to.have.lengthOf(1)
-      Extensions.unregisterAll()
+      try {
+        const playbook = { asciidoc: { extensions: [ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js')] } }
+        resolveAsciiDocConfig(playbook)
+        resolveAsciiDocConfig(playbook)
+        const extensionGroupNames = Object.keys(Extensions.getGroups())
+        expect(extensionGroupNames).to.have.lengthOf(1)
+      } finally {
+        Extensions.unregisterAll()
+      }
     })
 
-    it('should load extension relative to playbook dir', () => {
+    it('should load extension at path relative to playbook dir', () => {
       const playbook = {
         dir: FIXTURES_DIR,
         asciidoc: {
@@ -4694,7 +4700,20 @@ describe('loadAsciiDoc()', () => {
       expect(config.extensions[0]).to.be.instanceOf(Function)
     })
 
-    it('should load extension from modules path', () => {
+    it('should load extension at extensionless path relative to playbook dir', () => {
+      const playbook = {
+        dir: FIXTURES_DIR,
+        asciidoc: {
+          extensions: ['./ext/scoped-shout-block'],
+        },
+      }
+      const config = resolveAsciiDocConfig(playbook)
+      expect(config.extensions).to.exist()
+      expect(config.extensions).to.have.lengthOf(1)
+      expect(config.extensions[0]).to.be.instanceOf(Function)
+    })
+
+    it('should load extension from module in node_modules directory relative to playbook dir', () => {
       const playbook = {
         dir: FIXTURES_DIR,
         asciidoc: {
@@ -4707,26 +4726,61 @@ describe('loadAsciiDoc()', () => {
       expect(config.extensions[0]).to.be.instanceOf(Function)
     })
 
-    it('should load all extensions', () => {
+    it('should load extension from module in node_modules directory relative to cwd', () => {
+      const oldCwd = process.cwd()
+      try {
+        process.chdir(FIXTURES_DIR)
+        const playbook = {
+          dir: __dirname,
+          asciidoc: {
+            extensions: ['~+:lorem-block-macro'],
+          },
+        }
+        const config = resolveAsciiDocConfig(playbook)
+        expect(config.extensions).to.exist()
+        expect(config.extensions).to.have.lengthOf(1)
+        expect(config.extensions[0]).to.be.instanceOf(Function)
+      } finally {
+        process.chdir(oldCwd)
+      }
+    })
+
+    it('should load extension from module at absolute path', () => {
       const playbook = {
-        dir: FIXTURES_DIR,
+        dir: __dirname,
         asciidoc: {
-          extensions: [
-            './ext/scoped-shout-block.js',
-            'lorem-block-macro',
-            ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js'),
-          ],
+          extensions: [ospath.join(FIXTURES_DIR, 'node_modules', 'lorem-block-macro')],
         },
       }
       const config = resolveAsciiDocConfig(playbook)
       expect(config.extensions).to.exist()
-      expect(config.extensions).to.have.lengthOf(2)
+      expect(config.extensions).to.have.lengthOf(1)
       expect(config.extensions[0]).to.be.instanceOf(Function)
-      expect(config.extensions[1]).to.be.instanceOf(Function)
+    })
+
+    it('should load all extensions', () => {
       const Extensions = Asciidoctor.Extensions
-      const extensionGroupNames = Object.keys(Extensions.getGroups())
-      expect(extensionGroupNames).to.have.lengthOf(1)
-      Extensions.unregisterAll()
+      try {
+        const playbook = {
+          dir: FIXTURES_DIR,
+          asciidoc: {
+            extensions: [
+              './ext/scoped-shout-block.js',
+              'lorem-block-macro',
+              ospath.resolve(FIXTURES_DIR, 'ext/global-shout-block.js'),
+            ],
+          },
+        }
+        const config = resolveAsciiDocConfig(playbook)
+        expect(config.extensions).to.exist()
+        expect(config.extensions).to.have.lengthOf(2)
+        expect(config.extensions[0]).to.be.instanceOf(Function)
+        expect(config.extensions[1]).to.be.instanceOf(Function)
+        const extensionGroupNames = Object.keys(Extensions.getGroups())
+        expect(extensionGroupNames).to.have.lengthOf(1)
+      } finally {
+        Extensions.unregisterAll()
+      }
     })
   })
 

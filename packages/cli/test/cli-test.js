@@ -601,7 +601,7 @@ describe('cli', function () {
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
-    return runAntora('generate the-site')
+    return runAntora(['generate', 'the-site', '--generator', '.:@antora-site-generator-default'])
       .assert(/^error: Generator not found or failed to load/i)
       .on('exit', () => rmdirSync(localNodeModules))
       .done()
@@ -647,8 +647,8 @@ describe('cli', function () {
 
   it('should preload libraries specified using the require option', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const r1 = ospath.resolve(FIXTURES_DIR, 'warming-up')
-    const r2 = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-postprocessor'))
+    const r1 = ospath.resolve(FIXTURES_DIR, 'warming-up.js')
+    const r2 = '.' + ospath.sep + ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-postprocessor'))
     const args = ['--require', r1, '-r', r2, 'generate', 'the-site', '--quiet']
     const messages = []
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
@@ -728,7 +728,7 @@ describe('cli', function () {
 
   it('should configure logger with default settings and warning if used before being configured', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const r1 = ospath.resolve(FIXTURES_DIR, 'use-logger')
+    const r1 = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
     const args = ['--require', r1, 'generate', 'the-site', '--quiet']
     const messages = []
     return new Promise((resolve) =>
@@ -746,7 +746,7 @@ describe('cli', function () {
 
   it('should allow require script to replace base html5 converter that Antora extends', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const r1 = ospath.resolve(FIXTURES_DIR, 'custom-html5-converter')
+    const r1 = ospath.resolve(FIXTURES_DIR, 'custom-html5-converter.js')
     const args = ['--require', r1, 'generate', 'the-site', '--quiet']
     return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)

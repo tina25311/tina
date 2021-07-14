@@ -8,8 +8,8 @@ const configSchema = require('@antora/playbook-builder/lib/config/schema')
 const convict = require('@antora/playbook-builder/lib/solitary-convict')
 const { finalizeLogger } = require('@antora/logger')
 const ospath = require('path')
+const userRequire = require('@antora/user-require-helper')
 
-const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${ospath.sep.replace('/', '').replace('\\', '\\\\')}]`)
 const { version: VERSION } = require('../package.json')
 
 async function run (argv = process.argv) {
@@ -39,22 +39,6 @@ function getTTYColumns () {
   return process.env.COLUMNS || process.stdout.columns || 80
 }
 
-function requireLibraries (requirePaths) {
-  if (requirePaths) requirePaths.forEach((requirePath) => requireLibrary(requirePath))
-}
-
-function requireLibrary (requirePath, cwd = process.cwd()) {
-  if (requirePath.charAt() === '.' && DOT_RELATIVE_RX.test(requirePath)) {
-    // NOTE require resolves a dot-relative path relative to current file; resolve relative to cwd instead
-    requirePath = ospath.resolve(requirePath)
-  } else if (!ospath.isAbsolute(requirePath)) {
-    // NOTE appending node_modules prevents require from looking elsewhere before looking in these paths
-    const paths = [cwd, ospath.dirname(__dirname)].map((start) => ospath.join(start, 'node_modules'))
-    requirePath = require.resolve(requirePath, { paths })
-  }
-  return require(requirePath)
-}
-
 cli
   .allowExcessArguments(false)
   .configureOutput({ getOutHelpWidth: getTTYColumns, getErrHelpWidth: getTTYColumns })
@@ -75,8 +59,8 @@ cli
       )
     }.bind(cli)
   )
-  .option('-r, --require <library>', 'Require library (aka node module) or script before executing command.')
-  .on('option:require', (requirePath) => (cli.requirePaths = [...(cli.requirePaths || []), requirePath]))
+  .option('-r, --require <library>', 'Require library (aka node module) or script path before executing command.')
+  .on('option:require', (requireRequest) => (cli.requireRequests = cli.requireRequests || []).push(requireRequest))
   .option('--stacktrace', 'Print the stacktrace to the console if the application fails.')
 
 cli
@@ -89,15 +73,19 @@ cli
       .default('@antora/site-generator-default', '@antora/site-generator-default')
   )
   .action(async (playbookFile, options, command) => {
-    try {
-      requireLibraries(cli.requirePaths)
-    } catch (err) {
-      exitWithError(err, cli.stacktrace)
+    const dot = ospath.resolve(playbookFile, '..')
+    const userRequireContext = { dot, paths: [dot, __dirname] }
+    if (cli.requireRequests) {
+      try {
+        cli.requireRequests.forEach((requireRequest) => userRequire(requireRequest, userRequireContext))
+      } catch (err) {
+        exitWithError(err, cli.stacktrace)
+      }
     }
     const generator = options.generator
     let generateSite
     try {
-      generateSite = requireLibrary(generator, ospath.resolve(playbookFile, '..'))
+      generateSite = userRequire(generator, userRequireContext)
     } catch (err) {
       let msg = 'Generator not found or failed to load.'
       if (generator && generator.charAt() !== '.') msg += ` Try installing the '${generator}' package.`

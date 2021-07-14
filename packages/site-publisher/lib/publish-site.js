@@ -1,7 +1,7 @@
 'use strict'
 
 const ReadableOutputFileArray = require('./readable-output-file-array')
-const requireProvider = require('./require-provider')()
+const userRequire = require('@antora/user-require-helper')
 
 const { DEFAULT_DEST_FS } = require('./constants.js')
 
@@ -52,9 +52,12 @@ async function publishSite (playbook, catalogs) {
         return require('./providers/' + provider).bind(null, options)
       default:
         try {
-          return requireProvider(provider, playbook.dir || '.').bind(null, options)
-        } catch {
-          throw new Error('Unsupported destination provider: ' + provider)
+          const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || process.cwd(), __dirname] }
+          return userRequire(provider, userRequireContext).bind(null, options)
+        } catch (err) {
+          const prettyErr = new Error('Unsupported destination provider: ' + provider)
+          prettyErr.stack = `\nCaused by: ${err.stack}`
+          throw prettyErr
         }
     }
   })
