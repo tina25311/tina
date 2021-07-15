@@ -32,7 +32,7 @@ function collectOptions (props, context = undefined) {
       const option = { name: arg, form: `--${arg}`, description: value.doc, format: format }
       if (Array.isArray(format)) {
         option.form += ' <choice>'
-        option.choices = Object.defineProperty(format.slice(0), 'map', { value: () => format })
+        option.choices = Object.defineProperty(format.slice(), 'map', { value: () => format })
       } else if (format !== 'boolean') {
         option.form += ` <${arg.substr(arg.lastIndexOf('-') + 1, arg.length)}>`
       }

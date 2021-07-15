@@ -76,7 +76,7 @@ function getDestinations (output) {
   let destinations = output.destinations
   if (output.dir) {
     if (destinations && destinations.length) {
-      destinations = destinations.slice(0)
+      destinations = destinations.slice()
       const primaryFsDestIdx = destinations.findIndex(({ provider: candidate }) => candidate === 'fs')
       if (~primaryFsDestIdx) {
         ;(destinations[primaryFsDestIdx] = Object.assign({}, destinations[primaryFsDestIdx])).path = output.dir

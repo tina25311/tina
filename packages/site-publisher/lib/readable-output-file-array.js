@@ -12,7 +12,7 @@ class File extends Vinyl {
 class ReadableOutputFileArray extends Readable {
   constructor (array) {
     super({ objectMode: true })
-    this.array = array.slice(0)
+    this.array = array.slice()
   }
 
   _read (size) {
