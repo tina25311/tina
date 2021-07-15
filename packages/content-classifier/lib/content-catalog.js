@@ -183,8 +183,8 @@ class ContentCatalog {
     return accum
   }
 
-  getById ({ component, version, module: module_, family, relative }) {
-    return this[$files].get(generateKey({ component, version, module: module_, family, relative }))
+  getById (id) {
+    return this[$files].get(generateKey(id))
   }
 
   getByPath ({ component, version, path: path_ }) {
