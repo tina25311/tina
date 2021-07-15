@@ -5,12 +5,12 @@ const { posix: path } = require('path')
 const { DEFAULT_LAYOUT_NAME } = require('./constants')
 const { version: VERSION } = require('../package.json')
 
-function buildBaseUiModel (playbook, contentCatalog, env) {
+function buildBaseUiModel (playbook, contentCatalog) {
   const contentCatalogModel = contentCatalog.exportToModel()
   return {
     antoraVersion: VERSION,
     contentCatalog: contentCatalogModel,
-    env,
+    env: playbook.env,
     site: buildSiteUiModel(playbook, contentCatalogModel),
   }
 }
