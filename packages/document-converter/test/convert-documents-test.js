@@ -11,7 +11,7 @@ describe('convertDocuments()', () => {
   const asciidocConfig = resolveAsciiDocConfig()
   const expectPageLink = (html, url, content) => expect(html).to.include(`<a href="${url}" class="page">${content}</a>`)
 
-  it('should run on all files in the page family', () => {
+  it('should start with all files in the page family', () => {
     const contentCatalog = mockContentCatalog().spyOn('getPages')
     convertDocuments(contentCatalog)
     expect(contentCatalog.getPages).to.have.been.called()
