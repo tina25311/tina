@@ -3,14 +3,14 @@
 == Component version
 
 A [.term]*component version* represents a discrete version of the documentation for a project, product, library, service, training course, etc.
-Antora looks for sources files associated with the same xref:component-name-and-version.adoc#name-key[component name] and xref:component-name-and-version.adoc#version-key[component version] in multiple content sources and collates them together to make a component version.
+Antora looks for source files associated with the same xref:component-name-and-version.adoc#name-key[component name] and xref:component-name-and-version.adoc#version-key[version] in multiple content sources and collates them together to make a component version.
 The xref:component-version-descriptor.adoc[component version descriptor] (named [.path]_antora.yml_) declares each component version and marks the source files that belong to it.
 It also supplies additional configuration for that component version.
 
 [#docs-component]
 == Component
 
-A [.term]*component*—more formally a *documentation component* or simply *docs component*—refers to all of the component versions that share the same xref:component-name-and-version.adoc#name-key[component name].
+A [.term]*component*—more formally a *documentation component* or shortened to *docs component*—refers to all of the component versions that share the same xref:component-name-and-version.adoc#name-key[component name].
 A component is never declared directly.
 Instead, it gets created by having at least one component version.
 

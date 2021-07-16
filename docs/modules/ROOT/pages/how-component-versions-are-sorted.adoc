@@ -41,7 +41,7 @@ a|[%hardbreaks]
 |All values that don't match the semantic scheme
 a|[%hardbreaks]
 `edge`
-`master`
+`main`
 `z4`
 
 |Unversioned
@@ -57,7 +57,7 @@ NOTE: The version `master` has special meaning when a xref:component-with-no-ver
 Antora applies the following rules when sorting component versions:
 
 . Named versions of a component are displayed in the component version selector menu before semantic versions if both are present.
-. Named versions of a component are sorted in reverse alphabetical order (e.g., `z4`, `master`).
+. Named versions of a component are sorted in reverse alphabetical order (e.g., `z4`, `wish`, `lester`).
 .. Version identifiers with uppercase letters aren't recommended in URLs and can prevent portability between web servers.
 If you do use uppercase letters, they come before lowercase letters (e.g., `A`, `a`).
 . Semantic versions of a component are displayed in the component version selector menu after named versions if both are present.
@@ -70,14 +70,13 @@ If you do use uppercase letters, they come before lowercase letters (e.g., `A`, 
 
 Let's assume that the component _RoseyDB_ contains several component versions.
 Some versions use the semantic scheme: `v2.5`, `4.0`, and `3.9`.
-Some are named: `utopia`, `master`, and `vivid`.
+Some are named: `utopia` and `vivid`.
 According to Antora's sorting rules, the _RoseyDB_ component versions will be displayed in the reference UI in the order listed below.
 
 .Sorted RoseyDB component versions
 ....
 vivid
 utopia
-master
 4.0
 3.9
 v2.5
@@ -93,7 +92,6 @@ The `utopia` version is just labeled with a different version name in the refere
 ....
 vivid
 5.0
-master
 4.0
 3.9
 v2.5
@@ -107,7 +105,7 @@ The latest version for _RoseyDB_ would be `vivid` because it's the first version
 
 In addition to sorting the component versions, Antora identifies the most recent, stable component version of each component.
 The [.term]*latest version* is the first version in the sorted list that's not a xref:component-prerelease.adoc[prerelease].
-(If all versions are prereleases, then the first prerelease version in the list is selected.)
+If all versions are prereleases, then the first prerelease version in the list is selected.
 
 Antora uses the latest version of a component when qualifying an incoming page or resource ID reference from another component if the version coordinate wasn't specified or can't otherwise be determined.
 
