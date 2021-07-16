@@ -43,7 +43,7 @@ chai.Assertion.addMethod('startWith', function (expected) {
 
 beforeEach(() => configureLogger({ level: 'silent' })) // eslint-disable-line no-undef
 
-function captureStandardStream (streamName, fn, transform, cb) {
+function captureStandardStream (streamName, fn, transform, isAsync) {
   const stream = process[streamName]
   const streamWrite = stream.write
   const fsWrite = fs.write
@@ -58,12 +58,12 @@ function captureStandardStream (streamName, fn, transform, cb) {
   }
   const data = []
   const restore = () => {
-    if (cb) fs.write = fsWrite
+    if (isAsync) fs.write = fsWrite
     fs.writeSync = fsWriteSync
     stream.write = streamWrite
   }
   try {
-    if (cb) {
+    if (isAsync) {
       fs.write = (...[fd, buffer, ...remaining]) => {
         const callback = remaining.pop()
         if (fd === stream.fd) {
@@ -82,22 +82,16 @@ function captureStandardStream (streamName, fn, transform, cb) {
     }
     stream.write = (buffer) => data.push(...transform(buffer))
     const returnValue = fn()
-    if (cb && returnValue instanceof Promise) {
-      return returnValue
-        .then((actualReturnValue) =>
-          cb(
-            null,
-            Object.defineProperty(data, 'withReturnValue', {
-              get () {
-                return () => ({ [transform.name || 'data']: this, returnValue: actualReturnValue })
-              },
-            })
-          )
+    if (isAsync) {
+      return (returnValue instanceof Promise ? returnValue : Promise.resolve(returnValue))
+        .then((resolvedValue) =>
+          Object.defineProperty(data, 'withReturnValue', {
+            get () {
+              return () => ({ [transform.name || 'data']: this, returnValue: resolvedValue })
+            },
+          })
         )
-        .catch(cb)
         .finally(restore)
-    } else {
-      cb = undefined
     }
     return Object.defineProperty(data, 'withReturnValue', {
       get () {
@@ -105,7 +99,7 @@ function captureStandardStream (streamName, fn, transform, cb) {
       },
     })
   } finally {
-    if (!cb) restore()
+    if (!isAsync) restore()
   }
 }
 
@@ -200,7 +194,9 @@ module.exports = {
   captureStderrSync: (fn) => captureStandardStream('stderr', fn),
   captureStdout: (fn) =>
     new Promise((resolve, reject) =>
-      captureStandardStream('stdout', fn, undefined, (err, result) => (err ? reject(err) : resolve(result)))
+      captureStandardStream('stdout', fn, undefined, true)
+        .then(resolve)
+        .catch(reject)
     ),
   captureStdoutSync: (fn) => captureStandardStream('stdout', fn),
   captureStdoutLog: (fn) =>
@@ -212,8 +208,10 @@ module.exports = {
           const { time, ...message } = JSON.parse(buffer)
           return [message]
         },
-        (err, result) => (err ? reject(err) : resolve(result))
+        true
       )
+        .then(resolve)
+        .catch(reject)
     ),
   captureStdoutLogSync: (fn) =>
     captureStandardStream('stdout', fn, function messages (buffer) {

@@ -1088,7 +1088,10 @@ describe('logger', () => {
       expect(realStream).to.have.property('minLength', 4096)
       let lines = captureStdoutSync(() => logger.info('love is the message'))
       expect(lines).to.be.empty()
+      const fs = require('fs')
+      const originalWrite = fs.write
       lines = await captureStdout(finalizeLogger)
+      expect(fs.write).to.equal(originalWrite) // verify that captureStdout releases fs.write
       expect(lines).to.have.lengthOf(1)
       const expectedLine = /^\[.+\] INFO: love is the message$/
       expect(lines[0]).to.match(expectedLine)
