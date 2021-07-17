@@ -79,7 +79,7 @@ async function loadUi (playbook) {
           .catch(() => downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {})))
     })
   } else {
-    const localPath = expandPath(bundleUrl, '~+', startDir)
+    const localPath = expandPath(bundleUrl, { dot: startDir })
     resolveBundle = fsp
       .stat(localPath)
       .then((stat) => new File({ path: localPath, stat }))
@@ -147,7 +147,7 @@ function ensureCacheDir (customCacheDir, startDir) {
   const baseCacheDir =
     customCacheDir == null
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
-      : expandPath(customCacheDir, '~+', startDir)
+      : expandPath(customCacheDir, { dot: startDir })
   const cacheDir = ospath.join(baseCacheDir, UI_CACHE_FOLDER)
   return fsp
     .mkdir(cacheDir, { recursive: true })
@@ -263,7 +263,7 @@ function srcSupplementalFiles (filesSpec, startDir) {
           if (~contents_.indexOf('\n') || !EXT_RX.test(contents_)) {
             accum.push(new MemoryFile({ path: path_, contents: Buffer.from(contents_) }))
           } else {
-            contents_ = expandPath(contents_, '~+', startDir)
+            contents_ = expandPath(contents_, { dot: startDir })
             accum.push(
               fsp
                 .stat(contents_)
@@ -277,7 +277,7 @@ function srcSupplementalFiles (filesSpec, startDir) {
       }, [])
     ).then((files) => files.reduce((accum, file) => accum.set(file.path, file) && accum, new Map()))
   } else {
-    const cwd = expandPath(filesSpec, '~+', startDir)
+    const cwd = expandPath(filesSpec, { dot: startDir })
     return fsp
       .access(cwd)
       .then(
