@@ -18,7 +18,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "@antora/logger": "3.0.0-alpha.7",
-    "@antora/user-require-helper": "~1.0",
+    "@antora/user-require-helper": "~2.0",
     "@asciidoctor/core": "~2.2"
   },
   "engines": {

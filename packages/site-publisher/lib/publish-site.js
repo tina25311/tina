@@ -52,7 +52,7 @@ async function publishSite (playbook, catalogs) {
         return require('./providers/' + provider).bind(null, options)
       default:
         try {
-          const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || process.cwd(), __dirname] }
+          const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || '', __dirname] }
           return userRequire(provider, userRequireContext).bind(null, options)
         } catch (err) {
           const prettyErr = new Error('Unsupported destination provider: ' + provider)
