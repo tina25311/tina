@@ -169,7 +169,7 @@ function resolveAsciiDocConfig (playbook = {}) {
     attributes: Object.assign(attributes, playbook.asciidoc.attributes),
   })
   if (extensions && extensions.length) {
-    const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || process.cwd(), __dirname] }
+    const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || '', __dirname] }
     const scopedExtensions = extensions.reduce((accum, extensionPath) => {
       const extension = userRequire(extensionPath, userRequireContext)
       if ('register' in extension) {
