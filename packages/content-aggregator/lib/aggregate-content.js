@@ -193,7 +193,7 @@ async function loadRepository (url, opts) {
         .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
         .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
     }
-  } else if (await isDirectory((dir = expandPath(url, '~+', opts.startDir)))) {
+  } else if (await isDirectory((dir = expandPath(url, { dot: opts.startDir })))) {
     repo = (await isDirectory(ospath.join(dir, '.git')))
       ? { cache: {}, dir, fs }
       : { cache: {}, dir, fs, gitdir: dir, noCheckout: true }
@@ -946,7 +946,7 @@ function ensureCacheDir (preferredCacheDir, startDir) {
   const baseCacheDir =
     preferredCacheDir == null
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
-      : expandPath(preferredCacheDir, '~+', startDir)
+      : expandPath(preferredCacheDir, { dot: startDir })
   const cacheDir = ospath.join(baseCacheDir, CONTENT_CACHE_FOLDER)
   return fsp
     .mkdir(cacheDir, { recursive: true })

@@ -11,7 +11,7 @@ const { DEFAULT_DEST_FS } = require('../constants.js')
 
 function publishToFs (config, files, playbook) {
   const destDir = config.path || DEFAULT_DEST_FS
-  const absDestDir = expandPath(destDir, '~+', playbook.dir || '.')
+  const absDestDir = expandPath(destDir, { dot: playbook.dir })
   const report = {
     provider: 'fs',
     path: destDir,

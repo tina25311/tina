@@ -12,7 +12,7 @@ class GitCredentialManagerStore {
     if ((this.contents = (config = config || {}).contents)) {
       this.path = undefined
     } else if (config.path) {
-      this.path = expandPath(config.path, '~+', startDir)
+      this.path = expandPath(config.path, { dot: startDir })
     } else {
       this.path = undefined
     }

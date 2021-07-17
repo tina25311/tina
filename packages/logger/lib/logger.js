@@ -43,7 +43,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
       const { file, append = true, bufferSize, ...destOpts } = destination
       if (bufferSize != null) destOpts.minLength = bufferSize
       if (file && !(dest = standardStreams[file])) {
-        dest = expandPath(file, '~+', baseDir)
+        dest = expandPath(file, { dot: baseDir })
         try {
           fs.mkdirSync(ospath.dirname(dest), { recursive: true })
           if (!append) fs.unlinkSync(dest)

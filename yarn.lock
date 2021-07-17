@@ -7,6 +7,11 @@
   resolved "https://registry.yarnpkg.com/@antora/expand-path-helper/-/expand-path-helper-1.0.0.tgz#3bfd6938ab86d4709af8d869cbf3bb17b8fe8912"
   integrity sha512-hg3y6M3OvRTb7jtLAnwwloYDxafbyKYttcf16kGCXvP7Wqosh7c+Ag+ltaZ7VSebpzpphO/umb/BXdpU7rxapw==
 
+"@antora/expand-path-helper@~2.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@antora/expand-path-helper/-/expand-path-helper-2.0.0.tgz#2e7e8fe35ed97049a8f5f971a63a7a75886e646d"
+  integrity sha512-CSMBGC+tI21VS2kGW3PV7T2kQTM5eT3f2GTPVLttwaNYbNxDve08en/huzszHJfxo11CcEs26Ostr0F2c1QqeA==
+
 "@antora/user-require-helper@~1.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@antora/user-require-helper/-/user-require-helper-1.0.0.tgz#db11f9050933a728b4e449afc65444286839b080"
