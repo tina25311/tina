@@ -67,9 +67,9 @@ function loadConvictConfig (args, env, customSchema) {
   return convict(customSchema || require('./config/schema'), { args, env })
 }
 
-function freeze (o) {
+function deepFreeze (o) {
   let v
-  for (const k in o) hasOwnProperty.call(o, k) && (Object.isFrozen((v = o[k])) || freeze(v))
+  for (const k in o) hasOwnProperty.call(o, k) && (Object.isFrozen((v = o[k])) || deepFreeze(v))
   return Object.freeze(o)
 }
 
@@ -97,7 +97,7 @@ function exportModel (config) {
     if (log) configureLogger(log, playbook.dir)
   }
   delete playbook.playbook
-  return freeze(playbook)
+  return deepFreeze(playbook)
 }
 
 module.exports = buildPlaybook
