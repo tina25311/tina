@@ -41,7 +41,7 @@ site:
   title: Site Title
   url: https://example.org
 urls:
-  html-extension-style: indexify
+  html_extension_style: indexify
 ----
 
 When `indexify` is applied, the site's published URLs don't end with the extension _.html_.
@@ -62,7 +62,7 @@ site:
   title: Site Title
   url: https://example.org
 urls:
-  html-extension-style: drop
+  html_extension_style: drop
 ----
 
 When `drop` is applied, the site's published URLs don't end with the extension _.html_.
