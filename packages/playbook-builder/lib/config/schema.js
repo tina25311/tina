@@ -62,7 +62,7 @@ module.exports = {
       default: true,
     },
     sources: {
-      doc: 'The list of git repositories + branch patterns to use.',
+      doc: 'The list of git repository urls, references, and start paths to use as content sources.',
       format: Array,
       default: [],
     },
