@@ -4,7 +4,6 @@ const camelCaseKeys = require('camelcase-keys')
 const { configureLogger } = require('@antora/logger')
 const convict = require('./solitary-convict')
 const fs = require('fs')
-const { hasOwnProperty } = Object.prototype
 const ospath = require('path')
 
 /**
