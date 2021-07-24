@@ -366,22 +366,10 @@ describe('createPageComposer()', () => {
       expect(file.contents.toString()).to.include(`<body>${VERSION}</body>`)
     })
 
-    it('should be able to reference the real environment variables using the env variable', () => {
-      const oldEnv = process.env
-      try {
-        process.env = Object.assign({}, oldEnv, { FOO: 'BAR' })
-        replaceCallToBodyPartial('<body>{{env.FOO}}</body>')
-        const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
-        composePage(file, contentCatalog, navigationCatalog)
-        expect(file.contents.toString()).to.include('<body>BAR</body>')
-      } finally {
-        process.env = oldEnv
-      }
-    })
-
     it('should be able to reference the provided environment variables using the env variable', () => {
+      playbook.env = { FOO: 'BAR' }
       replaceCallToBodyPartial('<body>{{env.FOO}}</body>')
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog, { FOO: 'BAR' })
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       composePage(file, contentCatalog, navigationCatalog)
       expect(file.contents.toString()).to.include('<body>BAR</body>')
     })

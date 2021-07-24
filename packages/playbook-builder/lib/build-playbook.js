@@ -82,6 +82,7 @@ function exportModel (config) {
   }
   const playbook = camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
   playbook.dir = playbook.playbook ? ospath.dirname((playbook.file = playbook.playbook)) : process.cwd()
+  Object.defineProperty(playbook, 'env', { value: config.getEnv() })
   const runtime = (playbook.runtime || false).constructor === Object && playbook.runtime
   if (runtime) {
     const log = (runtime.log || false).constructor === Object && runtime.log

@@ -21,7 +21,7 @@ async function generateSite (args, env) {
   ])
   const pages = convertDocuments(contentCatalog, asciidocConfig)
   const navigationCatalog = buildNavigation(contentCatalog, asciidocConfig)
-  const composePage = createPageComposer(playbook, contentCatalog, uiCatalog, env)
+  const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
   pages.forEach((page) => composePage(page, contentCatalog, navigationCatalog))
   const siteFiles = [...mapSite(playbook, pages), ...produceRedirects(playbook, contentCatalog)]
   if (playbook.site.url) siteFiles.push(composePage(create404Page()))

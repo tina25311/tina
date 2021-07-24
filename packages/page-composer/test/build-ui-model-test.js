@@ -112,10 +112,10 @@ describe('build UI model', () => {
     })
 
     it('should set env property to provided env object', () => {
-      const env = { FOO: 'BAR' }
-      const model = buildBaseUiModel(playbook, contentCatalog, env)
+      playbook.env = { FOO: 'BAR' }
+      const model = buildBaseUiModel(playbook, contentCatalog)
       expect(model.env).to.exist()
-      expect(model.env).to.equal(env)
+      expect(model.env).to.equal(playbook.env)
     })
 
     it('should set contentCatalog property to exported content catalog', () => {

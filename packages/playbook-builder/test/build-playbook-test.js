@@ -116,6 +116,23 @@ describe('buildPlaybook()', () => {
     expect(playbook.playbook).to.not.exist()
   })
 
+  it('should assign second positional argument to non-enumerable env property', () => {
+    const playbook = buildPlaybook([], process.env, { playbook: { format: String, default: undefined } })
+    expect(playbook.env).to.equal(process.env)
+    try {
+      process.env.TMP_ENV_VAR = 'value'
+      expect(playbook.env.TMP_ENV_VAR).to.equal('value')
+    } finally {
+      delete process.env.TMP_ENV_VAR
+    }
+    expect(Object.keys(playbook)).to.not.include('env')
+  })
+
+  it('should set env property to empty object if second positional argument is undefined', () => {
+    const playbook = buildPlaybook([], undefined, { playbook: { format: String, default: undefined } })
+    expect(playbook.env).to.eql({})
+  })
+
   it('should load YAML playbook file with .yml extension', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(ymlSpec)
