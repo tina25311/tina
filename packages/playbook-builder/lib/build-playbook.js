@@ -68,8 +68,7 @@ function loadConvictConfig (args, env, customSchema) {
 }
 
 function deepFreeze (o) {
-  let v
-  for (const k in o) hasOwnProperty.call(o, k) && (Object.isFrozen((v = o[k])) || deepFreeze(v))
+  for (const v of Object.values(o)) Object.isFrozen(v) || deepFreeze(v)
   return Object.freeze(o)
 }
 
