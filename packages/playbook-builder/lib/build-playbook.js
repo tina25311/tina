@@ -28,7 +28,6 @@ const ospath = require('path')
  */
 function buildPlaybook (args = [], env = {}, schema = undefined) {
   const config = loadConvictConfig(args, env, schema)
-
   const relSpecFilePath = config.get('playbook')
   if (relSpecFilePath) {
     let absSpecFilePath = ospath.resolve(relSpecFilePath)
@@ -56,9 +55,7 @@ function buildPlaybook (args = [], env = {}, schema = undefined) {
     config.loadFile(absSpecFilePath)
     if (relSpecFilePath !== absSpecFilePath) config.set('playbook', absSpecFilePath)
   }
-
   config.validate({ allowed: 'strict' })
-
   return exportModel(config)
 }
 
