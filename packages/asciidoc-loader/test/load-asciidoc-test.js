@@ -1588,6 +1588,56 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
     })
 
+    // Q should this test be moved to document-converter?
+    it('should resolve URL to relative target of image in partial included from different component', () => {
+      const pageContents = 'include::another-component::partial$block-image.adoc[]'
+      const partialContents = 'image::screenshot.jpg[]'
+      const contentCatalog = mockContentCatalog([
+        {
+          component: 'component-a',
+          module: 'module-a',
+          family: 'image',
+          relative: 'screenshot.jpg',
+          contents: Buffer.alloc(0),
+        },
+        {
+          component: 'another-component',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'block-image.adoc',
+          contents: partialContents,
+        },
+      ])
+      setInputFileContents(pageContents)
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(html).to.include('src="_images/screenshot.jpg"')
+    })
+
+    // Q should this test be moved to document-converter?
+    it('should resolve URL to qualified target of image in partial included from different component', () => {
+      const pageContents = 'include::another-component::partial$block-image.adoc[]'
+      const partialContents = 'image::another-component::screenshot.jpg[]'
+      const contentCatalog = mockContentCatalog([
+        {
+          component: 'another-component',
+          module: 'ROOT',
+          family: 'image',
+          relative: 'screenshot.jpg',
+          contents: Buffer.alloc(0),
+        },
+        {
+          component: 'another-component',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'block-image.adoc',
+          contents: partialContents,
+        },
+      ])
+      setInputFileContents(pageContents)
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(html).to.include('src="../../another-component/_images/screenshot.jpg"')
+    })
+
     it('should skip include directive if max include depth is 0', () => {
       const includeContents = 'greetings!'
       const contentCatalog = mockContentCatalog({
