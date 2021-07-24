@@ -115,7 +115,9 @@ module.exports = {
       arg: 'attribute',
     },
     extensions: {
-      doc: 'A list of require paths for registering extensions per instance of the AsciiDoc processor.',
+      doc:
+        'A list of extensions to register either globally or per instance of the AsciiDoc processor. ' +
+        'Each extension is specified as a require request string.',
       format: Array,
       default: [],
     },
