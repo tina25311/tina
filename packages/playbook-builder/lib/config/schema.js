@@ -113,6 +113,7 @@ module.exports = {
       format: 'map',
       default: {},
       arg: 'attribute',
+      preserved: true,
     },
     extensions: {
       doc:

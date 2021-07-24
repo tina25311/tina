@@ -80,7 +80,7 @@ function exportModel (config) {
     if (site.__private__google_analytics_key != null) site.keys.google_analytics = site.__private__google_analytics_key
     delete site.__private__google_analytics_key
   }
-  const playbook = camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
+  const playbook = camelCaseKeys(data, { deep: true, stopPaths: getStopPaths(schemaProperties) })
   playbook.dir = playbook.playbook ? ospath.dirname((playbook.file = playbook.playbook)) : process.cwd()
   Object.defineProperty(playbook, 'env', { value: config.getEnv() })
   const runtime = (playbook.runtime || false).constructor === Object && playbook.runtime
@@ -94,6 +94,15 @@ function exportModel (config) {
   }
   delete playbook.playbook
   return deepFreeze(playbook)
+}
+
+function getStopPaths (schemaProperties, schemaPath = []) {
+  const stopPaths = []
+  for (const [key, { preserved, _cvtProperties }] of Object.entries(schemaProperties)) {
+    if (preserved) return stopPaths.concat(schemaPath.concat(key).join('.'))
+    if (_cvtProperties) stopPaths.push(...getStopPaths(_cvtProperties, schemaPath.concat(key)))
+  }
+  return stopPaths
 }
 
 module.exports = buildPlaybook
