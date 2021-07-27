@@ -4,12 +4,12 @@
 Antora builds the URLs for pages and assets using information from resource IDs, the site URL, and URL settings in the site's playbook.
 
 [#site]
-== Site URLs
+== The site URL
 
 _User-defined._
 _Optional._
 
-A [.term]*site URL* represents the domain or root of your published site.
+A [.term]*site URL* identifies the location where your site is published.
 A site URL is defined by assigning an allowable value to the xref:playbook:site-url.adoc[site.url key in the playbook], xref:cli:options.adoc#site-url[--url command line option], or xref:playbook:environment-variables.adoc#site-url[URL environment variable].
 There are two types of allowable site URLs: absolute and root-relative.
 
@@ -27,20 +27,20 @@ An absolute site URL begins with _https://_ and is followed by the site domain o
 [#fig-absolute]
 image::ROOT:site-url-absolute.svg[Diagram of an absolute site URL]
 
-If you're publishing your site to a subfolder, the site domain is followed by a site subpath.
+If you're publishing your site to a subfolder, the site domain is followed by a subpath.
 
 .Absolute site URL with subpath
 [#fig-subpath]
 image::ROOT:site-url-subpath.svg[Diagram of an absolute site URL with a subpath]
 
-The [#subpath-def.term]*subpath*, also known as a *path segment* or *pathname*, represents the location from the root of the domain where the site managed by Antora is located.
-That is, if your site is published to a subfolder of your domain then the absolute site URL should include this path.
+The [[subpath-def]][.term]*subpath*, also known as a *path segment* or *pathname*, represents the location from the root of the domain where the site managed by Antora is located.
+That is, if your site is published to a subfolder of your domain, then the absolute site URL should include this path.
 See xref:playbook:site-url.adoc#absolute-site-url[Configure an absolute site URL] and xref:playbook:site-url.adoc#subpath[When should the site URL include a subpath?] for more information about using an absolute site URL with a subpath.
 
 [#root-relative]
 === Root-relative site URL
 
-A root-relative site URL begins with a forward slash (`/`) and can contain a <<subpath-def,subpath>>.
+A root-relative site URL begins with a forward slash (`/`) and, if more than one character, is itself the <<subpath-def,subpath>>.
 
 .Root-relative site URL
 [#fig-root]
@@ -53,17 +53,17 @@ See xref:playbook:site-url.adoc#root-relative-site-url[Configure a root-relative
 
 _Computed._
 
-The site pathname represents an internal property, `site.path`, that Antora uses when a publishing feature requires domain-relative URLs.
+The site pathname represents an internal property, `site.path`, that Antora uses when a publishing feature requires domain-relative (aka root-relative) URLs.
 Antora computes the site pathname based on the site URL.
 The site pathname value is typically empty except when an absolute site URL contains a subpath or the site URL is a root-relative site URL.
 If `site.url` is an absolute site URL that contains a subpath, Antora extracts the subpath and uses it as the site pathname.
-For example, using the absolute site URL in <<fig-subpath>>, Antora extracts the subpath, `docs`, and assigns it to `site.path`.
+For example, using the absolute site URL in <<fig-subpath>>, Antora extracts the subpath, `/docs`, and assigns it to `site.path`.
 When the value assigned to `site.url` is a root-relative site URL, Antora extracts the entire value and uses it as the site pathname.
 Antora appends the <<resource,resource URLs>> to the site pathname to create a <<domain-relative,domain-relative URLs>> when a feature, such as redirects, requires the computed URLs be relative to the site domain.
 
 ==  Right URL, right place
 
-Antora normalizes URLs across the application.
+Antora generates and manages all URLs in your site.
 Antora builds the <<resource,resource URLs>> for publishable resources as absolute paths relative to the <<pathname,site pathname>>.
 Then, the resource URLs are converted to URLs relative to the current page, the site URL (site-pathname/resource-URL), or absolute URLs (absolute-site-URL/resource-URL) depending on the context and feature in which the URL is used.
 //to be relative to the current page using the relativize helper.
@@ -96,9 +96,9 @@ Antora assigns the computed resource URL of a resource to the internal property,
 _Computed_.
 
 Antora computes domain-relative URLs when creating rewrite rules for page aliases, component version start pages, and the latest version segment `redirect:to` and `redirect:from` strategies.
-If a non-empty value is assigned to the site pathname, Antora prepends the site pathname with a forward slash (`/site-pathname`) and then appends a resource URL.
-When the site pathname is empty, a resource URL is already a domain-relative URL.
-For example, using the resource URL in <<fig-resource>>, and the site pathname `docs`, Antora computes the domain-relative URL shown in <<fig-domain-relative>>.
+If a non-empty value is assigned to the site pathname, Antora prepends the site pathname to the resource URL.
+When the site pathname is empty, a resource URL is already equivalent to the domain-relative URL.
+For example, using the resource URL in <<fig-resource>>, and the site pathname `/docs`, Antora computes the domain-relative URL shown in <<fig-domain-relative>>.
 
 .Domain-relative URL computed by Antora
 [#fig-domain-relative]
@@ -119,7 +119,7 @@ For example, using the site URL in <<fig-subpath>> and resource URL in <<fig-res
 image::ROOT:published-absolute-url.svg[Diagram of an absolute URL computed by Antora]
 
 <<fig-pub-absolute>> is an example of how a page's URL is displayed in the browser address bar or in the sitemap.
-Antora computes absolute URLs when generating sitemaps and assigning the canonical link tag in the head of each page.
+Antora computes absolute URLs when generating sitemaps and computing the canonical URL for the meta tag in the head of each page.
 If the `site.url` key isn't assigned an absolute site URL, the publishing features that require absolute URLs are automatically deactivated at runtime.
 
 [#segments]
@@ -161,7 +161,7 @@ The symbolic version doesn't apply to component versions that are unversioned; t
 === Module segment
 
 Antora derives the module segment from the xref:ROOT:module-directories.adoc#module[module directory name] where a resource's source file is stored.
-When the resource belongs to a `ROOT` module, the module segment is dropped from the URL.
+When the resource belongs to the specially named `ROOT` module, the module segment is dropped from the URL.
 See xref:ROOT:module-url-segment.adoc[] for examples and more information.
 
 === Family segment
@@ -170,10 +170,11 @@ The family segment only applies to the resource URLs of images and attachments.
 Image and attachment URLs include a family segment that's prepended with an underscore (`_`).
 For images, this segment is `_images`.
 For attachments, this segment is `_attachments`.
+The URLs for pages do not contain a family segment.
 
-=== Resource segment
+=== Relative path segment
 
-The resource segment is derived from the family-relative path of the resource's source file.
+The relative path (aka resource) segment is derived from the family-relative path of the resource's source file.
 For pages, the _.adoc_ extension is dropped and replaced with _.html_ or the specified HTML extension style.
 The URLs for other resources maintain the original file extension, such as _.svg_ or _.pdf_.
 
