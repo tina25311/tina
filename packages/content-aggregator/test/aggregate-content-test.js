@@ -59,13 +59,6 @@ function testRemote (block) {
     block(new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })))
 }
 
-function freeze (o) {
-  let v
-  const { hasOwnProperty } = Object.prototype
-  for (const k in o) hasOwnProperty.call(o, k) && (Object.isFrozen((v = o[k])) || freeze(v))
-  return Object.freeze(o)
-}
-
 describe('aggregateContent()', function () {
   let playbookSpec
   let gitServer
@@ -98,6 +91,11 @@ describe('aggregateContent()', function () {
       .then(() => repoBuilder.addFilesFromFixture(paths))
       .then(() => beforeClose && beforeClose())
       .then(() => repoBuilder.close())
+  }
+
+  const deepFreeze = (o) => {
+    for (const v of Object.values(o)) Object.isFrozen(v) || deepFreeze(v)
+    return Object.freeze(o)
   }
 
   const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
@@ -1404,7 +1402,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
@@ -1416,7 +1414,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '.' })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
@@ -1428,7 +1426,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['master', 'HEAD'] })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
@@ -1442,7 +1440,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['master', '.'] })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
@@ -1456,7 +1454,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master,HEAD' })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
@@ -1470,7 +1468,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master,.' })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
@@ -1487,7 +1485,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\ncontent\n'))
         })
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const expectedPaths = ['modules/ROOT/pages/page-one.adoc', 'modules/ROOT/pages/page-two.adoc']
@@ -1508,7 +1506,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\ncontent\n'))
         })
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD', worktrees: false })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const expectedPaths = ['modules/ROOT/pages/page-one.adoc']
@@ -1525,7 +1523,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\ncontent\n'))
         })
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD', worktrees: '*' })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         const expectedPaths = ['modules/ROOT/pages/page-one.adoc']
@@ -1542,7 +1540,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.detachHead())
           .then(() => repoBuilder.close())
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         sortAggregate(aggregate)
@@ -1561,7 +1559,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.detachHead())
           .then(() => repoBuilder.close())
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['HEAD', 'v1.0', 'v2.0'] })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
@@ -1583,7 +1581,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.detachHead())
           .then(() => repoBuilder.close())
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD', worktrees: false })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         sortAggregate(aggregate)
@@ -1610,7 +1608,7 @@ describe('aggregateContent()', function () {
           branches: ['HEAD', 'v1.0', 'v2.0'],
           worktrees: false,
         })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
@@ -1629,7 +1627,7 @@ describe('aggregateContent()', function () {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['HEAD', 'master'] })
-        freeze(playbookSpec)
+        deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
