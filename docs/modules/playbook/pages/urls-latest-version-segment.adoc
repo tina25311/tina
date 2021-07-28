@@ -1,7 +1,7 @@
 = Latest Version Segment
 
-The `latest_version_segment` key replaces the actual version with the symbolic version in the publishable URLs of the latest component versions.
-As the key's name implies, it only applies to the latest version of each component version in your site.
+The `latest_version_segment` key replaces the actual version with the symbolic version in the published URLs of the latest component versions.
+As the key's name implies, it only applies to the latest version of each component version in a site.
 
 [#key]
 == latest_version_segment key
@@ -11,13 +11,16 @@ The `latest_version_segment` key is configured in the playbook under the `urls` 
 .antora-playbook.yml
 [source#ex-replace,yaml]
 ----
-urls:
-  latest_version_segment: current
+urls: # <.>
+  latest_version_segment: current # <.>
 ----
+<.> Type the parent key `urls`, followed by a colon (`:`), and press kbd:[Enter] to go to a new line.
+<.> The `latest_version_segment` key must be nested under the `urls` key.
+Type `latest_version_segment`, followed by a colon (`:`), and then type the symbolic version value.
 
-The value assigned to the `latest_version_segment` key is the [#symbolic.term]*symbolic version*.
+The value assigned to the `latest_version_segment` key is the [[symbolic]][.term]*symbolic version*.
 Antora replaces the xref:ROOT:version-types.adoc#actual[actual version] in the version segment of a URL with the symbolic version.
-The symbolic version is only used in the version segment of a URL if the page or asset belongs to the xref:ROOT:how-component-versions-are-sorted.adoc[latest version of a component].
+The symbolic version is only applied to the URLs of pages and assets that belong to the xref:ROOT:how-component-versions-are-sorted.adoc[latest version of a component].
 Depending on the strategy assigned to the xref:urls-latest-version-segment-strategy.adoc[latest_version_segment_strategy key], Antora may apply additional redirect rules when routing to or from symbolic and actual version URLs.
 
 === Value requirements
@@ -53,17 +56,18 @@ version: '5.6' # <.>
 ----
 <.> The `version` key in [.path]_antora.yml_ defines the component's actual version as `5.6`.
 
-Both component versions have a page named [.path]_tour.adoc_ that belongs to the module `get-started`.
+Both component versions have a page named [.path]_tour.adoc_ that belongs to the module _get-started_.
 
-First, let's review the URLs Antora makes when the `latest_version_segment` key *isn't set* in the playbook.
-<<ex-site>> shows the site's base URL, assigned to the `url` key, that Antora will use to build the page and asset URLs.
+First, let's review the URLs Antora makes by default.
+That is, when the `latest_version_segment` key isn't set in the playbook.
+<<ex-site>> specifies the site URL, assigned to the `url` key, that Antora uses when building absolute URLs and when the URLs are displayed in a browser address bar.
 
 .Playbook (antora-playbook.yml file) showing site url value
 [source#ex-site,yaml]
 ----
 site:
   title: The Ranges
-  url: https://docs.site.com
+  url: https://docs.example.com
 content:
   # ...
 ----
@@ -72,22 +76,22 @@ Assuming <<ex-actual>> and <<ex-latest>> are the only component versions in the 
 Antora determines the latest component version and order of versions based on its xref:ROOT:how-component-versions-are-sorted.adoc#version-schemes[semantic and named version sorting rules].
 Using information from the playbook and [.path]_antora.yml_ files, Antora constructs the following URLs for the [.path]_tour.adoc_ page in each component version.
 
-As shown in <<result-default>>, the version segment uses the actual version `5.2` for the [.path]_tour.adoc_ page that belongs to the `colorado 5.2` component version.
+As shown in <<result-default>>, the version segment uses the actual version _5.2_ for the [.path]_tour.adoc_ page that belongs to the _colorado 5.2_ component version.
 
 .URL for colorado 5.2 tour.adoc page
 [listing#result-default]
-https://docs.site.com/colorado/5.2/get-started/tour.html
+https://docs.example.com/colorado/5.2/get-started/tour.html
 
-In <<result-default-latest>>, the version segment uses the actual version `5.6` for the [.path]_tour.adoc_ page that belongs to the `colorado 5.6` component version.
+In <<result-default-latest>>, the version segment uses the actual version _5.6_ for the [.path]_tour.adoc_ page that belongs to the _colorado 5.6_ component version.
 
 .URL for colorado 5.6 tour.adoc page
 [listing#result-default-latest]
-https://docs.site.com/colorado/5.6/get-started/tour.html
+https://docs.example.com/colorado/5.6/get-started/tour.html
 
-While there's nothing in the URL to signify version `5.6` as the latest version of the component `colorado`, Antora applies the default sorting order in the reference UI, so version `5.6` is listed first under the `colorado` component name in the xref:navigation:index.adoc#component-dropdown[component version selector] and first in the listed versions in the xref:navigation:index.adoc#page-dropdown[page version selector].
+While there's nothing in the URL to signify version _5.6_ as the latest version of the component _colorado_, Antora applies the default sorting order in the reference UI, so version _5.6_ is listed first under the _colorado_ component name in the xref:navigation:index.adoc#component-dropdown[component version selector] and first in the listed versions in the xref:navigation:index.adoc#page-dropdown[page version selector].
 
-Now, let's assign a symbolic version to the latest component version in this site.
-The `latest_version_segment` key is configured in the playbook file (not the component version descriptor files) under the `urls` key.
+Now, let's assign a symbolic version to replace the actual version in the page and asset URLs of the latest component versions.
+The `latest_version_segment` key is configured in the playbook file, not the component version descriptor files, because it applies to all of the latest component versions in a site.
 <<ex-playbook>> shows a truncated playbook file with the `latest_version_segment` key defined.
 
 .Playbook (antora-playbook.yml file) defining a symbolic version
@@ -95,32 +99,30 @@ The `latest_version_segment` key is configured in the playbook file (not the com
 ----
 site:
   title: The Ranges
-  url: https://docs.site.com
-urls: # <.>
-  latest_version_segment: current # <.>
+  url: https://docs.example.com
+urls:
+  latest_version_segment: stable # <.>
 content:
   # ...
 ----
-<.> Type the parent key `urls`, followed by a colon (`:`), and press kbd:[Enter] to go to a new line.
-<.> The `latest_version_segment` must be nested under the `urls` key.
-Type `latest_version_segment`, followed by a colon (`:`), and then type the symbolic version value.
+<.> The `latest_version_segment` is set under the `urls` key and assigned the value `stable`.
 
 Using the component versions defined in <<ex-actual>> and <<ex-latest>> and the playbook in <<ex-playbook>>, Antora constructs the following URLs for the [.path]_tour.adoc_ page in each component version.
 
-In <<result-not-latest>>, the version segment uses the actual version because `colorado 5.2` isn't the latest version of the `colorado` component.
+In <<result-not-latest>>, the version segment uses the actual version because _colorado 5.2_ isn't the latest version of the _colorado_ component.
 
 .URL for colorado 5.2 tour.adoc page when latest_version_segment is set
 [listing#result-not-latest]
-https://docs.site.com/colorado/5.2/get-started/tour.html
+https://docs.example.com/colorado/5.2/get-started/tour.html
 
-However, in <<result-latest>>, the version segment uses the symbolic version, `current`, because Antora determined `colorado 5.6` is the latest version of the `colorado` component.
+However, in <<result-latest>>, the version segment uses the symbolic version, _stable_, because Antora determined _colorado 5.6_ is the latest version of the _colorado_ component.
 
 .URL for colorado 5.6 tour.adoc page when latest_version_segment is set
 [listing#result-latest]
-https://docs.site.com/colorado/current/get-started/tour.html
+https://docs.example.com/colorado/stable/get-started/tour.html
 
-The actual version, `5.6`, is still displayed in the reference UI menus.
-The symbolic version, `current`, is only used in the URLs.
+The actual version, _5.6_, is still displayed in the reference UI menus.
+The symbolic version, _stable_, is only used in the URLs.
 To customize the value displayed in the reference UI menus, use the xref:ROOT:component-display-version.adoc[display_version key].
 
 The examples in this section assumed the `latest_version_segment_strategy` key wasn't set.

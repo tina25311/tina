@@ -9,6 +9,6 @@
 * xref:component-attributes.adoc[]
 * xref:component-start-page.adoc[]
 * xref:component-navigation.adoc[]
-* xref:how-component-versions-are-sorted.adoc[]
 * xref:version-types.adoc[]
+* xref:how-component-versions-are-sorted.adoc[]
 * xref:distributed-component-version.adoc[]
