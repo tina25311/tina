@@ -672,22 +672,19 @@ function loadComponentDescriptor (files, ref, version) {
 
 function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefined, editUrl = true) {
   const { shortname: refname, oid: refhash, type: reftype } = ref
-  const remote = !url.startsWith('file://')
-  const origin = { type: 'git', refname, [reftype]: refname, startPath }
+  const origin = { type: 'git', url, refname, [reftype]: refname, startPath }
   if (authStatus) origin.private = authStatus
   if (worktreePath) {
-    if (remote) origin.url = url
     origin.fileUriPattern =
       (posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath) + path.join('/', startPath, '%s')
     origin.worktree = worktreePath
   } else {
-    origin.url = url
     origin.refhash = refhash
   }
-  if (remote) origin.webUrl = url.replace(GIT_SUFFIX_RX, '')
+  if (!url.startsWith('file://')) origin.webUrl = url.replace(GIT_SUFFIX_RX, '')
   if (editUrl === true) {
     let match
-    if (url && (match = url.match(HOSTED_GIT_REPO_RX))) {
+    if (origin.webUrl && (match = url.match(HOSTED_GIT_REPO_RX))) {
       const host = match[1]
       let action
       let category = ''
