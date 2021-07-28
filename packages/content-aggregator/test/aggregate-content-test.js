@@ -2869,13 +2869,24 @@ describe('aggregateContent()', function () {
         })
       })
 
-      it('should generate correct origin data for file taken from worktree', () => {
-        const url = 'the-component'
-        const worktreePath = ospath.join(CONTENT_REPOS_DIR, url)
+      it('should generate correct origin data for file taken from worktree with remote', () => {
+        const url = 'https://git.example.org/the-component.git'
+        const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
         const branch = 'master'
-        const expectedfileUriPattern = posixify
-          ? 'file:///' + posixify(worktreePath) + '/%s'
-          : 'file://' + worktreePath + '/%s'
+        const expectedfileUriPattern = posixify ? `file:///${posixify(worktreePath)}/%s` : `file://${worktreePath}/%s`
+        const origin = computeOrigin(url, false, { shortname: branch, type: 'branch' }, '', worktreePath)
+        expect(origin.url).to.equal(url)
+        expect(origin.branch).to.equal(branch)
+        expect(origin.refname).to.equal(branch)
+        expect(origin.fileUriPattern).to.equal(expectedfileUriPattern)
+        expect(origin.editUrlPattern).to.be.undefined()
+      })
+
+      it('should generate correct origin data for file taken from worktree with no remote', () => {
+        const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
+        const branch = 'master'
+        const url = posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath
+        const expectedfileUriPattern = url + '/%s'
         const origin = computeOrigin(url, false, { shortname: branch, type: 'branch' }, '', worktreePath)
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
