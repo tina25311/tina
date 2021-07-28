@@ -29,8 +29,8 @@
 * xref:configure-urls.adoc[]
 ** xref:urls-html-extension-style.adoc[]
 ** xref:urls-latest-version-segment.adoc[]
+** xref:urls-latest-prerelease-version-segment.adoc[]
 ** xref:urls-latest-version-segment-strategy.adoc[]
-//** latest-prerelease-version-segment
 ** xref:urls-redirect-facility.adoc[]
 * xref:configure-output.adoc[]
 ** xref:output-dir.adoc[]
