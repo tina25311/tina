@@ -7,6 +7,11 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *content-aggregator*: Assign location of git directory for local or cloned remote repository to `src.origin.gitdir` property on virtual file (#305)
+* *content-aggregator*: Set `src.origin.worktree` property on virtual file to `null` if repository is local and reference is not mapped to a worktree (#305)
+
 === Fixed
 
 * *logger*: End destination stream for logger in finalize call when log format is pretty (#795)

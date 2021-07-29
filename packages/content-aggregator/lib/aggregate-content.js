@@ -194,8 +194,9 @@ async function loadRepository (url, opts) {
         .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
     }
   } else if (await isDirectory((dir = expandPath(url, { dot: opts.startDir })))) {
-    repo = (await isDirectory(ospath.join(dir, '.git')))
-      ? { cache: {}, dir, fs }
+    const gitdir = ospath.join(dir, '.git')
+    repo = (await isDirectory(gitdir))
+      ? { cache: {}, dir, fs, gitdir }
       : { cache: {}, dir, fs, gitdir: dir, noCheckout: true }
     try {
       await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
@@ -240,6 +241,7 @@ async function collectFilesFromSource (source, repo, remoteName, authStatus) {
 async function selectReferences (source, repo, remote) {
   let { branches: branchPatterns, tags: tagPatterns, worktrees: worktreePatterns = '.' } = source
   const isBare = repo.noCheckout
+  const noWorktree = repo.url ? undefined : null
   const refs = new Map()
   if (tagPatterns) {
     tagPatterns = Array.isArray(tagPatterns)
@@ -249,7 +251,7 @@ async function selectReferences (source, repo, remote) {
       const tags = await git.listTags(repo)
       for (const shortname of tags.length ? matcher(tags, tagPatterns) : tags) {
         // NOTE tags are stored using symbol keys to distinguish them from branches
-        refs.set(Symbol(shortname), { shortname, fullname: 'tags/' + shortname, type: 'tag' })
+        refs.set(Symbol(shortname), { shortname, fullname: 'tags/' + shortname, type: 'tag', head: noWorktree })
       }
     }
   }
@@ -273,9 +275,8 @@ async function selectReferences (source, repo, remote) {
       } else {
         if (!isBare) {
           // NOTE current branch is undefined when HEAD is detached
-          const ref = { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true }
-          if (worktreePatterns[0] === '.') ref.head = repo.dir
-          refs.set('HEAD', ref)
+          const head = worktreePatterns[0] === '.' ? repo.dir : noWorktree
+          refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true, head })
         }
         return [...refs.values()]
       }
@@ -297,10 +298,13 @@ async function selectReferences (source, repo, remote) {
           }
         } else {
           if (!isBare) {
+            let head = noWorktree
+            if (worktreePatterns[0] === '.') {
+              worktreePatterns = worktreePatterns.slice(1)
+              head = repo.dir
+            }
             // NOTE current branch is undefined when HEAD is detached
-            const ref = { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true }
-            if (worktreePatterns[0] === '.' && (worktreePatterns = worktreePatterns.slice(1))) ref.head = repo.dir
-            refs.set('HEAD', ref)
+            refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true, head })
           }
           branchPatterns.splice(headBranchIdx, 1)
         }
@@ -312,7 +316,8 @@ async function selectReferences (source, repo, remote) {
     const remoteBranches = (await git.listBranches(Object.assign({ remote }, repo))).filter((it) => it !== 'HEAD')
     if (remoteBranches.length) {
       for (const shortname of matcher(remoteBranches, branchPatterns)) {
-        refs.set(shortname, { shortname, fullname: path.join('remotes', remote, shortname), type: 'branch', remote })
+        const fullname = 'remotes/' + remote + '/' + shortname
+        refs.set(shortname, { shortname, fullname, type: 'branch', remote, head: noWorktree })
       }
     }
     // NOTE only consider local branches if repo has a worktree or there are no remote tracking branches
@@ -321,16 +326,15 @@ async function selectReferences (source, repo, remote) {
       if (localBranches.length) {
         const worktrees = await findWorktrees(repo, worktreePatterns)
         for (const shortname of matcher(localBranches, branchPatterns)) {
-          const ref = { shortname, fullname: 'heads/' + shortname, type: 'branch' }
-          if (worktrees.has(shortname)) ref.head = worktrees.get(shortname)
-          refs.set(shortname, ref)
+          const head = worktrees.get(shortname) || noWorktree
+          refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head })
         }
       }
     } else if (!remoteBranches.length) {
       // QUESTION should local branches be used if the only remote branch is HEAD?
       const localBranches = await git.listBranches(repo)
       for (const shortname of localBranches.length ? matcher(localBranches, branchPatterns) : localBranches) {
-        refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch' })
+        refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head: noWorktree })
       }
     }
   }
@@ -391,7 +395,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
   )
     .then((files) => {
       const componentVersionBucket = loadComponentDescriptor(files, ref, version)
-      const origin = computeOrigin(originUrl, authStatus, ref, startPath, worktreePath, editUrl)
+      const origin = computeOrigin(originUrl, authStatus, repo.gitdir, ref, startPath, worktreePath, editUrl)
       componentVersionBucket.files = files.map((file) => assignFileProperties(file, origin))
       return componentVersionBucket
     })
@@ -670,21 +674,26 @@ function loadComponentDescriptor (files, ref, version) {
   return camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
 }
 
-function computeOrigin (url, authStatus, ref, startPath, worktreePath = undefined, editUrl = true) {
+function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = undefined, editUrl = true) {
   const { shortname: refname, oid: refhash, type: reftype } = ref
-  const origin = { type: 'git', url, refname, [reftype]: refname, startPath }
+  const origin = { type: 'git', url, gitdir, refname, [reftype]: refname, startPath }
   if (authStatus) origin.private = authStatus
-  if (worktreePath) {
-    origin.fileUriPattern =
-      (posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath) + path.join('/', startPath, '%s')
-    origin.worktree = worktreePath
-  } else {
+  if (worktreePath === undefined) {
     origin.refhash = refhash
+  } else {
+    if (worktreePath) {
+      origin.fileUriPattern =
+        (posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath) + path.join('/', startPath, '%s')
+    } else {
+      origin.refhash = refhash
+    }
+    origin.worktree = worktreePath
+    if (url.startsWith('file://')) url = undefined
   }
-  if (!url.startsWith('file://')) origin.webUrl = url.replace(GIT_SUFFIX_RX, '')
+  if (url) origin.webUrl = url.replace(GIT_SUFFIX_RX, '')
   if (editUrl === true) {
     let match
-    if (origin.webUrl && (match = url.match(HOSTED_GIT_REPO_RX))) {
+    if (url && (match = url.match(HOSTED_GIT_REPO_RX))) {
       const host = match[1]
       let action
       let category = ''
