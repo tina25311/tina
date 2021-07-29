@@ -1622,7 +1622,7 @@ describe('aggregateContent()', function () {
         const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
         const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
         expect(pageOne.src.abspath).to.be.undefined()
-        expect(pageOne.src.origin.worktree).to.be.undefined()
+        expect(pageOne.src.origin.worktree).to.be.null()
         expect(pageTwo).to.be.undefined()
       })
 
@@ -1651,7 +1651,7 @@ describe('aggregateContent()', function () {
         const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
         const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
         expect(pageOne.src.abspath).to.be.undefined()
-        expect(pageOne.src.origin.worktree).to.be.undefined()
+        expect(pageOne.src.origin.worktree).to.be.null()
         expect(pageTwo).to.be.undefined()
       })
 
@@ -1989,7 +1989,11 @@ describe('aggregateContent()', function () {
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v2.0' })
         const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
         expect(fixtureFile).to.exist()
-        expect(fixtureFile.src.origin.worktree).to.be.undefined()
+        if (repoBuilder.remote) {
+          expect(fixtureFile.src.origin.worktree).to.be.undefined()
+        } else {
+          expect(fixtureFile.src.origin.worktree).to.be.null()
+        }
         expect(fixtureFile.stat.mode).to.equal(expectedMode)
       })
     })
@@ -2027,7 +2031,11 @@ describe('aggregateContent()', function () {
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v2.0' })
         const fixtureFile = aggregate[0].files.find((file) => file.path === fixturePath)
         expect(fixtureFile).to.exist()
-        expect(fixtureFile.src.origin.worktree).to.be.undefined()
+        if (repoBuilder.remote) {
+          expect(fixtureFile.src.origin.worktree).to.be.undefined()
+        } else {
+          expect(fixtureFile.src.origin.worktree).to.be.null()
+        }
         expect(fixtureFile.stat.mode).to.equal(expectedMode)
       })
     })
@@ -2070,7 +2078,11 @@ describe('aggregateContent()', function () {
           expect(symlinkPage.symlink).to.not.exist()
           expect(symlinkPage.stat.mode).to.equal(expectedMode)
           expect(symlinkPage.contents).to.deep.equal(expectedContents)
-          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          if (repoBuilder.remote) {
+            expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          } else if (repoBuilder.bare) {
+            expect(symlinkPage.src.origin.worktree).to.be.null()
+          }
         })
       })
 
@@ -2096,7 +2108,11 @@ describe('aggregateContent()', function () {
           expect(symlinkPage.symlink).to.not.exist()
           expect(symlinkPage.stat.mode).to.equal(expectedMode)
           expect(symlinkPage.contents).to.deep.equal(expectedContents)
-          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          if (repoBuilder.remote) {
+            expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          } else if (repoBuilder.bare) {
+            expect(symlinkPage.src.origin.worktree).to.be.null()
+          }
         })
       })
 
@@ -2122,7 +2138,11 @@ describe('aggregateContent()', function () {
           expect(symlinkPage.symlink).to.not.exist()
           expect(symlinkPage.stat.mode).to.equal(expectedMode)
           expect(symlinkPage.contents).to.deep.equal(expectedContents)
-          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          if (repoBuilder.remote) {
+            expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          } else if (repoBuilder.bare) {
+            expect(symlinkPage.src.origin.worktree).to.be.null()
+          }
         })
       })
 
@@ -2152,7 +2172,11 @@ describe('aggregateContent()', function () {
           expect(symlinkPage.symlink).to.not.exist()
           expect(symlinkPage.stat.mode).to.equal(expectedMode)
           expect(symlinkPage.contents).to.deep.equal(expectedContents)
-          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          if (repoBuilder.remote) {
+            expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          } else if (repoBuilder.bare) {
+            expect(symlinkPage.src.origin.worktree).to.be.null()
+          }
         })
       })
 
@@ -2182,7 +2206,11 @@ describe('aggregateContent()', function () {
           expect(page.symlink).to.not.exist()
           expect(page.stat.mode).to.equal(expectedMode)
           expect(page.contents).to.deep.equal(expectedContents)
-          if (repoBuilder.bare || repoBuilder.remote) expect(page.src.origin.worktree).to.be.undefined()
+          if (repoBuilder.remote) {
+            expect(page.src.origin.worktree).to.be.undefined()
+          } else if (repoBuilder.bare) {
+            expect(page.src.origin.worktree).to.be.null()
+          }
         })
       })
 
@@ -2210,7 +2238,11 @@ describe('aggregateContent()', function () {
           expect(page.symlink).to.not.exist()
           expect(page.stat.mode).to.equal(expectedMode)
           expect(page.contents).to.deep.equal(expectedContents)
-          if (repoBuilder.bare || repoBuilder.remote) expect(page.src.origin.worktree).to.be.undefined()
+          if (repoBuilder.remote) {
+            expect(page.src.origin.worktree).to.be.undefined()
+          } else if (repoBuilder.bare) {
+            expect(page.src.origin.worktree).to.be.null()
+          }
         })
       })
 
@@ -2238,7 +2270,11 @@ describe('aggregateContent()', function () {
           expect(page.symlink).to.not.exist()
           expect(page.stat.mode).to.equal(expectedMode)
           expect(page.contents).to.deep.equal(expectedContents)
-          if (repoBuilder.bare || repoBuilder.remote) expect(page.src.origin.worktree).to.be.undefined()
+          if (repoBuilder.remote) {
+            expect(page.src.origin.worktree).to.be.undefined()
+          } else if (repoBuilder.bare) {
+            expect(page.src.origin.worktree).to.be.null()
+          }
         })
       })
 
@@ -2414,7 +2450,11 @@ describe('aggregateContent()', function () {
           expect(symlinkPage.symlink).to.not.exist()
           expect(symlinkPage.stat.mode).to.equal(expectedMode)
           expect(symlinkPage.contents).to.deep.equal(expectedContents)
-          if (repoBuilder.bare || repoBuilder.remote) expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          if (repoBuilder.remote) {
+            expect(symlinkPage.src.origin.worktree).to.be.undefined()
+          } else if (repoBuilder.bare) {
+            expect(symlinkPage.src.origin.worktree).to.be.null()
+          }
         })
       })
 
@@ -2579,17 +2619,20 @@ describe('aggregateContent()', function () {
           },
         }
         if (repoBuilder.remote) {
+          expectedFileSrc.origin.gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(repoBuilder.url))
           expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
           expectedFileSrc.origin.refhash = refhash
         } else if (repoBuilder.bare) {
+          expectedFileSrc.origin.gitdir = repoBuilder.url
           expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
           expectedFileSrc.origin.refhash = refhash
+          expectedFileSrc.origin.worktree = null
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
           expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.fileUriPattern = fileUriScheme + repoBuilder.repoPath + '/%s'
-          expectedFileSrc.origin.worktree = repoBuilder.repoPath
+          expectedFileSrc.origin.gitdir = ospath.join((expectedFileSrc.origin.worktree = repoBuilder.repoPath), '.git')
           expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath
           if (posixify) {
             expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
@@ -2634,18 +2677,21 @@ describe('aggregateContent()', function () {
           },
         }
         if (repoBuilder.remote) {
+          expectedFileSrc.origin.gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(repoBuilder.url))
           expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
           expectedFileSrc.origin.refhash = refhash
         } else if (repoBuilder.bare) {
+          expectedFileSrc.origin.gitdir = repoBuilder.url
           expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
           expectedFileSrc.origin.refhash = refhash
+          expectedFileSrc.origin.worktree = null
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, repoBuilder.startPath, expectedFileSrc.path)
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
           expectedFileSrc.origin.fileUriPattern =
             fileUriScheme + ospath.join(repoBuilder.repoPath, repoBuilder.startPath, '%s')
-          expectedFileSrc.origin.worktree = repoBuilder.repoPath
+          expectedFileSrc.origin.gitdir = ospath.join((expectedFileSrc.origin.worktree = repoBuilder.repoPath), '.git')
           expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath
           if (posixify) {
             expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
@@ -2689,17 +2735,20 @@ describe('aggregateContent()', function () {
           },
         }
         if (repoBuilder.remote) {
+          expectedFileSrc.origin.gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(repoBuilder.url))
           expectedFileSrc.origin.webUrl = (expectedFileSrc.origin.url = repoBuilder.url).replace(/\.git$/, '')
           expectedFileSrc.origin.refhash = refhash
         } else if (repoBuilder.bare) {
+          expectedFileSrc.origin.gitdir = repoBuilder.url
           expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
           expectedFileSrc.origin.refhash = refhash
+          expectedFileSrc.origin.worktree = null
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
           const fileUriScheme = posixify ? 'file:///' : 'file://'
           expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
           expectedFileSrc.origin.fileUriPattern = fileUriScheme + repoBuilder.repoPath + '/%s'
-          expectedFileSrc.origin.worktree = repoBuilder.repoPath
+          expectedFileSrc.origin.gitdir = ospath.join((expectedFileSrc.origin.worktree = repoBuilder.repoPath), '.git')
           expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath.replace(/ /g, '%20')
           if (posixify) {
             expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
@@ -2775,7 +2824,7 @@ describe('aggregateContent()', function () {
         expect(page).to.not.be.undefined()
         const expectedOriginUrl = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
         expect(page.src.origin.url).to.equal(expectedOriginUrl)
-        expect(page.src.origin.worktree).to.be.undefined()
+        expect(page.src.origin.worktree).to.be.null()
       })
 
       it('should set origin url for local repository if using worktree and remote url is not set in git config', async () => {
@@ -2788,7 +2837,7 @@ describe('aggregateContent()', function () {
         expect(page).to.not.be.undefined()
         const expectedOriginUrl = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
         expect(page.src.origin.url).to.equal(expectedOriginUrl)
-        expect(page.src.origin.worktree).to.not.be.undefined()
+        expect(page.src.origin.worktree).to.exist()
       })
 
       it('should generate correct origin data for file taken from repository on GitHub', () => {
@@ -2805,7 +2854,9 @@ describe('aggregateContent()', function () {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
-              const origin = computeOrigin(url, false, { shortname, type }, '')
+              const gitdir = ospath.join(CACHE_DIR, 'content', 'org-name-repo-name.git')
+              const origin = computeOrigin(url, false, gitdir, { shortname, type }, '')
+              expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'github.com') {
@@ -2833,7 +2884,9 @@ describe('aggregateContent()', function () {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
-              const origin = computeOrigin(url, false, { shortname, type }, '')
+              const gitdir = ospath.join(CACHE_DIR, 'content', 'org-name-repo-name.git')
+              const origin = computeOrigin(url, false, gitdir, { shortname, type }, '')
+              expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'gitlab.com') {
@@ -2860,7 +2913,9 @@ describe('aggregateContent()', function () {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
-              const origin = computeOrigin(url, false, { shortname, type }, '')
+              const gitdir = ospath.join(CACHE_DIR, 'content', 'org-name-repo-name.git')
+              const origin = computeOrigin(url, false, gitdir, { shortname, type }, '')
+              expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'bitbucket.org') {
@@ -2887,7 +2942,9 @@ describe('aggregateContent()', function () {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
-              const origin = computeOrigin(url, false, { shortname, type }, '')
+              const gitdir = ospath.join(CACHE_DIR, 'content', 'org-name-repo-name.git')
+              const origin = computeOrigin(url, false, gitdir, { shortname, type }, '')
+              expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'pagure.io') {
@@ -2904,32 +2961,39 @@ describe('aggregateContent()', function () {
       it('should generate correct origin data for file taken from worktree with remote', () => {
         const url = 'https://git.example.org/the-component.git'
         const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
+        const gitdir = ospath.join(worktreePath, '.git')
         const branch = 'master'
         const expectedfileUriPattern = posixify ? `file:///${posixify(worktreePath)}/%s` : `file://${worktreePath}/%s`
-        const origin = computeOrigin(url, false, { shortname: branch, type: 'branch' }, '', worktreePath)
+        const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch' }, '', worktreePath)
+        expect(origin.gitdir).to.equal(gitdir)
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
         expect(origin.fileUriPattern).to.equal(expectedfileUriPattern)
         expect(origin.editUrlPattern).to.be.undefined()
+        expect(origin.worktree).to.equal(worktreePath)
       })
 
       it('should generate correct origin data for file taken from worktree with no remote', () => {
         const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
+        const gitdir = ospath.join(worktreePath, '.git')
         const branch = 'master'
         const url = posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath
         const expectedfileUriPattern = url + '/%s'
-        const origin = computeOrigin(url, false, { shortname: branch, type: 'branch' }, '', worktreePath)
+        const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch' }, '', worktreePath)
+        expect(origin.gitdir).to.equal(gitdir)
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
         expect(origin.fileUriPattern).to.equal(expectedfileUriPattern)
         expect(origin.editUrlPattern).to.be.undefined()
+        expect(origin.worktree).to.equal(worktreePath)
       })
 
       it('should set correct origin data if URL requires auth', () => {
         const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
-        const origin = computeOrigin(url, 'auth-required', { shortname: 'master', type: 'branch' }, '')
+        const gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(url))
+        const origin = computeOrigin(url, 'auth-required', gitdir, { shortname: 'master', type: 'branch' }, '')
         expect(origin.private).to.equal('auth-required')
       })
 
