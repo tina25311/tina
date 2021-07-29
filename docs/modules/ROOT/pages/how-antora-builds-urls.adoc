@@ -86,7 +86,7 @@ Certain playbook keys can modify, add, or remove portions of a resource URL.
 Some resource URL segments are added or absent if a resource isn't a page or it belongs to an unversioned component version or a _ROOT_ module.
 See <<segments>> for information about each segment and from where Antora extracts their values.
 
-Antora assigns the computed resource URL of a resource to the internal property, `pub.url`.
+Antora assigns the computed resource URL of a resource to the internal property, `pub.url`, where `pub` is the property group for properties that pertain to publishing.
 
 === Reference URL
 
