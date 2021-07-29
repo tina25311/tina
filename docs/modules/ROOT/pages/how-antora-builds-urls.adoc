@@ -88,7 +88,7 @@ See <<segments>> for information about each segment and from where Antora extrac
 
 Antora assigns the computed resource URL of a resource to the internal property, `pub.url`, where `pub` is the property group for properties that pertain to publishing.
 
-=== Reference URL
+=== Reference URLs
 
 _Computed._
 
