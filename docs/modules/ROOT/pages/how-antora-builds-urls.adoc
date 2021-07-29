@@ -88,6 +88,26 @@ See <<segments>> for information about each segment and from where Antora extrac
 
 Antora assigns the computed resource URL of a resource to the internal property, `pub.url`.
 
+=== Reference URL
+
+_Computed._
+
+Whenever Antora creates a URL to a reference, such as one defined by the xref macro, it uses a relative URL.
+Antora refers to this translation as _relativize_.
+
+Where the relativize transation occurs depends on the reference, which can be a page, image, attachment, or UI resource.
+For xrefs and images in AsciiDoc, Antora calls relativize internally in the extended HTML converter for Asciidoctor.
+For navigation entries, breadcrumbs, pagination links, and the page version selector, the UI uses the relativize helper to convert a resource URL into a relative URL from the current page.
+For UI resources, the UI uses the uiRootPath variable to create a relative URL to the resource.
+
+There are two reasons Antora creates relative URLs to link to references.
+First, it keeps the length of the URL as short as possible to curb the size of the generated HTML.
+More importantly, it ensures that the URL is portable between environments.
+It's a key reason why an Antora site works when viewed directly from the filesystem.
+The relative references don't rely on a web server to resolve the base URL.
+Instead, they start from the current page and walk up and down the filesystem to the target resource, which works everywhere.
+For the same reason, it uncomplicates publishing because the site is not bound to a given domain or subpath.
+
 [#domain-relative]
 === Domain-relative URL
 
