@@ -10,13 +10,13 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *logger*: End destination stream for logger in finalize call when log format is pretty (#795)
-* *content-aggregator*: remove unnecessary patch to symlink path read from git repository on Windows (#796)
-* *content-classifier*: include source information in error message for duplicate alias when component is unknown (#804)
+* *content-aggregator*: Remove unnecessary patch to symlink path read from git repository on Windows (#796)
+* *content-classifier*: Include source information in error message for duplicate alias when component is unknown (#804)
 
 === Changed
 
 * *playbook-builder*: Attach map of environment variables to non-enumerable `env` property on playbook (#805)
-* *content-aggregator*: Set src.origin.url when repository has no remote even when using worktree; related to #764
+* *content-aggregator*: Set `src.origin.url` property on virtual file when repository has no remote even when using worktree (related to #764)
 * *ui-loader*: Ignore backup files (files that end with `+~+`) when reading supplemental UI files and UI bundle from directory (#793)
 * *asciidoc-loader*: Integrate @antora/user-require-helper to require Asciidoctor extensions (#802)
 * *site-publisher*: Integrate @antora/user-require-helper to require custom providers (#802)
