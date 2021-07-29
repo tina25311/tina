@@ -113,6 +113,16 @@ describe('aggregateContent()', function () {
     )
   }
 
+  const generateCloneFolderName = (url) => {
+    const normalizedUrl = (posixify ? posixify(url.toLowerCase()) : url.toLowerCase()).replace(
+      /(?:(?:(?:\.git)?\/)?\.git|\/)$/,
+      ''
+    )
+    const hash = createHash('sha1')
+    hash.update(normalizedUrl)
+    return `${ospath.basename(normalizedUrl)}-${hash.digest('hex')}.git`
+  }
+
   const clean = (fin) => {
     process.chdir(CWD)
     rmdirSync(CACHE_DIR)
@@ -3512,13 +3522,7 @@ describe('aggregateContent()', function () {
           playbookSpec.content.sources.push({ url: repoBuilder.url })
           await aggregateContent(playbookSpec)
           if (repoBuilder.remote) {
-            const normalizedUrl = repoBuilder.url
-              .toLowerCase()
-              .replace(/\\/g, '/')
-              .replace(/(?:(?:(?:\.git)?\/)?\.git|\/)$/, '')
-            const hash = createHash('sha1')
-            hash.update(normalizedUrl)
-            const repoDir = `${ospath.basename(normalizedUrl)}-${hash.digest('hex')}.git`
+            const repoDir = generateCloneFolderName(repoBuilder.url)
             expect(CONTENT_CACHE_DIR).to.be.a.directory()
             expect(ospath.join(CONTENT_CACHE_DIR, repoDir))
               .to.be.a.directory()
