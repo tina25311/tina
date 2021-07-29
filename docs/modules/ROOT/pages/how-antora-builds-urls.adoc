@@ -1,5 +1,4 @@
 = How Antora Builds URLs
-// URLs in Antora
 
 Antora builds the URLs for pages and assets using information from resource IDs, the site URL, and URL settings in the site's playbook.
 
@@ -53,7 +52,7 @@ See xref:playbook:site-url.adoc#root-relative-site-url[Configure a root-relative
 
 _Computed._
 
-The site pathname represents an internal property, `site.path`, that Antora uses when a publishing feature requires domain-relative (aka root-relative) URLs.
+The site pathname represents an internal property, `site.path`, that Antora uses when a publishing feature requires root-relative URLs.
 Antora computes the site pathname based on the site URL.
 The site pathname value is typically empty except when an absolute site URL contains a subpath or the site URL is a root-relative site URL.
 If `site.url` is an absolute site URL that contains a subpath, Antora extracts the subpath and uses it as the site pathname.
@@ -66,7 +65,6 @@ Antora appends the <<resource,resource URLs>> to the site pathname to create a <
 Antora generates and manages all URLs in your site.
 Antora builds the <<resource,resource URLs>> for publishable resources as absolute paths relative to the <<pathname,site pathname>>.
 Then, the resource URLs are converted to URLs relative to the current page, the site URL (site-pathname/resource-URL), or absolute URLs (absolute-site-URL/resource-URL) depending on the context and feature in which the URL is used.
-//to be relative to the current page using the relativize helper.
 
 [#resource]
 === Resource URL
@@ -174,7 +172,7 @@ The URLs for pages do not contain a family segment.
 
 === Relative path segment
 
-The relative path (aka resource) segment is derived from the family-relative path of the resource's source file.
+The relative path segment is derived from the family-relative path of the resource's source file.
 For pages, the _.adoc_ extension is dropped and replaced with _.html_ or the specified HTML extension style.
 The URLs for other resources maintain the original file extension, such as _.svg_ or _.pdf_.
 
