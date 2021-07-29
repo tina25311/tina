@@ -1486,6 +1486,28 @@ describe('aggregateContent()', function () {
         expect(aggregate[1]).to.include({ name: 'the-component', version: 'v3.0' })
       })
 
+      // this test verifies that the default branch is used if the repository is bare (local or remote clone)
+      describe('should select default branch if pattern is HEAD', () => {
+        testAll(
+          async (repoBuilder) => {
+            await initRepoWithBranches(repoBuilder)
+              .then(() => repoBuilder.open())
+              .then(() => repoBuilder.deleteBranch('master'))
+              .then(() => repoBuilder.checkoutBranch('v3.0'))
+              .then(() => repoBuilder.checkoutBranch('main'))
+              .then(() => repoBuilder.deleteBranch('v3.0'))
+              .then(() => repoBuilder.close('main'))
+            playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
+            deepFreeze(playbookSpec)
+            const aggregate = await aggregateContent(playbookSpec)
+            expect(aggregate).to.have.lengthOf(1)
+            expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
+          },
+          1,
+          true
+        )
+      })
+
       it('should resolve branches pattern HEAD to worktree if repository is on branch', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         const componentDesc = { name: 'the-component', version: '3.0' }
