@@ -25,7 +25,8 @@
     "@antora/redirect-producer": "3.0.0-alpha.7",
     "@antora/site-mapper": "3.0.0-alpha.7",
     "@antora/site-publisher": "3.0.0-alpha.7",
-    "@antora/ui-loader": "3.0.0-alpha.7"
+    "@antora/ui-loader": "3.0.0-alpha.7",
+    "@antora/user-require-helper": "~2.0"
   },
   "engines": {
     "node": ">=10.17.0"

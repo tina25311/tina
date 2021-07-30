@@ -10,6 +10,13 @@ runtime:
       buffer_size: 4096
       sync: false
       append: false
+pipeline:
+  extensions:
+  - antora-lunr
+  - require: .:pdf-exporter
+    config_path: ./pdf-config.yml
+    data:
+      key_name: value
 site:
   url: https://example.com
   title: Example site

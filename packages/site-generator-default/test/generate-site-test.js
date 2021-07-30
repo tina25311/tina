@@ -1,7 +1,15 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureStdoutLog, expect, rmdirSync, toJSON } = require('../../../test/test-utils')
+const {
+  captureStdout,
+  captureStdoutLog,
+  deferExceptions,
+  expect,
+  heredoc,
+  rmdirSync,
+  toJSON,
+} = require('../../../test/test-utils')
 
 const cheerio = require('cheerio')
 const fs = require('fs')
@@ -16,6 +24,7 @@ const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const WORK_DIR = ospath.join(__dirname, 'work')
 const UI_BUNDLE_URI =
   'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable'
+const TMP_DIR = require('os').tmpdir()
 
 describe('generateSite()', function () {
   let $
@@ -740,6 +749,457 @@ describe('generateSite()', function () {
     const contents = readFile('the-component/2.0/the-alias/index.html', absDestDir)
     expect(contents).to.include('<script>location="../the-page/"</script>')
   }).timeout(timeoutOverride)
+
+  describe('extensions', () => {
+    const LIB_DIR = ospath.join(WORK_DIR, 'lib')
+    let extensionNumber = 1 // NOTE alternative is to clearModule after each test
+
+    beforeEach(() => {
+      rmdirSync(LIB_DIR)
+      fs.mkdirSync(LIB_DIR)
+      playbookSpec.pipeline = {}
+      playbookSpec.ui.bundle = { url: ospath.join(FIXTURES_DIR, 'minimal-ui') }
+    })
+
+    after(() => rmdirSync(LIB_DIR))
+
+    it('should require and register extension specified as a string', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => console.log('extension initialized')
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('extension initialized')
+    })
+
+    it('should require and register extension specified as a map containing a require property', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => console.log('extension initialized')
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [{ require: extensionPath }]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('extension initialized')
+    })
+
+    it('should throw TypeError if require key is missing from extension defined as map', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => console.log('extension initialized')
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [{ key: 'value' }]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const expectedMessage = 'The "request" argument must be of type string. Received type undefined'
+      const generateSiteDeferred = await deferExceptions(generateSite, ['--playbook', playbookFile], env)
+      expect(generateSiteDeferred).to.throw(TypeError, expectedMessage)
+    })
+
+    it('should not attempt to invoke register function if not defined on extension module', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        console.log('extension required')
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('extension required')
+    })
+
+    it('should allow extension to be registered with configuration parameters', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline, { config }) => {
+          console.log('extension initialized with config: ' + JSON.stringify(config))
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [{ require: extensionPath, foo: 'bar', yin: ['yang'] }]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('extension initialized with config: {"foo":"bar","yin":["yang"]}')
+    })
+
+    /*
+    it('should not register extension if configuration key named register is false', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => console.log('extension initialized')
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [{ require: extensionPath, register: false }]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.be.empty()
+    })
+    */
+
+    it('should pass playbook to extension function via the third parameter', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline, { config, playbook }) => {
+          console.log('extension initialized for site: ' + playbook.site.url)
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.site.url = 'https://docs.example.org'
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('extension initialized for site: https://docs.example.org')
+    })
+
+    it('should allow extension to listen for events', async () => {
+      const common = ['playbook', 'asciidocConfig', 'siteCatalog']
+      const events = {
+        playbookBuilt: [common[0]],
+        beforeProcess: common.slice().sort(),
+        contentAggregated: [...common, 'contentAggregate'].sort(),
+        uiLoaded: [...common, 'uiCatalog'].sort(),
+        contentClassified: [...common, 'contentCatalog', 'uiCatalog'].sort(),
+        documentsConverted: [...common, 'contentCatalog', 'uiCatalog'].sort(),
+        navigationBuilt: [...common, 'contentCatalog', 'uiCatalog', 'navigationCatalog'].sort(),
+        pagesComposed: [...common, 'contentCatalog', 'uiCatalog'].sort(),
+        siteMapped: [...common, 'contentCatalog', 'uiCatalog'].sort(),
+        redirectsProduced: [...common, 'contentCatalog', 'uiCatalog'].sort(),
+        beforePublish: [...common, 'contentCatalog', 'uiCatalog'].sort(),
+        sitePublished: [...common, 'contentCatalog', 'uiCatalog', 'publications'].sort(),
+      }
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline, { config: { events }, playbook }) => {
+          const observed = playbook.env.OBSERVED = {}
+          events.forEach((name) => {
+            pipeline.on(name, function () {
+              observed[name] = Object.keys(arguments[0]).sort()
+            })
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [{ require: extensionPath, events: Object.keys(events) }]
+      playbookSpec.site.url = 'https://docs.example.org'
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      await generateSite(['--playbook', playbookFile], env)
+      const observed = env.OBSERVED
+      expect(Object.keys(observed).sort()).to.eql(Object.keys(events).sort())
+      Object.entries(events).forEach(([event, vars]) => expect(observed[event]).to.include.members(vars))
+    })
+
+    it('should always emit contentClassified event after both content is classified and UI is loaded', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline, { config }) => {
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+          pipeline.on('contentAggregated', async () => {
+            if (config.delay === 'contentAggregated') await sleep(250)
+            console.log('contentAggregated')
+          })
+          pipeline.on('uiLoaded', async () => {
+            if (config.delay === 'uiLoaded') await sleep(250)
+            console.log('uiLoaded')
+          })
+          pipeline.on('contentClassified', ({ contentCatalog, uiCatalog }) => {
+            if (contentCatalog && uiCatalog) console.log('contentClassified')
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      for (const delay of ['contentAggregated', 'uiLoaded']) {
+        playbookSpec.pipeline.extensions = [{ require: extensionPath, delay }]
+        fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+        const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+        expect(lines).to.have.lengthOf(3)
+        const expectedNames = ['contentAggregated', 'uiLoaded', 'contentClassified'].filter((it) => it !== delay)
+        expectedNames.splice(1, 0, delay)
+        expect(lines).to.eql(expectedNames)
+      }
+    })
+
+    it('should execute listeners for event in order extensions are registered', async () => {
+      const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionACode = heredoc`
+        module.exports.register = (pipeline) => pipeline.on('beforePublish', () => console.log('before publish a'))
+      `
+      const extensionBCode = heredoc`
+        module.exports.register = (pipeline) => pipeline.on('beforePublish', () => console.log('before publish b'))
+      `
+      fs.writeFileSync(extensionAPath, extensionACode)
+      fs.writeFileSync(extensionBPath, extensionBCode)
+      playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.equal('before publish a')
+      expect(lines[1]).to.equal('before publish b')
+    })
+
+    it('should execute and wait for async listeners for event in order extensions are registered', async () => {
+      const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionACode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('beforePublish', async () => {
+            await new Promise((resolve) => setTimeout(resolve, 100))
+            console.log('before publish a')
+          })
+        }
+      `
+      const extensionBCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('beforePublish', async () => {
+            await new Promise((resolve) => setImmediate(resolve))
+            console.log('before publish b')
+          })
+        }
+      `
+      fs.writeFileSync(extensionAPath, extensionACode)
+      fs.writeFileSync(extensionBPath, extensionBCode)
+      playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.equal('before publish a')
+      expect(lines[1]).to.equal('before publish b')
+    })
+
+    it('should allow listener to register itself before other listeners', async () => {
+      const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionACode = heredoc`
+        module.exports.register = (pipeline) => pipeline.on('beforePublish', () => console.log('before publish a'))
+      `
+      const extensionBCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.prependListener('beforePublish', () => console.log('before publish b'))
+        }
+      `
+      fs.writeFileSync(extensionAPath, extensionACode)
+      fs.writeFileSync(extensionBPath, extensionBCode)
+      playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.equal('before publish b')
+      expect(lines[1]).to.equal('before publish a')
+    })
+
+    it('should allow extension listener to access pipeline variables', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('contentClassified', ({ playbook, contentCatalog }) => {
+            console.log('building ' + contentCatalog.getPages().length + ' pages for site ' + playbook.site.url)
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.site.url = 'https://docs.example.org'
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('building 4 pages for site https://docs.example.org')
+    })
+
+    it('should allow extension listener to access SiteCatalog in beforeProcess event', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('beforeProcess', ({ siteCatalog }) => {
+            siteCatalog.addFile({
+              contents: Buffer.alloc(0),
+              out: { path: '.nojekyll' }
+            })
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      await generateSite(['--playbook', playbookFile], env)
+      expect(ospath.join(absDestDir, '.nojekyll'))
+        .to.be.a.file()
+        .and.be.empty()
+    })
+
+    it('should not allow extension listener to access vars via pipeline object', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('playbookBuilt', function () {
+            console.log(this.vars == null ? 'is null' : 'is not null')
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('is null')
+    })
+
+    it('should allow extension listener to update writable pipeline variables in register function', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline, { config, playbook }) => {
+          const site = Object.assign({}, playbook.site, { url: 'https://docs.example.com' })
+          pipeline.updateVars({ playbook: Object.assign({}, playbook, { site }) })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      await generateSite(['--playbook', playbookFile], env)
+      expect(ospath.join(absDestDir, 'sitemap.xml'))
+        .to.be.a.file()
+        .with.contents.that.match(/https:\/\/docs\.example\.com\//)
+    })
+
+    it('should allow extension listener to update writable pipeline variables in event listener', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline
+            .on('contentClassified', function ({ playbook, contentCatalog }) {
+              const contentCatalogProxy = new Proxy(contentCatalog, {
+                get (target, property) {
+                  if (property === 'getPages' || property === 'getFiles') {
+                    return (...args) =>
+                      target[property].apply(target, args).filter((it) => it.src.relative !== 'index.adoc')
+                  }
+                  return target[property]
+                }
+              })
+              this.updateVars({ contentCatalog: contentCatalogProxy })
+            })
+            .on('beforePublish', ({ contentCatalog }) => {
+              console.log('publishing ' + contentCatalog.getPages((page) => page.out).length + ' pages')
+            })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('publishing 2 pages')
+      expect(ospath.join(absDestDir, 'the-component/2.0/index.html')).to.not.be.a.path()
+    })
+
+    it('should allow one extension listener to see pipeline variables set by previous listener', async () => {
+      const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionACode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('playbookBuilt', function ({ playbook }) {
+            const site = Object.assign({}, playbook.site, { url: 'https://docs.example.com' })
+            this.updateVars({ playbook: Object.assign({}, playbook, { site }) })
+          })
+        }
+      `
+      const extensionBCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('playbookBuilt', ({ playbook }) => console.log('building site for ' + playbook.site.url))
+        }
+      `
+      fs.writeFileSync(extensionAPath, extensionACode)
+      fs.writeFileSync(extensionBPath, extensionBCode)
+      playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
+      playbookSpec.site.url = 'https://docs.example.org'
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('building site for https://docs.example.com')
+    })
+
+    it('should not allow extension listener to update locked pipeline variables', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline
+            .on('contentClassified', function ({ playbook, contentCatalog }) {
+              this.updateVars({ playbook: {} })
+            })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const expectedMessage = "Cannot update read-only var 'playbook'"
+      const generateSiteDeferred = await deferExceptions(generateSite, ['--playbook', playbookFile], env)
+      expect(generateSiteDeferred).to.throw(TypeError, expectedMessage)
+    })
+
+    it('should allow extension listener to require internal modules', async () => {
+      const extensionPath = ospath.join(TMP_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('beforePublish', function () {
+            const logger = this.require('@antora/logger')('my-extension')
+            logger.info('time to publish!')
+          })
+        }
+      `
+      try {
+        fs.writeFileSync(extensionPath, extensionCode)
+        playbookSpec.runtime.log = { level: 'info' }
+        playbookSpec.pipeline.extensions = [extensionPath]
+        fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+        const messages = await captureStdoutLog(() => generateSite(['--playbook', playbookFile], env))
+        expect(messages).to.have.lengthOf(1)
+        expect(messages[0]).to.include({ level: 'info', name: 'my-extension', msg: 'time to publish!' })
+      } finally {
+        fs.unlinkSync(extensionPath) // remove explicitly since it's outside of work dir
+      }
+    })
+
+    it('should allow extension listener to access module of generator', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => {
+          console.log(pipeline.module.path)
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.runtime.log = { level: 'info' }
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
+      const expectedMessage = ospath.dirname(require.resolve('@antora/site-generator-default'))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal(expectedMessage)
+    })
+
+    it('should allow extension listener to invoke halt to immediately halt pipeline', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (pipeline) => {
+          pipeline.on('beforePublish', function () {
+            this.halt()
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.pipeline.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      await generateSite(['--playbook', playbookFile], env)
+      expect(absDestDir).to.not.be.a.path()
+    })
+  })
 
   describe('integration', () => {
     beforeEach(() => {

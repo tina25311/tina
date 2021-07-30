@@ -7,6 +7,16 @@ module.exports = {
     default: undefined,
     arg: 'playbook',
   },
+  pipeline: {
+    extensions: {
+      doc:
+        'A list of extensions that listen for pipeline events. ' +
+        'Each extension is specified as a require request string or an object with a require key.',
+      format: Array,
+      default: [],
+      preserve: ['data'],
+    },
+  },
   site: {
     start_page: {
       doc: 'The start page for the site, redirected from the site index.',
@@ -113,7 +123,7 @@ module.exports = {
       format: 'map',
       default: {},
       arg: 'attribute',
-      preserved: true,
+      preserve: true,
     },
     extensions: {
       doc:
