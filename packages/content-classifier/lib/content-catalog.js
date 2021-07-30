@@ -1,6 +1,7 @@
 'use strict'
 
 const File = require('./file')
+const invariably = { void: () => undefined }
 const logger = require('./logger')
 const { lookup: resolveMimeType } = require('./mime-types-with-asciidoc')
 const parseResourceId = require('./util/parse-resource-id')
@@ -120,12 +121,16 @@ class ContentCatalog {
   addFile (file) {
     const src = file.src
     let family = src.family
+    let filesForFamily = this[$files].get(family)
+    if (!filesForFamily) this[$files].set(family, (filesForFamily = new Map()))
     const key = generateKey(src)
-    if (this[$files].has(key)) {
+    if (filesForFamily.has(key)) {
       if (family === 'alias') {
         throw new Error(`Duplicate alias: ${generateResourceSpec(src)}`)
       } else {
-        const details = [this.getById(src), file].map((it, idx) => `  ${idx + 1}: ${getFileLocation(it)}`).join('\n')
+        const details = [filesForFamily.get(key), file]
+          .map((it, idx) => `  ${idx + 1}: ${getFileLocation(it)}`)
+          .join('\n')
         if (family === 'nav') {
           throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}\n${details}`)
         } else {
@@ -169,28 +174,35 @@ class ContentCatalog {
       if (versionSegment == null) versionSegment = computeVersionSegment.bind(this)(src.component, src.version)
       file.pub = computePub(src, file.out, family, versionSegment, this.htmlUrlExtensionStyle)
     }
-    this[$files].set(key, file)
+    filesForFamily.set(key, file)
     return file
   }
 
   findBy (criteria) {
     const criteriaEntries = Object.entries(criteria)
+    const family = criteria.family
+    if (criteriaEntries.length === 1 && family) {
+      const filesForFamily = this[$files].get(family)
+      return filesForFamily ? [...filesForFamily.values()] : []
+    }
     const accum = []
-    for (const candidate of this[$files].values()) {
-      const candidateSrc = candidate.src
-      if (criteriaEntries.every(([key, val]) => candidateSrc[key] === val)) accum.push(candidate)
+    for (const filesForFamily of this[$files].values()) {
+      for (const candidate of filesForFamily.values()) {
+        const candidateSrc = candidate.src
+        if (criteriaEntries.every(([key, val]) => candidateSrc[key] === val)) accum.push(candidate)
+      }
     }
     return accum
   }
 
   getById (id) {
-    return this[$files].get(generateKey(id))
+    return (this[$files].get(id.family) || { get: invariably.void }).get(generateKey(id))
   }
 
   getByPath ({ component, version, path: path_ }) {
-    for (const candidate of this[$files].values()) {
-      if (candidate.path === path_ && candidate.src.component === component && candidate.src.version === version) {
-        return candidate
+    for (const filesForFamily of this[$files].values()) {
+      for (const it of filesForFamily.values()) {
+        if (it.path === path_ && it.src.component === component && it.src.version === version) return it
       }
     }
   }
@@ -214,21 +226,23 @@ class ContentCatalog {
   }
 
   getFiles () {
-    return [...this[$files].values()]
+    const accum = []
+    for (const filesForFamily of this[$files].values()) {
+      for (const file of filesForFamily.values()) accum.push(file)
+    }
+    return accum
   }
 
   getPages (filter) {
-    const accum = []
+    const candidates = this[$files].get('page')
+    if (!candidates) return []
     if (filter) {
-      for (const candidate of this[$files].values()) {
-        if (candidate.src.family === 'page' && filter(candidate)) accum.push(candidate)
-      }
+      const accum = []
+      for (const candidate of candidates.values()) filter(candidate) && accum.push(candidate)
+      return accum
     } else {
-      for (const candidate of this[$files].values()) {
-        if (candidate.src.family === 'page') accum.push(candidate)
-      }
+      return [...candidates.values()]
     }
-    return accum
   }
 
   // TODO add `follow` argument to control whether alias is followed
