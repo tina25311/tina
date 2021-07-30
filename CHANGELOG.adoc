@@ -22,6 +22,7 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Attach map of environment variables to non-enumerable `env` property on playbook (#805)
 * *content-aggregator*: Set `src.origin.url` property on virtual file when repository has no remote even when using worktree (related to #764)
+* *content-classifier*: Store files in content catalog by family (#817)
 * *ui-loader*: Ignore backup files (files that end with `+~+`) when reading supplemental UI files and UI bundle from directory (#793)
 * *asciidoc-loader*: Integrate @antora/user-require-helper to require Asciidoctor extensions (#802)
 * *site-publisher*: Integrate @antora/user-require-helper to require custom providers (#802)
