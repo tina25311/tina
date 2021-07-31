@@ -98,8 +98,12 @@ function exportModel (config) {
 
 function getStopPaths (schemaProperties, schemaPath = []) {
   const stopPaths = []
-  for (const [key, { preserved, _cvtProperties }] of Object.entries(schemaProperties)) {
-    if (preserved) return stopPaths.concat(schemaPath.concat(key).join('.'))
+  for (const [key, { preserve, _cvtProperties }] of Object.entries(schemaProperties)) {
+    if (preserve) {
+      return Array.isArray(preserve)
+        ? preserve.reduce((accum, it) => accum.concat(schemaPath.concat(key, it).join('.')), stopPaths)
+        : stopPaths.concat(schemaPath.concat(key).join('.'))
+    }
     if (_cvtProperties) stopPaths.push(...getStopPaths(_cvtProperties, schemaPath.concat(key)))
   }
   return stopPaths

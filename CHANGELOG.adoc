@@ -9,8 +9,12 @@ This project utilizes semantic versioning.
 
 === Added
 
+* *playbook-builder*: Add `pipeline` category to the playbook schema to configure the pipeline of the generator (#799)
+* *playbook-builder*: Add `extensions` key to the `pipeline` category to specify extensions that listen for pipeline events (#799)
 * *content-aggregator*: Assign location of git directory for local or cloned remote repository to `src.origin.gitdir` property on virtual file (#305)
 * *content-aggregator*: Set `src.origin.worktree` property on virtual file to `null` if repository is local and reference is not mapped to a worktree (#305)
+* *site-generator-default*: Introduce an event-based extension mechanism that notifies listeners registered by extensions of key events, also providing access to in-scope pipeline variables (#799)
+* *site-generator-default*: Add the SiteCatalog class to define a formal API for the site catalog (#799)
 
 === Fixed
 

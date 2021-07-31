@@ -551,6 +551,14 @@ describe('buildPlaybook()', () => {
     expect(playbook.network.httpProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.httpsProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.noProxy).to.equal('example.org,example.com')
+    expect(playbook.pipeline.extensions).to.eql([
+      'antora-lunr',
+      {
+        require: '.:pdf-exporter',
+        configPath: './pdf-config.yml',
+        data: { key_name: 'value' },
+      },
+    ])
     expect(playbook.site.url).to.equal('https://example.com')
     expect(playbook.site.title).to.equal('Example site')
     expect(playbook.site.startPage).to.equal('1.0@server::intro')
