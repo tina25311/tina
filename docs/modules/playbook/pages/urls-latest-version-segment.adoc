@@ -19,7 +19,7 @@ urls: # <.>
 Type `latest_version_segment`, followed by a colon (`:`), and then type the symbolic version value.
 
 The value assigned to the `latest_version_segment` key is the [[symbolic]][.term]*symbolic version*.
-Antora replaces the xref:ROOT:version-types.adoc#actual[actual version] in the version segment of a URL with the symbolic version.
+Antora replaces the xref:ROOT:version-facets.adoc#actual[actual version] in the version segment of a URL with the symbolic version.
 The symbolic version is only applied to the URLs of pages and assets that belong to the xref:ROOT:how-component-versions-are-sorted.adoc[latest version of a component].
 Depending on the strategy assigned to the xref:urls-latest-version-segment-strategy.adoc[latest_version_segment_strategy key], Antora may apply additional redirect rules when routing to or from symbolic and actual version URLs.
 

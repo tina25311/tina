@@ -23,7 +23,7 @@ urls: # <.>
 <.> Optional `latest_version_segment` key
 <.> Optional `latest_prerelease_version_segment` key
 
-Antora uses the default values values for the `html_extension_style` and `redirect_facility` keys if they're not specified.
+Antora uses the default values for the `html_extension_style` and `redirect_facility` keys if they're not specified.
 The `html_extension_style` and `redirect_facility` keys are also configurable from the xref:cli:options.adoc[Antora CLI].
 
 [#urls-reference]
@@ -40,17 +40,17 @@ Accepts the values `default`, `drop`, and `indexify`.
 
 |xref:urls-latest-prerelease-version-segment.adoc[latest_prerelease_version_segment]
 |Symbolic prerelease version that Antora uses to replace the actual version in the version segment of page and asset URLs.
-Only applies to the latest prerelease component versions.
+Only applies to the latest prerelease component version.
 |No
 
 |xref:urls-latest-version-segment.adoc[latest_version_segment]
 |Symbolic version that Antora uses to replace the actual version in the version segment of page and asset URLs.
-Only applies to the latest component versions.
+Only applies to the latest component version.
 |No
 
 |xref:urls-latest-version-segment-strategy.adoc[latest_version_segment_strategy]
 |Controls the replacement and redirect direction between URLs containing the actual version and URLs containing the symbolic version.
-Only applies to the latest component versions or latest prerelease component versions.
+Only applies to the latest component version or latest prerelease component version.
 Accepts the values `replace`, `redirect:to`, and `redirect:from`.
 |No
 

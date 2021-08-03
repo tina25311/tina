@@ -15,7 +15,7 @@ urls:
 ----
 
 The value assigned to the `latest_prerelease_version_segment` key is the [[symbolic]][.term]*symbolic prerelease version*.
-Antora replaces the xref:ROOT:version-types.adoc#actual[actual version] in the version segment of the latest prerelease component versions`' URLs with the symbolic prerelease version.
+Antora replaces the xref:ROOT:version-facets.adoc#actual[actual version] in the version segment of the latest prerelease component versions`' URLs with the symbolic prerelease version.
 A component version must be xref:ROOT:component-prerelease.adoc[designated as a prerelease] and Antora must determine that it is the xref:ROOT:how-component-versions-are-sorted.adoc[latest prerelease of a component] for the value assigned to the `latest_prerelease_version_segment` key to be applied to its page and asset URLs.
 Depending on the strategy assigned to the xref:urls-latest-version-segment-strategy.adoc[latest_version_segment_strategy key], Antora may apply additional redirect rules when routing to or from symbolic and actual version URLs.
 
