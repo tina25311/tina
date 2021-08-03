@@ -39,7 +39,7 @@ See xref:playbook:site-url.adoc#absolute-site-url[Configure an absolute site URL
 [#root-relative]
 === Root-relative site URL
 
-A root-relative site URL begins with a forward slash (`/`) and, if more than one character, is itself the <<subpath-def,subpath>>.
+A root-relative site URL begins with a forward slash (`/`) and, if more than one character, is the <<subpath-def,subpath>>.
 
 .Root-relative site URL
 [#fig-root]
@@ -52,13 +52,13 @@ See xref:playbook:site-url.adoc#root-relative-site-url[Configure a root-relative
 
 _Computed._
 
-The site pathname represents an internal property, `site.path`, that Antora uses when a publishing feature requires root-relative URLs.
+The site pathname represents an internal property, `site.path`, that Antora uses when a publishing feature requires URLs that are relative to the root of your site.
 Antora computes the site pathname based on the site URL.
 The site pathname value is typically empty except when an absolute site URL contains a subpath or the site URL is a root-relative site URL.
 If `site.url` is an absolute site URL that contains a subpath, Antora extracts the subpath and uses it as the site pathname.
 For example, using the absolute site URL in <<fig-subpath>>, Antora extracts the subpath, `/docs`, and assigns it to `site.path`.
 When the value assigned to `site.url` is a root-relative site URL, Antora extracts the entire value and uses it as the site pathname.
-Antora appends the <<resource,resource URLs>> to the site pathname to create a <<domain-relative,domain-relative URLs>> when a feature, such as redirects, requires the computed URLs be relative to the site domain.
+Antora appends the <<resource,resource URLs>> to the site pathname to create a <<domain-relative,domain-relative URLs>> when a feature, such as redirects, requires the computed URLs be relative to the site domain or site root.
 
 ==  Right URL, right place
 
@@ -72,7 +72,7 @@ Then, the resource URLs are converted to URLs relative to the current page, the 
 _Computed._
 
 Antora computes a resource URL for each publishable resource in a site.
-A [.term]*publishable resource* is a source file that belongs to the pages, images, and attachments families.
+A [[publishable-def]][.term]*publishable resource* is a source file that belongs to the pages, images, and attachments families.
 Resource URLs are computed as absolute paths relative to the <<pathname,site pathname>> so they are normalized across the application.
 
 A resource URL begins with a forward slash (`/`) and contains segments that Antora derives from the ID of a resource and the URL settings in the playbook.
@@ -88,25 +88,25 @@ See <<segments>> for information about each segment and from where Antora extrac
 
 Antora assigns the computed resource URL of a resource to the internal property, `pub.url`, where `pub` is the property group for properties that pertain to publishing.
 
-=== Reference URLs
+=== Relativized URL
 
 _Computed._
 
-Whenever Antora creates a URL to a reference, such as one defined by the xref macro, it uses a relative URL.
-Antora refers to this translation as _relativize_.
+Antora converts the references to resources into relative URLs.
+Antora refers to this translation as [.term]*relativize*.
 
-Where the relativize transation occurs depends on the reference, which can be a page, image, attachment, or UI resource.
+Where the relativize translation occurs depends on the resource, which can be a page, image, attachment, or UI resource.
 For xrefs and images in AsciiDoc, Antora calls relativize internally in the extended HTML converter for Asciidoctor.
 For navigation entries, breadcrumbs, pagination links, and the page version selector, the UI uses the relativize helper to convert a resource URL into a relative URL from the current page.
-For UI resources, the UI uses the uiRootPath variable to create a relative URL to the resource.
+For UI resources, the UI uses the `uiRootPath` variable to create a relative URL to the resource.
 
-There are two reasons Antora creates relative URLs to link to references.
+There are two reasons Antora creates relative URLs to link to resources.
 First, it keeps the length of the URL as short as possible to curb the size of the generated HTML.
 More importantly, it ensures that the URL is portable between environments.
 It's a key reason why an Antora site works when viewed directly from the filesystem.
-The relative references don't rely on a web server to resolve the base URL.
+The relative references don't rely on a web server to resolve the URL.
 Instead, they start from the current page and walk up and down the filesystem to the target resource, which works everywhere.
-For the same reason, it uncomplicates publishing because the site is not bound to a given domain or subpath.
+For the same reason, it simplifies publishing because the site is not bound to a given domain or site root.
 
 [#domain-relative]
 === Domain-relative URL
