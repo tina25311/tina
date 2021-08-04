@@ -126,9 +126,9 @@ a|[%hardbreaks]
 |[[log-format]]`--log-format`
 |`json` if CI=true, otherwise `pretty`
 a|[%hardbreaks]
-`pretty`
 `json`
-|See xref:playbook:environment-variables.adoc#log-format[ANTORA_LOG_FORMAT variable].
+`pretty`
+|See xref:playbook:runtime-log-format.adoc[format key] and xref:playbook:environment-variables.adoc#log-format[ANTORA_LOG_FORMAT variable].
 
 |[[log-level]]`--log-level`
 |`warn`

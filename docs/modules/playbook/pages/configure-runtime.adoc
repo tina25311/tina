@@ -49,7 +49,7 @@ runtime:
 <.> The optional, built-in `level` key is nested under the `log` key.
 
 If `level`, `failure_level`, or `format` are set in the playbook, they must be nested under the `log` key.
-The xref:runtime-log-level.adoc#default[level], xref:runtime-log-failure-level.adoc#default[failure_level], and `format` keys have default values that are automatically applied when Antora runs if they're not explicitly defined in the playbook or using the corresponding the xref:cli:options.adoc#generate-options[command line options] or xref:playbook:environment-variables.adoc[environment variables].
+The xref:runtime-log-level.adoc#default[level], xref:runtime-log-failure-level.adoc#default[failure_level], and xref:runtime-log-format.adoc#default[format] keys have default values that are automatically applied when Antora runs if they're not explicitly defined in the playbook or using the corresponding the xref:cli:options.adoc#generate-options[command line options] or xref:playbook:environment-variables.adoc[environment variables].
 
 [#runtime-reference]
 == Available runtime keys
@@ -73,8 +73,7 @@ The default value is `fatal`.
 The value `none` causes Antora to always exit with a zero exit code.
 |No
 
-//xref:runtime-log-format.adoc[log.format]
-|log.format
+|xref:runtime-log-format.adoc[log.format]
 |Sets the format of log messages.
 Accepts the values `pretty` and `json`.
 The default value is `json` in a CI environment and `pretty` in all other environments.

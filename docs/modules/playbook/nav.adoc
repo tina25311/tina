@@ -40,6 +40,7 @@
 * xref:configure-runtime.adoc[]
 ** xref:runtime-log-level.adoc[]
 ** xref:runtime-log-failure-level.adoc[]
+** xref:runtime-log-format.adoc[]
 ** xref:runtime-fetch.adoc[]
 ** xref:runtime-cache-dir.adoc[]
 * xref:author-mode.adoc[]
