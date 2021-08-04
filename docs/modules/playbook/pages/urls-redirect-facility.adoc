@@ -22,7 +22,7 @@ netlify::
 A Netlify format redirect file is generated and placed at the root of the generated site at [.path]_+++_redirects+++_.
 nginx::
 An Nginx format redirect file is generated and placed at the root of the generated site at [.path]_.etc/nginx/rewrite.conf_.
-static::
+[[static-value]]static::
 (default) A static HTML file with the `http-equiv` meta element set to `refresh` is generated at the source page's URL.
 The file provides a redirect notice and routes the source page URL to the target page URL.
 
@@ -63,6 +63,7 @@ This means that each redirect is considered permanent.
 
 The example output above shows a redirect rule that routes the URL for a renamed page to it's target page URL and the applied 301 HTTP status code.
 
+[#nginx]
 === Generated redirect configuration for Nginx
 
 Antora generates an {url-nginx-rewrites}[Nginx rewrite configuration file] named [.path]_rewrite.conf_ and places it in the generated site at [.path]_.etc/nginx/rewrite.conf_.

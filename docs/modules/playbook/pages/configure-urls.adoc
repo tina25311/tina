@@ -9,16 +9,22 @@ The global properties of your site's published URLs and redirect facility are de
 
 [source,yaml]
 ----
-urls: # <1>
-  html_extension_style: drop # <2>
-  redirect_facility: netlify # <3>
+urls: # <.>
+  html_extension_style: drop # <.>
+  redirect_facility: ngnix # <.>
+  latest_version_segment_strategy: redirect:to # <.>
+  latest_version_segment: stable # <.>
+  latest_prerelease_version_segment: unstable # <.>
 ----
-<1> Optional `urls` key
-<2> Optional `html_extension_style` key
-<3> Optional `redirect_facility` key
+<.> Optional `urls` key
+<.> Optional `html_extension_style` key
+<.> Optional `redirect_facility` key
+<.> Optional `latest_version_segment_strategy` key
+<.> Optional `latest_version_segment` key
+<.> Optional `latest_prerelease_version_segment` key
 
-These keys are optional; Antora will use their default values if they're not specified.
-The `html_extension_style` and `redirect_facility` keys can also be configured from the xref:cli:options.adoc[Antora CLI].
+Antora uses the default values for the `html_extension_style` and `redirect_facility` keys if they're not specified.
+The `html_extension_style` and `redirect_facility` keys are also configurable from the xref:cli:options.adoc[Antora CLI].
 
 [#urls-reference]
 == Available urls keys
@@ -32,8 +38,24 @@ The `html_extension_style` and `redirect_facility` keys can also be configured f
 Accepts the values `default`, `drop`, and `indexify`.
 |No
 
+|xref:urls-latest-prerelease-version-segment.adoc[latest_prerelease_version_segment]
+|Symbolic prerelease version that Antora uses to replace the actual version in the version segment of page and asset URLs.
+Only applies to the latest prerelease component version.
+|No
+
+|xref:urls-latest-version-segment.adoc[latest_version_segment]
+|Symbolic version that Antora uses to replace the actual version in the version segment of page and asset URLs.
+Only applies to the latest component version.
+|No
+
+|xref:urls-latest-version-segment-strategy.adoc[latest_version_segment_strategy]
+|Controls the replacement and redirect direction between URLs containing the actual version and URLs containing the symbolic version.
+Only applies to the latest component version or latest prerelease component version.
+Accepts the values `replace`, `redirect:to`, and `redirect:from`.
+|No
+
 |xref:urls-redirect-facility.adoc[redirect_facility]
-|Specifies whether Antora generates redirects either as static HTML refresh pages or redirect configuration files.
-Accepts the values `disabled`, `netlify`, `ngnix`, and `static`.
+|Specifies whether Antora generates redirects as static HTML refresh pages or redirect configuration files.
+Accepts the values `disabled`, `httpd`, `netlify`, `ngnix`, and `static`.
 |No
 |===
