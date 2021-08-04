@@ -75,10 +75,12 @@ function _registerExtensions (playbook, module_, vars) {
   if (extensions.length) {
     const requireContext = { dot: playbook.dir, paths: [playbook.dir || '', module_.path] }
     extensions.forEach((ext) => {
-      const { require: request, ...config } = ext.constructor === String ? { require: ext } : ext
-      const { register } = userRequire(request, requireContext)
-      if (typeof register === 'function') {
-        register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
+      const { enabled = true, id, require: request, ...config } = ext.constructor === String ? { require: ext } : ext
+      if (enabled) {
+        const { register } = userRequire(request, requireContext)
+        if (typeof register === 'function') {
+          register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
+        }
       }
     })
   }

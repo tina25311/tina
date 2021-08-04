@@ -13,7 +13,9 @@ runtime:
 pipeline:
   extensions:
   - antora-lunr
-  - require: .:pdf-exporter
+  - id: pdf-exporter
+    require: .:pdf-exporter
+    enabled: false
     config_path: ./pdf-config.yml
     data:
       key_name: value
