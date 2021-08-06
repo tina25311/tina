@@ -1,0 +1,73 @@
+= ADR 0016: Upgrade to Asciidoctor 2
+:revdate: 2021-08-06
+
+== Status
+
+Accepted
+
+== Context
+
+Users want to be able to access the latest features of Asciidoctor and the AsciiDoc language.
+To meet this expectation, Antora needs to be running the latest version of Asciidoctor.js.
+Asciidoctor.js is the library that allows Asciidoctor be run in the JavaScript / Node.js environment.
+
+At the time of drafting this ADR, the stable release of Antora is using Asciidoctor.js 1.5.9 (which provides Asciidoctor 1.5.8) and the latest release of Asciidoctor.js is 2.2.5 (which provides Asciidoctor 2.0.16).
+Antora will need to make the transition from Asciidoctor.js 1.5.9 to Asciidoctor.js 2.2.5, then continue to upgrade as new releases become available.
+
+There are several factors that make this upgrade significant.
+First, Asciidoctor 2 is a major release that brought with it breaking changes, some to the API and some to the AsciiDoc language.
+Asciidoctor.js 2 also pulls in a newer version of Opal.
+The language changes have already been documented in the https://docs.antora.org/antora/3.0/asciidoctor-upgrade-notes/#asciidoctor-2-feature-changes[documentation].
+Internally, Antora will have to address any API changes, such as how the html5 converter is resolved and extended, and remove any outdated workarounds.
+There could also be impacts to Asciidoctor extensions written by users, though this is unlikely.
+
+Second, the package name of Asciidoctor.js changed between the 1.5.9 and 2.0.0 releases.
+The package name for Asciidoctor.js 1.5.9 is *asciidoctor.js*.
+Starting with Asciidoctor.js 2, the package was moved to the @asciidoctor namespace and is now named *@asciidoctor/core*.
+This name change impacts the require statement as well, which must be changed from `require('asciidoctor.js')` to `require('@asciidoctor/core')`.
+The module essentially works the same way after that.
+
+Finally, starting with the Asciidoctor.js 2.0.0 release, Asciidoctor.js conforms to semantic versioning.
+Antora can leverage this contract to simplify future upgrades.
+
+== Decision
+
+Antora positions itself as *the* documentation site generator for AsciiDoc.
+So we say, without hesitation, that we want Antora users to be able to access the latest functionality of Asciidoctor and the AsciiDoc language.
+
+The switch to Asciidoctor 2 introduces breaking changes, so the upgrade warrants a major release of Antora.
+We have decided to make this upgrade part of the Antora 3 release.
+
+Since Asciidoctor.js now conforms to semantic versioning, rather than linking to a specific Asciidoctor.js release, Antora should leave the patch release unspecified so it automatically picks up the latest patch release during installation.
+Given that Asciidoctor is so central to the operation of Antora, upgrading to a minor or major release of Asciidoctor.js will still need to be explicit and require a minor or major release of Antora, respectively.
+But Antora should not be as slow to upgrade Asciidoctor.js in the future.
+
+Asciidoctor.js 2 resolves the encoding bug in Opal for which Antora was applying a patch.
+Therefore, as part of this upgrade, Antora can also drop the direct runtime dependency on Opal (asciidoctor-opal-runtime).
+
+== Consequences
+
+Asciidoctor.js 2 provides Asciidoctor 2, which introduces some minor AsciiDoc language changes and enhancements.
+This includes support for the collapsible block, which is a very popular feature for writing long-form documentation.
+The language changes will need to be clearly communicated to Antora users, and some users may have to undergo a small content migration.
+The list of changes will be maintained in the https://docs.antora.org/antora/3.0/asciidoctor-upgrade-notes/#asciidoctor-2-feature-changes[documentation].
+
+Initial tests with the Asciidoctor.js 2 upgrade revealed that there was a major performance problem with running Asciidoctor.js 2 on Node.js 12 and above.
+This turned out to be related to a change in how array access is optimized in the V8 engine, which is documented in https://github.com/nodejs/node/issues/29187[this Node.js issue].
+It affects all versions of Asciidoctor.js, even without this upgrade.
+We were able to make a change in Asciidoctor 2.0.16 to replace the stack of lines in the Reader with a queue, which essentially erased the performance problem.
+That fix is available in Asciidoctor.js starting with Asciidoctor.js 2.2.5.
+Therefore, we don't see any reason to continue to recommend using Node.js < 12 with Antora any longer.
+
+The API changes in Asciidoctor.js could impact Asciidoctor extensions, though we expect this impact to be minor.
+The main impact would be if the extension uses AbstractBlock#findBy, which now supports descending into tables, or if the extension used Opal directly.
+The list of these changes will also be maintained in the https://docs.antora.org/antora/3.0/asciidoctor-upgrade-notes/#asciidoctor-2-feature-changes[documentation].
+
+Antora will need to adapt internally to use the new package name and be updated to reflect any API changes in Asciidoctor.js or Opal.
+The most notable change is how Antora resolves and extends the HTML converter (i.e., the converter for the html5 backend).
+These changes won't impact the end user.
+
+Upgrading to Asciidoctor.js opens up capabilities that weren't previously available.
+For example, Antora will be able to allow the user to specify a custom converter for the html5 backend, including the ability to use custom converter templates.
+The user will also be able to plug in a custom syntax highlighter adapter.
+And, most importantly, Antora will finally be able to tie into the Asciidoctor logger to route log messages into its own logger.
