@@ -10,18 +10,18 @@ The following table describes the new behavior of existing Asciidoctor features 
 |===
 |Feature |New behavior |Action
 
-|Non-AsciiDoc files inserted into a verbatim block (listing, literal, and source blocks) with an include directive
-|Trailing space characters aren't removed, tabs aren't expanded, and newlines aren't normalized in non-AsciiDoc files that are inserted into a verbatim block with an include directive.
+|Including non-AsciiDoc files using the include directive, particularly inside verbatim (listing, literal, or source) blocks
+|Trailing space characters aren't removed, tabs aren't expanded, and newlines aren't normalized when including a non-AsciiDoc file using the include directive.
 This can change how the output is displayed.
 .3+.^a|* Update non-AsciiDoc files that use a mix of tabs and spaces or inconsistent newlines if their content isn't displaying as expected when published.
 * Replace any tabs in non-AsciiDoc files if the `indent` attribute is set but not working as expected.
 * Remove trailing space characters from non-AsciiDoc files, especially if using callouts in the file content or applying the `indent` attribute.
 
-|Non-AsciiDoc files with the `indent` attribute set on the verbatim block they're inserted into with an include directive
-|Since tabs aren't expanded, the `indent` attribute may not work as expected.
+|Including non-AsciiDoc files with the `indent` attribute set on the include directive or verbatim block into which they're inserted
+|Since tabs aren't expanded in the non-AsciiDoc content, the `indent` attribute may not work as expected.
 
-|Non-AsciiDoc files with callouts that are inserted into a verbatim block with an include directive
-|Callout numbers may no longer be detected if followed by a space character.
+|Including non-AsciiDoc files with callouts into a verbatim block using the include directive
+|Since trailing spaces aren't removed, callout numbers may no longer be detected.
 
 |Delimited listing blocks without an explicit style when `source-language` is set
 |Delimited listing blocks (`+----+`) that don't have an explicit style are automatically promoted to source blocks if `source-language` is set in the document, component descriptor, or playbook.
@@ -61,7 +61,7 @@ This can affect section and block titles that use attribute references.
 
 |"`Unresolved include directive`" message in the content
 |The message has changed to "`Unresolved directive`".
-|
+|No action unless you're using a postprocessor that looks for this message in the output.
 
 |`attribute-missing`
 |The `attribute-missing` setting is now honored when include directives and block macros are processed.
@@ -81,7 +81,7 @@ Now the target is placed directly after the colon (`+footnote:<target>[<optional
 |Encode characters in email address to comply with RFC-3986
 |Previously, spaces in an email address were encoded as `%20`.
 Now, spaces are encoded as a plus sign (`{plus}`) in email addresses to comply with https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Description[RFC-3986].
-|
+|This change will not affect the behavior of email links.
 
 |Description list delimiters (`::`)
 |Description list delimiters, that is, double colons (`::`) that are bare or at the start of line are no longer mistaken for a description list item.
@@ -101,4 +101,4 @@ You could also ignore these messages or not enable the info log level.
 == Semantic versioning and Asciidoctor 2
 
 Starting with version 2.0.0, Asciidoctor and Asciidoctor.js switched to semantic versioning.
-This allows Antora to automatically pick up newer patch versions of Asciidoctor.js without making a new Antora release.
+This allows Antora to automatically pick up the latest patch versions of Asciidoctor.js during installation without having to make a new Antora release available.
