@@ -91,6 +91,11 @@ Now, spaces are encoded as a plus sign (`{plus}`) in email addresses to comply w
 |The rounding used when calculating table column widths changed minutely.
 |No action is needed as the change shouldn't be noticeable to site visitors.
 
+|Reference validation
+|If Asciidoctor cannot locate a reference to an inline anchor, even if it exists, it will log a message at the info level about a possible invalid reference.
+|Define inline anchors using the double square bracket enclosure, and only place them in locations where Asciidoctor scans for them.
+Valid locations include anywhere in paragraph text or at the start of a list item or table cell.
+You could also ignore these messages or not enable the info log level.
 |===
 
 == Semantic versioning and Asciidoctor 2
