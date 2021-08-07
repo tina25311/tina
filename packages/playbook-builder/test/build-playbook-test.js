@@ -505,6 +505,30 @@ describe('buildPlaybook()', () => {
     expect(playbook.four).to.eql(['John'])
   })
 
+  it('should add entries to value of require-array type from playbook file with values in args', () => {
+    const args = ['--playbook', defaultSchemaSpec, '--extension', './lib/add-nojekyll.js', '--extension', 'antora-lfs']
+    const playbook = buildPlaybook(args, {})
+    const exts = playbook.pipeline.extensions
+    expect(exts).to.include('antora-lunr')
+    expect(exts).to.include('./lib/add-nojekyll.js')
+    expect(exts).to.include('antora-lfs')
+  })
+
+  it('should set enabled flag on entry in require-array type from playbook file if arg value matches id of entry', () => {
+    const args = ['--playbook', defaultSchemaSpec, '--extension', 'pdf-exporter']
+    const playbook = buildPlaybook(args, {})
+    const ext = playbook.pipeline.extensions.find((it) => it.id === 'pdf-exporter')
+    expect(ext.enabled).to.be.true()
+  })
+
+  it('should not add duplicate entry to require-array', () => {
+    const args = ['--playbook', defaultSchemaSpec, '--extension', 'antora-lunr', '--extension', 'antora-lunr']
+    const playbook = buildPlaybook(args, {})
+    // Q should the code check that isn't adding a duplicate even if entry has an id?
+    const num = playbook.pipeline.extensions.reduce((accum, it) => it === 'antora-lunr' ? accum + 1 : accum, 0)
+    expect(num).to.equal(1)
+  })
+
   it('should throw error if dir-or-virtual-files key is not a string or array', () => {
     Object.keys(schema).forEach((key) => {
       if (key !== 'playbook') delete schema[key]
@@ -554,7 +578,9 @@ describe('buildPlaybook()', () => {
     expect(playbook.pipeline.extensions).to.eql([
       'antora-lunr',
       {
+        id: 'pdf-exporter',
         require: '.:pdf-exporter',
+        enabled: false,
         configPath: './pdf-config.yml',
         data: { key_name: 'value' },
       },

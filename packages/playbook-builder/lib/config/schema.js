@@ -12,8 +12,9 @@ module.exports = {
       doc:
         'A list of extensions that listen for pipeline events. ' +
         'Each extension is specified as a require request string or an object with a require key.',
-      format: Array,
+      format: 'require-array',
       default: [],
+      arg: 'extension',
       preserve: ['data'],
     },
   },

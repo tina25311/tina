@@ -86,6 +86,25 @@ function registerFormats (convict) {
     },
   })
   convict.addFormat({
+    name: 'require-array',
+    validate: (val) => {
+      if (!Array.isArray(val)) throw new Error('must be an array')
+    },
+    coerce: (val, config, name) => {
+      const accum = config && config.has(name) ? config.get(name) : []
+      val.split(',').forEach((v) => {
+        if (~accum.indexOf(v)) return
+        const match = accum.find((it) => it.constructor === Object && it.id === v)
+        if (match) {
+          if (match.enabled === false) match.enabled = true
+        } else {
+          accum.push(v)
+        }
+      })
+      return accum
+    },
+  })
+  convict.addFormat({
     name: 'boolean-or-string',
     validate: (val) => {
       if (!(val == null || val.constructor === String || val.constructor === Boolean)) {

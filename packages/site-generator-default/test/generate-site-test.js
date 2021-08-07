@@ -823,26 +823,24 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [{ require: extensionPath, foo: 'bar', yin: ['yang'] }]
+      playbookSpec.pipeline.extensions = [{ id: 'my-extension', require: extensionPath, foo: 'bar', yin: ['yang'] }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('extension initialized with config: {"foo":"bar","yin":["yang"]}')
     })
 
-    /*
-    it('should not register extension if configuration key named register is false', async () => {
+    it('should not register extension if enabled key is specified on configuration and value is false', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         module.exports.register = (pipeline) => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [{ require: extensionPath, register: false }]
+      playbookSpec.pipeline.extensions = [{ require: extensionPath, enabled: false }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(['--playbook', playbookFile], env))
       expect(lines).to.be.empty()
     })
-    */
 
     it('should pass playbook to extension function via the third parameter', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
