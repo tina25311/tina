@@ -183,8 +183,7 @@ describe('loadAsciiDoc()', () => {
     expect(doc.getDocumentTitle()).to.equal('Document Title')
   })
 
-  // FIXME reenable once the fix for https://github.com/asciidoctor/asciidoctor.js/issues/1344 is released
-  it.skip('should load AsciiDoc contents with BOM encoded as UTF-16 character', () => {
+  it('should load AsciiDoc contents with BOM encoded as UTF-16 character', () => {
     const contents = heredoc`
       \uFEFF= Document Title
 
