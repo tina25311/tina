@@ -161,6 +161,18 @@ module.exports = {
       format: Boolean,
       default: true,
     },
+    plugins: {
+      credential_manager: {
+        doc: 'A require request for a plugin to replace the built-in credential manager used by the git client.',
+        format: String,
+        default: undefined,
+      },
+      http: {
+        doc: 'A require request for a plugin to replace the built-in HTTP client used by the git client.',
+        format: String,
+        default: undefined,
+      },
+    },
   },
   network: {
     http_proxy: {

@@ -24,6 +24,7 @@ const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const { fs: resolvePathGlobsFs, git: resolvePathGlobsGit } = require('./resolve-path-globs')
 const { Transform } = require('stream')
 const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
+const userRequire = require('@antora/user-require-helper')
 const vfs = require('vinyl-fs')
 const yaml = require('js-yaml')
 
@@ -922,7 +923,10 @@ function tagsSpecified (sources, defaultTags) {
 }
 
 function loadGitPlugins (gitConfig, networkConfig, startDir) {
-  const plugins = (git.cores || git.default.cores || new Map()).get(GIT_CORE) || new Map()
+  const plugins = new Map((git.cores || git.default.cores || new Map()).get(GIT_CORE))
+  for (const [name, request] of Object.entries(gitConfig.plugins || {})) {
+    if (request) plugins.set(name, userRequire(request, { dot: startDir, paths: [startDir, __dirname] }))
+  }
   let credentialManager, urlRouter
   if ((credentialManager = plugins.get('credentialManager'))) {
     if (typeof credentialManager.configure === 'function') {
