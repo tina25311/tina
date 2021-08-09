@@ -525,7 +525,7 @@ describe('buildPlaybook()', () => {
     const args = ['--playbook', defaultSchemaSpec, '--extension', 'antora-lunr', '--extension', 'antora-lunr']
     const playbook = buildPlaybook(args, {})
     // Q should the code check that isn't adding a duplicate even if entry has an id?
-    const num = playbook.pipeline.extensions.reduce((accum, it) => it === 'antora-lunr' ? accum + 1 : accum, 0)
+    const num = playbook.pipeline.extensions.reduce((accum, it) => (it === 'antora-lunr' ? accum + 1 : accum), 0)
     expect(num).to.equal(1)
   })
 
