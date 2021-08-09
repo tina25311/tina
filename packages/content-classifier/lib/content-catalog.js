@@ -407,8 +407,8 @@ class ContentCatalog {
  */
 ContentCatalog.prototype.getAll = ContentCatalog.prototype.getFiles
 
-function generateKey ({ component, version, module: module_, family, relative }) {
-  return `${version}@${component}:${module_}:${family}$${relative}`
+function generateKey ({ component, version, module: module_, relative }) {
+  return `${version}@${component}:${module_}:${relative}`
 }
 
 function generateResourceSpec ({ component, version, module: module_, family, relative }, shorthand = true) {

@@ -18,7 +18,7 @@ class UiCatalog {
   addFile (file) {
     let filesForType = this[$files].get(file.type)
     if (!filesForType) this[$files].set(file.type, (filesForType = new Map()))
-    const key = generateKey(file)
+    const key = file.path
     if (filesForType.has(key)) {
       throw new Error('Duplicate file')
     }
@@ -36,9 +36,5 @@ class UiCatalog {
  * @deprecated superceded by getFiles(); scheduled to be removed in Antora 4
  */
 UiCatalog.prototype.getAll = UiCatalog.prototype.getFiles
-
-function generateKey ({ type, path }) {
-  return type + '$' + path
-}
 
 module.exports = UiCatalog
