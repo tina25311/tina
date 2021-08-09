@@ -21,7 +21,8 @@ The steps below assume that the target {family} and current page belong to the s
 ----
 
 . Enter the resource ID of the target {family} file.
-The resource ID must specify the `{coordinate}` family coordinate since the include directive is also used to insert files from other families.
+When including a page (i.e., a file in the page family), the family segment is optional.
+In all other cases, the resource ID must specify the `{coordinate}` family coordinate since the include directive assumes the family is "`page`" if not specified.
 +
 [listing,subs="attributes+,+quotes"]
 ----
