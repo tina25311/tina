@@ -12,7 +12,7 @@ The value of the `version` key is part of the identity of a xref:component-versi
 [#version-master]
 == Assign master as the version value
 
-Antora requires the xref:component-name-and-version.adoc#version-key[version key] be assigned a value in [.path]_antora.yml_.
+Antora requires the xref:component-version-key.adoc[version key] be assigned a value in [.path]_antora.yml_.
 This value becomes the xref:page:page-id.adoc#id-coordinates[version coordinate] in the component version's page and xref:page:resource-id.adoc#id-coordinates[resource IDs].
 
 The value of `version` also becomes the version segment in the URL of its published pages.

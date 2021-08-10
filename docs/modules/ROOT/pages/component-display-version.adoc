@@ -9,8 +9,8 @@ It doesn't affect page and resource IDs, the version segment in the page URL, or
 The `display_version` key is optional.
 It's set in a component version's [.path]_antora.yml_ file and used by the reference UI where ever the version is displayed, including the xref:navigation:index.adoc#component-dropdown[component version selector] and xref:navigation:index.adoc#page-dropdown[page version selector].
 
-If `display_version` isn't set, the reference UI falls back to xref:component-name-and-version.adoc#version-key[the version key].
-Unlike `version`, the value of `display_version` can contain empty spaces, uppercase letters, and most characters (e.g., `3.0 Beta`, `RED WREN!`, `rawhide`).
+If `display_version` isn't set, the reference UI falls back to xref:component-version-key.adoc[the version key].
+Unlike `version`, the value of `display_version` can contain spaces, uppercase letters, and most characters (e.g., `3.0 Beta`, `RED WREN!`, `rawhide`).
 
 .antora.yml
 [source,yaml]
@@ -45,7 +45,7 @@ title: Silver Leaf
 version: '7.1'
 ----
 
-. On a blank line, type `display_version`, directly followed by a colon (`:`).
+. On a new line, type `display_version`, directly followed by a colon (`:`).
 . Insert a blank space after the colon, and then type the value you want to assign to `display_version`.
 Since the value begins with a number, enclose it in a set of single quote marks (`'`).
 +

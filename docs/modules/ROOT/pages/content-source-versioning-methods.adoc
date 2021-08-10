@@ -5,7 +5,7 @@
 
 In this scheme, each branch in a git repository stores a xref:component-version.adoc[version of a component] just like we use branches to store versions of a software project.
 The name of the branch itself doesn't matter.
-It's the xref:component-name-and-version.adoc#version-key[version key] in the xref:component-version-descriptor.adoc[component version descriptor] that determines the version.
+It's the xref:component-version-key.adoc[version key] in the xref:component-version-descriptor.adoc[component version descriptor] that determines the version.
 
 Branches are ideally suited for managing multiple versions of the same content.
 If we didn't use branches to specify versions, but instead used, for example, version folders in a single branch, then we'd have to explicitly copy all the files from a previous version to start a new version.
@@ -31,9 +31,9 @@ If you do decide to take this approach, we recommend having separate tags for do
 == Learn more
 // The list items IDs exist because they're the previous section IDs for sections that were originally in the aliased page, but have now become their own pages.
 
-* xref:component-name-and-version.adoc[Define a component name and version with antora.yml]
-* [[version-sorting]]xref:how-component-versions-are-sorted.adoc[How Antora sorts component versions]
-* [[versionless-urls]]xref:component-with-no-version.adoc[Define a component version with no version]
+* xref:component-name-and-version.adoc[]
+* xref:how-component-versions-are-sorted.adoc[]
+* xref:component-with-no-version.adoc[]
 
 
 ////
@@ -41,7 +41,7 @@ This section is going to become a new page
 
 == Setting the version for a branch
 
-To assign a version to a component version stored in a particular branch, you set the xref:component-name-and-version.adoc#version-key[version key in the component version descriptor]:
+To assign a version to a component version stored in a particular branch, you set the xref:component-version-key.adoc[version key in the component version descriptor]:
 
 [source,yaml]
 ----

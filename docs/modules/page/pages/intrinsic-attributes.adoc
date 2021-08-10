@@ -72,7 +72,7 @@ These attributes are reassigned for each page as well as each xref:navigation:fi
 |7.1 Beta
 
 |`page-component-name`
-|The xref:ROOT:component-name-and-version.adoc#name-key[component name] of the component version as specified in _antora.yml_.
+|The xref:ROOT:component-name-key.adoc[component name] of the component version as specified in _antora.yml_.
 |silver-leaf
 
 |`page-component-title`
@@ -80,7 +80,7 @@ These attributes are reassigned for each page as well as each xref:navigation:fi
 |Silver Leaf
 
 |`page-component-version`
-|The xref:ROOT:component-name-and-version.adoc#version-key[version] of the component version as specified in _antora.yml_.
+|The xref:ROOT:component-version-key.adoc[version] of the component version as specified in _antora.yml_.
 |7.1
 
 |`page-module`

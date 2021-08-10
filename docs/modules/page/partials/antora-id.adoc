@@ -6,13 +6,13 @@
 [#id-version]
 version@::
 The first coordinate identifies the version of the component to which the target {family} belongs.
-The version is specified by the xref:ROOT:component-name-and-version.adoc#version-key[version key] in the [.path]_antora.yml_ file that defines the {family}'s component version.
+The version is specified by the xref:ROOT:component-version-key.adoc[version key] in the [.path]_antora.yml_ file that defines the {family}'s component version.
 The version coordinate is directly followed by an at sign (`@`).
 
 [#id-component]
 component{colon}::
 The second coordinate identifies the name of the component to which the target {family} belongs.
-The component name is specified by the xref:ROOT:component-name-and-version.adoc#name-key[name key] in the [.path]_antora.yml_ file that defines the {family}'s component version.
+The component name is specified by the xref:ROOT:component-name-key.adoc[name key] in the [.path]_antora.yml_ file that defines the {family}'s component version.
 The component name is directly followed by one colon (`:`).
 
 [#id-module]
