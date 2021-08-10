@@ -157,17 +157,19 @@ The family segment follows the module segment as shown in <<fig-image>>.
 [#fig-image]
 image::ROOT:resource-url-segments-with-family.svg[Diagram of the resource URL segments for an image assembled by Antora]
 
+[#component]
 === Component segment
 
 The component segment of the URL is the name of the component the published resource belongs to.
-A component name is specified by the xref:ROOT:component-name-and-version.adoc#name-key[name key] in an xref:ROOT:component-version-descriptor.adoc[_antora.yml_ file].
+A component name is specified by the xref:ROOT:component-name-key.adoc[name key] in an xref:ROOT:component-version-descriptor.adoc[_antora.yml_ file].
 
 The <<resource,resource URL>> that Antora computes and assigns to the `pub.url` property of a resource always starts with this segment.
 
+[#version]
 === Version segment
 
 The version segment of a URL is the actual version or symbolic version of the component version the published resource belongs to.
-The [.term]*actual version* is the value assigned to the xref:ROOT:component-name-and-version.adoc#version-key[version key] in a component version's xref:ROOT:component-version-descriptor.adoc[_antora.yml_ file] or to the `version` key for a content source that's specified in the playbook.
+The [.term]*actual version* is the value assigned to the xref:ROOT:component-version-key.adoc[version key] in a component version's xref:ROOT:component-version-descriptor.adoc[_antora.yml_ file] or to the `version` key for a content source that's specified in the playbook.
 All component versions have an actual version, though that version may be defined as unversioned.
 When a component version is xref:ROOT:component-with-no-version.adoc[unversioned], the version segment is dropped from the URLs of its resources.
 

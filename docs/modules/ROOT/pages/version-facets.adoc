@@ -8,7 +8,7 @@ This collection of source files is a xref:component-version.adoc[component versi
 A component version always has an actual version.
 Even an  xref:component-with-no-version.adoc[unversioned component version] has an actual version, defined as an empty string, for internal sorting and routing purposes.
 
-A component version's actual version is assigned to the xref:component-name-and-version.adoc#version-key[version key] in its component version descriptor (_antora.yml_).
+A component version's actual version is assigned to the xref:component-version-key.adoc[version key] in its component version descriptor (_antora.yml_).
 Alternatively, the actual version is extracted by Antora from a git refname based on the pattern assigned to the `version` key in [.path]_antora.yml_ or on a content source in a playbook.
 
 Content writers use the actual version to reference pages and assets in other component versions.

@@ -11,17 +11,17 @@ Understanding how Antora sorts xref:component-version.adoc[component versions] i
 == Docs component sort order
 
 First, Antora sorts component versions into xref:component-version.adoc#docs-component[components] according to the xref:component-title.adoc[title key] defined in each component version's [.path]_antora.yml_ file.
-If the title key isn't set, it falls back to the xref:component-name-and-version.adoc#name-key[name key].
+If the title key isn't set, it falls back to the xref:component-name-key.adoc[name key].
 
 Docs components are sorted in alphabetical order.
 The resulting alphabetical list of components is used for display purposes in the xref:navigation:index.adoc#component-dropdown[component version selector menu].
-Under each component name, a list of versions, sorted according to the <<version-sorting-rules,component version sorting rules>>, is presented.
+Under each component title or name, a list of versions, sorted according to the <<version-sorting-rules,component version sorting rules>>, is presented in the menu.
 
 [#version-schemes]
 == Versioning schemes
 
 Antora only considers the value of the `version` key when sorting the component versions of a component.
-The xref:component-name-and-version.adoc#version-key[value you assign to the version key] determines what versioning scheme, and therefore what order, that component version is placed in under its component name in the xref:navigation:index.adoc#component-dropdown[component version selector menu].
+The xref:component-version-key.adoc[value you assign to the version key] determines what versioning scheme, and therefore what order, a component version is placed in under its component title or name in the xref:navigation:index.adoc#component-dropdown[component version selector menu].
 
 [cols="1,4,1"]
 |===
@@ -41,15 +41,15 @@ a|[%hardbreaks]
 |All values that don't match the semantic scheme
 a|[%hardbreaks]
 `edge`
-`main`
 `z4`
 
 |Unversioned
-|`master`
-|`master`
+|`~` +
+`null`
+|`~`
 |===
 
-NOTE: The version `master` has special meaning when a xref:component-with-no-version.adoc[component version is unversioned or version-less], but it's given no special treatment when sorting.
+NOTE: The version values `~` and `null` have special meaning when a xref:component-with-no-version.adoc[component version is unversioned], but they're given no special treatment when sorting.
 
 [#version-sorting-rules]
 == Component version sorting rules
@@ -59,7 +59,7 @@ Antora applies the following rules when sorting component versions:
 . Named versions of a component are displayed in the component version selector menu before semantic versions if both are present.
 . Named versions of a component are sorted in reverse alphabetical order (e.g., `z4`, `wish`, `lester`).
 .. Version identifiers with uppercase letters aren't recommended in URLs and can prevent portability between web servers.
-If you do use uppercase letters, they come before lowercase letters (e.g., `A`, `a`).
+If you use uppercase letters, they come before lowercase letters (e.g., `A`, `a`).
 . Semantic versions of a component are displayed in the component version selector menu after named versions if both are present.
 . Semantic versions of a component are sorted in descending order
 .. The leading `v` in a semantic identifier is ignored and versions are sorted according to the first number after the `v`.
@@ -104,7 +104,7 @@ The latest version for _RoseyDB_ would be `vivid` because it's the first version
 == Latest component version
 
 In addition to sorting the component versions, Antora identifies the most recent, stable component version of each component.
-The [.term]*latest version* is the first version in the sorted list that's not a xref:component-prerelease.adoc[prerelease].
+The [.term]*latest component version*, also called the [.term]*latest version*, is the first version in the sorted list that's not a xref:component-prerelease.adoc[prerelease].
 If all versions are prereleases, then the first prerelease version in the list is selected.
 
 Antora uses the latest version of a component when qualifying an incoming page or resource ID reference from another component if the version coordinate wasn't specified or can't otherwise be determined.

@@ -9,8 +9,8 @@ It doesn't affect page and resource IDs or the component name segment in the pag
 The `title` key is optional.
 It's set in a component version's [.path]_antora.yml_ file and used by the reference UI where ever the component's name is displayed, including the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector], and first breadcrumb position on a component version's pages.
 
-If `title` isn't set, the reference UI uses the xref:component-name-and-version.adoc#name-key[value of name] instead.
-Unlike `name`, the value of `title` can contain empty spaces, uppercase letters, and a broader range of characters (e.g., `SUSE Manager`, `APIkit`).
+If `title` isn't set, the reference UI uses the xref:component-name-key.adoc[value of name] instead.
+Unlike `name`, the value of `title` can contain spaces, uppercase letters, and a broader range of characters (e.g., `SUSE Manager`, `APIkit`).
 
 .antora.yml
 [source,yaml]
@@ -39,7 +39,7 @@ name: silver-leaf
 version: '7.1'
 ----
 
-. On a blank line, type `title`, directly followed by a colon (`:`).
+. On a new line, type `title`, directly followed by a colon (`:`).
 . Insert a blank space after the colon, and then type the value you want to assign to `title`.
 +
 [source,yaml]
