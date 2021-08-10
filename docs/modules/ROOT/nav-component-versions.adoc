@@ -2,6 +2,8 @@
 * xref:component-version.adoc[]
 * xref:component-version-descriptor.adoc[]
 * xref:component-name-and-version.adoc[]
+* xref:component-name-key.adoc[]
+* xref:component-version-key.adoc[]
 * xref:component-title.adoc[]
 * xref:component-display-version.adoc[]
 * xref:component-prerelease.adoc[]

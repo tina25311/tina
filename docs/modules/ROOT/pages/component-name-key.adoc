@@ -1,0 +1,56 @@
+= Name Key
+
+A component name is defined by assigning a value to the `name` key.
+
+== What's a component name?
+
+A [.term]*component name*, also called [.term]*name*, is the value assigned to the `name` key in a component version descriptor file ([.path]_antora.yml_).
+A component name typically represents the name of a project, library, service, etc., such as `fauna`, `rudder`, `nrepl`, etc.
+The value of a `name` key, in combination with the value of a `version` key, defines a xref:component-version.adoc[component version].
+
+[#usage]
+=== How Antora uses name
+
+The component name is fundamental to many of Antora's operations.
+Antora uses the name:
+
+* as the xref:how-antora-builds-urls.adoc#component[component segment] in page and asset URLs
+
+Additionally, if the component title key isn't set, Antora uses the name:
+
+* to xref:how-component-versions-are-sorted.adoc[sort component versions]
+* for display purposes in the reference UI, which includes the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector menu], and
+the first breadcrumb position on a component version's pages
+
+Content writers use the name as a coordinate in page and resource IDs when referencing a resource in another component version.
+
+[#key]
+== name key
+
+The `name` key is required.
+It's set and assigned a value in a component version descriptor file ([.path]_antora.yml_).
+
+.antora.yml with defined component name
+[source,yaml]
+----
+name: colorado # <.>
+----
+<.> At the beginning of a new line, type `name`, directly followed by a colon and a space (`++: ++`).
+Then type the value you want assigned to `name`.
+
+[#requirements]
+=== name requirements
+
+The value assigned to the `name` key can contain letters, numbers, underscores (`+_+`), hyphens (`-`), and periods (`.`).
+To ensure portability between host platforms, letters used in the `name` value should be lowercase.
+
+The value *cannot* contain spaces, forward slashes (`/`), or HTML special characters (`&`, `<`, or `>`).
+The value *cannot* be empty.
+
+See xref:component-title.adoc[] to learn how to display a name that contains spaces, uppercase letters, and other characters in your site's UI.
+
+////
+Antora uses the `name` key when interpreting page and resource IDs and generating the URLs for the component version's pages.
+Unless the xref:component-title.adoc[title key is set], it uses `name` for sorting components in the component version selector and where ever the component's name is displayed in the reference UI, which includes the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector], and
+the first breadcrumb position on a component version's pages.
+////
