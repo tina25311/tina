@@ -1,0 +1,63 @@
+// tag::register[]
+module.exports.register = (pipeline, { config }) => {
+// end::register[]
+  // tag::register[]
+  const { addToNavigation, unlistedPagesHeading = 'Unlisted Pages' } = config
+  // end::register[]
+  // tag::logger[]
+  const logger = pipeline.require('@antora/logger').get('unlisted-pages-extension')
+  // end::logger[]
+  // tag::on[]
+  pipeline
+    .on('navigationBuilt', ({ contentCatalog }) => {
+  // end::on[]
+      // tag::each-nav[]
+      contentCatalog.getComponents().forEach(({ versions }) => {
+        versions.forEach(({ name: component, version, navigation: nav, url: defaultUrl }) => {
+      // end::each-nav[]
+          // tag::create-lookup-table[]
+          const navEntriesByUrl = getNavEntriesByUrl(nav)
+          // end::create-lookup-table[]
+          // tag::find-unlisted[]
+          const unlistedPages = contentCatalog
+            .findBy({ component, version, family: 'page' })
+            .filter((page) => page.out)
+            .reduce((collector, page) => {
+              if ((page.pub.url in navEntriesByUrl) || page.pub.url === defaultUrl) return collector
+              // tag::warn[]
+              logger.warn({ file: { path: page.relative }, source: page.src.origin }, 'detected unlisted page')
+              // end::warn[]
+              return collector.concat(page)
+            }, [])
+          // end::find-unlisted[]
+          // tag::add-to-nav[]
+          if (unlistedPages.length && addToNavigation) {
+            nav.push({
+              content: unlistedPagesHeading,
+              items: unlistedPages.map((page) => {
+                return { content: page.asciidoc.navtitle, url: page.pub.url, urlType: 'internal' }
+              }),
+              root: true,
+            })
+          }
+          // end::add-to-nav[]
+      // tag::each-nav[]
+        })
+      })
+      // end::each-nav[]
+  // tag::on[]
+    })
+  // end::on[]
+// tag::register[]
+}
+// end::register[]
+
+// tag::helper[]
+function getNavEntriesByUrl (items = [], accum = {}) {
+  items.forEach((item) => {
+    if (item.urlType === 'internal') accum[item.url.split('#')[0]] = item
+    getNavEntriesByUrl(item.items, accum)
+  })
+  return accum
+}
+// end::helper[]

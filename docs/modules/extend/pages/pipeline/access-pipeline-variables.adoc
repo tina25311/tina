@@ -1,0 +1,30 @@
+= Access Pipeline Variables
+:url-object-destructuring: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#object_destructuring
+
+The main goal of pipeline extensions is to allow you to write code that hooks into the site generation process at key transition points and to access variables that are flowing through the pipeline at that time.
+The fun with pipeline extensions really starts once you start accessing those pipeline variables.
+
+By accessing a pipeline variable, you can:
+
+* read properties from the object,
+* call methods on the object, or
+* modify properties on the object (provided the object is not frozen).
+
+In xref:pipeline/update-pipeline-variables.adoc[], you'll learn how to replace the variable with a proxy of the object, which is another option.
+
+The first positional parameter of each event listener is a map of pipeline objects.
+You should use {url-object-destructuring}[object destructring^] to pick individual variables out of this object (e.g., `{ playbook }`).
+The in-scoped variables for each event are defined on the xref:pipeline/event-reference.adoc[] page.
+
+Let's build on our extension to retrieve the site catalog and add a [.path]_.nojekyll_ file to it as an alternative to using the supplemental UI for this purpose.
+
+.nojekyll-extension.js
+[source#ex-nojekyll,js]
+----
+include::example$nojekyll-extension.js[]
+----
+
+In <<ex-nojekyll>>, the site catalog is retrieved from the pipeline using `{ siteCatalog }`.
+To retrieve multiple variables, you would separate the variable names using commas (e.g., `{ playbook, siteCatalog }`).
+
+In addition to the built-in pipeline variables, your extension can also access pipeline variables documented and published by other extensions.

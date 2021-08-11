@@ -1,0 +1,39 @@
+= Pipeline API Reference
+:url-event-emitter: https://nodejs.org/api/events.html#events_class_eventemitter
+
+The pipeline object is the main point of access into Antora's pipeline extension facility.
+Most notably, it allows you to register event listeners and update pipeline variables.
+It also provides a handful of helpers that make writing extensions easier.
+
+The type of Antora's pipeline object extends the Node.js {url-event-emitter}[EventEmitter^] type.
+All methods on the EventEmitter are inherited by and available on Antora's pipeline object.
+However, note that you should never call the `emit` object to emit one of Antora's own pipeline events.
+
+In addition to the methods on EventEmitter, the following table describes the methods available on the pipeline object.
+
+// Q: should we document all methods on the Pipeline object, including the ones contributed by EventEmitter?
+.Additional methods provided Antora's Pipeline object
+[cols="1,1,2"]
+|===
+|Method name | Parameter(s) | Description
+
+//|getLogger
+//|String
+//|Creates an instance of the specified named logger.
+//If the value is empty, returns Antora's root logger.
+
+|halt
+|_none_
+|Halts the operation of the Antora site generator and exits successfully (without error).
+
+|updateVars
+|Object
+|Adds or replaces the variables in the pipeline with the specified variables.
+
+|require
+|String
+|Requires the name of a module in the context of Antora.
+This method can be used to require Antora internals without having to declare the Antora component as a dependency.
+|===
+
+Since the pipeline object is an EventEmitter, you can use it not only to register listeners, but to get a list of registered listeners, unregister listeners, and reregister listeners in a different order.
