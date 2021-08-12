@@ -197,8 +197,8 @@ The xref:index.adoc#generate-command[generate command] is implied if not present
 Remember that the command you type executes relative to the xref:primer.adoc#working-directory[current working directory].
 
 .Pass multiple options to the CLI
-[listing#ex-multiple-options]
-$ antora --ui-bundle-url ./../ui-bundle.zip --redirect-facility nginx --clean antora-playbook
+[#ex-multiple-options]
+ $ antora --ui-bundle-url ./../ui-bundle.zip --redirect-facility nginx --clean antora-playbook
 
 In <<ex-multiple-options>>, the option `--ui-bundle-url` is assigned a value that specifies a local filesystem path relative to the working directory.
 The `--redirect-facility` is assigned the built-in value `nginx`.
@@ -210,8 +210,8 @@ Examples include `--key` and `--attribute`.
 Each value must be preceded by the option's flag.
 
 .Specify an option multiple times
-[listing#ex-multiple-values]
-$ antora --key support=587tyr999 --key tracer=ID-${spawn} antora-playbook
+[#ex-multiple-values]
+ $ antora --key support=587tyr999 --key tracer=ID-${spawn} antora-playbook
 
 In <<ex-multiple-values>>, the `--key` option has been assigned two values in <<name-value,the form name=value>>.
 
@@ -226,16 +226,16 @@ In <<ex-option-value>>, the option `--to-dir` is assigned the value `prod`.
 When Antora runs, a folder named [.path]_prod_ will be created relative to the working directory and the site files written to it.
 
 .Assign a value to an option
-[listing#ex-option-value]
-$ antora --to-dir prod antora-playbook
+[#ex-option-value]
+ $ antora --to-dir prod antora-playbook
 
 Values that contain spaces must be surrounded by quotation marks: `--option 'Value with Spaces'` or `--option='Value with Spaces'`.
 In <<ex-option-quotes>>, the option `title` is assigned the value `My Docs`.
 The generated site's title will be _My Docs_.
 
 .Assign a value containing spaces to an option
-[listing#ex-option-quotes]
-$ antora --title 'My Docs' antora-playbook
+[#ex-option-quotes]
+ $ antora --title 'My Docs' antora-playbook
 
 [#name-value]
 === Name=value values
@@ -245,8 +245,8 @@ In <<ex-name-value-pair>>, the attribute `page-team` is assigned the value `Coco
 The `@` at the end of the value indicates that the attribute is xref:ROOT:component-attributes.adoc#soft-set[soft set].
 
 .Assign a name=value value to an option
-[listing#ex-name-value-pair]
-$ antora --attribute page-team='Coco B@' antora-playbook
+[#ex-name-value-pair]
+ $ antora --attribute page-team='Coco B@' antora-playbook
 
 [#boolean-value]
 === Boolean values
@@ -255,11 +255,11 @@ Boolean options turn a behavior on or off.
 To activate a boolean option, type it on the command line.
 
 .Activate a boolean option
-[listing#ex-boolean-true]
-$ antora --stacktrace antora-playbook
+[#ex-boolean-true]
+ $ antora --stacktrace antora-playbook
 
 When a boolean option is activated in a playbook file, it can be overridden from the command line and deactivated with the `false` value.
 
 .Deactivate a boolean option
-[listing#ex-boolean-false]
-$ antora --clean=false antora-playbook
+[#ex-boolean-false]
+ $ antora --clean=false antora-playbook
