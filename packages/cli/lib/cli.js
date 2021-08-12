@@ -25,7 +25,15 @@ function exitWithError (err, showStack, msg = undefined) {
     if ((stack = err.backtrace)) {
       msg = [`error: ${msg}`, ...stack.slice(1)].join('\n')
     } else if ((stack = err.stack)) {
-      msg = stack.startsWith(`${err.name}: ${msg}\n`) ? stack : [msg, ...stack.split('\n').slice(1)].join('\n')
+      if (err instanceof SyntaxError) {
+        let loc
+        ;[loc, stack] = stack.split(/\n+(?=SyntaxError: )/)
+        msg = stack.replace('\n', `\n    at ${loc}\n`)
+      } else if (stack.startsWith(`${err.name}: ${msg}\n`)) {
+        msg = stack
+      } else {
+        msg = [msg, ...stack.split('\n').slice(1)].join('\n')
+      }
     } else {
       msg = `error: ${msg} (no stack)`
     }
