@@ -258,8 +258,4 @@ To activate a boolean option, type it on the command line.
 [#ex-boolean-true]
  $ antora --stacktrace antora-playbook
 
-When a boolean option is activated in a playbook file, it can be overridden from the command line and deactivated with the `false` value.
-
-.Deactivate a boolean option
-[#ex-boolean-false]
- $ antora --clean=false antora-playbook
+When a boolean option is activated in a playbook file, it cannot be deactivated from the command line.
