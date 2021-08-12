@@ -70,7 +70,7 @@ Verify the `antora` command is now available on your PATH by running:
 
 If the installation was successful, the command should report the latest, stable version of Antora for both the CLI and default site generator packages (where `.x` is a placeholder for the latest patch version).
 
-[subs=+attributes+]
+[subs=+attributes]
  $ antora -v
  @antora/cli: {page-component-version}.x
  @antora/site-generator-default: {page-component-version}.x
