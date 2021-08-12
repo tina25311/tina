@@ -2787,7 +2787,7 @@ describe('aggregateContent()', function () {
         expect(page.src.origin.url).to.equal(remoteUrl)
       })
 
-      it('should coerce SSH URI resolved from git config for local repository to HTTPS URL', async () => {
+      it('should coerce implicit SSH URI resolved from git config for local repository to HTTPS URL', async () => {
         const remoteUrl = 'git@gitlab.com:antora/demo/demo-component-a.git'
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         const fixturePath = 'modules/ROOT/pages/page-one.adoc'
@@ -2798,6 +2798,25 @@ describe('aggregateContent()', function () {
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
         expect(page.src.origin.url).to.equal('https://gitlab.com/antora/demo/demo-component-a.git')
+      })
+
+      it('should coerce SSH URI resolved from git config for local repository to HTTPS URL', async () => {
+        ;[
+          'ssh://git@gitlab.com/antora/demo/demo-component-a.git',
+          'ssh://git@gitlab.com:8022/antora/demo/demo-component-a.git',
+          'ssh://gitlab.com/antora/demo/demo-component-a.git',
+          'ssh://gitlab.com:8022/antora/demo/demo-component-a.git',
+        ].forEach(async (remoteUrl) => {
+          const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+          const fixturePath = 'modules/ROOT/pages/page-one.adoc'
+          await initRepoWithFiles(repoBuilder, {}, fixturePath, () => repoBuilder.config('remote.origin.url', remoteUrl))
+          playbookSpec.content.sources.push({ url: repoBuilder.url })
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          const page = aggregate[0].files[0]
+          expect(page).to.not.be.undefined()
+          expect(page.src.origin.url).to.equal('https://gitlab.com/antora/demo/demo-component-a.git')
+        })
       })
 
       it('should clean credentials from remote url retrieved from git config', async () => {

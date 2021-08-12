@@ -56,6 +56,7 @@ const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const SPACE_RX = / /g
 const SUPERFLUOUS_SEPARATORS_RX = /^\/+|\/+$|\/+(?=\/)/g
 const URL_AUTH_CLEANER_RX = /^(https?:\/\/)[^/@]*@/
+const URL_PORT_CLEANER_RX = /^([^/]+):[0-9]+(?=\/)/
 const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)/
 
 /**
@@ -868,6 +869,10 @@ function resolveRemoteUrl (repo, remoteName) {
       return ~url.indexOf('@') ? url.replace(URL_AUTH_CLEANER_RX, '$1') : url
     } else if (url.startsWith('git@')) {
       return 'https://' + url.substr(4).replace(':', '/')
+    } else if (url.startsWith('ssh://')) {
+      return 'https://' + url.substr((url.indexOf('@') + 1) || 6).replace(URL_PORT_CLEANER_RX, '$1')
+    } else {
+      return url
     }
   })
 }

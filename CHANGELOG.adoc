@@ -24,6 +24,7 @@ This project utilizes semantic versioning.
 
 * *logger*: End destination stream for logger in finalize call when log format is pretty (#795)
 * *content-aggregator*: Remove unnecessary patch to symlink path read from git repository on Windows (#796)
+* *content-aggregator*: Handle case when remote URL for local content source uses explicit `ssh://` protocol and port (#816)
 * *content-classifier*: Include source information in error message for duplicate alias when component is unknown (#804)
 * *ui-loader*: Publish dot files from UI bundle if matched by an entry in the list of static files in the UI descriptor (#794)
 * *cli*: Show location and reason of syntax error when `--stacktrace` option is specified (#823)
