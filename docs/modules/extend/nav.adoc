@@ -12,3 +12,4 @@
 ** xref:pipeline/tutorial.adoc[]
 ** xref:pipeline/event-reference.adoc[]
 ** xref:pipeline/pipeline-api-reference.adoc[]
+* xref:supported-components.adoc[]
