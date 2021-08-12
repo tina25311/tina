@@ -59,4 +59,5 @@ To activate the sourcemap from the CLI, use the xref:cli:options.adoc#sourcemap[
 
 The `--asciidoc-sourcemap` option overrides a value assigned to the `sourcemap` key in the playbook file.
 
-When the sourcemap key is activated in a playbook file, it cannot be deactivated from the command line.
+When the `sourcemap` key is activated in a playbook file, it cannot be deactivated from the command line.
+The CLI can only activate it.
