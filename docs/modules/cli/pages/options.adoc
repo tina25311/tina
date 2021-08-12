@@ -69,7 +69,7 @@ xref:playbook:environment-variables.adoc[ANTORA_CACHE_DIR variable].
 |`false`
 |<<boolean-value,Boolean>>
 |This option xref:playbook:output-dir.adoc#clean-warning[erases entire folders and their files]; use it with great care!
-See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>> and <<ex-boolean-false>>.
+See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>> and <<ex-boolean-true>>.
 
 |[[fetch]]`--fetch`
 |`false`
