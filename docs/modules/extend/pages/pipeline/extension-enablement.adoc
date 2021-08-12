@@ -1,0 +1,49 @@
+= Extension Enablement
+
+By default, if you specify an extension in the playbook file, Antora will register it.
+You could defer registering it by specifying it using the CLI option instead.
+However, the benefit of specifying it in the playbook file is that you can provide configuration keys.
+That's where extension enablement comes into play.
+It's possible to specify an extension in the playbook file, along with optional configuration, then tell Antora not to register it.
+You can then use the CLI option to enable it.
+And it will be registered relative to other extensions in the order it is listed in the playbook.
+
+To prevent Antora from registering an extension, set the predefined configuration key `enabled` to the value `false`.
+When Antora sees that the `enabled` key has a value of `false`, it will not register it.
+
+.An extension that is not enabled
+[source,yaml]
+----
+pipeline:
+  extension:
+  - require: ./my-extension.js
+    enabled: false
+    foo: bar
+----
+
+You may use the `enabled` key to quickly turn off an extension without having to otherwise remove it from the playbook.
+More likely, though, you mark it this way so that it can be enabled using the CLI option.
+However, in order to do that, you need a way to reference it.
+That's the purpose of the predefined configuration key `id`.
+The `id` key specifies a value you can reference using the `--extension` CLI option to enable an extension that is marked as not enabled in the playbook file.
+
+Let's give our extension an ID:
+
+.An extension with an ID that is not enabled
+[source,yaml]
+----
+pipeline:
+  extension:
+  - id: my-extension
+    require: ./my-extension.js
+    enabled: false
+    foo: bar
+----
+
+We can now enable this extension from the CLI as follows:
+
+ $ antora --extension=my-extension antora-playbook.yml
+
+Whereas normally the value of the `--extension` CLI option is a require request, in the case when you are enabling an extension, the value is the ID of the extension entry in the playbook file.
+
+If Antora cannot locate an entry with an ID that matches the value of the `--extension` CLI option, it will fallback to treating the value as a require request.

@@ -1,4 +1,6 @@
 = Available and Supported Antora Components
+:page-aliases: pipeline:supported-components.adoc
+:navtitle: Antora Components
 :table-caption!:
 // URLs
 :url-antora-lcs: https://gitlab.com/antora/antora/blob/master/LICENSE

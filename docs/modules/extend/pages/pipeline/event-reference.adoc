@@ -1,0 +1,54 @@
+= Pipeline Event Reference
+:nosp:
+
+Antora pipeline extensions listen for events emitted by the site generator and other components in the Antora pipeline.
+Each listener can access variables that are in scope at the time the event is emitted.
+The following table lists the pipeline events in the order they are emitted and the in-scope variables that correspond to each event.
+If the variable is locked (meaning it cannot be replaced), it's marked with an asterisk (`*`).
+
+.Antora pipeline events and in-scope variables
+[cols="1,2"]
+|===
+|Event name | In-scope variables
+
+|_register()_{nosp}footnote:register[The register function is not an event, but rather the function Antora calls to register the extension itself.]
+|playbook, config
+
+|playbookBuilt
+|playbook
+
+|beforeProcess
+|playbook*, asciidocConfig, siteCatalog
+
+|contentAggregated{nosp}footnote:event-sequence[The order of the contentAggregated and uiLoaded events relative to each other is not guaranteed.]
+|playbook*, asciidocConfig*, siteCatalog, contentAggregate
+
+|uiLoaded{nosp}footnote:event-sequence[]
+|playbook*, asciidocConfig*, siteCatalog, uiCatalog
+
+|contentClassified
+|playbook*, asciidocConfig*, siteCatalog, uiCatalog, contentCatalog
+
+|documentsConverted
+|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+
+|navigationBuilt
+|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*, navigationCatalog
+
+|pageComposed
+|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+
+|redirectsProduced
+|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+
+|siteMapped{nosp}footnote:[The siteMapped event is only emitted if the site URL is specified in the playbook.]
+|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+
+|beforePublish
+|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+
+|sitePublished
+|playbook*, asciidocConfig*, siteCatalog*, uiCatalog*, contentCatalog*, publications
+|===
+
+In addition to the built-in pipeline variables listed in this table, your extension can also access pipeline variables documented and published by other extensions.

@@ -26,5 +26,6 @@ nav:
 - modules/playbook/nav.adoc
 - modules/ROOT/nav-generate.adoc
 - modules/ROOT/nav-publish.adoc
+- modules/extend/nav.adoc
 - modules/pipeline/nav.adoc
 - modules/ROOT/nav-end.adoc
