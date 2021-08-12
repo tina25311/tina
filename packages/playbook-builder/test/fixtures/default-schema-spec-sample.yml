@@ -59,6 +59,8 @@ git:
   credentials:
     path: ./.git-credentials
   ensure_git_suffix: true
+  plugins:
+    http: ./lib/git-http-plugin.js
 network:
   http_proxy: http://proxy.example.org
   https_proxy: http://proxy.example.org

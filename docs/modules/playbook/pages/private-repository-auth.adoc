@@ -281,8 +281,9 @@ Antora provides a default implementation of this plugin.
 As you've seen in previous sections, this implementation assumes Antora can access the credentials directly, in plain text, either via a file or environment variable.
 If this arrangement does not meet your security requirements, you can replace the built-in credential manager with your own.
 
-To write a custom credential manager, create a JavaScript object (or class) that implements the following methods:
+To write a custom credential manager, export a JavaScript object that implements the following methods:
 
+.API for custom git credential manager
 [source,js]
 ----
 configure ({ config, startDir })
@@ -300,7 +301,28 @@ The optional `configure` and `status` methods are specific to Antora, extending 
 If defined, the `configure` method is called each time Antora starts, providing an opportunity to perform initialization steps such as defining properties.
 The `status` method, if available, is used by Antora to look up whether authentication was requested for a given URL.
 
-To activate your custom credential manager, first write your implementation in a dedicated JavaScript file and register it with isomorphic-git as follows:
+To activate your custom credential manager, first write your implementation in a dedicated JavaScript file and configure it as the default export:
+
+.custom-git-credential-manager.js
+[source,js]
+----
+module.exports = {
+  async fill ({ url }) { ... },
+  async approved ({ url }) { ... },
+  async rejected ({ url, auth }) { ... },
+}
+----
+
+Then register the credential manager with the playbook as follows:
+
+[source,yaml]
+----
+git:
+  plugins:
+    credentialManager: ./custom-git-credential-manager.js
+----
+
+Alternately, you can configure the plugin to self register:
 
 .custom-git-credential-manager.js
 [source,js]
@@ -317,18 +339,20 @@ git.cores.set('antora', new Map().set('credentialManager', {
 }))
 ----
 
-Then pass this file to the `-r` option when running Antora:
+In this case, you pass the credential manager to Antora using the `-r` option instead of registering it with the playbook:
 
  $ antora -r ./custom-git-credential-manager.js antora-playbook.yml
 
-If you've installed Antora globally using `npm`, you may run into problems getting your custom credential manager to work.
+When using a self-registering plugin, if you've installed Antora globally using `npm`, you may run into problems getting your custom credential manager to work.
 Either you'll encounter the error `Cannot find module 'isomorphic-git'` or your custom credential manager won't be called.
 To fix this problem, set the `NODE_PATH` environment variable to tell Node where to look for Antora's dependencies:
 
  $ NODE_PATH=$(npm -g list --parseable=true @antora/site-generator-default)/node_modules \
-   antora -r ./system-git-credential-manager.js antora-playbook.yml
+   antora -r ./custom-git-credential-manager.js antora-playbook.yml
 
 The alternate solution is to install Antora locally (i.e., add the Antora packages to the dependencies in [.path]_package.json_ file and run `npm i`).
+
+Since self-registering a plugin is more complex, we will proceed with the example of registering the plugin in the playbook.
 
 === Get credentials from git
 
@@ -338,14 +362,14 @@ We can use this command in a custom credential manager to allow Antora to delega
 
 Let's start by creating a helper function that interfaces with the system git via `git credentials fill` to retrieve the credentials for a URL:
 
+.system-git-credential-manager.js
 [source,js]
 ----
 'use strict'
 
-const git = require('isomorphic-git')
 const { spawn } = require('child_process')
 
-function gitCredentialFill (url) {
+function callGitCredentialFill (url) {
   const { protocol, host } = new URL(url)
   return new Promise((resolve, reject) => {
     const output = []
@@ -367,50 +391,50 @@ function gitCredentialFill (url) {
 }
 ----
 
-Next, let's create a credential manager that uses this function to retrieve the credentials:
+Next, let's create a credential manager that uses this function to fill the credentials for a URL:
 
 [source,js]
 ----
 // ...
 
-const systemGitCredentialManager = {
+module.exports = {
   configure () {
-    this.urls = []
+    this.urls = {}
   },
   async fill ({ url }) {
-    this.urls.push(url)
-    return gitCredentialFill(url)
+    this.urls[url] = 'requested'
+    return callGitCredentialFill(url)
   },
-  async approved ({ url }) {},
+  async approved ({ url }) {
+    this.urls[url] = 'approved'
+  },
   async rejected ({ url, auth }) {
+    this.urls[url] = 'rejected'
     const data = { statusCode: 401, statusMessage: 'HTTP Basic: Access Denied' }
     const err = new Error(`HTTP Error: ${data.statusCode} ${data.statusMessage}`)
-    err.name = err.code = 'HTTPError'
+    err.name = err.code = 'HttpError'
     err.data = data
-    err.rejected = !!auth
+    if (auth) err.rejected = true
     throw err
   },
   status ({ url }) {
-    return this.urls.includes(url)
+    return this.urls[url]
   },
 }
 ----
 
-Finally, we need to register the credential manager with isomorphic-git:
+Finally, we need to register the credential manager with the playbook:
 
-[source,js]
+[source,yaml]
 ----
-// ...
-
-if (!git.cores) git.cores = new Map()
-git.cores.set('antora', new Map().set('credentialManager', systemGitCredentialManager))
+git:
+  plugins:
+    credentialManager: ./system-git-credential-manager.js
 ----
 
-If we require this script when invoking Antora, Antora will delegate to the system git to fill the credentials:
+Antora will now delegate to the system git to fill the credentials for a URL:
 
- $ antora -r ./system-git-credential-manager.js antora-playbook.yml
-
-If you run into problems, make sure to set the `NODE_PATH` environment variable as explained in the previous section.
+ $ antora antora-playbook.yml
 
 It's left up to an exercise for the reader to store or erase the credentials based on whether they were approved or rejected by the server (hint: use the `approved` and `rejected` methods to invoke `git credential` again).
 

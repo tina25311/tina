@@ -4490,7 +4490,7 @@ describe('aggregateContent()', function () {
   })
 
   describe('plugins', () => {
-    it('should not register additional git plugins', async () => {
+    it('should not register additional git plugins on git core', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -4551,6 +4551,33 @@ describe('aggregateContent()', function () {
       } finally {
         gitServer.off('fetch', recordFetch)
         RepositoryBuilder.unregisterPlugin('http', GIT_CORE)
+      }
+    })
+
+    it('should use http plugin specified in playbook', async () => {
+      let userAgent
+      const recordFetch = (fetch) => {
+        userAgent = fetch.req.headers['user-agent']
+        fetch.accept()
+      }
+      try {
+        const pluginSource = heredoc`
+          module.exports = require('@antora/content-aggregator/lib/git-plugin-http')({}, 'git/just-git-it@1.0')
+        `
+        await fsp.writeFile(ospath.join(WORK_DIR, 'git-http-plugin.js'), pluginSource)
+        gitServer.on('fetch', recordFetch)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.dir = WORK_DIR
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        playbookSpec.git = { plugins: { http: './git-http-plugin.js' } }
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0].files).to.not.be.empty()
+        expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
+        expect(userAgent).to.equal('git/just-git-it@1.0')
+      } finally {
+        gitServer.off('fetch', recordFetch)
       }
     })
   })
@@ -5091,6 +5118,37 @@ describe('aggregateContent()', function () {
         expect(aggregate).to.have.lengthOf(1)
         expect(RepositoryBuilder.getPlugin('credentialManager', GIT_CORE)).to.equal(credentialManager)
         expect(credentialManager.fulfilledUrl).to.equal(repoBuilder.url)
+      })
+
+      it('should use credential manager specified in playbook', async () => {
+        const pluginSource = heredoc`
+          module.exports = {
+            configure () {
+              this.urls = {}
+            },
+            async fill ({ url }) {
+              this.urls[url] = 'requested'
+              return { username: 'u', password: 'p' }
+            },
+            async approved ({ url }) {
+              this.urls[url] = 'approved'
+            },
+            async rejected ({ url, auth }) {
+              this.urls[url] = 'rejected'
+            },
+          }
+        `
+        await fsp.writeFile(ospath.join(WORK_DIR, 'git-credential-manager-plugin.js'), pluginSource)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.dir = WORK_DIR
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        playbookSpec.git = { plugins: { credentialManager: './git-credential-manager-plugin.js' } }
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(RepositoryBuilder.hasPlugin('credentialManager', GIT_CORE)).to.be.false()
+        expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
+        expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
+        expect(aggregate).to.have.lengthOf(1)
       })
 
       it('should not enhance registered credential manager if it already contains a status method', async () => {
