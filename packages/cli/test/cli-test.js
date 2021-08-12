@@ -303,6 +303,17 @@ describe('cli', function () {
       .done()
   }).timeout(timeoutOverride)
 
+  it('should show location of syntax error when --stacktrace option is specified', () => {
+    const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-with-syntax-error.js'))
+    playbookSpec.asciidoc = { extensions: [ext] }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return runAntora('--stacktrace generate the-site')
+      .assert(/^SyntaxError: missing \) after argument list/)
+      .assert(/^at .*extension-with-syntax-error\.js:6/)
+      .assert(/^console\.log\(doc.getDocumentTitle\(\)/)
+      .done()
+  }).timeout(timeoutOverride)
+
   it('should recommend --stacktrace option if not specified and an exception is thrown during generation', () => {
     playbookSpec.ui.bundle.url = false
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
