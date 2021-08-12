@@ -22,10 +22,8 @@ To see if you have Node installed, and which version, open a terminal and type:
 This command should return an {url-node-releases}[active Node LTS version number], for example:
 
 [subs=attributes+]
-....
-$ node --version
-v{version-node}
-....
+ $ node --version
+ v{version-node}
 
 If you have an active Node LTS version on your machine, you're ready to <<install-antora,install Antora>>.
 
@@ -70,13 +68,12 @@ Verify the `antora` command is now available on your PATH by running:
 
  $ antora -v
 
-If the installation was successful, the command should report the latest, stable version of Antora.
+If the installation was successful, the command should report the latest, stable version of Antora for both the CLI and default site generator packages (where `.x` is a placeholder for the latest patch version).
 
 [subs=attributes+]
-....
-$ antora -v
-{page-component-version}.x
-....
+ $ antora -v
+ @antora/cli: {page-component-version}.x
+ @antora/site-generator-default: {page-component-version}.x
 
 Now you're ready to create your first playbook.
 

@@ -34,11 +34,12 @@ Verify the `antora` command is available on your PATH by running:
 
  $ antora -v
 
-If installation was successful, the command should report the version of Antora (where `.x` represents the latest patch number).
+If installation was successful, the command should report the version of Antora (where `.x` is a placeholder for the latest patch version).
 
 [subs=attributes+]
  $ antora -v
- {page-component-version}.x
+ @antora/cli: {page-component-version}.x
+ @antora/site-generator-default: {page-component-version}.x
 
 CAUTION: If you're using a system-wide Node installation managed by your operating system's package manager, you may run into permission problems when installing packages globally.
 In that case, you'll need to <<install-dir,install Antora directly in your project repository>>.
@@ -84,10 +85,11 @@ If you installed the package without the `-g` flag, you'll need to prefix the co
 .If installed in a project directory
  $ $(npm bin)/antora -v
 
-The command should report the Antora CLI version in the terminal (where `.x` represents the latest patch number).
+The command should report the Antora CLI version in the terminal (where `.x` is a placeholder for the latest patch version).
 
 [subs=attributes+]
- {page-component-version}.x
+ @antora/cli: {page-component-version}.x
+ @antora/site-generator-default: not installed
 
 If you installed the CLI globally, change into the project directory before installing the site generator.
 
@@ -95,6 +97,14 @@ Next, run the following command to install the site generator package:
 
 [subs=attributes+]
  $ npm i @antora/site-generator-default@{page-component-display-version}
+
+Now when you run `antora -v`, you should see the version of both the Antora CLI and the default site generator printed in the terminal (where `.x` is a placeholder for the latest patch version).
+
+[subs=attributes+]
+ @antora/cli: {page-component-version}.x
+ @antora/site-generator-default: {page-component-version}.x
+
+That confirms you have both top-level components of Antora installed.
 
 TIP: If you're reinstalling Antora, it's best to first remove the [.path]_node_modules_ folder.
 If you also want to get the latest version of each dependency, remove the [.path]_package-lock.json_ file as well.

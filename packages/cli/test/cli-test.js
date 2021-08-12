@@ -19,6 +19,7 @@ const UI_BUNDLE_URI =
 const VERSION = pkg.version
 const WORK_DIR = ospath.join(__dirname, 'work')
 const ANTORA_CACHE_DIR = ospath.join(WORK_DIR, '.antora/cache')
+const TMP_DIR = require('os').tmpdir()
 
 Kapok.config.shouldShowLog = false
 
@@ -108,13 +109,22 @@ describe('cli', function () {
 
   it('should output version when called with "-v"', () => {
     return runAntora('-v')
-      .assert(VERSION)
+      .assert(`@antora/cli: ${VERSION}`)
+      .assert(`@antora/site-generator-default: ${VERSION}`)
       .done()
   })
 
   it('should output version when invoked with "version"', () => {
     return runAntora('version')
-      .assert(VERSION)
+      .assert(`@antora/cli: ${VERSION}`)
+      .assert(`@antora/site-generator-default: ${VERSION}`)
+      .done()
+  })
+
+  it('should report site generator version when invoked outside installation directory', () => {
+    return runAntora('-v', { cwd: TMP_DIR })
+      .assert(`@antora/cli: ${VERSION}`)
+      .assert(`@antora/site-generator-default: ${VERSION}`)
       .done()
   })
 
@@ -134,7 +144,8 @@ describe('cli', function () {
     // NOTE kapok removes leading spaces from output lines
     return runAntora('-h', { COLUMNS: 82 })
       .ignoreUntil(/^Options:/)
-      .assert(/^-v, --version +Output the version number\.$/)
+      .assert(/^-v, --version +Output the version of the CLI and default site$/)
+      .assert(/^generator\.$/)
       .assert(/^-r, --require /)
       .assert(/^before executing command\.$/)
       .assert(/^--stacktrace /)

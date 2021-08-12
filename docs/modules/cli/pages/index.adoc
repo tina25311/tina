@@ -46,7 +46,7 @@ Usage: antora [options] [[command] [args]]
 A modular, multi-repository documentation site generator for AsciiDoc.
 
 Options:
-  -v, --version                  Output the version number.
+  -v, --version                  Output the version of the CLI and default site generator.
   -r, --require <library>        Require library (aka node module) or script before executing command.
   --stacktrace                   Print the stacktrace to the console if the application fails.
   -h, --help                     Output usage information.

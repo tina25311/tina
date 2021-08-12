@@ -10,6 +10,7 @@ const { finalizeLogger } = require('@antora/logger')
 const ospath = require('path')
 const userRequire = require('@antora/user-require-helper')
 
+const DEFAULT_GENERATOR = '@antora/site-generator-default'
 const { version: VERSION } = require('../package.json')
 
 async function run (argv = process.argv) {
@@ -44,7 +45,26 @@ cli
   .configureOutput({ getOutHelpWidth: getTTYColumns, getErrHelpWidth: getTTYColumns })
   .storeOptionsAsProperties()
   .name('antora')
-  .version(VERSION, '-v, --version', 'Output the version number.')
+  .version(
+    {
+      toString () {
+        const buffer = [`@antora/cli: ${VERSION}`]
+        let generatorVersion
+        const generatorPackageJson = DEFAULT_GENERATOR + '/package.json'
+        try {
+          generatorVersion = require(generatorPackageJson).version
+        } catch {
+          try {
+            generatorVersion = require(require.resolve(generatorPackageJson, { paths: [''] })).version
+          } catch {}
+        }
+        buffer.push(DEFAULT_GENERATOR + ': ' + (generatorVersion || 'not installed'))
+        return buffer.join('\n')
+      },
+    },
+    '-v, --version',
+    'Output the version of the CLI and default site generator.'
+  )
   .description('A modular, multi-repository documentation site generator for AsciiDoc.')
   .usage('[options] [[command] [args]]')
   .helpOption('-h, --help', 'Output usage information.')
@@ -70,7 +90,7 @@ cli
   .addOption(
     cli
       .createOption('--generator <library>', 'The site generator library.')
-      .default('@antora/site-generator-default', '@antora/site-generator-default')
+      .default(DEFAULT_GENERATOR, DEFAULT_GENERATOR)
   )
   .action(async (playbookFile, options, command) => {
     const dot = ospath.resolve(playbookFile, '..')

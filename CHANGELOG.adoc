@@ -35,6 +35,7 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Integrate @antora/user-require-helper to require Asciidoctor extensions (#802)
 * *site-publisher*: Integrate @antora/user-require-helper to require custom providers (#802)
 * *cli*: Integrate @antora/user-require-helper to require user scripts and the custom generator (#802)
+* *cli*: Output version of default site generator in addition to version of CLI when `-v` option is used (#703)
 
 == 3.0.0-alpha.7 (2021-06-26)
 

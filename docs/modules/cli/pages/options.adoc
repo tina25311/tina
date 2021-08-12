@@ -36,7 +36,7 @@ See <<ex-boolean-true>> and xref:ROOT:run-antora.adoc#error-stacktrace[Show erro
 |`-v`, `--version`
 |_Not applicable_
 |_Not applicable_
-|Displays the current Antora version.
+|Displays the version of the CLI and default site generator.
 |===
 
 [#generate-options]
