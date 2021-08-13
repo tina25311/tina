@@ -1,5 +1,4 @@
 = Publish to GitHub Pages
-:listing-caption!:
 
 Antora is designed to create sites that run anywhere, whether it be on a static web host or the local filesystem.
 However, some hosts offer "`features`" that mess with Antora's output.
@@ -42,7 +41,7 @@ Fortunately, there's way to do this without having to run a separate command.
 To avoid the need for the extra command, the other way to do it is to inject the file using Antora's supplemental UI feature.
 To do so, add the following `supplemental_files` block under the `ui` category in your playbook file:
 
-.antora-playbook.yml
+.antora-playbook.yml that adds .nojekyll file using supplemental UI
 [source,yaml]
 ----
 ui:
@@ -72,7 +71,7 @@ If your playbook repository is hosted on GitHub, you can configure a GitHub Acti
 This workflow assumes that the name of the default branch of your playbook repository is _main_, that the name of your playbook file is [.path]_antora-playbook.yml_, and that Antora is configured to publish the files to the [.path]_build/site_ directory.
 If your site uses different settings, update the values in the workflow file accordingly.
 
-..github/workflows/publish.yml
+..github/workflows/publish.yml that uses the Antora Site Action
 [source#github-actions-workflow,yaml]
 ----
 include::example$github-actions-workflow.yml[]
@@ -81,3 +80,15 @@ include::example$github-actions-workflow.yml[]
 The benefit of using GitHub Actions is two-fold.
 First, you don't have to worry about how to get the published files into the gh-pages branch for publishing.
 Second, you don't have to worry about the [.path]_.nojekyll_ file since the action adds it for you.
+
+If you want to specify the version of Antora to use, or you want more control over how Antora is called, you don't have to use the Antora Site Action.
+Instead, you can install and invoke Antora directly from the workflow.
+<<custom-github-actions-workflow>> shows an example of a GitHub Actions workflow that uses a specific release of Antora to build and publish your site to GitHub Pages.
+
+..github/workflow/publish.yml that installs Antora itself
+[source#custom-github-actions-workflow,yaml]
+----
+include::example$custom-github-actions-workflow.yml[]
+----
+
+To install a different verson of Antora, replace the `@testing` qualifier on the package names with a specific version, such as `@2.3.4`.
