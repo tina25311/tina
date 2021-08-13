@@ -132,12 +132,19 @@ function aggregateContent (playbook) {
 }
 
 function buildAggregate (componentVersionBuckets) {
-  const aggregateMap = flattenDeep(componentVersionBuckets).reduce((accum, batch) => {
-    const key = batch.version + '@' + batch.name
-    const entry = accum.get(key)
-    return accum.set(key, entry ? Object.assign(entry, batch, { files: [...entry.files, ...batch.files] }) : batch)
-  }, new Map())
-  return [...aggregateMap.values()]
+  return [
+    ...flattenDeep(componentVersionBuckets)
+      .reduce((accum, batch) => {
+        const key = batch.version + '@' + batch.name
+        const entry = accum.get(key)
+        if (!entry) return accum.set(key, batch)
+        const files = batch.files
+        ;(batch.files = entry.files).push(...files)
+        Object.assign(entry, batch)
+        return accum
+      }, new Map())
+      .values(),
+  ]
 }
 
 async function loadRepository (url, opts) {
@@ -870,7 +877,7 @@ function resolveRemoteUrl (repo, remoteName) {
       } else if (url.startsWith('git@')) {
         return 'https://' + url.substr(4).replace(':', '/')
       } else if (url.startsWith('ssh://')) {
-        return 'https://' + url.substr((url.indexOf('@') + 1) || 6).replace(URL_PORT_CLEANER_RX, '$1')
+        return 'https://' + url.substr(url.indexOf('@') + 1 || 6).replace(URL_PORT_CLEANER_RX, '$1')
       }
     }
     return posixify ? 'file:///' + posixify(repo.dir) : 'file://' + repo.dir

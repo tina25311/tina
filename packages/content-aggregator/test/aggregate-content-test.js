@@ -2809,7 +2809,9 @@ describe('aggregateContent()', function () {
         ].forEach(async (remoteUrl) => {
           const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
           const fixturePath = 'modules/ROOT/pages/page-one.adoc'
-          await initRepoWithFiles(repoBuilder, {}, fixturePath, () => repoBuilder.config('remote.origin.url', remoteUrl))
+          await initRepoWithFiles(repoBuilder, {}, fixturePath, () =>
+            repoBuilder.config('remote.origin.url', remoteUrl)
+          )
           playbookSpec.content.sources.push({ url: repoBuilder.url })
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
