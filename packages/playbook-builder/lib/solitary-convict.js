@@ -88,7 +88,7 @@ function registerFormats (convict) {
   convict.addFormat({
     name: 'require-array',
     validate: (val) => {
-      if (!Array.isArray(val)) throw new Error('must be an array')
+      if (!Array.isArray(val)) throw new Error('must be of type Array')
     },
     coerce: (val, config, name) => {
       const accum = config && config.has(name) ? config.get(name) : []
