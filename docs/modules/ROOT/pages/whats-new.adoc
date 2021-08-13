@@ -11,7 +11,28 @@
 
 _**Release date:** 2021.08.13 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
-== New documentation
+== Antora pipeline extensions
+
+Antora now provides a lightweight, event-based extension facility that you can tap into to augment or influence the functionality of the site generator.
+The extension facility is designed for users of all experience levels.
+
+To learn more, see:
+
+* xref:extend:pipeline/index.adoc[Pipeline Extensions Overview]
+* xref:extend:pipeline/define-extension.adoc[]
+* xref:extend:pipeline/register-extension.adoc[]
+* xref:extend:pipeline/add-listener.adoc[]
+* xref:extend:pipeline/access-pipeline-variables.adoc[]
+* xref:extend:pipeline/update-pipeline-variables.adoc[]
+* xref:extend:pipeline/configure-extension.adoc[]
+* xref:extend:pipeline/extension-enablement.adoc[]
+* xref:extend:pipeline/extension-helpers.adoc[]
+* xref:extend:pipeline/asynchronous-listeners.adoc[]
+* xref:extend:pipeline/tutorial.adoc[]
+* xref:extend:pipeline/event-reference.adoc[]
+* xref:extend:pipeline/pipeline-api-reference.adoc[]
+
+== More new documentation
 
 Preliminary documentation for the following new features is now available:
 
@@ -34,20 +55,21 @@ These new pages and updates are in the works.
 
 === Added
 
+Issue {url-issues}/305[#305^]:: Assign location of git directory for local or cloned remote repository to `src.origin.gitdir` property on virtual file.
+Set `src.origin.worktree` property on virtual file to `null` if repository is local and reference is not mapped to a worktree.
+Issue {url-issues}/775[#775^]:: Allow git plugins to be specified in the playbook using the `git.plugins` key.
 Issue {url-issues}/799[#799^]:: Introduce an event-based extension facility that notifies listeners added by extensions of significant events, at the same time providing access to in-scope pipeline variables.
 +
 * Add `pipeline` category to the playbook schema to configure the pipeline of the site generator.
 * Add `extensions` key to the `pipeline` category to specify extensions that listen for pipeline events.
 * Emit events at key transition points in the site generator, to which listeners added by extensions can respond to.
-* Introduce a pipeline object that allows extensions to add listeners and provides helpers for writing extensions.
-Issue {url-issues}/305[#305^]:: Assign location of git directory for local or cloned remote repository to `src.origin.gitdir` property on virtual file.
-Set `src.origin.worktree` property on virtual file to `null` if repository is local and reference is not mapped to a worktree.
+* Introduce a Pipeline object that allows extensions to add listeners and provides helpers for writing extensions.
 Issue {url-issues}/810[#810^]:: Map repeatable CLI option named `--extension` to add an entry to or enable an existing entry in the `pipeline.extensions` key in the playbook.
 Don't register pipeline extension if extension configuration has a key named `enabled` with a value of `false` and the extension is not enabled from the CLI.
-Issue {url-issues}/775[#775^]:: Allow git plugins to be specified in the playbook using the `git.plugins` key.
 
 === Changed
 
+Issue {url-issues}/703[#703^]:: Output version of default site generator in addition to version of CLI when `antora -v` is called.
 Related to issue {url-issues}/764[#764^]:: Set `src.origin.url` property on virtual file when repository has no remote even when using worktree.
 In this case, the value is the file URI for the local repository.
 Issue {url-issues}/793[#793^]:: Ignore backup files (files that end with `+~+`) when reading supplemental UI files and UI bundle from directory.
@@ -55,7 +77,6 @@ Issue {url-issues}/802[#802^]:: Integrate @antora/user-require-helper to require
 Issue {url-issues}/805[#805^]:: Attach map of environment variables to non-enumerable `env` property on playbook.
 Issue {url-issues}/817[#817^]:: Store files in content catalog by family and in UI catalog by type.
 _(Internal change only)._
-Issue {url-issues}/703[#703^]:: Output version of default site generator in addition to version of CLI when `antora -v` is called.
 
 === Fixed
 
