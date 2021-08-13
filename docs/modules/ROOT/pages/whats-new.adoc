@@ -9,7 +9,7 @@
 
 = Antora 3.0.0-alpha.8
 
-_**Release date:** 2021.08.11 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+_**Release date:** 2021.08.13 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 == New documentation
 
@@ -20,6 +20,9 @@ Preliminary documentation for the following new features is now available:
 As the key's name implies, it only applies to the latest version of each component version in a site.
 * The xref:playbook:urls-latest-prerelease-version-segment.adoc[urls.latest_prerelease_version_segment playbook key] replaces the actual version with a symbolic prerelease version in the published page and asset URLs of the latest prereleases in your site.
 * The xref:playbook:urls-latest-version-segment-strategy.adoc[urls.latest_version_segment_strategy playbook key] controls the replacement and redirect direction between publishable URLs containing the actual version and URLs containing the symbolic version.
+* The xref:playbook:git-plugins.adoc[git.plugins key] provides a way to specify predefined plugins to load into the git client used by Antora.
+* The xref:playbook:content-worktrees.adoc[worktrees key] controls which worktrees Antora uses when locating branches in a location repository.
+* The author mode page now provides a step-by-step guide for setting up xref:playbook:author-mode.adoc#multiple-worktrees[multiple worktrees] for local authoring.
 
 To help support the new version and URL features, there's now documentation explaining xref:how-antora-builds-urls.adoc[] and high-level descriptions of Antora's xref:version-facets.adoc[] to help you decide what keys to use when configuring a version of a component.
 
@@ -31,28 +34,36 @@ These new pages and updates are in the works.
 
 === Added
 
+Issue {url-issues}/799[#799^]:: Introduce an event-based extension facility that notifies listeners added by extensions of significant events, at the same time providing access to in-scope pipeline variables.
++
+* Add `pipeline` category to the playbook schema to configure the pipeline of the site generator.
+* Add `extensions` key to the `pipeline` category to specify extensions that listen for pipeline events.
+* Emit events at key transition points in the site generator, to which listeners added by extensions can respond to.
+* Introduce a pipeline object that allows extensions to add listeners and provides helpers for writing extensions.
 Issue {url-issues}/305[#305^]:: Assign location of git directory for local or cloned remote repository to `src.origin.gitdir` property on virtual file.
 Set `src.origin.worktree` property on virtual file to `null` if repository is local and reference is not mapped to a worktree.
-Issue {url-issues}/799[#799^]:: Introduce an event-based extension mechanism that notifies listeners registered by extensions of key events, also providing access to in-scope pipeline variables.
-+
-* Add `pipeline` category to the playbook schema to configure the pipeline of the generator.
-* Add `extensions` key to the `pipeline` category to specify extensions that listen for pipeline events.
-Issue {url-issues}/810[#810^]:: Map repeatable CLI option named `--extension` to add an entry to (or enable an existing one in) the `pipeline.extensions` key in the playbook.
-Don't register pipeline extension if extension configuration has a key named `enabled` and its value is `false`.
+Issue {url-issues}/810[#810^]:: Map repeatable CLI option named `--extension` to add an entry to or enable an existing entry in the `pipeline.extensions` key in the playbook.
+Don't register pipeline extension if extension configuration has a key named `enabled` with a value of `false` and the extension is not enabled from the CLI.
+Issue {url-issues}/775[#775^]:: Allow git plugins to be specified in the playbook using the `git.plugins` key.
 
 === Changed
 
 Related to issue {url-issues}/764[#764^]:: Set `src.origin.url` property on virtual file when repository has no remote even when using worktree.
+In this case, the value is the file URI for the local repository.
 Issue {url-issues}/793[#793^]:: Ignore backup files (files that end with `+~+`) when reading supplemental UI files and UI bundle from directory.
-Issue {url-issues}/802[#802^]:: Integrate @antora/user-require-helper to require Asciidoctor extensions, custom providers, user scripts, or a custom generator.
+Issue {url-issues}/802[#802^]:: Integrate @antora/user-require-helper to require code provided by the user (i.e., Asciidoctor extensions, Antora pipeline extensions, custom providers for the site publisher, user scripts, custom site generator, etc).
 Issue {url-issues}/805[#805^]:: Attach map of environment variables to non-enumerable `env` property on playbook.
 Issue {url-issues}/817[#817^]:: Store files in content catalog by family and in UI catalog by type.
+_(Internal change only)._
+Issue {url-issues}/703[#703^]:: Output version of default site generator in addition to version of CLI when `antora -v` is called.
 
 === Fixed
 
 Issue {url-issues}/794[#794^]:: Publish dot files from UI bundle if matched by an entry in the list of static files in the UI descriptor.
 Issue {url-issues}/795[#795^]:: End destination stream for logger in finalize call when log format is pretty.
 Issue {url-issues}/804[#804^]:: Include source information in error message for duplicate alias when component is unknown.
+Issue {url-issues}/816[#816^]:: Gracefully handle case when remote URL for local content source uses explicit `ssh://` protocol and port.
+Issue {url-issues}/823[#823^]:: Show location and reason of syntax error in user code when `--stacktrace` option is specified.
 
 = Antora 3.0.0-alpha.7
 
