@@ -1512,6 +1512,17 @@ describe('ContentCatalog', () => {
       expect(contentCatalog.getById(result.src)).to.equal(result)
     })
 
+    it('should store alias in alias family in content catalog', () => {
+      const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
+      const result = contentCatalog.registerPageAlias('alias.adoc', targetPage)
+      expect(result).to.have.property('rel')
+      expect(result.rel).to.equal(targetPage)
+      expect(contentCatalog.getById(result.src)).to.equal(result)
+      const aliases = contentCatalog.findBy({ family: 'alias' })
+      expect(aliases).to.have.lengthOf(1)
+      expect(aliases[0]).to.equal(result)
+    })
+
     it('should register alias if relative path in page spec is only a file extension', () => {
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       const result = contentCatalog.registerPageAlias('ROOT:.adoc', targetPage)
