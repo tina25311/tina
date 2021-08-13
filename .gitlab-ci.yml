@@ -89,6 +89,7 @@ test:windows:
   #<<: *yarn_cache_pull_only
   before_script:
   - npx yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile
+  - node -p '`Node.js ${process.version}`'
   script: node_modules/.bin/gulp test
   artifacts:
     paths:
