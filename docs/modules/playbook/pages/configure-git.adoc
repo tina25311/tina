@@ -1,11 +1,11 @@
 = Git Keys
 
-The playbook keys configured under `git` control the behavior of the git client in Antora.
+The playbook keys configured under `git` control the behavior of the git client used by Antora.
 
 [#git-key]
 == git key
 
-The `git` key holds all the git-related playbook keys, such as the git credentials and automatic URL suffix.
+The `git` key holds all the git-related playbook keys, such as the git credentials, automatic URL suffix, and plugins.
 
 .antora-playbook.yml
 [source,yaml]
@@ -14,14 +14,18 @@ git: # <1>
   ensure_git_suffix: false # <2>
   credentials: # <3>
     path: ./.git-credentials # <4>
+  plugins: # <5>
+    credential_manager: ./system-git-credential-manager.js # <6>
 ----
-<1> Optional `git` key
+<1> Optional `git` category key
 <2> Optional `ensure_git_suffix` key
-<3> Optional `credentials` key
-<4> Optional `path` key
+<3> Optional `credentials` category key
+<4> `path` key to specify the location of optional credentials; mutually exclusive with the `contents` key
+<5> Optional `plugins` category key
+<6> Optional `credential_manager` key
 
-The `git` key and the child key-value pairs it accepts are optional.
-When the `git` key isn't present in the playbook, Antora falls back to using default configuration for the git client.
+The `git` category key and the child keys it accepts are all optional.
+When the `git` key isn't present in the playbook, Antora falls back to using the default configuration for the git client.
 
 [#git-reference]
 == Available git keys
@@ -41,5 +45,13 @@ When the `git` key isn't present in the playbook, Antora falls back to using def
 |xref:git-suffix.adoc[ensure_git_suffix]
 |`true` by default.
 When `true`, this key instructs the git client to automatically append [.path]_.git_ to content sources repository URLs if absent.
+|No
+
+|xref:git-plugins.adoc#credential-manager[plugins.credential_manager]
+|Accepts a require request that specifies the location of the code that provides a custom credential manager.
+|No
+
+|xref:git-plugins.adoc#http[plugins.http]
+|Accepts a require request that specifies the location of the code that provides a custom HTTP request handler.
 |No
 |===

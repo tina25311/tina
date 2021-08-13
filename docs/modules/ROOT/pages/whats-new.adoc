@@ -68,7 +68,7 @@ Upgrading isomorphic-git forced a change to how a custom git credential manager 
 Previously, this was done using `git.cores.create('antora').set('credentialManager', customCredentialManager)`.
 However, isomorphic-git no longer includes the `cores` (aka plugin) API, so this call is going to fail.
 Antora still honors the `cores` API, but the call to register the credential manager is now responsible for creating it (since it runs before Antora loads).
-Refer to xref:playbook:private-repository-auth.adoc#custom-manager[Configure a custom credential manager] for the latest instructions.
+Refer to xref:playbook:private-repository-auth.adoc#custom[Configure a custom credential manager] for the latest instructions.
 
 == New documentation
 
