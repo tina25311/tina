@@ -133,4 +133,8 @@ Single values are coerced into an array.
 |xref:content-source-url.adoc[url]
 |Accepts the URL of a git repository, which can either be an HTTPS URL or a local filesystem path.
 |Yes
+
+|xref:content-worktrees.adoc[worktrees]
+|Accepts a keyword or list of exact branch names or glob patterns to control which corresponding worktrees Antora should use.
+|No
 |===

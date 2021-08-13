@@ -120,4 +120,18 @@ content:
     branches: v1.0, v2.0
 ----
 
+A better way to bypass the git worktree is to set the `worktrees` key to `false`.
+
+.Sets worktrees to false to bypass files in the worktree
+[source,yaml]
+----
+content:
+  sources:
+  - url: ./demo-component-b
+    branches: master
+    worktrees: false
+  - url: https://gitlab.com/antora/demo/demo-component-b.git
+    branches: v1.0, v2.0
+----
+
 Keep in mind that, in this case, *all files must be committed locally* in order for Antora to use them.
