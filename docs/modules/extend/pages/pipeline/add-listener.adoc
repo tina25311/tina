@@ -4,7 +4,7 @@
 The bulk of the work of an Antora pipeline extension is done by the event listeners.
 An event listener is a function that's called whenever an event is emitted.
 Any value returned by the listener is ignored.
-The `register` function is responsible for associating these listener functions with particular events using the `on` method of the pipeline object, called adding a listener.
+The `register` function is responsible for associating these listener functions with particular events using the `on` method of the Pipeline object, called adding a listener.
 The API of the pipeline object extends that of the Node.js {url-event-emitter}[EventEmitter^].
 
 Let's build on the extension we have defined by updating it to add an event listener.
@@ -17,11 +17,11 @@ This gives us the opportunity to roughly measure how long it took to generate an
 include::example$time-generation-extension.js[]
 ----
 
-In <<ex-listen>>, we use the `on` method of the pipeline object to add two listeners, one for when the `playbookBuilt` event is fired and one for when the `sitePublished` event is fired.
-The `on` method returns the pipeline object, so we can use it to chain calls, as show in the previous example.
+In <<ex-listen>>, we use the `on` method of the Pipeline object to add two listeners, one for when the `playbookBuilt` event is fired and one for when the `sitePublished` event is fired.
+The `on` method returns the Pipeline object, so we can use it to chain calls, as show in the previous example.
 
 By default, listeners are invoked in the order they are added.
-To guarantee our timer starts before listeners from other extensions are called, we want our `playbookBuilt` listener to be called before other listeners of the `playbookBuilt` event and we want our `sitePublished` listener to be called after other listeners of the `sitePublished` event.
+To guarantee our timer starts before listeners from other extensions are called, our `playbookBuilt` listener should be called before other listeners of the `playbookBuilt` event and our `sitePublished` listener should be called after other listeners of the `sitePublished` event.
 There are two changes we must make to get this to work.
 
 First, we can use the `prependListener` method as an alternative to `on` to add the `playbookBuilt` listener before other listeners that have already been associated with that event.
@@ -35,8 +35,8 @@ include::example$better-time-generation-extension.js[]
 Second, we should list our extension last in the playbook.
 Taking these two steps ensures our timer runs around all other listeners.
 
-The EventEmitter API, which the pipeline object inherits, also allows listeners to be retrieved, removed, and added again.
+The EventEmitter API, which the Pipeline object inherits, also allows listeners to be retrieved, removed, and added again.
 So one extension can do some rearranging of the listeners added by other extensions, if the need arises.
 
-In order to do something more interesting than time execution time and print messages to the console, we need to xref:pipeline/access-pipeline-variables.adoc[access variables in the pipeline].
+To do something more interesting than time execution time and print messages to the console, we need to xref:pipeline/access-pipeline-variables.adoc[access variables in the pipeline].
 Let's learn how that's done next.

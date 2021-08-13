@@ -3,15 +3,15 @@
 
 Antora pipeline extensions listen for events emitted by the site generator and other components in the Antora pipeline.
 Each listener can access variables that are in scope at the time the event is emitted.
-The following table lists the pipeline events in the order they are emitted and the in-scope variables that correspond to each event.
-If the variable is locked (meaning it cannot be replaced), it's marked with an asterisk (`*`).
+The following table lists the pipeline events in the order they're emitted and the in-scope variables that correspond to each event.
+If the variable is locked, meaning it can't be replaced, it's marked with an asterisk (`*`).
 
 .Antora pipeline events and in-scope variables
 [cols="1,2"]
 |===
 |Event name | In-scope variables
 
-|_register()_{nosp}footnote:register[The register function is not an event, but rather the function Antora calls to register the extension itself.]
+|_register()_{nosp}footnote:register[The `register` function isn't an event, but rather the function Antora calls to register the extension itself.]
 |playbook, config
 
 |playbookBuilt
@@ -20,7 +20,7 @@ If the variable is locked (meaning it cannot be replaced), it's marked with an a
 |beforeProcess
 |playbook*, asciidocConfig, siteCatalog
 
-|contentAggregated{nosp}footnote:event-sequence[The order of the contentAggregated and uiLoaded events relative to each other is not guaranteed.]
+|contentAggregated{nosp}footnote:event-sequence[The order of the `contentAggregated` and `uiLoaded` events relative to each other is not guaranteed.]
 |playbook*, asciidocConfig*, siteCatalog, contentAggregate
 
 |uiLoaded{nosp}footnote:event-sequence[]
@@ -41,7 +41,7 @@ If the variable is locked (meaning it cannot be replaced), it's marked with an a
 |redirectsProduced
 |playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
 
-|siteMapped{nosp}footnote:[The siteMapped event is only emitted if the site URL is specified in the playbook.]
+|siteMapped{nosp}footnote:[The `siteMapped` event is only emitted if the site URL is specified in the playbook.]
 |playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
 
 |beforePublish

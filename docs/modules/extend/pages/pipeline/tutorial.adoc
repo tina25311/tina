@@ -35,7 +35,7 @@ Let's pause to break down what this extension does, step by step.
 == How the extension works
 
 The extension starts by exporting the `register` function, which Antora calls immediately after requiring the extension file.
-The `register` function accepts the pipeline object as the first argument, which it can use to add listeners, and the config object for the extension (via object destructuring) as the second argument.
+The `register` function accepts the Pipeline object as the first argument, which it can use to add listeners, and the config object for the extension (via object destructuring) as the second argument.
 It pulls several configuration keys out of the config object to customize its behavior.
 
 [source,js]

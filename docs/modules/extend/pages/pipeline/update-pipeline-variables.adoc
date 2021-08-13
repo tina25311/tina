@@ -18,8 +18,8 @@ include::example$exclude-private-content-sources-extension.js[]
 ----
 
 Notice that the example uses the formal `function` keyword to declare the listener instead of an arrow function.
-Defining the function this way gives us access to the standard `this` keyword, which is a reference to the pipeline object.
-When the listener is registered, Antora binds the function to the pipeline object, allowing the pipeline object to be referenced within the function using the standard `this` keyword.
+Defining the function this way gives us access to the standard `this` keyword, which is a reference to the Pipeline object.
+When the listener is registered, Antora binds the function to the Pipeline object, allowing the pipeline object to be referenced within the function using the standard `this` keyword.
 
 Let's consider another case where we proxy the content catalog to prevent it from registering any aliases.
 In <<ex-proxy>>, we will listen for the `contentClassified` event, retrieve the `contentCatalog` pipeline variable, and replace the variable with a proxy of the object.
@@ -39,17 +39,16 @@ module.exports.register = (pipeline) => {
 }
 ----
 
-Of course, you may want to do something more interesting than just preventing a page alias from being registered.
-But <<ex-proxy>> gives you the starting point to replace the `registerPageAlias` function with your own implementation.
+<<ex-proxy>> gives you the starting point to replace the `registerPageAlias` function with your own implementation.
 
 == Variable locking
 
 Once a built-in pipeline variable is deemed established, which is typically after the event in which it was introduced is emitted, that variable becomes locked.
 There are exceptions to this rule, but by-in-large it holds.
-A variable that is locked cannot be replaced.
-Any attempt to do so will result in an error.
+A variable that is locked can't be replaced.
+Any attempt to do so results in an error.
 
-The built-in variables which are locked, and when, are indicated on the xref:pipeline/event-reference.adoc[] page.
+The built-in variables that are locked, and when they're locked, are indicated on the xref:pipeline/event-reference.adoc[] page.
 
 The reason built-in variables are locked is two fold.
 First, it signals when a variable should be replaced if it must be.
