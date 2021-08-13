@@ -46,10 +46,7 @@ lint:
   script: $(npm bin)/gulp lint
 test:node-10-linux:
   stage: verify
-  variables:
-    COVERAGE: 'true'
-  <<: *except_docs
-  <<: *only_code
+  <<: *only_schedules
   <<: *yarn_cache_pull_only
   <<: *yarn_install
   script: $(npm bin)/gulp test
@@ -73,7 +70,10 @@ test:node-14-linux:
 test:node-16-linux:
   image: node:16-buster
   stage: verify
-  <<: *only_schedules
+  variables:
+    COVERAGE: 'true'
+  <<: *except_docs
+  <<: *only_code
   <<: *yarn_cache_pull_only
   <<: *yarn_install
   script: $(npm bin)/gulp test
