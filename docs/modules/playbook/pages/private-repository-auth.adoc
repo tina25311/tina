@@ -273,7 +273,7 @@ You can then use the following script to expand the references to the environmen
 
 Despite this workaround, we still recommend using the credential store integration described earlier.
 
-[#custom-manager]
+[#custom]
 == Configure a custom credential manager
 
 The git client used by Antora, isomorphic-git, provides a {url-credential-manager-plugin}[pluggable credential manager^] for looking up authentication credentials.
@@ -319,7 +319,7 @@ Then register the credential manager with the playbook as follows:
 ----
 git:
   plugins:
-    credentialManager: ./custom-git-credential-manager.js
+    credential_manager: ./custom-git-credential-manager.js
 ----
 
 Alternately, you can configure the plugin to self register:
@@ -339,11 +339,14 @@ git.cores.set('antora', new Map().set('credentialManager', {
 }))
 ----
 
-In this case, you pass the credential manager to Antora using the `-r` option instead of registering it with the playbook:
+Notice that in this case, the plugin name is `credentialManager` rather than `credential_manager`.
+That's because the playbook builder automatically camelCases the key name for us, which is the key name that git client expects.
+
+When using a self-registering credential manager, you pass it to Antora using the `-r` option instead of registering it with the playbook:
 
  $ antora -r ./custom-git-credential-manager.js antora-playbook.yml
 
-When using a self-registering plugin, if you've installed Antora globally using `npm`, you may run into problems getting your custom credential manager to work.
+If you've installed Antora globally using `npm`, you may run into problems getting your self-registering credential manager to work.
 Either you'll encounter the error `Cannot find module 'isomorphic-git'` or your custom credential manager won't be called.
 To fix this problem, set the `NODE_PATH` environment variable to tell Node where to look for Antora's dependencies:
 
@@ -352,7 +355,7 @@ To fix this problem, set the `NODE_PATH` environment variable to tell Node where
 
 The alternate solution is to install Antora locally (i.e., add the Antora packages to the dependencies in [.path]_package.json_ file and run `npm i`).
 
-Since self-registering a plugin is more complex, we will proceed with the example of registering the plugin in the playbook.
+Since self-registering a plugin is more complex, we'll proceed with the example of registering the plugin in the playbook.
 
 === Get credentials from git
 
@@ -385,7 +388,7 @@ Finally, we need to register the credential manager with the playbook:
 ----
 git:
   plugins:
-    credentialManager: ./system-git-credential-manager.js
+    credential_manager: ./system-git-credential-manager.js
 ----
 
 Antora will now delegate to the system git to fill the credentials for a URL:

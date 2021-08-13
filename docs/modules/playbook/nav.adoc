@@ -19,6 +19,7 @@
 * xref:configure-git.adoc[]
 ** xref:git-suffix.adoc[]
 ** xref:git-credentials-path-and-contents.adoc[]
+** xref:git-plugins.adoc[]
 * xref:configure-asciidoc.adoc[]
 ** xref:asciidoc-attributes.adoc[]
 ** xref:asciidoc-extensions.adoc[]
