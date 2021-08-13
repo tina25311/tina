@@ -56,8 +56,8 @@ const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const SPACE_RX = / /g
 const SUPERFLUOUS_SEPARATORS_RX = /^\/+|\/+$|\/+(?=\/)/g
 const URL_AUTH_CLEANER_RX = /^(https?:\/\/)[^/@]*@/
-const URL_PORT_CLEANER_RX = /^([^/]+):[0-9]+(?=\/)/
 const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)/
+const URL_PORT_CLEANER_RX = /^([^/]+):[0-9]+(?=\/)/
 
 /**
  * Aggregates files from the specified content sources so they can be loaded
@@ -114,7 +114,7 @@ function aggregateContent (playbook) {
           Promise.all(
             sources.map((source) => {
               source = Object.assign({ branches, editUrl, tags }, source)
-              // NOTE if repository is managed (has a url), we can assume the remote name is origin
+              // NOTE if repository is managed (has a url property), we can assume the remote name is origin
               // TODO if the repo has no remotes, then remoteName should be undefined
               const remoteName = repo.url ? 'origin' : source.remote || 'origin'
               return collectFilesFromSource(source, repo, remoteName, authStatus)
@@ -860,20 +860,20 @@ function generateCloneFolderName (url) {
  *
  * @param {Repository} repo - The repository on which to operate.
  * @param {String} remoteName - The name of the remote to resolve.
- * @returns {String} The URL of the specified remote, if present.
+ * @returns {String} The URL of the specified remote, if defined, or the file URI to the local repository.
  */
 function resolveRemoteUrl (repo, remoteName) {
   return git.getConfig(Object.assign({ path: 'remote.' + remoteName + '.url' }, repo)).then((url) => {
-    if (!url) return posixify ? 'file:///' + posixify(repo.dir) : 'file://' + repo.dir
-    if (url.startsWith('https://') || url.startsWith('http://')) {
-      return ~url.indexOf('@') ? url.replace(URL_AUTH_CLEANER_RX, '$1') : url
-    } else if (url.startsWith('git@')) {
-      return 'https://' + url.substr(4).replace(':', '/')
-    } else if (url.startsWith('ssh://')) {
-      return 'https://' + url.substr((url.indexOf('@') + 1) || 6).replace(URL_PORT_CLEANER_RX, '$1')
-    } else {
-      return url
+    if (url) {
+      if (url.startsWith('https://') || url.startsWith('http://')) {
+        return ~url.indexOf('@') ? url.replace(URL_AUTH_CLEANER_RX, '$1') : url
+      } else if (url.startsWith('git@')) {
+        return 'https://' + url.substr(4).replace(':', '/')
+      } else if (url.startsWith('ssh://')) {
+        return 'https://' + url.substr((url.indexOf('@') + 1) || 6).replace(URL_PORT_CLEANER_RX, '$1')
+      }
     }
+    return posixify ? 'file:///' + posixify(repo.dir) : 'file://' + repo.dir
   })
 }
 

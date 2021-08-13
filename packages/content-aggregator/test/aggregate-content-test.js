@@ -2859,6 +2859,21 @@ describe('aggregateContent()', function () {
         expect(page.src.origin.worktree).to.exist()
       })
 
+      it('should set origin url for local repository if remote url in git config is not recognized', async () => {
+        const remoteUrl = 'git://git-host/repo.git'
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const fixturePath = 'modules/ROOT/pages/page-one.adoc'
+        await initRepoWithFiles(repoBuilder, {}, fixturePath, () => repoBuilder.config('remote.origin.url', remoteUrl))
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const page = aggregate[0].files[0]
+        expect(page).to.not.be.undefined()
+        const expectedOriginUrl = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+        expect(page.src.origin.url).to.equal(expectedOriginUrl)
+        expect(page.src.origin.worktree).to.exist()
+      })
+
       it('should generate correct origin data for file taken from repository on GitHub', () => {
         const urls = [
           'https://{hostname}/org-name/repo-name.git',
