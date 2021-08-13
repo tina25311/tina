@@ -11,6 +11,7 @@
 ** xref:content-source-url.adoc[]
 *** xref:private-repository-auth.adoc[]
 ** xref:content-branches.adoc[]
+** xref:content-worktrees.adoc[]
 ** xref:content-tags.adoc[]
 ** xref:content-source-start-path.adoc[]
 ** xref:content-source-start-paths.adoc[]
