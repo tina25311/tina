@@ -1195,13 +1195,15 @@ describe('logger', () => {
 
   describe('finalize()', () => {
     it('should close logger and return Promise to resolves to failOnExit value', async () => {
-      ;[Logger.finalize, finalizeLogger].forEach(async (fn) => {
-        const logger = configure({ failureLevel: 'warn' }).get()
-        captureStdoutSync(() => logger.fatal('a tree falling in the forest'))
-        const failOnExit = await fn()
-        expect(getLogger(null).closed).to.be.true()
-        expect(failOnExit).to.be.true()
-      })
+      await Promise.all(
+        [Logger.finalize, finalizeLogger].map(async (fn) => {
+          const logger = configure({ failureLevel: 'warn' }).get()
+          captureStdoutSync(() => logger.fatal('a tree falling in the forest'))
+          const failOnExit = await fn()
+          expect(getLogger(null).closed).to.be.true()
+          expect(failOnExit).to.be.true()
+        })
+      )
     })
   })
 
