@@ -2801,15 +2801,16 @@ describe('aggregateContent()', function () {
       })
 
       it('should coerce SSH URI resolved from git config for local repository to HTTPS URL', async () => {
-        ;[
+        const remoteUrls = [
           'ssh://git@gitlab.com/antora/demo/demo-component-a.git',
           'ssh://git@gitlab.com:8022/antora/demo/demo-component-a.git',
           'ssh://gitlab.com/antora/demo/demo-component-a.git',
           'ssh://gitlab.com:8022/antora/demo/demo-component-a.git',
-        ].forEach(async (remoteUrl) => {
+        ]
+        for (const [idx, remoteUrl] of remoteUrls.entries()) {
           const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
           const fixturePath = 'modules/ROOT/pages/page-one.adoc'
-          await initRepoWithFiles(repoBuilder, {}, fixturePath, () =>
+          await initRepoWithFiles(repoBuilder, { repoName: `the-component-${idx}` }, fixturePath, () =>
             repoBuilder.config('remote.origin.url', remoteUrl)
           )
           playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -2818,7 +2819,7 @@ describe('aggregateContent()', function () {
           const page = aggregate[0].files[0]
           expect(page).to.not.be.undefined()
           expect(page.src.origin.url).to.equal('https://gitlab.com/antora/demo/demo-component-a.git')
-        })
+        }
       })
 
       it('should clean credentials from remote url retrieved from git config', async () => {
