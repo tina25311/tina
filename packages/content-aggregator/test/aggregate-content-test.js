@@ -2838,7 +2838,8 @@ describe('aggregateContent()', function () {
 
       it('should set origin url for local repository if not using worktree and remote url is not set in git config', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        await initRepoWithFiles(repoBuilder, {}, 'modules/ROOT/pages/page-one.adoc')
+        const repoName = 'the-component-no-remote'
+        await initRepoWithFiles(repoBuilder, { repoName }, 'modules/ROOT/pages/page-one.adoc')
         playbookSpec.content.sources.push({ url: repoBuilder.url, worktrees: false })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2851,7 +2852,8 @@ describe('aggregateContent()', function () {
 
       it('should set origin url for local repository if using worktree and remote url is not set in git config', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        await initRepoWithFiles(repoBuilder, {}, 'modules/ROOT/pages/page-one.adoc')
+        const repoName = 'the-component-no-remote'
+        await initRepoWithFiles(repoBuilder, { repoName }, 'modules/ROOT/pages/page-one.adoc')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
