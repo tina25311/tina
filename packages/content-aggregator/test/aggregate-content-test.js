@@ -4619,6 +4619,30 @@ describe('aggregateContent()', function () {
         gitServer.off('fetch', recordFetch)
       }
     })
+
+    it('should allow built-in http plugin from isomorphic-git to be used', async () => {
+      let userAgent
+      const recordFetch = (fetch) => {
+        userAgent = fetch.req.headers['user-agent']
+        fetch.accept()
+      }
+      try {
+        gitServer.on('fetch', recordFetch)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.dir = WORK_DIR
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        playbookSpec.git = { plugins: { http: '^:isomorphic-git/http/node' } }
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0].files).to.not.be.empty()
+        expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
+        // NOTE the built-in http plugin in isomorphic-git does not set the user-agent header
+        expect(userAgent).to.be.undefined()
+      } finally {
+        gitServer.off('fetch', recordFetch)
+      }
+    })
   })
 
   describe('https and proxy', () => {
