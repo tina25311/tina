@@ -102,9 +102,11 @@ include::example$unlisted-pages-extension.js[tag=warn,indent=0]
 Notice that we're passing an object as the first argument and the message as the second.
 The keys of the object passed as the first argument get merged into the structured log message.
 Antora's logger provides a custom formatter for the `file` and `source` keys when outputting a pretty log message.
-The `file` key should point to an object with a `path` key, which is the relative path to the file from the content source root.
-This path is provided by the `relative` property on the virtual file.
+The `file` key should point to an object with a `path` key and, if applicable, an `abspath` key.
+The simplest way to provide this content is to pass the `src` property of the virtual file, which has all the necessary information about where the file is located.
 The `origin` key should point to the `src.origin` property on the virtual file, which provides information about the content source.
+You can also pass in an optional line number using the `line` key.
+The custom formatter will compile all this information into a formatted message to help the user locate the relevant file.
 
 Finally, if the extension finds unlisted pages.
 If configured to do so, it also adds them to a new category in the navigation with the specified heading.

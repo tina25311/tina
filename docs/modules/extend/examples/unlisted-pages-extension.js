@@ -25,7 +25,7 @@ module.exports.register = (pipeline, { config }) => {
             .reduce((collector, page) => {
               if ((page.pub.url in navEntriesByUrl) || page.pub.url === defaultUrl) return collector
               // tag::warn[]
-              logger.warn({ file: { path: page.relative }, source: page.src.origin }, 'detected unlisted page')
+              logger.warn({ file: page.src, source: page.src.origin }, 'detected unlisted page')
               // end::warn[]
               return collector.concat(page)
             }, [])
