@@ -30,8 +30,8 @@ const LoggerAdapter = (() => {
   Opal.defn(classDef, '$initialize', function initialize (context) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), [Opal.nil])
     const delegate = logger.unwrap()
-    this.level = severityMap.get(delegate.level) || severityMap.get('info')
-    this.failureLevel = severityMap.get(delegate.failureLevel) || Infinity
+    if ((this.level = severityMap.get(delegate.level)) == null) this.level = severityMap.get('info')
+    if ((this.failureLevel = severityMap.get(delegate.failureLevel)) == null) this.failureLevel = Infinity
     this.context = context
     this.delegate = delegate
   })

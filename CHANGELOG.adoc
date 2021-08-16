@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *asciidoc-loader*: Match Asciidoctor log level to Antora log level when Antora log level is debug
+
 == 3.0.0-alpha.8 (2021-08-13)
 
 === Added

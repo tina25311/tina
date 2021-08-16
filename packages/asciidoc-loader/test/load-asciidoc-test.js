@@ -382,6 +382,20 @@ describe('loadAsciiDoc()', () => {
       expect(Asciidoctor.LoggerManager.getLogger().level).to.equal(Infinity)
     })
 
+    it('should set Asciidoctor log level to 0 when Antora log level is debug', () => {
+      configureLogger({ level: 'debug' })
+      setInputFileContents('= Page Title')
+      loadAsciiDoc(inputFile)
+      expect(Asciidoctor.LoggerManager.getLogger().level).to.equal(0)
+    })
+
+    it('should set Asciidoctor log failureLevel to 0 when Antora log failureLevel is debug', () => {
+      configureLogger({ failureLevel: 'debug' })
+      setInputFileContents('= Page Title')
+      loadAsciiDoc(inputFile)
+      expect(Asciidoctor.LoggerManager.getLogger().failureLevel).to.equal(0)
+    })
+
     it('should include file and source keys in log object when Asciidoctor does not provide source location', () => {
       setInputFileContents('= Page Title\n\n{no-such-attribute}')
       inputFile.src.origin = {
