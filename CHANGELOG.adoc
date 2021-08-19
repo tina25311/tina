@@ -7,6 +7,11 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *content-aggregator*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
+* *ui-loader*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
+
 === Fixed
 
 * *asciidoc-loader*: Match Asciidoctor log level to Antora log level when Antora log level is debug

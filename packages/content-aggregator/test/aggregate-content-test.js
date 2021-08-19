@@ -4758,6 +4758,18 @@ describe('aggregateContent()', function () {
       expect(aggregate[0].files).to.not.be.empty()
     })
 
+    it('should ignore http_proxy setting if no_proxy setting is a wildcard', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.network = { httpProxy: proxyServerUrl, noProxy: '*' }
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
+      expect(serverRequests).to.be.empty()
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+    })
+
     it('should honor https_proxy setting when cloning repository over https', async () => {
       const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
@@ -4778,6 +4790,19 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.network = { httpsProxy: proxyServerUrl, noProxy: 'example.org,localhost' }
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
+      expect(serverRequests).to.be.empty()
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+    })
+
+    it('should ignore https_proxy setting if no_proxy setting is a wildcard', async () => {
+      const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
+      await initRepoWithFiles(repoBuilder)
+      playbookSpec.network = { httpsProxy: proxyServerUrl, noProxy: '*' }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()

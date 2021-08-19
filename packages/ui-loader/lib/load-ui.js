@@ -158,7 +158,7 @@ function ensureCacheDir (customCacheDir, startDir) {
 }
 
 function createAgent (url, { httpProxy, httpsProxy, noProxy }) {
-  if (httpsProxy || httpProxy) {
+  if ((httpsProxy || httpProxy) && noProxy !== '*') {
     const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
     const shouldProxy = require('should-proxy')
     const proxy = url.startsWith('https:')
