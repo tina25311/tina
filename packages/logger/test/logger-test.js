@@ -1061,7 +1061,7 @@ describe('logger', () => {
       expect(messages[0].msg).to.equal('love is the message')
     })
 
-    it.skip('should write to standard stream specified by destination.file when logger is finalized if sync is false and bufferSize is non-zero', async () => {
+    it('should write to standard stream specified by destination.file when logger is finalized if sync is false and bufferSize is non-zero', async () => {
       const bufferSize = 4096
       const logger = configure({ destination: { file: 'stdout', sync: false, bufferSize } }, WORK_DIR).get(null)
       const stream = getStream(logger)
