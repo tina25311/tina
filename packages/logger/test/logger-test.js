@@ -1047,7 +1047,7 @@ describe('logger', () => {
         .and.have.contents.that.match(/"msg":"love is the message"/)
     })
 
-    it('should write to standard stream specified by destination.file when logger is finalized if bufferSize is non-zero', async () => {
+    it.skip('should write to standard stream specified by destination.file when logger is finalized if bufferSize is non-zero', async () => {
       const bufferSize = 4096
       const logger = configure({ destination: { file: 'stdout', bufferSize } }, WORK_DIR).get(null)
       const stream = getStream(logger)
