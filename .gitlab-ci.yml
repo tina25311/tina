@@ -36,6 +36,7 @@ variables:
 - &yarn_install
   before_script:
   - yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile > /dev/null
+  - node -p '`Node.js ${process.version}`'
 # this step also seeds the dependency cache
 lint:
   stage: init
