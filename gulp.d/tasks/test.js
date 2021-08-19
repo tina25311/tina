@@ -5,7 +5,7 @@ const run = require('../lib/run-command')
 
 module.exports = (files, timeout = process.env.MOCHA_TIMEOUT, enableCodeCoverage = false) => () => {
   const args = [...files]
-  if (process.env.CI) args.unshift('--forbid-only')
+  if (process.env.CI) args.unshift('--forbid-only', '--reporter', 'dot')
   if (timeout) args.unshift('--timeout', String(timeout))
   if (enableCodeCoverage) {
     let onSuccess
