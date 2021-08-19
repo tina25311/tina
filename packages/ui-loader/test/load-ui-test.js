@@ -1079,9 +1079,39 @@ describe('loadUi()', () => {
     expect(paths).to.have.members(expectedFilePaths)
   })
 
+  it('should not use proxy if http_proxy network setting is specified but no_proxy setting is a wildcard', async () => {
+    const playbook = {
+      network: { httpProxy: proxyServerUrl, noProxy: '*' },
+      ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
+    }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(1)
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+    const paths = uiCatalog.getFiles().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
+  })
+
   it('should not use proxy if https_proxy network setting is specified but URL is excluded by no_proxy setting', async () => {
     const playbook = {
       network: { httpsProxy: proxyServerUrl, noProxy: 'example.org,localhost' },
+      ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } },
+    }
+    const env = process.env
+    try {
+      process.env = Object.assign({}, env, { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
+      const uiCatalog = await loadUi(playbook)
+      expect(serverRequests).to.have.lengthOf(1)
+      expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+      const paths = uiCatalog.getFiles().map((file) => file.path)
+      expect(paths).to.have.members(expectedFilePaths)
+    } finally {
+      process.env = env
+    }
+  })
+
+  it('should not use proxy if https_proxy network setting is specified but no_proxy setting is a wildcard', async () => {
+    const playbook = {
+      network: { httpsProxy: proxyServerUrl, noProxy: '*' },
       ui: { bundle: { url: httpsServerUrl + 'the-ui-bundle.zip' } },
     }
     const env = process.env

@@ -26,7 +26,7 @@ async function mergeBuffers (data) {
 }
 
 module.exports = ({ httpProxy, httpsProxy, noProxy }, userAgent) => {
-  if (httpsProxy || httpProxy) {
+  if ((httpsProxy || httpProxy) && noProxy !== '*') {
     const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
     const shouldProxy = require('should-proxy')
     return {
