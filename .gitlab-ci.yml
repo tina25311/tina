@@ -69,7 +69,7 @@ test:node-14-linux:
   <<: *yarn_install
   script: $(npm bin)/gulp test
 test:node-16-linux:
-  image: node:16.6-buster
+  image: node:16-buster
   stage: verify
   variables:
     COVERAGE: 'true'
