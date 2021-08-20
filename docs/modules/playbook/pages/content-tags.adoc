@@ -2,6 +2,10 @@
 
 The `tags` key accepts a list of exact tag names and shell glob patterns.
 
+WARNING: We generally recommend against pulling documentation from tags.
+If you do use tags, we recommend using dedicated documentation tags rather than reusing tags for software releases.
+You can read more about our philosophy regarding documentation versioning on the xref:ROOT:content-source-versioning-methods.adoc[] page.
+
 [#tags-key]
 == tags key
 
