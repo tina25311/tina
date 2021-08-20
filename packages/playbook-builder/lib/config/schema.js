@@ -76,6 +76,7 @@ module.exports = {
       doc: 'The list of git repository urls, references, and start paths to use as content sources.',
       format: Array,
       default: [],
+      preserve: ['version'],
     },
     tags: {
       doc: 'The default tag pattern to use when no specific pattern is provided.',

@@ -1,0 +1,9 @@
+content:
+  sources:
+  - url: https://git.example.org/org/project-docs.git
+    branches: release-*
+    version:
+      release-(?<version>{0..9}+).x: v$<version>
+ui:
+  bundle:
+    url: ./../ui/build/ui-bundles.zip

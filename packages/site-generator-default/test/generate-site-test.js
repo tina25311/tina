@@ -191,6 +191,29 @@ describe('generateSite()', function () {
       .with.subDirs(['2.0'])
   }).timeout(timeoutOverride)
 
+  it('should derive version from reference name if version key is set on content source', async () => {
+    await repoBuilder
+      .open()
+      .then(() => repoBuilder.checkoutBranch('v2.0'))
+      .then(() =>
+        repoBuilder.addComponentDescriptorToWorktree({
+          name: 'the-component',
+          start_page: 'the-component::the-page.adoc',
+          nav: ['modules/ROOT/nav.adoc'],
+        })
+      )
+      .then(() => repoBuilder.removeFromWorktree('modules/ROOT/pages/index.adoc'))
+      .then(() => repoBuilder.commitAll())
+      .then(() => repoBuilder.close('master'))
+    playbookSpec.content.sources[0].version = { 'v(?<version>{0..9}+)*': 'lts-$<version>' }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    await generateSite(['--playbook', playbookFile], env)
+    expect(ospath.join(absDestDir, 'the-component'))
+      .to.be.a.directory()
+      .with.subDirs(['lts-2'])
+    expect(ospath.join(absDestDir, 'the-component/lts-2/the-page.html')).to.be.a.file()
+  }).timeout(timeoutOverride)
+
   it('should use start page from latest version of component if version not specified', async () => {
     playbookSpec.site.start_page = 'the-component::index.adoc'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
