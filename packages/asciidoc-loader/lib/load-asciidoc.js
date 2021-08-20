@@ -1,8 +1,8 @@
 'use strict'
 
 const Asciidoctor = require('@asciidoctor/core')()
+const { Extensions, LoggerManager, NullLogger } = Asciidoctor
 const Opal = global.Opal
-const Extensions = Asciidoctor.Extensions
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
 const LoggerAdapter = require('./logger/adapter')
@@ -60,9 +60,9 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
       : () => undefined,
   })
   const extensions = config.extensions || []
+  LoggerManager.setLogger(LoggerAdapter.logger.noop ? NullLogger.$new() : LoggerAdapter.$new(file.src))
   if (extensions.length) extensions.forEach((ext) => ext.register(extensionRegistry, { file, contentCatalog, config }))
-  const loggerAdapter = LoggerAdapter.logger.noop ? false : LoggerAdapter.$new(file.src)
-  const opts = { attributes, extension_registry: extensionRegistry, safe: 'safe', logger: loggerAdapter }
+  const opts = { attributes, extension_registry: extensionRegistry, safe: 'safe' }
   if (config.doctype) opts.doctype = config.doctype
   if (config.sourcemap) opts.sourcemap = true
   let contents = file.contents

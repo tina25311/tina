@@ -1,7 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureLogSync, captureStderrSync, configureLogger, expect, heredoc } = require('../../../test/test-utils')
+const {
+  captureLogSync,
+  captureStdoutLogSync,
+  captureStderrSync,
+  configureLogger,
+  expect,
+  heredoc,
+} = require('../../../test/test-utils')
 
 // NOTE use separate require statement to verify loadAsciiDoc is default export
 const loadAsciiDoc = require('@antora/asciidoc-loader')
@@ -319,7 +326,7 @@ describe('loadAsciiDoc()', () => {
     it('should use null logger if logger is not enabled', () => {
       setInputFileContents('= Page Title')
       const doc = loadAsciiDoc(inputFile)
-      expect(doc.getOptions().logger).to.be.false()
+      expect(doc.getOptions().logger).to.be.undefined()
       expect(Asciidoctor.LoggerManager.getLogger()).to.be.instanceOf(Asciidoctor.NullLogger)
     })
 
@@ -798,6 +805,38 @@ describe('loadAsciiDoc()', () => {
       html = loadAsciiDoc(inputFile).convert()
       expect(shoutBlockExtension.registered).to.equal(2)
       expect(html).to.include('Release early. Release often.')
+    })
+
+    it('should set context on logger before calling register method on extension', () => {
+      const contentCatalog = mockContentCatalog([
+        { family: 'page', relative: 'page-a.adoc', contents: '= Page A' },
+        { family: 'page', relative: 'page-b.adoc', contents: '= Page B' },
+      ])
+      const files = contentCatalog.getFiles()
+      const origin = {
+        type: 'git',
+        url: 'https://git.example.org/repo-a.git',
+        startPath: '',
+        refname: 'main',
+      }
+      files.forEach((file) => (file.src.origin = origin))
+      configureLogger()
+      loadAsciiDoc(files[0])
+      const extension = {
+        register (registry) {
+          const logger = Asciidoctor.LoggerManager.getLogger()
+          console.log(logger)
+          logger.info('hey there')
+        },
+      }
+      const config = { extensions: [extension] }
+      const { messages, returnValue: doc } = captureStdoutLogSync(() =>
+        loadAsciiDoc(files[1], undefined, config)
+      ).withReturnValue()
+      expect(doc.getDocumentTitle()).to.equal('Page B')
+      expect(messages).to.have.lengthOf(1)
+
+      expect(messages[0].file.path).to.equal('modules/module-a/pages/page-b.adoc')
     })
 
     it('should give extension access to context that includes current file and content catalog', () => {
