@@ -50,10 +50,7 @@ describe('loadAsciiDoc()', () => {
     }
   })
 
-  afterEach(() => {
-    // see https://github.com/asciidoctor/asciidoctor.js/issues/1321
-    Asciidoctor.LoggerManager['$logger='](null)
-  })
+  afterEach(() => Asciidoctor.LoggerManager.setLogger(null))
 
   it('should export loadAsciiDoc as default function', () => {
     expect(loadAsciiDoc.loadAsciiDoc).to.equal(loadAsciiDoc)
