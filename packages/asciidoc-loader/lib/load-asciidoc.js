@@ -1,8 +1,8 @@
 'use strict'
 
-const asciidoctor = require('@asciidoctor/core')()
+const Asciidoctor = require('@asciidoctor/core')()
 const Opal = global.Opal
-const Extensions = asciidoctor.Extensions
+const Extensions = Asciidoctor.Extensions
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
 const LoggerAdapter = require('./logger/adapter')
@@ -54,7 +54,7 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
     intrinsicAttrs,
     computePageAttrs(file.src, contentCatalog)
   )
-  const extensionRegistry = createExtensionRegistry(asciidoctor, {
+  const extensionRegistry = createExtensionRegistry(Asciidoctor, {
     onInclude: contentCatalog
       ? (doc, target, cursor) => resolveIncludeFile(target, file, cursor, contentCatalog)
       : () => undefined,
@@ -78,7 +78,7 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
     attributes.relfilesuffix = '.adoc' // NOTE relfilesuffix must be set for page-to-page xrefs to work correctly
     opts.converter = createConverter(file, contentCatalog, config)
   }
-  const doc = asciidoctor.load(contents.toString(), opts)
+  const doc = Asciidoctor.load(contents.toString(), opts)
   if (extensions.length) freeExtensions()
   return doc
 }

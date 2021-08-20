@@ -10,14 +10,14 @@ const IncludeProcessor = require('./include/include-processor')
  *
  * @memberof asciidoc-loader
  *
- * @param {Asciidoctor} asciidoctor - Asciidoctor API.
+ * @param {Asciidoctor} Asciidoctor - Asciidoctor API.
  * @param {Object} callbacks - Callback functions.
  * @param {Function} callbacks.onInclude - A function that resolves the target of an include.
  *
  * @returns {Registry} An instance of Asciidoctor's extension registry.
  */
-function createExtensionRegistry (asciidoctor, callbacks) {
-  const registry = asciidoctor.Extensions.create()
+function createExtensionRegistry (Asciidoctor, callbacks) {
+  const registry = Asciidoctor.Extensions.create()
   registry.includeProcessor(IncludeProcessor.$new(callbacks.onInclude))
   return registry
 }

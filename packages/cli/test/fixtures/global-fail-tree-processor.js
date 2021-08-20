@@ -1,8 +1,8 @@
 'use strict'
 
-const asciidoctor = require('@asciidoctor/core')()
+const Asciidoctor = require('@asciidoctor/core')()
 
-asciidoctor.Extensions.register(function () {
+Asciidoctor.Extensions.register(function () {
   this.treeProcessor(function () {
     throw 'not today!' // eslint-disable-line no-throw-literal
   })
