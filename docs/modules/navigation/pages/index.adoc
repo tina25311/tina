@@ -48,8 +48,8 @@ image::component-navigation-menu.png[Screenshot of the component version page me
 [#component-dropdown]
 === image:four.svg[,18,role=conum is-hidden-toc] Component version selector (Site)
 
-When your site has several components and/or component versions, Antora assembles an aggregated list of the components and their versions.
-This master menu of components and their component versions is the component version selector.
+When your site has several components or component versions, Antora assembles an aggregated list of the components and their versions.
+This menu of components and their component versions is the component version selector.
 Antora automatically lists the components in alphabetical order.
 Each component version is xref:ROOT:how-component-versions-are-sorted.adoc[ordered from the greatest or latest].
 

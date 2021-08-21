@@ -18,4 +18,4 @@ AsciiDoc's URL syntax requires that the target have a valid URI scheme (e.g., `h
 ** https://another-external-website.com
 ----
 
-If you don't add a set of square brackets (`+[]+`) directly onto the end of the URL and insert link text, the raw URL will be displayed in the component version page menu when the site is generated.
+If you don't add a set of square brackets (`+[]+`) directly to the end of the URL and insert link text, the raw URL will be displayed in the component version page menu when the site is generated.

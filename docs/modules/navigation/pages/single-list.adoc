@@ -7,22 +7,22 @@ An unordered list is made up of list items.
 
 [source]
 ----
-* List item <1>
-* List item <2>
-** Nested item <3>
-<4>
+* List item <.>
+* List item <.>
+** Nested item <.>
+<.>
 * List item
-// Comment line <5>
+// Comment line <.>
 * List item
-** Nested item <6>
+** Nested item <.>
 *** Nested item
 ----
-<1> List item preceded by an unordered AsciiDoc list marker (`+*+`).
-<2> Each list item must be entered on its own line.
-<3> Enter a blank space between the last asterisk of a marker and the content of your list item.
-<4> List items can be interspersed by blank lines.
-<5> List items can be interspersed by comment lines.
-<6> A nested list item.
+<.> List item preceded by an unordered AsciiDoc list marker (`+*+`).
+<.> Each list item must be entered on its own line.
+<.> Enter a blank space between the last asterisk of a marker and the content of your list item.
+<.> List items can be interspersed by blank lines.
+<.> List items can be interspersed by comment lines.
+<.> A nested list item.
 
 Each list item is preceded by a marker.
 An unordered AsciiDoc list's marker can range from one asterisk (`+*+`) to five asterisks (`+*****+`).
@@ -38,12 +38,12 @@ Unlike list items, there must be *no spaces* between the `.` and the content of 
 
 [source]
 ----
-.List title <1>
+.List title <.>
 * List item
 * Another list item
 ** A nested list item
 ----
-<1> A list title becomes the top-level item for the entire list.
+<.> A list title becomes the top-level item for the entire list.
 
 When converted into a component version page menu, the list title becomes the top-level item for all of the other list items (`+*+` through `+*****+`) in that file.
 Therefore, all of the other list items will be nested beneath the title.
@@ -52,13 +52,13 @@ When a list doesn't have a title, each item with a single asterisk marker (`+*+`
 
 [source]
 ----
-* List item <1>
-** A nested list item <2>
-* Another list item <3>
+* List item <.>
+** A nested list item <.>
+* Another list item <.>
 ----
-<1> A top-level list item.
-<2> This list item is nested under the preceding top-level list item.
-<3> A top-level list item.
+<.> A top-level list item.
+<.> This list item is nested under the preceding top-level list item.
+<.> A top-level list item.
 
 The greatest nesting depth allowed is level five (`+*****+`).
 Each list item can have as many nested items as you need.

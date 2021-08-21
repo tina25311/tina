@@ -58,7 +58,7 @@ In a xref:single-list.adoc[single list navigation file], each item with a single
 You can compose your navigation by combining files using the include directive.
 Each included file must be located in a partials directory.
 If you want the navigation list in the included file to be added as a child of the current item, you should enclose the include directive in an open block.
-Refer to the xref:include-lists.adoc[] page to learn how to build the navigation from multiple files.
+See xref:include-lists.adoc[] to learn how to create a navigation list using multiple files and include directives.
 
 == List titles and items
 
@@ -67,22 +67,22 @@ The most common items in a navigation file are xrefs to pages that belong to the
 
 [source]
 ----
-.The Special Project <1>
-* xref:index.adoc[] <2>
-** xref:ROOT:get-started.adoc[] <3>
-** xref:team::contributing.adoc[] <4>
+.The Special Project <.>
+* xref:index.adoc[] <.>
+** xref:ROOT:get-started.adoc[] <.>
+** xref:team::contributing.adoc[] <.>
 
-._Support_ <5>
-* https://support.project.com[Get Help] <6>
-* xref:help.adoc[*Troubleshooting*] <7>
+._Support_ <.>
+* https://support.project.com[Get Help] <.>
+* xref:help.adoc[*Troubleshooting*] <.>
 ----
-<1> Regular, unlinked text.
-<2> Xref to a page that belongs to the same module as the navigation file.
+<.> Regular, unlinked text.
+<.> Xref to a page that belongs to the same module as the navigation file.
 Antora will apply the target page's xref:xrefs-and-link-text.adoc[default navigation link text] when the site is generated.
-<3> Xref to a page that doesn't belong to the same module as the navigation file.
-<4> Xref to a page that doesn't belong to the same component as the navigation file.
-<5> Unlinked text with xref:format-content.adoc[inline formatting].
-<6> xref:external-links.adoc[Link to an external website].
-<7> Xref with formatted link text.
+<.> Xref to a page that doesn't belong to the same module as the navigation file.
+<.> Xref to a page that doesn't belong to the same component as the navigation file.
+<.> Unlinked text with xref:format-content.adoc[inline formatting].
+<.> xref:external-links.adoc[Link to an external website].
+<.> Xref with formatted link text.
 
 List items can xref:reference-resources.adoc[reference attachments], too.

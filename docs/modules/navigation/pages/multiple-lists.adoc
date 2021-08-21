@@ -10,18 +10,18 @@ When a navigation file contains multiple lists:
 
 [source]
 ----
-.List title <1>
+.List title <.>
 * List item
-<2>
-.Second list title <3>
-* List item <4>
+<.>
+.Second list title <.>
+* List item <.>
 ----
-<1> Required list title.
+<.> Required list title.
 A list title is preceded by a dot (`.`).
 There must be *no spaces* between the `.` and the content of the title.
-<2> Required blank line between lists.
-<3> Required list title.
-<4> List item.
+<.> Required blank line between lists.
+<.> Required list title.
+<.> List item.
 
 When converted to HTML, the list titles become top-level items and all of their list items are nested under them in cascading order.
 The blank line between the lists is not present in the published menu.
@@ -31,23 +31,23 @@ Each navigation list is made up of list items.
 .Navigation file with multiple lists
 [source]
 ----
-.List title <1>
-* List item <2>
-* List item <3>
-** Nested item <4>
+.List title <.>
+* List item <.>
+* List item <.>
+** Nested item <.>
 
-.List title <5>
+.List title <.>
 * List item
 ** Nested item
 
 .List title
 * List item
 ----
-<1> A list title becomes the top-level list item of a list.
-<2> A list item preceded by an unordered AsciiDoc list marker (`+*+`).
-<3> Each list item must be entered on its own line.
-<4> Enter a blank space between the last asterisk of a marker and the content of your list item.
-<5> A list title, indicating the start of another navigation list.
+<.> A list title becomes the top-level list item of a list.
+<.> A list item preceded by an unordered AsciiDoc list marker (`+*+`).
+<.> Each list item must be entered on its own line.
+<.> Enter a blank space between the last asterisk of a marker and the content of your list item.
+<.> A list title, indicating the start of another navigation list.
 
 Each list item is preceded by a marker.
 An unordered AsciiDoc list's marker can range from one asterisk (`+*+`) to five asterisks (`+*****+`).
