@@ -7,6 +7,26 @@
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-repo}/merge_requests
 
+= Antora 3.0.0-alpha.9
+
+_**Release date:** 2021.08.tbd | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== More new documentation
+
+Updated and improved information to help you choose xref:content-source-versioning-methods.adoc[how to manage versioning content in your repositories].
+
+== Resolved issues
+
+=== Added
+
+Issue {url-issues}/829[#829^]:: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*`.
+
+=== Fixed
+
+Issue {url-issues}/828[#828^]:: Don't camelCase keys in value of `version` key on content source.
+asciidoc-loader:: Match Asciidoctor log level to Antora log level when Antora log level is `debug`.
+Set context on Asciidoctor logger before calling register function of extensions to match behavior of Asciidoctor.
+
 = Antora 3.0.0-alpha.8
 
 _**Release date:** 2021.08.13 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
