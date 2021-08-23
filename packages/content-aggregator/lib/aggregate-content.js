@@ -122,12 +122,10 @@ function aggregateContent (playbook) {
           )
         )
       )
-    )
-      .then(buildAggregate)
-      .catch((err) => {
-        progress && progress.terminate()
-        throw err
-      })
+    ).then(buildAggregate, (err) => {
+      progress && progress.terminate()
+      throw err
+    })
   })
 }
 
@@ -417,12 +415,8 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
 
 function readFilesFromWorktree (worktreePath, startPath) {
   const cwd = ospath.join(worktreePath, startPath)
-  return fsp
-    .stat(cwd)
-    .catch(() => {
-      throw new Error(`the start path '${startPath}' does not exist`)
-    })
-    .then((stat) => {
+  return fsp.stat(cwd).then(
+    (stat) => {
       if (!stat.isDirectory()) throw new Error(`the start path '${startPath}' is not a directory`)
       return new Promise((resolve, reject) =>
         vfs
@@ -442,7 +436,11 @@ function readFilesFromWorktree (worktreePath, startPath) {
           .pipe(relativizeFiles())
           .pipe(collectFiles(resolve))
       )
-    })
+    },
+    () => {
+      throw new Error(`the start path '${startPath}' does not exist`)
+    }
+  )
 }
 
 /**
@@ -493,13 +491,13 @@ function readFilesFromGitTree (repo, oid, startPath) {
 }
 
 function getGitTreeAtStartPath (repo, oid, startPath) {
-  return git
-    .readTree(Object.assign({ oid, filepath: startPath }, repo))
-    .catch((err) => {
+  return git.readTree(Object.assign({ oid, filepath: startPath }, repo)).then(
+    (result) => Object.assign(result, { dirname: startPath }),
+    (err) => {
       const m = err instanceof ObjectTypeError && err.data.expected === 'tree' ? 'is not a directory' : 'does not exist'
       throw new Error(`the start path '${startPath}' ${m}`)
-    })
-    .then((result) => Object.assign(result, { dirname: startPath }))
+    }
+  )
 }
 
 function srcGitTree (repo, root, start) {
@@ -518,9 +516,11 @@ function createGitTreeWalker (repo, root, filter) {
     walk (start) {
       return (
         visitGitTree(this, repo, root, filter, start)
-          .then(() => this.emit('end'))
           // NOTE if error is thrown, promises already being resolved won't halt
-          .catch((err) => this.emit('error', err))
+          .then(
+            () => this.emit('end'),
+            (err) => this.emit('error', err)
+          )
       )
     },
   })
@@ -543,8 +543,15 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
         let mode
         if (entry.mode === SYMLINK_FILE_MODE) {
           reads.push(
-            readGitSymlink(repo, root, parent, entry, following)
-              .catch((err) => {
+            readGitSymlink(repo, root, parent, entry, following).then(
+              (target) => {
+                if (target.type === 'tree') {
+                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, new Set(following).add(entry.oid))
+                } else if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
+                  emitter.emit('entry', Object.assign({ mode, oid: target.oid, path: vfilePath }, repo))
+                }
+              },
+              (err) => {
                 // NOTE this error could be caught after promise chain has already been rejected
                 if (err instanceof NotFoundError) {
                   err.message = `Broken symbolic link detected at ${vfilePath}`
@@ -552,14 +559,8 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
                   err.message = `Symbolic link cycle detected at ${vfilePath}`
                 }
                 throw err
-              })
-              .then((target) => {
-                if (target.type === 'tree') {
-                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, new Set(following).add(entry.oid))
-                } else if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
-                  emitter.emit('entry', Object.assign({ mode, oid: target.oid, path: vfilePath }, repo))
-                }
-              })
+              }
+            )
           )
         } else if ((mode = FILE_MODES[entry.mode])) {
           emitter.emit('entry', Object.assign({ mode, oid: entry.oid, path: vfilePath }, repo))
@@ -891,10 +892,7 @@ function resolveRemoteUrl (repo, remoteName) {
  * @return {Boolean} A flag indicating whether the URL matches a directory on the local filesystem.
  */
 function isDirectory (url) {
-  return fsp
-    .stat(url)
-    .then((stat) => stat.isDirectory())
-    .catch(invariably.false)
+  return fsp.stat(url).then((stat) => stat.isDirectory(), invariably.false)
 }
 
 /**
@@ -969,12 +967,12 @@ function ensureCacheDir (preferredCacheDir, startDir) {
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
       : expandPath(preferredCacheDir, { dot: startDir })
   const cacheDir = ospath.join(baseCacheDir, CONTENT_CACHE_FOLDER)
-  return fsp
-    .mkdir(cacheDir, { recursive: true })
-    .then(() => cacheDir)
-    .catch((err) => {
+  return fsp.mkdir(cacheDir, { recursive: true }).then(
+    () => cacheDir,
+    (err) => {
       throw Object.assign(err, { message: `Failed to create content cache directory: ${cacheDir}; ${err.message}` })
-    })
+    }
+  )
 }
 
 function transformGitCloneError (err, displayUrl) {
@@ -1025,8 +1023,7 @@ function findWorktrees (repo, patterns) {
   return (patterns.length
     ? fsp
       .readdir((worktreesDir = ospath.join(repo.dir, '.git', 'worktrees')))
-      .catch(invariably.emptyArray)
-      .then((worktreeNames) => matcher(worktreeNames, [...patterns]))
+      .then((worktreeNames) => matcher(worktreeNames, [...patterns]), invariably.emptyArray)
       .then((worktreeNames) =>
         worktreeNames.length
           ? Promise.all(
