@@ -6,7 +6,6 @@ const { promises: fsp } = fs
 const patchedFs = (() => {
   if (ospath.sep !== '\\') return fs
   const posixifyPathBuffer = (buffer) => {
-    console.log('here')
     let idx
     while (~(idx = buffer.indexOf(92))) buffer[idx] = 47
     return buffer
