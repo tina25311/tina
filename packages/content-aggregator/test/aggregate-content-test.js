@@ -3750,6 +3750,59 @@ describe('aggregateContent()', function () {
         .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
     })
 
+    it('should not create valid file on fetch if another repository fails to clone', async () => {
+      const repoBuilderA = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilderA, { name: 'component-a', version: '1.0' })
+      playbookSpec.content.sources.push({ url: repoBuilderA.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(CONTENT_CACHE_DIR)
+        .to.be.a.directory()
+        .with.subDirs.have.lengthOf(1)
+      const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+      const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
+      expect(cachedRepoDir)
+        .to.be.a.directory()
+        .and.include.files(['HEAD', 'valid'])
+        .and.include.subDirs(['refs'])
+      await repoBuilderA.open().then(async () => {
+        for (let i = 0; i < 25; i++) {
+          const path = `modules/ROOT/pages/page-${i}.adoc`
+          await repoBuilderA.addToWorktree(
+            path,
+            Array(1000)
+              .fill('filler')
+              .join('\n\n')
+          )
+        }
+        await repoBuilderA.commitAll('add filler')
+        await repoBuilderA.close()
+      })
+      const repoBuilderB = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilderB, { name: 'component-b', version: '3.0' }, [])
+      playbookSpec.content.sources.push({ url: repoBuilderB.url.replace('-b.git', '-c.git') })
+      playbookSpec.runtime.fetch = true
+      try {
+        await aggregateContent(playbookSpec)
+      } catch {
+        expect(cachedRepoDir)
+          .to.be.a.directory()
+          .and.not.include.files(['valid'])
+          .and.include.files(['HEAD'])
+          .and.include.subDirs(['refs'])
+      }
+      // wait for pending promise to resolve
+      const validFile = ospath.join(cachedRepoDir, 'valid')
+      while (
+        !(await fsp.access(validFile).then(
+          () => true,
+          () => false
+        ))
+      ) {
+        await new Promise((resolve) => setImmediate(resolve))
+      }
+    })
+
     describe('should use custom cache dir with absolute path', () => {
       testAll(async (repoBuilder) => {
         const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
