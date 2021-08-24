@@ -124,10 +124,11 @@ function listDirentsFs (base, path) {
 function listDirentsGit (repo, treeOid) {
   return git
     .readTree(Object.assign({ oid: treeOid, filepath: '' }, repo))
-    .then(({ tree: entries }) =>
-      entries.map(({ type, oid, path: name }) => ({ name, oid, isDirectory: invariably[type === 'tree'] }))
+    .then(
+      ({ tree: entries }) =>
+        entries.map(({ type, oid, path: name }) => ({ name, oid, isDirectory: invariably[type === 'tree'] })),
+      invariably.emptyArray
     )
-    .catch(invariably.emptyArray)
 }
 
 function makeAlternationMatcherRx (patterns) {
@@ -147,10 +148,7 @@ function readdirWithFileTypes (dir) {
 }
 
 function retrievePathFs (base, { path }, subpath) {
-  return fsp
-    .access(base + '/' + joinPath(path, subpath))
-    .then(invariably.true)
-    .catch(invariably.false)
+  return fsp.access(base + '/' + joinPath(path, subpath)).then(invariably.true, invariably.false)
 }
 
 function retrievePathGit (repo, { oid }, filepath) {

@@ -2,6 +2,7 @@
 
 const { homedir } = require('os')
 const expandPath = require('@antora/expand-path-helper')
+const invariably = { void: () => undefined }
 const { promises: fsp } = require('fs')
 const ospath = require('path')
 
@@ -9,12 +10,10 @@ class GitCredentialManagerStore {
   configure ({ config, startDir }) {
     this.entries = undefined
     this.urls = {}
-    if ((this.contents = (config = config || {}).contents)) {
+    if ((this.contents = (config = config || {}).contents) || !config.path) {
       this.path = undefined
-    } else if (config.path) {
-      this.path = expandPath(config.path, { dot: startDir })
     } else {
-      this.path = undefined
+      this.path = expandPath(config.path, { dot: startDir })
     }
     return this
   }
@@ -28,10 +27,7 @@ class GitCredentialManagerStore {
         contentsPromise = Promise.resolve(this.contents)
         delimiter = /[,\n]/
       } else if (this.path) {
-        contentsPromise = fsp
-          .access(this.path)
-          .then(() => fsp.readFile(this.path, 'utf8'))
-          .catch(() => undefined)
+        contentsPromise = fsp.access(this.path).then(() => fsp.readFile(this.path, 'utf8'), invariably.void)
       } else {
         const homeGitCredentialsPath = ospath.join(homedir(), '.git-credentials')
         const xdgConfigGitCredentialsPath = ospath.join(
@@ -45,8 +41,7 @@ class GitCredentialManagerStore {
           .catch(() =>
             fsp
               .access(xdgConfigGitCredentialsPath)
-              .then(() => fsp.readFile(xdgConfigGitCredentialsPath, 'utf8'))
-              .catch(() => undefined)
+              .then(() => fsp.readFile(xdgConfigGitCredentialsPath, 'utf8'), invariably.void)
           )
       }
       contentsPromise.then((contents) => {
