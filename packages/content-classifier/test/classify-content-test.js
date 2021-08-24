@@ -317,7 +317,7 @@ describe('classifyContent()', () => {
       expect(componentVersion.displayVersion).to.equal('default')
     })
 
-    it('should not prepend separator to display version if version is empty and prerelease is a string', () => {
+    it('should use prerelease string as display version fallback if value is a string and version is empty', () => {
       aggregate[0].prerelease = 'dev'
       aggregate[0].version = ''
       const catalog = classifyContent(playbook, aggregate)
