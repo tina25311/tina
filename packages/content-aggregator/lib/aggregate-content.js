@@ -146,12 +146,9 @@ function buildAggregate (componentVersionBuckets) {
 }
 
 async function loadRepository (url, opts) {
-  let dir
-  let repo
-  let authStatus
+  let authStatus, dir, repo
   if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
-    let displayUrl
-    let credentials
+    let credentials, displayUrl
     ;({ displayUrl, url, credentials } = extractCredentials(url))
     const { cacheDir, fetch, fetchTags, gitPlugins, progress } = opts
     dir = ospath.join(cacheDir, generateCloneFolderName(displayUrl))
@@ -976,8 +973,7 @@ function ensureCacheDir (preferredCacheDir, startDir) {
 }
 
 function transformGitCloneError (err, displayUrl) {
-  let wrappedMsg
-  let trimMessage
+  let wrappedMsg, trimMessage
   if (HTTP_ERROR_CODE_RX.test(err.code)) {
     switch (err.data.statusCode) {
       case 401:
