@@ -275,7 +275,7 @@ module.exports = {
         },
         buffer_size: {
           doc: 'The size of the log buffer that must be exceeded before writing a chunk to the destination.',
-          format: Number,
+          format: 'int',
           default: 0,
         },
         sync: {

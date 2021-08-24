@@ -17,6 +17,10 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Match Asciidoctor log level to Antora log level when Antora log level is debug
 * *asciidoc-loader*: Set context on Asciidoctor logger before calling register function of extensions to match behavior of Asciidoctor
 
+=== Changed
+
+* *playbook-builder*: Further restrict type of runtime.log.destination.buffer_size in playbook schema from number to integer
+
 == 3.0.0-alpha.8 (2021-08-13)
 
 === Added
