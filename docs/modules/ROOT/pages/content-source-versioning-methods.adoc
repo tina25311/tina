@@ -7,6 +7,7 @@ While these recommendations are most applicable to software documentation, they 
 == Version content using branches
 
 Using this method, you store each xref:component-version.adoc[documentation version] in a branch of a git repository, just like you use branches to store version lines of a software project.
+You then set the xref:playbook:content-branches.adoc[branches key] on the content source to tell Antora which branches to use.
 The name of the branch itself _does not_ matter.
 It's the xref:component-version-key.adoc[version key] in the xref:component-version-descriptor.adoc[component version descriptor] or playbook that determines the version.
 
@@ -29,6 +30,7 @@ Branches map well to the system of references provided by git and are flexible e
 == Version content using tags
 
 Using this method, you store each xref:component-version.adoc[documentation version] in a tag of a git repository, just like you use tags to store software releases.
+You then set the xref:playbook:content-tags.adoc[tags key] on the content source to tell Antora which branches to use.
 Tags provide many of the same benefits of branches, but with some notable downsides.
 
 Like branches, tags allow you to compare different instances of a file across versions and the repository only stores what's changed since the previous tag point.
@@ -42,7 +44,26 @@ In doing so, you provide a window to update the documentation after the software
 Otherwise, you'd have to ensure all documentation updates are in before the software is released, which is rarely the case.
 (The alternative is to release the software so frequently that missing the software release is no big deal).
 
-//== Version content using directories
+== Version content using folders
+
+Using this method, you store each xref:component-version.adoc[documentation version] in a folder in a single reference (branch or tag) of a repository.
+You then set the xref:playbook:content-source-start-paths.adoc[start_paths key] on the content source to tell Antora which directories to consider to locate those folders and the branches or tags key to point Antora to the reference where the directories are located.
+The name of the folder itself _does not_ matter.
+It's the xref:component-version-key.adoc[version key] in the xref:component-version-descriptor.adoc[component version descriptor] that determines the version.
+
+We generally recommend against using this method since you lose a lot of the advantages that git affords you, as previously described.
+However, it can be useful when the documentation for a lot of different versioned software components coexist in the same repository.
+In this scenario, references (branches or tags) don't work well since a reference for a single software component will carry with it unrelated (and likely outdated) documentation from another software component.
+That kind of arrangement doesn't fit with git's model.
+And it can be confusing for writers.
+
+Using folders to version content is arguably the easiest system for the writer to use.
+The writer can clone the content source repository and immediately edit files across all versions without having to do any branch switching.
+Although the writer can no longer rely on git to compare, manage, and merge different versions, and each version starts as a complete copy of the previous one, the productivity benefits of having all the files together may win out.
+That's why Antora supports this method.
+However, keep in mind that by using xref:playbook:content-worktrees.adoc[multiple worktrees], it's possible to achieve a similar setup using branches that doesn't sacrifice the ability to use git's revision control mechanisms.
+
+You should only consider versioning content using folders if either the repository hosts versioned documentation for many different components or your writers are unable to work with branches.
 
 == Documentation versions and software releases
 
