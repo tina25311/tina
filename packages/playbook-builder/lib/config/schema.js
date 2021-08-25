@@ -162,6 +162,11 @@ module.exports = {
       format: Boolean,
       default: true,
     },
+    fetch_concurrency: {
+      doc: 'The maximum number of fetch or clone operations that are permitted to run at once. Use 0 for unlimited.',
+      format: 'int',
+      default: 0,
+    },
     plugins: {
       credential_manager: {
         doc: 'A require request for a plugin to replace the built-in credential manager used by the git client.',

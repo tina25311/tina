@@ -1,5 +1,7 @@
 'use strict'
 
+if (!Promise.allSettled) require('./promise-all-settled-polyfill')
+
 const camelCaseKeys = require('camelcase-keys')
 const { createHash } = require('crypto')
 const createHttpPlugin = require('./git-plugin-http')
@@ -14,7 +16,7 @@ const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
-const invariably = { false: () => false, void: () => undefined, emptyArray: () => [] }
+const invariably = { true: () => true, false: () => false, void: () => undefined, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 const matcher = require('matcher')
 const MultiProgress = require('multi-progress')
@@ -89,44 +91,68 @@ const URL_PORT_CLEANER_RX = /^([^/]+):[0-9]+(?=\/)/
 function aggregateContent (playbook) {
   const startDir = playbook.dir || '.'
   const { branches, editUrl, tags, sources } = playbook.content
-  const { cacheDir, fetch, quiet } = playbook.runtime
-  return ensureCacheDir(cacheDir, startDir).then((resolvedCacheDir) => {
-    const gitPlugins = loadGitPlugins(
-      Object.assign({ ensureGitSuffix: true }, playbook.git),
-      playbook.network || {},
-      startDir
-    )
-    const sourcesByUrl = sources.reduce(
-      (accum, source) => accum.set(source.url, [...(accum.get(source.url) || []), source]),
-      new Map()
-    )
+  const sourceDefaults = { branches, editUrl, tags }
+  const { cacheDir: requestedCacheDir, fetch, quiet } = playbook.runtime
+  return ensureCacheDir(requestedCacheDir, startDir).then((cacheDir) => {
+    const gitConfig = Object.assign({ ensureGitSuffix: true }, playbook.git)
+    const gitPlugins = loadGitPlugins(gitConfig, playbook.network || {}, startDir)
+    const fetchConcurrency = Math.max(gitConfig.fetchConcurrency || Infinity, 1)
+    const sourcesByUrl = sources.reduce((accum, source) => {
+      return accum.set(source.url, [...(accum.get(source.url) || []), Object.assign({}, sourceDefaults, source)])
+    }, new Map())
     const progress = !quiet && createProgress(sourcesByUrl.keys(), process.stdout)
-    return Promise.all(
-      [...sourcesByUrl.entries()].map(([url, sources]) =>
-        loadRepository(url, {
-          cacheDir: resolvedCacheDir,
-          gitPlugins,
-          fetchTags: tagsSpecified(sources, tags),
-          progress,
-          fetch,
-          startDir,
-        }).then(({ repo, authStatus }) =>
-          Promise.all(
-            sources.map((source) => {
-              source = Object.assign({ branches, editUrl, tags }, source)
-              // NOTE if repository is managed (has a url property), we can assume the remote name is origin
-              // TODO if the repo has no remotes, then remoteName should be undefined
-              const remoteName = repo.url ? 'origin' : source.remote || 'origin'
-              return collectFilesFromSource(source, repo, remoteName, authStatus)
-            })
-          )
-        )
-      )
-    ).then(buildAggregate, (err) => {
+    const loadOpts = { cacheDir, fetch, gitPlugins, progress, startDir }
+    return collectFiles(sourcesByUrl, loadOpts, fetchConcurrency).then(buildAggregate, (err) => {
       progress && progress.terminate()
       throw err
     })
   })
+}
+
+async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
+  const tasks = [...sourcesByUrl.entries()].map(([url, sources]) => [
+    () => loadRepository(url, Object.assign({ fetchTags: tagsSpecified(sources) }, loadOpts)),
+    ({ repo, authStatus }) =>
+      Promise.all(
+        sources.map((source) => {
+          // NOTE if repository is managed (has a url property), we can assume the remote name is origin
+          // TODO if the repo has no remotes, then remoteName should be undefined
+          const remoteName = repo.url ? 'origin' : source.remote || 'origin'
+          return collectFilesFromSource(source, repo, remoteName, authStatus)
+        })
+      ),
+  ])
+  let rejected, started
+  const startedContinuations = []
+  const recordRejection = (err) => {
+    throw (rejected = true) && err
+  }
+  const runTask = (primary, continuation, idx) =>
+    primary().then((value) => {
+      if (!rejected) startedContinuations[idx] = continuation(value).catch(recordRejection)
+    }, recordRejection)
+  if (tasks.length > concurrency) {
+    started = []
+    const pending = []
+    for (const [primary, continuation] of tasks) {
+      const current = runTask(primary, continuation, started.length).finally(() =>
+        pending.splice(pending.indexOf(current), 1)
+      )
+      started.push(current)
+      if (pending.push(current) < concurrency) continue
+      if (await Promise.race(pending).then(invariably.true, invariably.false)) continue
+      break
+    }
+  } else {
+    started = tasks.map(([primary, continuation], idx) => runTask(primary, continuation, idx))
+  }
+  return Promise.allSettled(started).then((outcomes) =>
+    Promise.allSettled(startedContinuations).then((continuationOutcomes) => {
+      const rejection = outcomes.push(...continuationOutcomes) && outcomes.find(({ status }) => status === 'rejected')
+      if (rejection) throw rejection.reason
+      return continuationOutcomes.map(({ value }) => value)
+    })
+  )
 }
 
 function buildAggregate (componentVersionBuckets) {
@@ -922,11 +948,8 @@ function rmdir (dir) {
     })
 }
 
-function tagsSpecified (sources, defaultTags) {
-  return ~sources.findIndex((source) => {
-    const tags = source.tags || defaultTags || []
-    return Array.isArray(tags) ? tags.length : true
-  })
+function tagsSpecified (sources) {
+  return sources.some(({ tags }) => tags && (Array.isArray(tags) ? tags.length : true))
 }
 
 function loadGitPlugins (gitConfig, networkConfig, startDir) {

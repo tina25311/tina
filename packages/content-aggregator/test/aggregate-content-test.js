@@ -3125,6 +3125,24 @@ describe('aggregateContent()', function () {
       }, 2)
     })
 
+    describe('should load all repositories when number of repositories exceeds fetch concurrency', () => {
+      testAll(async (repoBuilderA, repoBuilderB, repoBuilderC) => {
+        const componentDescA = { name: 'the-component-a', version: 'v1.0' }
+        await initRepoWithFiles(repoBuilderA, componentDescA, ['modules/ROOT/pages/page-one.adoc'])
+        playbookSpec.content.sources.push({ url: repoBuilderA.url })
+        const componentDescB = { name: 'the-component-b', version: 'v3.0' }
+        await initRepoWithFiles(repoBuilderB, componentDescB, ['modules/ROOT/pages/page-one.adoc'])
+        playbookSpec.content.sources.push({ url: repoBuilderB.url })
+        const componentDescC = { name: 'the-component-c', version: null }
+        await initRepoWithFiles(repoBuilderC, componentDescC, ['modules/ROOT/pages/page-one.adoc'])
+        playbookSpec.content.sources.push({ url: repoBuilderC.url })
+        playbookSpec.git = { fetchConcurrency: 2 }
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(3)
+        expect(aggregate.map(({ name }) => name)).to.eql(['the-component-a', 'the-component-b', 'the-component-c'])
+      }, 3)
+    })
+
     describe('should reuse repository if url occurs multiple times in content sources', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithFiles(repoBuilder, { name: 'the-component', version: 'master' }, [], () =>
@@ -3750,7 +3768,42 @@ describe('aggregateContent()', function () {
         .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
     })
 
-    it('should not create valid file on fetch if another repository fails to clone', async () => {
+    it('should create valid file on clone if another repository fails to clone', async () => {
+      const repoBuilderA = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      const repoBuilderB = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilderA, { name: 'component-a', version: '1.0' }, undefined, async () => {
+        for (let i = 0; i < 25; i++) {
+          const path = `modules/ROOT/pages/page-${i}.adoc`
+          await repoBuilderA.addToWorktree(
+            path,
+            Array(1000)
+              .fill('filler')
+              .join('\n\n')
+          )
+        }
+        await repoBuilderA.commitAll('add filler')
+      })
+      await initRepoWithFiles(repoBuilderB, { name: 'component-b', version: '3.0' }, [])
+      playbookSpec.content.sources.push(
+        { url: repoBuilderA.url },
+        { url: repoBuilderB.url.replace('-b.git', '-c.git') }
+      )
+      try {
+        await aggregateContent(playbookSpec)
+      } catch {
+        expect(CONTENT_CACHE_DIR)
+          .to.be.a.directory()
+          .with.subDirs.have.lengthOf(1)
+        const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+        const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
+        expect(cachedRepoDir)
+          .to.be.a.directory()
+          .and.include.files(['HEAD', 'valid'])
+          .and.include.subDirs(['refs'])
+      }
+    })
+
+    it('should create valid file on fetch if another repository fails to clone', async () => {
       const repoBuilderA = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilderA, { name: 'component-a', version: '1.0' })
       playbookSpec.content.sources.push({ url: repoBuilderA.url })
@@ -3787,19 +3840,38 @@ describe('aggregateContent()', function () {
       } catch {
         expect(cachedRepoDir)
           .to.be.a.directory()
-          .and.not.include.files(['valid'])
-          .and.include.files(['HEAD'])
+          .and.include.files(['HEAD', 'valid'])
           .and.include.subDirs(['refs'])
       }
-      // wait for pending promise to resolve
-      const validFile = ospath.join(cachedRepoDir, 'valid')
-      while (
-        !(await fsp.access(validFile).then(
-          () => true,
-          () => false
-        ))
-      ) {
-        await new Promise((resolve) => setImmediate(resolve))
+    })
+
+    it('should not attempt clone on entries in content sources beyond fetch concurrency if initial batch fails', async () => {
+      const repoBuilderA = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      const componentDescA = { name: 'the-component-a', version: 'v1.0' }
+      await initRepoWithFiles(repoBuilderA, componentDescA, ['modules/ROOT/pages/page-one.adoc'])
+      playbookSpec.content.sources.push({ url: repoBuilderA.url })
+      const repoBuilderB = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      const componentDescB = { name: 'the-component-b', version: 'v3.0' }
+      await initRepoWithFiles(repoBuilderB, componentDescB, ['modules/ROOT/pages/page-one.adoc'])
+      playbookSpec.content.sources.push({ url: repoBuilderB.url.replace('-b.git', '-d.git') })
+      const repoBuilderC = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      const componentDescC = { name: 'the-component-c', version: null }
+      await initRepoWithFiles(repoBuilderC, componentDescC, ['modules/ROOT/pages/page-one.adoc'])
+      playbookSpec.content.sources.push({ url: repoBuilderC.url })
+      playbookSpec.git = { fetchConcurrency: 2 }
+      try {
+        await aggregateContent(playbookSpec)
+      } catch {
+        expect(CONTENT_CACHE_DIR)
+          .to.be.a.directory()
+          .with.subDirs.have.lengthOf(1)
+        const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
+        expect(cachedRepoName).to.startWith('the-component-a-')
+        const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
+        expect(cachedRepoDir)
+          .to.be.a.directory()
+          .and.include.files(['HEAD', 'valid'])
+          .and.include.subDirs(['refs'])
       }
     })
 

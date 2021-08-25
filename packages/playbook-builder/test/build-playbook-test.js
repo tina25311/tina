@@ -617,6 +617,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.asciidoc.sourcemap).to.be.false()
     expect(playbook.git.credentials.path).to.equal('./.git-credentials')
     expect(playbook.git.ensureGitSuffix).to.be.true()
+    expect(playbook.git.fetchConcurrency).to.equal(15)
     expect(playbook.git.plugins).to.include({ http: './lib/git-http-plugin.js' })
     expect(playbook.urls.htmlExtensionStyle).to.equal('indexify')
     expect(playbook.urls.redirectFacility).to.equal('nginx')
