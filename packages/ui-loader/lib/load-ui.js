@@ -73,22 +73,22 @@ async function loadUi (playbook) {
       const cachePath = ospath.join(absCacheDir, `${sha1(bundleUrl)}.zip`)
       return fetch && bundle.snapshot
         ? downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {}))
-        : fsp
-          .stat(cachePath)
-          .then((stat) => new File({ path: cachePath, stat }))
-          .catch(() => downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {})))
+        : fsp.stat(cachePath).then(
+          (stat) => new File({ path: cachePath, stat }),
+          () => downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {}))
+        )
     })
   } else {
     const localPath = expandPath(bundleUrl, { dot: startDir })
-    resolveBundle = fsp
-      .stat(localPath)
-      .then((stat) => new File({ path: localPath, stat }))
-      .catch(() => {
+    resolveBundle = fsp.stat(localPath).then(
+      (stat) => new File({ path: localPath, stat }),
+      () => {
         throw new Error(
           `Specified UI ${path.extname(localPath) ? 'bundle' : 'directory'} does not exist: ` +
             (bundleUrl === localPath ? bundleUrl : `${localPath} (resolved from url: ${bundleUrl})`)
         )
-      })
+      }
+    )
   }
   const files = await Promise.all([
     resolveBundle.then((bundleFile) =>
@@ -149,12 +149,12 @@ function ensureCacheDir (customCacheDir, startDir) {
       ? getCacheDir('antora' + (process.env.NODE_ENV === 'test' ? '-test' : '')) || ospath.resolve('.antora/cache')
       : expandPath(customCacheDir, { dot: startDir })
   const cacheDir = ospath.join(baseCacheDir, UI_CACHE_FOLDER)
-  return fsp
-    .mkdir(cacheDir, { recursive: true })
-    .then(() => cacheDir)
-    .catch((err) => {
+  return fsp.mkdir(cacheDir, { recursive: true }).then(
+    () => cacheDir,
+    (err) => {
       throw Object.assign(err, { message: `Failed to create UI cache directory: ${cacheDir}; ${err.message}` })
-    })
+    }
+  )
 }
 
 function createAgent (url, { httpProxy, httpsProxy, noProxy }) {
