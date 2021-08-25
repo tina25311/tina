@@ -431,7 +431,7 @@ function readFilesFromWorktree (worktreePath, startPath) {
             reject(err)
           })
           .pipe(relativizeFiles())
-          .pipe(collectFiles(resolve))
+          .pipe(collectDataFromStream(resolve))
       )
     },
     () => {
@@ -466,11 +466,11 @@ function relativizeFiles () {
   })
 }
 
-function collectFiles (done) {
+function collectDataFromStream (done) {
   const accum = []
   return map(
-    (file, enc, next) => {
-      accum.push(file)
+    (obj, _, next) => {
+      accum.push(obj)
       next()
     },
     () => done(accum)
