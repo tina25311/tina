@@ -21,6 +21,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *playbook-builder*: Further restrict type of runtime.log.destination.buffer_size in playbook schema from number to integer
+* *content-aggregator*: Switch back to versionless default cache folder for content repositories (#690)
 
 == 3.0.0-alpha.8 (2021-08-13)
 
