@@ -97,26 +97,24 @@ function aggregateContent (playbook) {
     const gitConfig = Object.assign({ ensureGitSuffix: true }, playbook.git)
     const gitPlugins = loadGitPlugins(gitConfig, playbook.network || {}, startDir)
     const fetchConcurrency = Math.max(gitConfig.fetchConcurrency || Infinity, 1)
-    const sourcesByUrl = sources.reduce(
-      (accum, source) => accum.set(source.url, [...(accum.get(source.url) || []), source]),
-      new Map()
-    )
+    const sourcesByUrl = sources.reduce((accum, source) => {
+      return accum.set(source.url, [...(accum.get(source.url) || []), Object.assign({}, sourceDefaults, source)])
+    }, new Map())
     const progress = !quiet && createProgress(sourcesByUrl.keys(), process.stdout)
     const loadOpts = { cacheDir, fetch, gitPlugins, progress, startDir }
-    return collectFiles(sourcesByUrl, sourceDefaults, loadOpts, fetchConcurrency).then(buildAggregate, (err) => {
+    return collectFiles(sourcesByUrl, loadOpts, fetchConcurrency).then(buildAggregate, (err) => {
       progress && progress.terminate()
       throw err
     })
   })
 }
 
-async function collectFiles (sourcesByUrl, sourceDefaults, loadOpts, concurrency) {
+async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
   const tasks = [...sourcesByUrl.entries()].map(([url, sources]) => [
-    () => loadRepository(url, Object.assign({ fetchTags: tagsSpecified(sources, sourceDefaults.tags) }, loadOpts)),
+    () => loadRepository(url, Object.assign({ fetchTags: tagsSpecified(sources) }, loadOpts)),
     ({ repo, authStatus }) =>
       Promise.all(
         sources.map((source) => {
-          source = Object.assign({}, sourceDefaults, source)
           // NOTE if repository is managed (has a url property), we can assume the remote name is origin
           // TODO if the repo has no remotes, then remoteName should be undefined
           const remoteName = repo.url ? 'origin' : source.remote || 'origin'
@@ -950,11 +948,8 @@ function rmdir (dir) {
     })
 }
 
-function tagsSpecified (sources, defaultTags) {
-  return ~sources.findIndex((source) => {
-    const tags = source.tags || defaultTags || []
-    return Array.isArray(tags) ? tags.length : true
-  })
+function tagsSpecified (sources) {
+  return sources.some(({ tags }) => tags && (Array.isArray(tags) ? tags.length : true))
 }
 
 function loadGitPlugins (gitConfig, networkConfig, startDir) {
