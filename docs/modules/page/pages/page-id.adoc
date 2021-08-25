@@ -25,6 +25,9 @@ include::partial$antora-id.adoc[tags=*;!resource]
 A page ID is used in an <<xref-macro,AsciiDoc xref macro>> to create a link from one page to another page.
 They're also used to create the links in a xref:navigation:xrefs-and-link-text.adoc[component version's navigation files].
 
+NOTE: Keep in mind that the target of an xref is a page ID, not a URL.
+Therefore, the path portion must always be the complete path relative to the _pages_ family directory.
+
 [#whats-a-cross-reference]
 == What's a cross reference?
 
