@@ -101,6 +101,7 @@ describe('buildPlaybook()', () => {
   const legacyUiBundleSpec = ospath.join(FIXTURES_DIR, 'legacy-ui-bundle-sample.yml')
   const legacyUiStartPathSpec = ospath.join(FIXTURES_DIR, 'legacy-ui-start-path-sample.yml')
   const invalidSiteUrlSpec = ospath.join(FIXTURES_DIR, 'invalid-site-url-spec-sample.yml')
+  const contentSourceVersionSpec = ospath.join(FIXTURES_DIR, 'content-source-version-spec-sample.yml')
   const defaultSchemaSpec = ospath.join(FIXTURES_DIR, 'default-schema-spec-sample.yml')
 
   it('should set dir to process.cwd() when playbook file is not specified', () => {
@@ -675,6 +676,14 @@ describe('buildPlaybook()', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--http-proxy', 'file:///proxy'], {})).to.throw(
       'must be an HTTP or HTTPS URL'
     )
+  })
+
+  it('should not camelCase the keys in the value of the version key on a content source', () => {
+    const playbook = buildPlaybook(['--playbook', contentSourceVersionSpec])
+    expect(playbook.content.sources).to.have.lengthOf(1)
+    expect(playbook.content.sources[0]).to.have.property('version')
+    expect(playbook.content.sources[0].version).to.be.instanceOf(Object)
+    expect(Object.keys(playbook.content.sources[0].version)).to.eql(['release-(?<version>{0..9}+).x'])
   })
 
   it('should throw error if boolean-or-string key is not a boolean or string', () => {
