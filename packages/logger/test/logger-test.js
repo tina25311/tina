@@ -1024,11 +1024,26 @@ describe('logger', () => {
       expect(stream).to.have.property('minLength', 0)
       expect(stream).to.have.property('file', null)
       logger.info('love is the message')
+      // NOTE sonic-boom will create the file on demand
+      expect(logFile).to.not.be.a.path()
       await finalizeLogger()
       expect(logFile)
         .to.be.a.file()
         .with.json()
         .and.have.contents.that.match(/"msg":"love is the message"/)
+    })
+
+    it('should create empty file at destination.file when logger is finalized if sync is false and no messages are logged', async () => {
+      const logger = configure({ destination: { file: './antora.log', sync: false } }, WORK_DIR).get(null)
+      const logFile = ospath.join(WORK_DIR, 'antora.log')
+      const stream = getStream(logger)
+      expect(stream).to.have.property('sync', false)
+      // NOTE sonic-boom will create the file on demand
+      expect(logFile).to.not.be.a.path()
+      await finalizeLogger()
+      expect(logFile)
+        .to.be.a.file()
+        .and.be.empty()
     })
 
     it('should write to file specified by destination.file when logger is finalized if sync is false and bufferSize is non-zero', async () => {
@@ -1097,7 +1112,7 @@ describe('logger', () => {
       expect(lines[0]).to.match(expectedLine)
     })
 
-    it('should honor sync: false option when format is pretty', async () => {
+    it('should honor sync option when format is pretty', async () => {
       const opts = { format: 'pretty', destination: { file: './antora.log', sync: false } }
       const logger = configure(opts, WORK_DIR).get(null)
       const logFile = ospath.join(WORK_DIR, 'antora.log')
@@ -1110,14 +1125,26 @@ describe('logger', () => {
       expect(realStream).to.have.property('sync', false)
       expect(realStream).to.have.property('minLength', 0)
       logger.info('love is the message')
-      expect(logFile)
-        .to.be.a.file()
-        .and.be.empty()
+      // NOTE sonic-boom will create the file on demand
+      expect(logFile).to.not.be.a.path()
       await finalizeLogger()
       const expectedLine = /^\[.+\] INFO: love is the message\n/
       expect(logFile)
         .to.be.a.file()
         .and.have.contents.that.match(expectedLine)
+    })
+
+    it('should create empty file at destination.file if sync is false, format is pretty, and no messages are logged', async () => {
+      const opts = { format: 'pretty', destination: { file: './antora.log', sync: false } }
+      const logger = configure(opts, WORK_DIR).get(null)
+      const logFile = ospath.join(WORK_DIR, 'antora.log')
+      expect(getStream(logger).stream).to.have.property('sync', false)
+      // NOTE sonic-boom will create the file on demand
+      expect(logFile).to.not.be.a.path()
+      await finalizeLogger()
+      expect(logFile)
+        .to.be.a.file()
+        .and.be.empty()
     })
 
     it('should append to file specified by destination.file by default', async () => {
