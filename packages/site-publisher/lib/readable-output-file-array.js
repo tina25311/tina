@@ -12,13 +12,17 @@ class File extends Vinyl {
 class ReadableOutputFileArray extends Readable {
   constructor (array) {
     super({ objectMode: true })
-    this.array = array.slice()
+    this.array = array.slice().reverse()
   }
 
   _read (size) {
-    const read = this.array.splice(0, size)
-    while (read.length) this.push(toOutputFile(read.shift()))
-    if (!this.array.length) this.push(null)
+    const array = this.array
+    while (size--) {
+      const next = array.pop()
+      if (next === undefined) break
+      this.push(toOutputFile(next))
+    }
+    if (size > -1) this.push(null)
   }
 }
 
