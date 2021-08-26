@@ -6,11 +6,11 @@ const fs = require('fs')
 const ospath = require('path')
 const { posix: path } = ospath
 const {
-  destination: buildDest,
   levels: { labels: levelLabels, values: levelValues },
   symbols: { streamSym },
   pino,
 } = require('pino')
+const SonicBoom = require('sonic-boom')
 
 const closedLogger = { closed: true }
 const finalizers = []
@@ -44,18 +44,16 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     const prettyPrint = format === 'pretty'
     let colorize, dest
     if (typeof (destination || (destination = {})).write !== 'function') {
-      const { file, append = true, bufferSize, ...destOpts } = destination
+      const { file, bufferSize, ...destOpts } = destination
       if (bufferSize != null) destOpts.minLength = bufferSize
       if (file && !(dest = standardStreams[file])) {
         dest = expandPath(file, { dot: baseDir })
-        try {
-          fs.mkdirSync(ospath.dirname(dest), { recursive: true })
-          if (!append) fs.unlinkSync(dest)
-        } catch {}
-      } else if (process.env.NODE_ENV !== 'test') {
-        colorize = true
+      } else if (prettyPrint) {
+        dest = dest || 2
+        if (process.env.NODE_ENV !== 'test') colorize = true
       }
-      destination = buildDest(Object.assign({ sync: true }, destOpts, { dest: dest || (prettyPrint ? 2 : 1) }))
+      destOpts.dest = dest || 1
+      destination = new SonicBoom(Object.assign({ mkdir: true, sync: true }, destOpts))
     }
     close()
     logger = pino(
