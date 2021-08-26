@@ -8,5 +8,5 @@ Used as the component coordinate in page and resource IDs and in the component U
 
 |xref:component-version-key.adoc[version]
 |Version used with `name` to identify a component version.
-Used as the version coordinate in page and resource IDs and, with the exception of the reserved value `master`, in the version URL segment for a component version's published pages and assets.
+Used as the version coordinate in page and resource IDs and as the version segment for a component version's published page and asset URLs, except when a xref:component-with-no-version.adoc[component version is defined as unversioned].
 |===
