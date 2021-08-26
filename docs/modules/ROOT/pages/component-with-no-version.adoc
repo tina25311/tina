@@ -1,35 +1,50 @@
 = Define a Component Version with No Version
 
-Sometimes the project or process your documenting isn't versioned.
-For example, hosted technology services and team handbooks may only need their content to represent how the service or process works right now.
-In these cases, you may prefer the component version's page URLs not contain the `version` value.
-This is where the special value `master` comes into play.
+Sometimes the project or process you're documenting isn't versioned.
+For example, hosted technology services and team handbooks may only need their content to represent how the service or process works as of right now.
+This is where the reserved version value of a tilde, `~`, comes into play.
 
-NOTE: A repository branch named _master_ and a `version` key with a value of `master` aren't related.
-A repository branch can be a xref:playbook:configure-content-sources.adoc[content source specified in a playbook].
-The value of the `version` key is part of the identity of a xref:component-version.adoc[component version], and it's defined in xref:component-version-descriptor.adoc[an _antora.yml_ file].
+== Assign ~ to the version key
 
-[#version-master]
-== Assign master as the version value
+To define a component version that doesn't have a version, assign a tilde, `~`, to the `version` key.
+The `~` is shorthand for the value `null`, which also specifies a versionless component version when assign to the `version` key.
 
-Antora requires the xref:component-version-key.adoc[version key] be assigned a value in [.path]_antora.yml_.
-This value becomes the xref:page:page-id.adoc#id-coordinates[version coordinate] in the component version's page and xref:page:resource-id.adoc#id-coordinates[resource IDs].
-
-The value of `version` also becomes the version segment in the URL of its published pages.
-For example, if the value is  `2.1`, that value will appear in the URL of the component version's pages (e.g., [.path]_/component-name/2.1/page-name.html_).
-The exception to this rule is if `version` matches the reserved value `master`.
-Antora *does not* include the version segment in a component version's page URLs in this case.
-
-For instance, the component version defined in <<ex-unversioned>> will produce versionless URLs.
-
-.antora.yml for an unversioned component version
-[source#ex-unversioned,yaml]
+.antora.yml for a versionless component version
+[source,yaml]
 ----
-name: tutorials
-version: master
-title: Tutorials
-display_version: Stable
+name: component-name
+version: ~ # <.>
 ----
+<.> On a new line, type the key `version`, directly followed by a colon and a blank space (`++: ++`).
+Then enter the value `~`.
 
-A page with the filename [.path]_build-a-restful-web-service.adoc_ in this component version will have the URL [.path]_/tutorials/build-a-restful-web-service.html_.
-Also, you can still reference this docs component from other docs components using a fully qualified xref:page:page-id.adoc[page ID] or xref:page:resource-id.adoc[resource ID] (e.g., `master@tutorials::build-a-restful-web-service.adoc`).
+Antora doesn't apply the same behavior and output rules to an unversioned component version that it does to a component version with a named or semantic version.
+For example, Antora doesn't include the version segment in the page and asset URLs of an unversioned component version (e.g., [.path]_/component-name/module-name/page-name.html_).
+
+[#usage]
+== Behavior and output
+
+Every component version has a value assigned to its `version` key because Antora applies a default set of behavior and output rules to a xref:component-version-key.adoc#usage[component version based on the value assigned to the version key].
+Antora uses a modified set of these rules when processing an unversioned component version.
+When the `version` key is assigned `~`, defining the component version as unversioned, Antora:
+
+* sorts the unversioned component version above xref:how-component-versions-are-sorted.adoc[other versions that belong to the same component]
+* identifies it as the xref:how-component-versions-are-sorted.adoc#latest-version[latest version of a component] or, if the `prerelease` key is set, as the latest prerelease version of a component
+* assigns the fallback value `default` to the `display_version` key at runtime for display purposes in the UI menus, except when:
+** the `display_version` key is assigned a value in [.path]_antora.yml_, or
+** the xref:component-prerelease.adoc#identifier[prerelease key is assigned an identifier] and the `display_version` key isn't set in [.path]_antora.yml_; at runtime, Antora assigns the identifier to the `display_version` key
+* doesn't add a xref:how-antora-builds-urls.adoc#version[version segment] to the unversioned component version's page and asset URLs, even if the xref:playbook:urls-latest-version-segment.adoc[latest_version_segment key] or xref:playbook:urls-latest-prerelease-version-segment.adoc[latest_prerelease_version_segment key] is set in the playbook
+
+[TIP]
+.UI and extension developers
+====
+When a component version is defined as unversioned:
+
+* the reserved version value, `~` or `null`, is coerced into and stored as an empty string internally
+* a version segment isn't added to `pub.url` or `out.path`
+====
+
+== Reference an unversioned resource
+
+Because an unversioned component version is often the only version or always the latest component version in a component, Antora automatically routes any incoming references that originate from other components that don't specify a version coordinate to it.
+However, in rare cases, such as when referencing an unversioned prerelease from another component version, you can use the reserved keyword `+_+` (an underscore) as the version coordinate in the xref:page:page-id.adoc#id-coordinates[page ID] or xref:page:resource-id.adoc#id-coordinates[resource ID] (e.g., `+xref:_@component:module:file-name.adoc[]+`) to reference an unversioned component version.
