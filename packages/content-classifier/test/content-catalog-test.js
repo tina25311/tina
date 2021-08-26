@@ -125,6 +125,16 @@ describe('ContentCatalog', () => {
       }).to.throw('Duplicate version detected for component')
     })
 
+    it('should throw error if component version already exists with different prerelease value', () => {
+      const contentCatalog = new ContentCatalog()
+      expect(() => {
+        contentCatalog.registerComponentVersion('the-component', '1.0.0')
+        contentCatalog.registerComponentVersion('the-component', '2.0.0')
+        contentCatalog.registerComponentVersion('the-component', 'dev', { prerelease: true })
+        contentCatalog.registerComponentVersion('the-component', '1.0.0', { prerelease: true })
+      }).to.throw('Duplicate version detected for component')
+    })
+
     it('should add component version that has same comparison value as existing version', () => {
       const contentCatalog = new ContentCatalog()
       expect(() => {

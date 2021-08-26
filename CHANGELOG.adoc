@@ -18,6 +18,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *playbook-builder*: Don't camelCase keys in value of `version` key on content source (#828)
+* *content-classifier*: Always sort prerelease versions before non-prerelease versions (#838)
 * *asciidoc-loader*: Match Asciidoctor log level to Antora log level when Antora log level is debug
 * *asciidoc-loader*: Set context on Asciidoctor logger before calling register function of extensions to match behavior of Asciidoctor
 
