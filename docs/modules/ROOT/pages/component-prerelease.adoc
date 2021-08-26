@@ -25,9 +25,9 @@ The component version defined in <<ex-append-identifier>> is a prerelease.
 name: colorado
 title: Colorado ∆
 version: '6.0'
-prerelease: -rc.3 # <1>
+prerelease: -rc.3 # <.>
 ----
-<1> Assign an identifier to `prerelease` to designate the component version as a prerelease.
+<.> Assign an identifier to `prerelease` to designate the component version as a prerelease.
 
 When `prerelease` is assigned an identifier, Antora computes an internal prerelease version value for UI sorting and, if `display_version` isn't set, for display purposes.
 This computed prerelease version depends on the first character in the prerelease identifier.

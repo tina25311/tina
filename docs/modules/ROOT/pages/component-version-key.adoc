@@ -7,7 +7,7 @@ It's important to understand <<usage,how Antora uses the version>> and its relat
 
 In Antora, a [.term]*version* is the value assigned to the `version` key in a component version descriptor file ([.path]_antora.yml_) or on a content source in the playbook.
 A version is a semantic or named identifier that often represents a unique or final release of the documentation associated with a project.
-A version can also be defined as xref:component-with-no-version.adoc[unversioned] by assigning the tilde character, `~`, to the `version` key.
+A version can also be defined as xref:component-with-no-version.adoc[unversioned] by assigning a tilde, `~`, to the `version` key.
 The value of a `version` key, in combination with the value of a `name` key, defines a xref:component-version.adoc[component version].
 
 Occasionally, the version is called the [.term]*actual version* when a distinction between version and the other version facets--xref:version-facets.adoc#prerelease[prerelease], xref:version-facets.adoc#display[display], and xref:version-facets.adoc#symbolic[symbolic]&mdash;needs to be made in a description or example.
@@ -22,7 +22,7 @@ Antora uses the version:
 * identify the xref:how-component-versions-are-sorted.adoc#latest-version[latest version of a component]
 * apply routing rules
 * as the xref:how-antora-builds-urls.adoc#version[version segment] in page and asset URLs, except when:
-** the assigned value is the xref:component-with-no-version.adoc[tilde character, ~, that defines an unversioned component version]
+** the assigned value is the xref:component-with-no-version.adoc[tilde, ~, that defines an unversioned component version]
 ** a component version is identified as the latest stable or latest prerelease version and the xref:playbook:urls-latest-version-segment.adoc[latest_version_segment key] or xref:playbook:urls-latest-prerelease-version-segment.adoc[latest_prerelease_version_segment key] is set in the playbook
 * for display purposes in the reference UI xref:navigation:index.adoc#component-dropdown[component version selector] and xref:navigation:index.adoc#page-dropdown[page version selector] menus, except when:
 ** the `display_version` key is set and assigned a value in the component version's [.path]_antora.yml_ file
@@ -34,9 +34,10 @@ Content writers use the version as a coordinate in page and resource IDs when re
 == version key
 
 The `version` key is set and assigned a value in a component version descriptor file ([.path]_antora.yml_).
-The `version` key accepts a named identifier, such as `jesse`, a semantic identifier, such as `1.5`, or the reserved tilde character (`~`), that defines a component version as unversioned.
-To learn about defining a component version that is unversioned, see xref:component-with-no-version.adoc[].
-The following sections and examples describe how to assign a named or semantic identifier value to `version`.
+The `version` key accepts a named identifier, such as `jesse`, a semantic identifier, such as `1.5`, or the reserved tilde (`~`), that defines a component version as unversioned.
+To learn about specify an unversioned component version, see xref:component-with-no-version.adoc[].
+
+The following examples describe how to assign a named or semantic identifier to `version`.
 
 .antora.yml with named identifier assigned to version
 [source#ex-name,yaml]
