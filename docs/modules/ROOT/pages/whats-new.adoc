@@ -13,7 +13,10 @@ _**Release date:** 2021.08.tbd | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 == More new documentation
 
-Updated and improved information to help you choose xref:content-source-versioning-methods.adoc[how to manage versioning content in your repositories].
+* The reserved value `~`, when assigned to the `version` key, defines an unversioned component version.
+The `~` replaces the deprecated value `master`.
+See xref:component-with-no-version.adoc[] to learn more.
+* Updated and improved information to help you choose xref:content-source-versioning-methods.adoc[how to manage versioning content in your repositories].
 
 == Resolved issues
 
@@ -326,17 +329,8 @@ In Antora 3.0, we're deprecating the use of the version `master` for this purpos
 The reason we're phasing out this term is because it's not descriptive, it infers that the version is coupled to the branch (which it's not), and it glorifies an immoral system based on human exploitation.
 In short, the term just isn't appropriate and we want to move away from it.
 
-Instead, you should identify a versionless component version by assigning the tilde symbol (`~`) (shorthand for `null`) to the version key in the component descriptor (i.e., [.path]_antora.yml_).
-
-.antora.yml for a versionless component version
-[source,yaml]
-----
-name: component-name
-version: ~
-----
-
-As expected, when the version key is assigned `~`, Antora doesn't include the version segment in the component version's page URLs (e.g., [.path]_/component-name/module-name/page-name.html_).
-Although rare, if you ever need to refer to a resource in a versionless version, you can do so using the `+_+` keyword in the resource ID (e.g., `+_@page.html+`).
+Instead, you should identify a versionless component version by assigning the tilde (`~`) (shorthand for `null`) to the version key in the component version descriptor file ([.path]_antora.yml_).
+See See xref:component-with-no-version.adoc[] to learn more.
 
 == Resolved issues
 
