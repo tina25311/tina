@@ -73,15 +73,17 @@ class ContentCatalog {
     const component = this[$components].get(name)
     if (component) {
       const componentVersions = component.versions
-      const insertIdx = componentVersions.findIndex(({ version: candidate }) => {
-        if (candidate === version) throw new Error(`Duplicate version detected for component ${name}: ${version}`)
-        return versionCompare(candidate, version) > 0
-      })
-      if (~insertIdx) {
-        componentVersions.splice(insertIdx, 0, componentVersion)
-      } else {
-        componentVersions.push(componentVersion)
+      if (componentVersions.find(({ version: candidate }) => candidate === version)) {
+        throw new Error(`Duplicate version detected for component ${name}: ${version}`)
       }
+      const insertIdx = prerelease
+        ? componentVersions.findIndex(({ version: candidateVersion, prerelease: candidatePrerelease }) =>
+          candidatePrerelease ? versionCompare(candidateVersion, version) > 0 : true
+        )
+        : componentVersions.findIndex(({ version: candidateVersion, prerelease: candidatePrerelease }) =>
+          candidatePrerelease ? false : versionCompare(candidateVersion, version) > 0
+        )
+      ~insertIdx ? componentVersions.splice(insertIdx, 0, componentVersion) : componentVersions.push(componentVersion)
       if ((component.latest = componentVersions.find((candidate) => !candidate.prerelease))) {
         if (componentVersions[0] !== component.latest) component.latestPrerelease = componentVersions[0]
       } else {

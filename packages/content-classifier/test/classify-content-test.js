@@ -176,7 +176,7 @@ describe('classifyContent()', () => {
       expect(versions).to.eql(['master', 'dev', 'v1.2.3'])
     })
 
-    it('should sort versionless version first', () => {
+    it('should insert versionless version first if there are no prereleases', () => {
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
@@ -194,6 +194,64 @@ describe('classifyContent()', () => {
       expect(component.name).to.equal('the-component')
       const versions = component.versions.map((version) => version.version)
       expect(versions).to.eql(['', 'dev', 'v1.2.3'])
+    })
+
+    it('should insert versionless component version after last prerelease', () => {
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v2.0',
+        prerelease: true,
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: '',
+        files: [],
+      })
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const versions = contentCatalog.getComponent('the-component').versions.map(({ version }) => version)
+      expect(versions).to.eql(['v2.0', '', 'v1.2.3'])
+    })
+
+    it('should insert non-prerelease component version after last prerelease', () => {
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v2.0',
+        prerelease: true,
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v3.0',
+        files: [],
+      })
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const versions = contentCatalog.getComponent('the-component').versions.map(({ version }) => version)
+      expect(versions).to.eql(['v2.0', 'v3.0', 'v1.2.3'])
+    })
+
+    it('should insert prerelease versionless component version before other prereleases', () => {
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v2.0',
+        prerelease: true,
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: '',
+        prerelease: true,
+        files: [],
+      })
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const versions = contentCatalog.getComponent('the-component').versions.map(({ version }) => version)
+      expect(versions).to.eql(['', 'v2.0', 'v1.2.3'])
     })
 
     it('should use name as title if title is falsy', () => {
