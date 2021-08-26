@@ -48,7 +48,7 @@ version: rigel # <.>
 <.> On a new line, type `version`, directly followed by a colon and a space (`++: ++`).
 Then type the value you want assigned to `version`.
 
-Semantic identifiers often begin with a number.
+Semantic identifiers begin with a number or the letter _v_.
 Enclose values, like the one shown in <<ex-semver>>, in a set of single quote marks (`'`).
 
 .antora.yml with semantic identifier assigned to version
@@ -58,6 +58,10 @@ name: colorado
 version: '5.6' # <.>
 ----
 <.> Enclose values that start with a number in a set of single quote marks (`'`).
+
+Antora recognizes semantic identifiers according to the https://semver.org[semantic versioning rules].
+A semantic identifier is an integer, begins with a number and contains at least one dot (`.`), or begins with `v`, followed by a number, and contains at least one dot (`.`).
+`3`, `v9.0`, and `5.1` are examples of semantic identifiers.
 
 //If a component version is a prerelease, set the xref:component-prerelease.adoc[prerelease key] in addition to `version`.
 
