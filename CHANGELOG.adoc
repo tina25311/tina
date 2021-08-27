@@ -11,13 +11,13 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Add `git.fetch_concurrency` to control the maximum number of fetch or clone operations that are permitted to run at once (#779)
 * *content-aggregator*: Limit the number of concurrent clone or fetch operations specified by the `git.fetch_concurrency` playbook key (#779)
-* *content-aggregator*: If an error is thrown while loading or scanning a repository, allow any clone or fetch operations already underway to complete (#779)
 * *content-aggregator*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
 * *ui-loader*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
 
 === Fixed
 
 * *playbook-builder*: Don't camelCase keys in value of `version` key on content source (#828)
+* *content-aggregator*: If an error is thrown while loading or scanning a repository, allow any clone or fetch operations already underway to complete (#779)
 * *content-classifier*: Always sort prerelease versions before non-prerelease versions (#838)
 * *asciidoc-loader*: Match Asciidoctor log level to Antora log level when Antora log level is debug
 * *asciidoc-loader*: Set context on Asciidoctor logger before calling register function of extensions to match behavior of Asciidoctor
@@ -25,8 +25,8 @@ This project utilizes semantic versioning.
 === Changed
 
 * *logger*: Upgrade to sonic-boom 2.0.x (#837)
-* *playbook-builder*: Further restrict type of runtime.log.destination.buffer_size in playbook schema from number to integer
-* *content-aggregator*: Switch back to versionless default cache folder for content repositories (#690)
+* *playbook-builder*: Further restrict type of `runtime.log.destination.buffer_size` key in playbook schema from number to integer
+* *content-aggregator*: Switch back to versionless default cache folder for managed content repositories (#690)
 
 == 3.0.0-alpha.8 (2021-08-13)
 

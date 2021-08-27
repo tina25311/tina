@@ -9,12 +9,12 @@
 
 = Antora 3.0.0-alpha.9
 
-_**Release date:** 2021.08.tbd | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+_**Release date:** 2021.08.26 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 == More new documentation
 
 * The reserved value `~`, when assigned to the `version` key, defines an unversioned component version.
-The `~` replaces the deprecated value `master`.
+The `~` value replaces the deprecated value `master`.
 See xref:component-with-no-version.adoc[] to learn more.
 * Updated and improved information to help you choose xref:content-source-versioning-methods.adoc[how to manage versioning content in your repositories].
 
@@ -22,13 +22,21 @@ See xref:component-with-no-version.adoc[] to learn more.
 
 === Added
 
+Issue {url-issues}/779[#779^]:: Add `git.fetch_concurrency` key to playbook to control the maximum number of fetch or clone operations that are permitted to run at once.
 Issue {url-issues}/829[#829^]:: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*`.
+
+=== Changed
+
+Issue {url-issues}/690[#690^]:: Switch back to using versionless default cache folder for managed content repositories.
+Issue {url-issues}/837[#837^]:: Upgrade sonic-boom to 2.0.x.
 
 === Fixed
 
 Issue {url-issues}/828[#828^]:: Don't camelCase keys in value of `version` key on content source.
-asciidoc-loader:: Match Asciidoctor log level to Antora log level when Antora log level is `debug`.
-Set context on Asciidoctor logger before calling register function of extensions to match behavior of Asciidoctor.
+Issue {url-issues}/779[#779^]:: If an error is thrown while loading or scanning a repository, allow any clone or fetch operations already underway to complete.
+Issue {url-issues}/838[#838^]:: Always sort prerelease versions before non-prerelease versions.
+Asciidoctor logger:: Sync Asciidoctor log level to Antora log level when Antora log level is `debug`.
+Set context on Asciidoctor logger before calling `register` function of extensions to match behavior of Asciidoctor.
 
 = Antora 3.0.0-alpha.8
 
