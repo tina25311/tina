@@ -1,4 +1,4 @@
-= Define a Component Version with No Version
+= Define a Component with No Version
 
 Sometimes the project or process you're documenting isn't versioned.
 For example, hosted technology services and team handbooks may only need their content to represent how the service or process works as of right now.

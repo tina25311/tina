@@ -16,14 +16,14 @@ _**Release date:** 2021.08.26 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 * The reserved value `~`, when assigned to the `version` key, defines an unversioned component version.
 The `~` value replaces the deprecated value `master`.
 See xref:component-with-no-version.adoc[] to learn more.
-* Updated and improved information to help you choose xref:content-source-versioning-methods.adoc[how to manage versioning content in your repositories].
+* Updated and improved information to help you choose xref:content-source-versioning-methods.adoc[a versioning strategy for your content].
 
 == Resolved issues
 
 === Added
 
-Issue {url-issues}/779[#779^]:: Add `git.fetch_concurrency` key to playbook to control the maximum number of fetch or clone operations that are permitted to run at once.
-Issue {url-issues}/829[#829^]:: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*`.
+Issue {url-issues}/779[#779^]:: Add `git.fetch_concurrency` key to playbook schema to control the maximum number of fetch or clone operations that are permitted to run at once.
+Issue {url-issues}/829[#829^]:: Don't use an HTTP(S) proxy if the value of the `network.no_proxy` key in the playbook is `*`.
 
 === Changed
 
