@@ -13,6 +13,9 @@ You can install it globally, declare it as a dependency of the project, or add t
 An Asciidoctor extension is registered using the `extensions` key.
 The `extensions` key accepts a list of node module names (i.e., npm package names) and relative or absolute filesystem paths.
 
+If the node module name contains a dot, a slash needs to be appended (for example `highlight.js` becomes `highlight.js/`).
+If the slash is missing for a node module that contains a dot, Antora will report `Error: Cannot find module`.
+
 .antora-playbook.yml
 [source,yaml]
 ----
