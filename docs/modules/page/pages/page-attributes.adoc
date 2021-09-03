@@ -144,7 +144,7 @@ So where's the `page-` prefix gone?
 When a page attribute is promoted to the UI model, the `page-` prefix is dropped.
 That's why we say the page attribute is named `toclevels` instead of `page-toclevels`.
 The `page-` prefix is just a namespace to identify it as a page attribute.
-So a page attribute named `page-toclevels` becomes `toclevels` in the UI model (e.g., `page.attributes.toclevel`).
+So a page attribute named `page-toclevels` becomes `toclevels` in the UI model (e.g., `page.attributes.toclevels`).
 
 The `page-` prefix on the attribute name is what hoists it to the UI model.
 All other document attributes are effectively hidden from the UI model.
