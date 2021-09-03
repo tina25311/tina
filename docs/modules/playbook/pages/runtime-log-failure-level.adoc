@@ -1,6 +1,10 @@
 = Log Failure Level
 
-The `failure_level` key specifies the severity threshold that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
+The `failure_level` key specifies the severity threshold that, when met or exceeded, causes Antora to exit with a non-zero (i.e., failure) exit code.
+
+To be clear, this setting doesn't stop Antora from running.
+Rather, it merely impacts the exit code value of the process in which Antora is running.
+It's up to the shell to interpret this value, as most CI environments do.
 
 [#default]
 == Default failure level
