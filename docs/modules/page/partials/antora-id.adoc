@@ -39,7 +39,8 @@ The filename must include the file extension.
 [#id-page]
 page.adoc::
 The fourth coordinate specifies the path relative to the xref:ROOT:pages-directory.adoc[_pages_ family directory] of the target page's source file.
-If both the source page and the target page are located in the same subdirectory of the _pages_ family directory, the path coordinate still needs to be specified relative to the _pages_ directory.
+If both the source page and the target page are located in the same subdirectory (i.e., topic path) of the _pages_ family directory, the path coordinate still must be specified relative to the _pages_ directory.
+You can add `./` to the start of this segment as a shorthand for the topic path of the source page.
 The filename must include the _.adoc_ file extension.
 // end::page[]
 // end::id[]
