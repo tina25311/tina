@@ -165,6 +165,16 @@ class RepositoryBuilder {
     return this
   }
 
+  async commitBlob (filepath, contents, message = 'make it so') {
+    const repo = this.repository
+    const { tree: treeEntries } = await git.readTree({ ...repo, oid: await git.resolveRef({ ...repo, ref: 'HEAD' }) })
+    const blob = await git.writeBlob({ ...repo, blob: Buffer.from(contents) })
+    treeEntries.push({ mode: '100644', path: filepath, oid: blob })
+    const tree = await git.writeTree({ ...repo, tree: treeEntries })
+    await git.commit({ ...repo, author: this.author, tree, message })
+    return this
+  }
+
   async commitAll (message = 'make it so') {
     const repo = this.repository
     // NOTE emulates addAll

@@ -1625,6 +1625,21 @@ describe('aggregateContent()', function () {
       })
     })
 
+    // NOTE the content classifier will discard this file since it's outside the Antora hierarchy
+    describe('should read file with path that refers to location outside of repository', () => {
+      testRemote(async (repoBuilder) => {
+        await initRepoWithFiles(repoBuilder, undefined, ['modules/ROOT/pages/page-one.adoc'], async () =>
+          repoBuilder.commitBlob('modules/ROOT/pages/../../../../the-page.adoc', '= Page Title')
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const thePage = aggregate[0].files.find((it) => it.basename === 'the-page.adoc')
+        expect(thePage.path).to.equal('../the-page.adoc')
+        expect(thePage.src.path).to.equal('../the-page.adoc')
+      })
+    })
+
     describe('should set file mode of regular file read from git repository to correct value', () => {
       testAll(async (repoBuilder) => {
         const fixturePath = 'modules/ROOT/pages/page-one.adoc'

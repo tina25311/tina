@@ -886,6 +886,13 @@ describe('classifyContent()', () => {
       expect(files).to.have.lengthOf(0)
     })
 
+    it('should ignore file with path that refers to location outside of repository', () => {
+      aggregate[0].files.push(...[createFile(COMPONENT_DESC_FILENAME), createFile('../not-gonna-happen.adoc')])
+      aggregate[0].files[1].src.path = '../not-gonna-happen.adoc'
+      const files = classifyContent(playbook, aggregate).getAll()
+      expect(files).to.have.lengthOf(0)
+    })
+
     it('should classify files from multiple components and versions', () => {
       aggregate = [
         {
