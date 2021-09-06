@@ -1972,6 +1972,19 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should read file with path that refers to location outside of repository', () => {
+      testRemote(async (repoBuilder) => {
+        const maliciousPath = 'modules/ROOT/pages/../../../../the-page.adoc'
+        await initRepoWithFiles(repoBuilder, undefined, ['modules/ROOT/pages/page-one.adoc'], async () =>
+          repoBuilder.commitBlob(maliciousPath, '= Page Title')
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const expectedMessage = `The filepath "${maliciousPath}" contains unsafe character sequences`
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        expect(aggregateContentDeferred).to.throw(expectedMessage)
+      })
+    })
+
     describe('should set file mode of regular file read from git repository to correct value', () => {
       testAll(async (repoBuilder) => {
         const fixturePath = 'modules/ROOT/pages/page-one.adoc'
