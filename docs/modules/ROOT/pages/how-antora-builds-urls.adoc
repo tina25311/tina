@@ -113,7 +113,7 @@ For the same reason, it simplifies publishing because the site is not bound to a
 
 _Computed_.
 
-Antora computes domain-relative URLs when creating rewrite rules for page aliases, component version start pages, and the latest version segment `redirect:to` and `redirect:from` strategies.
+Antora computes domain-relative URLs when creating rewrite rules for page aliases, component version start pages, and the latest version segment `redirect:to` and `replace` strategies.
 If a non-empty value is assigned to the site pathname, Antora prepends the site pathname to the resource URL.
 When the site pathname is empty, a resource URL is already equivalent to the domain-relative URL.
 For example, using the resource URL in <<fig-resource>>, and the site pathname `/docs`, Antora computes the domain-relative URL shown in <<fig-domain-relative>>.
