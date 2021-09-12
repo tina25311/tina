@@ -30,17 +30,20 @@ The `latest_version_segment_strategy` key accepts the following built-in values:
 
 `redirect:from`:: Sets up redirects from the URLs using the symbolic version to the URLs using the actual version.
 The actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
+This strategy is currently ignored when the redirect facility is `static`.
 
 `redirect:to`:: Sets up redirects from the URLs using the actual version to the URLs using the symbolic version.
 The actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
+This strategy is transparently changed to `replace` when the redirect facilit is `static`.
 
 `replace`:: _Default_.
 The actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
 `replace` is the default value when the `latest_version_segment_strategy` key isn't set, but the `latest_version_segment` key or `latest_prerelease_version_segment` key is assigned a value in the playbook.
 
-Antora creates temporary redirects (302) or static HTML refresh pages when the strategy is `redirect:to` or `redirect:from`.
+Antora creates temporary redirects (302) when the strategy is `redirect:to` or `redirect:from`.
 The format of the rules and redirect configuration file is determined by the xref:urls-redirect-facility.adoc[redirect facility] you specify using the `redirect_facility` key.
-When the `redirect_facility` key isn't defined in the playbook or CLI, Antora assigns the xref:urls-redirect-facility.adoc#static-value[static value] to the key at runtime.
+Note that when the `redirect_facility` key isn't defined in the playbook or CLI, Antora assigns the xref:urls-redirect-facility.adoc#static-value[static value] to the key at runtime.
+Since creating temporary redirect rules is only something a web server can do, when using the static redirect facility, the `redirect:from` strategy is ignored and the `redirect:to` strategy effectively becomes the `replace` strategy.
 
 [#default]
 == Enable the replace strategy automatically
@@ -125,7 +128,7 @@ However, in <<result-latest>>, the version segment uses the symbolic version, _c
 https://docs.example.com/colorado/current/get-started/tour.html
 
 In addition to replacing the actual version with the symbolic version in the URLs of the latest component versions, Antora creates temporary redirects from the URLs using the actual version to the URLs using the symbolic version.
-The playbook in <<ex-playbook>> assigns the xref:urls-redirect-facility.adoc#nginx[nginx value] to the `redirect_facility` key, therefore Antora writes the redirect rules in an nginx rewrite configuration file named [.path]_rewrite.conf_ and places it in the site at [.path]_.etc/nginx/rewrite.conf_.
+The playbook in <<ex-playbook>> assigns the xref:urls-redirect-facility.adoc#nginx[nginx value] to the `redirect_facility` key, therefore Antora writes the redirect rules to an nginx rewrite configuration file named [.path]_rewrite.conf_ and places it in the site at [.path]_.etc/nginx/rewrite.conf_.
 Any request for a URL using the actual version of a latest component version is redirected to the URL with the symbolic version.
 For example, if the URL _\https://docs.example.com/colorado/5.6/get-started/tour.html_ is requested, the URL redirects to _\https://docs.example.com/colorado/current/get-started/tour.html_.
 
