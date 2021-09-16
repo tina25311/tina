@@ -3603,6 +3603,35 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, '../4.5.6/module-a/the-topic/the-page.html', 'The Page Title')
     })
 
+    it('should convert a page reference with version, topic, and page where page is relative to the current page', () => {
+      const contentCatalog = mockContentCatalog([
+        {
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+          contents: 'xref:4.5.6@./the-page.adoc[The Page Title]',
+        },
+        {
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        },
+      ]).spyOn('getById')
+      inputFile = contentCatalog.getFiles()[0]
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '4.5.6',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+      expectPageLink(html, '../../4.5.6/module-a/the-topic/the-page.html', 'The Page Title')
+    })
+
     it('should convert a page reference with module and page', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
@@ -3669,6 +3698,28 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, 'the-page.html', 'The Page Title')
     })
 
+    it('should convert a basic page reference relative to the current top-level page', () => {
+      const contentCatalog = mockContentCatalog({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'page',
+        relative: 'the-page.adoc',
+      }).spyOn('getById')
+      setInputFileContents('xref:./the-page.adoc[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-page.adoc',
+        })
+      expectPageLink(html, 'the-page.html', 'The Page Title')
+    })
+
     it('should convert a page reference that contains spaces', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
@@ -3715,6 +3766,32 @@ describe('loadAsciiDoc()', () => {
           relative: 'the-page.adoc',
         })
       expectPageLink(html, '../the-page.html', 'The Page Title')
+    })
+
+    it('should convert a basic page reference relative to the current page within a topic', () => {
+      const contentCatalog = mockContentCatalog([
+        {
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+          contents: 'xref:./the-sibling-page.adoc[The Page Title]',
+        },
+        {
+          family: 'page',
+          relative: 'the-topic/the-sibling-page.adoc',
+        },
+      ]).spyOn('getById')
+      inputFile = contentCatalog.getFiles()[0]
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'the-topic/the-sibling-page.adoc',
+        })
+      expectPageLink(html, 'the-sibling-page.html', 'The Page Title')
     })
 
     it('should convert sibling page reference without a file extension', () => {
@@ -4356,6 +4433,29 @@ describe('loadAsciiDoc()', () => {
           relative: 'the-image.png',
         })
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/_images/the-image.png"')
+    })
+
+    it('should resolve target of block image in topic if resource ID is relative to current page', () => {
+      const contentCatalog = mockContentCatalog([
+        {
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+          contents: 'image::./the-image.png[The Image,250]',
+        },
+        { family: 'image', relative: 'the-topic/the-image.png' },
+      ]).spyOn('getById')
+      inputFile = contentCatalog.getFiles()[0]
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'image',
+          relative: 'the-topic/the-image.png',
+        })
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../_images/the-topic/the-image.png"')
     })
 
     it('should allow default converter to handle target of block image if target is a URL', () => {

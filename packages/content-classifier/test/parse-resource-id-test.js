@@ -51,7 +51,7 @@ describe('parseResourceId()', () => {
   })
 
   it('should clean self and parent references from relative path', () => {
-    const input = 'foo/../bar/./the-page.adoc'
+    const input = 'foo/baz/../bar/./the-page.adoc'
     const inputCtx = { component: 'the-component', module: 'the-module', version: '1.0' }
     const expected = {
       version: '1.0',
@@ -59,6 +59,34 @@ describe('parseResourceId()', () => {
       module: 'the-module',
       family: 'page',
       relative: 'foo/bar/the-page.adoc',
+    }
+    const result = parseResourceId(input, inputCtx)
+    expect(result).to.eql(expected)
+  })
+
+  it('should allow relative path to be anchored to dirname of context', () => {
+    const input = './the-sibling-page.adoc'
+    const inputCtx = { component: 'the-component', module: 'the-module', version: '1.0', relative: 'the-topic/the-page.adoc' }
+    const expected = {
+      version: '1.0',
+      component: 'the-component',
+      module: 'the-module',
+      family: 'page',
+      relative: 'the-topic/the-sibling-page.adoc',
+    }
+    const result = parseResourceId(input, inputCtx)
+    expect(result).to.eql(expected)
+  })
+
+  it('should clean parent reference from relative path anchored to dirname of context', () => {
+    const input = './../the-ancestor-page.adoc'
+    const inputCtx = { component: 'the-component', module: 'the-module', version: '1.0', relative: 'the-topic/the-page.adoc' }
+    const expected = {
+      version: '1.0',
+      component: 'the-component',
+      module: 'the-module',
+      family: 'page',
+      relative: 'the-ancestor-page.adoc',
     }
     const result = parseResourceId(input, inputCtx)
     expect(result).to.eql(expected)

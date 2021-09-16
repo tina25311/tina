@@ -56,9 +56,16 @@ function parseResourceId (spec, ctx = {}, defaultFamily = 'page', permittedFamil
   }
 
   if (~relative.indexOf('/')) {
-    relative = relative
-      .split('/')
-      .filter((it) => it && it !== '.' && it !== '..')
+    const relativeSegments = relative.split('/')
+    let from
+    if (relativeSegments[0] === '.' && (from = ctx.relative)) {
+      relativeSegments[0] = from.substr(0, (from.lastIndexOf('/') + 1 || 1) - 1)
+    }
+    relative = relativeSegments
+      .reduce((accum, segment) => {
+        segment === '..' ? accum.pop() : (segment || '.') !== '.' && accum.push(segment)
+        return accum
+      }, [])
       .join('/')
   }
 
