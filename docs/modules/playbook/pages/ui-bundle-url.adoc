@@ -66,6 +66,9 @@ ui:
 
 If you're using Antora's reference UI bundle, you should mark it as a snapshot.
 
+The snapshot key is only required if you're referring to a remote bundle (which Antora caches by default).
+If you're referencing a bundle from the filesystem, Antora will always use the file as specified.
+
 [#local-bundle]
 == Load a bundle from the filesystem
 
