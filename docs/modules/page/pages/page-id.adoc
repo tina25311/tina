@@ -55,6 +55,7 @@ The prefix of the AsciiDoc xref macro.
 
 target page ID:: The <<id-coordinates,page ID coordinates>> of the target page relative to the current page.
 If the target page is in a subdirectory, the page coordinate of the page ID must include that subdirectory, even if the current page is located in the same directory.
+When the page ID contains the module coordinate, and the module name ends with the name of a built-in macro (e.g., `monolink`), you may have to escape that portion of the name by prefixing it with a backslash (e.g., `mono\link`).
 
 [#id-fragment]
 #fragment::
