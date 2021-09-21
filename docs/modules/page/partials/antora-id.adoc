@@ -20,6 +20,7 @@ module{colon}::
 The third coordinate identifies the name of the module to which the target {family} belongs.
 The module name is derived from the xref:ROOT:module-directories.adoc#module[module directory] where the {family} is stored.
 The module name is directly followed by one colon (`:`).
+When using a resource ID that contains the module coordinate in an xref, and the module name ends with the name of a built-in macro (e.g., `monolink`), you may have to escape that portion of the name by prefixing it with a backslash (e.g., `mono\link`).
 
 // tag::resource[]
 [#id-family]
