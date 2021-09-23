@@ -10,6 +10,7 @@ function mockContentCatalog (seed = []) {
   if (!Array.isArray(seed)) seed = [seed]
   const familyDirs = {
     alias: 'pages',
+    attachment: 'attachments',
     example: 'examples',
     image: 'images',
     nav: '',
@@ -56,10 +57,16 @@ function mockContentCatalog (seed = []) {
     if (mediaType) entry.src.mediaType = entry.mediaType = mediaType
     const pubVersion = version === 'master' ? '' : version
     const pubModule = module_ === 'ROOT' ? '' : module_
-    if (family === 'page' || family === 'alias' || family === 'image') {
+    if (family === 'page' || family === 'alias' || family === 'image' || family === 'attachment') {
       if (('/' + relative).indexOf('/_') < 0) {
-        const relativeOut =
-          family === 'image' ? path.join('_images/', relative) : relative.slice(0, -5) + (indexify ? '/' : '.html')
+        let relativeOut
+        if (family === 'image') {
+          relativeOut = path.join('_images/', relative)
+        } else if (family === 'attachment') {
+          relativeOut = path.join('_attachments/', relative)
+        } else {
+          relativeOut = relative.slice(0, -5) + (indexify ? '/' : '.html')
+        }
         entry.out = {
           path: path.join(component, pubVersion, pubModule, relativeOut),
           moduleRootPath: ~relativeOut.indexOf('/')

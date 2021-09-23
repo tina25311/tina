@@ -774,7 +774,7 @@ describe('cli', function () {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
         .to.be.a.file()
-        .with.contents.that.match(/<p>See <a href="the-page.html" class="page">the page<\/a>.<\/p>/)
+        .with.contents.that.match(/<p>See <a href="the-page.html" class="xref page">the page<\/a>.<\/p>/)
         .and.with.contents.that.not.match(/<div class="paragraph">/)
     })
   }).timeout(timeoutOverride)

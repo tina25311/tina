@@ -9,7 +9,8 @@ const mockContentCatalog = require('../../../test/mock-content-catalog')
 
 describe('convertDocuments()', () => {
   const asciidocConfig = resolveAsciiDocConfig()
-  const expectPageLink = (html, url, content) => expect(html).to.include(`<a href="${url}" class="page">${content}</a>`)
+  const expectPageLink = (html, url, content) =>
+    expect(html).to.include(`<a href="${url}" class="xref page">${content}</a>`)
 
   it('should start with all files in the page family', () => {
     const contentCatalog = mockContentCatalog().spyOn('getPages')
@@ -496,7 +497,7 @@ describe('convertDocuments()', () => {
     contentCatalog.registerPageAlias = (spec, targetPage) => {
       aliases[spec] = { rel: targetPage }
     }
-    contentCatalog.resolvePage = (spec, ctx = {}) => {
+    contentCatalog.resolveResource = (spec, ctx = {}) => {
       return (aliases[spec] || {}).rel
     }
     const pages = convertDocuments(contentCatalog, asciidocConfig)

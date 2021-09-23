@@ -24,10 +24,12 @@ const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 describe('loadAsciiDoc()', () => {
   let inputFile
 
-  const expectLink = (html, url, content) => expect(html).to.include(`<a href="${url}">${content}</a>`)
+  const expectLink = (html, url, content, classes) =>
+    expect(html).to.include(`<a href="${url}"${classes ? ' class="' + classes + '"' : ''}>${content}</a>`)
   const expectUnresolvedPageLink = (html, url, content) =>
-    expect(html).to.include(`<a href="${url}" class="page unresolved">${content}</a>`)
-  const expectPageLink = (html, url, content) => expect(html).to.include(`<a href="${url}" class="page">${content}</a>`)
+    expect(html).to.include(`<a href="${url}" class="xref unresolved">${content}</a>`)
+  const expectPageLink = (html, url, content) =>
+    expect(html).to.include(`<a href="${url}" class="xref page">${content}</a>`)
   const expectImgLink = (html, url, content) => expect(html).to.include(`<a class="image" href="${url}">${content}</a>`)
 
   const setInputFileContents = (contents) => {
@@ -3863,6 +3865,29 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, 'the-page.html', 'The Page Title')
     })
 
+    it('should convert a reference to a non-page resource', () => {
+      const contentCatalog = mockContentCatalog({
+        component: 'component-a',
+        version: 'master',
+        module: 'module-a',
+        family: 'attachment',
+        relative: 'sample.zip',
+        mediaType: 'application/zip',
+      }).spyOn('getById')
+      setInputFileContents('xref:attachment$sample.zip[The Sample]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'attachment',
+          relative: 'sample.zip',
+        })
+      expectLink(html, '_attachments/sample.zip', 'The Sample', 'xref attachment')
+    })
+
     it('should pass on attributes defined in xref macro', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
@@ -3882,7 +3907,7 @@ describe('loadAsciiDoc()', () => {
           family: 'page',
           relative: 'the-page.adoc',
         })
-      expect(html).to.include('<a href="the-page.html" class="page secret" rel="nofollow">The Page Title</a>')
+      expect(html).to.include('<a href="the-page.html" class="xref page secret" rel="nofollow">The Page Title</a>')
     })
 
     it('should convert a page reference with topic and page', () => {
@@ -4045,7 +4070,7 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, '#the-fragment', 'Deep Link to Self')
     })
 
-    it('should convert a page reference to a root relative path if relativizePageRefs is disabled', () => {
+    it('should convert a page reference to a root relative path if relativizeResourceRefs is disabled', () => {
       const contentCatalog = mockContentCatalog([
         {
           family: 'page',
@@ -4058,7 +4083,7 @@ describe('loadAsciiDoc()', () => {
         },
       ]).spyOn('getById')
       inputFile = contentCatalog.getFiles()[0]
-      const html = loadAsciiDoc(inputFile, contentCatalog, { relativizePageRefs: false }).convert()
+      const html = loadAsciiDoc(inputFile, contentCatalog, { relativizeResourceRefs: false }).convert()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -4734,7 +4759,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
-      expect(html).to.include(' class="imageblock link-page link-unresolved"')
+      expect(html).to.include(' class="imageblock xref-unresolved"')
       expectImgLink(html, '#module-b:no-such-page.adoc', html.match(/<img[^>]*>/)[0])
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.eql({
@@ -4770,8 +4795,37 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
-      expect(html).to.include(' class="imageblock link-page border"')
+      expect(html).to.include(' class="imageblock xref-page border"')
       expectImgLink(html, '../module-b/the-page.html', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should resolve non-page referenced by xref attribute on block image macro and link to it', () => {
+      const contentCatalog = mockContentCatalog([
+        { module: 'module-b', family: 'attachment', relative: 'the-attachment.zip' },
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      setInputFileContents('image::module-b:the-image.png[The Image,250,xref=module-b:attachment$the-attachment.zip]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'attachment',
+          relative: 'the-attachment.zip',
+        })
+      expect(contentCatalog.getById)
+        .nth(2)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="imageblock xref-attachment"')
+      expectImgLink(html, '../module-b/_attachments/the-attachment.zip', html.match(/<img[^>]*>/)[0])
     })
 
     it('should resolve anchor referenced by xref attribute on inline image macro and link to it', () => {
@@ -4827,7 +4881,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
-      expect(html).to.include(' class="imageblock link-page border"')
+      expect(html).to.include(' class="imageblock xref-page border"')
       expectImgLink(html, '../module-b/the-page.html#anchor', html.match(/<img[^>]*>/)[0])
     })
 
@@ -4882,7 +4936,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
-      expect(html).to.include(' class="image link-page link-unresolved"')
+      expect(html).to.include(' class="image xref-unresolved"')
       expectImgLink(html, '#module-b:no-such-page.adoc', html.match(/<img[^>]*>/)[0])
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.eql({
@@ -4949,7 +5003,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
-      expect(html).to.include(' class="image link-page icon"')
+      expect(html).to.include(' class="image xref-page icon"')
       expectImgLink(html, '../module-b/the-page.html', html.match(/<img[^>]*>/)[0])
     })
 

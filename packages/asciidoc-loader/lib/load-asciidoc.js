@@ -30,8 +30,8 @@ const EXTENSION_DSL_TYPES = Extensions.$constants(false).filter((name) => name.e
  * @param {Object} [config={}] - AsciiDoc processor configuration options.
  * @param {Object} [config.attributes={}] - Shared AsciiDoc attributes to assign to the document.
  * @param {Array<Function>} [config.extensions=[]] - Self-registering AsciiDoc processor extension functions.
- * @param {Boolean} [config.relativizePageRefs=true] - Configures the AsciiDoc processor to generate relative page
- *   references (relative to the current page) instead of root relative (relative to the site root).
+ * @param {Boolean} [config.relativizeResourceRefs=true] - Configures the AsciiDoc processor to generate relative
+ * resource references (relative to the current page) instead of root relative (relative to the site root).
  *
  * @returns {Document} An Asciidoctor Document object created from the source of the specified file.
  */

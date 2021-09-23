@@ -12,7 +12,8 @@ describe('convertDocument()', () => {
   let playbook
   let asciidocConfig
 
-  const expectPageLink = (html, url, content) => expect(html).to.include(`<a href="${url}" class="page">${content}</a>`)
+  const expectPageLink = (html, url, content) =>
+    expect(html).to.include(`<a href="${url}" class="xref page">${content}</a>`)
 
   beforeEach(() => {
     playbook = {
@@ -320,9 +321,9 @@ describe('convertDocument()', () => {
         url: '/component-a/1.2.3/module-b/page-b.html',
       },
     }
-    const contentCatalog = { resolvePage: spy(() => targetFile), getComponent: () => {} }
+    const contentCatalog = { resolveResource: spy(() => targetFile), getComponent: () => {} }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.resolvePage)
+    expect(contentCatalog.resolveResource)
       .nth(1)
       .called.with('module-b:page-b.adoc', inputFile.src)
     expectPageLink(inputFile.contents.toString(), '../module-b/page-b.html', 'Page B')

@@ -21,14 +21,14 @@ const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
  * @param {ContentCatalog} [contentCatalog=undefined] - The content catalog
  *   that provides access to the virtual files in the site.
  * @param {Object} [asciidocConfig={}] - AsciiDoc processor configuration options. Extensions are not propagated.
- *   Sets the relativizePageRefs option to false before passing to the loadAsciiDoc function.
+ *   Sets the relativizeResourceRefs option to false before passing to the loadAsciiDoc function.
  * @param {Object} [asciidocConfig.attributes={}] - Shared AsciiDoc attributes to assign to the document.
  *
  * @returns {NavigationCatalog} A navigation catalog built from the navigation files in the content catalog.
  */
 function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
   const navCatalog = new NavigationCatalog()
-  const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizePageRefs: false }
+  const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizeResourceRefs: false }
   contentCatalog
     .findBy({ family: 'nav' })
     .reduce((accum, navFile) => {
@@ -98,7 +98,7 @@ function partitionContent (content) {
     if (match) {
       const [, url, role, content] = match
       let roles
-      if (role && (roles = role.includes(' ') ? role.split(' ') : [role]).includes('page')) {
+      if (role && role.includes(' ') && (roles = role.split(' ')).includes('xref')) {
         const hashIdx = url.indexOf('#')
         if (~hashIdx) {
           if (roles.includes('unresolved')) {
