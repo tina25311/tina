@@ -316,7 +316,7 @@ module.exports = {
     },
     redirect_facility: {
       doc: 'The facility for handling page alias and start page redirections.',
-      format: ['disabled', 'httpd', 'netlify', 'nginx', 'static'],
+      format: ['disabled', 'gitlab', 'httpd', 'netlify', 'nginx', 'static'],
       default: 'static',
       arg: 'redirect-facility',
     },

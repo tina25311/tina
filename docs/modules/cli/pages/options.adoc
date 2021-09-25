@@ -151,6 +151,7 @@ a|[%hardbreaks]
 |`static`
 a|[%hardbreaks]
 `disabled`
+`gitlab`
 `httpd`
 `netlify`
 `nginx`

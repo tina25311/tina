@@ -357,6 +357,74 @@ describe('produceRedirects()', () => {
     })
   })
 
+  // NOTE the only difference is that the force flag is missing; only cover code paths, not permutations
+  describe('gitlab facility', () => {
+    beforeEach(() => {
+      playbook.urls.redirectFacility = 'gitlab'
+    })
+
+    it('should create and return netlify redirects file for gitlab', () => {
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0]).to.have.property('contents')
+      expect(result[0]).to.have.property('out')
+      expect(result[0].out.path).to.equal('_redirects')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        '/ /component-a/module-a/the-target.html 301',
+        '/component-a/module-a/alias-a.html /component-a/module-a/the-target.html 301',
+        '/component-a/module-a/old-target/ /component-a/module-a/the-target.html 301',
+        '/component-a/module-a/old-target/index.html /component-a/module-a/the-target.html 301',
+        '/component-a/module-b/alias-b.html /component-a/module-a/the-target.html 301',
+        '/component-b/1.0/alias-c.html /component-a/module-a/the-target.html 301',
+        '/index.html /component-a/module-a/the-target.html 301',
+      ])
+    })
+
+    it('should generate temporary redirect for splat aliases', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'component-b', version: 'current', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/component-b/current'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0]).to.have.property('contents')
+      expect(result[0]).to.have.property('out')
+      expect(result[0].out.path).to.equal('_redirects')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['/component-b/current/* /component-b/1.0/:splat 302'])
+    })
+
+    it('should not include extra redirect for directory if HTML URL extension style is indexify', () => {
+      contentCatalog.getFiles().forEach((file) => {
+        const url = file.pub.url
+        file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 11 : 5)) + '/'
+      })
+      playbook.urls.htmlExtensionStyle = 'indexify'
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0].out.path).to.equal('_redirects')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        '/ /component-a/module-a/the-target/ 301',
+        '/component-a/module-a/alias-a/ /component-a/module-a/the-target/ 301',
+        '/component-a/module-a/old-target/ /component-a/module-a/the-target/ 301',
+        '/component-a/module-b/alias-b/ /component-a/module-a/the-target/ 301',
+        '/component-b/1.0/alias-c/ /component-a/module-a/the-target/ 301',
+      ])
+    })
+  })
+
   describe('nginx facility', () => {
     beforeEach(() => {
       playbook.urls.redirectFacility = 'nginx'
