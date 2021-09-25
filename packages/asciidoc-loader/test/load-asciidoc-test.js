@@ -3794,7 +3794,7 @@ describe('loadAsciiDoc()', () => {
       expectPageLink(html, 'the-sibling-page.html', 'The Page Title')
     })
 
-    it('should convert sibling page reference without a file extension', () => {
+    it('should convert sibling page reference without a file extension and empty fragment', () => {
       const contentCatalog = mockContentCatalog({
         relative: 'the-page.adoc',
       }).spyOn('getById')
@@ -3849,7 +3849,7 @@ describe('loadAsciiDoc()', () => {
         relative: 'the-page.html',
         mediaType: 'text/html',
       }).spyOn('getById')
-      setInputFileContents('xref:the-page.html#[The Page Title]')
+      setInputFileContents('xref:the-page.html[The Page Title]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
@@ -3958,6 +3958,26 @@ describe('loadAsciiDoc()', () => {
         family: 'page',
         relative: 'this-page.adoc',
         contents: 'xref:module-a:this-page.adoc#[Link to Self]',
+      }).spyOn('getById')
+      inputFile = contentCatalog.getFiles()[0]
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'page',
+          relative: 'this-page.adoc',
+        })
+      expectPageLink(html, 'this-page.html', 'Link to Self')
+    })
+
+    it('should convert a page reference to self without fragment', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'page',
+        relative: 'this-page.adoc',
+        contents: 'xref:module-a:this-page.adoc[Link to Self]',
       }).spyOn('getById')
       inputFile = contentCatalog.getFiles()[0]
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
@@ -4232,7 +4252,7 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       const targetPage = contentCatalog.getFiles()[0]
       targetPage.asciidoc = { doctitle: 'Page Title', xreftext: 'reference me' }
-      setInputFileContents('xref:module-b:the-topic/the-page.adoc#[]')
+      setInputFileContents('xref:module-b:the-topic/the-page.adoc[]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById)
         .nth(1)
