@@ -88,7 +88,13 @@ function transformImageNode (converter, node, imageTarget) {
     if (imageRefCallback) {
       const alt = node.getAttribute('alt', undefined, false)
       if (node.isAttribute('default-alt', alt, false)) node.setAttribute('alt', alt.split(/[@:]/).pop())
-      Opal.defs(node, '$image_uri', (imageSpec) => imageRefCallback(imageSpec) || imageSpec)
+      Opal.defs(node, '$image_uri', (imageSpec) => {
+        const imageSrc = imageRefCallback(imageSpec)
+        if (imageSrc) return imageSrc
+        const role = node.getAttribute('role', undefined, false)
+        node.setAttribute('role', `unresolved${role ? ' ' + role : ''}`)
+        return imageSpec
+      })
     }
   }
   if (node.hasAttribute('xref')) {

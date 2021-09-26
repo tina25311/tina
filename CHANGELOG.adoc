@@ -30,6 +30,7 @@ This project utilizes semantic versioning.
 * *logger*: Upgrade to sonic-boom 2.0.x (#837)
 * *playbook-builder*: Further restrict type of `runtime.log.destination.buffer_size` key in playbook schema from number to integer
 * *content-aggregator*: Switch back to versionless default cache folder for managed content repositories (#690)
+* *asciidoc-loader*: Add `unresolved` role to image if target is local and it cannot be resolved (#692)
 
 == 3.0.0-alpha.8 (2021-08-13)
 
