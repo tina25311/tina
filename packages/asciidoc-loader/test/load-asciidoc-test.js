@@ -4394,7 +4394,9 @@ describe('loadAsciiDoc()', () => {
     it('should pass through unresolved target of block image that matches resource ID', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
       setInputFileContents('image::module-b:no-such-image.png[The Image,250]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -4406,15 +4408,31 @@ describe('loadAsciiDoc()', () => {
         })
       expect(html).to.include(' class="imageblock unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:no-such-image.png')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of image not found: module-b:no-such-image.png',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should pass through target of block image with invalid resource ID', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
       setInputFileContents('image::module-b:image$$[The Image,250]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById).to.not.have.been.called()
       expect(html).to.include(' class="imageblock unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of image not found: module-b:image$$',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should resolve target of block image if it matches resource ID in same module', () => {
@@ -4502,7 +4520,9 @@ describe('loadAsciiDoc()', () => {
     it('should pass through unresolved target of inline image that matches resource ID', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
       setInputFileContents('Look for image:module-b:no-such-image.png[The Image,16].')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -4514,15 +4534,31 @@ describe('loadAsciiDoc()', () => {
         })
       expect(html).to.include(' class="image unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:no-such-image.png')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of image not found: module-b:no-such-image.png',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should pass through target of inline image with invalid resource ID', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
       setInputFileContents('Look for image:module-b:image$$[The Image,16]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById).to.not.have.been.called()
       expect(html).to.include(' class="image unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of image not found: module-b:image$$',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should resolve target of inline image if it matches resource ID in same module', () => {
@@ -4646,7 +4682,9 @@ describe('loadAsciiDoc()', () => {
         relative: 'the-image.png',
       }).spyOn('getById')
       setInputFileContents('image::module-b:the-image.png[The Image,250,xref=module-b:no-such-page.adoc]')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -4667,6 +4705,13 @@ describe('loadAsciiDoc()', () => {
         })
       expect(html).to.include(' class="imageblock link-page link-unresolved"')
       expectImgLink(html, '#module-b:no-such-page.adoc', html.match(/<img[^>]*>/)[0])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref on image not found: module-b:no-such-page.adoc',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should resolve page referenced by xref attribute on block image macro and link to it', () => {
@@ -4762,7 +4807,9 @@ describe('loadAsciiDoc()', () => {
         relative: 'the-image.png',
       }).spyOn('getById')
       setInputFileContents('Look for image:module-b:the-image.png[The Image,16,xref=module-b:no-such-page.adoc].')
-      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
         .called.with({
@@ -4783,6 +4830,13 @@ describe('loadAsciiDoc()', () => {
         })
       expect(html).to.include(' class="image link-page link-unresolved"')
       expectImgLink(html, '#module-b:no-such-page.adoc', html.match(/<img[^>]*>/)[0])
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of xref on image not found: module-b:no-such-page.adoc',
+        file: { path: inputFile.src.path },
+      })
     })
 
     it('should resolve page referenced by xref attribute on inline image macro and link to it', () => {
