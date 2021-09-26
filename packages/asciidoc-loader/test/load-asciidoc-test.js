@@ -4404,7 +4404,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'no-such-image.png',
         })
-      //expect(html).to.include(' class="imageblock unresolved"')
+      expect(html).to.include(' class="imageblock unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:no-such-image.png')
     })
 
@@ -4413,7 +4413,7 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('image::module-b:image$$[The Image,250]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById).to.not.have.been.called()
-      //expect(html).to.include(' class="imageblock unresolved"')
+      expect(html).to.include(' class="imageblock unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
@@ -4433,6 +4433,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
+      expect(html).to.include(' class="imageblock"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="_images/the-image.png"')
     })
 
@@ -4452,6 +4453,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
+      expect(html).to.include(' class="imageblock"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/_images/the-image.png"')
     })
 
@@ -4475,6 +4477,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-topic/the-image.png',
         })
+      expect(html).to.include(' class="imageblock"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../_images/the-topic/the-image.png"')
     })
 
@@ -4509,7 +4512,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'no-such-image.png',
         })
-      //expect(html).to.include(' class="image unresolved"')
+      expect(html).to.include(' class="image unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:no-such-image.png')
     })
 
@@ -4518,7 +4521,7 @@ describe('loadAsciiDoc()', () => {
       setInputFileContents('Look for image:module-b:image$$[The Image,16]')
       const html = loadAsciiDoc(inputFile, contentCatalog).convert()
       expect(contentCatalog.getById).to.not.have.been.called()
-      //expect(html).to.include(' class="imageblock unresolved"')
+      expect(html).to.include(' class="image unresolved"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="module-b:image$$')
     })
 
@@ -4538,6 +4541,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
+      expect(html).to.include(' class="image"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="_images/the-image.png"')
     })
 
@@ -4557,6 +4561,7 @@ describe('loadAsciiDoc()', () => {
           family: 'image',
           relative: 'the-image.png',
         })
+      expect(html).to.include(' class="image"')
       expect(html.match(/<img[^>]*>/)[0]).to.include(' src="../module-b/_images/the-image.png"')
     })
 
