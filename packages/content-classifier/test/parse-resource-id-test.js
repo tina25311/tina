@@ -66,7 +66,12 @@ describe('parseResourceId()', () => {
 
   it('should allow relative path to be anchored to dirname of context', () => {
     const input = './the-sibling-page.adoc'
-    const inputCtx = { component: 'the-component', module: 'the-module', version: '1.0', relative: 'the-topic/the-page.adoc' }
+    const inputCtx = {
+      component: 'the-component',
+      module: 'the-module',
+      version: '1.0',
+      relative: 'the-topic/the-page.adoc',
+    }
     const expected = {
       version: '1.0',
       component: 'the-component',
@@ -80,7 +85,12 @@ describe('parseResourceId()', () => {
 
   it('should clean parent reference from relative path anchored to dirname of context', () => {
     const input = './../the-ancestor-page.adoc'
-    const inputCtx = { component: 'the-component', module: 'the-module', version: '1.0', relative: 'the-topic/the-page.adoc' }
+    const inputCtx = {
+      component: 'the-component',
+      module: 'the-module',
+      version: '1.0',
+      relative: 'the-topic/the-page.adoc',
+    }
     const expected = {
       version: '1.0',
       component: 'the-component',
