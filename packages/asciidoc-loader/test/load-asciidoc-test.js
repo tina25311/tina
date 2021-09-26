@@ -4619,6 +4619,37 @@ describe('loadAsciiDoc()', () => {
       expect(contentCatalog.resolveResource).to.not.have.been.called()
     })
 
+    it('should add link to block image resolved from resource ID if link=self', () => {
+      const contents = 'image::module-b:the-image.png[The Image,250,link=self]'
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="imageblock"')
+      expectImgLink(html, '../module-b/_images/the-image.png', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should add link to block image with remote URL if link=self', () => {
+      const contents = 'image::https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg[The Tux,250,link=self]'
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog().spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).to.not.have.been.called()
+      expect(html).to.include(' class="imageblock"')
+      expectImgLink(html, 'https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg', html.match(/<img[^>]*>/)[0])
+    })
+
     it('should resolve internal anchor referenced by xref attribute on block image macro and link to it', () => {
       const contents = heredoc`
       image::module-b:the-image.png[The Image,250,xref=section-a]
@@ -4800,6 +4831,29 @@ describe('loadAsciiDoc()', () => {
       expectImgLink(html, '../module-b/the-page.html#anchor', html.match(/<img[^>]*>/)[0])
     })
 
+    it('should ignore xref attribute on block image if link attribute is set', () => {
+      const contents = 'image::module-b:the-image.png[The Image,link=https://example.org,xref=module-b:the-page.adoc]'
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'page', relative: 'the-page.adoc' },
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).to.have.been.called.once()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="imageblock"')
+      expectImgLink(html, 'https://example.org', html.match(/<img[^>]*>/)[0])
+    })
+
     it('should pass through unresolved xref on inline image macro as href of enclosing link', () => {
       const contentCatalog = mockContentCatalog({
         module: 'module-b',
@@ -4839,6 +4893,37 @@ describe('loadAsciiDoc()', () => {
       })
     })
 
+    it('should add link to inline image resolved from resource ID if link=self', () => {
+      const contents = 'image:module-b:the-image.png[The Image,250,link=self]'
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include('span class="image"')
+      expectImgLink(html, '../module-b/_images/the-image.png', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should add link to inline image with remote URL if link=self', () => {
+      const contents = 'image:https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg[The Tux,250,link=self]'
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog().spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).to.not.have.been.called()
+      expect(html).to.include('span class="image"')
+      expectImgLink(html, 'https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg', html.match(/<img[^>]*>/)[0])
+    })
+
     it('should resolve page referenced by xref attribute on inline image macro and link to it', () => {
       const contentCatalog = mockContentCatalog([
         { module: 'module-b', family: 'page', relative: 'the-page.adoc' },
@@ -4866,6 +4951,29 @@ describe('loadAsciiDoc()', () => {
         })
       expect(html).to.include(' class="image link-page icon"')
       expectImgLink(html, '../module-b/the-page.html', html.match(/<img[^>]*>/)[0])
+    })
+
+    it('should ignore xref attribute on inline image if link attribute is set', () => {
+      const contents = 'image:module-b:the-image.png[The Image,link=https://example.org,xref=module-b:the-page.adoc]'
+      setInputFileContents(contents)
+      const contentCatalog = mockContentCatalog([
+        inputFile.src,
+        { module: 'module-b', family: 'page', relative: 'the-page.adoc' },
+        { module: 'module-b', family: 'image', relative: 'the-image.png' },
+      ]).spyOn('getById')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).to.have.been.called.once()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-b',
+          family: 'image',
+          relative: 'the-image.png',
+        })
+      expect(html).to.include(' class="image"')
+      expectImgLink(html, 'https://example.org', html.match(/<img[^>]*>/)[0])
     })
   })
 
