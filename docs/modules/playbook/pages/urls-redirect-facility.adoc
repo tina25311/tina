@@ -18,10 +18,13 @@ It can be configured in the playbook or via the xref:cli:options.adoc#redirect-f
 
 disabled::
 Redirects aren't generated.
+gitlab::
+A redirect file for GitLab Pages is generated and placed at the root of the generated site at [.path]_+++_redirects+++_.
 netlify::
-A Netlify format redirect file is generated and placed at the root of the generated site at [.path]_+++_redirects+++_.
+A redirect file for Netlify is generated and placed at the root of the generated site at [.path]_+++_redirects+++_.
 nginx::
-An Nginx format redirect file is generated and placed at the root of the generated site at [.path]_.etc/nginx/rewrite.conf_.
+A redirect file for nginx is generated and placed at the root of the generated site at [.path]_.etc/nginx/rewrite.conf_.
+nginx will not know to look for the file in this location, so you will either need to move it or configure nginx to use it.
 [[static-value]]static::
 (default) A static HTML file with the `http-equiv` meta element set to `refresh` is generated at the source page's URL.
 The file provides a redirect notice and routes the source page URL to the target page URL.
@@ -60,6 +63,22 @@ This means that each redirect is considered permanent.
 ....
 /component/version/module/old-name.html /component/version/module/new-name.html 301!
 ....
+
+The example output above shows a redirect rule that routes the URL for a renamed page to it's target page URL and the applied 301 HTTP status code.
+
+=== Generated redirect configuration for GitLab Pages
+
+{url-netlify-redirects}[Redirect rules for sites served by GitLab Pages] are configured in a plain text file named [.path]_++_redirects++_.
+The format of this file is a modified version of the one for Netlify.
+When the assigned redirect facility value is `gitlab`, Antora generates [.path]_++_redirects++_ and places it at the root of the generated site.
+Each redirect rule is automatically calculated by Antora from the `page-aliases` attributes, and then the 301 HTTP status code is applied to each rule.
+This means that each redirect is considered permanent.
+
+.Antora generated _redirects file
+....
+/component/version/module/old-name.html /component/version/module/new-name.html 301 <1>
+....
+<1> Unlike the redirect file for the `netlify` redirect facility, the rule does not end with `!`.
 
 The example output above shows a redirect rule that routes the URL for a renamed page to it's target page URL and the applied 301 HTTP status code.
 

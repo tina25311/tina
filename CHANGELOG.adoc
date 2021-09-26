@@ -10,10 +10,12 @@ This project utilizes semantic versioning.
 === Added
 
 * *playbook-builder*: Add `git.fetch_concurrency` to control the maximum number of fetch or clone operations that are permitted to run at once (#779)
+* *redirect-producer*: Add `gitlab` as a valid option for the `urls.redirect_facility` key (#847)
 * *content-aggregator*: Limit the number of concurrent clone or fetch operations specified by the `git.fetch_concurrency` playbook key (#779)
 * *content-aggregator*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
 * *content-classifier*: Add support for `./` token at start of path in resource ID as shorthand for current topic path (#428)
 * *ui-loader*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
+* *redirect-producer*: Add `gitlab` redirect facility for generating redirects that can be used with GitLab Pages (#847)
 
 === Fixed
 
