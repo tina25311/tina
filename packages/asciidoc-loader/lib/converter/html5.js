@@ -49,11 +49,7 @@ const defineHtml5Converter = () => {
         } else {
           type = 'link'
           if (unresolved) {
-            const logger = this[$logger] || (this[$logger] = this.$logger())
-            let msg = 'target of xref not found: ' + refSpec
-            const loc = node.getParent().getSourceLocation()
-            if (loc) msg = this.$message_with_context(msg, Opal.hash2(['source_location'], { source_location: loc }))
-            logger.error(msg)
+            logUnresolved(this, node, refSpec, 'xref')
             attrs.role = `page unresolved${attrs.role ? ' ' + attrs.role : ''}`
           } else {
             attrs.role = `page${attrs.role ? ' ' + attrs.role : ''}`
@@ -91,6 +87,7 @@ function transformImageNode (converter, node, imageTarget) {
       Opal.defs(node, '$image_uri', (imageSpec) => {
         const imageSrc = imageRefCallback(imageSpec)
         if (imageSrc) return imageSrc
+        logUnresolved(converter, node, imageSpec, 'image')
         const role = node.getAttribute('role', undefined, false)
         node.setAttribute('role', `unresolved${role ? ' ' + role : ''}`)
         return imageSpec
@@ -105,6 +102,7 @@ function transformImageNode (converter, node, imageTarget) {
       const pageRefCallback = converter[$pageRefCallback]
       if (pageRefCallback) {
         const { target, unresolved } = pageRefCallback(refSpec, '[image]')
+        if (unresolved) logUnresolved(converter, node, refSpec, 'xref on image')
         const role = node.getAttribute('role', undefined, false)
         node.setAttribute('role', `link-page${unresolved ? ' link-unresolved' : ''}${role ? ' ' + role : ''}`)
         node.setAttribute('link', target)
@@ -118,6 +116,17 @@ function transformImageNode (converter, node, imageTarget) {
 
 function matchesResourceSpec (target) {
   return !(~target.indexOf(':') && (~target.indexOf('://') || (target.startsWith('data:') && ~target.indexOf(','))))
+}
+
+function getLogger (converter) {
+  return converter[$logger] || (converter[$logger] = converter.$logger())
+}
+
+function logUnresolved (converter, node, resourceSpec, label) {
+  let msg = 'target of ' + label + ' not found: ' + resourceSpec
+  const loc = node.getParent().getSourceLocation()
+  if (loc) msg = converter.$message_with_context(msg, Opal.hash2(['source_location'], { source_location: loc }))
+  getLogger(converter).error(msg)
 }
 
 module.exports = defineHtml5Converter
