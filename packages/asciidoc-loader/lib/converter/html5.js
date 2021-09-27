@@ -4,7 +4,7 @@ const Opal = global.Opal
 const { $Antora } = require('../constants')
 const $logger = Symbol('logger')
 const $imageRefCallback = Symbol('imageRefCallback')
-const $pageRefCallback = Symbol('pageRefCallback')
+const $resourceRefCallback = Symbol('resourceRefCallback')
 const converterFor = Opal.Asciidoctor.Converter.$for.bind(Opal.Asciidoctor.Converter)
 
 let classDef
@@ -22,7 +22,7 @@ const defineHtml5Converter = () => {
 
   Opal.defn(classDef, '$initialize', function initialize (backend, opts, callbacks) {
     Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), [backend, opts])
-    this[$pageRefCallback] = callbacks.onPageRef
+    this[$resourceRefCallback] = callbacks.onResourceRef
     this[$imageRefCallback] = callbacks.onImageRef
   })
 
@@ -36,11 +36,11 @@ const defineHtml5Converter = () => {
           node.getText() == null &&
           node.getAttribute('refid', undefined, false) == null &&
           node.getDocument().getAttribute('page-relative-src-path'))
-      if (refSpec && (callback = this[$pageRefCallback])) {
+      if (refSpec && (callback = this[$resourceRefCallback])) {
         const attrs = node.getAttributes()
         const fragment = attrs.fragment
         if (fragment) refSpec += '#' + fragment
-        const { content, target, internal, unresolved } = callback(refSpec, node.getText())
+        const { content, target, family, internal, unresolved } = callback(refSpec, node.getText())
         let type
         if (internal) {
           type = 'xref'
@@ -50,9 +50,9 @@ const defineHtml5Converter = () => {
           type = 'link'
           if (unresolved) {
             logUnresolved(this, node, refSpec, 'xref')
-            attrs.role = `page unresolved${attrs.role ? ' ' + attrs.role : ''}`
+            attrs.role = `xref unresolved${attrs.role ? ' ' + attrs.role : ''}`
           } else {
-            attrs.role = `page${attrs.role ? ' ' + attrs.role : ''}`
+            attrs.role = `xref ${family}${attrs.role ? ' ' + attrs.role : ''}`
           }
         }
         const attributes = Opal.hash2(Object.keys(attrs), attrs)
@@ -104,23 +104,31 @@ function transformImageNode (converter, node, imageTarget) {
       })
     }
   } else if (node.hasAttribute('xref')) {
+    let resourceRefCallback
     const refSpec = node.getAttribute('xref', '', false)
     if (refSpec.charAt() === '#') {
       node.setAttribute('link', refSpec)
-    } else if (refSpec.endsWith('.adoc') || ~refSpec.indexOf('.adoc#')) {
-      const pageRefCallback = converter[$pageRefCallback]
-      if (pageRefCallback) {
-        const { target, unresolved } = pageRefCallback(refSpec, '[image]')
+    } else if (hasExt(refSpec) && (resourceRefCallback = converter[$resourceRefCallback])) {
+      const { target, family, internal, unresolved } = resourceRefCallback(refSpec, refSpec)
+      if (!internal) {
         if (unresolved) logUnresolved(converter, node, refSpec, 'xref on image')
         const role = node.getAttribute('role', undefined, false)
-        node.setAttribute('role', `link-page${unresolved ? ' link-unresolved' : ''}${role ? ' ' + role : ''}`)
-        node.setAttribute('link', target)
+        node.setAttribute('role', `xref-${unresolved ? 'unresolved' : family}${role ? ' ' + role : ''}`)
       }
+      node.setAttribute('link', target)
     } else {
       node.setAttribute('link', '#' + refSpec)
     }
   }
   return node
+}
+
+function hasExt (target) {
+  if (target.endsWith('.adoc')) return true
+  const hashIdx = target.indexOf('#')
+  if (~hashIdx) target = target.substr(0, hashIdx)
+  const lastDotIdx = target.lastIndexOf('.')
+  return ~lastDotIdx && !~target.indexOf('/', lastDotIdx)
 }
 
 function matchesResourceSpec (target) {

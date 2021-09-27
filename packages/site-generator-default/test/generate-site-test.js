@@ -724,9 +724,9 @@ describe('generateSite()', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     const contents = readFile('the-component/2.0/index.html', absDestDir)
-    expect(contents).to.include('<a href="the-page.html" class="page">its alias</a>')
-    expect(contents).to.include('<a href="new-page.html" class="page">the new page</a>')
-    expect(contents).to.include('<a href="new-page.html" class="page">2.0</a>')
+    expect(contents).to.include('<a href="the-page.html" class="xref page">its alias</a>')
+    expect(contents).to.include('<a href="new-page.html" class="xref page">the new page</a>')
+    expect(contents).to.include('<a href="new-page.html" class="xref page">2.0</a>')
   }).timeout(timeoutOverride)
 
   // NOTE this also tests that aliases do not have to have the .adoc file extension

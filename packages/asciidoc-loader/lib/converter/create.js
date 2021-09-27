@@ -1,7 +1,7 @@
 'use strict'
 
 const convertImageRef = require('./../image/convert-image-ref')
-const convertPageRef = require('./../xref/convert-page-ref')
+const convertResourceRef = require('./../xref/convert-resource-ref')
 const defineHtml5Converter = require('./html5')
 
 /**
@@ -12,14 +12,17 @@ const defineHtml5Converter = require('./html5')
  * @param {File} file - The virtual file whose contents is an AsciiDoc source document.
  * @param {ContentCatalog} contentCatalog - The catalog of all virtual content files in the site.
  * @param {Object} config - AsciiDoc processor configuration options.
+ * @param {Boolean} [config.relativizeResourceRefs=true] - Configures the converter to generate relative resource
+ * references (relative to the current page) instead of root relative (relative to the site root).
  *
- * @returns {Converter} An enhanced instance of Asciidoctor's HTML5 converter.
+ * @returns {Converter} An enhanced instance of Asciidoctor's built-in HTML 5 converter.
  */
 function createConverter (file, contentCatalog, config) {
-  const relativizePageRefs = config.relativizePageRefs !== false
+  const relativizeResourceRefs = config.relativizeResourceRefs !== false
   return defineHtml5Converter().$new('html5', undefined, {
-    onImageRef: (resourceSpec) => convertImageRef(resourceSpec, file, contentCatalog),
-    onPageRef: (pageSpec, content) => convertPageRef(pageSpec, content, file, contentCatalog, relativizePageRefs),
+    onImageRef: (imageSpec) => convertImageRef(imageSpec, file, contentCatalog),
+    onResourceRef: (resourceSpec, content) =>
+      convertResourceRef(resourceSpec, content, file, contentCatalog, relativizeResourceRefs),
   })
 }
 
