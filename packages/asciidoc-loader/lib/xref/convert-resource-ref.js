@@ -48,9 +48,8 @@ function convertResourceRef (refSpec, content, currentPage, contentCatalog, rela
   if (content) return { content, target, family }
   if (family === 'page' && !hash) {
     content =
-      (currentPage.src.family === 'nav'
-        ? (resource.asciidoc || {}).navtitle
-        : (resource.asciidoc || {}).xreftext) || resourceSpec
+      (currentPage.src.family === 'nav' ? (resource.asciidoc || {}).navtitle : (resource.asciidoc || {}).xreftext) ||
+      resourceSpec
   } else {
     content = resourceSpec + hash
   }
