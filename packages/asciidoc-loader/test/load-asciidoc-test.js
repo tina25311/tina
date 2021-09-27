@@ -4416,7 +4416,33 @@ describe('loadAsciiDoc()', () => {
   })
 
   describe('image macro', () => {
-    it('should pass through unresolved target of block image that matches resource ID', () => {
+    it('should pass through unresolved target of block image when specified resource is in same module', () => {
+      const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
+      setInputFileContents('image::no-such-image.png[The Image,250]')
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'image',
+          relative: 'no-such-image.png',
+        })
+      expect(html).to.include(' class="imageblock unresolved"')
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="no-such-image.png')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of image not found: no-such-image.png',
+        file: { path: inputFile.src.path },
+      })
+    })
+
+    it('should pass through unresolved target of block image when specified resource is in different module', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
       setInputFileContents('image::module-b:no-such-image.png[The Image,250]')
       const { messages, returnValue: html } = captureLogSync(() =>
@@ -4542,7 +4568,33 @@ describe('loadAsciiDoc()', () => {
       expect(contentCatalog.resolveResource).to.not.have.been.called()
     })
 
-    it('should pass through unresolved target of inline image that matches resource ID', () => {
+    it('should pass through unresolved target of inline image when specified resource is in same module', () => {
+      const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
+      setInputFileContents('Look for image:no-such-image.png[The Image,16].')
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: 'master',
+          module: 'module-a',
+          family: 'image',
+          relative: 'no-such-image.png',
+        })
+      expect(html).to.include(' class="image unresolved"')
+      expect(html.match(/<img[^>]*>/)[0]).to.include(' src="no-such-image.png')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of image not found: no-such-image.png',
+        file: { path: inputFile.src.path },
+      })
+    })
+
+    it('should pass through unresolved target of inline image when specified resource is in different module', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
       setInputFileContents('Look for image:module-b:no-such-image.png[The Image,16].')
       const { messages, returnValue: html } = captureLogSync(() =>
