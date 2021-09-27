@@ -94,7 +94,16 @@ function transformImageNode (converter, node, imageTarget) {
       })
     }
   }
-  if (node.hasAttribute('xref')) {
+  if (node.hasAttribute('link')) {
+    if (node.isAttribute('link', 'self', false)) {
+      const superImageUri = node.$image_uri.bind(node)
+      Opal.defs(node, '$image_uri', () => {
+        const imageSrc = superImageUri(imageTarget)
+        if (!imageSrc.startsWith('data:')) node.setAttribute('link', imageSrc)
+        return imageSrc
+      })
+    }
+  } else if (node.hasAttribute('xref')) {
     const refSpec = node.getAttribute('xref', '', false)
     if (refSpec.charAt() === '#') {
       node.setAttribute('link', refSpec)

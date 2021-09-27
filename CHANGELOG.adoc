@@ -16,6 +16,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: Add support for `./` token at start of path in resource ID as shorthand for current topic path (#428)
 * *ui-loader*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
 * *asciidoc-loader*: Log error if image with local target or value of xref attribute on image cannot be resolved (#800)
+* *asciidoc-loader*: Add support for `link=self` attribute on image macros (#735)
 * *redirect-producer*: Add `gitlab` redirect facility for generating redirects that can be used with GitLab Pages (#847)
 
 === Fixed
