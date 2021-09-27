@@ -4418,9 +4418,15 @@ describe('loadAsciiDoc()', () => {
   describe('image macro', () => {
     it('should pass through unresolved target of block image when specified resource is in same module', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
-      setInputFileContents('image::no-such-image.png[The Image,250]')
+      setInputFileContents(heredoc`
+        = Page Title
+
+        before
+
+        image::no-such-image.png[The Image,250]
+      `)
       const { messages, returnValue: html } = captureLogSync(() =>
-        loadAsciiDoc(inputFile, contentCatalog).convert()
+        loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert()
       ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
@@ -4438,7 +4444,7 @@ describe('loadAsciiDoc()', () => {
         level: 'error',
         name: 'asciidoctor',
         msg: 'target of image not found: no-such-image.png',
-        file: { path: inputFile.src.path },
+        file: { path: inputFile.src.path, line: 5 },
       })
     })
 
@@ -4570,9 +4576,16 @@ describe('loadAsciiDoc()', () => {
 
     it('should pass through unresolved target of inline image when specified resource is in same module', () => {
       const contentCatalog = mockContentCatalog(inputFile.src).spyOn('getById')
-      setInputFileContents('Look for image:no-such-image.png[The Image,16].')
+      setInputFileContents(heredoc`
+        = Page Title
+
+        before
+
+        Generation complete.
+        Look for image:no-such-image.png[The Image,16].
+      `)
       const { messages, returnValue: html } = captureLogSync(() =>
-        loadAsciiDoc(inputFile, contentCatalog).convert()
+        loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert()
       ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
@@ -4590,7 +4603,7 @@ describe('loadAsciiDoc()', () => {
         level: 'error',
         name: 'asciidoctor',
         msg: 'target of image not found: no-such-image.png',
-        file: { path: inputFile.src.path },
+        file: { path: inputFile.src.path, line: 5 },
       })
     })
 
@@ -4789,9 +4802,17 @@ describe('loadAsciiDoc()', () => {
         family: 'image',
         relative: 'the-image.png',
       }).spyOn('getById')
-      setInputFileContents('image::module-b:the-image.png[The Image,250,xref=module-b:no-such-page.adoc]')
+      setInputFileContents(heredoc`
+        = Page Title
+
+        before
+
+        then some
+
+        image::module-b:the-image.png[The Image,250,xref=module-b:no-such-page.adoc]
+      `)
       const { messages, returnValue: html } = captureLogSync(() =>
-        loadAsciiDoc(inputFile, contentCatalog).convert()
+        loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert()
       ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
@@ -4818,7 +4839,7 @@ describe('loadAsciiDoc()', () => {
         level: 'error',
         name: 'asciidoctor',
         msg: 'target of xref on image not found: module-b:no-such-page.adoc',
-        file: { path: inputFile.src.path },
+        file: { path: inputFile.src.path, line: 7 },
       })
     })
 
@@ -4966,9 +4987,14 @@ describe('loadAsciiDoc()', () => {
         family: 'image',
         relative: 'the-image.png',
       }).spyOn('getById')
-      setInputFileContents('Look for image:module-b:the-image.png[The Image,16,xref=module-b:no-such-page.adoc].')
+      setInputFileContents(heredoc`
+        = Page Title
+
+        Generation complete.
+        Look for image:module-b:the-image.png[The Image,16,xref=module-b:no-such-page.adoc].
+      `)
       const { messages, returnValue: html } = captureLogSync(() =>
-        loadAsciiDoc(inputFile, contentCatalog).convert()
+        loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert()
       ).withReturnValue()
       expect(contentCatalog.getById)
         .nth(1)
@@ -4995,7 +5021,7 @@ describe('loadAsciiDoc()', () => {
         level: 'error',
         name: 'asciidoctor',
         msg: 'target of xref on image not found: module-b:no-such-page.adoc',
-        file: { path: inputFile.src.path },
+        file: { path: inputFile.src.path, line: 3 },
       })
     })
 

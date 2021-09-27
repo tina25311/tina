@@ -141,7 +141,7 @@ function getLogger (converter) {
 
 function logUnresolved (converter, node, resourceSpec, label) {
   let msg = 'target of ' + label + ' not found: ' + resourceSpec
-  const loc = node.getParent().getSourceLocation()
+  const loc = (node.isInline() ? node.getParent() : node).getSourceLocation()
   if (loc) msg = converter.$message_with_context(msg, Opal.hash2(['source_location'], { source_location: loc }))
   getLogger(converter).error(msg)
 }
