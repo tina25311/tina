@@ -21,7 +21,7 @@ Before configuring a site's playbook, you'll want to determine where to set up t
 
 A [.term]*content source root* is a location in a branch or tag (i.e., a reference) of a repository from where Antora begins looking for content source files.
 Think of the content source root as the entrance of the store where Antora shops.
-From the content source root, Antora looks for an [.path]_antora.yml_ file, which identifies the component version basket, then scans for a collection of source files organized in a xref:standard-directories.adoc[standard set of directories] to add to that basket.
+From the content source root, Antora looks for an [.path]_antora.yml_ file, which identifies the component version bucket, then scans for a collection of source files organized in a xref:standard-directories.adoc[standard set of directories] to add to that bucket.
 
 A repository can have many content source roots.
 You may have one content source root per branch or tag.

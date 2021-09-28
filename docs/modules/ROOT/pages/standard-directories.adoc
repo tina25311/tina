@@ -11,12 +11,11 @@ This page introduces this hierarchy, the reserved names it employs, and the rule
 
 == Hierarchy and reserved names
 
-<<ex-standard-dirs>> shows the hierarchy of the standard file and directory set if all of the possible standard directories are used.
-The content source root in <<ex-standard-dirs>> is at the root of the repository.
-However, a content source root can also be a subdirectory in the repository, which you can see in <<ex-image>>.
+<<ex-standard-dirs-root>> and <<ex-standard-dirs-sub>> show the hierarchy of the standard file and directory set if all required and optional files and directories are used.
+In <<ex-standard-dirs-root>>, the content source root is located at the root of the repository.
 
-.All required and optional standard files and directories
-[listing#ex-standard-dirs]
+.A complete Antora content source hierarchy at the repository root
+[listing#ex-standard-dirs-root]
 ----
 📒 repository <1>
   📄 antora.yml <2>
@@ -28,10 +27,10 @@ However, a content source root can also be a subdirectory in the repository, whi
       📂 pages <8>
       📂 partials <9>
       📄 nav.adoc <10>
-    📂 a-named-module <11>
+    📂 another-module <11>
       📂 pages
 ----
-<1> xref:content-source-repositories.adoc#content-source-root[Content source root].
+<1> xref:content-source-repositories.adoc#content-source-root[Repository root and content source root].
 <2> Required xref:component-version-descriptor.adoc[component version descriptor file].
 This file indicates to Antora that the contents of the _modules_ directory should be collected and processed.
 <3> Required [.path]_modules_ directory.
@@ -44,6 +43,31 @@ This directory contains xref:module-directories.adoc[one or more module director
 <9> Optional xref:partials-directory.adoc[_partials_ family directory].
 <10> Optional navigation file named [.path]_nav.adoc_.
 <11> Optional xref:named-module-directory.adoc[named module directory], which can have any of the same folders shown in the ROOT module.
+
+The content source root does not have to be at the root of the repository.
+In <<ex-standard-dirs-sub>>, the content source root is located inside a subdirectory of the repository.
+This subdirectory is referred to in Antora as the start path.
+
+.A complete Antora content source hierarchy starting at a subdirectory of the repository
+[listing#ex-standard-dirs-sub]
+----
+📒 repository <1>
+  📄 README.adoc
+  📂 docs <2>
+    📄 antora.yml
+    📂 modules
+      📂 ROOT
+        📂 attachments
+        📂 examples
+        📂 images
+        📂 pages
+        📂 partials
+        📄 nav.adoc
+      📂 another-module
+        📂 pages
+----
+<1> Repository root.
+<2> xref:content-source-repositories.adoc#content-source-root[Content source root].
 
 As you can see in the descriptions above, navigation files and many of the directories are optional.
 For instance, if you aren't inserting any images into the content stored in a module directory, then you don't need to create an [.path]_images_ directory.
