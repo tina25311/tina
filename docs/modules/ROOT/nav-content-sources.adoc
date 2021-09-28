@@ -3,6 +3,7 @@
 * xref:content-source-repositories.adoc[]
 * xref:content-source-versioning-methods.adoc[]
 * xref:standard-directories.adoc[]
+* xref:symlinks.adoc[]
 * xref:module-directories.adoc[]
 ** xref:root-module-directory.adoc[]
 ** xref:named-module-directory.adoc[]
