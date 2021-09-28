@@ -1,0 +1,10 @@
+keyvals:
+  foo-bar: testing
+  yin-yang: zen
+entries:
+- not-data:
+    foo-bar: baz
+    yin-yang: zen
+  data:
+    foo-bar: baz
+    yin-yang: zen

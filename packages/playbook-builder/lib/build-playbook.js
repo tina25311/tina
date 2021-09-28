@@ -100,11 +100,12 @@ function getStopPaths (schemaProperties, schemaPath = []) {
   const stopPaths = []
   for (const [key, { preserve, _cvtProperties }] of Object.entries(schemaProperties)) {
     if (preserve) {
-      return Array.isArray(preserve)
-        ? preserve.reduce((accum, it) => accum.concat(schemaPath.concat(key, it).join('.')), stopPaths)
-        : stopPaths.concat(schemaPath.concat(key).join('.'))
+      Array.isArray(preserve)
+        ? preserve.forEach((it) => stopPaths.push(schemaPath.concat(key, it).join('.')))
+        : stopPaths.push(schemaPath.concat(key).join('.'))
+    } else if (_cvtProperties) {
+      stopPaths.push(...getStopPaths(_cvtProperties, schemaPath.concat(key)))
     }
-    if (_cvtProperties) stopPaths.push(...getStopPaths(_cvtProperties, schemaPath.concat(key)))
   }
   return stopPaths
 }

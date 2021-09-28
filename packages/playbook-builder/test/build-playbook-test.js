@@ -95,6 +95,8 @@ describe('buildPlaybook()', () => {
   const nullMapSpec = ospath.join(FIXTURES_DIR, 'null-map-spec-sample.yml')
   const invalidDirOrFilesSpec = ospath.join(FIXTURES_DIR, 'invalid-dir-or-files-spec-sample.yml')
   const invalidStringOrBooleanSpec = ospath.join(FIXTURES_DIR, 'invalid-string-or-boolean-spec-sample.yml')
+  const preserveAllKeysSpec = ospath.join(FIXTURES_DIR, 'preserve-all-keys-spec-sample.yml')
+  const preserveSpecifiedKeysSpec = ospath.join(FIXTURES_DIR, 'preserve-specified-keys-spec-sample.yml')
   const runtimeLogFormatSpec = ospath.join(FIXTURES_DIR, 'runtime-log-format-spec-sample.yml')
   const legacyGitEnsureGitSuffixSpec = ospath.join(FIXTURES_DIR, 'legacy-git-ensure-git-suffix-sample.yml')
   const legacyRuntimePullSpec = ospath.join(FIXTURES_DIR, 'legacy-runtime-pull-sample.yml')
@@ -557,6 +559,96 @@ describe('buildPlaybook()', () => {
     expect(() => {
       playbook.one.two = 'override'
     }).to.throw()
+  })
+
+  it('should preserve case of keys in map if preserve is true', () => {
+    schema = {
+      playbook: {
+        format: String,
+        default: undefined,
+        env: 'PLAYBOOK',
+      },
+      keyvals: {
+        format: 'map',
+        default: {},
+        preserve: true,
+      },
+    }
+    const playbook = buildPlaybook([], { PLAYBOOK: preserveAllKeysSpec }, schema)
+    expect(playbook.keyvals).to.eql({ 'foo-bar': 'testing', 'yin-yang': 'zen' })
+  })
+
+  it('should preserve case of keys in map in entry if preserve is true', () => {
+    schema = {
+      playbook: {
+        format: String,
+        default: undefined,
+        env: 'PLAYBOOK',
+      },
+      keyvals: {
+        format: 'map',
+        default: {},
+      },
+      entries: {
+        format: Array,
+        default: [],
+        preserve: true,
+      },
+    }
+    const playbook = buildPlaybook([], { PLAYBOOK: preserveSpecifiedKeysSpec }, schema)
+    expect(playbook.keyvals).to.eql({ fooBar: 'testing', yinYang: 'zen' })
+    const entry = playbook.entries[0]
+    expect(entry.data).to.eql({ 'foo-bar': 'baz', 'yin-yang': 'zen' })
+    expect(entry['not-data']).to.eql({ 'foo-bar': 'baz', 'yin-yang': 'zen' })
+  })
+
+  it('should preserve case of keys in entries specified by preserve', () => {
+    schema = {
+      playbook: {
+        format: String,
+        default: undefined,
+        env: 'PLAYBOOK',
+      },
+      keyvals: {
+        format: 'map',
+        default: {},
+      },
+      entries: {
+        format: Array,
+        default: [],
+        preserve: ['data'],
+      },
+    }
+    const playbook = buildPlaybook([], { PLAYBOOK: preserveSpecifiedKeysSpec }, schema)
+    const entry = playbook.entries[0]
+    expect(playbook.keyvals).to.eql({ fooBar: 'testing', yinYang: 'zen' })
+    expect(entry.data).to.eql({ 'foo-bar': 'baz', 'yin-yang': 'zen' })
+    expect(entry.notData).to.eql({ fooBar: 'baz', yinYang: 'zen' })
+  })
+
+  it('should preserve case of keys when preserve is specified on sibling keys', () => {
+    schema = {
+      playbook: {
+        format: String,
+        default: undefined,
+        env: 'PLAYBOOK',
+      },
+      keyvals: {
+        format: 'map',
+        default: {},
+        preserve: true,
+      },
+      entries: {
+        format: Array,
+        default: [],
+        preserve: ['data'],
+      },
+    }
+    const playbook = buildPlaybook([], { PLAYBOOK: preserveSpecifiedKeysSpec }, schema)
+    const entry = playbook.entries[0]
+    expect(playbook.keyvals).to.eql({ 'foo-bar': 'testing', 'yin-yang': 'zen' })
+    expect(entry.data).to.eql({ 'foo-bar': 'baz', 'yin-yang': 'zen' })
+    expect(entry.notData).to.eql({ fooBar: 'baz', yinYang: 'zen' })
   })
 
   it('should use default schema if no schema is specified', () => {
