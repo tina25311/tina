@@ -11,10 +11,11 @@ This page introduces this hierarchy, the reserved names it employs, and the rule
 
 == Hierarchy and reserved names
 
-<<ex-standard-dirs-root>> and <<ex-standard-dirs-sub>> show the hierarchy of the standard file and directory set if all required and optional files and directories are used.
+Both <<ex-standard-dirs-root>> and <<ex-standard-dirs-sub>> show the standard file and directory hierarchy that Antora expects if all required and optional files and directories are used.
+In these examples, _repository_ represents the root of the file tree of a single reference (e.g., a branch) in a git repository.
 In <<ex-standard-dirs-root>>, the content source root is located at the root of the repository.
 
-.A complete Antora content source hierarchy at the repository root
+.A complete Antora content source hierarchy located at the repository root
 [listing#ex-standard-dirs-root]
 ----
 📒 repository <1>
@@ -46,9 +47,9 @@ This directory contains xref:module-directories.adoc[one or more module director
 
 The content source root does not have to be at the root of the repository.
 In <<ex-standard-dirs-sub>>, the content source root is located inside a subdirectory of the repository.
-This subdirectory is referred to in Antora as the start path.
+In Antora, this subdirectory is referred to as the start path of the content source.
 
-.A complete Antora content source hierarchy starting at a subdirectory of the repository
+.A complete Antora content source hierarchy located at a subdirectory of the repository
 [listing#ex-standard-dirs-sub]
 ----
 📒 repository <1>
