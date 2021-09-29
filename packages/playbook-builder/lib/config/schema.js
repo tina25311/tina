@@ -98,8 +98,9 @@ module.exports = {
         default: false,
       },
       start_path: {
-        doc: 'The relative path inside the bundle from which to start reading files.',
+        doc: 'The relative path inside the UI bundle from which to start reading files.',
         format: String,
+        arg: 'ui-start-path',
         default: '',
       },
     },
