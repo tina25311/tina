@@ -1,0 +1,74 @@
+= ADR 0017: Change default branch name and built-in unversioned value
+:revdate: 2021-09-28
+:url-gnome: Gnome.org Desktop Development mailing list, https://mail.gnome.org/archives/desktop-devel-list/2020-June/msg00023.html[Re: Replacing "master" reference in git branch names]
+
+== Status
+
+Accepted
+
+== Context
+
+We recognize that the term "`master`" has bad connotations which are harmfulfootnote:[https://inclusivenaming.org/word-lists/tier-1/#master]footnote:[https://datatracker.ietf.org/doc/draft-knodel-terminology/] to many individuals and groups of people (directly or indirectly) in the open source software community, of which Antora is a part.
+We understand that the continued use of this term only serves as a barrier to involvement and participation and isn't consistent with our pledge to establish a welcoming space for everyone.
+
+The reason the term master is problematic is because of its association with master-slave, an oppressive metaphor that will never become fully detached from real events, past or present.
+We don't want anyone who comes into Antora to feel harmed, oppressed, or isolated by seeing this term in use.
+Although Antora doesn't use the term slave in conjunction with master, it's impossible to remove the association of master with command and control, and, in particular, the immoral practice of ownership and subjugation of another person or persons.
+
+The term master was introduced into Antora through its tight integration with git.
+Until recently, the term master was used as the default branch name for all git repositories.
+To this day, Antora must fetch content from repositories that continue to use this branch name.
+Whether the master-slave metaphor directly influenced the git developers when they chose the default branch name, and whether, by association, that meaning was inherited by Antora, doesn't matter.
+We, as the project founders, must own the responsibility for using this term and replace it.
+
+[quote,Bastien Nocera,'{url-gnome}']
+I wanted to conclude that, at the end of the day, it doesn't matter where the name comes from (...).
+The fact that it has bad connotations, or inspires dread for individuals and whole communities, is reason enough to change it.
+
+At the time of drafting this ADR, most of the repositories in the Antora organization still use the name master for the default branch.
+Prior to Antora 3, Antora used the keyword master to define a component version as unversioned when assigned as a value to the `version` key.
+Our decision to use master as a built-in value for the `version` key was a mistake, not only because it harms people due to its association to the master-slave metaphor, but also because one of the founding tenets of Antora is that the branch name and the version aren't coupled.
+Relying on master as a built-in value for `version` creates a false equivalence between the version of a component and the repository branch where the source files are stored.
+
+In conclusion, the term master is quite inappropriate when used in Antora.
+The software is flexible enough that we can easily change that term without much disruption.
+Simply put, we don't need to use it.
+
+== Decision
+
+The default branch for all new repositories in the Antora organization is already configured to use the name main.
+We will change the default branch name of all existing repositories within the Antora organization to main as well.
+
+In Antora's main branch, where the code for Antora 3 is stored, the word master will be removed or replaced in the source code, test fixtures, scripts, and infrastructure.
+Deprecated references will only be kept internally in the final release of Antora 3, where necessary, to maintain backwards compatibility.
+In Antora 4, all references to master for fallback purposes will be removed.
+
+Using `version: master` to define a component version as unversioned will be deprecated and replaced with `version: ~` in Antora 3.
+Support for `version: master` will still be recognized for fallback purposes in the Antora 3 code base, but will be removed in Antora 4.
+
+The Antora 3 documentation and other user-facing content, such as the demo materials, websites, and contributing guides will no longer refer to a master branch or use `version: master` except when describing these changes in the CHANGELOG, deprecation and removal notices, and instructions for upgrading from Antora 2 to Antora 3.
+
+== Consequences
+
+The decisions described in the previous section require the Antora project team to reconfigure multiple repositories and build scripts.
+We had already planned to make this change well before this ADR was filed.
+However, we held off when GitLab announced it would ship a tool that could allow renaming the default branch of a repository in such a way that it preserves existing references using automatic redirects.
+In retrospect, waiting for this tool was a mistake because we put convenience above not doing harm for a prolonged period of time.
+Since that tool now exists, we will leverage it to ease the transition.
+
+Replacing the built-in value that creates an unversioned component version introduces a breaking change in Antora and requires the team re-architect and re-implement the feature.
+Updating our infrastructure and introducing a breaking change to our code base is a typical part of software development and, especially in this case, it's well worth our time and effort.
+While making this change, some of the builds in the Antora organization may temporarily fail until any master branch references are updated.
+
+Changing the default branch name of the Antora UI repository would have drastic downstream consequences because many users fetch the UI bundle directly from the output of CI builds that run on the master branch.
+Therefore, we're going to leave the master branch alone and create a new main branch to host all future changes.
+We will also put a process in place to publish official releases of the default UI in order to decouple documentation sites from the name of the branch altogether.
+Once that's done, we'll immediately encourage users to update their playbook to pull the UI bundle from the new location.
+At some point in the future, we will then remove the master branch and its CI builds.
+
+Users who previously defined a component version as unversioned by assigning `master` to the `version` key in [.path]_antora.yml_ will need to update the value of that key to `~` when upgrading to Antora 3.
+This will ensure that a component version remains unversioned when it is published using Antora 3 and Antora 4.
+Starting in Antora 4, if `version: master` is specified, the component version will be defined as a versioned component version named master (at the user's request).
+
+We apologize for any harm we may have done to users of the Antora software by using the term master.
+We're committed to honoring our pledge to establish a welcoming space for everyone, and we promise to do better.
