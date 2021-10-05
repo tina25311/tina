@@ -2312,6 +2312,7 @@ describe('aggregateContent()', function () {
 
       it('should not populate editUrl if edit_url key on content source is falsy', async () => {
         const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
+        playbookSpec.content.branches = ['v*', 'main']
         playbookSpec.content.sources.push({ url, editUrl: false })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2322,7 +2323,7 @@ describe('aggregateContent()', function () {
       it('should use editUrl pattern to generate editUrl', async () => {
         const webUrl = 'https://gitlab.com/antora/demo/demo-component-b'
         const url = webUrl + '.git'
-        const sourceDev = { url, branches: 'master', startPath: 'docs', editUrl: '{web_url}/blob/{refhash}/{path}' }
+        const sourceDev = { url, branches: 'main', startPath: 'docs', editUrl: '{web_url}/blob/{refhash}/{path}' }
         const sourceTwo = { url, branches: 'v2.0', startPath: 'docs', editUrl: '{web_url}/blob/{refname}/{path}' }
         playbookSpec.content.sources.push(sourceDev)
         playbookSpec.content.sources.push(sourceTwo)
