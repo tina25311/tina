@@ -25,7 +25,7 @@ We, as the project founders, must own the responsibility for using this term and
 I wanted to conclude that, at the end of the day, it doesn't matter where the name comes from (...).
 The fact that it has bad connotations, or inspires dread for individuals and whole communities, is reason enough to change it.
 
-At the time of drafting this ADR, most of the repositories in the Antora organization still use the name master for the default branch.
+At the time of drafting this ADR, many of the repositories in the Antora organization still use the name master for the default branch.
 Prior to Antora 3, Antora used the keyword master to define a component version as unversioned when assigned as a value to the `version` key.
 Our decision to use master as a built-in value for the `version` key was a mistake, not only because it harms people due to its association to the master-slave metaphor, but also because one of the founding tenets of Antora is that the branch name and the version aren't coupled.
 Relying on master as a built-in value for `version` creates a false equivalence between the version of a component and the repository branch where the source files are stored.
