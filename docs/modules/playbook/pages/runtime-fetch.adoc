@@ -24,6 +24,7 @@ runtime:
   fetch: true
 ----
 
+[#fetch-option]
 == Fetch option
 
 You don't have to modify the playbook file directly to set this key.
