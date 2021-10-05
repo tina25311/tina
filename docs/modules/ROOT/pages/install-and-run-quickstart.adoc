@@ -128,8 +128,8 @@ Antora will clone the content and UI repositories and generate your documentatio
 IMPORTANT: By default, Antora does not sync the repository once it clones it.
 Instead, it tries to work offline by using the repository in the cache it previously cloned.
 This default can create some confusion when getting started.
-Therefore, we recommend including the xref:playbook:runtime-fetch#fetch-option[`--fetch` option] in the command until you're more familiar with Antora.
-You can also set the xref:playbook:runtime-fetch#fetch-key[fetch key] in your playbook to enable this setting permanently.
+Therefore, we recommend including the xref:playbook:runtime-fetch.adoc#fetch-option[`--fetch` option] in the command until you're more familiar with Antora.
+You can also set the xref:playbook:runtime-fetch.adoc#fetch-key[fetch key] in your playbook to enable this setting permanently.
 
 Navigate to the [.path]_docs-site/build/site_ directory and open the [.path]_index.html_ file in your browser to see the result.
 Congratulations!
