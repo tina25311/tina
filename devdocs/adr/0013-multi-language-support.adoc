@@ -1,0 +1,334 @@
+= ADR 0013: Support multi-language documentation
+:revdate: 2020-7-12
+
+== Status
+
+draft
+
+== Context
+
+Supporting multi-language or translated sites is often necessary; see link:https://gitlab.com/antora/antora/-/issues/208[].
+This ADR aims to discuss design decisions for an initial implementation.
+
+== Out of scope
+
+Antora is designed to got from source documents in git repositories to a complete site.
+Therefore, this ADR only covers the situation where all source documents in all languages are already present in git repositories.
+Out of scope is any consideration of how the translations get there, perhaps with the aid of translation tools, or ways to directly add translated source documents to the content catalog, perhaps through a pipeline extension.
+
+== Overall concept
+
+Antora currently divides content by component-version, i.e. a combination of `component` and `version`.
+Each component-version is sourced from one or more sources and has a single "master" `antora.yml` component descriptor.
+Multi-lingual support will divide content by component-version-language, i.e. a combination of `component`, `version` and `language`.
+
+== Design decisions
+
+=== Language indicator syntax
+
+There are actually quite a few choices: link:https://en.wikipedia.org/wiki/Language_code[].
+
+One choice is the link:https://en.wikipedia.org/wiki/IETF_language_tag[] such as `en-US`
+
+The most obvious choice is a POSIX locale specifier: link:https://en.wikipedia.org/wiki/Locale_(computer_software)[] such as `en_US`
+These appear to be roughly equivalent to the IETF tags with hyphens replaced with underscores.
+
+=== Principal or default language
+
+Current sites should build successfully without change with multi-language support added.
+Therefore there must be a default principal language, to be assumed wherever needed and not specified.
+It must be possible to specify this for the site.
+
+==== Conclusion
+
+When not specified, this should be en_US.
+
+=== Resource id structure
+
+The Antora resource id
+
+* must support specifying language with a language id.
+* the language id must be optional
+* be consistent with the current resource id structure
+* allow all current optional segments to be optional with or without the language segment.
+
+Since the `language` specifier is at the same logical level as `component` and `version`, it should be grouped with these in the resource id.
+
+The three possible orderings are:
+
+* language/version/component
+* version/language/component
+* version/component/language
+
+Since a version or component could possibly have a language identifier as a value, and both version and component are optional, a separator other than '@' or ':' is needed.
+Since the existing content familes ('page', 'example', etc) are not language identifiers, the '$' family separator could be reused.
+
+==== Convention for this document
+
+Resource ids will be written using the order `language$version@component`.
+
+==== Defaults in partial resource ids
+
+It should be easy to refer to the same page or a closely related page in another language.
+From `en$1.0@component-a:module-a:page$foo/bar.adoc` a spanish translation should be found with `es$foo/bar.adoc`.
+
+When omitted, the language identifier must default to the current language identifier.
+This is required for consistency with existing resource ids, which all lack the language segment.
+
+Relative must always be specified.
+
+Family is either implied by the use of the resource id or specified.
+
+In the context of `lang-a$version-a@component-a:module-a` a fully specified resource id would be `lang-b$version-b@component-b:module-b`.
+
+This table shows what is inferred when segments are omitted from the target resource id.
+The assumption is that the target page exists.
+
+[cols=4*,options=headers]
+|===
+| Language
+| Version
+| Component
+| Module
+
+4+^| *Single omission*
+
+| lang-a
+|
+|
+|
+
+|
+| latest in language-component
+|
+|
+
+|
+|
+| component-a
+|
+
+|
+|
+|
+| ROOT
+
+4+^| *Double omission*
+
+| lang-a
+| latest in lang-a-component
+|
+|
+
+| lang-a
+|
+| component-a
+|
+
+| lang-a
+|
+|
+| ROOT
+
+|
+| version-a
+| component-a
+|
+
+|
+| latest in language-component
+|
+| ROOT
+
+|
+|
+| component-a
+| module-a
+
+4+^| *Triple omission*
+
+| lang-a
+| version-a
+| component-a
+|
+
+| lang-a
+| latest in principal-language-component
+|
+| ROOT
+
+| lang-a
+|
+| component-a
+| module-a
+
+|
+| version-a
+| component-a
+| module-a
+
+4+^| *Total omission*
+
+| lang-a
+| version-a
+| component-a
+| module-a
+
+|===
+
+The choice to default to lang-a when language is not specified is required for compatibility with all existing language-free resource ids.
+All other entries in the table (i.e., the last 3 columns) reflect existing behavior.
+
+==== Partial translations (for page links)
+
+Pages may exist in only some languages in a particular component-version.
+
+A report of which pages are present and which missing for each language could be very useful.
+
+It might be convenient for an xref that does not specify language, and references a page missing in the current language, be resolved to a different language, where the page exists, automatically.
+This would enable building up a component-version translation page by page, without having to modify previously translated pages to update links.
+Several possible schemes could support this.
+
+===== Single "backup language"
+
+Each language could have one "backup language". These would form a unbranched path from the current language that could be searched for an existing page.
+Of course, the path could be circular.
+
+===== List of "backup languages"
+
+Each language would have a list of backup languages, which would be searched for the page in order.
+This would seem to involve more configuration than the previous option, but would support scenarios like Apache TomEE:
+
+* All pages are present in English
+* Some pages are translated to Spanish, and some to Portugese.
+* Most likely pages missing in Spanish should have Portugese backup if it exists, otherwise English, and pages missing in Portugese should have Spanish backup if it exists, otherwise English.
+
+Another possibility would be to duplicate the existing 'backup language page' in the current language.
+This would have the big advantage of keeping the UI in the 'current language' and requiring no modification in the link calculations.
+Instead, the content catalog would be scanned for missing pages and duplicates made.
+Quite possibly the rendered asciidoc could be shared.
+
+===== Conclusion
+
+Needs more thought and experimentation.
+See also UI section.
+
+=== Playbook
+
+The Antora playbook must be able to specify the principal language.
+This naturally fits under the site key.
+
+The Antora playbook contains the site.title key which will need to be available in multiple languages.
+This could be specified in the playbook or in one or more auxilliary files.
+If specified in the playbook, a natural key would be `site.title.<language-id>`.
+If specified in auxilliary files, one choice would be files named `title_<language-id>.yml`.
+
+==== Convention for this document
+
+Principal language will be specified `site.<language-id>`.
+Translated titles will be specified in the playbook under the `site.title.<language-id>` key.
+
+=== Component descriptor
+
+Since `language` is now a coordinate of equal importance as `component` and `version` the component descriptor must specify it.
+For backwards compatitibility, it must be possible to omit it, in which case it should default to the principal language.
+
+Some choices of key:
+
+* `language`
+* `lang`
+* `locale`
+
+The component descriptor can be used to specify the default layout for pages in the component-version-language.
+This value could have a default of <site-wide default layout>_<language-id>.
+
+==== Convention for this document
+
+The `lang` key will be assumed, although <language-id> will be used in expressions.
+
+=== Source organization
+
+The most straightforward source organization involves independent sources for each language-component-version.
+Compressed options are also possible, where a single component-version source supports several languages.
+In this case, the component descriptor will need to support multiple languages for at least `component-title` and `display-version`.
+This could be done either in the current component descriptor or 'add-on' files, such as perhaps partial component descriptors such as `antora-es.yml`.
+
+Two choices among many for compressed component directory structure are:
+
+* modules/<language>/<module>/...
+* as current with pages indicating the language, e.g. `foo/bar_es.adoc`
+
+The content aggregator would decompress this organization into separate language-component-versions.
+
+==== Conclusion
+
+Consider this after initial implementation and consider whether it should be supported only with pipeline extensions.
+
+=== Content catalog
+
+Another level of hierarchy is needed with component, component-version and now component-version-language.
+As with the resource id organization, there are three possibilities.
+As with any hierarchical database, the order chosen has effects on how one thinks about the information.
+
+* `language-component-version` tends to imply separate, possibly equivalent, sites for each language.
+* `component-language-version` tends to imply that different languages might have different sets of available versions.
+* `component-version-language` tends to imply that the capabilities of the component-version are independent of language.
+
+Many of the query methods of ContentCatalog will need to be extended to include the language criterion, and methods may need to be added.
+
+==== Conclusion (provisional)
+
+Choose `component-version-language` to imply that content is translated completely and accurately.
+
+=== UI bundle
+
+UI bundles should support multiple languages.
+UI bundles already support containing multiple UIs, at internal paths.
+The most obvious solution is to have separate bundles for each language, each at a path equal to the language identifier.
+However, this won't currently work as a site may have only one UI, and is apt to cause extensive and hard-to-maintain duplication.
+It would be appropriate if the generated site structure was completely independent sites for each language.
+Most likely, javascript, css, and image UI resources will generally be language-independent, and many templates will also be language independent.
+Translating to a right-to-left language would likely require different css.
+
+Questions:
+
+* is it possible to parameterize inclusion of template files, such as footer-<language-id>.hbs?
+* how often will different layouts for different languages be needed?
+
+==== Conclusion
+
+Needs further investigation.
+
+=== UI building
+
+Generally when you are looking at a page in one language, everything you see should assume you want to stay in that language.
+However, it should also be easy to switch languages.
+
+Two possibilities for switching languages are:
+
+* A language picker similar to the page version picker.
+* Showing all language-component-versions in the component explorer.
+
+The set of languages available for each component or component-version may vary.
+
+The version picker should be able to show all versions for which the page exists in some language.
+This would happen automatically if the proprosal to copy missing pages from a backup language were adopted.
+
+The component explorer should show all components, even if they don't exist in the current language.
+Note that this conflicts with the first point, that everything should keep you in the current language.
+
+==== Conclusion
+
+Needs further investigation.
+
+=== Generated site structure
+
+The language can be reflected just about anywhere in the generated site structure, from completely separate parallel sites, to one directory hierarchy with translated html files identified with a language suffix.
+
+One possibility is to support all choices using configuration.
+Otherwise investigation of industry practice is needed.
+
+==== Conclusion
+
+Needs further investigation.
+
