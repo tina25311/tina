@@ -1,6 +1,6 @@
 = Run Antora in a Container
 // URLs
-:url-docs-job: https://gitlab.com/antora/docs.antora.org/blob/master/.gitlab-ci.yml
+:url-docs-job: https://gitlab.com/antora/docs.antora.org/blob/main/.gitlab-ci.yml
 :url-docker: https://docs.docker.com
 :url-podman: https://podman.io
 :url-docker-hub: https://hub.docker.com/r/antora/antora

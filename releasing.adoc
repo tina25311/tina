@@ -75,7 +75,7 @@ The auth token for publishing to npmjs.com is stored in the RELEASE_NPM_TOKEN se
 Lerna uses this token to authenticate as the release manager (currently https://www.npmjs.com/~mojavelinux[mojavelinux]).
 This is done by writing the token to an [.path]_.npmrc_ file located at the root of the project (i.e., [.path]_.npmrc_).
 
-After the package is published, the tag and the corresponding commit to master must be pushed from the CI job to the git repository.
+After the package is published, the tag and the corresponding commit to the main branch must be pushed from the CI job to the git repository.
 A dedicated SSH key (with no passphrase) has been generated for this purpose using `ssh-keygen -t rsa -b 4096 -C antora-releases -f antora-releases`.
 The private SSH key is stored in the RELEASE_SSH_PRIV_KEY secret variable defined in the CI/CD configuration.
 The corresponding public SSH key is registered as a deploy key in the repository configuration.
@@ -102,8 +102,8 @@ Thanks to lerna lifecycle hooks, this is possible.
 The release script places two lifecycle scripts into the scripts folder of each package folder during the release process.
 These scripts are wrappers that turn around and invoke the following two scripts:
 
-* https://gitlab.com/antora/antora/blob/master/scripts/prepublish.js[prepublish.js]
-* https://gitlab.com/antora/antora/blob/master/scripts/postpublish.js[postpublish.js]
+* https://gitlab.com/antora/antora/blob/main/scripts/prepublish.js[prepublish.js]
+* https://gitlab.com/antora/antora/blob/main/scripts/postpublish.js[postpublish.js]
 
 In the *prepublish* script, the [.path]_README.adoc_ file is moved out of the way, its contents are transformed to Markdown and saved as [.path]_README.md_.
 The packaging script then picks up the generated [.path]_README.md_ file and bundles it with the package (ignoring the hidden README.adoc).
@@ -111,7 +111,7 @@ The packaging script then picks up the generated [.path]_README.md_ file and bun
 The *postpublish* script restores the original state by removing the [.path]_README.md_ file and moving [.path]_README.adoc_ back into place.
 As a result, the npm registry displays the Markdown version of the README, but we get to maintain the content in AsciiDoc format.
 
-In addition to these two package-scope scripts, the https://gitlab.com/antora/antora/blob/master/scripts/postpublish.js[version.js] script runs once at the start of the Lerna lifecycle to apply the following changes before the files are committed and tagged for the release:
+In addition to these two package-scope scripts, the https://gitlab.com/antora/antora/blob/main/scripts/postpublish.js[version.js] script runs once at the start of the Lerna lifecycle to apply the following changes before the files are committed and tagged for the release:
 
 * Replace the Unreleased section title in [.path]_CHANGELOG.adoc_ with the release version and date.
 * Update the docs version in [.path]_docs/antora.yml_.
@@ -153,7 +153,7 @@ RELEASE_NPM_TAG=preview
 ----
 
 The [.path]_releaserc_ file can also control the branch from which the release will be cut.
-But default, the release is cut from the master branch.
+But default, the release is cut from the main branch.
 To override this default, set the RELEASE_BRANCH shell variable in the [.path]_releaserc_ file.
 For example:
 
@@ -164,7 +164,7 @@ RELEASE_VERSION=patch
 RELEASE_BRANCH=1.x
 ----
 
-CAUTION: If you release from a branch other than master, you'll need to carry over the change that the release scripts makes to the CHANGELOG to the master branch manually in order to retain a continuity of releases.
+CAUTION: If you release from a branch other than main, you'll need to carry over the change that the release scripts makes to the CHANGELOG to the main branch manually in order to retain a continuity of releases.
 
 Modifying the [.path]_releaserc_ file is the central mechanism for triggering a release, as covered in the next section.
 
@@ -176,7 +176,7 @@ The release is triggered by pushing a new commit to the releases branch.
 
 The steps to perform a release are as follows:
 
-. Rebase the releases branch on top of the release branch (e.g., master).
+. Rebase the releases branch on top of the release branch (e.g., main).
 . Update the [.path]_releaserc_ file, if necessary (typically to set the release version).
  ** The commit message on the release branch is arbitrary, but can be something like "`cut release`".
 . Force push the branch.
@@ -190,7 +190,7 @@ If this is not the case, the release job will refuse to publish the release.
 Here are the steps in the form of a commands:
 
  $ git fetch origin
-   git rebase origin/master
+   git rebase origin/main
    git commit --amend --date="$(date)" -m "cut release" releaserc
    git push --force origin releases
 
@@ -199,7 +199,7 @@ This job is configured to only run on the releases branch.
 The release job immediately clones the release branch and performs the release from there.
 Thus, the releases branch is merely a utility.
 
-//NOTE: In the future, we may decide to add multiple release branches, one for each version line (e.g., 1.x, 2.x, master, etc.)
+//NOTE: In the future, we may decide to add multiple release branches, one for each version line (e.g., 1.x, 2.x, main, etc.)
 
 In summary, the releases branch is used to:
 
@@ -275,7 +275,7 @@ Start by cloning the repository to use as the upstream target:
  $ git clone git@gitlab.com:antora/antora.git test-release-to
    cd test-release-to
 
-Next, switch to another branch so the master branch can receive commits and we have something to come back to:
+Next, switch to another branch so the main branch can receive commits and we have something to come back to:
 
  $ git checkout -b current
    cd ..
@@ -291,7 +291,7 @@ Next, change the remote origin to point to our local (fake) target:
 
 Confirm this is set up correctly by doing an empty push:
 
- $ git push origin master
+ $ git push origin main
 
 === Perform a Local Release
 
@@ -321,7 +321,7 @@ Start by purging the packages from the private npm repository:
 Next, move to the [.path]_test-release-to_ repository and clean stuff up:
 
  $ git tag -d `git tag`
-   git checkout master
+   git checkout main
    git reset --hard `git rev-parse current`
    git checkout current
 
@@ -329,7 +329,7 @@ Now, go back to the [.path]_test-release-from_ repository and sync with the loca
 
  $ git tag -d `git tag`
    git fetch origin
-   git reset --hard origin/master
+   git reset --hard origin/main
 
 Now you should be all set to try the release again!
 
@@ -339,7 +339,7 @@ In the future, we may consider other ways to trigger a release aside from using 
 
 === Pipeline Triggers
 
-One possible approach is to use a https://docs.gitlab.com/ee/ci/triggers/[pipeline trigger] against the master branch.
+One possible approach is to use a https://docs.gitlab.com/ee/ci/triggers/[pipeline trigger] against the main branch.
 The reason we decided to defer using this strategy is because there's no clear way to disable a job for a certain trigger or distinguish one trigger from another.
 If we want to use pipeline triggers for other purposes, there's a risk we could inadvertently trigger a release.
 Even with protections in place, such as checking for a special environment variable, the release job would still run on any trigger.
@@ -347,7 +347,7 @@ Even with protections in place, such as checking for a special environment varia
 === Commit Tags
 
 Another way to trigger a release is to use a commit tag.
-When pushing a commit to master, either directly or by merging an MR, we could use a special tag in the commit message to indicate that a release could follow.
+When pushing a commit to the main branch, either directly or by merging an MR, we could use a special tag in the commit message to indicate that a release could follow.
 For example, the commit message might look like:
 
  add a cool new feature [ci release]

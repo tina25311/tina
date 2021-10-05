@@ -16,20 +16,21 @@
 :url-ci-pipelines: {url-project}/pipelines
 :url-members: {url-project}/-/project_members
 // Project documentation URIs (alphebetized)
-:url-adrs: {url-project}/tree/master/devdocs/adr
-:url-adr-0001: {url-adrs}/0001-minimum-node-version.adoc
-:url-asciidoc-loader-arch: {url-project}/blob/master/packages/asciidoc-loader/devdocs/architecture-guidebook.adoc
-:url-cli-arch: {url-project}/blob/master/packages/cli/devdocs/architecture-guidebook.adoc
-:url-content-aggregator-arch: {url-project}/blob/master/packages/content-aggregator/devdocs/architecture-guidebook.adoc
-:url-content-classifier-arch: {url-project}/blob/master/packages/content-classifier/devdocs/architecture-guidebook.adoc
-:url-document-converter-arch: {url-project}/blob/master/packages/document-converter/devdocs/architecture-guidebook.adoc
-:url-nav-builder-arch: {url-project}/blob/master/packages/navigation-builder/devdocs/architecture-guidebook.adoc
-:url-page-composer-arch: {url-project}/blob/master/packages/page-composer/devdocs/architecture-guidebook.adoc
-:url-playbook-builder-arch: {url-project}/blob/master/packages/playbook-builder/devdocs/architecture-guidebook.adoc
-:url-site-generator-arch: {url-project}/blob/master/packages/site-generator-default/devdocs/architecture-guidebook.adoc
-:url-site-mapper-arch: {url-project}/blob/master/packages/site-mapper/devdocs/architecture-guidebook.adoc
-:url-site-publisher-arch: {url-project}/blob/master/packages/site-publisher/devdocs/architecture-guidebook.adoc
-:url-ui-loader-arch: {url-project}/blob/master/packages/ui-loader/devdocs/architecture-guidebook.adoc
+:url-adrs: {url-project}/tree/main/devdocs/adr
+:url-adr-0001: {url-project}/blob/main/devdocs/adr/0001-minimum-node-version.adoc
+:url-packages: {url-project}/blob/main/packages
+:url-asciidoc-loader-arch: {url-packages}/asciidoc-loader/devdocs/architecture-guidebook.adoc
+:url-cli-arch: {url-packages}/cli/devdocs/architecture-guidebook.adoc
+:url-content-aggregator-arch: {url-packages}/content-aggregator/devdocs/architecture-guidebook.adoc
+:url-content-classifier-arch: {url-packages}/content-classifier/devdocs/architecture-guidebook.adoc
+:url-document-converter-arch: {url-packages}/document-converter/devdocs/architecture-guidebook.adoc
+:url-nav-builder-arch: {url-packages}/navigation-builder/devdocs/architecture-guidebook.adoc
+:url-page-composer-arch: {url-packages}/page-composer/devdocs/architecture-guidebook.adoc
+:url-playbook-builder-arch: {url-packages}/playbook-builder/devdocs/architecture-guidebook.adoc
+:url-site-generator-arch: {url-packages}/site-generator-default/devdocs/architecture-guidebook.adoc
+:url-site-mapper-arch: {url-packages}/site-mapper/devdocs/architecture-guidebook.adoc
+:url-site-publisher-arch: {url-packages}/site-publisher/devdocs/architecture-guidebook.adoc
+:url-ui-loader-arch: {url-packages}/ui-loader/devdocs/architecture-guidebook.adoc
 // External URLs (alphebetized)
 :url-asciidoc-recommended: https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line
 :url-async-func: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
@@ -208,7 +209,7 @@ rename component descriptor filename to antora.yml
 - promote component descriptor filename to a constant
 ----
 
-. Prior to submitting a MR, *rebase your branch against the latest master*, then push the branch to your fork.
+. Prior to submitting a MR, *rebase your branch against the main branch*, then push the branch to your fork.
 
 . *Create an MR from your branch* (using the URL shown in the terminal when you push).
 .. *Begin the title of the MR with the issue it resolves* followed by a restatement of the issue.
@@ -838,7 +839,7 @@ For more detailed instructions for how to install a prerelease, refer to the htt
 
 === Continuous Integration
 
-Both the linter and the test suite are run in a continuous integration (CI) environment on every commit to master and on every merge request.
+Both the linter and the test suite are run in a continuous integration (CI) environment on every commit to the main branch and on every merge request.
 A merge request cannot be merged unless the CI pipeline succeeds.
 
 The CI pipeline is run in the https://docs.gitlab.com/ce/ci/[GitLab CI] environment using the https://store.docker.com/images/node[node:12] docker image.
@@ -969,7 +970,7 @@ The project maintainers are responsible for:
 * managing organization and project permissions
 * managing the community and code of conduct
 * setting ADR statuses
-* merging requests into master
+* merging requests into the main branch
 * managing and releasing the pipeline
 
 [#mr-approval]
@@ -988,8 +989,8 @@ The reviewer is responsible for making sure the MR meets the project and issue c
 *If the MR needs to be modified, notify the contributor and add helpful information to the MR or the issue*.
 Once the contributor has modified the MR, evaluate it again.
 
-When the MR meets the project and issue criteria, it can be merged into master.
-*When the branch is ready to be merged into master*:
+When the MR meets the project and issue criteria, it can be merged into the main branch.
+*When the branch is ready to be merged into the main branch*:
 
 * Rebase the MR if necessary.
 * Modify the commit message(s) if necessary.

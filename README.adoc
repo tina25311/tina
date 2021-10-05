@@ -11,7 +11,7 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 :url-ui-repo: {url-org}/antora-ui-default
 :url-issues: {url-repo}/issues
 :url-ci-pipelines: {url-repo}/pipelines
-:img-ci-status: {url-repo}/badges/master/pipeline.svg
+:img-ci-status: {url-repo}/badges/main/pipeline.svg
 :url-chat: https://antora.zulipchat.com
 :url-twitter: https://twitter.com/antoraproject
 :url-twitter-hash: https://twitter.com/hashtag/antora?src=hash
@@ -131,13 +131,13 @@ site:
 content:
   sources:
   - url: https://@gitlab.com/antora/demo/demo-component-a.git
-    branches: master
+    branches: HEAD
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: [v2.0, v1.0]
     start_path: docs
 ui:
   bundle:
-    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
 ----
 
@@ -145,7 +145,7 @@ We're using Antora's default UI as the UI for the site.
 Antora will take care of assembling all this input together to produce a documentation site.
 
 The UI bundle can be loaded from a URI or a local filesystem path.
-If you want to use your own UI bundle, follow the instructions in the README for the {url-ui-repo}/blob/master/README.adoc[Default UI].
+If you want to use your own UI bundle, follow the instructions in the README for the {url-ui-repo}/blob/HEAD/README.adoc[Default UI].
 
 ==== Run Antora
 

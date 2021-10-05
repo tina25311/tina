@@ -103,7 +103,7 @@ const sources = playbook.content.sources
 
 == Data
 
-The schema for the playbook is managed in the file https://gitlab.com/antora/antora/blob/master/packages/playbook/lib/config/schema.js[schema.js].
+The schema for the playbook is managed in the file https://gitlab.com/antora/antora/blob/HEAD/packages/playbook/lib/config/schema.js[schema.js].
 The schema defines the hierarchy of configuration properties as well as the names of environment variables and process arguments that can be used to override the default values or the values specified in the playbook spec.
 It may be possible in the future for extensions to contribute entries to the schema.
 

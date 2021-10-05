@@ -14,7 +14,7 @@ if [ -z $RELEASE_VERSION ]; then
   fi
 fi
 
-if [ -z $RELEASE_BRANCH ]; then RELEASE_BRANCH=master; fi
+if [ -z $RELEASE_BRANCH ]; then RELEASE_BRANCH=main; fi
 
 # make sure the release branch exists as a local branch
 git fetch origin

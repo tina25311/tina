@@ -3,7 +3,7 @@
 :listing-caption!:
 :url-demo: https://gitlab.com/antora/demo
 :url-demo-project: {url-demo}/docs-site
-:url-demo-playbook: {url-demo-project}/raw/master/antora-playbook.yml
+:url-demo-playbook: {url-demo-project}/raw/main/antora-playbook.yml
 :url-demo-component-a: {url-demo}/demo-component-a
 :url-demo-component-b: {url-demo}/demo-component-b
 :url-default-ui: https://gitlab.com/antora/antora-ui-default
@@ -58,13 +58,13 @@ site:
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git
-    branches: master
+    branches: HEAD
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: [v2.0, v1.0]
     start_path: docs
 ui:
   bundle:
-    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
 ----
 <1> The 404 page and sitemap files are only generated if the site `url` key is set.

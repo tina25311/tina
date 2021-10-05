@@ -1,7 +1,7 @@
 = Antora Changelog
 
 This document provides a summary of all notable changes to the core Antora components by release.
-For a detailed view of what's changed, refer to the repository's https://gitlab.com/antora/antora/commits/master[commit history].
+For a detailed view of what's changed, refer to the repository's https://gitlab.com/antora/antora/commits/main[commit history].
 
 This project utilizes semantic versioning.
 
@@ -857,7 +857,7 @@ _No changes since previous release._
 
 === Added
 
-* *content-aggregator*: Interpret string branches and tags patterns defined on a content source as CSV (e.g., `master,v*`)
+* *content-aggregator*: Interpret string branches and tags patterns defined on a content source as CSV (e.g., `main, v*`)
 * *page-composer*: Bind Antora version to antoraVersion variable in UI model
 * *default-ui*: Add support for additional languages in highlight.js configuration (Kotlin, Scala, Haskell, and nix)
 * *demo*: Upgrade playbook for demo site to use the latest Antora features

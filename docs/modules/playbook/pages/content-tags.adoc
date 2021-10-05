@@ -63,14 +63,14 @@ With the creation of the default tags filter, Antora will now discover and use t
 [#mix-branches-and-tags]
 == Use tags and branches from the same repository
 
-In this example, we'll load the `master` branch of a content repository as well as all of the tags starting with the letter `v`.
+In this example, we'll load the `main` branch of a content repository as well as all of the tags starting with the letter `v`.
 
 [source,yaml]
 ----
 content:
   sources:
   - url: https://git-service.com/org/repo-x.git
-    branches: [master, sneaky-chinchilla]
+    branches: [main, sneaky-chinchilla]
     tags: v*
 ----
 

@@ -107,7 +107,7 @@ The model should have the following properties:
  ** domains - a list of the domains in the site
 * domain - information about the page's domain
  ** name - the name of the page's domain, retrieved from the `src.component` property of the file
- ** versioned - whether this is a versioned page, true if the page's version `src.version` is not "master"
+ ** versioned - whether this is a versioned page, true if the page's version `src.version` is not empty
  ** url - the start URL for the page's domain
  ** root - whether the current domain is the root domain
  ** version - information about the page's version

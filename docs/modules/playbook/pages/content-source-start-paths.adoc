@@ -29,7 +29,7 @@ If both the `start_path` and `start_paths` keys are present on a content source,
 Like with the singular start path, the start paths are searched per reference (i.e., branch or tag).
 That means a xref:ROOT:component-version-descriptor.adoc[component version descriptor] must be found at each start path for each reference.
 
-Typically, when using multiple start paths, you'll only be using a single reference anyway (e.g., `master`).
+Typically, when using multiple start paths, you'll only be using a single reference anyway (e.g., `main`).
 If you do use multiple references in this scenario, the assumption is that each reference shares the same layout.
 
 == Use cases
@@ -149,7 +149,7 @@ For instance, if you have multiple components stored in a branch, you could list
 content:
   sources:
   - url: https://github.com/org/repo1
-    branches: master
+    branches: main
     start_paths: docs/product-a, docs/product-b, docs/product-c
 ----
 
@@ -161,7 +161,7 @@ Or, as shown in <<ex-wildcard>>, you could use a wildcard segment and reduce the
 content:
   sources:
   - url: https://github.com/org/repo1
-    branches: master
+    branches: main
     start_paths: docs/product-*
 ----
 
@@ -190,7 +190,7 @@ You can use a prefix in your file path before a brace expression to simplify wha
 content:
   sources:
   - url: https://github.com/org/repo1
-    branches: master
+    branches: main
     start_paths: docs/v{1..9}
 ----
 
@@ -202,7 +202,7 @@ You can also use wildcards in brace expressions to help expand values.
 content:
   sources:
   - url: https://github.com/org/repo1
-    branches: master
+    branches: main
     start_paths: docs/product-v{1*,2*}
 ----
 

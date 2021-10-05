@@ -21,7 +21,7 @@ A `start_path` key can only be configured per `url` key (it can't be set directl
 content:
   sources:
   - url: https://git-service.com/org/repo.git
-    branches: [master, v1.0]
+    branches: [main, v1.0]
     start_path: path/to/content-source-root
 ----
 

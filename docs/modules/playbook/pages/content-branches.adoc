@@ -103,7 +103,7 @@ Branches can be specified by their exact name.
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches: [master, sneaky-chinchilla, 1.0, 1.5]
+    branches: [main, sneaky-chinchilla, 1.0, 1.5]
 ----
 
 [#glob-pattern]

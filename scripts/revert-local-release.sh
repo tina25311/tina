@@ -6,11 +6,11 @@ done
 
 cd ${1:-../test-release-to}
 git tag -d `git tag`
-git checkout master
+git checkout main
 git reset --hard `git rev-parse current`
 git checkout current
 
 cd -
 git tag -d `git tag`
 git fetch origin
-git reset --hard origin/master
+git reset --hard origin/main

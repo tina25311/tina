@@ -1,7 +1,7 @@
 = Edit URL Key
 :page-aliases: configure-edit-url.adoc
 // placeholders that are fulfilled by the file's origin information
-//https://gitlab.com/antora/antora/blob/master/docs/modules/cli/pages/index.adoc
+//https://gitlab.com/antora/antora/blob/main/docs/modules/cli/pages/index.adoc
 
 On this page, you'll learn:
 
@@ -63,7 +63,7 @@ web_url:: The `+{web_url}+` placeholder is the corresponding web URL for the con
 For example, [.path]_\https://gitlab.com/cave/sneaky.git_ is converted to [.path]_\https://gitlab.com/cave/sneaky_.
 This placeholder can be omitted if you use a web URL that differs from the one Antora computes.
 
-refname:: The `+{refname}+` is the name of the git reference (e.g., v2.1.x, master, rawhide).
+refname:: The `+{refname}+` is the name of the git reference (e.g., v2.1.x, main, rawhide).
 
 refhash:: The `+{refhash}+` is the commit hash of the git reference (e.g., aab0e5684afe0d4e05955fbef72b6e5538bb1ec5).
 
