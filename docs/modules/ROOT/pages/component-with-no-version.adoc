@@ -1,6 +1,6 @@
 = Define a Component Version with No Version
 
-Sometimes the project or process your documenting isn't versioned.
+Sometimes the project or process you're documenting isn't versioned.
 For example, hosted technology services and team handbooks may only need their content to represent how the service or process works right now.
 In these cases, you may prefer the component version's page URLs not contain the `version` value.
 This is where the special value `master` comes into play.
