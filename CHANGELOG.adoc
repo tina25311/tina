@@ -41,6 +41,7 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Don't add role to element created for an image macro that has an internal xref target (#603)
 * *asciidoc-loader*: Add only the `xref-unresolved` role to element created for an image macro that has an unresolved xref target (#603)
 * *cli*: Begin CLI error message with name of base call (i.e., `antora:`) instead of generic `error:` prefix (#855)
+* *cli*: Log unhandled error at fatal level (#788)
 
 == 3.0.0-alpha.8 (2021-08-13)
 

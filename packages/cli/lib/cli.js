@@ -6,7 +6,7 @@ const cli = require('./commander')
 // Q: can we ask the playbook builder for the config schema?
 const configSchema = require('@antora/playbook-builder/lib/config/schema')
 const convict = require('@antora/playbook-builder/lib/solitary-convict')
-const { finalizeLogger } = require('@antora/logger')
+const { configureLogger, getLogger, finalizeLogger } = require('@antora/logger')
 const ospath = require('path')
 const userRequire = require('@antora/user-require-helper')
 
@@ -18,30 +18,38 @@ async function run (argv = process.argv) {
   return cli.parseAsync(args.length ? args : ['help'], { from: 'user' })
 }
 
-function exitWithError (err, showStack, msg = undefined) {
+function exitWithError (err, opts, msg = undefined) {
   if (!msg) msg = err.message || err
-  if (showStack) {
-    let stack
+  const name = msg.startsWith('asciidoctor: FAILED: ') ? (msg = msg.slice(21)) && 'asciidoctor' : cli.name()
+  const logger = getLogger(null)
+    ? getLogger(name)
+    : configureLogger({ format: 'pretty', level: opts.silent ? 'silent' : 'fatal', failureLevel: 'fatal' }).get(name)
+  if (opts.stacktrace) {
+    let loc, stack
     if ((stack = err.backtrace)) {
-      msg = [`error: ${msg}`, ...stack.slice(1)].join('\n')
+      err = Object.assign(new Error(msg), { stack: ['Error', ...stack.slice(1)].join('\n') })
     } else if ((stack = err.stack)) {
-      if (err instanceof SyntaxError) {
-        let loc
-        ;[loc, stack] = stack.split(/\n+(?=SyntaxError: )/)
-        msg = stack.replace('\n', `\n    at ${loc}\n`)
-      } else if (stack.startsWith(`${err.name}: ${msg}\n`)) {
-        msg = stack
-      } else {
-        msg = [msg, ...stack.split('\n').slice(1)].join('\n')
+      if (err instanceof SyntaxError && stack.includes('\nSyntaxError: ')) {
+        ;[loc, stack] = stack.split(/\n+SyntaxError: [^\n]+/)
+        err = Object.assign(new SyntaxError(msg), { stack: stack.replace('\n', `SyntaxError\n    at ${loc}\n`) })
+      } else if (stack.startsWith(`${err.name}: ${msg}`)) {
+        stack = stack.replace(`${err.name}: ${msg}`, '').replace(/^\n/, '')
+        err = Object.assign(new err.constructor(msg), { stack: stack ? `${err.name}\n${stack}` : undefined })
       }
     } else {
-      msg = `error: ${msg} (no stack)`
+      err = Object.assign(new Error(msg), { stack: undefined })
     }
-    console.error(msg)
+    if ({}.propertyIsEnumerable.call(err, 'name')) Object.defineProperty(err, 'name', { enumerable: false })
+    err.stack = `Cause: ${err.stack || '(no stacktrace)'}`
+    logger.fatal(err, msg)
   } else {
-    console.error(`error: ${msg}\nAdd the --stacktrace option to see the cause.`)
+    logger.fatal(msg + '\nAdd the --stacktrace option to see the cause of the error.')
   }
-  process.exit(1)
+  return exit()
+}
+
+function exit () {
+  return finalizeLogger().then((failOnExit) => process.exit(failOnExit ? 1 : process.exitCode))
 }
 
 function getTTYColumns () {
@@ -106,12 +114,13 @@ cli
   )
   .action(async (playbookFile, options, command) => {
     const dot = ospath.resolve(playbookFile, '..')
+    const errorOpts = { stacktrace: cli.stacktrace, silent: command.silent }
     const userRequireContext = { dot, paths: [dot, __dirname] }
     if (cli.requireRequests) {
       try {
         cli.requireRequests.forEach((requireRequest) => userRequire(requireRequest, userRequireContext))
       } catch (err) {
-        exitWithError(err, cli.stacktrace)
+        await exitWithError(err, errorOpts)
       }
     }
     const generator = options.generator
@@ -121,15 +130,14 @@ cli
     } catch (err) {
       let msg = 'Generator not found or failed to load.'
       if (generator && generator.charAt() !== '.') msg += ` Try installing the '${generator}' package.`
-      exitWithError(err, cli.stacktrace, msg)
+      await exitWithError(err, errorOpts, msg)
     }
     const args = cli.rawArgs.slice(cli.rawArgs.indexOf(command.name()) + 1)
     args.splice(args.indexOf(playbookFile), 0, '--playbook')
     // TODO support passing a preloaded convict config as third option; gets new args and env
     return generateSite(args, process.env)
-      .then(finalizeLogger)
-      .then((failOnExit) => process.exit(failOnExit ? 1 : process.exitCode))
-      .catch((err) => finalizeLogger().then(() => exitWithError(err, cli.stacktrace)))
+      .then(exit)
+      .catch((err) => exitWithError(err, errorOpts))
   })
   .options.sort((a, b) => a.long.localeCompare(b.long))
 

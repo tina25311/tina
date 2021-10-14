@@ -2,6 +2,9 @@
 
 The log `format` key specifies the format of the log messages.
 
+CAUTION: The log format, and all other log settings, are not honored if an error is thrown before the playbook is fully configured.
+Instead, the error message is printed directly to standard error (stderr).
+
 [#default]
 == Default log format
 
