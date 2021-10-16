@@ -572,4 +572,17 @@ describe('publishSite()', () => {
       .that.matches(/^Error: Unsupported destination provider: unknown/)
       .that.matches(/^Caused by: Error: Cannot find module/m)
   })
+
+  it('should throw error if destination provider throws an error with a stack', async () => {
+    const absProviderPath = ospath.resolve(playbook.dir, 'provider-not-implemented.js')
+    await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
+    await fsp.writeFile(absProviderPath, "throw 'not implemented'")
+    playbook.output.destinations.push({ provider: './provider-not-implemented.js' })
+    const publishSiteDeferred = await deferExceptions(publishSite, playbook, catalogs)
+    expect(publishSiteDeferred)
+      .to.throw(Error, 'Unsupported destination provider: ./provider-not-implemented.js')
+      .with.property('stack')
+      .that.matches(/^Error: Unsupported destination provider: \.\/provider-not-implemented\.js/)
+      .that.matches(/^Caused by: not implemented/m)
+  })
 })
