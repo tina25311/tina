@@ -111,6 +111,18 @@ describe('logger', () => {
       expect(message).to.eql({ level: 'fatal', msg: "You've sunk my battleship!" })
     })
 
+    it('should allow error to be logged at fatal level', () => {
+      const err = new Error('uh oh!')
+      const logger = configure().get(null)
+      const lines = captureStdoutSync(() => logger.fatal(err))
+      expect(lines).to.have.lengthOf(1)
+      const { time, ...message } = JSON.parse(lines[0])
+      expect(typeof time).to.equal('number')
+      expect(message).to.include({ level: 'fatal', type: 'Error', msg: 'uh oh!' })
+      expect(message.stack).to.exist()
+      expect(message.stack).to.startWith('Error: uh oh!\n    at ')
+    })
+
     it('should format log level as number of levelFormat is number', () => {
       const logger = configure({ levelFormat: 'number' }).get(null)
       const lines = captureStdoutSync(() => logger.info('love is the message'))
