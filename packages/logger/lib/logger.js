@@ -102,13 +102,13 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
                 ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
                 : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
           },
-          suppressFlushSyncWarning: true,
           translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
           ...(colorize ? undefined : { colorize: false }),
         },
       },
       destination
     )
+    logger[streamSym].flushSync = logger.silent // better alternative to suppressFlushSyncWarning option
     if (prettyPrint) logger[streamSym].stream = destination
   }
   rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))

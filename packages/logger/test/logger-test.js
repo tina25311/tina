@@ -456,7 +456,7 @@ describe('logger', () => {
       })
     }
 
-    it('should not log warning about call to flushSync when fatal message is logged', () => {
+    it('should not log warning that flushSync is not supported when fatal message is logged', () => {
       const logger = configure({ format: 'pretty' }).get()
       const lines = captureStderrSync(() => logger.fatal("You've sunk my battleship!"))
       expect(lines).to.have.lengthOf(1)
