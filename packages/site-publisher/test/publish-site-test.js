@@ -566,7 +566,8 @@ describe('publishSite()', () => {
   it('should throw error if destination provider is unsupported', async () => {
     playbook.output.destinations.push({ provider: 'unknown' })
     const publishSiteDeferred = await deferExceptions(publishSite, playbook, catalogs)
-    expect(publishSiteDeferred).to.throw(Error, 'Unsupported destination provider: unknown')
+    expect(publishSiteDeferred)
+      .to.throw(Error, 'Unsupported destination provider: unknown')
       .with.property('stack')
       .that.matches(/^Error: Unsupported destination provider: unknown/)
       .that.matches(/^Caused by: Error: Cannot find module/m)
