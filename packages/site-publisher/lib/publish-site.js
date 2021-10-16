@@ -56,7 +56,7 @@ async function publishSite (playbook, catalogs) {
           return userRequire(provider, userRequireContext).bind(null, options)
         } catch (err) {
           const prettyErr = new Error('Unsupported destination provider: ' + provider)
-          prettyErr.stack = `\nCaused by: ${err.stack}`
+          prettyErr.stack += `\nCaused by: ${err.stack}`
           throw prettyErr
         }
     }
