@@ -48,7 +48,7 @@ const EXT_RX = /\.[a-z]{2,3}$/
  * @param {String} [playbook.network.noProxy=undefined] - The list of domains and IPs that should not be proxied.
  * @param {Object} playbook.ui - The UI configuration object for Antora.
  * @param {String} playbook.ui.bundle - The UI bundle configuration.
- * @param {String} playbook.ui.bundle.url - The path (relative or absolute) or URI
+ * @param {String} playbook.ui.bundle.url - The path (relative or absolute) or URL
  * of the UI bundle to use.
  * @param {String} [playbook.ui.bundle.startPath=''] - The path inside the bundle from
  * which to start reading files.

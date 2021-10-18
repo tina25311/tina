@@ -22,7 +22,7 @@ const RepositoryBuilder = require('../../../test/repository-builder')
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const WORK_DIR = ospath.join(__dirname, 'work')
-const UI_BUNDLE_URI =
+const UI_BUNDLE_URL =
   'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable'
 const TMP_DIR = require('os').tmpdir()
 
@@ -34,7 +34,7 @@ describe('generateSite()', function () {
   let playbookSpec
   let playbookFile
   let repoBuilder
-  let uiBundleUri
+  let uiBundleUrl
   let gitServer
 
   const timeoutOverride = this.timeout() * 2
@@ -54,7 +54,7 @@ describe('generateSite()', function () {
       })
     )
     repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-    uiBundleUri = UI_BUNDLE_URI
+    uiBundleUrl = UI_BUNDLE_URL
   })
 
   beforeEach(async () => {
@@ -87,7 +87,7 @@ describe('generateSite()', function () {
         sources: [{ url: repoBuilder.repoPath, branches: 'v2.0' }],
       },
       ui: {
-        bundle: { url: uiBundleUri, snapshot: true },
+        bundle: { url: uiBundleUrl, snapshot: true },
       },
       output: {
         destinations: [{ provider: 'fs', path: '.' + ospath.sep + destDir }],
