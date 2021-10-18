@@ -51,9 +51,6 @@ test:node-10-linux:
   <<: *yarn_cache_pull_only
   <<: *yarn_install
   script: $(npm bin)/gulp test
-  artifacts:
-    paths:
-    - coverage/
 test:node-12-linux:
   image: node:12-buster
   stage: verify
@@ -78,6 +75,9 @@ test:node-16-linux:
   <<: *yarn_cache_pull_only
   <<: *yarn_install
   script: $(npm bin)/gulp test
+  artifacts:
+    paths:
+    - coverage/
 test:windows:
   tags: [windows]
   stage: verify
