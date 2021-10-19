@@ -273,7 +273,23 @@ describe('cli', function () {
 
   it('should show error message if specified playbook file does not exist', () => {
     return runAntora('generate does-not-exist.json')
-      .assert(/^error: playbook file not found at /)
+      .assert(/playbook file not found at /)
+      .done()
+  }).timeout(timeoutOverride)
+
+  it('should use fallback logger to log fatal message if error is thrown before playbook is built', () => {
+    playbookSpec.ui.bundle.url = false
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return runAntora('generate --log-format=json the-site')
+      .assert(/^\[.+?\] FATAL \(antora\): ui\.bundle\.url: must be of type String/)
+      .done()
+  }).timeout(timeoutOverride)
+
+  it('should use configured logger to log fatal message if error is thrown after playbook is built', () => {
+    playbookSpec.ui.bundle.url = 'does-not-exist.zip'
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return runAntora('generate --log-format=json the-site')
+      .assert(/"msg":"Specified UI bundle does not exist: .*"/)
       .done()
   }).timeout(timeoutOverride)
 
@@ -281,16 +297,30 @@ describe('cli', function () {
     playbookSpec.ui.bundle.url = false
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('--stacktrace generate the-site')
-      .assert(/^Error: ui\.bundle\.url: must be of type String/)
-      .assert(/at /)
+      .assert(/^\[.+?\] FATAL \(antora\): ui\.bundle\.url: must be of type String/)
+      .assert(/^Cause: Error$/)
+      .assert(/^at /)
       .done()
   }).timeout(timeoutOverride)
 
-  it('should show stack if --stacktrace option is specified and a Ruby exception with only a backtrace property is thrown', () => {
+  it('should show nested cause if --stacktrace option is specified and an exception is nested', () => {
+    playbookSpec.output = { destinations: [{ provider: 'unknown' }] }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return runAntora('--stacktrace generate --log-format=pretty the-site')
+      .assert(/^\[.+?\] FATAL \(antora\): Unsupported destination provider: unknown/)
+      .assert(/^Cause: Error$/)
+      .assert(/^at /)
+      .ignoreUntil(/^Caused by: Error: Cannot find module/)
+      .assert(/^(Require stack:$|at )/)
+      .done()
+  }).timeout(timeoutOverride)
+
+  it('should show stack if --stacktrace option is specified and a Ruby exception with backtrace property is thrown', () => {
     playbookSpec.asciidoc = { attributes: { idseparator: 1 } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('--stacktrace generate the-site')
-      .assert(new RegExp("error: asciidoctor: FAILED: .* - undefined method `length' for 1"))
+    return runAntora('--stacktrace generate --log-format=pretty the-site')
+      .assert(/^\[.+?\] FATAL \(asciidoctor\): .*: Failed to load AsciiDoc document/)
+      .assert(/^Cause: Error$/)
       .assert(/^at Number\./)
       .done()
   }).timeout(timeoutOverride)
@@ -298,8 +328,46 @@ describe('cli', function () {
   it('should show message if --stacktrace option is specified and an exception with no stack is thrown', () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-fail-tree-processor'))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora(`-r ${ext} --stacktrace generate the-site`)
-      .assert(/^error: not today! \(no stack\)/)
+    return runAntora(`-r ${ext} --stacktrace generate --log-format=pretty the-site`)
+      .assert(/^\[.+?\] FATAL \(antora\): not today!$/)
+      .assert(/^Cause: \(no stacktrace\)$/)
+      .done()
+  }).timeout(timeoutOverride)
+
+  it('should show correct type in structured log message if an exception with no stack is thrown', () => {
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(`--stacktrace generate --cache-dir="${playbookFile}" the-site`)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.have.lengthOf(1)
+      const message = messages[0]
+      expect(message).to.include('{"')
+      const { time, ...parsedMessage } = JSON.parse(message)
+      expect(parsedMessage.type).to.eql('Error')
+      expect(parsedMessage.msg).to.match(/Failed to create .* cache directory: .* ENOTDIR: not a directory, mkdir/)
+      expect(parsedMessage.stack).to.eql('Cause: (no stacktrace)')
+    })
+  }).timeout(timeoutOverride)
+
+  it('should not repeat multiline error message in stack when --stacktrace option is specified', () => {
+    const playbookContents = heredoc`
+      --
+      site:
+        title: The Site
+      ui:
+        bundle:
+          url: ${uiBundleUrl}
+    `
+    fs.writeFileSync(ospath.join(WORK_DIR, 'the-site-bad.yml'), playbookContents)
+    return runAntora('--stacktrace generate --log-format=pretty the-site-bad.yml')
+      .assert(/^\[.+?\] FATAL \(antora\): end of the stream or a document separator is expected/)
+      .ignoreUntil(/^-+\^/)
+      .ignoreUntil(/^Cause: YAMLException$/)
+      .assert(/^at generateError/)
       .done()
   }).timeout(timeoutOverride)
 
@@ -307,10 +375,27 @@ describe('cli', function () {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-with-syntax-error.js'))
     playbookSpec.asciidoc = { extensions: [ext] }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('--stacktrace generate the-site')
-      .assert(/^SyntaxError: missing \) after argument list/)
+    return runAntora('--stacktrace generate --log-format=pretty the-site')
+      .assert(/^\[.+?\] FATAL \(antora\): missing \) after argument list$/)
+      .assert(/^Cause: SyntaxError$/)
       .assert(/^at .*extension-with-syntax-error\.js:6/)
       .assert(/^console\.log\(doc.getDocumentTitle\(\)/)
+      .done()
+  }).timeout(timeoutOverride)
+
+  it('should report syntax error without line information normally when --stacktrace option is specified', () => {
+    const playbookContents = heredoc`
+      site:
+        title: The Site
+      ui:
+        bundle:
+          url: ${uiBundleUrl}
+    `
+    fs.writeFileSync(ospath.join(WORK_DIR, 'the-site-bad.json'), playbookContents)
+    return runAntora('--stacktrace generate --log-format=pretty the-site-bad.json')
+      .assert(/^\[.+?\] FATAL \(antora\): JSON5: invalid character 's' at 1:1/)
+      .assert(/^Cause: SyntaxError$/)
+      .assert(/^at syntaxError/)
       .done()
   }).timeout(timeoutOverride)
 
@@ -318,8 +403,8 @@ describe('cli', function () {
     playbookSpec.ui.bundle.url = false
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('generate the-site')
-      .assert(/^error: ui\.bundle\.url: must be of type String/)
-      .assert(/--stacktrace option/)
+      .assert(/^\[.+?\] FATAL \(antora\): ui\.bundle\.url: must be of type String/)
+      .assert('Add the --stacktrace option to see the cause of the error.')
       .done()
   }).timeout(timeoutOverride)
 
@@ -543,7 +628,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     return runAntora('generate --generator=no-such-module the-site')
-      .assert(/error: Generator not found or failed to load. Try installing the 'no-such-module' package./i)
+      .assert(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load./)
       .done()
   })
 
@@ -611,7 +696,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     return runAntora('-r no-such-module generate the-site')
-      .assert(/error: Cannot find module/i)
+      .assert(/^\[.+?\] FATAL \(antora\): Cannot find module/)
       .done()
   })
 
@@ -624,7 +709,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     return runAntora(['generate', 'the-site', '--generator', '.:@antora-site-generator-default'])
-      .assert(/^error: Generator not found or failed to load/i)
+      .assert(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load./)
       .on('exit', () => rmdirSync(localNodeModules))
       .done()
   })
@@ -664,6 +749,56 @@ describe('cli', function () {
       expect(message).to.include('{"')
       const { time, ...parsedMessage } = JSON.parse(message)
       expect(parsedMessage.msg).to.eql('skipping reference to missing attribute: no-such-attribute')
+    })
+  }).timeout(timeoutOverride)
+
+  it('should exit with status code 0 if error is thrown but log failure level is not reached', async () => {
+    const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-fail-tree-processor'))
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(`generate -r ${ext} --stacktrace --log-failure-level=none the-site`)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(messages).to.have.lengthOf(1)
+      const message = messages[0]
+      expect(message).to.include('{"')
+      const { time, ...parsedMessage } = JSON.parse(message)
+      expect(parsedMessage.type).to.eql('Error')
+      expect(parsedMessage.msg).to.eql('not today!')
+      expect(parsedMessage.stack).to.eql('Cause: (no stacktrace)')
+    })
+  }).timeout(timeoutOverride)
+
+  // this test also verifies that the --stacktrace option hint is not routed to stderr
+  it('should not show error message thrown before playbook is built if --silent flag is specified', async () => {
+    playbookSpec.runtime = { log: { foo: 'bar' } }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora('generate --silent the-site')
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.be.empty()
+    })
+  }).timeout(timeoutOverride)
+
+  // this test also verifies that the --stacktrace option hint is not routed to stderr
+  it('should not show error message thrown after playbook is built if log level is silent', async () => {
+    const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-fail-tree-processor'))
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(`generate -r ${ext} --stacktrace --log-level=silent the-site`)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.be.empty()
     })
   }).timeout(timeoutOverride)
 
@@ -730,7 +865,7 @@ describe('cli', function () {
     }
     playbookSpec.output = { destinations: [{ provider: 's3' }] }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['generate', 'the-site']
+    const args = ['generate', '--log-format=json', 'the-site']
     const messages = []
     const logFile = ospath.join(WORK_DIR, buildDir, 'antora.log')
     return new Promise((resolve) =>
@@ -739,16 +874,18 @@ describe('cli', function () {
         .on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(1)
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.include('Unsupported destination provider')
+      expect(messages).to.be.empty()
       expect(logFile)
         .to.be.a.file()
-        .with.json()
+        //.with.json() // .with.json() doesn't understand the json lines format
         .and.have.contents.that.match(/"msg":"Start page specified for site not found: .+"/)
+        .and.have.contents.that.match(
+          /"msg":"Unsupported destination provider: s3\\nAdd the --stacktrace option to see the cause of the error\."/
+        )
     })
   })
 
-  it('should configure logger with default settings and warning if used before being configured', () => {
+  it('should configure logger with default settings and warn if used before being configured', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const r1 = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
     const args = ['--require', r1, 'generate', 'the-site', '--quiet']

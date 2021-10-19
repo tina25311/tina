@@ -35,12 +35,10 @@ The key accepts the following built-in values:
 
 These values correspond to the xref:runtime-log-level.adoc#severity-levels[severity levels] Antora assigns to log messages.
 Except when the value is `none`, Antora exits with a non-zero exit code if a message is logged that meets or exceeds the value assigned to `failure_level`.
+When the value is `none`, Antora always exits with zero exit code, even when an unhandled error is thrown.
 Note that when Antora's logger is turned off, the `failure_level` key and its value aren't applied.
 
 === Force zero exit code
-
-NOTE: The behavior of `none`, described in this section, hasn't been implemented yet.
-See https://gitlab.com/antora/antora/-/issues/788[issue #788] for updates.
 
 When the `failure_level` key is assigned the value `none`, Antora always exits with the exit code zero (0), even if a fatal error is encountered.
 

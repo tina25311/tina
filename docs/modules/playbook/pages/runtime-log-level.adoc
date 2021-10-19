@@ -28,9 +28,8 @@ The `level` key accepts the following built-in values:
 fatal:: Catastrophic errors that force Antora to shut down abruptly.
 Your site was not generated.
 +
-NOTE: Currently, Antora doesn't make use of the fatal level.
-Such errors aren't routed through Antora's logger.
-Instead, they're routed directly to standard error (stderr).
+NOTE: If an error is thrown before the playbook is configured, Antora will always print the error to standard error (stderr).
+In this case, the error message is not routed through the logger as configured by the user.
 
 error:: Serious issues that indicate an important operation failed to occur or wasn't completed successfully.
 An error may not cause Antora to shut down, but your site probably wasn't generated or published as expected.
