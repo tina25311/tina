@@ -40,6 +40,7 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Rename the `link-page` role to `xref-` followed by the family name (e.g., `xref-page`) on element created for an image macro that has an non-internal xref target (#603)
 * *asciidoc-loader*: Don't add role to element created for an image macro that has an internal xref target (#603)
 * *asciidoc-loader*: Add only the `xref-unresolved` role to element created for an image macro that has an unresolved xref target (#603)
+* *cli*: Begin CLI error message with name of base call (i.e., `antora:`) instead of generic `error:` prefix (#855)
 
 == 3.0.0-alpha.8 (2021-08-13)
 

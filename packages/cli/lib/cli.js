@@ -48,9 +48,13 @@ function getTTYColumns () {
   return process.env.COLUMNS || process.stdout.columns || 80
 }
 
+function outputError (str, write) {
+  write(str.replace(/^error: /, `${cli.name()}: `))
+}
+
 cli
   .allowExcessArguments(false)
-  .configureOutput({ getOutHelpWidth: getTTYColumns, getErrHelpWidth: getTTYColumns })
+  .configureOutput({ getOutHelpWidth: getTTYColumns, getErrHelpWidth: getTTYColumns, outputError })
   .storeOptionsAsProperties()
   .name('antora')
   .version(
@@ -135,10 +139,8 @@ cli.command('help [command]', { hidden: true }).action((name, options, command) 
     if (helpCommand) {
       helpCommand.help()
     } else {
-      console.error(
-        `'${name}' is not a valid command in ${cli.name()}. See '${cli.name()} --help' for a list of commands.`
-      )
-      process.exit(1)
+      const message = `error: unknown command '${name}'. See '${cli.name()} --help' for a list of commands.`
+      cli._displayError(1, 'commander.unknownCommand', message)
     }
   } else {
     cli.help()

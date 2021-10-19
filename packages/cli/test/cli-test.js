@@ -186,7 +186,7 @@ describe('cli', function () {
 
   it('should output warning that command does not exist when invoked with "help no-such-command"', () => {
     return runAntora('help no-such-command')
-      .assert(/not a valid command/)
+      .assert("antora: unknown command 'no-such-command'. See 'antora --help' for a list of commands.")
       .done()
   })
 
@@ -240,31 +240,31 @@ describe('cli', function () {
 
   it('should show error message if generate command is run without an argument', () => {
     return runAntora('generate')
-      .assert(/missing required argument 'playbook'/)
+      .assert(/^antora: missing required argument 'playbook'/)
       .done()
   })
 
   it('should show error message if generate command is run with multiple arguments', () => {
     return runAntora('generate the-site extra-cruft')
-      .assert(/too many arguments for 'generate'/)
+      .assert("antora: too many arguments for 'generate'. Expected 1 argument but got 2.")
       .done()
   })
 
   it('should show error message if generate command is run with unknown option', () => {
     return runAntora('generate does-not-exist.json --unknown')
-      .assert(/unknown option '--unknown'/)
+      .assert("antora: unknown option '--unknown'")
       .done()
   })
 
   it('should show error message if default command is run with unknown option', () => {
     return runAntora('--unknown the-site')
-      .assert(/unknown option '--unknown'/)
+      .assert("antora: unknown option '--unknown'")
       .done()
   })
 
   it('should show error message if generate command is run with unknown option value', () => {
     const expected =
-      "error: option '--html-url-extension-style <choice>' argument 'none' is invalid. " +
+      "antora: option '--html-url-extension-style <choice>' argument 'none' is invalid. " +
       'Allowed choices are default, drop, indexify.'
     return runAntora('generate antora-playbook.yml --html-url-extension-style=none')
       .assert(expected)
@@ -273,7 +273,7 @@ describe('cli', function () {
 
   it('should show error message if specified playbook file does not exist', () => {
     return runAntora('generate does-not-exist.json')
-      .assert(/playbook file not found at /)
+      .assert(/^error: playbook file not found at /)
       .done()
   }).timeout(timeoutOverride)
 
