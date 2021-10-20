@@ -3,9 +3,9 @@
 //Antora extracts the metadata that defines a documentation component from its component version descriptor ([.path]_antora.yml_) and the standard set of directories structure used to store the component version's source files.
 //Antora also uses this structure to assign preset behavior to the files stored in each directory.
 
-Antora collects and processes content source files that are organized in a standard hierarchy under a content source root.
-This hierarchy (i.e., directory structure) and its reserved names helps Antora understand which files to collect, the role of each of those files and how they should be classified, and which files to ignore.
-The required [.path]_antora.yml_ file and the optional navigation file(s) also give Antora information about how to classify the files and what metadata to apply to them.
+Antora collects and processes content source files that are organized in a standard directory structure and file hierarchy under a content source root.
+The hierarchy and reserved names helps Antora understand which files to collect, the role of each file, how each file should be classified, and which files to ignore.
+The required [.path]_antora.yml_ file and the optional navigation file also give Antora information about how to classify the files and what metadata to apply to them.
 
 This page introduces this hierarchy, the reserved names it employs, and the rules about which files get collected or ignored.
 
@@ -52,9 +52,9 @@ In Antora, this subdirectory is referred to as the start path of the content sou
 .A complete Antora content source hierarchy located at a subdirectory of the repository
 [listing#ex-standard-dirs-sub]
 ----
-📒 repository <1>
+📒 repository <.>
   📄 README.adoc
-  📂 docs <2>
+  📂 docs <.>
     📄 antora.yml
     📂 modules
       📂 ROOT
@@ -67,8 +67,8 @@ In Antora, this subdirectory is referred to as the start path of the content sou
       📂 another-module
         📂 pages
 ----
-<1> Repository root.
-<2> xref:content-source-repositories.adoc#content-source-root[Content source root].
+<.> Repository root.
+<.> xref:content-source-repositories.adoc#content-source-root[Content source root].
 
 As you can see in the descriptions above, navigation files and many of the directories are optional.
 For instance, if you aren't inserting any images into the content stored in a module directory, then you don't need to create an [.path]_images_ directory.
@@ -134,9 +134,9 @@ The standard directory and file set in <<ex-image>> is also valid.
 [#hidden-files]
 == Hidden and unpublished files
 
-Antora ignores any files stored in hierarchy that begin with a dot (`.`) or which don't have a file extension.
-These hidden files *do not* get added to Antora's content catalog and thus cannot be referenced or published.
-If the filename begins with an underscore (`+_+`), it's added to the content catalog, but isn't automatically published, even if it's stored in a folder of a publishable family (like [.path]_pages_).
+Antora ignores any files stored in hierarchy that begin with a dot (`.`) or that don't have a file extension.
+These hidden files *do not* get added to Antora's content catalog, and therefore can't be referenced or published.
+If the filename begins with an underscore (`+_+`), the file is added to the content catalog, but it isn't automatically published, even if it's stored in the folder of a publishable family (that is, the [.path]_pages_, [.path]_images_, or [.path]_attachments_ folders).
 
 .Standard directory set containing hidden and unpublished files
 [listing#ex-hide]
@@ -146,13 +146,13 @@ If the filename begins with an underscore (`+_+`), it's added to the content cat
   📂 modules
     📂 ROOT
       📂 pages
-        📄 .a-hidden-file.adoc <1>
-        📄 a-hidden-file <2>
-        📄 _an-unpublished-file.adoc <3>
+        📄 .a-hidden-file.adoc <.>
+        📄 a-hidden-file <.>
+        📄 _an-unpublished-file.adoc <.>
 ----
-<1> Antora won't load this file into the content catalog or publish it because its filename begins with a dot (`.`).
-<2> Antora won't load this file into the content catalog or publish it because it's missing a file extension.
-<3> A filename that begins with an underscore (`+_+`) is loaded into the content catalog and can be referenced by an include directive, but it won't be published automatically even when stored in the folder of a publishable family.
+<.> Antora won't load this file into the content catalog or publish it because its filename begins with a dot (`.`).
+<.> Antora won't load this file into the content catalog or publish it because it's missing a file extension.
+<.> A filename that begins with an underscore (`+_+`) is loaded into the content catalog and can be referenced by an include directive, but it won't be published automatically even when stored in the folder of a publishable family.
 
 NOTE: Support for loading files without extensions into the content catalog and publishing them is being considered for a future Antora version.
 See https://gitlab.com/antora/antora/-/issues/368[issue #368^].

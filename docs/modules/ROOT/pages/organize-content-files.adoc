@@ -1,14 +1,14 @@
 = How to Organize Your Content Files
 
 Antora employs both convention and configuration to aggregate content and generate your site.
-Before you begin setting up or migrating your repositories, let's review some key concepts that could impact how you organize your documentation projects and content files to work with Antora.
+Before setting up or migrating your repositories, let's review some key concepts that could impact how you organize your documentation projects and content files to work with Antora.
 
 == Storing your content source files
 
-Antora can retrieve content source files from numerous git repositories, which means searching for files under a xref:playbook:content-source-start-path.adoc[start path] (or xref:playbook:content-source-start-paths.adoc[multiple start paths]) in branches, tags, and/or the local worktree.
+Antora can retrieve content source files from numerous git repositories by searching for files or their xref:symlinks.adoc[symlinks] under a xref:playbook:content-source-start-path.adoc[start path] or xref:playbook:content-source-start-paths.adoc[multiple start paths] in branches, tags, or the local worktree.
 The repositories Antora uses don't have to be reserved exclusively for storing documentation (hence the start path).
-Antora relies on both xref:standard-directories.adoc[convention] and xref:playbook:configure-content-sources.adoc[configuration] to identify the documentation content.
 Antora can retrieve files from repositories that also host application code, tests, and other materials in sibling hierarchies.
+Antora relies on both xref:standard-directories.adoc[convention] and xref:playbook:configure-content-sources.adoc[configuration] to identify the documentation content.
 
 In order to fetch source files from multiple and multi-use repositories, Antora requires that the documentation files be:
 
@@ -19,7 +19,7 @@ In order to fetch source files from multiple and multi-use repositories, Antora 
 == Classifying your content source files
 
 Once Antora collects the source files from all content source roots, it classifies each file by assigning metadata to it, which is used to uniquely identify the file within the site.
-The file's identifier (i.e., resource ID) is used for creating references from pages and the configuration.
+The file's identifier, called a resource ID, is used for creating references from pages, other resources, and the configuration.
 This step also implicitly partitions the source files into component versions.
 
 === Antora's virtual filesystem
@@ -27,11 +27,11 @@ This step also implicitly partitions the source files into component versions.
 Antora decouples source files from their storage locations after it collects them.
 For all intents and purposes, the origin of each file is irrelevant.
 In other words, Antora never goes back to the filesystem or git repository to read the file once it's discovered and loaded.
-Antora bases all of its file operations on this virtual filesystem (VFS) it creates after it collects the files.
+Antora bases all of its file operations on the virtual filesystem (VFS) it creates after it collects the files.
 
 The only aspect of a file that maps back to the location on the filesystem is the family-relative path.
 And even this association is maintained merely as a convenience for the author.
-Aside from the family-relative path, all other parts of the file's identity are based on associative metadata (i.e., the component name, version, module name, and family).
+Aside from the family-relative path, all other parts of the file's identity are based on associative metadata, such as the component name, version, module name, and family.
 
 === File metadata
 
@@ -43,17 +43,16 @@ For example, you're reading a page in the {page-component-title} {page-component
 
 These _antora.yml_ files are how content that belongs to the same version of a project can be identified by Antora.
 It's also how component versions are defined and populated implicitly.
-//and authors alike, cataloged, referenced by other pages and navigation in the site or externally, and published to the appropriate location in the site.
 
 Inside a content source root, files are further grouped into module and family folders, which provide two more facets of a source file's identity.
-Finally, the family-relative path is captured to uniquely identify a source file within a family, even across multiple repositories and/or references.
+Finally, the family-relative path is captured to uniquely identify a source file within a family, even across multiple repositories or git references.
 
 === File locations and URLs
 
-The location of a source file also doesn't dictate the location of the published file.
-Once a source file is loaded into memory, its metadata gets manipulated, which includes computing the output location and URL by which it can be accessed.
+The location of a source file doesn't dictate the location of the published file.
+Once a source file is loaded into Antora's VFS, the file's metadata is manipulated, which includes computing the file's output location and URL.
 Each family of files has different rules for how these values are computed.
-This means the association between where the source file is found and where the published file gets placed in the site or how that file is accessed isn't hardwired.
+The association between where the source file is found, where the published file is placed in the site, or how that file is accessed isn't hardwired.
 
 //That means the names and URLs of the repositories, branches, tags, and content source roots doesn't have any bearing on a site that's generated from these files.
 //
