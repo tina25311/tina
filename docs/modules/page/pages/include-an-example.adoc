@@ -4,22 +4,19 @@
 :ext: .ext
 :page-aliases: asciidoc:include-example.adoc
 // URLs
-:url-include: {url-asciidoc}/directives/include/
 :url-tags: {url-asciidoc}/directives/include-tagged-regions/
 :url-leveloffset: {url-asciidoc}/directives/include-with-leveloffset/
 :url-indent: {url-asciidoc}/directives/include-with-indent/
 
 An example can be inserted into any page or partial in your site using the AsciiDoc include directive and the example's resource ID.
 
-include::partial$include-directive.adoc[]
+== Insert an example into a page
 
-Antora supports filtering the lines of an example file by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
-Filtering by line numbers takes precedence.
-See the {url-include}[AsciiDoc include directive documentation] for full details about the `lines`, `tag`, and `tags` syntax.
+include::partial$include-directive.adoc[]
 
 == Include an example from the same module
 
-When the target example file and the current page belong to the same module, you only need to enter the family (`example$`) and resource coordinates in the resource ID.
+When the target example file and the current page belong to the same module, you only need to enter the family and resource coordinates in the resource ID.
 
 .current-page.adoc
 ----
@@ -28,7 +25,7 @@ When the target example file and the current page belong to the same module, you
 
 == Include an example from another module
 
-When the target example file and current page belong to different modules of the same component version, enter the example's module, family (`example$`), and resource coordinates in the resource ID.
+When the target example file and current page belong to different modules of the same component version, enter the example's module, family, and resource coordinates in the resource ID.
 
 .current-page.adoc
 ----
@@ -37,14 +34,14 @@ When the target example file and current page belong to different modules of the
 
 == Include an example from another component
 
-When the target example file and the current page belong to different docs components, enter the example's version, component, module, family (`example$`), and resource coordinates in the resource ID.
+When the target example file and the current page belong to different docs components, enter the example's version, component, module, family, and resource coordinates in the resource ID.
 
 .current-page.adoc
 ----
 \include::4.5@uml:admin:example$config.js[]
 ----
 
-Don't specify the version coordinate if you want a page to always reference the latest version of the example.
+Don't specify the version coordinate if you want the page to always reference the latest version of the example.
 
 .current-page.adoc
 ----

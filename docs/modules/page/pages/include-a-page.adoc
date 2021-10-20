@@ -8,10 +8,56 @@
 :url-tags: {url-asciidoc}/directives/include-tagged-regions/
 :url-leveloffset: {url-asciidoc}/directives/include-with-leveloffset/
 
-In Antora, the AsciiDoc include directive has been configured to include another page or portion of a page into the current page.
+In Antora, the AsciiDoc include directive is configured to include another page or portion of a page into the current page.
 You can include a page from anywhere in the site, including pages from other docs components.
 
-include::partial$include-directive.adoc[]
+== Include a page into another page
+
+<<ex-base>> shows the structure of an include directive with a {family}'s fully qualified resource ID.
+
+.Include directive and resource ID syntax
+[#ex-base,subs=attributes+]
+----
+\include::version@component:module:filename{ext}[]
+----
+
+Let's break down the AsciiDoc syntax and resource ID coordinates you need to include a {family} resource into a page.
+The following steps assume that the target {family} and xref:resource-id.adoc#current-page[current page] belong to the same component version and module.
+Therefore, the resource ID of the target {family} only requires the family-relative path of the {family} file.
+
+. On a new line, enter the name of the directive followed by two colons, `include::`.
++
+[listing,subs=+quotes]
+----
+**include::**
+----
+
+. Enter the resource ID of the target {family} file.
++
+--
+[listing,subs="attributes+,+quotes"]
+----
+include::**filename{ext}**
+----
+
+You can use the `{coordinate}` family coordinate in the resource ID if you prefer, but it isn't required when including a page.
+The include directive assumes the family coordinate is `{coordinate}` when it isn't specified.
+--
+
+. Close the directive with a set of square brackets (`+[]+`).
++
+[listing,subs="attributes+,+quotes"]
+----
+include::filename{ext}**[]**
+----
+
+. The brackets can contain an optional list of attributes.
+The attributes are entered as key-value pairs separated by commas.
++
+[listing,subs="attributes+,+quotes"]
+----
+\include::filename{ext}[**attribute,attribute**]
+----
 
 Antora supports filtering the lines of an include file by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
 Filtering by line numbers takes precedence.
@@ -33,7 +79,7 @@ The relative path must be prefixed with `./`.
 --
 [listing,subs=+quotes]
 ----
-\include::**./relative-page-filename.adoc**[]
+include::**./relative-page-filename.adoc**
 ----
 
 CAUTION: You may find that the relative path works without this prefix, but that could change in the future.
@@ -68,28 +114,3 @@ All the attributes (e.g., `lines`, `tags`, `leveloffset`, `indent`) on the inclu
 .*AsciiDoc and Asciidoctor resources*
 * {url-tags}[Select regions of content with tags^]
 * {url-leveloffset}[Offset section headings with leveloffset^]
-
-////
-== AsciiDoc include directive
-
-In the simplest form, the target can be a path relative to the current page:
-
-----
-\include::./relative-page-filename.adoc[<attrlist>]
-----
-
-The target can also be a the resource ID of a page.
-The resource ID ranges in scope from a page in the current module:
-
-----
-\include::page$page-filename.adoc[<attrlist>]
-----
-
-To a page in a different component version:
-
-----
-\include::version@component:module:page-filename.adoc[<attrlist>]
-----
-
-Let's explore the syntax of the include directive in detail.
-////

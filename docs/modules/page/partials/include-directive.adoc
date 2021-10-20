@@ -1,17 +1,14 @@
-== AsciiDoc include directive
-
 <<ex-base>> shows the structure of an include directive with a {family}'s fully qualified resource ID.
 
-[#ex-base]
 .Include directive and resource ID syntax
-[subs=attributes+]
+[#ex-base,subs=attributes+]
 ----
-\include::version@component:module:{coordinate}{family}-filename{ext}[]
+\include::version@component:module:{coordinate}filename{ext}[]
 ----
 
 Let's break down the AsciiDoc syntax and resource ID coordinates you need to include a {family} resource into a page.
 
-The steps below assume that the target {family} and current page belong to the same component version and module, so only the xref:resource-id.adoc#id-family[{coordinate}] and xref:resource-id.adoc#id-resource[resource] coordinates of the xref:resource-id.adoc#target-resource[target {family} resource] are entered in the resource ID.
+The steps below assume that the target {family} and current page belong to the same component version and module, so only the xref:resource-id.adoc#id-family[family ({coordinate})] and xref:resource-id.adoc#id-resource[resource] coordinates of the xref:resource-id.adoc#target-resource[target {family} resource] are entered in the resource ID.
 
 . On a new line, enter the name of the directive followed by two colons, `include::`.
 +
@@ -20,20 +17,23 @@ The steps below assume that the target {family} and current page belong to the s
 **include::**
 ----
 
-. Enter the resource ID of the target {family} file.
-When including a page (i.e., a file in the page family), the family segment is optional.
-In all other cases, the resource ID must specify the `{coordinate}` family coordinate since the include directive assumes the family is "`page`" if not specified.
+. Enter the resource ID of the target {family} file, making sure to specify the `{coordinate}` family coordinate.
 +
+--
 [listing,subs="attributes+,+quotes"]
 ----
-include::**{coordinate}{family}-filename{ext}**
+include::**{coordinate}filename{ext}**
 ----
 
-. Close the directive with a set of square brackets (`+[]+`).
+By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
+If you forget to use the `{coordinate}` coordinate, Antora will report an error because it won't be able to find your {family}.
+--
+
+. Complete the directive with a set of square brackets (`+[]+`).
 +
 [listing,subs="attributes+,+quotes"]
 ----
-include::{coordinate}{family}-filename{ext}**[]**
+include::{coordinate}filename{ext}**[]**
 ----
 
 . The brackets can contain an optional list of attributes.
@@ -41,5 +41,9 @@ The attributes are entered as key-value pairs separated by commas.
 +
 [listing,subs="attributes+,+quotes"]
 ----
-include::{coordinate}{family}-filename{ext}**[attribute,attribute]**
+\include::{coordinate}filename{ext}[**attribute,attribute**]
 ----
+
+Antora supports filtering the lines of an example file by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
+Filtering by line numbers takes precedence.
+See the {url-asciidoc}/directives/include/[AsciiDoc include directive documentation] for full details about the `lines`, `tag`, and `tags` syntax.
