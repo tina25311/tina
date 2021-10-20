@@ -1,0 +1,65 @@
+= ADR 0018: Build playbook before calling site generator
+:revdate: 2021-10-19
+
+== Status
+
+Accepted
+
+== Context
+
+The effort to add a logging infrastructure to Antora revealed that the site generator violates the playbook abstraction.
+The problem occurs in the initialization of Antora at the interface of the CLI and the site generator.
+The purpose of this ADR is to correct this violation so that the abstraction the playbook provides over the configuration inputs is honored.
+
+Currently, the site generator (specifically the default site generator) assumes the responsibility of building the playbook.
+The site generator performs this task immediately after being called.
+In other words, the call to the `buildPlaybook` function occurs directly inside the `generateSite` function.
+This call sequence introduces the following problems that all stem from violating the playbook abstraction.
+
+First, in order to support the call to `buildPlaybook`, the array of CLI arguments and map of environment variables must be passed to the site generator.
+This violates the design that the playbook is the sole interface to the configuration inputs.
+By passing this information to the site generator, the site generator and any function calls within it can see the raw inputs of the playbook builder.
+If this information were to be used in the site generator or passed to those functions, it would violate the configuration abstraction the playbook provides.
+We want to close this loophole and reaffirm the playbook as the sole configuration interface by passing it to the site generator.
+
+Second, it's not possible for a custom site generator to be specified in the playbook if the site generator is the one responsible for building the playbook.
+By the time the playbook is built inside the site generator, it's too late to select an alternate site generator.
+Even if the site generator were changed after the fact, it would require the user to install and load both site generators.
+By building the playbook before calling the site generator, Antora can consult the playbook to determine which site generator to use.
+
+Third, the CLI cannot access the playbook to configure the logger, so the logger must instead be configured inside the playbook builder, and hence inside the site generator.
+As a result, the logger configuration ends up being done very late in the initialization process, after potential errors that need to be logged pass by.
+With a minor change to the playbook builder, and by moving the call to it outside the site generator, it's possible to configure the logger outside the playbook builder and thus much earlier in the initialization process.
+
+Finally, the schema of the playbook builder has to be required twice, once in the CLI to configure the CLI options and once in the playbook builder.
+This access could be consolidated if the playbook is built by the CLI, outside the site generator.
+And the dependency on the playbook builder can be consolidated to the CLI (currently both the CLI and site generator depend on it).
+
+It's clear from these problems that there's a design flaw in the sequence of calls.
+The playbook should be built outside the site generator, ideally inside the CLI.
+
+== Decision
+
+Move the call to the `buildPlaybook` function to the CLI, then pass the returned playbook object to the site generator instead of passing the inputs to the `buildPlaybook` function.
+Update the playbook schema to allow the site generator to be specified in the playbook (the key will either be `site.generator` or `pipeline.generator`).
+That key should be mapped to the existing `--generator` CLI option.
+Remove the existing hard-coded `--generator` CLI option that's being used for this purpose.
+Modify the CLI to consult the playbook object to determine which site generator to call.
+
+Since the CLI will now call the playbook builder, the playbook builder should export its default schema for the CLI to use to set up the CLI options.
+Instead of configuring the logger in the playbook builder, the playbook builder should provide a callback that the CLI can tap into to configure the logger (hence moving the responsibility of configuring the logger to the CLI).
+If specified, this callback should be invoked before the playbook is validated so the logger can be configured early enough to report validation errors in the playbook.
+To accomodate this callback, the third parameter of the `buildPlaybook` function should be changed to an options object with the keys `schema` (the existing parameter) and `beforeValidate` (the new callback).
+
+== Consequences
+
+This change will break the existing contract with the site generator.
+Instead of the site generator accepting the array of CLI arguments and map environment variables, the site generator will instead accept the playbook object.
+It also means that a custom generator will not be able to influence how the playbook is built.
+Antora's CLI will need to provide an alternate means of specifying a custom playbook builder (or playbook schema).
+
+To maintain backwards compatibility with an existing site generator, Antora could detect the parameter length or signature of the `generateSite` function and only use the new call sequence if the function's sole argument is the playbook object.
+If the function has the legacy signature, the CLI could skip building the playbook and pass the inputs of the playbook builder instead.
+
+A key benefit of this change is that the custom generator can now be specified in the playbook as an alternative to the `--generator` CLI option.
+The dependency on the playbook builder is also consolidated to the CLI instead of split across the CLI and the site generator.
