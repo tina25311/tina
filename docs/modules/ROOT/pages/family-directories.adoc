@@ -40,12 +40,3 @@ The families are:
 * xref:images-directory.adoc[images]
 * xref:pages-directory.adoc[pages]
 * xref:partials-directory.adoc[partials]
-
-////
-For instance:
-
-* Full page AsciiDoc documents go in the [.path]_pages_ directory.
-* Photographs, diagrams, screenshots, and other graphics go in the [.path]_images_ directory.
-* Source code snippets and terminal output go in the [.path]_examples_ directory.
-* Reusable, AsciiDoc content snippets, such as product descriptions and definitions, go in the [.path]_partials_ directory.
-////

@@ -184,6 +184,7 @@ Antora derives the module segment from the xref:ROOT:module-directories.adoc#mod
 When the resource belongs to the specially named `ROOT` module, the module segment is dropped from the URL.
 See xref:ROOT:module-url-segment.adoc[] for examples and more information.
 
+[#family]
 === Family segment
 
 The family segment only applies to the resource URLs of images and attachments.
@@ -192,6 +193,7 @@ For images, this segment is `_images`.
 For attachments, this segment is `_attachments`.
 The URLs for pages do not contain a family segment.
 
+[#relative-path]
 === Relative path segment
 
 The relative path segment is derived from the family-relative path of the resource's source file.

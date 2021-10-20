@@ -26,7 +26,6 @@
 ** xref:block-images.adoc[]
 ** xref:inline-images.adoc[]
 ** xref:image-resource-id-examples.adoc[]
-* xref:asciidoc:link-attachment.adoc[]
-// Pages as Resources
+* xref:attachments.adoc[]
 * xref:include-a-page.adoc[]
 ** xref:page-partial.adoc[]

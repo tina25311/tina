@@ -5,7 +5,7 @@ This page introduces symlinks and explains how they can be used in Antora to hel
 
 == What is a symlink?
 
-A [.term]_symlink_, short for symbolic link, is a shortcut to a file that itself acts like a file.
+A [.term]*symlink*, short for symbolic link, is a shortcut to a file that itself acts like a file.
 In other words, it's a file that points to another file.
 The purpose of a symlink is to give a file a second location with having to duplicate it.
 A symlink can also point to a directory, which effectively links all the files under that directory to the new location.
@@ -109,12 +109,12 @@ The symlink acts as a directory.
 
 Antora fully supports symlinks.
 That means you can use symlinks in the worktree and you can use symlinks in the git tree.
-(Yes, git supports symlinks too).
+(Yes, git supports symlinks, too).
 
 === How does it work?
 
-When Antora encounters a symlink to a file, it does not attempt to preserve it as a symlink.
-Rather, it creates a regular virtual file, just like it would for any other file it encounters.
+When Antora encounters a symlink to a file, it doesn't attempt to preserve it as a symlink.
+Rather, it creates a regular virtual file like it would for any other file it encounters.
 We can say that within Antora's virtual file system, the file is duplicated, though it may end up being the only instance if it's the only part of the symlink under the Antora hierarchy.
 
 When Antora encounters a symlink to a directory, it reads all the files under the target directory and creates a regular virtual file for each one.
@@ -229,7 +229,7 @@ Instead of creating a symlink directory to the source file, let's create a symli
 Again, start by switching to the [.path]_examples_ directory.
 
  $ cd docs/modules/ROOT/examples
- 
+
 Then, create the symlink using the command appropriate for your operating system.
 
 .*nix
@@ -277,15 +277,15 @@ Although the target of the symlink is usually outside of the Antora hierarchy, a
 
 There are some limitations to be aware of when using symlinks in Antora.
 
-* The target of the symlink must exist (i.e., it cannot be dangling).
-If Antora cannot resolve the symlink, it will throw an error.
-* A symlink cannot point to itself.
+* The target of the symlink must exist.
+If Antora can't resolve the symlink, it will throw an error.
+* A symlink can't point to itself.
 If Antora detects this scenario, it will throw an error.
-* A symlink in a git repository cannot point to a location outside the git repository.
-* A symlink in a git repository cannot point to a location in another reference in the git repository.
+* A symlink in a git repository can't point to a location outside the git repository.
+* A symlink in a git repository can't point to a location in another reference in the git repository.
 * The target of the symlink should be relative.
 Creating a symlink that targets an absolute path has undefined or non-portable behavior.
 
-One thing to watch out for is to not map a lot of files into the Antora hierarchy that aren't used in the documentation.
+Don't map a lot of files into the Antora hierarchy that aren't used in your documentation site.
 Doing so adds extra processing for Antora that can slow down your build.
-Be as surgical and specific as you can about which files you map into the Antora hierarchy.
+Be as surgical and precise as you can about which files you map into the Antora hierarchy.

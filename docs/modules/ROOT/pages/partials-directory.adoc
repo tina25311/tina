@@ -11,23 +11,20 @@ A module directory can contain an xref:family-directories.adoc[optional family d
   📂 ROOT
     📂 pages
       📄 a-source-file.adoc
-    📂 partials <1>
-      📄 a-source-file.adoc <2>
+    📂 partials <.>
+      📄 a-source-file.adoc <.>
     📄 nav.adoc
 ----
-<1> A [.path]_partials_ family directory in a [.path]_ROOT_ module directory
-<2> A partial source file
+<.> A [.path]_partials_ family directory in a [.path]_ROOT_ module directory
+<.> A partial source file
 
 Antora applies preset behavior to the source files stored in the [.path]_partials_ directory when it generates a site.
 
 [#partials]
-== Partials
+== Partial files
 
-xref:page:partials-and-content-snippets.adoc[Partials] are resources that contain content snippets, such as common descriptions, terminology, or reference tables, that you plan to reuse in one or more pages.
-Partials are saved as AsciiDoc source files (_.adoc_) and stored in a [.path]_partials_ directory.
+Partial files, or partials for short, are resources that contain content snippets, such as common descriptions, terminology, or reference tables, that can be reused in one or more pages.
+Partials are stored in a [.path]_partials_ directory.
 
-If a partial isn't referenced in an AsciiDoc include directive, its content won't be published to a site.
-Partials and tagged regions in a partial can be inserted into any page, regardless of the module or component version that page belongs to, using the xref:page:include-a-partial.adoc[include directive] and the partial's xref:page:resource-id.adoc[resource ID].
-
-When referencing a partial, the `partial$` family coordinate must be included in its resource ID.
-This coordinate is required because the include directive is also used to reference xref:examples-directory.adoc[examples] and, occasionally, xref:pages-directory.adoc[pages].
+Antora doesn't automatically publish partial files.
+A xref:page:include-a-partial.adoc[partial must be referenced by an include directive] from a page, or resource that's eventually included in a page, for the partial's content to be published.
