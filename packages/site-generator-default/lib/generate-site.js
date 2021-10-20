@@ -5,7 +5,6 @@ const SiteCatalog = require('./site-catalog')
 
 const aggregateContent = require('@antora/content-aggregator')
 const buildNavigation = require('@antora/navigation-builder')
-const buildPlaybook = require('@antora/playbook-builder')
 const classifyContent = require('@antora/content-classifier')
 const convertDocuments = require('@antora/document-converter')
 const createPageComposer = require('@antora/page-composer')
@@ -15,8 +14,7 @@ const produceRedirects = require('@antora/redirect-producer')
 const publishSite = require('@antora/site-publisher')
 const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 
-async function generateSite (args, env) {
-  let playbook = buildPlaybook(args, env)
+async function generateSite (playbook) {
   try {
     const pipeline = new Pipeline(playbook, module)
     const vars = pipeline.vars

@@ -7,6 +7,15 @@ This project utilizes semantic versioning.
 
 == 3.0.0-alpha.10 (2021-10-22)
 
+=== Changed
+
+* *playbook-builder*: Allow custom site generator to be configured in playbook using `pipeline.generator` key (#857)
+* *playbook-builder*: Export default configuration schema as `defaultSchema` property (#857)
+* *cli*: If site generator accepts a single parameter, build playbook in CLI and pass to site generator (#857)
+* *cli*: Use default schema exported by playbook builder to define CLI options (#857)
+
+== Unreleased
+
 === Added
 
 * *content-classifier*: Add support for `./` token at start of path in resource ID as shorthand for current topic path (#428)

@@ -225,9 +225,9 @@ describe('cli', function () {
           expect(options['--html-url-extension-style <choice>']).to.have.string(
             '(choices: default, drop, indexify, default: default)'
           )
-          expect(optionForms).to.include('--generator <library>')
+          expect(optionForms).to.include('--generator <generator>')
           // NOTE this assertion verifies the default value for an option defined in cli.js is not quoted
-          expect(options['--generator <library>']).to.have.string('(default: @antora/site-generator-default)')
+          expect(options['--generator <generator>']).to.have.string('(default: @antora/site-generator-default)')
           // check options are sorted, except drop -h as we know it always comes last
           expect(optionForms.slice(0, -1)).to.eql(
             Object.keys(options)
@@ -629,6 +629,17 @@ describe('cli', function () {
     })
   })
 
+  it('should use the generator specified in playbook', () => {
+    playbookSpec.pipeline = { generator: ospath.resolve(FIXTURES_DIR, 'simple-generator') }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return new Promise((resolve) => runAntora('generate the-site.json').on('exit', resolve)).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(ospath.join(absDestDir, '418.html'))
+        .to.be.a.file()
+        .with.contents.that.match(/I'm a teapot/)
+    })
+  })
+
   it('should clean output directory before generating when --clean switch is used', () => {
     const residualFile = ospath.join(absDestDir, 'the-component/1.0/old-page.html')
     fs.mkdirSync(ospath.dirname(residualFile), { recursive: true })
@@ -659,6 +670,7 @@ describe('cli', function () {
     })
   }).timeout(timeoutOverride)
 
+  // NOTE this test verifies backwards compatibility with a legacy site generator
   it('should discover locally installed default site generator', () => {
     const runCwd = __dirname
     const globalModulePath = require.resolve('@antora/site-generator-default')
@@ -667,7 +679,8 @@ describe('cli', function () {
     fs.mkdirSync(localModulePath, { recursive: true })
     const localScript = heredoc`module.exports = (args, env) => {
       console.log('Using custom site generator')
-      return require(${JSON.stringify(globalModulePath)})([...args, '--title', 'Custom Site Generator'], env)
+      const playbook = require('@antora/playbook-builder')([...args, '--title', 'Custom Site Generator'], env)
+      return require(${JSON.stringify(globalModulePath)})(playbook)
     }`
     fs.writeFileSync(ospath.join(localModulePath, 'generate-site.js'), localScript)
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'generate-site.js' }))
@@ -675,7 +688,7 @@ describe('cli', function () {
     const relPlaybookFile = ospath.relative(runCwd, playbookFile)
     const messages = []
     return new Promise((resolve) =>
-      runAntora(['generate', relPlaybookFile, '--quiet'], undefined, runCwd)
+      runAntora(['--stacktrace', 'generate', relPlaybookFile, '--quiet'], undefined, runCwd)
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -692,18 +705,26 @@ describe('cli', function () {
   it('should show error message if require path fails to load', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
-    return runAntora('-r no-such-module generate the-site')
+    // NOTE --log-format=pretty only required if playbook is built before scripts are required
+    return runAntora('-r no-such-module generate --log-format=pretty the-site')
       .assert(/^\[.+?\] FATAL \(antora\): Cannot find module/)
       .done()
   })
 
   it('should show error message if site generator cannot be found', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
-    return runAntora('--stacktrace generate --generator=no-such-module the-site')
-      .assert(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load\. Try installing /)
-      .assert(/^Cause: Error: Cannot find module 'no-such-module'/)
-      .done()
+    const args = ['--stacktrace', 'generate', 'the-site', '--generator', 'no-such-module']
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(args)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.match(/"msg":"Generator not found or failed to load\. Try installing .*"/)
+      expect(messages[0]).to.match(/"stack":"Cause: Error: Cannot find module 'no-such-module'.*"/)
+    })
   })
 
   it('should show error message if site generator fails to load', () => {
@@ -713,12 +734,21 @@ describe('cli', function () {
     fs.writeFileSync(ospath.join(localModulePath, 'index.js'), 'throw false')
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
-    return runAntora(['--stacktrace', 'generate', 'the-site', '--generator', '.:@antora/site-generator-default'])
-      .assert(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load\.$/)
-      .assert(/^Cause: \(no stacktrace\)$/)
-      .on('exit', () => rmdirSync(localNodeModules))
-      .done()
+    const args = ['--stacktrace', 'generate', 'the-site', '--generator', '.:@antora/site-generator-default']
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(args)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', (exitCode) => {
+          rmdirSync(localNodeModules)
+          resolve(exitCode)
+        })
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.match(/"msg":"Generator not found or failed to load\."/)
+      expect(messages[0]).to.match(/"stack":"Cause: \(no stacktrace\)"/)
+    })
   })
 
   it('should exit with status code 0 if log failure level is not reached', async () => {
@@ -892,13 +922,13 @@ describe('cli', function () {
     })
   })
 
+  // Q: in this case, should the log format be pretty?
   it('should configure logger with default settings and warn if used before being configured', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const r1 = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
-    const args = ['--require', r1, 'generate', 'the-site', '--quiet']
+    const requirePath = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
     const messages = []
     return new Promise((resolve) =>
-      runAntora(args)
+      runAntora(['generate', 'the-site', '-r', requirePath, '--quiet'])
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -909,6 +939,42 @@ describe('cli', function () {
       expect(messages[1]).to.include('"msg":"Let\'s go!"')
     })
   })
+
+  /* switch to these tests if playbook is is built before scripts are required
+  if (process.platform !== 'win32') {
+    it('should configure logger with default settings and warn if used before being configured', () => {
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const requirePath = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
+      const messages = []
+      return new Promise((resolve) =>
+        runAntora(['generate', 'the-site', '--quiet'], { NODE_OPTIONS: `-r "${requirePath}"` })
+          .on('data', (data) => messages.push(data.message))
+          .on('exit', resolve)
+      ).then((exitCode) => {
+        expect(exitCode).to.equal(0)
+        expect(messages).to.have.lengthOf(2)
+        expect(messages[0]).to.include('"level":"warn"')
+        expect(messages[0]).to.include('"msg":"logger not configured;')
+        expect(messages[1]).to.include('"msg":"Let\'s go!"')
+      })
+    })
+  }
+
+  it('should allow require script to use configured logger', () => {
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const requirePath = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(['generate', '-r', requirePath, '--log-level', 'info', 'the-site', '--quiet'])
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include('"msg":"Let\'s go!"')
+    })
+  })
+  */
 
   it('should allow require script to replace base html5 converter that Antora extends', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
