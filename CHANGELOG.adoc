@@ -5,21 +5,37 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Added
+
+* *content-classifier*: Add support for `./` token at start of path in resource ID as shorthand for current topic path (#428)
+* *asciidoc-loader*: Log error if image with local target or value of xref attribute on image cannot be resolved (#800)
+* *asciidoc-loader*: Add support for `link=self` attribute on image macros (#735)
+* *asciidoc-loader*: Allow xref macro to be used to create a reference to any publishable resource, not just pages (#603)
+* *asciidoc-loader*: Allow xref attribute on image macro to be used to create a reference to any publishable resource, not just pages (#603)
+* *redirect-producer*: Add `gitlab` as a valid option for the `urls.redirect_facility` key (#847)
+* *redirect-producer*: Add `gitlab` redirect facility for generating redirects that can be used with GitLab Pages (#847)
+
+=== Changed
+
+* *asciidoc-loader*: Add `unresolved` role to image if target is local and it cannot be resolved (#692)
+* *asciidoc-loader*: Add the `xref` role to the link created from a non-internal xref macro (e.g., `xref page`) (#603)
+* *asciidoc-loader*: Replace the `page` role with the `xref` role on the link created from an xref macro that could not be resolved (e.g., `xref unresolved`) (#603)
+* *asciidoc-loader*: Rename the `link-page` role to `xref-` followed by the family name (e.g., `xref-page`) on element created for an image macro that has an non-internal xref target (#603)
+* *asciidoc-loader*: Don't add role to element created for an image macro that has an internal xref target (#603)
+* *asciidoc-loader*: Add only the `xref-unresolved` role to element created for an image macro that has an unresolved xref target (#603)
+* *cli*: Begin CLI error message with name of base call (i.e., `antora:`) instead of generic `error:` prefix (#855)
+* *cli*: Log unhandled error at fatal level (#788)
+
 == 3.0.0-alpha.9 (2021-08-27)
 
 === Added
 
 * *playbook-builder*: Add `git.fetch_concurrency` to control the maximum number of fetch or clone operations that are permitted to run at once (#779)
-* *redirect-producer*: Add `gitlab` as a valid option for the `urls.redirect_facility` key (#847)
 * *content-aggregator*: Limit the number of concurrent clone or fetch operations specified by the `git.fetch_concurrency` playbook key (#779)
 * *content-aggregator*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
-* *content-classifier*: Add support for `./` token at start of path in resource ID as shorthand for current topic path (#428)
 * *ui-loader*: Don't use proxy if the value of the `network.no_proxy` key in the playbook is `*` (#829)
-* *asciidoc-loader*: Allow xref macro to be used to create a reference to any publishable resource, not just pages (#603)
-* *asciidoc-loader*: Allow xref attribute on image macro to be used to create a reference to any publishable resource, not just pages (#603)
-* *asciidoc-loader*: Log error if image with local target or value of xref attribute on image cannot be resolved (#800)
-* *asciidoc-loader*: Add support for `link=self` attribute on image macros (#735)
-* *redirect-producer*: Add `gitlab` redirect facility for generating redirects that can be used with GitLab Pages (#847)
 
 === Fixed
 
@@ -34,14 +50,6 @@ This project utilizes semantic versioning.
 * *logger*: Upgrade to sonic-boom 2.0.x (#837)
 * *playbook-builder*: Further restrict type of `runtime.log.destination.buffer_size` key in playbook schema from number to integer
 * *content-aggregator*: Switch back to versionless default cache folder for managed content repositories (#690)
-* *asciidoc-loader*: Add `unresolved` role to image if target is local and it cannot be resolved (#692)
-* *asciidoc-loader*: Add the `xref` role to the link created from a non-internal xref macro (e.g., `xref page`) (#603)
-* *asciidoc-loader*: Replace the `page` role with the `xref` role on the link created from an xref macro that could not be resolved (e.g., `xref unresolved`) (#603)
-* *asciidoc-loader*: Rename the `link-page` role to `xref-` followed by the family name (e.g., `xref-page`) on element created for an image macro that has an non-internal xref target (#603)
-* *asciidoc-loader*: Don't add role to element created for an image macro that has an internal xref target (#603)
-* *asciidoc-loader*: Add only the `xref-unresolved` role to element created for an image macro that has an unresolved xref target (#603)
-* *cli*: Begin CLI error message with name of base call (i.e., `antora:`) instead of generic `error:` prefix (#855)
-* *cli*: Log unhandled error at fatal level (#788)
 
 == 3.0.0-alpha.8 (2021-08-13)
 
