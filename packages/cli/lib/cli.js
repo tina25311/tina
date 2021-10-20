@@ -120,7 +120,7 @@ cli
       try {
         cli.requireRequests.forEach((requireRequest) => userRequire(requireRequest, userRequireContext))
       } catch (err) {
-        await exitWithError(err, errorOpts)
+        return exitWithError(err, errorOpts)
       }
     }
     const generator = options.generator
@@ -130,7 +130,7 @@ cli
     } catch (err) {
       let msg = 'Generator not found or failed to load.'
       if (generator && generator.charAt() !== '.') msg += ` Try installing the '${generator}' package.`
-      await exitWithError(err, errorOpts, msg)
+      return exitWithError(err, errorOpts, msg)
     }
     const args = cli.rawArgs.slice(cli.rawArgs.indexOf(command.name()) + 1)
     args.splice(args.indexOf(playbookFile), 0, '--playbook')
