@@ -1,5 +1,7 @@
-= Page Xrefs and Link Text
+= Page Xrefs and Link Text in Navigation Files
+:navtitle: Page Xrefs and Link Text
 :page-aliases: link-syntax-and-content.adoc
+//Page Xrefs and Link Text
 
 == Page xrefs
 

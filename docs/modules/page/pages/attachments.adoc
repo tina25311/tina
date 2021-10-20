@@ -1,0 +1,76 @@
+= Attachments
+:page-aliases: asciidoc:link-attachment.adoc
+:family: attachment
+:coordinate: attachment$
+
+[.term]*Attachments* are resources, such as PDFs or the ZIP archives of sample projects.
+Attachment files are stored in an xref:ROOT:attachments-directory.adoc[_attachments_ family directory].
+
+== Link to an attachment
+
+An attachment can be cross referenced from pages, other resources, and navigation files using an AsciiDoc xref macro and the xref:page:resource-id.adoc[resource ID] of the attachment.
+The `{coordinate}` family coordinate must be specified in the attachment's resource ID.
+
+<<ex-base>> shows the structure of an AsciiDoc xref macro with an {family}'s fully qualified resource ID.
+
+.Xref and attachment resource ID syntax
+[#ex-base,subs=attributes+]
+----
+xref:version@component:module:{coordinate}filename.ext[link text]
+----
+
+How many coordinates of the attachment's resource ID you need to specify in the target of the xref macro depends on the component version and module of the xref:resource-id.adoc#current-page[current page] in relation to the attachment.
+
+=== Xref an attachment from a page
+
+Let's break down the xref macro and resource ID coordinates you need to create a link to an {family} from a page.
+The following steps assume that the target {family} and xref:resource-id.adoc#current-page[current page] belong to the same component version and module.
+Therefore, the resource ID of the target {family} only requires the family coordinate, `{coordinate}`, and family-relative path of the {family} file.
+
+. In the flow of your content, enter the name of the macro followed by one colon, `xref:`.
++
+[listing,subs=+quotes]
+----
+See the **xref:**
+----
+
+. Enter the resource ID of the target {family} file.
+The resource ID must specify the `{coordinate}` family coordinate.
++
+[listing,subs="attributes+,+quotes"]
+----
+See the xref:**{coordinate}filename.ext**
+----
+
+. Directly after the attachment's file extension, enter an opening square bracket (`[`), followed by optional link text, and then a closing square bracket (`]`).
++
+[listing,subs="attributes+,+quotes"]
+----
+See the xref:{coordinate}filename.ext**[optional link text]** for more options.
+----
+
+=== Link text for attachments
+
+If you don't specify link text in an xref macro that targets an attachment, Antora displays the URL of the attachment as the link in the published page.
+
+.Attachment xref with no link text
+[source#ex-no-text]
+----
+Download xref:attachment$practice-project.zip[] to try it out!
+----
+
+The result of <<ex-no-text>>, would be display as shown below.
+
+....
+Download https://docs.example.com/component/version/module/_attachments/practice-project.zip to try it out!
+....
+
+You can specify link text by entering it between the square brackets of the xref macro.
+
+.Attachment xref with link text
+[source#ex-text]
+----
+Download xref:attachment$practice-project.zip[The Sample Project] to try it out!
+----
+
+Xrefs to attachments can also be created in xref:navigation:reference-resources.adoc[navigation files], image macros, and partials.
