@@ -59,6 +59,9 @@ The `version` key doesn't accept certain characters or spaces in its value, see 
 . Save the file as [.path]_antora.yml_ in the xref:content-source-repositories.adoc#content-source-root[content source root].
 The [.path]_antora.yml_ file should be located at the same hierarchy level as the [.path]_modules_ directory to which you want it applied.
 
+If you are defining multiple versions of a component, be sure to always use the same case when declaring the component name.
+If the case differs (e.g., Silver-Leaf vs silver-leaf), Antora will treat these as different components, not different versions of the same component.
+
 You've now associated a set of source files with a component version!
 When Antora runs, all of the xref:standard-directories.adoc[source files stored in the standard set of directories] will be assigned the component name `silver-leaf` and the version `7.1`.
 These values will be used as xref:page:page-id.adoc[page] and xref:page:resource-id.adoc[resource ID] coordinates and in the URLs of the pages generated from the component version's source files.

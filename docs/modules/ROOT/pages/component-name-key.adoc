@@ -22,6 +22,9 @@ Additionally, if the component title key isn't set, Antora uses the name:
 * for display purposes in the reference UI, which includes the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector menu], and
 the first breadcrumb position on a component version's pages
 
+Note that component name is case sensitive.
+This means that you have two components with the same name that only different in case, Antora will treat them as different components.
+
 Content writers use the name as a coordinate in page and resource IDs when referencing a resource in another component version.
 
 [#key]
@@ -43,6 +46,10 @@ Then type the value you want assigned to `name`.
 
 The value assigned to the `name` key can contain letters, numbers, underscores (`+_+`), hyphens (`-`), and periods (`.`).
 To ensure portability between host platforms, letters used in the `name` value should be lowercase.
+
+IMPORTANT: We *strongly* encouraged you to select a name that only consists of _lowercase_ characters.
+Since the component name appears is used in the URL, using consistent casing makes the component name, and thus your site, more portable.
+That's because some file systems, and thus the web server running on it, can't distiguish between uppercase and lowercase characters.
 
 The value *cannot* contain spaces, forward slashes (`/`), or HTML special characters (`&`, `<`, or `>`).
 The value *cannot* be empty.
