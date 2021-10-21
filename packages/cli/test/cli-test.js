@@ -408,10 +408,13 @@ describe('cli', function () {
       .done()
   }).timeout(timeoutOverride)
 
+  // NOTE this test also verifies the --playbook option is correctly inserted into the args array
   it('should generate site to output directory when playbook file is passed to generate command', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
-    return new Promise((resolve) => runAntora('generate the-site --quiet').on('exit', resolve)).then((exitCode) => {
+    return new Promise((resolve) =>
+      runAntora('--stacktrace generate --title the-site the-site --quiet').on('exit', resolve)
+    ).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(absDestDir)
         .to.be.a.directory()
@@ -419,7 +422,9 @@ describe('cli', function () {
       expect(ospath.join(absDestDir, 'the-component'))
         .to.be.a.directory()
         .with.subDirs(['1.0'])
-      expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file()
+      expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
+        .to.be.a.file()
+        .with.contents.that.match(/:: the-site<\/title>/)
     })
   }).timeout(timeoutOverride)
 

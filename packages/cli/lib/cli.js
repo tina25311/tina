@@ -112,6 +112,7 @@ cli
       .createOption('--generator <library>', 'The site generator library.')
       .default(DEFAULT_GENERATOR, DEFAULT_GENERATOR)
   )
+  .trackOptions()
   .action(async (playbookFile, options, command) => {
     const dot = ospath.resolve(playbookFile, '..')
     const errorOpts = { stacktrace: cli.stacktrace, silent: command.silent }
@@ -132,8 +133,7 @@ cli
       if (generator && generator.charAt() !== '.') msg += ` Try installing the '${generator}' package.`
       return exitWithError(err, errorOpts, msg)
     }
-    const args = cli.rawArgs.slice(cli.rawArgs.indexOf(command.name()) + 1)
-    args.splice(args.indexOf(playbookFile), 0, '--playbook')
+    const args = command.optionArgs.concat('--playbook', playbookFile)
     // TODO support passing a preloaded convict config as third option; gets new args and env
     return generateSite(args, process.env)
       .then(exit)
