@@ -178,7 +178,7 @@ describe('cli', function () {
       .done()
   })
 
-  it('should output usage for main command when invoked with "help"', () => {
+  it('should output usage for base call when invoked with "help"', () => {
     return runAntora('help')
       .assert(/^Usage: antora/)
       .done()
@@ -408,7 +408,7 @@ describe('cli', function () {
       .done()
   }).timeout(timeoutOverride)
 
-  it('should generate site to fs destination when playbook file is passed to generate command', () => {
+  it('should generate site to output directory when playbook file is passed to generate command', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora('generate the-site --quiet').on('exit', resolve)).then((exitCode) => {
@@ -423,7 +423,7 @@ describe('cli', function () {
     })
   }).timeout(timeoutOverride)
 
-  it('should generate site to fs destination when absolute playbook file is passed to generate command', () => {
+  it('should generate site to output directory when absolute playbook file is passed to generate command', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora(['generate', playbookFile, '--quiet']).on('exit', resolve)).then(
