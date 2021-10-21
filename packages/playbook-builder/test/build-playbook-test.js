@@ -749,13 +749,7 @@ describe('buildPlaybook()', () => {
     expect(() => buildPlaybook(['--playbook', invalidSiteUrlSpec], {})).to.throw('must be a string')
   })
 
-  it('should throw error if site.url is a pathname containing spaces', () => {
-    expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', '/my docs'], {})).to.throw(
-      'pathname segment must not contain spaces'
-    )
-  })
-
-  it('should throw error if site.url is an absolute URL containing spaces in the pathname', () => {
+  it('should throw error if site.url contains spaces', () => {
     expect(() => buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'https://example.org/my docs'], {})).to.throw(
       'pathname segment must not contain spaces'
     )
