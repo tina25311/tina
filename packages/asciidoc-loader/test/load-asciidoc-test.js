@@ -706,6 +706,29 @@ describe('loadAsciiDoc()', () => {
       expect(doc.getBlocks()[0].getContext()).to.equal('preamble')
     })
 
+    it('should not warn when parsing header only if doctype is manpage', () => {
+      const contents = heredoc`
+        = cmd(1)
+        Author Name
+        :doctype: manpage
+
+        == Name
+
+        cmd - does stuff
+      `
+      setInputFileContents(contents)
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, undefined, { headerOnly: true })
+      ).withReturnValue()
+      expect(messages).to.be.empty()
+      expect(doc.getDoctype()).to.equal('manpage')
+      expect(doc.getBlocks()).to.be.empty()
+      const attributes = doc.getAttributes()
+      expect(attributes.manvolnum).to.equal('1')
+      expect(attributes.mantitle).to.equal('cmd')
+      expect(attributes.manname).to.equal('unknown')
+    })
+
     it('should assign site-url attribute if site url is set in playbook', () => {
       setInputFileContents('= Document Title')
       const playbook = {
