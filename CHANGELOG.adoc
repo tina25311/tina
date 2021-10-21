@@ -17,6 +17,10 @@ This project utilizes semantic versioning.
 * *redirect-producer*: Add `gitlab` as a valid option for the `urls.redirect_facility` key (#847)
 * *redirect-producer*: Add `gitlab` redirect facility for generating redirects that can be used with GitLab Pages (#847)
 
+=== Fixed
+
+* *asciidoc-loader*: Don't warn if a page declares the manpage doctype (#790)
+
 === Changed
 
 * *asciidoc-loader*: Add `unresolved` role to image if target is local and it cannot be resolved (#692)
