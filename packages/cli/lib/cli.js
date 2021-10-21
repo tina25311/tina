@@ -105,7 +105,7 @@ cli
 
 cli
   .command('generate <playbook>', { isDefault: true })
-  .description('Generate a documentation site specified in <playbook>.')
+  .description('Generate a documentation site as specified by <playbook>.')
   .optionsFromConvict(convict(configSchema), { exclude: 'playbook' })
   .addOption(
     cli
