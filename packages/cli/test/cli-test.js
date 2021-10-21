@@ -629,14 +629,6 @@ describe('cli', function () {
     })
   })
 
-  it('should show error message if custom generator fails to load', () => {
-    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
-    return runAntora('generate --generator=no-such-module the-site')
-      .assert(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load./)
-      .done()
-  })
-
   it('should clean output directory before generating when --clean switch is used', () => {
     const residualFile = ospath.join(absDestDir, 'the-component/1.0/old-page.html')
     fs.mkdirSync(ospath.dirname(residualFile), { recursive: true })
@@ -705,6 +697,15 @@ describe('cli', function () {
       .done()
   })
 
+  it('should show error message if site generator cannot be found', () => {
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
+    return runAntora('--stacktrace generate --generator=no-such-module the-site')
+      .assert(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load\. Try installing /)
+      .assert(/^Cause: Error: Cannot find module 'no-such-module'/)
+      .done()
+  })
+
   it('should show error message if site generator fails to load', () => {
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
     const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
@@ -713,8 +714,9 @@ describe('cli', function () {
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
-    return runAntora(['generate', 'the-site', '--generator', '.:@antora-site-generator-default'])
-      .assert(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load./)
+    return runAntora(['--stacktrace', 'generate', 'the-site', '--generator', '.:@antora/site-generator-default'])
+      .assert(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load\.$/)
+      .assert(/^Cause: \(no stacktrace\)$/)
       .on('exit', () => rmdirSync(localNodeModules))
       .done()
   })
