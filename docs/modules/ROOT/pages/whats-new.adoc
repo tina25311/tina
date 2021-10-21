@@ -8,6 +8,9 @@
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-repo}/merge_requests
 
+NOTE: Interested in upgrading to Antora {page-component-display-version} and testing it out now?
+See xref:install:upgrade-antora.adoc[] for instructions and a list of features to update before upgrading.
+
 = Antora 3.0.0-alpha.10
 
 _**Release date:** 2021.10.22 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_

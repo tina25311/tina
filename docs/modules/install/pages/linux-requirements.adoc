@@ -12,8 +12,8 @@ Since Antora is built on Node.js, you'll need Node installed on your machine to 
 
 == Node
 
-We recommend using the latest long term support (LTS) release of Node.
-While you can use other versions of Node, Antora is only tested against {url-node-releases}[active LTS releases^].
+You can use any active LTS or maintenance LTS version of Node with Antora, but we recommend using the most recent active LTS version so that you benefit from the latest performance and security enhancements.
+The {url-node-releases}[Node release schedule^] shows the active Node LTS versions.
 
 To see if you have Node installed, and which version, open a terminal and type:
 
