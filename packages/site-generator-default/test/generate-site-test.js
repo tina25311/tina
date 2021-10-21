@@ -494,7 +494,7 @@ describe('generateSite()', function () {
     const editBaseUrl = repoBuilder.url.replace(/\.git$/, '')
     const refname = 'v2.0'
     playbookSpec.content.sources[0].url = repoBuilder.url
-    playbookSpec.content.sources[0].editUrl = `${editBaseUrl}/edit/{refname}/{path}`
+    playbookSpec.content.sources[0].edit_url = `${editBaseUrl}/edit/{refname}/{path}`
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
@@ -506,7 +506,7 @@ describe('generateSite()', function () {
 
   it('should not add edit page link to toolbar if repository is private', async () => {
     playbookSpec.content.sources[0].url = repoBuilder.url.replace('//', '//@')
-    playbookSpec.content.sources[0].editUrl = `${repoBuilder.url.replace(/\.git$/, '')}/edit/{refname}/{path}`
+    playbookSpec.content.sources[0].edit_url = `${repoBuilder.url.replace(/\.git$/, '')}/edit/{refname}/{path}`
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(['--playbook', playbookFile], env)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
@@ -518,7 +518,7 @@ describe('generateSite()', function () {
     const editBaseUrl = repoBuilder.url.replace(/\.git$/, '')
     const refname = 'v2.0'
     playbookSpec.content.sources[0].url = repoBuilder.url.replace('//', '//@')
-    playbookSpec.content.sources[0].editUrl = `${editBaseUrl}/edit/{refname}/{path}`
+    playbookSpec.content.sources[0].edit_url = `${editBaseUrl}/edit/{refname}/{path}`
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     env.FORCE_SHOW_EDIT_PAGE_LINK = 'true'
     await generateSite(['--playbook', playbookFile], env)
