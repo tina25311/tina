@@ -3,14 +3,17 @@
 
 On this page, you'll learn:
 
-* [x] How to upgrade Node. (optional)
+* [x] How to upgrade Node.
 * [x] How to upgrade Antora globally.
 * [x] How to upgrade the Antora CLI and default site generator individually.
 
+include::partial$upgrade-checklist.adoc[]
+
+[#node]
 == Upgrade Node (optional)
 
-You can use any currently supported Node LTS release with Antora, but we recommend using the most recent LTS version so that you benefit from the latest performance and security enhancements.
-The {url-node-releases}[Node release schedule^] shows which Node LTS versions are active.
+You can use any active LTS or maintenance LTS version of Node with Antora, but we recommend using the most recent active LTS version so that you benefit from the latest performance and security enhancements.
+The {url-node-releases}[Node release schedule^] shows the active Node LTS versions.
 
 To check which Node version you have installed, open a terminal and run:
 

@@ -22,7 +22,7 @@ When a platform version reaches the end of active support by its maintainers or 
 |&#8805; 3.11
 
 |Debian
-|&#8805; 10.10
+|&#8805; 10.11
 
 |Fedora
 |&#8805; 33
@@ -55,7 +55,6 @@ Windows Server 2019
 
 |Node.js
 |[%hardbreaks]
-&#8805; 10.24.0
 12
 14
 16
@@ -132,7 +131,6 @@ Windows Server 2016: Mainstream support: Until January 11, 2022
 Windows 10: TBD
 
 MacOS https://en.wikipedia.org/wiki/MacOS_version_history
-Mojave EOL Sept 2021
 
 MS Edge: replaces IE 11 which is not being developed further; it is the default browser for Windows 10/Server 2016
 ////

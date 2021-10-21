@@ -1,24 +1,48 @@
 == Upgrade checklist
 
-If you're upgrading from Antora 1.1, you may need to make some of the following changes to your documentation system before using Antora {page-component-version}.
+If you're upgrading from Antora 2.3, you may need to make some of the following changes to your documentation system before using Antora {page-component-display-version}.
 
-Does Antora access private repositories in order to build your site?::
-If yes, you get to say goodbye to your SSH agent and set up your authentication credentials for each private repository URL in a git credential store.
-Refer to the xref:playbook:private-repository-auth.adoc[Private repository authentication] documentation for setup options and instructions.
+Are you using an active LTS version of Node.js?::
+We recommend upgrading to the {url-node-releases}[latest active long term support (LTS) release of Node].
+Antora 3 supports Node 14 LTS and 16 LTS.
+Antora 3 doesn't support Node LTS versions that have reached end of life (EOL).
+See <<node>> for instructions.
 
-Does Antora access git repositories using the git: protocol or static HTTP (such as a host using cgit)?::
-Unfortunately, Antora can no longer connect to repositories that use these connection methods.
-You'll need to either clone the repositories to a local folder and point Antora at those locations or you'll need to set up a proxy server that serves the repositories over smart HTTP (as do all major git hosts).
+Have you updated your AsciiDoc syntax and Asciidoctor extensions to comply with the newest patch release of Asciidoctor.js 2.2?::
+Antora 3 dropped support for Asciidoctor.js 1.5.9 and now depends on the latest patch version of Asciidoctor.js 2.2 (which provides Asciidoctor 2.0.x).
+Asciidoctor 2 introduces a few substantive changes to existing features that may impact your documentation source content or UI.
+See xref:ROOT:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora 3.
 
-Is your Antora playbook file written in CSON?::
-If yes, you'll need to migrate it to YAML, JSON, or TOML before running Antora {page-component-version}.
+Are you linking to attachment files?::
+Using the AsciiDoc link macro (`+link:[]+`) and `+{attachmentsdir}+` attribute reference in the target value to reference an attachment has been deprecated in Antora 3.
+Replace the link macro with the xref macro and use the attachment's resource ID to reference it.
+See xref:page:attachments.adoc[] and xref:navigation:reference-resources.adoc[] to learn about the `attachment$` family coordinate and for usage examples.
 
-If you answered *No* to all of the above questions, then you're ready to upgrade to Antora {page-component-version} now!
+Are any of your component versions unversioned?::
+We've deprecated the use of the value `master`, when assigned to the `version` key, to identify an unversioned component.
+In Antora 3, assign the tilde (`~`) to the `version` key in a component version's [.path]_antora.yml_ file to specify it as unversioned.
+See xref:ROOT:component-with-no-version.adoc[] to learn more.
+
+Make sure you're using file extensions when cross referencing pages or assigning `page-aliases` values.::
+If the _.adoc_ file extension was missing from the resource ID in an xref macro or the value assigned to a `page-aliases` attribute, Antora 2 would automatically add _.adoc_ to the resource ID at runtime.
+This fallback mechanism has been deprecated because the xref macro can now reference other non-AsciiDoc resources.
+Review the resource IDs in your xrefs and `page-aliases` attributes to ensure the _.adoc_ extension is specified.
+
+Are you depending on the default branches pattern in your playbook?::
+The previous default branches pattern, `[master, v*]`, has been deprecated and replaced with `[HEAD, v*]`.
+It's unlikely this will cause a change when using remote repositories.
+For local repositories, it may result in the worktree being used in cases it wasn't previously.
+
+Do you use a custom git credential manager?::
+Isomorphic-git no longer includes the `cores` (plugin) API, so the call `git.cores.create('antora').set('credentialManager', customCredentialManager)` is going to fail.
+Antora still honors the `cores` API, but the call to register the credential manager is now responsible for creating it (since it runs before Antora loads).
+Refer to xref:playbook:private-repository-auth.adoc#custom[Configure a custom credential manager] for the latest instructions.
+
 ifeval::["{route}" == "New"]
 See xref:install:upgrade-antora.adoc[Upgrade Antora] for instructions.
 
 == Software Lifecycle Notices
 
-Antora 1.1 will enter maintenance on March 25, 2019.
+Antora 2.3 will enter maintenance on November 30, 2021.
 See the xref:ROOT:project/release-schedule.adoc[release schedule] for details.
 endif::[]
