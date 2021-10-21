@@ -71,7 +71,7 @@ function _initVars (playbook) {
 }
 
 function _registerExtensions (playbook, module_, vars) {
-  const extensions = (playbook.pipeline || {}).extensions
+  const extensions = (playbook.pipeline || {}).extensions || []
   if (extensions.length) {
     const requireContext = { dot: playbook.dir, paths: [playbook.dir || '', module_.path] }
     extensions.forEach((ext) => {
