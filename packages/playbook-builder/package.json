@@ -19,7 +19,7 @@
     "@antora/logger": "3.0.0-alpha.9",
     "@iarna/toml": "~2.2",
     "camelcase-keys": "~6.2",
-    "convict": "~6.1",
+    "convict": "~6.2",
     "js-yaml": "~4.1",
     "json5": "~2.2"
   },
