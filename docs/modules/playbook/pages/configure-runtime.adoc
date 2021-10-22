@@ -39,17 +39,22 @@ The `log` key accepts a list of built-in key-value pairs that configure the log 
 ----
 runtime:
   log: # <.>
-    format: pretty # <.>
+    format: json # <.>
     failure_level: warn # <.>
     level: all # <.>
+    level_format: number # <.>
 ----
 <.> The optional `log` key is nested under the `runtime` key.
 <.> The optional, built-in `format` key is nested under the `log` key.
 <.> The optional, built-in `failure_level` key is nested under the `log` key.
 <.> The optional, built-in `level` key is nested under the `log` key.
+<.> The optional, built-in `level_format` key is nested under the `log` key.
 
-If `level`, `failure_level`, or `format` are set in the playbook, they must be nested under the `log` key.
-The xref:runtime-log-level.adoc#default[level], xref:runtime-log-failure-level.adoc#default[failure_level], and xref:runtime-log-format.adoc#default[format] keys have default values that are automatically applied when Antora runs if they're not explicitly defined in the playbook or using the corresponding the xref:cli:options.adoc#generate-options[command line options] or xref:playbook:environment-variables.adoc[environment variables].
+If `level`, `failure_level`, `format`, or `level_format` are set in the playbook, they must be nested under the `log` key.
+The xref:runtime-log-level.adoc#default[level], xref:runtime-log-failure-level.adoc#default[failure_level], xref:runtime-log-format.adoc#default[format], and xref:runtime-log-format.adoc#level-format-key[level_format] keys have default values that are automatically applied when Antora runs if they're not explicitly defined in the playbook or using the corresponding the xref:cli:options.adoc#generate-options[command line options] or xref:playbook:environment-variables.adoc[environment variables].
+
+IMPORTANT: The log settings are not honored if a fatal error is thrown before Antora fully configures the playbook.
+In such cases, the error message is only printed directly to standard error (STDERR).
 
 [#runtime-reference]
 == Available runtime keys
@@ -84,5 +89,12 @@ The default value is `json` in a CI environment and `pretty` in all other enviro
 Accepts the values `all`, `debug`, `info`, `warn`, `error`, `fatal`, and `silent`.
 The default value is `warn`.
 The value `silent` turns the logger off.
+|No
+
+|xref:runtime-log-format.adoc#level-format-key[log.level_format]
+|Sets the format of how the log levels are expressed.
+Only applies when `log.format` is `json`.
+Accepts the values `label` and `number`.
+The default value is `label`.
 |No
 |===
