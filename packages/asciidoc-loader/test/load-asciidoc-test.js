@@ -2899,6 +2899,29 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, '#section-a', 'Section A')
     })
 
+    it('should resolve internal reference propertly if path attribute is set on document', () => {
+      const contentCatalog = mockContentCatalog({
+        family: 'page',
+        module: 'other-module',
+        relative: 'the-page.adoc',
+        contents: '= Other Page Title',
+      }).spyOn('getById')
+      setInputFileContents(heredoc`
+        = Page Title
+        :path: other-module:the-page.adoc
+
+        xref:section-a[]
+
+        == Section A
+      `)
+      const config = {
+        attributes: { idprefix: '', idseparator: '-' },
+      }
+      const html = loadAsciiDoc(inputFile, contentCatalog, config).convert()
+      expectLink(html, '#section-a', 'Section A')
+      expect(contentCatalog.getById).to.not.have.been.called()
+    })
+
     it('should break circular reference by delegating to built-in converter to process an internal reference', () => {
       const contentCatalog = mockContentCatalog({ family: 'page', relative: 'page-a.adoc' }).spyOn('getById')
       const contents = heredoc`
@@ -4827,6 +4850,7 @@ describe('loadAsciiDoc()', () => {
       }).spyOn('getById')
       setInputFileContents(heredoc`
         = Page Title
+        :role: ignored
 
         before
 
@@ -4862,7 +4886,7 @@ describe('loadAsciiDoc()', () => {
         level: 'error',
         name: 'asciidoctor',
         msg: 'target of xref on image not found: module-b:no-such-page.adoc',
-        file: { path: inputFile.src.path, line: 7 },
+        file: { path: inputFile.src.path, line: 8 },
       })
     })
 
