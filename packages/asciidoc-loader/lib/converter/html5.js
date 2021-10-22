@@ -30,11 +30,11 @@ const defineHtml5Converter = () => {
     if (node.getType() === 'xref') {
       let callback
       let refSpec =
-        node.getAttribute('path', undefined, false) ||
+        node.getAttribute('path') ||
         // NOTE detect and convert self reference into a page reference
         (node.target === '#' &&
           node.getText() == null &&
-          node.getAttribute('refid', undefined, false) == null &&
+          node.getAttribute('refid') == null &&
           node.getDocument().getAttribute('page-relative-src-path'))
       if (refSpec && (callback = this[$resourceRefCallback])) {
         const attrs = node.getAttributes()
@@ -82,20 +82,20 @@ function transformImageNode (converter, node, imageTarget) {
   if (matchesResourceSpec(imageTarget)) {
     const imageRefCallback = converter[$imageRefCallback]
     if (imageRefCallback) {
-      const alt = node.getAttribute('alt', undefined, false)
-      if (node.isAttribute('default-alt', alt, false)) node.setAttribute('alt', alt.split(/[@:]/).pop())
+      const alt = node.getAttribute('alt')
+      if (node.isAttribute('default-alt', alt)) node.setAttribute('alt', alt.split(/[@:]/).pop())
       Opal.defs(node, '$image_uri', (imageSpec) => {
         const imageSrc = imageRefCallback(imageSpec)
         if (imageSrc) return imageSrc
         logUnresolved(converter, node, imageSpec, 'image')
-        const role = node.getAttribute('role', undefined, false)
+        const role = node.getAttribute('role')
         node.setAttribute('role', `unresolved${role ? ' ' + role : ''}`)
         return imageSpec
       })
     }
   }
   if (node.hasAttribute('link')) {
-    if (node.isAttribute('link', 'self', false)) {
+    if (node.isAttribute('link', 'self')) {
       const superImageUri = node.$image_uri.bind(node)
       Opal.defs(node, '$image_uri', () => {
         const imageSrc = superImageUri(imageTarget)
@@ -105,14 +105,14 @@ function transformImageNode (converter, node, imageTarget) {
     }
   } else if (node.hasAttribute('xref')) {
     let resourceRefCallback
-    const refSpec = node.getAttribute('xref', '', false)
+    const refSpec = node.getAttribute('xref') || ''
     if (refSpec.charAt() === '#') {
       node.setAttribute('link', refSpec)
     } else if (hasExt(refSpec) && (resourceRefCallback = converter[$resourceRefCallback])) {
       const { target, family, internal, unresolved } = resourceRefCallback(refSpec, refSpec)
       if (!internal) {
         if (unresolved) logUnresolved(converter, node, refSpec, 'xref on image')
-        const role = node.getAttribute('role', undefined, false)
+        const role = node.getAttribute('role')
         node.setAttribute('role', `xref-${unresolved ? 'unresolved' : family}${role ? ' ' + role : ''}`)
       }
       node.setAttribute('link', target)
