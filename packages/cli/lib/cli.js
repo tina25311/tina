@@ -88,17 +88,16 @@ cli
   .description('A modular, multi-repository documentation site generator for AsciiDoc.')
   .usage('[options] [[command] [args]]')
   .helpOption('-h, --help', 'Output usage information.')
-  .addHelpText(
-    'after',
-    () => {
-      const name = cli.name()
-      return cli.createHelp().wrap(
+  .addHelpText('after', () => {
+    const name = cli.name()
+    return cli
+      .createHelp()
+      .wrap(
         ` \nRun '${name} <command> --help' to see options and examples for a command (e.g., ${name} generate --help).`,
         getTTYColumns(),
         0
       )
-    }
-  )
+  })
   .option('-r, --require <library>', 'Require library (aka node module) or script path before executing command.')
   .on('option:require', (requireRequest) => (cli.requireRequests = cli.requireRequests || []).push(requireRequest))
   .option('--stacktrace', 'Print the stacktrace to the console if the application fails.')
