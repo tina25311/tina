@@ -57,7 +57,7 @@ function getTTYColumns () {
 }
 
 function outputError (str, write) {
-  write(str.replace(/^error: /, `${cli.name()}: `))
+  write(str.replace(/^error: /, cli.name() + ': '))
 }
 
 cli
@@ -68,7 +68,7 @@ cli
   .version(
     {
       toString () {
-        const buffer = [`@antora/cli: ${VERSION}`]
+        const buffer = ['@antora/cli: ' + VERSION]
         let generatorVersion
         const generatorPackageJson = DEFAULT_GENERATOR + '/package.json'
         try {
@@ -90,14 +90,14 @@ cli
   .helpOption('-h, --help', 'Output usage information.')
   .addHelpText(
     'after',
-    function () {
-      const name = this.name()
-      return this.createHelp().wrap(
+    () => {
+      const name = cli.name()
+      return cli.createHelp().wrap(
         ` \nRun '${name} <command> --help' to see options and examples for a command (e.g., ${name} generate --help).`,
         getTTYColumns(),
         0
       )
-    }.bind(cli)
+    }
   )
   .option('-r, --require <library>', 'Require library (aka node module) or script path before executing command.')
   .on('option:require', (requireRequest) => (cli.requireRequests = cli.requireRequests || []).push(requireRequest))
@@ -143,7 +143,7 @@ cli
 
 cli.command('help [command]', { hidden: true }).action((name, options, command) => {
   if (name) {
-    const helpCommand = cli.commands.find((candidate) => candidate.name() === name)
+    const helpCommand = cli._findCommand(name)
     if (helpCommand) {
       helpCommand.help()
     } else {
