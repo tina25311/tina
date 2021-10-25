@@ -68,9 +68,10 @@ cli
   .version(
     {
       toString () {
+        const generator = cli._findCommand('generate')._getOptionValue('generator')
         const buffer = ['@antora/cli: ' + VERSION]
         let generatorVersion
-        const generatorPackageJson = DEFAULT_GENERATOR + '/package.json'
+        const generatorPackageJson = generator + '/package.json'
         try {
           generatorVersion = require(generatorPackageJson).version
         } catch {
@@ -78,7 +79,7 @@ cli
             generatorVersion = require(require.resolve(generatorPackageJson, { paths: [''] })).version
           } catch {}
         }
-        buffer.push(DEFAULT_GENERATOR + ': ' + (generatorVersion || 'not installed'))
+        buffer.push(generator + ': ' + (generatorVersion || 'not installed'))
         return buffer.join('\n')
       },
     },
