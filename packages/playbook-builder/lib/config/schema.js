@@ -8,6 +8,12 @@ module.exports = {
     arg: 'playbook',
   },
   pipeline: {
+    generator: {
+      doc: 'A require request for the generator package name or script to use.',
+      format: String,
+      default: '@antora/site-generator-default',
+      arg: 'generator',
+    },
     extensions: {
       doc:
         'A list of extensions that listen for pipeline events. ' +

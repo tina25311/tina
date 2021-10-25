@@ -668,6 +668,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.network.httpProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.httpsProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.noProxy).to.equal('example.org,example.com')
+    expect(playbook.pipeline.generator).to.equal('my-custom-generator')
     expect(playbook.pipeline.extensions).to.eql([
       'antora-lunr',
       {
@@ -720,6 +721,11 @@ describe('buildPlaybook()', () => {
     expect(playbook.output.dir).to.equal('./_site')
     expect(playbook.output.destinations[0].provider).to.equal('archive')
     expect(playbook.output.destinations[0].path).to.equal('./site.zip')
+  })
+
+  it('should export default schema', () => {
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {}, buildPlaybook.defaultSchema)
+    expect(playbook.site.url).to.equal('https://example.com')
   })
 
   it('should allow site.url to be a pathname', () => {

@@ -3,6 +3,7 @@
 const camelCaseKeys = require('camelcase-keys')
 const { configureLogger } = require('@antora/logger')
 const convict = require('./solitary-convict')
+const defaultSchema = require('./config/schema')
 const fs = require('fs')
 const ospath = require('path')
 
@@ -60,7 +61,7 @@ function buildPlaybook (args = [], env = {}, schema = undefined) {
 }
 
 function loadConvictConfig (args, env, customSchema) {
-  return convict(customSchema || require('./config/schema'), { args, env })
+  return convict(customSchema || defaultSchema, { args, env })
 }
 
 function deepFreeze (o) {
@@ -111,3 +112,4 @@ function getStopPaths (schemaProperties, schemaPath = []) {
 }
 
 module.exports = buildPlaybook
+module.exports.defaultSchema = defaultSchema

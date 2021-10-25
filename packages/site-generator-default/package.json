@@ -21,12 +21,14 @@
     "@antora/document-converter": "3.0.0-alpha.10",
     "@antora/navigation-builder": "3.0.0-alpha.10",
     "@antora/page-composer": "3.0.0-alpha.10",
-    "@antora/playbook-builder": "3.0.0-alpha.10",
     "@antora/redirect-producer": "3.0.0-alpha.10",
     "@antora/site-mapper": "3.0.0-alpha.10",
     "@antora/site-publisher": "3.0.0-alpha.10",
     "@antora/ui-loader": "3.0.0-alpha.10",
     "@antora/user-require-helper": "~2.0"
+  },
+  "devDependencies": {
+    "@antora/playbook-builder": "3.0.0-alpha.10"
   },
   "engines": {
     "node": ">=10.17.0"

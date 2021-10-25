@@ -2,15 +2,13 @@
 
 'use strict'
 
+const buildPlaybook = require('@antora/playbook-builder')
 const cli = require('./commander')
-// Q: can we ask the playbook builder for the config schema?
-const configSchema = require('@antora/playbook-builder/lib/config/schema')
 const convict = require('@antora/playbook-builder/lib/solitary-convict')
 const { configureLogger, getLogger, finalizeLogger } = require('@antora/logger')
 const ospath = require('path')
 const userRequire = require('@antora/user-require-helper')
 
-const DEFAULT_GENERATOR = '@antora/site-generator-default'
 const { version: VERSION } = require('../package.json')
 
 async function run (argv = process.argv) {
@@ -106,16 +104,11 @@ cli
 cli
   .command('generate <playbook>', { isDefault: true })
   .description('Generate a documentation site as specified by <playbook>.')
-  .optionsFromConvict(convict(configSchema), { exclude: 'playbook' })
-  .addOption(
-    cli
-      .createOption('--generator <library>', 'The site generator library.')
-      .default(DEFAULT_GENERATOR, DEFAULT_GENERATOR)
-  )
+  .optionsFromConvict(convict(buildPlaybook.defaultSchema), { exclude: 'playbook' })
   .trackOptions()
   .action(async (playbookFile, options, command) => {
-    const dot = ospath.resolve(playbookFile, '..')
     const errorOpts = { stacktrace: cli.stacktrace, silent: command.silent }
+    const dot = ospath.resolve(playbookFile, '..')
     const userRequireContext = { dot, paths: [dot, __dirname] }
     if (cli.requireRequests) {
       try {
@@ -124,18 +117,27 @@ cli
         return exitWithError(err, errorOpts)
       }
     }
-    const generator = options.generator
+    const args = command.optionArgs.concat('--playbook', playbookFile)
+    let playbook
+    try {
+      // TODO support passing a custom config schema as third option
+      playbook = buildPlaybook(args, process.env, buildPlaybook.defaultSchema)
+    } catch (err) {
+      return exitWithError(err, errorOpts)
+    }
+    const generator = playbook.pipeline.generator
     let generateSite
     try {
-      generateSite = userRequire(generator, userRequireContext)
+      generateSite =
+        (generateSite = userRequire(generator, userRequireContext)).length === 1
+          ? generateSite.bind(null, playbook)
+          : generateSite.bind(null, args, process.env)
     } catch (err) {
       let msg = 'Generator not found or failed to load.'
       if (generator && generator.charAt() !== '.') msg += ` Try installing the '${generator}' package.`
       return exitWithError(err, errorOpts, msg)
     }
-    const args = command.optionArgs.concat('--playbook', playbookFile)
-    // TODO support passing a preloaded convict config as third option; gets new args and env
-    return generateSite(args, process.env)
+    return generateSite()
       .then(exit)
       .catch((err) => exitWithError(err, errorOpts))
   })
