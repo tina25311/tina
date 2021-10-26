@@ -108,8 +108,8 @@ cli
   .trackOptions()
   .action(async (playbookFile, options, command) => {
     const errorOpts = { stacktrace: cli.stacktrace, silent: command.silent }
-    const dot = ospath.resolve(playbookFile, '..')
-    const userRequireContext = { dot, paths: [dot, __dirname] }
+    const playbookDir = ospath.resolve(playbookFile, '..')
+    const userRequireContext = { dot: playbookDir, paths: [playbookDir, __dirname] }
     if (cli.requireRequests) {
       try {
         cli.requireRequests.forEach((requireRequest) => userRequire(requireRequest, userRequireContext))
