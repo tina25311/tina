@@ -120,9 +120,16 @@ cli
     const args = command.optionArgs.concat('--playbook', playbookFile)
     let playbook
     try {
-      // TODO support passing a custom config schema as third option
-      playbook = buildPlaybook(args, process.env, buildPlaybook.defaultSchema)
-      configureLogger(playbook.runtime.log, playbook.dir)
+      playbook = buildPlaybook(args, process.env, buildPlaybook.defaultSchema, (config) => {
+        try {
+          const runtime = config.get('runtime')
+          if (runtime.silent) {
+            if (runtime.quiet === false) config.set('runtime.quiet', true)
+            if (runtime.log.level !== 'silent') config.set('runtime.log.level', 'silent')
+          }
+          configureLogger(config.getModel('runtime.log'), playbookDir)
+        } catch {}
+      })
     } catch (err) {
       return exitWithError(err, errorOpts)
     }

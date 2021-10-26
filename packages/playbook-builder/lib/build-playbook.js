@@ -21,12 +21,14 @@ const ospath = require('path')
  *   option flags and switches. Should begin with the first flag or switch.
  * @param {Object} [env={}] - A map of environment variables.
  * @param {Object} [schema=undefined] - A convict configuration schema.
+ * @param {Function} [beforeValidate=undefined] - A function to invoke on the
+ *   config before validating it.
  *
  * @returns {Object} A playbook object containing a hierarchical structure that
  *   mirrors the configuration schema. With the exception of the top-level asciidoc
  *   key and its descendants, all keys in the playbook are camelCased.
  */
-function buildPlaybook (args = [], env = {}, schema = undefined) {
+function buildPlaybook (args = [], env = {}, schema = undefined, beforeValidate = undefined) {
   const config = loadConvictConfig(args, env, schema)
   const relSpecFilePath = config.get('playbook')
   if (relSpecFilePath) {
@@ -55,46 +57,42 @@ function buildPlaybook (args = [], env = {}, schema = undefined) {
     config.loadFile(absSpecFilePath)
     if (relSpecFilePath !== absSpecFilePath) config.set('playbook', absSpecFilePath)
   }
-  config.validate({ allowed: 'strict' })
-  return exportModel(config)
+  if (beforeValidate) beforeValidate(config)
+  return config.getModel()
 }
 
 function loadConvictConfig (args, env, customSchema) {
-  return convict(customSchema || defaultSchema, { args, env })
+  return Object.assign(convict(customSchema || defaultSchema, { args, env }), { getModel })
 }
 
-function deepFreeze (o) {
-  for (const v of Object.values(o)) Object.isFrozen(v) || deepFreeze(v)
-  return Object.freeze(o)
-}
-
-function exportModel (config) {
-  const schemaProperties = config._schema._cvtProperties
-  const data = config.getProperties()
-  if (
-    'site' in schemaProperties &&
-    'keys' in schemaProperties.site._cvtProperties &&
-    '__private__google_analytics_key' in schemaProperties.site._cvtProperties
-  ) {
-    const site = data.site
-    if (site.__private__google_analytics_key != null) site.keys.google_analytics = site.__private__google_analytics_key
-    delete site.__private__google_analytics_key
+function getModel (name = '') {
+  let config = this
+  const data = config.get(name)
+  let schema = config._schema
+  if (name) {
+    schema = name.split('.').reduce((accum, key) => accum._cvtProperties[key], schema)
+    config = Object.assign(convict(name.split('.').reduce((def, key) => def[key], config._def)), { _instance: data })
+  } else {
+    const siteProperties = 'site' in schema._cvtProperties && schema._cvtProperties.site._cvtProperties
+    if (siteProperties && 'keys' in siteProperties && '__private__google_analytics_key' in siteProperties) {
+      const site = data.site
+      if (site.__private__google_analytics_key != null) {
+        site.keys.google_analytics = site.__private__google_analytics_key
+      }
+      delete site.__private__google_analytics_key
+    }
   }
-  const playbook = camelCaseKeys(data, { deep: true, stopPaths: getStopPaths(schemaProperties) })
-  playbook.dir = playbook.playbook ? ospath.dirname((playbook.file = playbook.playbook)) : process.cwd()
-  Object.defineProperty(playbook, 'env', { value: config.getEnv() })
-  const runtime = (playbook.runtime || false).constructor === Object && playbook.runtime
-  if (runtime && runtime.silent) {
-    if (runtime.quiet === false) runtime.quiet = true
-    const log = (runtime.log || false).constructor === Object && runtime.log
-    if (log && 'level' in log) log.level = 'silent'
+  config.validate({ allowed: 'strict' })
+  const model = camelCaseKeys(data, { deep: true, stopPaths: getStopPaths(schema._cvtProperties) })
+  if (!name) {
+    Object.defineProperty(model, 'env', { value: config.getEnv() })
+    model.dir = model.playbook ? ospath.dirname((model.file = model.playbook)) : process.cwd()
+    delete model.playbook
   }
-  delete playbook.playbook
-  return deepFreeze(playbook)
+  return deepFreeze(model)
 }
 
-function getStopPaths (schemaProperties, schemaPath = []) {
-  const stopPaths = []
+function getStopPaths (schemaProperties, schemaPath = [], stopPaths = []) {
   for (const [key, { preserve, _cvtProperties }] of Object.entries(schemaProperties)) {
     if (preserve) {
       Array.isArray(preserve)
@@ -105,6 +103,11 @@ function getStopPaths (schemaProperties, schemaPath = []) {
     }
   }
   return stopPaths
+}
+
+function deepFreeze (o) {
+  for (const v of Object.values(o)) Object.isFrozen(v) || deepFreeze(v)
+  return Object.freeze(o)
 }
 
 module.exports = buildPlaybook

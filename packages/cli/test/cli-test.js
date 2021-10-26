@@ -278,10 +278,10 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should use fallback logger to log fatal message if error is thrown before playbook is built', () => {
-    playbookSpec.ui.bundle.url = false
+    playbookSpec.runtime = { log: { level: 'verbose' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('generate --log-format=json the-site')
-      .assert(/^\[.+?\] FATAL \(antora\): ui\.bundle\.url: must be of type String/)
+      .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.level: must be one of/)
       .done()
   }).timeout(timeoutOverride)
 
@@ -294,10 +294,10 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should show stack if --stacktrace option is specified and an exception is thrown during generation', () => {
-    playbookSpec.ui.bundle.url = false
+    playbookSpec.runtime = { log: { format: 'fancy' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('--stacktrace generate the-site')
-      .assert(/^\[.+?\] FATAL \(antora\): ui\.bundle\.url: must be of type String/)
+      .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.format: must be one of/)
       .assert(/^Cause: Error$/)
       .assert(/^at /)
       .done()
@@ -400,10 +400,10 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should recommend --stacktrace option if not specified and an exception is thrown during generation', () => {
-    playbookSpec.ui.bundle.url = false
+    playbookSpec.runtime = { log: { format: 'fancy' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('generate the-site')
-      .assert(/^\[.+?\] FATAL \(antora\): ui\.bundle\.url: must be of type String/)
+      .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.format: must be one of/)
       .assert('Add the --stacktrace option to see the cause of the error.')
       .done()
   }).timeout(timeoutOverride)
