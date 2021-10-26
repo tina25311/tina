@@ -5,7 +5,7 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
-== 3.0.0-alpha.10 (2021-10-22)
+== Unreleased
 
 === Changed
 
@@ -14,7 +14,7 @@ This project utilizes semantic versioning.
 * *cli*: If site generator accepts a single parameter, build playbook in CLI and pass to site generator (#857)
 * *cli*: Use default schema exported by playbook builder to define CLI options (#857)
 
-== Unreleased
+== 3.0.0-alpha.10 (2021-10-22)
 
 === Added
 
