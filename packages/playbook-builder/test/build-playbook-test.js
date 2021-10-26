@@ -4,7 +4,6 @@
 const { expect } = require('../../../test/test-utils')
 
 const buildPlaybook = require('@antora/playbook-builder')
-const getLogger = require('@antora/logger')
 const ospath = require('path')
 
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
@@ -792,15 +791,13 @@ describe('buildPlaybook()', () => {
     )
   })
 
-  it('should not configure logger if runtime.log is not present in schema', () => {
-    const previousRootLogger = getLogger(null)
-    buildPlaybook([], { PLAYBOOK: yamlSpec }, schema)
-    expect(previousRootLogger.closed).to.not.be.true()
+  it('should not configure runtime.log.level if runtime.log is not present in schema', () => {
+    const playbook = buildPlaybook([], { PLAYBOOK: yamlSpec }, schema)
+    expect(playbook).to.not.have.property('runtime')
   })
 
   it('should set quiet to true and log level to silent if runtime.silent is set', () => {
     const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent', '--log-failure-level', 'none'])
-    expect(getLogger(null).noop).to.be.true()
     expect(playbook.runtime.quiet).to.be.true()
     expect(playbook.runtime.log.level).to.equal('silent')
     expect(playbook.runtime.log.failureLevel).to.equal('none')
@@ -808,14 +805,11 @@ describe('buildPlaybook()', () => {
 
   it('should set runtime.log.format to pretty when run locally', () => {
     const oldEnv = process.env
-    const previousRootLogger = getLogger(null)
     try {
       process.env = Object.assign({}, oldEnv)
       delete process.env.CI
       delete process.env.NODE_ENV
       const playbook = buildPlaybook(['--playbook', defaultSchemaSpec])
-      expect(previousRootLogger.closed).to.be.true()
-      expect(getLogger(null).noop).to.be.false()
       expect(playbook.runtime.log.format).to.equal('pretty')
     } finally {
       process.env = oldEnv
@@ -823,10 +817,7 @@ describe('buildPlaybook()', () => {
   })
 
   it('should override dynamic default value for log format', () => {
-    const previousRootLogger = getLogger(null)
     const playbook = buildPlaybook(['--playbook', runtimeLogFormatSpec])
-    expect(previousRootLogger.closed).to.be.true()
-    expect(getLogger(null).noop).to.be.false()
     expect(playbook.runtime.log.format).to.equal('pretty')
   })
 

@@ -13,6 +13,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Export default configuration schema as `defaultSchema` property (#857)
 * *cli*: If site generator accepts a single parameter, build playbook in CLI and pass to site generator (#857)
 * *cli*: Use default schema exported by playbook builder to define CLI options (#857)
+* *cli*: Configure logger in the CLI instead of the playbook builder (#862)
 
 == 3.0.0-alpha.10 (2021-10-22)
 
