@@ -122,6 +122,7 @@ cli
     try {
       // TODO support passing a custom config schema as third option
       playbook = buildPlaybook(args, process.env, buildPlaybook.defaultSchema)
+      configureLogger(playbook.runtime.log, playbook.dir)
     } catch (err) {
       return exitWithError(err, errorOpts)
     }

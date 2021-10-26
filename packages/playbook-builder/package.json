@@ -16,7 +16,6 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@antora/logger": "3.0.0-alpha.10",
     "@iarna/toml": "~2.2",
     "camelcase-keys": "~6.2",
     "convict": "~6.2",

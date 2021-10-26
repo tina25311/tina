@@ -1,7 +1,6 @@
 'use strict'
 
 const camelCaseKeys = require('camelcase-keys')
-const { configureLogger } = require('@antora/logger')
 const convict = require('./solitary-convict')
 const defaultSchema = require('./config/schema')
 const fs = require('fs')
@@ -85,13 +84,10 @@ function exportModel (config) {
   playbook.dir = playbook.playbook ? ospath.dirname((playbook.file = playbook.playbook)) : process.cwd()
   Object.defineProperty(playbook, 'env', { value: config.getEnv() })
   const runtime = (playbook.runtime || false).constructor === Object && playbook.runtime
-  if (runtime) {
+  if (runtime && runtime.silent) {
+    if (runtime.quiet === false) runtime.quiet = true
     const log = (runtime.log || false).constructor === Object && runtime.log
-    if (runtime.silent) {
-      if (runtime.quiet === false) runtime.quiet = true
-      if (log && 'level' in log) log.level = 'silent'
-    }
-    if (log) configureLogger(log, playbook.dir)
+    if (log && 'level' in log) log.level = 'silent'
   }
   delete playbook.playbook
   return deepFreeze(playbook)

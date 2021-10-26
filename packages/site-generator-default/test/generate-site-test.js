@@ -12,6 +12,7 @@ const {
 } = require('../../../test/test-utils')
 
 const cheerio = require('cheerio')
+const { configureLogger } = require('@antora/logger')
 const fs = require('fs')
 const generateSite = require('@antora/site-generator-default')
 const buildPlaybook = require('@antora/playbook-builder')
@@ -44,6 +45,12 @@ describe('generateSite()', function () {
   const readFile = (file, dir) => fs.readFileSync(dir ? ospath.join(dir, file) : file, 'utf8')
 
   const loadHtmlFile = (relative) => cheerio.load(readFile(relative, absDestDir))
+
+  const getPlaybook = (playbookFile, extraArgs = []) => {
+    const playbook = buildPlaybook(extraArgs.concat(['--playbook', playbookFile]), env)
+    configureLogger(playbook.runtime.log)
+    return playbook
+  }
 
   before(async () => {
     destDir = '_site'
@@ -112,7 +119,7 @@ describe('generateSite()', function () {
     playbookSpec.site.start_page = '2.0@the-component::index.adoc'
     playbookSpec.site.keys = { google_analytics: 'UA-XXXXXXXX-1' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, '_'))
       .to.be.a.directory()
       .with.subDirs.with.members(['css', 'js', 'font', 'img'])
@@ -170,7 +177,7 @@ describe('generateSite()', function () {
     const cwd = process.cwd()
     process.chdir(altWorkDir)
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     process.chdir(cwd)
     expect(ospath.join(absDestDir, '_'))
       .to.be.a.directory()
@@ -185,7 +192,7 @@ describe('generateSite()', function () {
     const absDestDirOverride = ospath.join(WORK_DIR, destDirOverride)
     playbookSpec.output.dir = '.' + ospath.sep + destDirOverride
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDirOverride, '_'))
       .to.be.a.directory()
       .with.subDirs.with.members(['css', 'js', 'font', 'img'])
@@ -210,7 +217,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.close('master'))
     playbookSpec.content.sources[0].version = { 'v(?<version>{0..9}+)*': 'lts-$<version>' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component'))
       .to.be.a.directory()
       .with.subDirs(['lts-2'])
@@ -220,7 +227,7 @@ describe('generateSite()', function () {
   it('should use start page from latest version of component if version not specified', async () => {
     playbookSpec.site.start_page = 'the-component::index.adoc'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'index.html'))
       .to.be.a.file()
       .with.contents.that.match(/<meta http-equiv="refresh" content="0; url=the-component\/2.0\/index.html">/)
@@ -229,7 +236,7 @@ describe('generateSite()', function () {
   it('should log warning message if site start page is missing .adoc file extension', async () => {
     playbookSpec.site.start_page = 'the-component::index'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const messages = await captureStdoutLog(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+    const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
     expect(messages).to.have.lengthOf(1)
     expect(messages[0]).to.include({
       level: 'warn',
@@ -241,7 +248,7 @@ describe('generateSite()', function () {
   it('should log warning message if site start page cannot be resolved', async () => {
     playbookSpec.site.start_page = 'unknown-component::index.adoc'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const messages = await captureStdoutLog(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+    const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
     expect(messages).to.have.lengthOf(1)
     expect(messages[0]).to.include({
       level: 'warn',
@@ -265,7 +272,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.commitAll())
       .then(() => repoBuilder.close('master'))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const messages = await captureStdoutLog(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+    const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
     expect(messages).to.have.lengthOf(1)
     expect(messages[0]).to.include({
       level: 'warn',
@@ -285,7 +292,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.close('master'))
     playbookSpec.content.sources[0].url = repoBuilder.url
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const messages = await captureStdoutLog(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+    const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
     expect(messages).to.have.lengthOf(2)
     ;['the-freshness.adoc', '2.0@the-freshness.adoc'].forEach((refSpec, idx) => {
       expect(messages[idx]).to.eql({
@@ -301,7 +308,7 @@ describe('generateSite()', function () {
   it('should qualify applicable links using site url if set in playbook', async () => {
     playbookSpec.site.url = 'https://example.com/docs/'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'sitemap.xml')).to.be.a.file()
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html'))
       .to.be.a.file()
@@ -314,7 +321,7 @@ describe('generateSite()', function () {
   it('should generate 404 page if site url is set to absolute URL in playbook', async () => {
     playbookSpec.site.url = 'https://example.com'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
     $ = loadHtmlFile('404.html')
     expect($('head > title')).to.have.text('Page Not Found :: The Site')
@@ -327,7 +334,7 @@ describe('generateSite()', function () {
   it('should generate 404 page if site url is set to absolute URL with subpath in playbook', async () => {
     playbookSpec.site.url = 'https://example.com/docs'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
     $ = loadHtmlFile('404.html')
     expect($('head > title')).to.have.text('Page Not Found :: The Site')
@@ -340,7 +347,7 @@ describe('generateSite()', function () {
   it('should generate 404 page if site url is set to / in playbook', async () => {
     playbookSpec.site.url = '/'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
     $ = loadHtmlFile('404.html')
     expect($('head > title')).to.have.text('Page Not Found :: The Site')
@@ -353,7 +360,7 @@ describe('generateSite()', function () {
   it('should generate 404 page if site url is set to a pathname in the playbook', async () => {
     playbookSpec.site.url = '/docs'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
     $ = loadHtmlFile('404.html')
     expect($('head > title')).to.have.text('Page Not Found :: The Site')
@@ -365,7 +372,7 @@ describe('generateSite()', function () {
 
   it('should be able to reference implicit page attributes', async () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('article').text()).to.include('This is version 2.0 of component the-component.')
@@ -376,7 +383,7 @@ describe('generateSite()', function () {
       attributes: { sectanchors: null, sectnums: '', description: 'Stuff about stuff@' },
     }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('head meta[name=description]')).to.have.attr('content', 'Stuff about stuff')
@@ -415,7 +422,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.close('master'))
     playbookSpec.content.sources[0].branches = ['v2.0', 'v1.0']
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/1.0/the-page.html')
     expect($('head meta[name=description]')).to.not.exist()
@@ -438,7 +445,7 @@ describe('generateSite()', function () {
       extensions: ['./ext/shout-tree-processor.js', ospath.resolve(FIXTURES_DIR, 'named-entity-postprocessor.js')],
     }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html'))
       .to.be.a.file()
       .with.contents.that.match(/Section A content!!!/)
@@ -455,7 +462,7 @@ describe('generateSite()', function () {
       },
     ]
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html'))
       .to.be.a.file()
       .with.contents.that.match(/<meta property="og:site_name" content="Learn All The Things!">/)
@@ -470,7 +477,7 @@ describe('generateSite()', function () {
       },
     ]
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'ui'))
       .to.be.a.directory()
       .with.subDirs.with.members(['css', 'js', 'font', 'img'])
@@ -485,7 +492,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.config('remote.origin.url', remoteGitUrl))
       .then(() => repoBuilder.close())
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
@@ -499,7 +506,7 @@ describe('generateSite()', function () {
     playbookSpec.content.sources[0].url = repoBuilder.url
     playbookSpec.content.sources[0].edit_url = `${editBaseUrl}/edit/{refname}/{path}`
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
@@ -511,7 +518,7 @@ describe('generateSite()', function () {
     playbookSpec.content.sources[0].url = repoBuilder.url.replace('//', '//@')
     playbookSpec.content.sources[0].edit_url = `${repoBuilder.url.replace(/\.git$/, '')}/edit/{refname}/{path}`
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('.toolbar .edit-this-page')).to.not.exist()
@@ -524,7 +531,7 @@ describe('generateSite()', function () {
     playbookSpec.content.sources[0].edit_url = `${editBaseUrl}/edit/{refname}/{path}`
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     env.FORCE_SHOW_EDIT_PAGE_LINK = 'true'
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
@@ -539,7 +546,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.close())
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     expect(env).to.not.have.property('CI')
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
@@ -560,7 +567,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.config('remote.origin.url', remoteGitUrl))
       .then(() => repoBuilder.checkoutBranch(refname))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
@@ -588,7 +595,7 @@ describe('generateSite()', function () {
     playbookSpec.content.sources[0].branches = ['v2.0', 'v1.0']
     playbookSpec.runtime.log = { level: 'silent' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component'))
       .to.be.a.directory()
       .with.subDirs(['1.0', '2.0'])
@@ -685,7 +692,7 @@ describe('generateSite()', function () {
     })
     playbookSpec.runtime.log = { level: 'silent' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-other-component')).to.be.a.directory()
     expect(ospath.join(absDestDir, 'the-other-component/core/index.html')).to.be.a.file()
     $ = loadHtmlFile('the-other-component/core/index.html')
@@ -725,7 +732,7 @@ describe('generateSite()', function () {
 
   it('should resolve xrefs that use an alias as the target', async () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     const contents = readFile('the-component/2.0/index.html', absDestDir)
     expect(contents).to.include('<a href="the-page.html" class="xref page">its alias</a>')
     expect(contents).to.include('<a href="new-page.html" class="xref page">the new page</a>')
@@ -735,7 +742,7 @@ describe('generateSite()', function () {
   // NOTE this also tests that aliases do not have to have the .adoc file extension
   it('should generate static redirect files for aliases by default', async () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-alias.html')).to.be.a.file()
     let contents = readFile('the-component/2.0/the-alias.html', absDestDir)
     expect(contents).to.include('<script>location="the-page.html"</script>')
@@ -747,7 +754,7 @@ describe('generateSite()', function () {
   it('should generate nginx rewrite config file for aliases when using nginx redirect facility', async () => {
     playbookSpec.urls = { redirect_facility: 'nginx' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, '.etc/nginx/rewrite.conf')).to.be.a.file()
     const contents = readFile('.etc/nginx/rewrite.conf', absDestDir)
     const rule2 = 'location = /the-component/2.0/the-freshness.html { return 301 /the-component/2.0/new-page.html; }'
@@ -761,7 +768,7 @@ describe('generateSite()', function () {
   it('should indexify URLs to internal pages', async () => {
     playbookSpec.urls = { html_extension_style: 'indexify' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+    await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html')).to.be.a.file()
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page/index.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/index.html')
@@ -798,7 +805,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('extension initialized')
     })
@@ -811,7 +818,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [{ require: extensionPath }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('extension initialized')
     })
@@ -825,7 +832,7 @@ describe('generateSite()', function () {
       playbookSpec.pipeline.extensions = [{ key: 'value' }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const expectedMessage = 'The "request" argument must be of type string. Received type undefined'
-      const generateSiteDeferred = await deferExceptions(generateSite, buildPlaybook(['--playbook', playbookFile], env))
+      const generateSiteDeferred = await deferExceptions(generateSite, getPlaybook(playbookFile))
       expect(generateSiteDeferred).to.throw(TypeError, expectedMessage)
     })
 
@@ -837,7 +844,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('extension required')
     })
@@ -852,7 +859,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [{ id: 'my-extension', require: extensionPath, foo: 'bar', yin: ['yang'] }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('extension initialized with config: {"foo":"bar","yin":["yang"]}')
     })
@@ -865,7 +872,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [{ require: extensionPath, enabled: false }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.be.empty()
     })
 
@@ -880,7 +887,7 @@ describe('generateSite()', function () {
       playbookSpec.pipeline.extensions = [extensionPath]
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('extension initialized for site: https://docs.example.org')
     })
@@ -916,7 +923,7 @@ describe('generateSite()', function () {
       playbookSpec.pipeline.extensions = [{ require: extensionPath, events: Object.keys(events) }]
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+      await generateSite(getPlaybook(playbookFile))
       const observed = env.OBSERVED
       expect(Object.keys(observed).sort()).to.eql(Object.keys(events).sort())
       Object.entries(events).forEach(([event, vars]) => expect(observed[event]).to.include.members(vars))
@@ -944,7 +951,7 @@ describe('generateSite()', function () {
       for (const delay of ['contentAggregated', 'uiLoaded']) {
         playbookSpec.pipeline.extensions = [{ require: extensionPath, delay }]
         fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-        const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+        const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
         expect(lines).to.have.lengthOf(3)
         const expectedNames = ['contentAggregated', 'uiLoaded', 'contentClassified'].filter((it) => it !== delay)
         expectedNames.splice(1, 0, delay)
@@ -965,7 +972,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionBPath, extensionBCode)
       playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(2)
       expect(lines[0]).to.equal('before publish a')
       expect(lines[1]).to.equal('before publish b')
@@ -994,7 +1001,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionBPath, extensionBCode)
       playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(2)
       expect(lines[0]).to.equal('before publish a')
       expect(lines[1]).to.equal('before publish b')
@@ -1015,7 +1022,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionBPath, extensionBCode)
       playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(2)
       expect(lines[0]).to.equal('before publish b')
       expect(lines[1]).to.equal('before publish a')
@@ -1034,7 +1041,7 @@ describe('generateSite()', function () {
       playbookSpec.pipeline.extensions = [extensionPath]
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('building 4 pages for site https://docs.example.org')
     })
@@ -1054,7 +1061,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+      await generateSite(getPlaybook(playbookFile))
       expect(ospath.join(absDestDir, '.nojekyll'))
         .to.be.a.file()
         .and.be.empty()
@@ -1072,7 +1079,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('is null')
     })
@@ -1088,7 +1095,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+      await generateSite(getPlaybook(playbookFile))
       expect(ospath.join(absDestDir, 'sitemap.xml'))
         .to.be.a.file()
         .with.contents.that.match(/https:\/\/docs\.example\.com\//)
@@ -1119,7 +1126,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('publishing 2 pages')
       expect(ospath.join(absDestDir, 'the-component/2.0/index.html')).to.not.be.a.path()
@@ -1146,7 +1153,7 @@ describe('generateSite()', function () {
       playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('building site for https://docs.example.com')
     })
@@ -1165,7 +1172,7 @@ describe('generateSite()', function () {
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const expectedMessage = "Cannot update read-only var 'playbook'"
-      const generateSiteDeferred = await deferExceptions(generateSite, buildPlaybook(['--playbook', playbookFile], env))
+      const generateSiteDeferred = await deferExceptions(generateSite, getPlaybook(playbookFile))
       expect(generateSiteDeferred).to.throw(TypeError, expectedMessage)
     })
 
@@ -1184,7 +1191,7 @@ describe('generateSite()', function () {
         playbookSpec.runtime.log = { level: 'info' }
         playbookSpec.pipeline.extensions = [extensionPath]
         fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-        const messages = await captureStdoutLog(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+        const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
         expect(messages).to.have.lengthOf(1)
         expect(messages[0]).to.include({ level: 'info', name: 'my-extension', msg: 'time to publish!' })
       } finally {
@@ -1203,7 +1210,7 @@ describe('generateSite()', function () {
       playbookSpec.runtime.log = { level: 'info' }
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const lines = await captureStdout(() => generateSite(buildPlaybook(['--playbook', playbookFile], env)))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       const expectedMessage = ospath.dirname(require.resolve('@antora/site-generator-default'))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal(expectedMessage)
@@ -1221,7 +1228,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.pipeline.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+      await generateSite(getPlaybook(playbookFile))
       expect(absDestDir).to.not.be.a.path()
     })
   })
@@ -1233,7 +1240,7 @@ describe('generateSite()', function () {
       playbookSpec.content.sources[0].url = repoBuilder.url
       playbookSpec.output.destinations[0] = { provider: 'archive', path: archivePath }
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+      await generateSite(getPlaybook(playbookFile))
       expect(absArchivePath).to.be.a.file()
     }).timeout(timeoutOverride)
 
@@ -1258,18 +1265,18 @@ describe('generateSite()', function () {
           moveCursor: () => {},
           write: (line) => /\[(?:clone|fetch)\]/.test(line) && progressLines.push(line),
         })
-        await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+        await generateSite(getPlaybook(playbookFile))
         expect(progressLines).to.have.lengthOf.at.least(2)
         expect(progressLines[0]).to.include('[clone] ' + repoBuilder.url)
         expect(progressLines[0]).to.match(/ \[-+\]/)
         expect(progressLines[progressLines.length - 1]).to.match(/ \[#+\]/)
 
         progressLines.length = 0
-        await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+        await generateSite(getPlaybook(playbookFile))
         expect(progressLines).to.be.empty()
 
         // TODO assert that the UI was downloaded again
-        await generateSite(buildPlaybook(['--playbook', playbookFile, '--fetch'], env))
+        await generateSite(getPlaybook(playbookFile, ['--fetch']))
         expect(progressLines).to.have.lengthOf.at.least(2)
         expect(progressLines[0]).to.include('[fetch] ' + repoBuilder.url)
         expect(progressLines[0]).to.match(/ \[-+\]/)
@@ -1298,7 +1305,7 @@ describe('generateSite()', function () {
           moveCursor: () => {},
           write: (line) => messages.push(line),
         })
-        await generateSite(buildPlaybook(['--playbook', playbookFile], env))
+        await generateSite(getPlaybook(playbookFile))
         expect(messages).to.have.lengthOf(2)
         expect(messages[0]).to.equal('Site generation complete!\n')
         const expectedFileUri = `file://${ospath.sep === '\\' ? '/' + absDestDir.replace(/\\/g, '/') : absDestDir}`

@@ -28,7 +28,8 @@
     "@antora/user-require-helper": "~2.0"
   },
   "devDependencies": {
-    "@antora/playbook-builder": "3.0.0-alpha.10"
+    "@antora/playbook-builder": "3.0.0-alpha.10",
+    "@antora/logger": "3.0.0-alpha.10"
   },
   "engines": {
     "node": ">=10.17.0"
