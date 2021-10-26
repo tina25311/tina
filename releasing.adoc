@@ -57,7 +57,7 @@ The release job is defined in the file [.path]_.gitlab-ci.yml_.
 The release job only runs on the "`releases`" branch.
 It runs in a phase named "`deploy`" at the end of the CI pipeline.
 
-The release job delegates to https://lernajs.io[Lerna] to perform the release.
+The release job delegates to https://lerna.js.org[Lerna] to perform the release.
 The version of Lerna used by the release job is set in the file [.path]_lerna.json_ at the root of this repository.
 The call to Lerna is managed by [.path]_scripts/release.sh_, which sets up and tears down the environment in which Lerna runs.
 

@@ -34,7 +34,7 @@ b. there are good tools available for organizing packages in this way
 
 Specifically, we've decided to use a combination of Lerna and Yarn workspaces to manage the packages.
 
-https://lernajs.io[Lerna] optimizes the workflow around managing multi-package repositories with git and npm or Yarn.
+https://lerna.js.org[Lerna] optimizes the workflow around managing multi-package repositories with git and npm or Yarn.
 https://yarnpkg.com/lang/en/docs/workspaces/[Yarn workspaces], a built-in feature of Yarn, provides support for multi-package repositories.
 When enabled for a project, Yarn workspaces allow Yarn to automatically recognize the structure required by Lerna, thus allowing the user to continue to use Yarn in the normal way (e.g., `yarn install`).
 
