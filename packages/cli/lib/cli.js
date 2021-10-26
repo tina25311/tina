@@ -133,7 +133,7 @@ cli
     } catch (err) {
       return exitWithError(err, errorOpts)
     }
-    const generator = playbook.pipeline.generator
+    const generator = playbook.antora.generator
     let generateSite
     try {
       generateSite =

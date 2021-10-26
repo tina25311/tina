@@ -13,8 +13,8 @@ When Antora sees that the `enabled` key has a value of `false`, it will not regi
 .An extension that is not enabled
 [source,yaml]
 ----
-pipeline:
-  extension:
+antora:
+  extensions:
   - require: ./my-extension.js
     enabled: false
     foo: bar
@@ -31,8 +31,8 @@ Let's give our extension an ID:
 .An extension with an ID that is not enabled
 [source,yaml]
 ----
-pipeline:
-  extension:
+antora:
+  extensions:
   - id: my-extension
     require: ./my-extension.js
     enabled: false

@@ -7,7 +7,7 @@ module.exports = {
     default: undefined,
     arg: 'playbook',
   },
-  pipeline: {
+  antora: {
     generator: {
       doc: 'A require request for the generator package name or script to use.',
       format: String,
@@ -16,7 +16,7 @@ module.exports = {
     },
     extensions: {
       doc:
-        'A list of extensions that listen for pipeline events. ' +
+        'A list of extensions that listen for lifecycle events. ' +
         'Each extension is specified as a require request string or an object with a require key.',
       format: 'require-array',
       default: [],

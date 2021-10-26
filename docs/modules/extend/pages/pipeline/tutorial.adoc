@@ -120,12 +120,12 @@ Now that the extension is written, and you understand what it does, it's time to
 
 == Register the extension
 
-To register the extension, you add a require request entry for it in the `pipeline.extensions` key in the playbook.
+To register the extension, you add a require request entry for it in the `antora.extensions` key in the playbook.
 In our case, the require request is the relative path from the playbook file to the extension file.
 
 [source,yaml]
 ----
-pipeline:
+antora:
   extensions:
   - ./lib/unlisted-pages-extension.js
 ----
@@ -135,12 +135,12 @@ However, since this extension is configurable, we'll want to use the more formal
 
 == Configure the extension
 
-To register an extension with configuration, you add a map entry for it in the `pipeline.extensions` key in the playbook.
+To register an extension with configuration, you add a map entry for it in the `antora.extensions` key in the playbook.
 In doing so, you'll define the require request in the `require` key, making way for the other configuration keys.
 
 [source,yaml]
 ----
-pipeline:
+antora:
   extensions:
   - require: ./lib/unlisted-pages-extension.js
     add_to_navigation: true
@@ -151,7 +151,7 @@ If you want the extension to only be used when specified using the `--extension`
 
 [source,yaml]
 ----
-pipeline:
+antora:
   extensions:
   - id: unlisted-pages
     enabled: false
