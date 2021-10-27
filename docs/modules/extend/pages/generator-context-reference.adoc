@@ -1,0 +1,41 @@
+= GeneratorContext API Reference
+:url-event-emitter: https://nodejs.org/api/events.html#events_class_eventemitter
+
+The GeneratorContext API is the main point of access into Antora's extension facility.
+Antora creates an instance of the GeneratorContext, called the generator context, and binds it to the register function of an extension as well as any listeners it adds.
+This object is shared across all extensions and event listeners.
+The generator context provides a way to add those event listeners.
+It also provides a handful of context-aware helpers that make writing extensions easier.
+
+The GeneratorContext class extends the Node.js {url-event-emitter}[EventEmitter^] type.
+All methods on the EventEmitter are inherited by and available on the generator context.
+However, you should never call the `emit` object to emit one of Antora's own events.
+
+In addition to the methods on EventEmitter, the following table describes the methods provided by the GeneratorContext API.
+
+// Q: should we document all methods, including the ones contributed by EventEmitter?
+.Additional methods provided by the GeneratorContext
+[cols="1,1,2"]
+|===
+|Method name | Parameter(s) | Description
+
+//|getLogger
+//|String
+//|Creates an instance of the specified named logger.
+//If the value is empty, returns Antora's root logger.
+
+|halt
+|_none_
+|Halts the operation of the Antora site generator and exits successfully (without error).
+
+|updateVars
+|Object
+|Adds or replaces the context variables with the specified variables.
+
+|require
+|String
+|Requires the name of a module in the context of the Antora generator.
+This method can be used to require Antora internals without having to declare the Antora component as a dependency.
+|===
+
+Since the GeneratorContext is an EventEmitter, you not only can use it to register listeners, but to get a list of registered listeners, unregister listeners, and reregister listeners in a different order.

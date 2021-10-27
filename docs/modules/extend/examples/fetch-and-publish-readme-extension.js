@@ -1,5 +1,5 @@
-module.exports.register = (pipeline) => {
-  pipeline.on('beforePublish', async ({ siteCatalog }) => {
+module.exports.register = function () {
+  this.on('beforePublish', async ({ siteCatalog }) => {
     const https = require('https')
     const contents = await new Promise((resolve, reject) => {
       const buffer = []

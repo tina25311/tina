@@ -800,7 +800,7 @@ describe('generateSite()', function () {
     it('should require and register extension specified as a string', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => console.log('extension initialized')
+        module.exports.register = () => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.antora.extensions = [extensionPath]
@@ -813,7 +813,7 @@ describe('generateSite()', function () {
     it('should require and register extension specified as a map containing a require property', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => console.log('extension initialized')
+        module.exports.register = () => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.antora.extensions = [{ require: extensionPath }]
@@ -826,7 +826,7 @@ describe('generateSite()', function () {
     it('should throw TypeError if require key is missing from extension defined as map', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => console.log('extension initialized')
+        module.exports.register = () => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.antora.extensions = [{ key: 'value' }]
@@ -836,7 +836,7 @@ describe('generateSite()', function () {
       expect(generateSiteDeferred).to.throw(TypeError, expectedMessage)
     })
 
-    it('should not attempt to invoke register function if not defined on extension module', async () => {
+    it('should not attempt to invoke register function if register method is not defined on module', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         console.log('extension required')
@@ -852,7 +852,7 @@ describe('generateSite()', function () {
     it('should allow extension to be registered with configuration parameters', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline, { config }) => {
+        module.exports.register = function ({ config }) {
           console.log('extension initialized with config: ' + JSON.stringify(config))
         }
       `
@@ -867,7 +867,7 @@ describe('generateSite()', function () {
     it('should not register extension if enabled key is specified on configuration and value is false', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => console.log('extension initialized')
+        module.exports.register = () => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.antora.extensions = [{ require: extensionPath, enabled: false }]
@@ -876,10 +876,11 @@ describe('generateSite()', function () {
       expect(lines).to.be.empty()
     })
 
-    it('should pass playbook to extension function via the third parameter', async () => {
+    it('should pass playbook to extension function via the context variables parameter', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline, { config, playbook }) => {
+        module.exports.register = function ({ playbook }) {
+          console.log('register function bound to ' + this.constructor.name)
           console.log('extension initialized for site: ' + playbook.site.url)
         }
       `
@@ -888,8 +889,104 @@ describe('generateSite()', function () {
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.equal('register function bound to GeneratorContext')
+      expect(lines[1]).to.equal('extension initialized for site: https://docs.example.org')
+    })
+
+    it('should pass generator context as argument if declared as parameter of bindable function', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function (generator, { playbook }) {
+          console.log('generator instanceof ' + generator.constructor.name)
+          console.log(this === generator ? 'this is bound' : 'this is not bound')
+          generator.on('playbookBuilt', () => {
+            console.log('extension initialized for site: ' + playbook.site.url)
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      playbookSpec.site.url = 'https://docs.example.org'
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(3)
+      expect(lines[0]).to.equal('generator instanceof GeneratorContext')
+      expect(lines[1]).to.equal('this is not bound')
+      expect(lines[2]).to.equal('extension initialized for site: https://docs.example.org')
+    })
+
+    it('should pass generator context as argument if declared as parameter of arrow function', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (generator, { playbook }) => {
+          console.log('generator instanceof ' + generator.constructor.name)
+          console.log(this === generator ? 'this is bound' : 'this is not bound')
+          generator.on('playbookBuilt', () => {
+            console.log('extension initialized for site: ' + playbook.site.url)
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      playbookSpec.site.url = 'https://docs.example.org'
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(3)
+      expect(lines[0]).to.equal('generator instanceof GeneratorContext')
+      expect(lines[1]).to.equal('this is not bound')
+      expect(lines[2]).to.equal('extension initialized for site: https://docs.example.org')
+    })
+
+    it('should pass generator context as argument if declared as parameter of shorthand arrow function', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = generator => generator.on('playbookBuilt', () => console.log('playbook built!'))
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
-      expect(lines[0]).to.equal('extension initialized for site: https://docs.example.org')
+      expect(lines[0]).to.equal('playbook built!')
+    })
+
+    it('should support static register method on class-based extension', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        class MyExtension${extensionNumber} {
+          static register () {
+            new MyExtension${extensionNumber}(this)
+          }
+
+          constructor (generatorContext) {
+            ;(this.context = generatorContext)
+              .on('playbookBuilt', this.onPlaybookBuilt.bind(this))
+              .on('sitePublished', this.onSitePublished.bind(this))
+          }
+
+          onPlaybookBuilt ({ playbook }) {
+            this.context.removeAllListeners('sitePublished')
+            this.printReport(playbook.site.title)
+          }
+
+          onSitePublished () {
+            console.log('site published')
+          }
+
+          printReport (siteTitle) {
+            console.log('extension initialized for ' + siteTitle)
+          }
+        }
+
+        module.exports = MyExtension${extensionNumber}
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('extension initialized for The Site')
     })
 
     it('should allow extension to listen for events', async () => {
@@ -910,10 +1007,10 @@ describe('generateSite()', function () {
       }
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline, { config: { events }, playbook }) => {
+        module.exports.register = function ({ config: { events }, playbook }) {
           const observed = playbook.env.OBSERVED = {}
           events.forEach((name) => {
-            pipeline.on(name, function () {
+            this.on(name, function () {
               observed[name] = Object.keys(arguments[0]).sort()
             })
           })
@@ -932,17 +1029,17 @@ describe('generateSite()', function () {
     it('should always emit contentClassified event after both content is classified and UI is loaded', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline, { config }) => {
+        module.exports.register = function ({ config }) {
           const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-          pipeline.on('contentAggregated', async () => {
+          this.on('contentAggregated', async () => {
             if (config.delay === 'contentAggregated') await sleep(250)
             console.log('contentAggregated')
           })
-          pipeline.on('uiLoaded', async () => {
+          this.on('uiLoaded', async () => {
             if (config.delay === 'uiLoaded') await sleep(250)
             console.log('uiLoaded')
           })
-          pipeline.on('contentClassified', ({ contentCatalog, uiCatalog }) => {
+          this.on('contentClassified', ({ contentCatalog, uiCatalog }) => {
             if (contentCatalog && uiCatalog) console.log('contentClassified')
           })
         }
@@ -963,10 +1060,14 @@ describe('generateSite()', function () {
       const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionACode = heredoc`
-        module.exports.register = (pipeline) => pipeline.on('beforePublish', () => console.log('before publish a'))
+        module.exports.register = function () {
+          this.on('beforePublish', () => console.log('before publish a'))
+        }
       `
       const extensionBCode = heredoc`
-        module.exports.register = (pipeline) => pipeline.on('beforePublish', () => console.log('before publish b'))
+        module.exports.register = function () {
+          this.on('beforePublish', () => console.log('before publish b'))
+        }
       `
       fs.writeFileSync(extensionAPath, extensionACode)
       fs.writeFileSync(extensionBPath, extensionBCode)
@@ -982,16 +1083,16 @@ describe('generateSite()', function () {
       const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionACode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('beforePublish', async () => {
+        module.exports.register = function () {
+          this.on('beforePublish', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100))
             console.log('before publish a')
           })
         }
       `
       const extensionBCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('beforePublish', async () => {
+        module.exports.register = function () {
+          this.on('beforePublish', async () => {
             await new Promise((resolve) => setImmediate(resolve))
             console.log('before publish b')
           })
@@ -1011,11 +1112,13 @@ describe('generateSite()', function () {
       const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionACode = heredoc`
-        module.exports.register = (pipeline) => pipeline.on('beforePublish', () => console.log('before publish a'))
+        module.exports.register = function () {
+          this.on('beforePublish', () => console.log('before publish a'))
+        }
       `
       const extensionBCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.prependListener('beforePublish', () => console.log('before publish b'))
+        module.exports.register = function () {
+          this.prependListener('beforePublish', () => console.log('before publish b'))
         }
       `
       fs.writeFileSync(extensionAPath, extensionACode)
@@ -1028,12 +1131,18 @@ describe('generateSite()', function () {
       expect(lines[1]).to.equal('before publish a')
     })
 
-    it('should allow extension listener to access pipeline variables', async () => {
+    it('should allow extension listener to access context variables', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('contentClassified', ({ playbook, contentCatalog }) => {
+        module.exports.register = function () {
+          this.on('contentClassified', ({ playbook, contentCatalog }) => {
             console.log('building ' + contentCatalog.getPages().length + ' pages for site ' + playbook.site.url)
+          })
+          this.on('beforeProcess', ({ siteCatalog }) => {
+            siteCatalog.addFile({
+              contents: Buffer.alloc(0),
+              out: { path: '.nojekyll' }
+            })
           })
         }
       `
@@ -1044,34 +1153,16 @@ describe('generateSite()', function () {
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('building 4 pages for site https://docs.example.org')
-    })
-
-    it('should allow extension listener to access SiteCatalog in beforeProcess event', async () => {
-      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
-      const extensionCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('beforeProcess', ({ siteCatalog }) => {
-            siteCatalog.addFile({
-              contents: Buffer.alloc(0),
-              out: { path: '.nojekyll' }
-            })
-          })
-        }
-      `
-      fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.antora.extensions = [extensionPath]
-      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      await generateSite(getPlaybook(playbookFile))
       expect(ospath.join(absDestDir, '.nojekyll'))
         .to.be.a.file()
         .and.be.empty()
     })
 
-    it('should not allow extension listener to access vars via pipeline object', async () => {
+    it('should not allow extension listener to access vars property on generator context', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('playbookBuilt', function () {
+        module.exports.register = function () {
+          this.on('playbookBuilt', function () {
             console.log(this.vars == null ? 'is null' : 'is not null')
           })
         }
@@ -1084,12 +1175,12 @@ describe('generateSite()', function () {
       expect(lines[0]).to.equal('is null')
     })
 
-    it('should allow extension listener to update writable pipeline variables in register function', async () => {
+    it('should allow extension listener to update writable context variables in register function', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline, { config, playbook }) => {
+        module.exports.register = function ({ playbook }) {
           const site = Object.assign({}, playbook.site, { url: 'https://docs.example.com' })
-          pipeline.updateVars({ playbook: Object.assign({}, playbook, { site }) })
+          this.updateVars({ playbook: Object.assign({}, playbook, { site }) })
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
@@ -1101,11 +1192,11 @@ describe('generateSite()', function () {
         .with.contents.that.match(/https:\/\/docs\.example\.com\//)
     })
 
-    it('should allow extension listener to update writable pipeline variables in event listener', async () => {
+    it('should allow extension listener to update writable context variables in event listener', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline
+        module.exports.register = function () {
+          this
             .on('contentClassified', function ({ playbook, contentCatalog }) {
               const contentCatalogProxy = new Proxy(contentCatalog, {
                 get (target, property) {
@@ -1132,20 +1223,20 @@ describe('generateSite()', function () {
       expect(ospath.join(absDestDir, 'the-component/2.0/index.html')).to.not.be.a.path()
     })
 
-    it('should allow one extension listener to see pipeline variables set by previous listener', async () => {
+    it('should allow one extension listener to see context variables set by previous listener', async () => {
       const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionACode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('playbookBuilt', function ({ playbook }) {
+        module.exports.register = function () {
+          this.on('playbookBuilt', function ({ playbook }) {
             const site = Object.assign({}, playbook.site, { url: 'https://docs.example.com' })
             this.updateVars({ playbook: Object.assign({}, playbook, { site }) })
           })
         }
       `
       const extensionBCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('playbookBuilt', ({ playbook }) => console.log('building site for ' + playbook.site.url))
+        module.exports.register = function () {
+          this.on('playbookBuilt', ({ playbook }) => console.log('building site for ' + playbook.site.url))
         }
       `
       fs.writeFileSync(extensionAPath, extensionACode)
@@ -1158,11 +1249,11 @@ describe('generateSite()', function () {
       expect(lines[0]).to.equal('building site for https://docs.example.com')
     })
 
-    it('should not allow extension listener to update locked pipeline variables', async () => {
+    it('should not allow extension listener to update locked context variables', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline
+        module.exports.register = function () {
+          this
             .on('contentClassified', function ({ playbook, contentCatalog }) {
               this.updateVars({ playbook: {} })
             })
@@ -1179,8 +1270,8 @@ describe('generateSite()', function () {
     it('should allow extension listener to require internal modules', async () => {
       const extensionPath = ospath.join(TMP_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('beforePublish', function () {
+        module.exports.register = function () {
+          this.on('beforePublish', function () {
             const logger = this.require('@antora/logger')('my-extension')
             logger.info('time to publish!')
           })
@@ -1202,8 +1293,8 @@ describe('generateSite()', function () {
     it('should allow extension listener to access module of generator', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => {
-          console.log(pipeline.module.path)
+        module.exports.register = function () {
+          console.log(this.module.path)
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
@@ -1216,11 +1307,11 @@ describe('generateSite()', function () {
       expect(lines[0]).to.equal(expectedMessage)
     })
 
-    it('should allow extension listener to invoke halt to immediately halt pipeline', async () => {
+    it('should allow extension listener to invoke halt to immediately halt execution', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (pipeline) => {
-          pipeline.on('beforePublish', function () {
+        module.exports.register = function () {
+          this.on('beforePublish', function () {
             this.halt()
           })
         }
@@ -1317,8 +1408,6 @@ describe('generateSite()', function () {
   })
 
   // to test:
-  // - don't pass environment variable map to generateSite
-  // - pass environment variable override to generateSite
   // - path to images from topic dir
   // - html URL extension style
   // - ui.yml is not published

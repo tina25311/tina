@@ -1,14 +1,14 @@
 // tag::register[]
-module.exports.register = (pipeline, { config }) => {
+module.exports.register = function ({ config }) => {
 // end::register[]
   // tag::register[]
   const { addToNavigation, unlistedPagesHeading = 'Unlisted Pages' } = config
   // end::register[]
   // tag::logger[]
-  const logger = pipeline.require('@antora/logger').get('unlisted-pages-extension')
+  const logger = this.require('@antora/logger').get('unlisted-pages-extension')
   // end::logger[]
   // tag::on[]
-  pipeline
+  this
     .on('navigationBuilt', ({ contentCatalog }) => {
   // end::on[]
       // tag::each-nav[]

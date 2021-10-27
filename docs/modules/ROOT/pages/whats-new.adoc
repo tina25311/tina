@@ -103,19 +103,19 @@ The extension facility is designed for users of all experience levels.
 
 To learn more, see:
 
-* xref:extend:pipeline/index.adoc[Pipeline Extensions Overview]
-* xref:extend:pipeline/define-extension.adoc[]
-* xref:extend:pipeline/register-extension.adoc[]
-* xref:extend:pipeline/add-listener.adoc[]
-* xref:extend:pipeline/access-pipeline-variables.adoc[]
-* xref:extend:pipeline/update-pipeline-variables.adoc[]
-* xref:extend:pipeline/configure-extension.adoc[]
-* xref:extend:pipeline/extension-enablement.adoc[]
-* xref:extend:pipeline/extension-helpers.adoc[]
-* xref:extend:pipeline/asynchronous-listeners.adoc[]
-* xref:extend:pipeline/tutorial.adoc[]
-* xref:extend:pipeline/event-reference.adoc[]
-* xref:extend:pipeline/pipeline-api-reference.adoc[]
+* xref:extend:extensions.adoc[Antora Extensions Overview]
+* xref:extend:define-extension.adoc[]
+* xref:extend:register-extension.adoc[]
+* xref:extend:add-event-listener.adoc[]
+* xref:extend:use-context-variables.adoc[]
+* xref:extend:configure-extension.adoc[]
+* xref:extend:enable-extension.adoc[]
+* xref:extend:extension-helpers.adoc[]
+* xref:extend:class-based-extension.adoc[]
+* xref:extend:asynchronous-listeners.adoc[]
+* xref:extend:extension-tutorial.adoc[]
+* xref:extend:generator-events-reference.adoc[]
+* xref:extend:generator-context-reference.adoc[]
 
 == More new documentation
 

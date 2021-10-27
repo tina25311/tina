@@ -1,13 +1,14 @@
-= Extension Enablement
+= Enable an Extension
 
-By default, if you specify an extension in the playbook file, Antora will register it.
-You can defer registering it by specifying it using the CLI option instead.
-However, the benefit of specifying it in the playbook file is that you can provide configuration keys.
+By default, if you register an extension in the playbook file, Antora will enable it automatically.
+One way to enable an extension only on request is to specify it using the CLI option (`--extension`).
+However, that alone doesn't allow you to provide configuration keys or influence the load order.
 That's where extension enablement comes into play.
-It's possible to specify an extension in the playbook file, along with optional configuration, then tell Antora not to register it.
-You can then use the CLI option to enable it, and it will be registered relative to other extensions in the order it is listed in the playbook.
 
-To prevent Antora from registering an extension, set the predefined configuration key `enabled` to the value `false`.
+You can register an extension in the playbook file, along with optional configuration, then tell Antora not to enable it.
+You can then use the CLI option (`--extension`) to enable it, and it will be registered relative to other extensions in the order listed in the playbook.
+
+To prevent Antora from enabling an extension specified in the playbook file, set the predefined configuration key `enabled` to the value `false`.
 When Antora sees that the `enabled` key has a value of `false`, it will not register the extension.
 
 .An extension that is not enabled
@@ -17,16 +18,16 @@ antora:
   extensions:
   - require: ./my-extension.js
     enabled: false
-    foo: bar
+    custom: value
 ----
 
 You can use the `enabled` key to quickly turn off an extension without having to remove it from the playbook.
 More likely, though, you mark it this way so that it can be enabled using the CLI option.
 However, in order to do that, you need a way to reference it.
 That's the purpose of the predefined configuration key `id`.
-The `id` key specifies a value you can reference using the `--extension` CLI option to enable an extension that is marked as not enabled in the playbook file.
+The `id` key specifies a value you can reference using the `--extension` CLI option to enable an extension that's marked as not enabled in the playbook file.
 
-Let's give our extension an ID:
+First, let's give our extension an ID:
 
 .An extension with an ID that is not enabled
 [source,yaml]
@@ -36,10 +37,10 @@ antora:
   - id: my-extension
     require: ./my-extension.js
     enabled: false
-    foo: bar
+    custom: value
 ----
 
-We can now enable this extension from the CLI as follows:
+Now we can now enable this extension from the CLI as follows:
 
  $ antora --extension=my-extension antora-playbook.yml
 

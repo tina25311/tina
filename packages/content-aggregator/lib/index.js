@@ -5,7 +5,7 @@
  *
  * Responsible for aggregating the content from multiple repositories and
  * references into a raw aggregate of virtual files that can be organized by a
- * subsequent step in the pipeline.
+ * subsequent step in the generator.
  *
  * @namespace content-aggregator
  */

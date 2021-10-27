@@ -8,7 +8,7 @@ If the deployment environment does not offer redirect capabilities, Antora can o
 If redirect capabilities are available in the deployment environment, such as rewrite rules in nginx, Antora can output a suitable server configuration file (for server-side redirection).
 
 https://antora.org[Antora] is a modular static site generator designed for creating documentation sites from AsciiDoc documents.
-Its site generator pipeline aggregates documents from versioned content repositories and processes them using https://asciidoctor.org[Asciidoctor].
+Its site generator aggregates documents from versioned content repositories and processes them using https://asciidoctor.org[Asciidoctor].
 
 == Copyright and License
 

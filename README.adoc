@@ -36,7 +36,7 @@ endif::[]
 
 Antora's toolchain and workflow help documentation and engineering teams create, manage, collaborate on, remix, and publish documentation sites sourced from multiple versioned git repositories without needing expertise in web technologies, build automation, or system administration.
 
-This project includes a command line interface (CLI) and a preassembled site generator pipeline so you can quickly start publishing documentation sites with Antora.
+This project includes a command line interface (CLI) and a default site generator so you can quickly start publishing documentation sites with Antora.
 
 == Code of Conduct
 
@@ -96,7 +96,7 @@ Now that you have Node installed, you can install Antora.
 
 === Install Antora
 
-To generate a site with Antora, you need the Antora CLI and an Antora site generator pipeline.
+To generate a site with Antora, you need the Antora CLI and an Antora site generator.
 Once these packages are installed, you use the `antora` command to generate your site.
 To install these packages globally using npm, in your terminal, type:
 

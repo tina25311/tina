@@ -3,9 +3,9 @@
 const EventEmitter = require('events')
 const userRequire = require('@antora/user-require-helper')
 
-class HaltPipelineSignal extends Error {}
+class HaltSignal extends Error {}
 
-class Pipeline extends EventEmitter {
+class GeneratorContext extends EventEmitter {
   constructor (playbook, module_) {
     super()
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
@@ -13,7 +13,7 @@ class Pipeline extends EventEmitter {
   }
 
   halt () {
-    throw new HaltPipelineSignal()
+    throw new HaltSignal()
   }
 
   async notify (vars, eventName) {
@@ -41,7 +41,7 @@ class Pipeline extends EventEmitter {
   }
 
   static isHaltSignal (err) {
-    return err instanceof HaltPipelineSignal
+    return err instanceof HaltSignal
   }
 }
 
@@ -76,15 +76,21 @@ function _registerExtensions (playbook, module_, vars) {
     const requireContext = { dot: playbook.dir, paths: [playbook.dir || '', module_.path] }
     extensions.forEach((ext) => {
       const { enabled = true, id, require: request, ...config } = ext.constructor === String ? { require: ext } : ext
-      if (enabled) {
-        const { register } = userRequire(request, requireContext)
-        if (typeof register === 'function') {
+      if (!enabled) return
+      const { register } = userRequire(request, requireContext)
+      if (typeof register !== 'function') return
+      if (register.length) {
+        if (/^(?:function *)?(?:\w+ *)?\( *\w|^\w+(?: *, *\w+)* *=>/.test(register.toString().replace(/\r?\n/g, ' '))) {
           register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
+        } else {
+          register.call(this, Object.assign({ config }, vars))
         }
+      } else {
+        register.call(this)
       }
     })
   }
   this.notify = this.eventNames().length ? this.notify.bind(this, vars) : async () => undefined
 }
 
-module.exports = Pipeline
+module.exports = GeneratorContext
