@@ -83,7 +83,7 @@ It means you *don't have to commit files locally* before Antora can use them.
 content:
   sources:
   - url: ./demo-component-b
-    branches: master
+    branches: main
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: v1.0, v2.0
 ----
@@ -115,7 +115,7 @@ This effectively hides the worktree from Antora so it won't get used.
 content:
   sources:
   - url: ./demo-component-b/.git
-    branches: master
+    branches: main
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: v1.0, v2.0
 ----

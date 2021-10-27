@@ -5,7 +5,7 @@
 :url-chat: https://antora.zulipchat.com
 :url-twitter: https://twitter.com/antoraproject
 :url-twitter-hash: https://twitter.com/hashtag/antora?src=hash
-:url-contributing: https://gitlab.com/antora/antora/blob/master/contributing.adoc
+:url-contributing: https://gitlab.com/antora/antora/blob/HEAD/contributing.adoc
 
 Antora is designed to help you write and publish your documentation.
 However, we can't fully realize this goal without your feedback!

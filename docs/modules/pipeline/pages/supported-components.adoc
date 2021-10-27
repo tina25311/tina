@@ -1,7 +1,7 @@
 = Available and Supported Antora Components
 :table-caption!:
 // URLs
-:url-antora-lcs: https://gitlab.com/antora/antora/blob/master/LICENSE
+:url-antora-lcs: https://gitlab.com/antora/antora/blob/main/LICENSE
 
 On this page, you'll find the list of Antora components that can be assembled into a custom site generator pipeline.
 Antora has a modular architecture so that components can be easily removed and replaced.

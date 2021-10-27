@@ -103,13 +103,14 @@ Then type `++url: ++` and the URL of a content source repository.
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git
+    branches: main
 ----
 
 Now, Antora can locate the _Demo Component A_ repository.
 But it also needs to know what branches and tags it should fetch.
 
 The xref:content-branches.adoc#default[default branches filter] is applied at runtime when a `url` key doesn't have a `branches` or `tags` key set on it.
-Since the _Demo Component A_ repository only has one branch, and that branch's name (`master`) falls within the parameters of the default filter, you don't need to explicitly set `branches` on this `url` key.
+Since the _Demo Component A_ repository only has one branch, and that branch's name (`main`) does not fall within the parameters of the default filter, you must explicitly set `branches` on this `url` key.
 --
 
 . Let's add the URL for the _Demo Component B_ repository.
@@ -123,12 +124,13 @@ On a new line, type `++- url: ++` and the repository's URL.
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git
+    branches: main
   - url: https://gitlab.com/antora/demo/demo-component-b.git
 ----
 
 The _Demo Component B_ repository uses branches for versioning.
 The content source files in the branches `v1.0` and `v2.0` are ready for publishing.
-However, you can't use the xref:content-branches.adoc#default[default branches filter] on this `url` because the files in the `master` branch shouldn't be published to the site.
+However, you can't use the xref:content-branches.adoc#default[default branches filter] on this `url` because the files in the `main` branch shouldn't be published to the site.
 Instead, you'll have to tell Antora what branches it should fetch from the _Demo Component B_ repository.
 --
 
@@ -147,6 +149,7 @@ Press kbd:[Enter].
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git
+    branches: main
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: [v2.0, v1.0]
 ----
@@ -157,7 +160,7 @@ TIP: The `branches` key also accepts shell glob patterns.
 For instance, you could define `branches: v*` on the `url` key for _Demo Component B_ to specify that Antora fetch the branches with the names `v1.0` and `v2.0`.
 
 You're not done configuring the keys for the _Demo Component B_ repository just yet.
-The xref:ROOT:content-source-repositories.adoc#content-source-root[content source root] in each branch isn't at the root of the repository, https://gitlab.com/antora/demo/demo-component-b/-/tree/master/docs[it's at _docs_].
+The xref:ROOT:content-source-repositories.adoc#content-source-root[content source root] in each branch isn't at the root of the repository, https://gitlab.com/antora/demo/demo-component-b/-/tree/main/docs[it's at _docs_].
 You'll need to set the `start_path` key on `url` so Antora can locate the content source root.
 --
 
@@ -171,6 +174,7 @@ You'll need to set the `start_path` key on `url` so Antora can locate the conten
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git
+    branches: main
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: [v2.0, v1.0]
     start_path: docs
@@ -217,7 +221,7 @@ Type `++url: ++` and then the URL of Antora's reference UI bundle.
     start_path: docs
 ui:
   bundle:
-    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
 ----
 
 Antora's reference UI archive changes over time, but its URL doesn't, so you need to activate the xref:ui-bundle-url.adoc#snapshot[snapshot key].
@@ -232,7 +236,7 @@ Antora's reference UI archive changes over time, but its URL doesn't, so you nee
     start_path: docs
 ui:
   bundle:
-    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
 ----
 
@@ -251,12 +255,13 @@ site:
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git
+    branches: main
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: [v2.0, v1.0]
     start_path: docs
 ui:
   bundle:
-    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
 ----
 

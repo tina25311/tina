@@ -410,7 +410,7 @@ For documenting the `page-aliases` attribute.
 Jared Morgan ({url-gitlab}/jaredmorgs[@jaredmorgs^]):: For taking on the herculean task of documenting the `start_paths` feature.
 {url-issues}/576[#576^]
 
-Daniel Mulholland ({url-gitlab}/danyill[@danyill^]):: For adding documentation about https://gitlab.com/antora/antora/-/blob/master/contributing.adoc#user-content-develop-with-docker[developing Antora with Docker] and Gulp test errors to the contributing guide.
+Daniel Mulholland ({url-gitlab}/danyill[@danyill^]):: For adding documentation about https://gitlab.com/antora/antora/-/blob/main/contributing.adoc#user-content-develop-with-docker[developing Antora with Docker] and Gulp test errors to the contributing guide.
 {url-issues}/388[#388^]
 
 Andreas Offenhaeuser:: For documenting how to include navigation content.

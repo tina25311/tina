@@ -3,7 +3,7 @@
 :xrefstyle: short
 :listing-caption: Example
 // placeholders that are fulfilled by the file's origin information
-//https://gitlab.com/antora/antora/blob/master/docs/modules/cli/pages/index.adoc
+//https://gitlab.com/antora/antora/blob/main/docs/modules/cli/pages/index.adoc
 
 On this page, you'll learn:
 
