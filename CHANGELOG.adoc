@@ -16,7 +16,8 @@ This project utilizes semantic versioning.
 
 === Changed
 
-* *playbook-builder*: rename `pipeline` category key in playbook schema to `antora` (e.g., `antora.extensions`) (#859)
+* *playbook-builder*: Rename `pipeline` category key in playbook schema to `antora` (e.g., `antora.extensions`) (#859)
+* *playbook-builder*: Move logic for postprocessing config data to `beforeValidate` function defined in the schema (#864)
 * *cli*: If generator accepts a single parameter, build playbook in CLI and pass to generator (#857)
 * *cli*: Use default schema exported by playbook builder to define CLI options (#857)
 * *cli*: Configure logger in the CLI instead of the playbook builder (#862)

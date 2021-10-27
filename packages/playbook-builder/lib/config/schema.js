@@ -346,4 +346,15 @@ module.exports = {
       default: undefined,
     },
   },
+  [Symbol.for('convict.beforeValidate')]: ({ _schema: schema, _instance: data }) => {
+    const runtime = data.runtime
+    if (runtime.silent) {
+      if (runtime.quiet === false) runtime.quiet = true
+      if (runtime.log.level !== 'silent') runtime.log.level = 'silent'
+    }
+    const site = data.site
+    if (site.__private__google_analytics_key != null) site.keys.google_analytics = site.__private__google_analytics_key
+    delete site.__private__google_analytics_key
+    delete schema._cvtProperties.site._cvtProperties.__private__google_analytics_key
+  },
 }
