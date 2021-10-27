@@ -118,13 +118,13 @@ Discussion TODO: While this use case would work, we don't recommend using the bu
 To make the redirects concrete, assume the original page coordinates are v2@component1::topic/topic.adoc.
 
 ----
-:page-aliases: master@{page-component-name}:{page-module}:{page-src-path}
+:page-aliases: _@{page-component-name}:{page-module}:{page-src-path}
 ----
 
 For clarity, this is expressed as case 8, everything specified.
 Since the component and module are the same as the target, it could equivalently be expressed as case 4:
 ----
-:page-aliases: master@:{page-src-path}
+:page-aliases: _@:{page-src-path}
 ----
 
 * static redirect:
