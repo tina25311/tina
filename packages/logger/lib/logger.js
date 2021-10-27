@@ -171,7 +171,7 @@ function addFailOnExitHooks (logger, failureLevel = undefined) {
         return levelLabels[this.failureLevelVal]
       },
     })
-    logger.setFailOnExit = setFailOnExit.bind(logger)
+    logger.setFailOnExit = setFailOnExit.bind(logger) // direct call to base logger
     logger.child = ((method) =>
       function (bindings) {
         return addFailOnExitHooks(method.call(this, bindings))

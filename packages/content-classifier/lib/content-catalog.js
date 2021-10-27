@@ -169,11 +169,11 @@ class ContentCatalog {
       ('/' + src.relative).indexOf('/_') < 0
     ) {
       publishable = true
-      versionSegment = computeVersionSegment.bind(this)(src.component, src.version)
+      versionSegment = computeVersionSegment.call(this, src.component, src.version)
       file.out = computeOut(src, family, versionSegment, this.htmlUrlExtensionStyle)
     }
     if (!file.pub && (publishable || family === 'nav')) {
-      if (versionSegment == null) versionSegment = computeVersionSegment.bind(this)(src.component, src.version)
+      if (versionSegment == null) versionSegment = computeVersionSegment.call(this, src.component, src.version)
       file.pub = computePub(src, file.out, family, versionSegment, this.htmlUrlExtensionStyle)
     }
     filesForFamily.set(key, file)
@@ -289,7 +289,7 @@ class ContentCatalog {
       componentVersion.url = startPage.pub.url
     } else {
       // QUESTION: should we warn if the default start page cannot be found?
-      const versionSegment = computeVersionSegment.bind(this)(name, version)
+      const versionSegment = computeVersionSegment.call(this, name, version)
       componentVersion.url = computePub(
         (startPageSrc = prepareSrc(Object.assign({}, indexPageId, { family: 'page' }))),
         computeOut(startPageSrc, startPageSrc.family, versionSegment, this.htmlUrlExtensionStyle),
@@ -302,7 +302,7 @@ class ContentCatalog {
     const symbolicVersionAlias = createSymbolicVersionAlias(
       name,
       version,
-      computeVersionSegment.bind(this)(name, version, 'alias'),
+      computeVersionSegment.call(this, name, version, 'alias'),
       this.latestVersionUrlSegmentStrategy
     )
     if (symbolicVersionAlias) this.addFile(symbolicVersionAlias)

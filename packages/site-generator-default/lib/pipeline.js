@@ -9,7 +9,7 @@ class Pipeline extends EventEmitter {
   constructor (playbook, module_) {
     super()
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
-    _registerExtensions.bind(this)(playbook, module_, _initVars.bind(this)(playbook))
+    _registerExtensions.call(this, playbook, module_, _initVars.call(this, playbook))
   }
 
   halt () {
