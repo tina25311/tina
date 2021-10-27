@@ -1,3 +1,13 @@
+antora:
+  generator: my-custom-generator
+  extensions:
+  - antora-lunr
+  - id: pdf-exporter
+    require: .:pdf-exporter
+    enabled: false
+    config_path: ./pdf-config.yml
+    data:
+      key_name: value
 runtime:
   cache_dir: ./.antora-cache
   fetch: true
@@ -10,16 +20,6 @@ runtime:
       buffer_size: 4096
       sync: false
       append: false
-pipeline:
-  generator: my-custom-generator
-  extensions:
-  - antora-lunr
-  - id: pdf-exporter
-    require: .:pdf-exporter
-    enabled: false
-    config_path: ./pdf-config.yml
-    data:
-      key_name: value
 site:
   url: https://example.com
   title: Example site

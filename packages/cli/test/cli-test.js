@@ -630,7 +630,7 @@ describe('cli', function () {
   })
 
   it('should use the generator specified in playbook', () => {
-    playbookSpec.pipeline = { generator: ospath.resolve(FIXTURES_DIR, 'simple-generator') }
+    playbookSpec.antora = { generator: ospath.resolve(FIXTURES_DIR, 'simple-generator') }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return new Promise((resolve) => runAntora('generate the-site.json').on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)

@@ -791,7 +791,7 @@ describe('generateSite()', function () {
     beforeEach(() => {
       rmdirSync(LIB_DIR)
       fs.mkdirSync(LIB_DIR)
-      playbookSpec.pipeline = {}
+      playbookSpec.antora = {}
       playbookSpec.ui.bundle = { url: ospath.join(FIXTURES_DIR, 'minimal-ui') }
     })
 
@@ -803,7 +803,7 @@ describe('generateSite()', function () {
         module.exports.register = (pipeline) => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
@@ -816,7 +816,7 @@ describe('generateSite()', function () {
         module.exports.register = (pipeline) => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [{ require: extensionPath }]
+      playbookSpec.antora.extensions = [{ require: extensionPath }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
@@ -829,7 +829,7 @@ describe('generateSite()', function () {
         module.exports.register = (pipeline) => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [{ key: 'value' }]
+      playbookSpec.antora.extensions = [{ key: 'value' }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const expectedMessage = 'The "request" argument must be of type string. Received type undefined'
       const generateSiteDeferred = await deferExceptions(generateSite, getPlaybook(playbookFile))
@@ -842,7 +842,7 @@ describe('generateSite()', function () {
         console.log('extension required')
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
@@ -857,7 +857,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [{ id: 'my-extension', require: extensionPath, foo: 'bar', yin: ['yang'] }]
+      playbookSpec.antora.extensions = [{ id: 'my-extension', require: extensionPath, foo: 'bar', yin: ['yang'] }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
@@ -870,7 +870,7 @@ describe('generateSite()', function () {
         module.exports.register = (pipeline) => console.log('extension initialized')
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [{ require: extensionPath, enabled: false }]
+      playbookSpec.antora.extensions = [{ require: extensionPath, enabled: false }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.be.empty()
@@ -884,7 +884,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
@@ -920,7 +920,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [{ require: extensionPath, events: Object.keys(events) }]
+      playbookSpec.antora.extensions = [{ require: extensionPath, events: Object.keys(events) }]
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
@@ -949,7 +949,7 @@ describe('generateSite()', function () {
       `
       fs.writeFileSync(extensionPath, extensionCode)
       for (const delay of ['contentAggregated', 'uiLoaded']) {
-        playbookSpec.pipeline.extensions = [{ require: extensionPath, delay }]
+        playbookSpec.antora.extensions = [{ require: extensionPath, delay }]
         fs.writeFileSync(playbookFile, toJSON(playbookSpec))
         const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
         expect(lines).to.have.lengthOf(3)
@@ -970,7 +970,7 @@ describe('generateSite()', function () {
       `
       fs.writeFileSync(extensionAPath, extensionACode)
       fs.writeFileSync(extensionBPath, extensionBCode)
-      playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
+      playbookSpec.antora.extensions = [extensionAPath, extensionBPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(2)
@@ -999,7 +999,7 @@ describe('generateSite()', function () {
       `
       fs.writeFileSync(extensionAPath, extensionACode)
       fs.writeFileSync(extensionBPath, extensionBCode)
-      playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
+      playbookSpec.antora.extensions = [extensionAPath, extensionBPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(2)
@@ -1020,7 +1020,7 @@ describe('generateSite()', function () {
       `
       fs.writeFileSync(extensionAPath, extensionACode)
       fs.writeFileSync(extensionBPath, extensionBCode)
-      playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
+      playbookSpec.antora.extensions = [extensionAPath, extensionBPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(2)
@@ -1038,7 +1038,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
@@ -1059,7 +1059,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
       expect(ospath.join(absDestDir, '.nojekyll'))
@@ -1077,7 +1077,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
@@ -1093,7 +1093,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
       expect(ospath.join(absDestDir, 'sitemap.xml'))
@@ -1124,7 +1124,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
@@ -1150,7 +1150,7 @@ describe('generateSite()', function () {
       `
       fs.writeFileSync(extensionAPath, extensionACode)
       fs.writeFileSync(extensionBPath, extensionBCode)
-      playbookSpec.pipeline.extensions = [extensionAPath, extensionBPath]
+      playbookSpec.antora.extensions = [extensionAPath, extensionBPath]
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
@@ -1169,7 +1169,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const expectedMessage = "Cannot update read-only var 'playbook'"
       const generateSiteDeferred = await deferExceptions(generateSite, getPlaybook(playbookFile))
@@ -1189,7 +1189,7 @@ describe('generateSite()', function () {
       try {
         fs.writeFileSync(extensionPath, extensionCode)
         playbookSpec.runtime.log = { level: 'info' }
-        playbookSpec.pipeline.extensions = [extensionPath]
+        playbookSpec.antora.extensions = [extensionPath]
         fs.writeFileSync(playbookFile, toJSON(playbookSpec))
         const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
         expect(messages).to.have.lengthOf(1)
@@ -1208,7 +1208,7 @@ describe('generateSite()', function () {
       `
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.runtime.log = { level: 'info' }
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       const expectedMessage = ospath.dirname(require.resolve('@antora/site-generator-default'))
@@ -1226,7 +1226,7 @@ describe('generateSite()', function () {
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.pipeline.extensions = [extensionPath]
+      playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
       expect(absDestDir).to.not.be.a.path()

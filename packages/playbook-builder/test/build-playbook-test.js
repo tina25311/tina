@@ -510,7 +510,7 @@ describe('buildPlaybook()', () => {
   it('should add entries to value of require-array type from playbook file with values in args', () => {
     const args = ['--playbook', defaultSchemaSpec, '--extension', './lib/add-nojekyll.js', '--extension', 'antora-lfs']
     const playbook = buildPlaybook(args, {})
-    const exts = playbook.pipeline.extensions
+    const exts = playbook.antora.extensions
     expect(exts).to.include('antora-lunr')
     expect(exts).to.include('./lib/add-nojekyll.js')
     expect(exts).to.include('antora-lfs')
@@ -519,7 +519,7 @@ describe('buildPlaybook()', () => {
   it('should set enabled flag on entry in require-array type from playbook file if arg value matches id of entry', () => {
     const args = ['--playbook', defaultSchemaSpec, '--extension', 'pdf-exporter']
     const playbook = buildPlaybook(args, {})
-    const ext = playbook.pipeline.extensions.find((it) => it.id === 'pdf-exporter')
+    const ext = playbook.antora.extensions.find((it) => it.id === 'pdf-exporter')
     expect(ext.enabled).to.be.true()
   })
 
@@ -527,7 +527,7 @@ describe('buildPlaybook()', () => {
     const args = ['--playbook', defaultSchemaSpec, '--extension', 'antora-lunr', '--extension', 'antora-lunr']
     const playbook = buildPlaybook(args, {})
     // Q should the code check that isn't adding a duplicate even if entry has an id?
-    const num = playbook.pipeline.extensions.reduce((accum, it) => (it === 'antora-lunr' ? accum + 1 : accum), 0)
+    const num = playbook.antora.extensions.reduce((accum, it) => (it === 'antora-lunr' ? accum + 1 : accum), 0)
     expect(num).to.equal(1)
   })
 
@@ -667,8 +667,8 @@ describe('buildPlaybook()', () => {
     expect(playbook.network.httpProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.httpsProxy).to.equal('http://proxy.example.org')
     expect(playbook.network.noProxy).to.equal('example.org,example.com')
-    expect(playbook.pipeline.generator).to.equal('my-custom-generator')
-    expect(playbook.pipeline.extensions).to.eql([
+    expect(playbook.antora.generator).to.equal('my-custom-generator')
+    expect(playbook.antora.extensions).to.eql([
       'antora-lunr',
       {
         id: 'pdf-exporter',

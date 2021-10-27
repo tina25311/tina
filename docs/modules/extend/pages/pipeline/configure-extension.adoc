@@ -16,7 +16,7 @@ The value of this key will be an array of names.
 
 [source,yaml]
 ----
-pipeline:
+antora:
   extensions:
   - require: ./humans-txt-extension.js
     names:
@@ -61,7 +61,7 @@ We don't need Antora to transform this structured content, so we can store it in
 
 [source,yaml]
 ----
-pipeline:
+antora:
   extensions:
   - require: ./humans-txt-extension.js
     data:
