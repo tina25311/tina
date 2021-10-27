@@ -796,8 +796,19 @@ describe('buildPlaybook()', () => {
     expect(playbook).to.not.have.property('runtime')
   })
 
-  it('should set quiet to true and log level to silent if runtime.silent is set', () => {
-    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent', '--log-failure-level', 'none'])
+  it('should call beforeValidate before validating playbook and exporting to model', () => {
+    const playbook = buildPlaybook(
+      ['--playbook', defaultSchemaSpec, '--silent', '--log-failure-level', 'none'],
+      {},
+      undefined,
+      (config) => {
+        const runtime = config._instance.runtime
+        if (runtime.silent) {
+          if (runtime.quiet === false) runtime.quiet = true
+          runtime.log.level = 'silent'
+        }
+      }
+    )
     expect(playbook.runtime.quiet).to.be.true()
     expect(playbook.runtime.log.level).to.equal('silent')
     expect(playbook.runtime.log.failureLevel).to.equal('none')
