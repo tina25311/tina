@@ -13,7 +13,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Export default configuration schema as `defaultSchema` property (#857)
 * *playbook-builder*: Add `getModel()` method to config object to validate the data and return a model at the specified name (#856)
 * *playbook-builder*: Add a `beforeValidate` callback as the fourth parameter to `buildPlaybook` (#856)
-* *cli*: If site generator accepts a single parameter, build playbook in CLI and pass to site generator (#857)
+* *cli*: If generator accepts a single parameter, build playbook in CLI and pass to generator (#857)
 * *cli*: Use default schema exported by playbook builder to define CLI options (#857)
 * *cli*: Configure logger in the CLI instead of the playbook builder (#862)
 
