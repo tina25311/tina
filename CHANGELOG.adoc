@@ -7,13 +7,16 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
-=== Changed
+=== Added
 
-* *playbook-builder*: rename `pipeline` category key in playbook schema to `antora` (e.g., `antora.extensions`) (#859)
 * *playbook-builder*: Allow custom site generator to be configured in playbook using `antora.generator` key (#857)
 * *playbook-builder*: Export default configuration schema as `defaultSchema` property (#857)
 * *playbook-builder*: Add `getModel()` method to config object to validate the data and return a model at the specified name (#856)
 * *playbook-builder*: Add a `beforeValidate` callback as the fourth parameter to `buildPlaybook` (#856)
+
+=== Changed
+
+* *playbook-builder*: rename `pipeline` category key in playbook schema to `antora` (e.g., `antora.extensions`) (#859)
 * *cli*: If generator accepts a single parameter, build playbook in CLI and pass to generator (#857)
 * *cli*: Use default schema exported by playbook builder to define CLI options (#857)
 * *cli*: Configure logger in the CLI instead of the playbook builder (#862)
