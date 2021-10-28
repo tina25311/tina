@@ -57,6 +57,8 @@ function buildPlaybook (args = [], env = {}, schema = undefined, beforeValidate 
     config.loadFile(absSpecFilePath)
     if (relSpecFilePath !== absSpecFilePath) config.set('playbook', absSpecFilePath)
   }
+  const beforeValidateFromSchema = config._def[Symbol.for('convict.beforeValidate')]
+  if (beforeValidateFromSchema) beforeValidateFromSchema(config)
   if (beforeValidate) beforeValidate(config)
   return config.getModel()
 }
@@ -72,15 +74,6 @@ function getModel (name = '') {
   if (name) {
     schema = name.split('.').reduce((accum, key) => accum._cvtProperties[key], schema)
     config = Object.assign(convict(name.split('.').reduce((def, key) => def[key], config._def)), { _instance: data })
-  } else {
-    const siteProperties = 'site' in schema._cvtProperties && schema._cvtProperties.site._cvtProperties
-    if (siteProperties && 'keys' in siteProperties && '__private__google_analytics_key' in siteProperties) {
-      const site = data.site
-      if (site.__private__google_analytics_key != null) {
-        site.keys.google_analytics = site.__private__google_analytics_key
-      }
-      delete site.__private__google_analytics_key
-    }
   }
   config.validate({ allowed: 'strict' })
   const model = camelCaseKeys(data, { deep: true, stopPaths: getStopPaths(schema._cvtProperties) })
@@ -110,5 +103,4 @@ function deepFreeze (o) {
   return Object.freeze(o)
 }
 
-module.exports = buildPlaybook
-module.exports.defaultSchema = defaultSchema
+module.exports = Object.assign(buildPlaybook, { defaultSchema })

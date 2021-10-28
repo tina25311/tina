@@ -796,22 +796,17 @@ describe('buildPlaybook()', () => {
     expect(playbook).to.not.have.property('runtime')
   })
 
-  it('should call beforeValidate before validating playbook and exporting to model', () => {
-    const playbook = buildPlaybook(
-      ['--playbook', defaultSchemaSpec, '--silent', '--log-failure-level', 'none'],
-      {},
-      undefined,
-      (config) => {
-        const runtime = config._instance.runtime
-        if (runtime.silent) {
-          if (runtime.quiet === false) runtime.quiet = true
-          runtime.log.level = 'silent'
-        }
-      }
-    )
+  it('should call beforeValidate callbacks before validating playbook and exporting to model', () => {
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent'], {}, undefined, (config) => {
+      const log = config._instance.runtime.log
+      if (log.level === 'silent') log.failure_level = 'none'
+      log.level_format = 'label'
+    })
+    expect(playbook.runtime.silent).to.be.true()
     expect(playbook.runtime.quiet).to.be.true()
     expect(playbook.runtime.log.level).to.equal('silent')
     expect(playbook.runtime.log.failureLevel).to.equal('none')
+    expect(playbook.runtime.log.levelFormat).to.equal('label')
   })
 
   it('should set runtime.log.format to pretty when run locally', () => {

@@ -122,11 +122,6 @@ cli
     try {
       playbook = buildPlaybook(args, process.env, buildPlaybook.defaultSchema, (config) => {
         try {
-          const runtime = config.get('runtime')
-          if (runtime.silent) {
-            if (runtime.quiet === false) config.set('runtime.quiet', true)
-            if (runtime.log.level !== 'silent') config.set('runtime.log.level', 'silent')
-          }
           configureLogger(config.getModel('runtime.log'), playbookDir)
         } catch {}
       })
