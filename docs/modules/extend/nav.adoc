@@ -9,6 +9,7 @@
 ** xref:extension-helpers.adoc[]
 ** xref:class-based-extension.adoc[]
 ** xref:asynchronous-listeners.adoc[]
+** xref:replace-generator-functions.adoc[]
 ** xref:extension-tutorial.adoc[]
 ** xref:generator-events-reference.adoc[]
 ** xref:generator-context-reference.adoc[]

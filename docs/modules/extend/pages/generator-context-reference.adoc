@@ -19,6 +19,12 @@ In addition to the methods on EventEmitter, the following table describes the me
 |===
 |Method name | Parameter(s) | Description
 
+|getFunctions
+|_none_
+|Returns the object of generator functions.
+A generator function is defined as any of the discrete steps in the generator, as well as any key utility functions those steps use.
+This object is read only.
+
 |getLogger
 |String
 |Creates an instance of the specified named logger.
@@ -40,6 +46,10 @@ This object is read only.
 |updateVariables
 |Object
 |Adds or replaces the context variables with the specified variables.
+
+|replaceFunctions
+|Object
+|Binds the specified functions to the generator context and uses them to replace existing functions on the generator context.
 
 |require
 |String

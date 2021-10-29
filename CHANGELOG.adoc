@@ -13,6 +13,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Export default configuration schema as `defaultSchema` property (#857)
 * *playbook-builder*: Add `getModel` method to config object to validate the data and return a model at the specified name (#856)
 * *playbook-builder*: Add a `beforeValidate` callback as the fourth parameter to `buildPlaybook` (#856)
+* *site-generator-default*: Allow extensions to replace functions on generator context (#868)
 * *site-generator-default*: Add `@antora/logger` as dependency (#813)
 * *site-generator-default*: Add `GeneratorContext#getLogger` method to retrieve an instance of the logger (#813)
 * *site-generator-default*: Add `GeneratorContext#getVars` method to access content variables (#813)

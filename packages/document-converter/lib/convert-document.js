@@ -1,6 +1,9 @@
 'use strict'
 
-const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-loader')
+const {
+  loadAsciiDoc: _loadAsciiDoc,
+  extractAsciiDocMetadata: _extractAsciiDocMetadata,
+} = require('@antora/asciidoc-loader')
 
 /**
  * Converts the contents on the specified file from AsciiDoc to embedded HTML.
@@ -24,6 +27,9 @@ const { loadAsciiDoc, extractAsciiDocMetadata } = require('@antora/asciidoc-load
  * @returns {File} The virtual file that was converted.
  */
 function convertDocument (file, contentCatalog = undefined, asciidocConfig = {}) {
+  const { extractAsciiDocMetadata = _extractAsciiDocMetadata, loadAsciiDoc = _loadAsciiDoc } = this
+    ? this.getFunctions(false)
+    : {}
   const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig)
   if (!file.asciidoc) {
     file.asciidoc = extractAsciiDocMetadata(doc)

@@ -1,6 +1,6 @@
 'use strict'
 
-const loadAsciiDoc = require('@antora/asciidoc-loader')
+const _loadAsciiDoc = require('@antora/asciidoc-loader')
 const NavigationCatalog = require('./navigation-catalog')
 
 const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
@@ -27,6 +27,7 @@ const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
  * @returns {NavigationCatalog} A navigation catalog built from the navigation files in the content catalog.
  */
 function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
+  const { loadAsciiDoc = _loadAsciiDoc } = this ? this.getFunctions(false) : {}
   const navCatalog = new NavigationCatalog()
   const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizeResourceRefs: false }
   contentCatalog
@@ -42,7 +43,7 @@ function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
     }, new Map())
     .forEach(({ component, version, componentVersion, asciidocConfig, navFiles }) => {
       const trees = navFiles.reduce((accum, navFile) => {
-        accum.push(...loadNavigationFile(navFile, contentCatalog, asciidocConfig))
+        accum.push(...loadNavigationFile(loadAsciiDoc, navFile, contentCatalog, asciidocConfig))
         return accum
       }, [])
       componentVersion.navigation = navCatalog.addNavigation(component, version, trees)
@@ -50,7 +51,7 @@ function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
   return navCatalog
 }
 
-function loadNavigationFile (navFile, contentCatalog, asciidocConfig) {
+function loadNavigationFile (loadAsciiDoc, navFile, contentCatalog, asciidocConfig) {
   const lists = loadAsciiDoc(navFile, contentCatalog, asciidocConfig).blocks.filter((b) => b.getContext() === 'ulist')
   if (!lists.length) return []
   const index = navFile.nav.index

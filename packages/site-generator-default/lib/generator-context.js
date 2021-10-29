@@ -4,13 +4,34 @@ const EventEmitter = require('events')
 const getLogger = require('@antora/logger')
 const userRequire = require('@antora/user-require-helper')
 
+const FUNCTION_PROVIDERS = {
+  aggregateContent: 'content-aggregator',
+  buildNavigation: 'navigation-builder',
+  classifyContent: 'content-classifier',
+  convertDocument: 'document-converter',
+  convertDocuments: 'document-converter',
+  createPageComposer: 'page-composer',
+  extractAsciiDocMetadata: 'asciidoc-loader',
+  loadAsciiDoc: 'asciidoc-loader',
+  loadUi: 'ui-loader',
+  mapSite: 'site-mapper',
+  produceRedirects: 'redirect-producer',
+  publishSite: 'site-publisher',
+  resolveAsciiDocConfig: 'asciidoc-loader',
+}
+
 class HaltSignal extends Error {}
 
 class GeneratorContext extends EventEmitter {
   constructor (playbook, module_) {
     super()
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
+    _registerFunctions.call(this, playbook, module_)
     _registerExtensions.call(this, playbook, module_, _initVariables.call(this, playbook))
+  }
+
+  getFunctions (fxns) {
+    return arguments[0] === false ? fxns : Object.assign({}, fxns)
   }
 
   getLogger (name = 'antora') {
@@ -26,12 +47,17 @@ class GeneratorContext extends EventEmitter {
   }
 
   async notify (eventName) {
-    if (this.listenerCount(eventName)) {
-      for (const listener of this.rawListeners(eventName)) {
-        const outcome = listener.length === 1 ? listener.call(this, this.getVariables()) : listener.call(this)
-        if (outcome instanceof Promise) await outcome
-      }
+    if (!this.listenerCount(eventName)) return
+    for (const listener of this.rawListeners(eventName)) {
+      const outcome = listener.length === 1 ? listener.call(this, this.getVariables()) : listener.call(this)
+      if (outcome instanceof Promise) await outcome
     }
+  }
+
+  replaceFunctions (fxns, updates) {
+    Object.entries(updates).map(([name, fxn]) => {
+      if (name in fxns) fxns[name] = fxn.bind(this)
+    })
   }
 
   require (request) {
@@ -99,6 +125,32 @@ function _registerExtensions (playbook, module_, vars) {
     })
   }
   this.notify = this.eventNames().length ? this.notify.bind(this) : async () => undefined
+}
+
+function _registerFunctions (playbook) {
+  const fxns = Object.entries(
+    Object.entries(FUNCTION_PROVIDERS).reduce((accum, [fxnName, moduleKey]) => {
+      accum[moduleKey] = (accum[moduleKey] || []).concat(fxnName)
+      return accum
+    }, {})
+  ).reduce((accum, [moduleKey, fxnNames]) => {
+    const defaultExport = this.require('@antora/' + moduleKey)
+    const defaultExportName = defaultExport.name
+    fxnNames.forEach((fxnName) => {
+      const fxn = fxnName === defaultExportName ? defaultExport : defaultExport[fxnName]
+      accum[fxnName] = fxn.bind(this)
+    })
+    return accum
+  }, {})
+  Object.defineProperty(this, 'fxns', {
+    configurable: true,
+    get: () => {
+      delete this.fxns
+      return fxns
+    },
+  })
+  this.getFunctions = this.getFunctions.bind(null, fxns)
+  this.replaceFunctions = this.replaceFunctions.bind(this, fxns)
 }
 
 module.exports = GeneratorContext
