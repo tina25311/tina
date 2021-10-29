@@ -1290,6 +1290,46 @@ describe('generateSite()', function () {
       }
     })
 
+    it('should allow extension listener to access default logger using getLogger on generator context', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.getLogger().info('Extension loaded.')
+          this.on('sitePublished', function () {
+            this.getLogger().info('Site published!')
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.runtime.log = { level: 'info' }
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
+      expect(messages).to.have.lengthOf(2)
+      expect(messages[0]).to.include({ level: 'info', name: 'antora', msg: 'Extension loaded.' })
+      expect(messages[1]).to.include({ level: 'info', name: 'antora', msg: 'Site published!' })
+    })
+
+    it('should allow extension listener to access named logger using getLogger on generator context', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.getLogger('my-extension').info('Extension loaded.')
+          this.on('sitePublished', function () {
+            this.getLogger('my-extension').info('Site published!')
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.runtime.log = { level: 'info' }
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
+      expect(messages).to.have.lengthOf(2)
+      expect(messages[0]).to.include({ level: 'info', name: 'my-extension', msg: 'Extension loaded.' })
+      expect(messages[1]).to.include({ level: 'info', name: 'my-extension', msg: 'Site published!' })
+    })
+
     it('should allow extension listener to access module of generator', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`

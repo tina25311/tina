@@ -19,6 +19,7 @@
     "@antora/content-aggregator": "3.0.0-alpha.10",
     "@antora/content-classifier": "3.0.0-alpha.10",
     "@antora/document-converter": "3.0.0-alpha.10",
+    "@antora/logger": "3.0.0-alpha.10",
     "@antora/navigation-builder": "3.0.0-alpha.10",
     "@antora/page-composer": "3.0.0-alpha.10",
     "@antora/redirect-producer": "3.0.0-alpha.10",
@@ -28,8 +29,7 @@
     "@antora/user-require-helper": "~2.0"
   },
   "devDependencies": {
-    "@antora/playbook-builder": "3.0.0-alpha.10",
-    "@antora/logger": "3.0.0-alpha.10"
+    "@antora/playbook-builder": "3.0.0-alpha.10"
   },
   "engines": {
     "node": ">=10.17.0"
