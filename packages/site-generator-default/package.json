@@ -1,7 +1,7 @@
 {
   "name": "@antora/site-generator-default",
   "version": "3.0.0-alpha.10",
-  "description": "The default site generator pipeline for producing and publishing static documentation sites with Antora.",
+  "description": "The default site generator for producing and publishing static documentation sites with Antora.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
   "contributors": [

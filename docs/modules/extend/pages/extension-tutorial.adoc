@@ -1,7 +1,6 @@
-= Pipeline Extensions Tutorial
-:navtitle: Tutorial
+= Extension Tutorial
 
-If you understand how pipeline extensions work, and have a solid grasp of the concepts, this page offers an end-to-end tutorial that walks you through an in-depth example to help you get the most out of this feature of Antora.
+If you understand how Antora extensions work, and have a solid grasp of the concepts, this page offers an end-to-end tutorial that walks you through an in-depth example to give you a full view and help you get the most out of this feature of Antora.
 
 In this tutorial, we'll create an extension that locates unlisted pages, which are pages not accessible from the navigation.
 The extension will first retrieve the navigation tree for each component version.
@@ -34,9 +33,10 @@ Let's pause to break down what this extension does, step by step.
 
 == How the extension works
 
-The extension starts by exporting the `register` function, which Antora calls immediately after requiring the extension file.
-The `register` function accepts the Pipeline object as the first argument, which it can use to add listeners, and the config object for the extension (via object destructuring) as the second argument.
-It pulls several configuration keys out of the config object to customize its behavior.
+The extension starts by exporting the register function, which Antora calls immediately after requiring the extension file.
+The register function is bound to the generator context, which it can use to add listeners.
+The function accepts the config object for the extension (via object destructuring) as the sole argument.
+It goes on to pull several configuration keys out of the config object to customize its behavior.
 
 [source,js]
 ----
@@ -52,8 +52,8 @@ include::example$unlisted-pages-extension.js[tag=logger,indent=0]
 ----
 
 The extension then adds a listener for the `navigationBuilt` event.
-Since the extension needs access to the navigation, this is the right opportunity in the pipeline to examine the navigation trees.
-To access the navigation and the pages, the listener retrieves the `contentCatalog` object from the pipeline variables using object destructuring.
+Since the extension needs access to the navigation, this is the right opportunity in the generator to examine the navigation trees.
+To access the navigation and the pages, the listener retrieves the `contentCatalog` object from the context variables using object destructuring.
 The `navigationBuilt` event is emitted after the pages have been converted, which provides access to the navtitle for each page.
 
 [source,js]
@@ -147,7 +147,7 @@ antora:
     unlisted_pages_heading: Orphans
 ----
 
-If you want the extension to only be used when specified using the `--extension` CLI option, you'll also need to set the `id` and `enabled` keys.
+If you want the extension to only be used when specified using the `--extension` CLI option, you'll need to set the `id` and `enabled` keys as well.
 
 [source,yaml]
 ----
@@ -160,9 +160,9 @@ antora:
     unlisted_pages_heading: Orphans
 ----
 
-Now the extension will only be called by passing `--extension=unlisted-pages` to Antora when you run it.
+Now the extension will only run if you pass `--extension=unlisted-pages` to Antora when you run it.
 
-TIP: When an extension accepts configuration, it's always wise to list it in the playbook, even if you don't want it to be enabled by default.
+TIP: When an extension accepts configuration, it's always wise to register it in the playbook, even if you don't want it to be enabled by default.
 
 == Use the extension
 
@@ -189,4 +189,4 @@ If the `add_to_navigation` key is true, you'll also find the page listed in the 
 To fix the problem of an unlisted page, find the appropriate nav file and add an entry for the unlisted page, then run Antora again to check your work.
 
 Congratulations!
-You've written your first Antora pipeline extension.
+You've made your first Antora extension.

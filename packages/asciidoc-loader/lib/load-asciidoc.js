@@ -21,7 +21,7 @@ const EXTENSION_DSL_TYPES = Extensions.$constants(false).filter((name) => name.e
  * Uses the Asciidoctor.js load API to parse the source of the file into an Asciidoctor Document object. Sets options
  * and attributes that provide integration with the Antora environment. Options include a custom converter and extension
  * registry to handle page references and include directives, respectively. It also assigns attributes that provide
- * context either for the author (e.g., env=site) or pipeline (e.g., docfile).
+ * context either for the author (e.g., env=site) or processor (e.g., docfile).
  *
  * @memberof asciidoc-loader
  *

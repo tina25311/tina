@@ -3,10 +3,10 @@
 An extension is inactive until it's registered with Antora.
 There are two ways to register an extension.
 You can list it as an entry in the `antora.extensions` key in the playbook file or specify it using the `--extension` CLI option.
-Once registered, Antora invokes the `register` function of the extension in the order it's listed in the playbook file or passed to the CLI.
-The extensions in the playbook file are registered before the extensions passed to the CLI, though this order can be changed using xref:pipeline/extension-enablement.adoc[extension enablement].
+Once registered, Antora invokes the xref:define-extension.adoc[register function] of the extension in the order it's listed in the playbook file or passed to the CLI.
+The extensions in the playbook file are registered before the extensions passed to the CLI, though this order can be changed by xref:enable-extension.adoc[enabling a registered extension on request].
 
-Let's register our extension in the playbook file so that we can see it in action.
+Let's register our extension in the playbook file so we can see it in action.
 In its simplest form, the entry is the require request (i.e., path) to the script.
 We prefix the path with `./` to indicate that its location is relative to the playbook file.
 // TODO link to docs for @antora/user-require-helper
@@ -26,7 +26,7 @@ When you run Antora, you should now see a line like this in your terminal:
 Antora is building the Example Docs.
 ....
 
-You can also specify the extension to require using the explicit `require` key.
+You can also specify the extension to require using the explicit `require` key, which leaves room for configuration settings.
 
 .antora-playbook.yml with extension specified using require key
 [source,yaml]
@@ -36,6 +36,6 @@ antora:
   - require: ./my-extension.js
 ----
 
-If you were to publish this extension to a package repository, then the require request would be the name of the package.
+If you were to publish this extension to a package repository, then the require request would be the name of that package.
 In that case, ensure that the package is configured as a dependency of the playbook project so that Node.js fetches it.
 Antora doesn't download npm packages for you.

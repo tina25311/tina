@@ -3,7 +3,7 @@
 An extension that you write or use may require additional settings to configure its behavior.
 While the extension could tap into information already available in the playbook or the content sources Antora is building, it may be necessary to configure the extension directly.
 An extension can accept an arbitrary number of properties, which may be nested, that are specified in the entry in the playbook file.
-These properties are accessible via a pipeline variable named `config` that's passed to the extension's `register` function.
+These properties are accessible via a context variable named `config` that's passed to the extension's register function.
 
 == Basic configuration
 
@@ -25,8 +25,8 @@ antora:
     - Emily Story
 ----
 
-To make room for the additional keys, we've converted the entry from a single (string) value to a map.
-The require request shifts into the `require` key.
+To make room for the additional keys, we've converted the entry for the extension from a single (string) value to a map.
+The require request value slides into the `require` key.
 That leaves room to define additional keys, in this case `names`.
 
 Now let's write an extension that accepts this configuration and uses it to create the [.path]_humans.txt_ file:
@@ -37,16 +37,16 @@ Now let's write an extension that accepts this configuration and uses it to crea
 include::example$humans-txt-extension.js[]
 ----
 
-The `config` object for the extension is accessed using object destructuring just like any other pipeline variable.
-Thanks to variable scoping in JavaScript, we can access that variable in our listener for the `beforePublish` event.
-We use it to build the contents of the [.path]_humans.txt_ file and add it to the site catalog.
+The `config` object for the extension is accessed using object destructuring just like any other context variable.
+Thanks to variable scoping in JavaScript, we can still access that variable in our listener for the `beforePublish` event.
+We use the information it provides to populate the contents of the [.path]_humans.txt_ file and add it to the site catalog.
 Antora will then include [.path]_humans.txt_ file in the published site.
 
 == Configuration key transformation
 
 In YAML, key names use the snake_case naming convention.
 In JavaScript, property names use the camelCase naming convention.
-To help bridge the naming convention mismatch between YAML and JavaScript, Antora automatically transforms snake_case key names into camelCase properties on the configuration object.
+To help bridge the naming convention mismatch between YAML and JavaScript, Antora automatically transforms snake_case key names in the playbook file into camelCase properties on the configuration object.
 For example, Antora transforms `cache_dir` to `cacheDir`.
 Most of the time, this isn't a problem.
 However, if your extension passes configuration or data on to another application, this transformation can be problematic.

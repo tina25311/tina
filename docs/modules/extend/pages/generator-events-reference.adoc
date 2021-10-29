@@ -1,17 +1,17 @@
-= Pipeline Event Reference
+= Generator Events Reference
 :nosp:
 
-Antora pipeline extensions listen for events emitted by the site generator and other components in the Antora pipeline.
+Antora extensions listen for events emitted by the generator when Antora runs.
 Each listener can access variables that are in scope at the time the event is emitted.
-The following table lists the pipeline events in the order they're emitted and the in-scope variables that correspond to each event.
+The following table lists the generator events in the order they're emitted and the context (in-scope) variables that correspond to each event.
 If the variable is locked, meaning it can't be replaced, it's marked with an asterisk (`*`).
 
-.Antora pipeline events and in-scope variables
+.Antora extension events and in-scope variables
 [cols="1,2"]
 |===
 |Event name | In-scope variables
 
-|_register()_{nosp}footnote:register[The `register` function isn't an event, but rather the function Antora calls to register the extension itself.]
+|_register()_{nosp}footnote:register[The register function isn't technically an event, but rather the function Antora calls to register listeners.]
 |playbook, config
 
 |playbookBuilt
@@ -51,4 +51,4 @@ If the variable is locked, meaning it can't be replaced, it's marked with an ast
 |playbook*, asciidocConfig*, siteCatalog*, uiCatalog*, contentCatalog*, publications
 |===
 
-In addition to the built-in pipeline variables listed in this table, your extension can also access pipeline variables documented and published by other extensions.
+In addition to the built-in context variables listed in this table, your extension can also access context variables documented and published by other extensions.

@@ -1,5 +1,5 @@
-module.exports.register = (pipeline) => {
-  pipeline
+module.exports.register = function () {
+  this
     .on('playbookBuilt', () => {
       console.time('generation time')
     })

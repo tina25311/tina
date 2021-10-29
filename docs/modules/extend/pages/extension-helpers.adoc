@@ -1,19 +1,21 @@
 = Extension Helpers
 
-The Pipeline object provides several utility methods that make writing extensions easier.
+The generator context provides several utility methods that make writing extensions easier.
 These utility methods are called [.term]*helpers* because they help you to write extensions.
 
 == Access helpers
 
-To use the helpers, you need a reference to the Pipeline object.
-There are two ways to get the Pipeline object.
-If the listener functions are defined within the `register` function for the extension, they can access the pipeline argument of the `register` function due to variable scoping.
-Otherwise, the listener function can reference the Pipeline object using the standard `this` keyword.
-The Pipeline object binds itself to the listener function when the listener function is registered.
+The helpers are located on the generator context, which provides the xref:generator-context-reference.adoc[GeneratorContext API].
+Thus, to use the helpers, you need a reference to the generator context.
+
+There are two ways to get the generator context.
+If the listener functions are defined within the `register` function for the extension, they can access the generator context from the register method courtesy of variable scoping.
+Otherwise, the listener function can reference the generator context using the standard `this` keyword.
+The generator context is bound to to the listener function when the listener function is registered.
 
 == updateVars(Object)
 
-The `updateVars` helper method provides a means for adding or replacing pipeline variables.
+The `updateVars` helper method provides a means for adding or replacing context variables.
 The method accepts a single argument of type Object, where the keys of the object are the variable names and the values are the variable values.
 This method doesn't return a value.
 
@@ -29,7 +31,7 @@ siteCatalog = new Proxy(siteCatalog, {})
 this.updateVars({ playbook, siteCatalog })
 ----
 
-You can also use the `updateVars` method to introduce new variables into the pipeline.
+You can also use the `updateVars` method to introduce new variables into the context.
 The site generator will not recognize or use these variables.
 However, other extensions, or listeners in the same extension, can use them.
 
@@ -88,9 +90,9 @@ Typically, you would do this in the `register` function, then access the same in
 
 [source,js]
 ----
-module.exports.register = (pipeline) => {
-  const logger = pipeline.require('@antora/logger')('extension-name')
-  pipeline.on('playbookBuilt', () => {
+module.exports.register = function () {
+  const logger = this.require('@antora/logger')('extension-name')
+  this.on('playbookBuilt', () => {
     logger.info('Let it be known. The playbook has been built!')
   })
 }

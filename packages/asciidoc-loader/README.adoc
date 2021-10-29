@@ -12,7 +12,7 @@ These extensions include:
 * Implicit document attributes that pass information from the Antora environment.
 
 https://antora.org[Antora] is a modular static site generator designed for creating documentation sites from AsciiDoc documents.
-Its site generator pipeline aggregates documents from versioned content repositories and processes them using https://asciidoctor.org[Asciidoctor].
+Its site generator aggregates documents from versioned content repositories and processes them using https://asciidoctor.org[Asciidoctor].
 
 == Copyright and License
 
