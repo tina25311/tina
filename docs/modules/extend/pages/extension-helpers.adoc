@@ -13,6 +13,7 @@ If the listener functions are defined within the `register` function for the ext
 Otherwise, the listener function can reference the generator context using the standard `this` keyword.
 The generator context is bound to to the listener function when the listener function is registered.
 
+[#update-vars]
 == updateVars(Object)
 
 The `updateVars` helper method provides a means for adding or replacing context variables.
@@ -56,6 +57,31 @@ console.log('Our work is done here. Shut it down.')
 this.halt()
 ----
 
+[#get-logger]
+== getLogger(String)
+
+The `getLogger` helper method allows you to retrieve an instance of the logger.
+
+Here's an example that shows how to retrieve an instance of the logger and use it in a listener:
+
+[source,js]
+----
+module.exports.register = function () {
+  const logger = this.getLogger('extension-name')
+  this.on('playbookBuilt', () => {
+    logger.info('Let it be known. The playbook has been built!')
+  })
+}
+----
+
+You'll see the following message in your terminal when you run Antora with this extension enabled (and the `--log-level=info` option):
+
+[.output]
+....
+[12:24:37.731] INFO (extension-name): Let it be known. The playbook has been built!
+....
+
+[#require]
 == require(String)
 
 The `require` helper method allows you to require libraries within the context of the Antora installation.
@@ -86,7 +112,7 @@ console.log(`Running ${name} version ${version}`)
 ----
 
 For a more practical example, you can use the `require` helper method to create a child logger for your extension.
-Typically, you would do this in the `register` function, then access the same instance of the logger throughout your extension.
+Typically, you'd do so in the `register` function, then access the same instance of the logger throughout your extension.
 
 [source,js]
 ----
@@ -98,9 +124,11 @@ module.exports.register = function () {
 }
 ----
 
-You will see the following message in your terminal when you run Antora with this extension enabled:
+You'll see the following message in your terminal when you run Antora with this extension enabled (and the `--log-level=info` option):
 
 [.output]
 ....
 [12:24:37.731] INFO (extension-name): Let it be known. The playbook has been built!
 ....
+
+A simpler way to retrieve a logger instance is to use the <<get-logger>> method.

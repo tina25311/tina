@@ -1,6 +1,7 @@
 'use strict'
 
 const EventEmitter = require('events')
+const getLogger = require('@antora/logger')
 const userRequire = require('@antora/user-require-helper')
 
 class HaltSignal extends Error {}
@@ -10,6 +11,10 @@ class GeneratorContext extends EventEmitter {
     super()
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
     _registerExtensions.call(this, playbook, module_, _initVars.call(this, playbook))
+  }
+
+  getLogger (name = 'antora') {
+    return getLogger(name)
   }
 
   halt () {
