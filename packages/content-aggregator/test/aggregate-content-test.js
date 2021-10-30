@@ -2291,6 +2291,50 @@ describe('aggregateContent()', function () {
         })
       })
 
+      describe('should resolve directory symlink that ends with trailing slash', () => {
+        testAll(async (repoBuilder) => {
+          const targetDir = 'more-pages'
+          const targetPath = 'more-pages/the-page.adoc'
+          const symlinkDir = 'modules/ROOT/pages/topic'
+          const pageInsideSymlinkDir = 'modules/ROOT/pages/topic/the-page.adoc'
+          const fixturePaths = [targetPath]
+          await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+            repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir/').then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+          const page = aggregate[0].files.find((file) => file.path === pageInsideSymlinkDir)
+          expect(page).to.exist()
+          expect(page.symlink).to.not.exist()
+          expect(page.contents).to.deep.equal(expectedContents)
+        })
+      })
+
+      describe('should resolve directory symlink to directory at root that ends with trailing slash', () => {
+        testAll(async (repoBuilder) => {
+          const targetDir = 'src/main/asciidoc'
+          const targetPath = 'src/main/asciidoc/ROOT/pages/the-page.adoc'
+          const symlinkDir = 'modules'
+          const pageInsideSymlinkDir = 'modules/ROOT/pages/the-page.adoc'
+          const fixturePaths = [targetPath]
+          await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
+            repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir/').then(() => repoBuilder.commitAll('add symlink'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+          const page = aggregate[0].files.find((file) => file.path === pageInsideSymlinkDir)
+          expect(page).to.exist()
+          expect(page.symlink).to.not.exist()
+          expect(page.contents).to.deep.equal(expectedContents)
+        })
+      })
+
       describe('should throw if symlink is broken', () => {
         testAll(async (repoBuilder) => {
           const targetPath = 'modules/ROOT/pages/page-one.adoc'

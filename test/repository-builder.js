@@ -135,8 +135,13 @@ class RepositoryBuilder {
     const toDir = ospath.dirname(to)
     if (toDir !== this.repoPath) await fsp.mkdir(toDir, { recursive: true })
     if (symlink) {
+      let suffix = ''
+      if (symlink === 'dir/') {
+        suffix = '/'
+        symlink = 'dir'
+      }
       await fsp.symlink(
-        ospath.relative(toDir, ospath.isAbsolute(contents) ? contents : ospath.join(this.repoPath, contents)),
+        ospath.relative(toDir, ospath.isAbsolute(contents) ? contents : ospath.join(this.repoPath, contents)) + suffix,
         to,
         symlink
       )
