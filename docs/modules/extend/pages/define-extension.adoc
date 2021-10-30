@@ -103,4 +103,4 @@ module.exports.register = function ({ playbook }) => {
 }
 ----
 
-Now, let's get into xref:register-extension.adoc[registering our extension], then xref:add-event-listener.adoc[adding an event listener].
+Now, let's now xref:register-extension.adoc[register our extension], then xref:add-event-listeners.adoc[add event listeners].

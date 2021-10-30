@@ -106,7 +106,7 @@ To learn more, see:
 * xref:extend:extensions.adoc[Antora Extensions Overview]
 * xref:extend:define-extension.adoc[]
 * xref:extend:register-extension.adoc[]
-* xref:extend:add-event-listener.adoc[]
+* xref:extend:add-event-listeners.adoc[]
 * xref:extend:use-context-variables.adoc[]
 * xref:extend:configure-extension.adoc[]
 * xref:extend:enable-extension.adoc[]

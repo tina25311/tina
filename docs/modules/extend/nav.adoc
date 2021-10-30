@@ -2,7 +2,7 @@
 * xref:extensions.adoc[]
 ** xref:define-extension.adoc[]
 ** xref:register-extension.adoc[]
-** xref:add-event-listener.adoc[]
+** xref:add-event-listeners.adoc[]
 ** xref:use-context-variables.adoc[]
 ** xref:configure-extension.adoc[]
 ** xref:enable-extension.adoc[]

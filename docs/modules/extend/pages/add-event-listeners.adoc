@@ -1,4 +1,4 @@
-= Add an Event Listener
+= Add Event Listeners
 :url-event-emitter: https://nodejs.org/api/events.html#events_class_eventemitter
 
 The bulk of the work of an Antora extension is done by the event listeners.
