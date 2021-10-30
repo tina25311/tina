@@ -66,7 +66,7 @@ cli
   .version(
     {
       toString () {
-        const generator = cli._findCommand('generate')._getOptionValue('generator')
+        const generator = cli._findCommand('generate').getOptionValue('generator')
         const buffer = ['@antora/cli: ' + VERSION]
         let generatorVersion
         const generatorPackageJson = generator + '/package.json'

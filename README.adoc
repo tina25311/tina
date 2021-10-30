@@ -25,8 +25,8 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 :url-opendevise: https://opendevise.com
 :url-git-credential-store: https://git-scm.com/docs/git-credential-store
 // Versions:
-:version-node-major: 14
-:version-node: {version-node-major}.17.1
+:version-node-major: 16
+:version-node: {version-node-major}.13.0
 
 ifdef::badges[]
 image:{img-ci-status}[CI Status (GitLab CI), link={url-ci-pipelines}]
