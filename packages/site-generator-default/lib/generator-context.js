@@ -17,14 +17,18 @@ class GeneratorContext extends EventEmitter {
     return getLogger(name)
   }
 
+  getVars (vars) {
+    return Object.assign({}, vars)
+  }
+
   halt () {
     throw new HaltSignal()
   }
 
-  async notify (vars, eventName) {
+  async notify (eventName) {
     if (this.listenerCount(eventName)) {
       for (const listener of this.rawListeners(eventName)) {
-        const outcome = listener.call(this, Object.assign({}, vars))
+        const outcome = listener.length === 1 ? listener.call(this, this.getVars()) : listener.call(this)
         if (outcome instanceof Promise) await outcome
       }
     }
@@ -71,7 +75,8 @@ function _initVars (playbook) {
       return vars
     },
   })
-  this.updateVars = this.updateVars.bind(this, vars)
+  this.getVars = this.getVars.bind(null, vars)
+  this.updateVars = this.updateVars.bind(null, vars)
   return vars
 }
 
@@ -95,7 +100,7 @@ function _registerExtensions (playbook, module_, vars) {
       }
     })
   }
-  this.notify = this.eventNames().length ? this.notify.bind(this, vars) : async () => undefined
+  this.notify = this.eventNames().length ? this.notify.bind(this) : async () => undefined
 }
 
 module.exports = GeneratorContext

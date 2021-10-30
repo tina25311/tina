@@ -13,6 +13,22 @@ If the listener functions are defined within the `register` function for the ext
 Otherwise, the listener function can reference the generator context using the standard `this` keyword.
 The generator context is bound to to the listener function when the listener function is registered.
 
+[#get-vars]
+== getVars()
+
+One way to access context variables is to accept them via the first parameter of the register function or event listener method using object destructuring (e.g., `{ playbook }`).
+However, there may be situations where a context variable is only needed conditionally.
+To simplify the function signature, you can retrieve context variables directly from the generator context using the `getVars` helper.
+
+Here's an example of how to access context variables from the generator context (bound to `this`) using the `getVars` method:
+
+[,js]
+----
+const { playbook, contentCatalog } = this.getVars()
+----
+
+Note that parameter destructuring is still the only way for the register function to access the config object for an extension.
+
 [#update-vars]
 == updateVars(Object)
 
