@@ -28,6 +28,11 @@ If an argument is specified, and the value is null, the method returns the root 
 If no argument is specified, the method returns a logger with the name `antora`.
 The logger is always created, if needed, unless the argument value is null.
 
+|getVars
+|_none_
+|Returns the object of context variables.
+This object is read only.
+
 |halt
 |_none_
 |Halts the operation of the Antora site generator and exits successfully (without error).

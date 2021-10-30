@@ -15,6 +15,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Add a `beforeValidate` callback as the fourth parameter to `buildPlaybook` (#856)
 * *site-generator-default*: Add `@antora/logger` as dependency (#813)
 * *site-generator-default*: Add `GeneratorContext#getLogger` method to retrieve an instance of the logger (#813)
+* *site-generator-default*: Add `GeneratorContext#getVars` method to access content variables (#813)
 
 === Changed
 

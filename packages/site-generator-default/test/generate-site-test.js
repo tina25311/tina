@@ -1010,8 +1010,8 @@ describe('generateSite()', function () {
         module.exports.register = function ({ config: { events }, playbook }) {
           const observed = playbook.env.OBSERVED = {}
           events.forEach((name) => {
-            this.on(name, function () {
-              observed[name] = Object.keys(arguments[0]).sort()
+            this.on(name, function (vars) {
+              observed[name] = Object.keys(vars).sort()
             })
           })
         }
@@ -1131,7 +1131,7 @@ describe('generateSite()', function () {
       expect(lines[1]).to.equal('before publish a')
     })
 
-    it('should allow extension listener to access context variables', async () => {
+    it('should allow extension listener to access context variables via listener argument', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         module.exports.register = function () {
@@ -1140,6 +1140,34 @@ describe('generateSite()', function () {
           })
           this.on('beforeProcess', ({ siteCatalog }) => {
             siteCatalog.addFile({
+              contents: Buffer.alloc(0),
+              out: { path: '.nojekyll' }
+            })
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      playbookSpec.site.url = 'https://docs.example.org'
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('building 4 pages for site https://docs.example.org')
+      expect(ospath.join(absDestDir, '.nojekyll'))
+        .to.be.a.file()
+        .and.be.empty()
+    })
+
+    it('should allow extension listener to access context variables via getVars', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.on('contentClassified', function () {
+            const { playbook, contentCatalog } = this.getVars()
+            console.log('building ' + contentCatalog.getPages().length + ' pages for site ' + playbook.site.url)
+          })
+          this.on('beforeProcess', () => {
+            this.getVars().siteCatalog.addFile({
               contents: Buffer.alloc(0),
               out: { path: '.nojekyll' }
             })
