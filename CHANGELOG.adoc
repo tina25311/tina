@@ -21,8 +21,8 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Rename `pipeline` category key in playbook schema to `antora` (e.g., `antora.extensions`) (#859)
 * *playbook-builder*: Move logic for postprocessing config data to `beforeValidate` function defined in the schema (#864)
-* *default-site-generator*: Rename Pipeline class to GeneratorContext (#860)
-* *default-site-generator*: Bind the generator context to the register function of an extension unless declared as the first parameter (#860)
+* *site-generator-default*: Rename Pipeline class to GeneratorContext (#860)
+* *site-generator-default*: Bind the generator context to the register function of an extension unless declared as the first parameter (#860)
 * *cli*: If generator accepts a single parameter, build playbook in CLI and pass to generator (#857)
 * *cli*: Use default schema exported by playbook builder to define CLI options (#857)
 * *cli*: Configure logger in the CLI instead of the playbook builder (#862)
