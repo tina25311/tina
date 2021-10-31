@@ -80,7 +80,7 @@ The following table lists when the family coordinate is required depending on th
 |*Yes, the `attachment$` coordinate is required*.
 See xref:attachments.adoc[].
 
-|xref:examples-and-source-snippets.adoc[Example]
+|xref:examples.adoc[Example]
 |Include directive
 |*Yes, the `example$` coordinate is required*.
 See xref:include-an-example.adoc[].
@@ -105,7 +105,7 @@ See xref:inline-images.adoc[] and xref:image-resource-id-examples.adoc[].
 |No, the family coordinate isn't required.
 See xref:include-a-page.adoc[].
 
-|xref:partials-and-content-snippets.adoc[Partial]
+|xref:partials.adoc[Partial]
 |Include directive
 |*Yes, the `partial$` coordinate is required*.
 See xref:include-a-partial.adoc[].
