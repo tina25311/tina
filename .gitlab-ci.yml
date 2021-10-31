@@ -35,8 +35,8 @@ variables:
     policy: pull
 - &yarn_install
   before_script:
-  - yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile > /dev/null
   - node -p '`Node.js ${process.version}`'
+  - yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile > /dev/null
 # this step also seeds the dependency cache
 lint:
   stage: init
@@ -89,8 +89,8 @@ test:windows:
   # cache does not currently work on the Windows runner
   #<<: *yarn_cache_pull_only
   before_script:
-  - npx yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile
   - node -p '`Node.js ${process.version}`'
+  - npx yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile
   script: node_modules/.bin/gulp test
   artifacts:
     paths:
