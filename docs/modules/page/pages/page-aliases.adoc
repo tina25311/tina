@@ -23,6 +23,16 @@ Multiple page IDs can be assigned to the attribute in a comma-separated list.
 :page-aliases: source-page-filename.adoc, version@component:module:source-page-filename.adoc
 ----
 
+You can split this list across multiple lines using a line continuation (a space followed by a backslash at the end of the line):
+
+.Page aliases split across multiple lines
+[source]
+----
+= Title of Target Page
+:page-aliases: source-page-filename.adoc, \
+version@component:module:source-page-filename.adoc
+----
+
 Antora calculates the URL for a source page's page ID and generates redirect information so that the source page URL redirects to the target page URL.
 Any coordinates, such as xref:page-id.adoc#id-version[version] or xref:page-id.adoc#id-component[component], that aren't specified in a page ID assigned to `page-aliases` are interpolated from the target page's coordinates.
 The generated output format of the redirect information is determined by your chosen xref:playbook:urls-redirect-facility.adoc[redirect facility].
