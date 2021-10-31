@@ -13,9 +13,6 @@ const { configureLogger } = require('@antora/logger')
 chai.use(require('chai-fs'))
 chai.use(require('chai-cheerio'))
 chai.use(require('chai-spies'))
-// dirty-chai must be loaded after the other plugins
-// see https://github.com/prodatakey/dirty-chai#plugin-assertions
-chai.use(require('dirty-chai'))
 chai.Assertion.addMethod('endWith', function (expected) {
   const subject = this._obj
   let verdict = false
@@ -40,6 +37,9 @@ chai.Assertion.addMethod('startWith', function (expected) {
     undefined
   )
 })
+// dirty-chai must be loaded after the other plugins
+// see https://github.com/prodatakey/dirty-chai#plugin-assertions
+chai.use(require('dirty-chai'))
 
 beforeEach(() => configureLogger({ level: 'silent' })) // eslint-disable-line no-undef
 
