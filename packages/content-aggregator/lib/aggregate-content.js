@@ -204,7 +204,7 @@ async function loadRepository (url, opts) {
         authStatus = await git.getConfig(Object.assign({ path: 'remote.origin.private' }, repo))
       }
     } catch (gitErr) {
-      await rmdir(dir)
+      await fsp['rm' in fsp ? 'rm' : 'rmdir'](dir, { recursive: true, force: true })
       if (gitErr.rethrow) throw transformGitCloneError(gitErr, displayUrl)
       const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetchTags, 'clone')
       await git
@@ -918,36 +918,6 @@ function resolveRemoteUrl (repo, remoteName) {
  */
 function isDirectory (url) {
   return fsp.stat(url).then((stat) => stat.isDirectory(), invariably.false)
-}
-
-/**
- * Removes the specified directory (including all of its contents) or file.
- * Equivalent to fs.promises.rmdir(dir, { recursive: true }) in Node 12.
- */
-function rmdir (dir) {
-  return fsp
-    .readdir(dir, { withFileTypes: true })
-    .then((lst) =>
-      Promise.all(
-        lst.map((it) =>
-          it.isDirectory()
-            ? rmdir(ospath.join(dir, it.name))
-            : fsp.unlink(ospath.join(dir, it.name)).catch((unlinkErr) => {
-              if (unlinkErr.code !== 'ENOENT') throw unlinkErr
-            })
-        )
-      )
-    )
-    .then(() => fsp.rmdir(dir))
-    .catch((err) => {
-      if (err.code === 'ENOENT') return
-      if (err.code === 'ENOTDIR') {
-        return fsp.unlink(dir).catch((unlinkErr) => {
-          if (unlinkErr.code !== 'ENOENT') throw unlinkErr
-        })
-      }
-      throw err
-    })
 }
 
 function tagsSpecified (sources) {

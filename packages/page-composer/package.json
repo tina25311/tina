@@ -20,7 +20,7 @@
     "require-from-string": "~2.0"
   },
   "engines": {
-    "node": ">=10.17.0"
+    "node": ">=12.21.0"
   },
   "files": [
     "lib/"

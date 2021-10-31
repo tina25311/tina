@@ -8,7 +8,6 @@ const fs = require('fs')
 const { Transform } = require('stream')
 const map = (transform) => new Transform({ objectMode: true, transform })
 const ospath = require('path')
-const { removeSync: rimrafSync } = require('fs-extra')
 const { configureLogger } = require('@antora/logger')
 
 chai.use(require('chai-fs'))
@@ -112,29 +111,8 @@ function unlinkSync (path_) {
   }
 }
 
-function rmdirSyncPosix (dir) {
-  try {
-    const lst = fs.readdirSync(dir, { withFileTypes: true })
-    lst.forEach((it) =>
-      it.isDirectory() ? rmdirSyncPosix(ospath.join(dir, it.name)) : unlinkSync(ospath.join(dir, it.name))
-    )
-    fs.rmdirSync(dir)
-  } catch (err) {
-    if (err.code === 'ENOENT') return
-    if (err.code === 'ENOTDIR') return unlinkSync(dir)
-    throw err
-  }
-}
-
-function rmdirSyncWindows (dir) {
-  // NOTE: Windows requires either rimraf (from fs-extra) or Node 12 to remove a non-empty directory
-  rimrafSync(dir)
-  //fs.rmdirSync(dir, { recursive: true })
-}
-
 // Removes the specified directory (including all of its contents) or file.
-// Equivalent to fs.promises.rmdir(dir, { recursive: true }) in Node 12.
-const rmdirSync = process.platform === 'win32' ? rmdirSyncWindows : rmdirSyncPosix
+const rmdirSync = (dir) => fs['rmSync' in fs ? 'rmSync' : 'rmdirSync'](dir, { recursive: true, force: true })
 
 function emptyDirSync (dir) {
   let lst

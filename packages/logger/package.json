@@ -21,7 +21,7 @@
     "sonic-boom": "~2.3"
   },
   "engines": {
-    "node": ">=10.17.0"
+    "node": ">=12.21.0"
   },
   "files": [
     "lib/"
