@@ -1,83 +1,64 @@
 = Resources and Resource IDs
-:family: resource
-:colon: :
 
-No matter which component version or module a resource belongs to, it can be referenced by the other resources in your site using its resource ID and the applicable AsciiDoc syntax.
+== What's a resource?
+
+A [.term]*resource* is a source file that belongs to the pages, images, partials, examples, or attachments family.
+Antora assigns each resource a unique identifier called an Antora resource ID.
+
+=== What's a publishable resource?
+
+A [.term]*publishable resource* is a source file that belongs to the pages, attachments, or images family.
+Antora automatically publishes page, attachment, and image files to your site, even if they aren't referenced in another resource.
+This is in contrast to partial and example files.
+The content of a partial or example is only published if it's referenced--either directly or by way of another partial or example that is eventually referenced--from a publishable resource.
 
 [#whats-a-resource-id]
 == What's a resource ID?
 
-A [.term]*resource* is a source file that is assigned to the attachments, examples, images, pages, or partials family.
+An [.term]*Antora resource ID*, or *resource ID* for short, is a unique and reliable set of identifying coordinates, organized in a standard sequence, that Antora automatically constructs from the properties assigned to each resource's source file.
+You'll often use the resource ID of a resource to reference it from another resource.
+A resource is referenced by assigning its resource ID to an AsciiDoc xref macro, include directive, image macro, or the few keys, attributes, or options that accept a resource ID as a value.
+Antora then uses the assigned resource ID to look up the corresponding resource in its virtual file system.
+xref:resource-id-coordinates.adoc[] describes the coordinates in a resource ID, where you find a resource's coordinates, and when you use each of the coordinates.
 
-An [.term]*Antora resource ID* is a unique and reliable set of identifying coordinates, organized in a standard sequence, that are constructed from the properties assigned to each resource's source file.
-In Antora, a resource is referenced using its resource ID.
+////
+The most common reason for you to use a resource that you'll u of resource ID is to .
+To reference a resource, enter its resource ID as the target value in an AsciiDoc xref macro, include directive, or image macro.
+The image macro's xref option also accepts the resource ID of a publishable resource.
+A few Antora keys and AsciiDoc attributes accept the resource ID of a page as a value.
 
-[#id-coordinates]
-== What are the resource ID coordinates?
+When you reference a resource, the published result depends on the AsciiDoc syntax you use to reference the resource, the family of the resource, and, occasionally, the file format of the resource and a site visitor's browser settings.
+For example, if you enter the resource ID for an image into an image macro, the image will be embedded in the page at the image macro's location.
+However, if you enter the image's resource ID into an xref macro, a link to the image's published location will be displayed in the page.
+How many resource ID coordinates you need to specify when referencing a resource depends on the component version and module of the <<current-page,current page>> in relation to the <<target-page,target resource>>.
+////
 
-Antora constructs a resource ID for a source file from the key-value pairs specified in a xref:ROOT:component-version-descriptor.adoc[component version descriptor] and the xref:ROOT:standard-directories.adoc[standard directory set].
-Using this information, a resource can be referenced from any other resource in your site using a unique and reliable set of resource ID coordinates.
+[#important]
+== Why are resource IDs important?
 
-A fully qualified resource ID with its coordinates organized in the standard sequence is shown below.
+*They're not coupled to a published URL* because they're a source-to-source reference.
+Notice the page coordinate ends with [.path]_.adoc_, the file extension of an AsciiDoc source file.
+Regardless of whether you're deploying your site locally, to a staging or production environment, or you change URL strategies, the page ID always remains the same.
+The xref locks on to the target page and produces a URL that points to it wherever it gets published.
 
- version@component:module:family$resource.ext
+*They're minimally coupled to the filesystem* by using an identifier based on the Antora's virtual component version classification system.
 
-include::partial$antora-id.adoc[tags=*;!page]
+*They've eliminated the relative path (../../) problem* by specifying the page as a pages-relative path.
+The path always starts from a module's [.path]_pages_ directory, even when the referencing page is located inside a topic folder.
+//If you move or rename a page within a module, you don't have to change any references to other pages.
 
-How many resource ID coordinates you need to specify when referencing a resource depends on the component version and module of the current page in relation to the target resource.
+*This human-friendly referencing system saves you from having to do computations in your head while writing*.
+You just specify the coordinates of the page you want to reference.
+There's no need to worry about the source file's physical location on disk or its published URL.
+All you need to know are the names of your components, versions, modules, and pages so you can fill in this information.
 
-[[target-resource]]The [.term]*target resource* is the source file that will be linked to from the current page or embedded in the current page when the site is published.
-[[current-page]]The [.term]*current page* is the page file that contains the AsciiDoc macro or include directive that references the target resource.
+////
+This needs to go in a section about future development.
 
-[#requires-family-coordinate]
-== When is the family coordinate required?
+Of course, inbound references to the page you move do have to be updated.
+To counter this, you could pin the page ID of the page you want to move, thus adding more stability.
+That way, references to the page don't have to be updated even when it moves.
+Though, a little help from the text editor to "`refactor`" references could make this abstraction unnecessary.
 
-The family coordinate doesn't always need to be specified in a resource ID.
-It may be implicitly assigned by the AsciiDoc syntax you use to reference the resource.
-For example, an image is always embedded in a page using an AsciiDoc image macro.
-Since images are only referenced using the image macros, the `image$` coordinate is automatically applied to the target resource ID at runtime.
-
-[#reference-syntax-id-requirements]
-[cols="1,4,4,5"]
-|===
-|Resource |Referencing syntax |Example |Resource ID requirements
-
-|xref:attachments.adoc[Attachment]
-|Xref macro
-|`+xref:attachment$brochure.pdf[]+`
-|*The `attachment$` coordinate is required*.
-See xref:attachments.adoc[].
-
-|xref:examples-and-source-snippets.adoc[Example]
-|Include directive
-|`include::example$app.rb[]`
-|*The `example$` coordinate is required*.
-See xref:include-an-example.adoc[].
-
-.2+|xref:images.adoc[Image]
-|Block image macro
-|`image::my-image.svg[]`
-|No family coordinate required.
-See xref:block-images.adoc[] and xref:image-resource-id-examples.adoc[].
-
-|Inline image macro
-|`+image:my-image.svg[]+`
-|No family coordinate required.
-See xref:inline-images.adoc[] and xref:image-resource-id-examples.adoc[].
-
-.2+|xref:index.adoc[Page]
-|Xref macro
-|`+xref:the-steps.adoc[]+`
-|No family coordinate required.
-
-|Include directive
-|`include::the-steps.adoc[tag=overview]`
-|No family coordinate required.
-See xref:include-a-page.adoc[].
-
-|xref:partials-and-content-snippets.adoc[Partial]
-|Include directive
-|`include::partial$my-partial.adoc[]`
-|*The `partial$` coordinate is required*.
-See xref:include-a-partial.adoc[].
-|===
+*We've made it possible to validate and update references* by using a well-defined pattern that's easy for a script to locate, parse, and rewrite.
+////

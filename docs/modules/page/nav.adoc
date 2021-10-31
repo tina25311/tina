@@ -1,3 +1,6 @@
+.xref:resource-id.adoc[]
+* xref:resource-id-coordinates.adoc[]
+
 .Create & Manage Pages
 * xref:index.adoc[]
 * xref:standard-page.adoc[]
@@ -16,7 +19,6 @@
 * xref:page-layout.adoc[]
 
 .Create & Manage Resources
-* xref:resource-id.adoc[]
 * xref:partials-and-content-snippets.adoc[]
 ** xref:create-a-partial.adoc[]
 ** xref:include-a-partial.adoc[]

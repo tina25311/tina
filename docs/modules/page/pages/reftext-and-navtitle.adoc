@@ -44,7 +44,7 @@ Here are the prerequisites:
 When the site is generated, the value of `reftext`, _Install Silver Leaf's Prerequisites_, will be used in <<ex-page>> as the xref's link text.
 It will also be used as the page's `navtitle` value.
 
-CAUTION: When the target page ID includes a xref:page-id.adoc#id-fragment[fragment], the link text isn't automatically populated.
+CAUTION: When the resource ID of the target page is appended with a xref:page-id.adoc#id-fragment[fragment], the link text isn't automatically populated.
 You'll need to specify the xref's link text in such cases.
 
 [#navtitle]
@@ -90,5 +90,5 @@ Let's get started!
 
 When the site is generated, the value of `navtitle`, _Getting Started_, will populate the xref link text in the navigation file.
 
-CAUTION: When the target includes a xref:page-id.adoc#id-fragment[fragment] (aka a deep link) like `\xref:page.adoc#fragment[...]`, the link text (`...`) isn't automatically populated.
-You'll need to specify the xref's link text in this case.
+CAUTION: When the resource ID of the target page is appended with a xref:page-id.adoc#id-fragment[fragment] (aka a deep link) and no link text is specified between the square brackets, like `\xref:page.adoc#fragment[]`, the link text isn't automatically populated.
+You'll need to specify the link text in the xref macro when using a fragment.
