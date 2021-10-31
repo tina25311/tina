@@ -601,7 +601,7 @@ function readGitSymlink (repo, root, parent, { oid }, following) {
       let targetParent
       if (parent.dirname) {
         const dirname = parent.dirname + '/'
-        target = path.join(dirname, target)
+        target = path.join(dirname, target) // join doesn't remove trailing separator
         if (target.startsWith(dirname)) {
           target = target.substr(dirname.length)
           targetParent = parent
@@ -609,10 +609,12 @@ function readGitSymlink (repo, root, parent, { oid }, following) {
           targetParent = root
         }
       } else {
-        target = path.normalize(target)
+        target = path.normalize(target) // normalize doesn't remove trailing separator
         targetParent = root
       }
-      return readGitObjectAtPath(repo, root, targetParent, target.split('/'), following)
+      const targetSegments = target.split('/')
+      if (!targetSegments[targetSegments.length - 1]) targetSegments.pop()
+      return readGitObjectAtPath(repo, root, targetParent, targetSegments, following)
     })
   }
   const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid }
