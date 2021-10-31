@@ -2,8 +2,8 @@
 
 The log `format` key specifies the format of the log messages.
 
-CAUTION: The log format, and all other log settings, are not honored if an error is thrown before the playbook is fully configured.
-Instead, the error message is printed directly to standard error (stderr).
+IMPORTANT: The log format, and all other log settings, are not honored if a fatal error is thrown before Antora fully configures the playbook.
+Instead, the error message is printed directly to standard error (STDERR).
 
 [#default]
 == Default log format
@@ -31,6 +31,8 @@ The `format` key accepts the following built-in values:
 json:: _Default when `CI=true`._
 The structured log messages are emitted in JSON format to the standard out stream (STDOUT), one per line, so that they can be piped to other applications and processed.
 The messages adhere to the https://jsonlines.org/[JSON Lines] text format, also known as newline-delimited JSON.
+The levels of the messages are expressed as labels, _error_, _info_, etc., by default.
+The level format can be changed to numbers by setting the <<level-format-key,log.level_format key>> and assigning the value `number` to it.
 
 pretty:: _Default in non-CI environments._
 The log messages are formatted for readability and emitted to the standard error stream (STDERR).
@@ -45,7 +47,7 @@ Antora uses this environment variable to determine when it's running in a CI env
 ****
 
 [#pretty]
-== Prettified
+=== Prettified
 
 To emit formatted log messages, assign the `pretty` value to the `format` key in your playbook.
 
@@ -71,7 +73,7 @@ If you run Antora from your terminal, the formatted log messages are displayed t
 <.> To display the line number where an error occurs, set the xref:asciidoc-sourcemap.adoc[sourcemap key].
 
 [#json]
-== JSON
+=== JSON
 
 To emit structured log messages in JSON format, assign the `json` value to the `format` key in your playbook.
 
@@ -127,3 +129,35 @@ You can use the `--log-format` option from the xref:cli:options.adoc#log-format[
  $ antora --log-format=json antora-playbook.yml
 
 The `--log-format` option overrides the value assigned to the `format` key or to the xref:playbook:environment-variables.adoc#log-format[ANTORA_LOG_FORMAT environment variable].
+
+[#level-format-key]
+== level_format key
+
+When the log format is JSON (`json`), each log level correlates to a label and a number.
+The JSON format expresses a level as a label, such as _error_ or _info_, by default.
+However, some tools require the level to be a number.
+The format of the level can be configured with the `level_format` key.
+The `level_format` key is configured under the xref:configure-runtime.adoc[runtime and log] keys in a playbook.
+
+.Assign number value to level_format key
+[source#ex-number,yaml]
+----
+runtime:
+  log:
+    format: json
+    level_format: number
+----
+
+The `level_format` key accepts the built-in values `label` and `number`.
+The default value is `label`.
+If the log format is `pretty`, the value assigned to the `level_format` key is ignored and levels are always expressed as labels.
+
+[#level-format-option]
+== Level format option
+
+You don't have to modify the playbook file directly to set the `level_format` key.
+You can use the `--log-level-format` option from the xref:cli:options.adoc#log-level-format[CLI].
+
+ $ antora --log-format=json --log-level-format=number antora-playbook.yml
+
+The `--log-level-format` option overrides the value assigned to the `level_format` key or to the xref:playbook:environment-variables.adoc#log-level-format[ANTORA_LOG_LEVEL_FORMAT environment variable].

@@ -57,6 +57,12 @@ The following table summarizes the environment variables you can use to control 
 |`warn`
 |See xref:runtime-log-level.adoc[level key] and xref:cli:options.adoc#log-level[--log-level option]
 
+|[[log-level-format]]`ANTORA_LOG_LEVEL_FORMAT`
+|String
+|`label`
+|See xref:runtime-log-format.adoc#level-format-key[level_format key] and xref:cli:options.adoc#log-level-format[--log-level-format option].
+Only applies when the log format is `json`.
+
 |`GIT_CREDENTIALS`
 |String
 |Not set
