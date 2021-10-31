@@ -951,12 +951,26 @@ describe('logger', () => {
       expect(message).to.eql({ level: 'info', msg: 'love is the message' })
     })
 
-    it('should support custom destination created by pino.destination', () => {
+    // NOTE pino.destination may use a different version of sonic-boom
+    it('should support custom sync destination created by pino.destination', () => {
       const destination = pino.destination({ dest: 1, sync: true })
       const logger = configure({ destination }).get(null)
       const stream = getStream(logger)
       expect(stream).to.equal(destination)
       const messages = captureStdoutLogSync(() => logger.info('love is the message'))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include({ level: 'info', msg: 'love is the message' })
+    })
+
+    // NOTE pino.destination may use a different version of sonic-boom
+    it('should support custom async destination created by pino.destination', async () => {
+      const destination = pino.destination({ dest: 1, sync: false, minLength: 4096 })
+      const logger = configure({ destination }).get(null)
+      const stream = getStream(logger)
+      expect(stream).to.equal(destination)
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.be.empty()
+      const messages = await captureStdoutLog(finalizeLogger)
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include({ level: 'info', msg: 'love is the message' })
     })
