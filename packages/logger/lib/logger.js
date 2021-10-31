@@ -2,7 +2,6 @@
 
 const { EventEmitter, once } = require('events')
 const expandPath = require('@antora/expand-path-helper')
-const fs = require('fs')
 const ospath = require('path')
 const { posix: path } = ospath
 const {
@@ -26,10 +25,9 @@ function close () {
   const dest = Object.assign(rootLogger, closedLogger)[streamSym].stream || rootLogger[streamSym]
   if (dest instanceof EventEmitter && typeof dest.end === 'function') {
     if (!(dest.fd in standardStreams)) {
-      finalizers.push(once(dest, 'close').catch(() => undefined))
-      dest.end()
-    } else if (dest._buf) {
-      finalizers.push(new Promise((resolve) => fs.write(dest.fd, dest._buf, () => resolve((dest._buf = '')))))
+      finalizers.push(once(dest, 'close').catch(() => undefined)) && dest.end()
+    } else if ((dest._bufs || dest._buf).length) {
+      finalizers.push(once(dest, 'drain')) && dest.flush()
     }
   }
 }
