@@ -6,7 +6,7 @@ You can also create xrefs to pages that belong to different versions of the same
 [#xref-page-in-different-docs-component]
 == Xref pages from other docs components
 
-When the xref:page-id.adoc#target[current and target] pages belong to different docs components, you must, at a minimum, specify the target page's xref:resource-id-coordinates.adoc#id-component[component, module, and file coordinates].
+When the xref:xref.adoc#target[current and target] pages belong to different docs components, you must, at a minimum, specify the target page's xref:resource-id-coordinates.adoc#id-component[component, module, and file coordinates].
 You'll almost always specify the version coordinate, too.
 
 .current-page.adoc

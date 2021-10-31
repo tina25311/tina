@@ -80,7 +80,7 @@ Some page attributes receive special treatment in Antora.
 These page attributes have reserved names, but accept user-defined values for communicating information about the page to Antora.
 Examples include `page-aliases`, `page-layout`, and `page-partial`.
 
-The `page-aliases` attribute allows you to configure alternate page IDs for the current page.
+The `page-aliases` attribute allows you to configure alternate resource IDs for the current page.
 For example, to claim the old name of a page, you'd use:
 
 [source]
@@ -89,7 +89,7 @@ For example, to claim the old name of a page, you'd use:
 :page-aliases: old-page-name.adoc
 ----
 
-Unlike custom page attributes, the `page-aliases` attribute requires the value to conform to a specific syntax (i.e., a comma-separated list of page IDs).
+Unlike custom page attributes, the `page-aliases` attribute requires the value to conform to a specific syntax (i.e., a comma-separated list of resource IDs).
 See xref:page-aliases.adoc[page aliases] to learn about the `page-aliases` attribute and how it can be used to preserve references to a renamed, moved, or deleted page.
 
 The `page-layout` attribute allows you to specify which UI template to apply to the current page.

@@ -1,5 +1,5 @@
 = Cross References
-:page-aliases: asciidoc:page-to-page-xref.adoc
+:page-aliases: page-id.adoc, asciidoc:page-to-page-xref.adoc
 :colon: :
 // page:page-id.adoc#whats-a-page-id == What's a page ID?
 // page:page-id.adoc#important == Why are page IDs important?

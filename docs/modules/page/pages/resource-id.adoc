@@ -38,7 +38,7 @@ How many resource ID coordinates you need to specify when referencing a resource
 
 *They're not coupled to a published URL* because they're a source-to-source reference.
 Notice the page coordinate ends with [.path]_.adoc_, the file extension of an AsciiDoc source file.
-Regardless of whether you're deploying your site locally, to a staging or production environment, or you change URL strategies, the page ID always remains the same.
+Regardless of whether you're deploying your site locally, to a staging or production environment, or you change URL strategies, the resource ID always remains the same.
 The xref locks on to the target page and produces a URL that points to it wherever it gets published.
 
 *They're minimally coupled to the filesystem* by using an identifier based on the Antora's virtual component version classification system.

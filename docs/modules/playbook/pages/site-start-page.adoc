@@ -1,6 +1,6 @@
 = Site Start Page
 
-When you assign a valid page ID to the `start_page` key in your playbook, site visitors will be redirected from the site's index page at the xref:site-url.adoc[site URL] to the URL of the start page.
+When you assign the valid resource ID of a page to the `start_page` key in your playbook, site visitors will be redirected from the site's index page at the xref:site-url.adoc[site URL] to the URL of the start page.
 
 [#start-page-key]
 == start_page key
@@ -18,14 +18,14 @@ site:
 ----
 
 You can use any page that belongs to a component version as the index page for your site.
-The `start_page` key accepts a xref:page:page-id.adoc[page ID] as a value.
-*The page ID must include the component, module, and page coordinates*.
+The `start_page` key accepts the resource ID of a page as a value.
+*The resource ID must include the xref:page:resource-id-coordinates.adoc[component, module, and file coordinates]*.
 The version coordinate can be specified if you want to use a specific version of a page instead of the latest version.
 Alternatively, `start_page` can be assigned from the xref:cli:options.adoc#start-page[CLI].
 
 == Use a page's latest version
 
-To have the `start_page` key always point to the last version of the specified page, don't enter the version coordinate in the page ID.
+To have the `start_page` key always point to the last version of the specified page, don't enter the version coordinate in the resource ID of the page.
 
 .antora-playbook.yml
 [source,yaml]
@@ -41,7 +41,7 @@ In this case, _\https://demo.antora.org/index.html_ will redirect to _\https://d
 
 == Use a specific version of a page
 
-If you want the site's start page to be a specific version of the designated page, include the xref:page:page-id.adoc#id-version[version coordinate in the page ID].
+If you want the site's start page to be a specific version of the designated page, include the xref:page:resource-id-coordinates.adoc#id-version[version coordinate in the resource ID].
 
 .antora-playbook.yml
 [source,yaml]

@@ -4,9 +4,9 @@
 
 |xref:component-name-key.adoc[name]
 |Component name used with `version` to identify a component version.
-Used as the component coordinate in page and resource IDs and in the component URL segment for a component version's published pages and assets.
+Used as the component coordinate in resource IDs and in the component URL segment for a component version's published resources.
 
 |xref:component-version-key.adoc[version]
 |Version used with `name` to identify a component version.
-Used as the version coordinate in page and resource IDs and as the version segment for a component version's published page and asset URLs, except when a xref:component-with-no-version.adoc[component version is defined as unversioned].
+Used as the version coordinate in resource IDs and as the version segment for a component version's published resource URLs, except when a xref:component-with-no-version.adoc[component version is defined as unversioned].
 |===

@@ -16,6 +16,6 @@ You can use just a little AsciiDoc syntax to mark up your pages, or you can expl
 
 == Linking pages
 
-Antora automatically publishes all of the standard source pages to your site, but if you want to create page-to-page links in the content, you'll need to learn about xref:page-id.adoc[Antora's page IDs] and how to create xref:page-id.adoc#whats-a-cross-reference[cross references].
-You'll also use cross references and page IDs to build and organize your site's xref:navigation:index.adoc[component version page menus].
+Antora automatically publishes all of the standard source pages to your site, but if you want to create page-to-page links in the content, you'll need to learn about xref:resource-id.adoc[Antora's resource IDs] and how to create xref:xref.adoc[cross references].
+You'll also use cross references and resource IDs to build and organize your site's xref:navigation:index.adoc[component version page menus].
 //If you don't want to include a page in a component menu, visitors will still be able to find it using search tools and through links to it on other pages, and in some scenarios, through dropdown menus such as the page version selector.

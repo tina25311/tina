@@ -46,6 +46,6 @@ For instance, source files stored in the [.path]_get-started_ module directory s
 [#where-name-is-used]
 == Where's a module's name used?
 
-When you target content that belongs to a named module from another module or component version, you'll specify the module's name in the  xref:page:page-id.adoc[page IDs] of cross references and the xref:page:resource-id.adoc[resource IDs] for images, examples, and partials.
+When you target content that belongs to a named module from another module or component version, you'll specify the module's name in the xref:page:resource-id.adoc[resource IDs] for pages, attachments, images, examples, and partials.
 
-The module's name is also used as a xref:module-url-segment.adoc#named-module-urls[segment in page URLs].
+The module's name is also used as a xref:module-url-segment.adoc#named-module-urls[segment in the publishable resource URLs].

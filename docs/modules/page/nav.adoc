@@ -9,7 +9,7 @@
 ** xref:page-attributes.adoc[]
 ** xref:intrinsic-attributes.adoc[]
 * xref:start-page.adoc[]
-* xref:page-id.adoc[]
+* xref:xref.adoc[]
 ** xref:module-and-page-xrefs.adoc[]
 ** xref:version-and-component-xrefs.adoc[]
 //Rename, Move, and Delete Pages

@@ -63,7 +63,7 @@ See xref:include-lists.adoc[] to learn how to create a navigation list using mul
 == List titles and items
 
 List titles and items in a navigation file can contain several types of content, such as cross references to pages, links to external sites, and regular and formatted text.
-The most common items in a navigation file are xrefs to pages that belong to the same component version and module, but a target page ID can be for pages in other modules and components, too.
+The most common items in a navigation file are xrefs to pages that belong to the same component version and module, but a target resource ID can be for pages in other modules and components, too.
 
 [source]
 ----
