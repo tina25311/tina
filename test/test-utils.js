@@ -11,7 +11,7 @@ const { removeSync: rimrafSync } = require('fs-extra')
 const { configureLogger } = require('@antora/logger')
 
 chai.use(require('chai-fs'))
-chai.use(require('chai-cheerio'))
+chai.use(require('./chai-cheerio'))
 chai.use(require('chai-spies'))
 chai.Assertion.addMethod('endWith', function (expected) {
   const subject = this._obj
