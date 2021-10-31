@@ -7,11 +7,11 @@ const {
   deferExceptions,
   expect,
   heredoc,
+  loadHtml,
   rmdirSync,
   toJSON,
 } = require('../../../test/test-utils')
 
-const cheerio = require('cheerio')
 const { configureLogger } = require('@antora/logger')
 const fs = require('fs')
 const generateSite = require('@antora/site-generator-default')
@@ -44,7 +44,7 @@ describe('generateSite()', function () {
 
   const readFile = (file, dir) => fs.readFileSync(dir ? ospath.join(dir, file) : file, 'utf8')
 
-  const loadHtmlFile = (relative) => cheerio.load(readFile(relative, absDestDir))
+  const loadHtmlFile = (relative) => loadHtml(readFile(relative, absDestDir))
 
   const getPlaybook = (playbookFile, extraArgs = []) => {
     const playbook = buildPlaybook(extraArgs.concat(['--playbook', playbookFile]), env)

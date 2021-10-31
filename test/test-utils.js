@@ -3,6 +3,7 @@
 process.env.NODE_ENV = 'test'
 
 const chai = require('chai')
+const cheerio = require('cheerio')
 const fs = require('fs')
 const { Transform } = require('stream')
 const map = (transform) => new Transform({ objectMode: true, transform })
@@ -248,6 +249,7 @@ module.exports = {
     const indentSize = Math.min(...lines.filter((l) => l.startsWith(' ')).map((l) => l.match(indentRx)[0].length))
     return (indentSize ? lines.map((l) => (l.startsWith(' ') ? l.substr(indentSize) : l)) : lines).join('')
   },
+  loadHtml: (str) => cheerio.load(str),
   loadSslConfig: () => ({
     cert: fs.readFileSync(ospath.join(__dirname, 'ssl.cert')),
     key: fs.readFileSync(ospath.join(__dirname, 'ssl.key')),
