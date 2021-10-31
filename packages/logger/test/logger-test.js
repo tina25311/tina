@@ -118,6 +118,8 @@ describe('logger', () => {
       expect(lines).to.have.lengthOf(1)
       const { time, ...message } = JSON.parse(lines[0])
       expect(typeof time).to.equal('number')
+      expect(message).to.not.have.property('err')
+      expect(message).to.not.have.property('message')
       expect(message).to.include({ level: 'fatal', type: 'Error', msg: 'uh oh!' })
       expect(message.stack).to.exist()
       expect(message.stack).to.startWith('Error: uh oh!\n    at ')
@@ -474,6 +476,16 @@ describe('logger', () => {
       expect(lines).to.have.lengthOf(1)
       const expectedLine = /^\[.+\] FATAL: You've sunk my battleship!$/
       expect(lines[0]).to.match(expectedLine)
+    })
+
+    it('should print error with stack logged at fatal level', () => {
+      const err = new TypeError('uh oh!')
+      const logger = configure({ format: 'pretty' }).get()
+      const lines = captureStderrSync(() => logger.fatal(err))
+      expect(lines.length).to.be.greaterThan(2)
+      expect(lines[0]).to.match(/^\[.+\] FATAL: uh oh!$/)
+      expect(lines[1]).to.match(/^ {4}TypeError: uh oh!$/)
+      expect(lines[2]).to.match(/^ {8}at /)
     })
 
     it('should ignore levelFormat setting when format is pretty', () => {
