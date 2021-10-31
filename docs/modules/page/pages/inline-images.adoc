@@ -14,7 +14,7 @@ The inline image macro is almost identical to the block image macro, except its 
 Here's an inline image:resource-id[optional attribute,optional attribute] image.
 ----
 
-In the flow of an element, enter the image macro name and a single colon (`+image:+`), followed by the resource ID of the xref:page:resource-id.adoc#target-resource[target resource file].
+In the flow of an element, enter the image macro name and a single colon (`+image:+`), followed by the resource ID of the xref:resource-id-coordinates.adoc#target[target image].
 To complete the macro, type a set of square brackets (`+[]+`) directly after the resource ID.
 You can specify a comma-separated list of optional attributes inside the square brackets or leave them empty.
 
@@ -25,7 +25,7 @@ It's applied automatically at runtime when a resource ID is entered into an Asci
 == Embed an inline image
 
 The example below assumes that the image and page belong to the same component version and module.
-Only the xref:resource-id.adoc#id-resource[resource coordinate] of the xref:resource-id.adoc#target-resource[target resource file] needs to be entered in the resource ID when the xref:resource-id.adoc#current-page[current page] and target resource belong to the same component version and module.
+Only the xref:resource-id-coordinates.adoc#id-resource[file coordinate] of the target image needs to be entered in the resource ID when the xref:resource-id-coordinates.adoc#current[current page and target image] belong to the same component version and module.
 
 . At the location in a line where you want to place the image, enter the macro's name followed by one colon (`+image:+`).
 +

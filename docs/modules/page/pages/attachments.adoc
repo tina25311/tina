@@ -8,7 +8,7 @@ Attachment files are stored in an xref:ROOT:attachments-directory.adoc[_attachme
 
 == Link to an attachment
 
-An attachment can be cross referenced from pages, other resources, and navigation files using an AsciiDoc xref macro and the xref:page:resource-id.adoc[resource ID] of the attachment.
+An attachment can be cross referenced from pages, other resources, and navigation files using an xref:page-id.adoc[AsciiDoc xref macro] and the xref:resource-id.adoc[resource ID] of the attachment.
 The `{coordinate}` family coordinate must be specified in the attachment's resource ID.
 
 <<ex-base>> shows the structure of an AsciiDoc xref macro with an {family}'s fully qualified resource ID.
@@ -19,12 +19,12 @@ The `{coordinate}` family coordinate must be specified in the attachment's resou
 xref:version@component:module:{coordinate}filename.ext[link text]
 ----
 
-How many coordinates of the attachment's resource ID you need to specify in the target of the xref macro depends on the component version and module of the xref:resource-id.adoc#current-page[current page] in relation to the attachment.
+How many coordinates of the attachment's resource ID you need to specify as the value of the xref macro depends on the component version and module of the current page in relation to the attachment.
 
 === Xref an attachment from a page
 
 Let's break down the xref macro and resource ID coordinates you need to create a link to an {family} from a page.
-The following steps assume that the target {family} and xref:resource-id.adoc#current-page[current page] belong to the same component version and module.
+The following steps assume that the target {family} and xref:page-id.adoc#current[current page] belong to the same component version and module.
 Therefore, the resource ID of the target {family} only requires the family coordinate, `{coordinate}`, and family-relative path of the {family} file.
 
 . In the flow of your content, enter the name of the macro followed by one colon, `xref:`.

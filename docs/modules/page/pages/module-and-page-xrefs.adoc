@@ -5,7 +5,7 @@ The majority of your cross references will probably be between pages that belong
 [#xref-page-in-module]
 == Xref pages that belong to the same module
 
-Only the xref:page-id.adoc#id-page[page coordinate] of the xref:page-id.adoc#target-page[target page] needs to be entered in the page ID when the xref:page-id.adoc#current-page[current page] and target page belong to the same component version and module.
+Only the xref:resource-id-coordinates.adoc#id-resource[file coordinate] of the target page needs to be entered in the resource ID when the xref:page-id.adoc#target[current page and target page] belong to the same component version and module.
 
 .current-page.adoc
 [#ex-in-module-base]
@@ -66,7 +66,7 @@ The xref in <<ex-topic>> will become a link to the published site page at [.path
 [#xref-page-across-modules]
 == Xref pages from other modules
 
-The target page's xref:page-id.adoc#id-module[module coordinate] and page coordinate are required when the current and target pages belong to different modules.
+The target page's xref:resource-id-coordinates.adoc#id-module[module coordinate] and file coordinate are required when the current and target pages belong to different modules.
 
 .current-page.adoc
 [#ex-across-modules-base]
@@ -117,8 +117,8 @@ If you click on the link, you'll see that the clickable text and the title of th
 A page's title is assigned to the built-in AsciiDoc `reftext` attribute by default.
 You can also xref:reftext-and-navtitle.adoc[assign a custom value to the reftext attribute].
 
-CAUTION: When the target includes a xref:page-id.adoc#id-fragment[fragment] (aka a deep link) like `\xref:page.adoc#fragment[...]`, the link text (`...`) isn't automatically populated.
-You'll need to specify the xref's link text in this case.
+CAUTION: When the resource ID of the target page is appended with a xref:page-id.adoc#id-fragment[fragment] (aka a deep link) and no link text is specified between the square brackets, like `\xref:page.adoc#fragment[]`, the link text isn't automatically populated.
+You'll need to specify the link text in the xref macro when using a fragment.
 
 TIP: Xrefs in a navigation file behave the same way with one additional feature.
 Navigation files use the xref:reftext-and-navtitle.adoc#navtitle[navtitle value] to populate missing link text.
