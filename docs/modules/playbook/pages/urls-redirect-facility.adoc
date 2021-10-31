@@ -17,14 +17,18 @@ The playbook key `redirect_facility` is optional.
 It can be configured in the playbook or via the xref:cli:options.adoc#redirect-facility[CLI] and accepts one of the following built-in values:
 
 disabled::
-Redirects aren't generated.
+No redirect file are generated.
 gitlab::
-A redirect file for GitLab Pages is generated and placed at the root of the generated site at [.path]_+++_redirects+++_.
+A redirect file for GitLab Pages named [.path]_++_redirects++_ is generated and placed at the root of the published site.
+httpd::
+A redirect file for Apache httpd named [.path]_.htaccess_ is generated and placed at the root of the published site.
 netlify::
-A redirect file for Netlify is generated and placed at the root of the generated site at [.path]_+++_redirects+++_.
+A redirect file for Netlify named [.path]_++_redirects++_ is generated and placed at the root of the published site.
 nginx::
-A redirect file for nginx is generated and placed at the root of the generated site at [.path]_.etc/nginx/rewrite.conf_.
-nginx will not know to look for the file in this location, so you will either need to move it or configure nginx to use it.
+A redirect file for nginx named [.path]_rewrite.conf_ is generated and placed at the location [.path]_.etc/nginx/rewrite.conf_ in the published site.
++
+CAUTION: By default, nginx will not know to look for the file in this location.
+You either need to move it to where nginx can find it or configure nginx to for it at this location.
 [[static-value]]static::
 (default) A static HTML file with the `http-equiv` meta element set to `refresh` is generated at the source page's URL.
 The file provides a redirect notice and routes the source page URL to the target page URL.
