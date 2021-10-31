@@ -1,115 +1,96 @@
-= Page IDs and Cross References
+= Cross References
 :page-aliases: asciidoc:page-to-page-xref.adoc
-:family: page
 :colon: :
-
-[#whats-a-page-id]
-== What's a page ID?
-
-In order for a page to be referenced, that page must have an identifier--a page ID.
-An [.term]*Antora page ID* is a unique and reliable set of identifying coordinates, organized in a standard sequence, that are constructed from the properties assigned to each page's source file.
-A page ID is most often used as a target in an AsciiDoc xref macro, but it can also be assigned to certain attributes and keys.
-
-[#id-coordinates]
-== What are the page ID coordinates?
-
-Antora constructs a page ID for a page source file from the key-value pairs specified in a xref:ROOT:component-version-descriptor.adoc[component version descriptor] and the xref:ROOT:standard-directories.adoc[standard directory set].
-Using this information, each page can be cross referenced using a sequence of page ID coordinates.
-
-The coordinates are organized into the standard sequence shown below.
-
-image::page-id-diagram.svg[Diagram of an Antora page ID,400]
-
-include::partial$antora-id.adoc[tags=*;!resource]
-
-A page ID is used in an <<xref-macro,AsciiDoc xref macro>> to create a link from one page to another page.
-They're also used to create the links in a xref:navigation:xrefs-and-link-text.adoc[component version's navigation files].
-
-NOTE: Keep in mind that the target of an xref is a page ID, not a URL.
-Therefore, the path portion must always be the complete path relative to the _pages_ family directory.
+// page:page-id.adoc#whats-a-page-id == What's a page ID?
+// page:page-id.adoc#important == Why are page IDs important?
 
 [#whats-a-cross-reference]
 == What's a cross reference?
 
-A [.term]*cross reference* indicates that an element in a page, such as a term or concept, is related to information on another page.
-Cross reference is often abbreviated to *xref*.
-
-A cross reference is created using the AsciiDoc xref macro and the <<whats-a-page-id,page ID>> of the target page.
-[[target-page]]The [.term]*target page* is the page the xref will link the site visitor to.
-[[current-page]]The [.term]*current page* is the page containing the xref that links to the target page.
-When a visitor clicks on an xref in the current page, that is, the page they're currently viewing, they'll be redirected to the target page.
+You use a [.term]*cross reference* to indicate that a piece of information in one resource, such as a term, concept, image, etc., is related to information in another resource.
+In Antora, cross references are almost always created using the AsciiDoc xref macro.
+A cross reference indicates this relationship by referencing the related resource, that is, linking to the published resource.
+The term cross reference is often abbreviated to *xref*.
 
 [#xref-macro]
 == AsciiDoc xref macro
 
-An AsciiDoc xref macro needs to be supplied with a valid <<whats-a-page-id,page ID>> in order to create a link to the target page when the site is generated.
-How many page ID coordinates you need to specify depends on the component version and module of the <<current-page,current page>> in relation to the <<target-page,target page>>.
+An AsciiDoc xref macro is used to create a source-to-source cross reference from one publishable resource to another publishable resource.
+The xref macro is also used to create the cross references to xref:navigation:xrefs-and-link-text.adoc[pages] and xref:navigation:reference-resources.adoc[attachments] in a component version's navigation files.
+
+An xref macro and its value--a valid xref:resource-id.adoc[resource ID] specifying a publishable page, attachment, or, occasionally, an image--are converted to a link to the target resource's published URL.
+[[target]]The [.term]*target resource* is the resource source file that's referenced, by specifying its resource ID, as the value in an xref macro.
+[[current]]The [.term]*current page* is the page containing the xref macro that references the target resource.
+//The xref macro accepts the resource ID of a publishable resource, that is, a page, attachment, or image.
+//When Antora runs, an xref macro with a valid resource ID is converted into a link that a site visitor can follow in their browser to access the published resource.
+How many resource ID coordinates you need to specify depends on the component version and module of the <<current,current page>> in relation to the <<target,target resource>> and the family to which the target resource belongs.
 
 First, let's review the AsciiDoc xref macro syntax.
 
-image::xref-macro-diagram.svg[Diagram of an AsciiDoc xref macro with an Antora page ID,600]
+image::xref-macro-diagram.svg[Diagram of an AsciiDoc xref macro with an Antora resource ID,600]
 
-//role=grow-x
 xref{colon}::
 The prefix of the AsciiDoc xref macro.
 
-target page ID:: The <<id-coordinates,page ID coordinates>> of the target page relative to the current page.
-If the target page is in a subdirectory, the page coordinate of the page ID must include that subdirectory, even if the current page is located in the same directory.
-When the page ID contains the module coordinate, and the module name ends with the name of a built-in macro (e.g., `monolink`), you may have to escape that portion of the name by prefixing it with a backslash (e.g., `mono\link`).
+target resource ID:: The xref:resource-id-coordinates.adoc[resource ID coordinates] of the target resource relative to the current page.
+If the target resource is in a subdirectory, the file coordinate of it resource ID must include that subdirectory, even if the current page is located in the same directory.
+Alternatively, you can add `./` to the start of the file coordinate as a shorthand for the family-relative path of the target resource.
+When the resource ID contains the module coordinate, and the module name ends with the name of a built-in macro (e.g., `monolink`), you may have to escape that portion of the name by prefixing it with a backslash (e.g., `mono\link`).
+If the target resource is a page, the `page$` family coordinate doesn't need to be entered in the resource ID.
+If the target resource is an attachment or an image, the `attachment$` or `image$` coordinate, respectively, is required.
 
 [#id-fragment]
 #fragment::
-The element ID that links to a section, block, or inline location within the target page.
-A fragment is always optional.
+A fragment is optional and only applies when the target resource is a page.
+A fragment is an element ID that links to a section, block, or inline location within the target page.
 The fragment starts with the hash symbol (`#`).
-A page's `reftext` (and `navtitle`) isn't used as <<link-text,the default link text>> when a fragment is specified.
+A target page's `reftext` and `navtitle` aren't used as <<link-text,the default link text>> when a fragment is specified.
 
 [#link-text]
 [link text]::
-When a visitor clicks on the link text that's displayed on the current page in the published site, they're directed to the target page.
+When a visitor clicks on the link text that's displayed on the current page in the published site, they're directed to the target resource.
 The link text is optional.
-If no link text is specified in the xref macro's square brackets (`[]`), the xref:reftext-and-navtitle.adoc[reftext or navtitle of the target page is displayed].
+If no link text is specified in the xref macro's square brackets (`[]`), the xref:reftext-and-navtitle.adoc[reftext or navtitle of the target page is displayed] unless a <<id-fragment,fragment>> is appended to the end of the resource ID.
 
-Here's how an xref macro with a fully qualified page ID looks in practice:
+Here's how an xref macro with a xref:resource-id-coordinates.adoc#full-id[fully qualified resource ID] for a page looks in practice:
 
-[listing,subs=attributes+]
+.current-page.adoc
+[source]
 ----
-See xref:{page-component-version}@antora:ROOT:how-antora-works.adoc[].
+See xref:2.5@hyper:admin:page$modes.adoc[].
 ----
 
-Specifying the version, component name, and even module every time seems verbose, right?
-Don't worry, the more related the current and target pages are, the less coordinates you need to enter in the page ID.
-For instance, if the target and current pages belong to the same component version and module, you only need to specify the page coordinate of the target page.
+Specifying the version, component, module, and family coordinates every time seems verbose, right?
+Don't worry, the more related the <<current,current page>> and <<target,target resource>> are, the less coordinates you need to enter in the resource ID.
+For instance, if the target resource and current page belong to the same component version and module, you can drop the version, component, and module coordinates from the resource ID.
 
-xref:module-and-page-xrefs.adoc[] has several examples showing how to create xrefs to pages that belong to the same module or component version.
+.current-page.adoc
+[source]
+----
+See xref:page$modes.adoc[].
+----
+
+Also, because the target resource is a page, the `page$` family coordinate can be dropped.
+
+.current-page.adoc
+[source]
+----
+See xref:modes.adoc[].
+----
+
+Antora automatically applies the `page$` family to a resource ID in an xref macro if the family coordinate isn't specified.
+Therefore, even when the target resource and current page belong to different component versions or modules, as long as the target resource is a page, the family coordinate doesn't need to be specified in the resource ID.
+
+.current-page.adoc
+[source]
+----
+See xref:2.5@hyper:admin:modes.adoc[].
+----
+
+== More examples
+
+xref:module-and-page-xrefs.adoc[] shows how to create xrefs to pages that belong to the same module or component version as the current page.
+
 For xref examples where the target and current pages belong to different components or different versions of the same component, see xref:version-and-component-xrefs.adoc[].
 
-[#important]
-== Why are page IDs important?
-
-*They're not coupled to a published URL* because they're a source-to-source reference.
-Notice the page coordinate ends with [.path]_.adoc_, the file extension of an AsciiDoc source file.
-Regardless of whether you're deploying your site locally, to a staging or production environment, or you change URL strategies, the page ID always remains the same.
-The xref locks on to the target page and produces a URL that points to it wherever it gets published.
-
-*They're minimally coupled to the filesystem* by using an identifier based on the Antora's virtual component version classification system.
-
-*They've eliminated the relative path (../../) problem* by specifying the page as a pages-relative path.
-The path always starts from a module's [.path]_pages_ directory, even when the referencing page is located inside a topic folder.
-//If you move or rename a page within a module, you don't have to change any references to other pages.
-
-*This human-friendly referencing system saves you from having to do computations in your head while writing*.
-You just specify the coordinates of the page you want to reference.
-There's no need to worry about the source file's physical location on disk or its published URL.
-All you need to know are the names of your components, versions, modules, and pages so you can fill in this information.
-
-////
-This needs to go in a section about future development.
-
-Of course, inbound references to the page you move do have to be updated.
-To counter this, you could pin the page ID of the page you want to move, thus adding more stability.
-That way, references to the page don't have to be updated even when it moves.
-Though, a little help from the text editor to "`refactor`" references could make this abstraction unnecessary.
-
-*We've made it possible to validate and update references* by using a well-defined pattern that's easy for a script to locate, parse, and rewrite.
-////
+xref:attachments.adoc[] shows how to create xrefs when the target resource is an attachment.
