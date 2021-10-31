@@ -7,11 +7,11 @@ const {
   deferExceptions,
   expect,
   heredoc,
+  loadHtml,
   rmdirSync,
   toJSON,
 } = require('../../../test/test-utils')
 
-const cheerio = require('cheerio')
 const { configureLogger } = require('@antora/logger')
 const fs = require('fs')
 const generateSite = require('@antora/site-generator-default')
@@ -44,7 +44,7 @@ describe('generateSite()', function () {
 
   const readFile = (file, dir) => fs.readFileSync(dir ? ospath.join(dir, file) : file, 'utf8')
 
-  const loadHtmlFile = (relative) => cheerio.load(readFile(relative, absDestDir))
+  const loadHtmlFile = (relative) => loadHtml(readFile(relative, absDestDir))
 
   const getPlaybook = (playbookFile, extraArgs = []) => {
     const playbook = buildPlaybook(extraArgs.concat(['--playbook', playbookFile]), env)
@@ -166,7 +166,7 @@ describe('generateSite()', function () {
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('nav.nav-menu .is-current-page')).to.have.lengthOf(1)
     expect($('nav.nav-menu .is-current-page > a.nav-link')).to.have.attr('href', 'the-page.html')
-    expect($('.page-versions')).to.not.exist()
+    expect($('.page-versions')).to.not.be.found()
   }).timeout(timeoutOverride)
 
   it('should resolve dot-relative paths in playbook relative to playbook dir', async () => {
@@ -425,7 +425,7 @@ describe('generateSite()', function () {
     await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/1.0/the-page.html')
-    expect($('head meta[name=description]')).to.not.exist()
+    expect($('head meta[name=description]')).to.not.be.found()
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('head meta[name=description]')).to.have.attr('content', 'Component description')
@@ -521,7 +521,7 @@ describe('generateSite()', function () {
     await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
-    expect($('.toolbar .edit-this-page')).to.not.exist()
+    expect($('.toolbar .edit-this-page')).to.not.be.found()
   }).timeout(timeoutOverride)
 
   it('should add edit page link to toolbar for private repository if env.FORCE_SHOW_EDIT_PAGE_LINK=true', async () => {
@@ -602,7 +602,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     // assert that all versions of page are shown
-    expect($('.page-versions')).to.exist()
+    expect($('.page-versions')).to.be.found()
     expect($('.page-versions .version-menu-toggle')).to.have.text('2.0')
     expect($('.page-versions a.version')).to.have.lengthOf(2)
     expect($('.page-versions a.version.is-current'))
