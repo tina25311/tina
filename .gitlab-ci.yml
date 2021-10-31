@@ -78,6 +78,7 @@ test:node-16-linux:
   artifacts:
     paths:
     - coverage/
+# https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
 test:windows:
   tags: [windows]
   stage: verify
