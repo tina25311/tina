@@ -52,7 +52,7 @@ Generally, the ROOT module doesn't use topic folders for this reason.
 [#where-root-name-is-used]
 == Where's the ROOT module name used?
 
-When you target content that belongs to a ROOT module from another module or component version, you'll specify the module name `ROOT` in the xref:page:page-id.adoc[page IDs] of cross references and the xref:page:resource-id.adoc[resource IDs] for images, examples, and partials.
+When you target content that belongs to a ROOT module from another module or component version, you'll specify the module name `ROOT` in the xref:page:resource-id.adoc[resource IDs] for pages, attachments, images, examples, and partials.
 `ROOT` is always written in uppercase letters when it's specified.
 
 Since Antora considers the pages in a ROOT module to be top-level component version pages, the module name `ROOT` isn't displayed in the xref:module-url-segment.adoc#root-module-urls[module segment of its page URLs].

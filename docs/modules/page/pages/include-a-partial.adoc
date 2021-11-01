@@ -30,7 +30,7 @@ If you want the partial contents to be a standalone block, make sure there's a b
 
 == Include a partial from another module
 
-When the target partial file and the current page belong to different modules of the same component version, enter the partial's module, family, and resource coordinates in the resource ID.
+When the target partial and the current page belong to different modules of the same component version, enter the partial's module, family, and file coordinates in the resource ID.
 
 .current-page.adoc
 ----
@@ -39,7 +39,7 @@ When the target partial file and the current page belong to different modules of
 
 == Include a partial from another component
 
-When the target partial file and the current page belong to different docs components, enter the partial's version, component, module, family, and resource coordinates in the resource ID.
+When the target partial and the current page belong to different docs components, enter the partial's version, component, module, family, and file coordinates in the resource ID.
 
 .current-page.adoc
 ----

@@ -1,7 +1,7 @@
 = Customize the Display Version
 
 The `display_version` key is strictly used for presentation purposes in the reference UI when a version identifier contains uppercase letters, symbols, or blank spaces.
-It doesn't affect page and resource IDs, the version segment in the page URL, or xref:how-component-versions-are-sorted.adoc[how component versions are sorted].
+It doesn't affect resource IDs, the version segment in the publishable resource URLs, or xref:how-component-versions-are-sorted.adoc[how component versions are sorted].
 
 [#display-version-key]
 == display_version key
@@ -22,8 +22,8 @@ display_version: '5.6 EOL' # <1>
 ----
 <1> If the value starts with a number, enclose it in a set of single quote marks (`'`).
 
-The `display_version` key should be used when a version contains spaces or characters that break Antora's page and resource IDs, prevent portability between web servers, and aren't recommended in URLs.
-It's useful when the component version is a xref:component-prerelease.adoc[prerelease], xref:component-with-no-version.adoc[unversioned], or archived because the value of `display_version` doesn't affect page URLs, page IDs, and resource IDs.
+The `display_version` key should be used when a version contains spaces or characters that would break Antora's resource IDs, prevent portability between web servers, and aren't recommended in URLs.
+It's useful when the component version is a xref:component-prerelease.adoc[prerelease], xref:component-with-no-version.adoc[unversioned], or archived because the value of `display_version` doesn't affect publishable resource URLs and resource IDs.
 
 TIP: The xref:component-prerelease.adoc[prerelease key] provides additional UI routing, sorting, and presentation capabilities.
 While the value of the `display_version` key is shown in the UI when both keys are set, the computed prerelease version generated from a xref:component-prerelease.adoc#identifier[prerelease identifier] is used for sorting and routing.

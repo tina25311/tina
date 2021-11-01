@@ -1,6 +1,6 @@
 = How Antora Builds URLs
 
-Antora builds the URLs for pages and assets using information from resource IDs, the site URL, and URL settings in the site's playbook.
+Antora builds the URLs for publishable resources--pages, attachments, and images--using information from resource IDs, the site URL, and URL settings in the site's playbook.
 
 [#site]
 == The site URL

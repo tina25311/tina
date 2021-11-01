@@ -108,6 +108,6 @@ The [.term]*latest component version*, also called the [.term]*latest version*, 
 If all versions are prereleases, then the first prerelease version in the list is selected.
 An xref:component-with-no-version.adoc[unversioned component version] is always considered the latest version or latest prerelease version (if `prerelease` is set).
 
-Antora uses the latest version of a component when qualifying an incoming page or resource ID reference from another component if the version coordinate wasn't specified or can't otherwise be determined.
+Antora uses the latest version of a component when qualifying an incoming resource ID reference from another component if the version coordinate wasn't specified or can't otherwise be determined.
 
 TIP: The latest version is available as the property `latest` in the xref:antora-ui-default::templates.adoc#site[UI model].

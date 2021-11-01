@@ -25,7 +25,7 @@ the first breadcrumb position on a component version's pages
 Note that component name is case sensitive.
 This means that you have two components with the same name that only different in case, Antora will treat them as different components.
 
-Content writers use the name as a coordinate in page and resource IDs when referencing a resource in another component version.
+Content writers use the name as the xref:page:resource-id-coordinates.adoc#id-component[component coordinate in resource IDs] when referencing a resource in another documentation component.
 
 [#key]
 == name key
@@ -57,7 +57,7 @@ The value *cannot* be empty.
 See xref:component-title.adoc[] to learn how to display a name that contains spaces, uppercase letters, and other characters in your site's UI.
 
 ////
-Antora uses the `name` key when interpreting page and resource IDs and generating the URLs for the component version's pages.
+Antora uses the `name` key when interpreting resource IDs and generating the URLs for the component version's pages.
 Unless the xref:component-title.adoc[title key is set], it uses `name` for sorting components in the component version selector and where ever the component's name is displayed in the reference UI, which includes the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector], and
 the first breadcrumb position on a component version's pages.
 ////

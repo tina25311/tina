@@ -57,17 +57,17 @@ An unordered AsciiDoc list's marker can range from one asterisk (`+*+`) to five 
 Let's create a navigation file that contains two navigation lists for the pages in a module.
 The most common items in a navigation list are xrefs to pages xref:organize-files.adoc[that belong to the same module as the navigation file].
 The exercise below assumes that the navigation file will belong to the same component version and module as the pages it is referencing.
-That means the page IDs won't need to specify version, component, or module coordinates.
+That means the resource IDs won't need to specify version, component, or module coordinates.
 
 . Open a new file in the text editor or IDE of your choice.
-. On the first line, type a dot (`.`), directly followed by an xref macro prefix and the page ID of the target page.
+. On the first line, type a dot (`.`), directly followed by an xref macro prefix and the resource ID of the target page.
 +
 [source]
 ----
 .xref:get-started.adoc
 ----
 
-. At the end of the page ID, complete the macro with a set of square brackets (`+[]+`).
+. At the end of the resource ID, complete the macro with a set of square brackets (`+[]+`).
 Press kbd:[Enter] to go to the next line.
 +
 --

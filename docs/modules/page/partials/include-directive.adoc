@@ -8,7 +8,7 @@
 
 Let's break down the AsciiDoc syntax and resource ID coordinates you need to include a {family} resource into a page.
 
-The steps below assume that the target {family} and current page belong to the same component version and module, so only the xref:resource-id.adoc#id-family[family ({coordinate})] and xref:resource-id.adoc#id-resource[resource] coordinates of the xref:resource-id.adoc#target-resource[target {family} resource] are entered in the resource ID.
+The steps below assume that the target {family} and current page belong to the same component version and module, so only the xref:resource-id-coordinates.adoc#id-family[family ({coordinate})] and xref:resource-id-coordinates.adoc#id-resource[file] coordinates of the xref:resource-id-coordinates.adoc#target[target {family}] are entered in the resource ID.
 
 . On a new line, enter the name of the directive followed by two colons, `include::`.
 +
@@ -26,7 +26,7 @@ include::**{coordinate}filename{ext}**
 ----
 
 By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
-If you forget to use the `{coordinate}` coordinate, Antora will report an error because it won't be able to find your {family}.
+If you forget to use the `{coordinate}` coordinate, Antora will report an error because it won't be able to find the {family}.
 --
 
 . Complete the directive with a set of square brackets (`+[]+`).
@@ -44,6 +44,6 @@ The attributes are entered as key-value pairs separated by commas.
 \include::{coordinate}filename{ext}[**attribute,attribute**]
 ----
 
-Antora supports filtering the lines of an example file by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
+Antora supports filtering the lines of an example or partial by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
 Filtering by line numbers takes precedence.
 See the {url-asciidoc}/directives/include/[AsciiDoc include directive documentation] for full details about the `lines`, `tag`, and `tags` syntax.

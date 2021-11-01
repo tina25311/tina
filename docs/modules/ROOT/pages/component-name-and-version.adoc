@@ -64,7 +64,7 @@ If the case differs (e.g., Silver-Leaf vs silver-leaf), Antora will treat these 
 
 You've now associated a set of source files with a component version!
 When Antora runs, all of the xref:standard-directories.adoc[source files stored in the standard set of directories] will be assigned the component name `silver-leaf` and the version `7.1`.
-These values will be used as xref:page:page-id.adoc[page] and xref:page:resource-id.adoc[resource ID] coordinates and in the URLs of the pages generated from the component version's source files.
+These values will be used as xref:page:resource-id-coordinates.adoc#id-version[resource ID coordinates] and in the URLs of the publishable resources generated from the component version's source files.
 
 [#optional-keys]
 == Optional antora.yml keys

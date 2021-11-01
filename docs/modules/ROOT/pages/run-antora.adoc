@@ -69,7 +69,7 @@ ui:
 ----
 <1> The 404 page and sitemap files are only generated if the site `url` key is set.
 The sitemap files are only generated if the value of the site `url` key is an absolute URL.
-<2> The site `start_page` key accepts the same page ID syntax that's used in xrefs.
+<2> The site `start_page` key accepts the same resource ID syntax that's used in xrefs.
 
 . Save the playbook as [.path]_antora-playbook.yml_ in the [.path]_demo-site_ directory you made in Step 1.
 

@@ -22,7 +22,7 @@ You can include a page from anywhere in the site, including pages from other doc
 ----
 
 Let's break down the AsciiDoc syntax and resource ID coordinates you need to include a {family} resource into a page.
-The following steps assume that the target {family} and xref:resource-id.adoc#current-page[current page] belong to the same component version and module.
+The following steps assume that the target {family} and xref:resource-id-coordinates.adoc#current[current page] belong to the same component version and module.
 Therefore, the resource ID of the target {family} only requires the family-relative path of the {family} file.
 
 . On a new line, enter the name of the directive followed by two colons, `include::`.

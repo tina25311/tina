@@ -16,7 +16,7 @@ include::partial$include-directive.adoc[]
 
 == Include an example from the same module
 
-When the target example file and the current page belong to the same module, you only need to enter the family and resource coordinates in the resource ID.
+When the target example file and the current page belong to the same module, you only need to enter the family and file coordinates in the resource ID.
 
 .current-page.adoc
 ----
@@ -25,7 +25,7 @@ When the target example file and the current page belong to the same module, you
 
 == Include an example from another module
 
-When the target example file and current page belong to different modules of the same component version, enter the example's module, family, and resource coordinates in the resource ID.
+When the target example file and current page belong to different modules of the same component version, enter the example's module, family, and file coordinates in the resource ID.
 
 .current-page.adoc
 ----
@@ -34,7 +34,7 @@ When the target example file and current page belong to different modules of the
 
 == Include an example from another component
 
-When the target example file and the current page belong to different docs components, enter the example's version, component, module, family, and resource coordinates in the resource ID.
+When the target example file and the current page belong to different docs components, enter the example's version, component, module, family, and file coordinates in the resource ID.
 
 .current-page.adoc
 ----

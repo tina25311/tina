@@ -10,7 +10,7 @@
 
 A common pattern is for each module directory to contain its own navigation file.
 xref:ROOT:module-directories.adoc#module[Modules already represent logical groups of concepts or objectives], so it's likely that you'd arrange the xrefs to that module's pages into a continuous, hierarchical flow of navigation menu entries.
-This also reduces the number of coordinates the page IDs in the xrefs require when you add a page to the navigation file.
+This also reduces the number of coordinates the resource IDs in the xrefs require when you add a page to the navigation file.
 
 Navigation files should be stored at the base of a module directory, i.e., at the same level as a [.path]_pages_ family directory.
 *Don't save navigation files inside a [.path]_pages_ folder*, otherwise the navigation files will be converted to pages and published as pages.

@@ -1,8 +1,7 @@
 .xref:resource-id.adoc[]
 * xref:resource-id-coordinates.adoc[]
 
-.Create & Manage Pages
-* xref:index.adoc[]
+.xref:index.adoc[]
 * xref:standard-page.adoc[]
 * xref:title-and-metadata.adoc[]
 * xref:attributes.adoc[]
@@ -10,25 +9,27 @@
 ** xref:page-attributes.adoc[]
 ** xref:intrinsic-attributes.adoc[]
 * xref:start-page.adoc[]
-* xref:page-id.adoc[]
+* xref:xref.adoc[]
 ** xref:module-and-page-xrefs.adoc[]
 ** xref:version-and-component-xrefs.adoc[]
 //Rename, Move, and Delete Pages
 * xref:reftext-and-navtitle.adoc[]
 * xref:page-aliases.adoc[]
 * xref:page-layout.adoc[]
-
-.Create & Manage Resources
-* xref:partials-and-content-snippets.adoc[]
-** xref:create-a-partial.adoc[]
-** xref:include-a-partial.adoc[]
-* xref:examples-and-source-snippets.adoc[]
-** xref:include-an-example.adoc[]
-* xref:images.adoc[]
-** xref:block-images.adoc[]
-** xref:inline-images.adoc[]
-** xref:image-resource-id-examples.adoc[]
-** xref:xref-from-image.adoc[]
-* xref:attachments.adoc[]
 * xref:include-a-page.adoc[]
 ** xref:page-partial.adoc[]
+
+.xref:images.adoc[]
+* xref:block-images.adoc[]
+* xref:inline-images.adoc[]
+* xref:image-resource-id-examples.adoc[]
+* xref:xref-from-image.adoc[]
+
+.xref:partials.adoc[]
+* xref:include-a-partial.adoc[]
+
+.xref:examples.adoc[]
+* xref:include-an-example.adoc[]
+
+[]
+* xref:attachments.adoc[]
