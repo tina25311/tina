@@ -1158,16 +1158,16 @@ describe('generateSite()', function () {
         .and.be.empty()
     })
 
-    it('should allow extension listener to access context variables via getVars', async () => {
+    it('should allow extension listener to access context variables via getVariables', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         module.exports.register = function () {
           this.on('contentClassified', function () {
-            const { playbook, contentCatalog } = this.getVars()
+            const { playbook, contentCatalog } = this.getVariables()
             console.log('building ' + contentCatalog.getPages().length + ' pages for site ' + playbook.site.url)
           })
           this.on('beforeProcess', () => {
-            this.getVars().siteCatalog.addFile({
+            this.getVariables().siteCatalog.addFile({
               contents: Buffer.alloc(0),
               out: { path: '.nojekyll' }
             })
@@ -1208,7 +1208,7 @@ describe('generateSite()', function () {
       const extensionCode = heredoc`
         module.exports.register = function ({ playbook }) {
           const site = Object.assign({}, playbook.site, { url: 'https://docs.example.com' })
-          this.updateVars({ playbook: Object.assign({}, playbook, { site }) })
+          this.updateVariables({ playbook: Object.assign({}, playbook, { site }) })
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
@@ -1235,7 +1235,7 @@ describe('generateSite()', function () {
                   return target[property]
                 }
               })
-              this.updateVars({ contentCatalog: contentCatalogProxy })
+              this.updateVariables({ contentCatalog: contentCatalogProxy })
             })
             .on('beforePublish', ({ contentCatalog }) => {
               console.log('publishing ' + contentCatalog.getPages((page) => page.out).length + ' pages')
@@ -1258,7 +1258,7 @@ describe('generateSite()', function () {
         module.exports.register = function () {
           this.on('playbookBuilt', function ({ playbook }) {
             const site = Object.assign({}, playbook.site, { url: 'https://docs.example.com' })
-            this.updateVars({ playbook: Object.assign({}, playbook, { site }) })
+            this.updateVariables({ playbook: Object.assign({}, playbook, { site }) })
           })
         }
       `
@@ -1283,7 +1283,7 @@ describe('generateSite()', function () {
         module.exports.register = function () {
           this
             .on('contentClassified', function ({ playbook, contentCatalog }) {
-              this.updateVars({ playbook: {} })
+              this.updateVariables({ playbook: {} })
             })
         }
       `

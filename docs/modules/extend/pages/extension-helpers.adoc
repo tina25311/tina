@@ -13,26 +13,26 @@ If the listener functions are defined within the `register` function for the ext
 Otherwise, the listener function can reference the generator context using the standard `this` keyword.
 The generator context is bound to to the listener function when the listener function is registered.
 
-[#get-vars]
-== getVars()
+[#get-variables]
+== getVariables()
 
 One way to access context variables is to accept them via the first parameter of the register function or event listener method using object destructuring (e.g., `{ playbook }`).
 However, there may be situations where a context variable is only needed conditionally.
-To simplify the function signature, you can retrieve context variables directly from the generator context using the `getVars` helper.
+To simplify the function signature, you can retrieve context variables directly from the generator context using the `getVariables` helper.
 
-Here's an example of how to access context variables from the generator context (bound to `this`) using the `getVars` method:
+Here's an example of how to access context variables from the generator context (bound to `this`) using the `getVariables` method:
 
 [,js]
 ----
-const { playbook, contentCatalog } = this.getVars()
+const { playbook, contentCatalog } = this.getVariables()
 ----
 
 Note that parameter destructuring is still the only way for the register function to access the config object for an extension.
 
-[#update-vars]
-== updateVars(Object)
+[#update-variables]
+== updateVariables(Object)
 
-The `updateVars` helper method provides a means for adding or replacing context variables.
+The `updateVariables` helper method provides a means for adding or replacing context variables.
 The method accepts a single argument of type Object, where the keys of the object are the variable names and the values are the variable values.
 This method doesn't return a value.
 
@@ -45,10 +45,10 @@ Here's an example that shows how to replace the `playbook` and `siteCatalog` var
 ----
 playbook = JSON.parse(JSON.stringify(playbook))
 siteCatalog = new Proxy(siteCatalog, {})
-this.updateVars({ playbook, siteCatalog })
+this.updateVariables({ playbook, siteCatalog })
 ----
 
-You can also use the `updateVars` method to introduce new variables into the context.
+You can also use the `updateVariables` method to introduce new variables into the context.
 The site generator will not recognize or use these variables.
 However, other extensions, or listeners in the same extension, can use them.
 

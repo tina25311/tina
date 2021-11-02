@@ -31,11 +31,11 @@ include::example$nojekyll-extension.js[]
 In <<ex-nojekyll>>, the site catalog is retrieved from the context using `{ siteCatalog }`.
 To retrieve multiple variables, separate the variable names using commas (e.g., `{ playbook, siteCatalog }`).
 
-Context variables can also be retrieved directly from the generator context using the `getVars` method:
+Context variables can also be retrieved directly from the generator context using the `getVariables` method:
 
 [,js]
 ----
-const { siteCatalog } = this.getVars()
+const { siteCatalog } = this.getVariables()
 ----
 
 In addition to the xref:generator-events-reference.adoc[built-in context variables], your extension can also access context variables documented and published by other extensions.
@@ -77,7 +77,7 @@ module.exports.register = function () {
         return property === 'registerPageAlias' ? () => undefined : target[property]
       },
     })
-    this.updateVars({ contentCatalog })
+    this.updateVariables({ contentCatalog })
   })
 }
 ----

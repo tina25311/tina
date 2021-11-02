@@ -10,14 +10,14 @@ class GeneratorContext extends EventEmitter {
   constructor (playbook, module_) {
     super()
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
-    _registerExtensions.call(this, playbook, module_, _initVars.call(this, playbook))
+    _registerExtensions.call(this, playbook, module_, _initVariables.call(this, playbook))
   }
 
   getLogger (name = 'antora') {
     return getLogger(name)
   }
 
-  getVars (vars) {
+  getVariables (vars) {
     return Object.assign({}, vars)
   }
 
@@ -28,7 +28,7 @@ class GeneratorContext extends EventEmitter {
   async notify (eventName) {
     if (this.listenerCount(eventName)) {
       for (const listener of this.rawListeners(eventName)) {
-        const outcome = listener.length === 1 ? listener.call(this, this.getVars()) : listener.call(this)
+        const outcome = listener.length === 1 ? listener.call(this, this.getVariables()) : listener.call(this)
         if (outcome instanceof Promise) await outcome
       }
     }
@@ -38,7 +38,7 @@ class GeneratorContext extends EventEmitter {
     return this.module.require(request)
   }
 
-  updateVars (vars, updates) {
+  updateVariables (vars, updates) {
     try {
       Object.assign(vars, updates)
     } catch (err) {
@@ -54,29 +54,27 @@ class GeneratorContext extends EventEmitter {
   }
 }
 
-function _initVars (playbook) {
-  const vars = Object.setPrototypeOf(
-    { playbook },
-    {
-      lock (name) {
-        return Object.defineProperty(this, name, { configurable: false, writable: false })[name]
-      },
-      remove (name) {
-        const currentValue = this[name]
-        delete this[name]
-        return currentValue
-      },
-    }
-  )
+function _initVariables (playbook) {
+  const vars = { playbook }
   Object.defineProperty(this, 'vars', {
     configurable: true,
     get: () => {
       delete this.vars
-      return vars
+      return Object.setPrototypeOf(vars, {
+        lock (name) {
+          return Object.defineProperty(this, name, { configurable: false, writable: false })[name]
+        },
+        remove (name) {
+          const currentValue = this[name]
+          delete this[name]
+          return currentValue
+        },
+      })
     },
   })
-  this.getVars = this.getVars.bind(null, vars)
-  this.updateVars = this.updateVars.bind(null, vars)
+  this.getVariables = this.getVariables.bind(null, vars)
+  // TODO remove updateVars before Antora 3.0.0
+  this.updateVars = this.updateVariables = this.updateVariables.bind(null, vars)
   return vars
 }
 
