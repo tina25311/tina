@@ -1390,6 +1390,59 @@ describe('generateSite()', function () {
       await generateSite(getPlaybook(playbookFile))
       expect(absDestDir).to.not.be.a.path()
     })
+
+    it('should allow register function to replace functions on the generator context', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        const mapSite = (playbook, publishableFiles) => {
+          console.log('creating sitemap with ' + publishableFiles.length + ' files for ' + playbook.site.url)
+          return []
+        }
+
+        const publishSite = async () => {
+          console.log('not publishing today')
+          return []
+        }
+
+        module.exports.register = function () {
+          this.replaceFunctions({ mapSite, publishSite })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      playbookSpec.site.url = 'https://docs.example.org'
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.equal('creating sitemap with 3 files for https://docs.example.org')
+      expect(lines[1]).to.equal('not publishing today')
+    })
+
+    it('should allow extension listener to access generator functions via getFunctions', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.on('beforePublish', ({ contentCatalog, siteCatalog }) => {
+            const { loadAsciiDoc } = this.getFunctions()
+            const file = {
+              contents: Buffer.from('xref:the-component::the-page.adoc[]'),
+              src: { component: '', version: '', module: 'ROOT', family: 'page', relative: 'generated-page.adoc' },
+              out: { path: 'generated-page.html' },
+              pub: { moduleRootPath: '', url: '/generated-page.html' }
+            }
+            file.contents = Buffer.from(loadAsciiDoc(file, contentCatalog).convert())
+            siteCatalog.addFile(file)
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      await generateSite(getPlaybook(playbookFile))
+      expect(ospath.join(absDestDir, 'generated-page.html'))
+        .to.be.a.file()
+        .with.contents.that.match(/href="the-component\/2.0\/the-page.html"[^>]*>The Page</)
+    })
   })
 
   describe('integration', () => {
