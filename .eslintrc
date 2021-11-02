@@ -1,5 +1,8 @@
 {
   "extends": "standard",
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
   "rules": {
     "array-callback-return": "off",
     "arrow-parens": ["error", "always"],
