@@ -9,6 +9,7 @@ const decodeUint8Array = require('./decode-uint8-array')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
+const filterRefs = require('./filter-refs')
 const flattenDeep = require('./flatten-deep')
 const fs = require('fs')
 const { promises: fsp } = fs
@@ -18,7 +19,6 @@ const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
 const invariably = { true: () => true, false: () => false, void: () => undefined, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
-const matcher = require('matcher')
 const MultiProgress = require('multi-progress')
 const ospath = require('path')
 const { posix: path } = ospath
@@ -40,6 +40,7 @@ const {
   GIT_OPERATION_LABEL_LENGTH,
   GIT_PROGRESS_PHASES,
   PICOMATCH_VERSION_OPTS,
+  REF_PATTERN_CACHE_KEY,
   SYMLINK_FILE_MODE,
   VALID_STATE_FILENAME,
 } = require('./constants')
@@ -101,7 +102,8 @@ function aggregateContent (playbook) {
       return accum.set(source.url, [...(accum.get(source.url) || []), Object.assign({}, sourceDefaults, source)])
     }, new Map())
     const progress = !quiet && createProgress(sourcesByUrl.keys(), process.stdout)
-    const loadOpts = { cacheDir, fetch, gitPlugins, progress, startDir }
+    const refPatternCache = Object.assign(new Map(), { braces: new Map() })
+    const loadOpts = { cacheDir, fetch, gitPlugins, progress, startDir, refPatternCache }
     return collectFiles(sourcesByUrl, loadOpts, fetchConcurrency).then(buildAggregate, (err) => {
       progress && progress.terminate()
       throw err
@@ -173,13 +175,14 @@ function buildAggregate (componentVersionBuckets) {
 
 async function loadRepository (url, opts) {
   let authStatus, dir, repo
+  const cache = { [REF_PATTERN_CACHE_KEY]: opts.refPatternCache }
   if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
     let credentials, displayUrl
     ;({ displayUrl, url, credentials } = extractCredentials(url))
     const { cacheDir, fetch, fetchTags, gitPlugins, progress } = opts
     dir = ospath.join(cacheDir, generateCloneFolderName(displayUrl))
     // NOTE the presence of the url property on the repo object implies the repository is remote
-    repo = { cache: {}, dir, fs, gitdir: dir, noCheckout: true, url }
+    repo = { cache, dir, fs, gitdir: dir, noCheckout: true, url }
     const validStateFile = ospath.join(dir, VALID_STATE_FILENAME)
     try {
       await fsp.access(validStateFile)
@@ -225,9 +228,7 @@ async function loadRepository (url, opts) {
     }
   } else if (await isDirectory((dir = expandPath(url, { dot: opts.startDir })))) {
     const gitdir = ospath.join(dir, '.git')
-    repo = (await isDirectory(gitdir))
-      ? { cache: {}, dir, fs, gitdir }
-      : { cache: {}, dir, fs, gitdir: dir, noCheckout: true }
+    repo = (await isDirectory(gitdir)) ? { cache, dir, fs, gitdir } : { cache, dir, fs, gitdir: dir, noCheckout: true }
     try {
       await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
     } catch {
@@ -271,15 +272,16 @@ async function collectFilesFromSource (source, repo, remoteName, authStatus) {
 async function selectReferences (source, repo, remote) {
   let { branches: branchPatterns, tags: tagPatterns, worktrees: worktreePatterns = '.' } = source
   const isBare = repo.noCheckout
+  const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
   const noWorktree = repo.url ? undefined : null
   const refs = new Map()
   if (tagPatterns) {
     tagPatterns = Array.isArray(tagPatterns)
       ? tagPatterns.map((pattern) => String(pattern))
-      : String(tagPatterns).split(CSV_RX)
+      : splitRefPatterns(String(tagPatterns))
     if (tagPatterns.length) {
       const tags = await git.listTags(repo)
-      for (const shortname of tags.length ? matcher(tags, tagPatterns) : tags) {
+      for (const shortname of tags.length ? filterRefs(tags, tagPatterns, patternCache) : tags) {
         // NOTE tags are stored using symbol keys to distinguish them from branches
         refs.set(Symbol(shortname), { shortname, fullname: 'tags/' + shortname, type: 'tag', head: noWorktree })
       }
@@ -294,7 +296,7 @@ async function selectReferences (source, repo, remote) {
       } else {
         worktreePatterns = Array.isArray(worktreePatterns)
           ? worktreePatterns.map((pattern) => String(pattern))
-          : String(worktreePatterns).split(CSV_RX)
+          : splitRefPatterns(String(worktreePatterns))
       }
     }
     const branchPatternsString = String(branchPatterns)
@@ -313,7 +315,7 @@ async function selectReferences (source, repo, remote) {
     } else if (
       (branchPatterns = Array.isArray(branchPatterns)
         ? branchPatterns.map((pattern) => String(pattern))
-        : branchPatternsString.split(CSV_RX)).length
+        : splitRefPatterns(branchPatternsString)).length
     ) {
       let headBranchIdx
       // NOTE we can assume at least two entries if HEAD or . are present
@@ -345,7 +347,7 @@ async function selectReferences (source, repo, remote) {
     // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
     const remoteBranches = (await git.listBranches(Object.assign({ remote }, repo))).filter((it) => it !== 'HEAD')
     if (remoteBranches.length) {
-      for (const shortname of matcher(remoteBranches, branchPatterns)) {
+      for (const shortname of filterRefs(remoteBranches, branchPatterns, patternCache)) {
         const fullname = 'remotes/' + remote + '/' + shortname
         refs.set(shortname, { shortname, fullname, type: 'branch', remote, head: noWorktree })
       }
@@ -355,16 +357,17 @@ async function selectReferences (source, repo, remote) {
       const localBranches = await git.listBranches(repo)
       if (localBranches.length) {
         const worktrees = await findWorktrees(repo, worktreePatterns)
-        for (const shortname of matcher(localBranches, branchPatterns)) {
+        for (const shortname of filterRefs(localBranches, branchPatterns, patternCache)) {
           const head = worktrees.get(shortname) || noWorktree
           refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head })
         }
       }
     } else if (!remoteBranches.length) {
-      // QUESTION should local branches be used if the only remote branch is HEAD?
       const localBranches = await git.listBranches(repo)
-      for (const shortname of localBranches.length ? matcher(localBranches, branchPatterns) : localBranches) {
-        refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head: noWorktree })
+      if (localBranches.length) {
+        for (const shortname of filterRefs(localBranches, branchPatterns, patternCache)) {
+          refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head: noWorktree })
+        }
       }
     }
   }
@@ -999,6 +1002,10 @@ function transformGitCloneError (err, displayUrl) {
   return wrappedErr
 }
 
+function splitRefPatterns (str) {
+  return ~str.indexOf('{') ? str.split(VENTILATED_CSV_RX) : str.split(CSV_RX)
+}
+
 function coerceToString (value) {
   return value == null ? '' : String(value)
 }
@@ -1011,10 +1018,11 @@ function findWorktrees (repo, patterns) {
   if (!patterns.length) return new Map()
   const linkedOnly = patterns[0] === '.' ? !(patterns = patterns.slice(1)) : true
   let worktreesDir
+  const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
   return (patterns.length
     ? fsp
       .readdir((worktreesDir = ospath.join(repo.dir, '.git', 'worktrees')))
-      .then((worktreeNames) => matcher(worktreeNames, [...patterns]), invariably.emptyArray)
+      .then((worktreeNames) => filterRefs(worktreeNames, [...patterns], patternCache), invariably.emptyArray)
       .then((worktreeNames) =>
         worktreeNames.length
           ? Promise.all(

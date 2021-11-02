@@ -25,7 +25,6 @@
     "hpagent": "~0.1.0",
     "isomorphic-git": "~1.10",
     "js-yaml": "~4.1",
-    "matcher": "~4.0",
     "multi-progress": "~4.0",
     "picomatch": "~2.3",
     "progress": "~2.0",
