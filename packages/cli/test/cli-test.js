@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { emptyDirSync, expect, heredoc, rmdirSync, toJSON } = require('../../../test/test-utils')
+const { emptyDirSync, expect, heredoc, wipeSync, toJSON } = require('../../../test/test-utils')
 
 const fs = require('fs')
 const GitServer = require('node-git-server')
@@ -85,8 +85,8 @@ describe('cli', function () {
       if (ioe.code !== 'ENOENT') throw ioe
     }
     // NOTE keep the default cache folder between tests
-    rmdirSync(absBuildDir)
-    rmdirSync(ospath.join(WORK_DIR, '.antora-cache-override'))
+    wipeSync(absBuildDir)
+    wipeSync(ospath.join(WORK_DIR, '.antora-cache-override'))
     playbookSpec = {
       site: { title: 'The Site' },
       content: {
@@ -98,12 +98,12 @@ describe('cli', function () {
 
   after(async () => {
     await once(gitServer.server.close(), 'close')
-    rmdirSync(CONTENT_REPOS_DIR)
+    wipeSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
-      rmdirSync(absBuildDir)
+      wipeSync(absBuildDir)
       fs.unlinkSync(playbookFile)
     } else {
-      rmdirSync(WORK_DIR)
+      wipeSync(WORK_DIR)
     }
   })
 
@@ -490,7 +490,7 @@ describe('cli', function () {
         expect(ospath.join(absCacheDir, 'ui'))
           .to.be.a.directory()
           .and.not.be.empty()
-        rmdirSync(absCacheDir)
+        wipeSync(absCacheDir)
       })
     }).timeout(timeoutOverride)
 
@@ -513,7 +513,7 @@ describe('cli', function () {
         expect(ospath.join(absCacheDir, 'ui'))
           .to.be.a.directory()
           .and.not.be.empty()
-        rmdirSync(absCacheDir)
+        wipeSync(absCacheDir)
       })
     }).timeout(timeoutOverride)
   })
@@ -692,7 +692,7 @@ describe('cli', function () {
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
-      rmdirSync(localNodeModules)
+      wipeSync(localNodeModules)
       expect(exitCode).to.equal(0)
       expect(messages).to.include('Using custom site generator')
       expect(absDestDir).to.be.a.directory()
@@ -740,7 +740,7 @@ describe('cli', function () {
       runAntora(args)
         .on('data', (data) => messages.push(data.message))
         .on('exit', (exitCode) => {
-          rmdirSync(localNodeModules)
+          wipeSync(localNodeModules)
           resolve(exitCode)
         })
     ).then((exitCode) => {

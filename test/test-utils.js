@@ -112,7 +112,7 @@ function unlinkSync (path_) {
 }
 
 // Removes the specified directory (including all of its contents) or file.
-const rmdirSync = (dir) => fs['rmSync' in fs ? 'rmSync' : 'rmdirSync'](dir, { recursive: true, force: true })
+const wipeSync = (dir) => fs['rmSync' in fs ? 'rmSync' : 'rmdirSync'](dir, { recursive: true, force: true })
 
 function emptyDirSync (dir) {
   let lst
@@ -130,7 +130,7 @@ function emptyDirSync (dir) {
     }
     throw err
   }
-  lst.forEach((it) => (it.isDirectory() ? rmdirSync(ospath.join(dir, it.name)) : unlinkSync(ospath.join(dir, it.name))))
+  lst.forEach((it) => (it.isDirectory() ? wipeSync(ospath.join(dir, it.name)) : unlinkSync(ospath.join(dir, it.name))))
 }
 
 module.exports = {
@@ -232,7 +232,7 @@ module.exports = {
     cert: fs.readFileSync(ospath.join(__dirname, 'ssl.cert')),
     key: fs.readFileSync(ospath.join(__dirname, 'ssl.key')),
   }),
-  rmdirSync,
+  wipeSync,
   spy: chai.spy,
   toJSON: (obj) => JSON.stringify(obj, undefined, '  '),
 }

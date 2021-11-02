@@ -8,7 +8,7 @@ const {
   expect,
   heredoc,
   loadHtml,
-  rmdirSync,
+  wipeSync,
   toJSON,
 } = require('../../../test/test-utils')
 
@@ -68,15 +68,15 @@ describe('generateSite()', function () {
 
   beforeEach(async () => {
     env = { ANTORA_CACHE_DIR: (cacheDir = ospath.join(WORK_DIR, '.antora/cache')) }
-    rmdirSync(CONTENT_REPOS_DIR)
+    wipeSync(CONTENT_REPOS_DIR)
     fs.mkdirSync(WORK_DIR, { recursive: true })
     try {
       fs.unlinkSync(playbookFile)
     } catch (ioe) {
       if (ioe.code !== 'ENOENT') throw ioe
     }
-    rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
-    rmdirSync(ospath.join(cacheDir, 'content'))
+    wipeSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
+    wipeSync(ospath.join(cacheDir, 'content'))
     await repoBuilder
       .init('the-component')
       .then(() => repoBuilder.checkoutBranch('v2.0'))
@@ -106,12 +106,12 @@ describe('generateSite()', function () {
 
   after(async () => {
     await once(gitServer.server.close(), 'close')
-    rmdirSync(CONTENT_REPOS_DIR)
+    wipeSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
-      rmdirSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
+      wipeSync(ospath.join(WORK_DIR, destDir.split('/')[0]))
       fs.unlinkSync(playbookFile)
     } else {
-      rmdirSync(WORK_DIR)
+      wipeSync(WORK_DIR)
     }
   })
 
@@ -789,13 +789,13 @@ describe('generateSite()', function () {
     let extensionNumber = 1 // NOTE alternative is to clearModule after each test
 
     beforeEach(() => {
-      rmdirSync(LIB_DIR)
+      wipeSync(LIB_DIR)
       fs.mkdirSync(LIB_DIR)
       playbookSpec.antora = {}
       playbookSpec.ui.bundle = { url: ospath.join(FIXTURES_DIR, 'minimal-ui') }
     })
 
-    after(() => rmdirSync(LIB_DIR))
+    after(() => wipeSync(LIB_DIR))
 
     it('should require and register extension specified as a string', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)

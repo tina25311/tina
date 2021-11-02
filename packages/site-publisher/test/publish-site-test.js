@@ -7,7 +7,7 @@ const {
   emptyDirSync,
   expect,
   heredoc,
-  rmdirSync,
+  wipeSync,
 } = require('../../../test/test-utils')
 
 const File = require('vinyl')
@@ -146,7 +146,7 @@ describe('publishSite()', () => {
 
   after(() => {
     process.chdir(CWD)
-    rmdirSync(WORK_DIR)
+    wipeSync(WORK_DIR)
   })
 
   it('should publish site to fs at default path when no destinations are specified', async () => {

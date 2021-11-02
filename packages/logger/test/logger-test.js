@@ -9,7 +9,7 @@ const {
   captureStdoutSync,
   emptyDirSync,
   expect,
-  rmdirSync,
+  wipeSync,
 } = require('../../../test/test-utils')
 const Logger = require('@antora/logger')
 const { configure, configureLogger, finalizeLogger, get, getLogger } = Logger
@@ -919,15 +919,11 @@ describe('logger', () => {
   })
 
   describe('destination', () => {
-    beforeEach(() => {
-      rmdirSync(WORK_DIR)
-    })
+    beforeEach(() => wipeSync(WORK_DIR))
 
     afterEach(finalizeLogger)
 
-    after(() => {
-      rmdirSync(WORK_DIR)
-    })
+    after(() => wipeSync(WORK_DIR))
 
     it('should allow custom destination with write method to be specified', () => {
       const destination = new (class {

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { deferExceptions, expect, loadSslConfig, rmdirSync } = require('../../../test/test-utils')
+const { deferExceptions, expect, loadSslConfig, wipeSync } = require('../../../test/test-utils')
 const RepositoryBuilder = require('../../../test/repository-builder')
 
 const fs = require('fs')
@@ -93,8 +93,8 @@ describe('loadUi()', () => {
 
   const clean = (fin) => {
     process.chdir(CWD)
-    rmdirSync(CACHE_DIR)
-    rmdirSync(WORK_DIR)
+    wipeSync(CACHE_DIR)
+    wipeSync(WORK_DIR)
     if (!fin) {
       fs.mkdirSync(WORK_DIR, { recursive: true })
       process.chdir(WORK_DIR)

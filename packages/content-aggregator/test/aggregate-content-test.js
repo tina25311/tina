@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { deferExceptions, expect, heredoc, loadSslConfig, rmdirSync, spy } = require('../../../test/test-utils')
+const { deferExceptions, expect, heredoc, loadSslConfig, wipeSync, spy } = require('../../../test/test-utils')
 
 const aggregateContent = require('@antora/content-aggregator')
 const computeOrigin = aggregateContent._computeOrigin
@@ -125,9 +125,9 @@ describe('aggregateContent()', function () {
 
   const clean = (fin) => {
     process.chdir(CWD)
-    rmdirSync(CACHE_DIR)
-    rmdirSync(CONTENT_REPOS_DIR)
-    rmdirSync(WORK_DIR)
+    wipeSync(CACHE_DIR)
+    wipeSync(CONTENT_REPOS_DIR)
+    wipeSync(WORK_DIR)
     if (!fin) {
       fs.mkdirSync(WORK_DIR, { recursive: true })
       process.chdir(WORK_DIR)
@@ -3341,7 +3341,7 @@ describe('aggregateContent()', function () {
           () =>
             linkedWorktreeRepoBuilder
               .addToWorktree(pageThreePath, '= Page Three\n\ncontent\n')
-              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => wipeSync(linkedWorktreeRepoBuilder.repository.gitdir))
               .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD, v*', worktrees: '*' })
@@ -3404,7 +3404,7 @@ describe('aggregateContent()', function () {
           () =>
             linkedWorktreeRepoBuilder
               .addToWorktree('modules/ROOT/pages/page-three.adoc', '= Page Three\n\ncontent\n')
-              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => wipeSync(linkedWorktreeRepoBuilder.repository.gitdir))
               .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*', worktrees: true })
@@ -3477,7 +3477,7 @@ describe('aggregateContent()', function () {
           () =>
             linkedWorktreeRepoBuilder
               .addToWorktree(pageOnePath, '= Page One (Linked Worktree)\n\ncontent\n')
-              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => wipeSync(linkedWorktreeRepoBuilder.repository.gitdir))
               .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD, v*', worktrees: '., v*' })
@@ -3519,7 +3519,7 @@ describe('aggregateContent()', function () {
           () =>
             linkedWorktreeRepoBuilder
               .addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One (Worktree)\n\ncontent\n')
-              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => wipeSync(linkedWorktreeRepoBuilder.repository.gitdir))
               .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.*', worktrees: true })
@@ -3567,7 +3567,7 @@ describe('aggregateContent()', function () {
           () =>
             linkedWorktreeRepoBuilder
               .addToWorktree('modules/ROOT/pages/page-one.adoc', '= Page One (Worktree)\n\ncontent\n')
-              .then(() => rmdirSync(linkedWorktreeRepoBuilder.repository.gitdir))
+              .then(() => wipeSync(linkedWorktreeRepoBuilder.repository.gitdir))
               .then(() => linkedWorktreeRepoBuilder.addToWorktree('.git', 'gitdir: ' + linkedWorktreeGitdir + '\n'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.*', worktrees: 'v2.*' })
