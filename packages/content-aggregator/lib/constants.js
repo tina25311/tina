@@ -21,6 +21,7 @@ module.exports = Object.freeze({
     noquantifiers: true,
     strictSlashes: true,
   },
+  REF_PATTERN_CACHE_KEY: Symbol('RefPatternCache'),
   SYMLINK_FILE_MODE: '120000',
   VALID_STATE_FILENAME: 'valid',
 })

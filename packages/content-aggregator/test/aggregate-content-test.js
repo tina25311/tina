@@ -1308,7 +1308,16 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should filter branches using wildcard', () => {
+    describe('should include all branches when pattern is wildcard', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '*' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate.map((it) => it.version)).to.have.members(['latest-and-greatest', 'v3.0', 'v2.0', 'v1.0'])
+      })
+    })
+
+    describe('should filter branches using trailing wildcard', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
@@ -1318,6 +1327,100 @@ describe('aggregateContent()', function () {
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
         expect(aggregate[1]).to.include({ name: 'the-component', version: 'v2.0' })
         expect(aggregate[2]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should filter branches with nested path segments using wildcard', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+          .then(() => repoBuilder.open())
+          .then(() => repoBuilder.checkoutBranch('v3.0'))
+          .then(() => repoBuilder.checkoutBranch('release/stable/3.0'))
+          .then(() => repoBuilder.close('master'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'release/*' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should filter branches using brace expression with set', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+        // NOTE if pattern contains '{', then pattern is only split on ',' if followed by a space
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v{3,2,1}.0' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(3)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: 'v2.0' })
+        expect(aggregate[2]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should filter branches using brace expression with range', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+          .then(() => repoBuilder.open())
+          .then(() => repoBuilder.checkoutBranch('master'))
+          .then(() => repoBuilder.checkoutBranch('v10.0'))
+          .then(() => repoBuilder.close('master'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v{1..10}.0' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(4)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: 'v1.0' })
+        expect(aggregate[2]).to.include({ name: 'the-component', version: 'v2.0' })
+        expect(aggregate[3]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should filter branches using brace expression with repeating range', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+          .then(() => repoBuilder.open())
+          .then(() => repoBuilder.checkoutBranch('master'))
+          .then(() => repoBuilder.checkoutBranch('v10.0'))
+          .then(() => repoBuilder.close('master'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v{0..9}+.0' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(4)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: 'v1.0' })
+        expect(aggregate[2]).to.include({ name: 'the-component', version: 'v2.0' })
+        expect(aggregate[3]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should filter branches using brace expression with nested range', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '{v{0..9}+.*,ma*}' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(4)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: 'v1.0' })
+        expect(aggregate[2]).to.include({ name: 'the-component', version: 'v2.0' })
+        expect(aggregate[3]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should filter branches using brace expression with stepped range', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+          .then(() => repoBuilder.open())
+          .then(() => repoBuilder.checkoutBranch('master'))
+          .then(() => repoBuilder.checkoutBranch('v10.0'))
+          .then(() => repoBuilder.close('master'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v{2..10..2}.0' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: 'v2.0' })
       })
     })
 
@@ -1359,6 +1462,21 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
           branches: ['v*', '!master', '!v2*'],
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should apply branch exclusion filter with brace expressions', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          branches: ['v*', '!ma{ster,in}', '!v{2..10..2}.?'],
         })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
@@ -4432,9 +4550,10 @@ describe('aggregateContent()', function () {
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
       expect(cacheArgs).to.have.lengthOf(1)
-      const sharedCache = [...cacheArgs][0]
-      expect(sharedCache).to.exist()
-      expect(sharedCache[Object.getOwnPropertySymbols(sharedCache)[0]]).to.be.instanceOf(Map)
+      const cache = [...cacheArgs][0]
+      expect(cache).to.exist()
+      const packfileCacheKey = Object.getOwnPropertySymbols(cache).find((sym) => sym.description === 'PackfileCache')
+      expect(cache[packfileCacheKey]).to.be.instanceOf(Map)
     } finally {
       Object.entries(gitCommands).forEach(([name, fn]) => (git[name] = fn))
     }
