@@ -35,7 +35,7 @@ class GeneratorContext extends EventEmitter {
   }
 
   getFunctions () {
-    return arguments[0] === false ? this.#fxns : Object.assign({}, this.#fxns)
+    return arguments.length ? this.#fxns : Object.assign({}, this.#fxns)
   }
 
   getLogger (name = 'antora') {
