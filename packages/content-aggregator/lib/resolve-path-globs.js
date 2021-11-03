@@ -17,6 +17,7 @@ const PICOMATCH_OPTS = {
   noglobstar: true,
   nonegate: true,
   noquantifiers: true,
+  strictSlashes: true,
 }
 const PICOMATCH_NEGATED_OPTS = Object.assign({}, PICOMATCH_OPTS, { noglobstar: undefined })
 
