@@ -96,14 +96,12 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
         })
       } else if ((patternSegment += '/' + patternSegments.join('/')).indexOf('{')) {
         return expandBraces(patternSegment).map((it) => joinPath(path, it))
-      } else {
-        return [joinPath(path, patternSegment)]
       }
+      return [joinPath(path, patternSegment)]
     } else if (globbed) {
       return (await retrievePath(base, { oid, path }, patternSegment)) ? [joinPath(path, patternSegment)] : []
-    } else {
-      return [joinPath(path, patternSegment)]
     }
+    return [joinPath(path, patternSegment)]
   }
 }
 
@@ -141,10 +139,13 @@ function makeMatcherRx (pattern) {
 }
 
 function patternToRx (pattern) {
-  return (pattern.charAt() === '.' ? '' : '(?!\\.)') + pattern
-    .replace(NON_GLOB_SPECIAL_CHARS_RX, '\\$&')
-    .replace('\\\\*', '\\x2a')
-    .replace('*', '.*?')
+  return (
+    (pattern.charAt() === '.' ? '' : '(?!\\.)') +
+    pattern
+      .replace(NON_GLOB_SPECIAL_CHARS_RX, '\\$&')
+      .replace('\\\\*', '\\x2a')
+      .replace('*', '.*?')
+  )
 }
 
 function readdirWithFileTypes (dir) {

@@ -923,8 +923,18 @@ describe('aggregateContent()', function () {
           if (!(repoBuilder.remote || repoBuilder.bare)) return
           const startPath1 = 'docs*extra'
           const startPath2 = 'docs-extra'
-          const componentDesc1 = { name: 'the-component', title: 'Component Title', version: '1', startPath: startPath1 }
-          const componentDesc2 = { name: 'the-component', title: 'Component Title', version: '2', startPath: startPath2 }
+          const componentDesc1 = {
+            name: 'the-component',
+            title: 'Component Title',
+            version: '1',
+            startPath: startPath1,
+          }
+          const componentDesc2 = {
+            name: 'the-component',
+            title: 'Component Title',
+            version: '2',
+            startPath: startPath2,
+          }
           let componentDescEntry1
           let componentDescEntry2
           await repoBuilder
@@ -979,7 +989,9 @@ describe('aggregateContent()', function () {
         const componentDesc = { name: 'the-component', title: 'Component Title', version: '1', startPath: 'docs' }
         let componentDescEntry
         await initRepoWithFiles(repoBuilder, componentDesc, undefined, () =>
-          repoBuilder.findEntry('docs/antora.yml').then((entry) => (componentDescEntry = entry))
+          repoBuilder
+            .findEntry('docs/antora.yml')
+            .then((entry) => (componentDescEntry = entry))
             .then(() => repoBuilder.addToWorktree('src/hello.rb', 'puts 1'))
             .then(() => repoBuilder.commitAll('add file'))
         )
