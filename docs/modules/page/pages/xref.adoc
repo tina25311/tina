@@ -1,4 +1,4 @@
-= Xref Macro and Page Links
+= Page Links
 //Cross References
 :page-aliases: page-id.adoc, asciidoc:page-to-page-xref.adoc
 :colon: :
@@ -62,10 +62,10 @@ When Antora converts the xref macro and its value into a link, the text you ente
 If no link text is specified between the macro's square brackets, and the value of the xref macro doesn't contain a fragment, then the target page's xref:reftext-and-navtitle.adoc[default reference text] is displayed in the current page when it's published.
 If a fragment is appended to the resource ID of the target page and no link text was entered between the brackets, then the URL of the published target page is displayed.
 
-The next section, <<create-xref>>, shows how to create a cross reference step-by-step.
+The next section, <<create-link>>, shows how to create a cross reference step-by-step.
 
-[#create-xref]
-== Create an xref to a page
+[#create-link]
+== Create a link to a page
 
 Let's break down the xref macro and resource ID coordinates you need to create a cross reference to a page (the <<target,target page>>) from a page that you're currently editing (the <<current,current page>>).
 For this exercise, let's assume that the filename of the target page is [.path]_modes.adoc_ and the filename of the current page is [.path]_satellites.adoc_.

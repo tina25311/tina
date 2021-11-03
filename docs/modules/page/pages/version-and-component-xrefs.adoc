@@ -1,4 +1,4 @@
-= Xref Pages in Other Components and Versions
+= Link to Pages in other Components
 
 Sometimes you'll need to create cross references to pages that belong to different docs components.
 You can also create xrefs to pages that belong to different versions of the same component.
