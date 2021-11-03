@@ -3,10 +3,10 @@
 :family: attachment
 :coordinate: attachment$
 
-[.term]*Attachments* are resources, such as PDFs or the ZIP archives of sample projects.
+Attachments are resources, such as PDFs or the ZIP archives of sample projects.
 Attachment files are stored in an xref:ROOT:attachments-directory.adoc[_attachments_ family directory].
 
-== Link to an attachment
+== Attachment resource ID
 
 An attachment can be cross referenced from pages, other resources, and navigation files using an xref:xref.adoc[AsciiDoc xref macro] and the xref:resource-id.adoc[resource ID] of the attachment.
 The `{coordinate}` family coordinate must be specified in the attachment's resource ID.
@@ -21,7 +21,7 @@ xref:version@component:module:{coordinate}filename.ext[link text]
 
 How many coordinates of the attachment's resource ID you need to specify as the value of the xref macro depends on the component version and module of the current page in relation to the attachment.
 
-=== Xref an attachment from a page
+== Create a link to an attachment
 
 Let's break down the xref macro and resource ID coordinates you need to create a link to an {family} from a page.
 The following steps assume that the target {family} and xref:xref.adoc#current[current page] belong to the same component version and module.
@@ -49,9 +49,9 @@ See the xref:**{coordinate}filename.ext**
 See the xref:{coordinate}filename.ext**[optional link text]** for more options.
 ----
 
-=== Link text for attachments
+== Link text for attachments
 
-If you don't specify link text in an xref macro that targets an attachment, Antora displays the URL of the attachment as the link in the published page.
+If you don't specify link text in an xref macro that references an attachment, Antora displays the URL of the attachment as the link in the published page.
 
 .Attachment xref with no link text
 [source#ex-no-text]
@@ -73,4 +73,4 @@ You can specify link text by entering it between the square brackets of the xref
 Download xref:attachment$practice-project.zip[The Sample Project] to try it out!
 ----
 
-Xrefs to attachments can also be created in xref:navigation:reference-resources.adoc[navigation files], image macros, and partials.
+You can also create links to attachments in xref:navigation:reference-resources.adoc[navigation files], image macros, and partials.

@@ -1,4 +1,4 @@
-= Xref Pages in a Component Version
+= Link to Pages in the same Component Version
 
 The majority of your cross references will probably be between pages that belong to the xref:ROOT:module-directories.adoc#module[same module] or to the xref:ROOT:component-version.adoc[same component version].
 

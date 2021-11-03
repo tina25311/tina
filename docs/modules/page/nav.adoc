@@ -23,7 +23,7 @@
 * xref:block-images.adoc[]
 * xref:inline-images.adoc[]
 * xref:image-resource-id-examples.adoc[]
-* xref:xref-from-image.adoc[]
+* xref:image-xref-and-link.adoc[]
 
 .xref:partials.adoc[]
 * xref:include-a-partial.adoc[]
