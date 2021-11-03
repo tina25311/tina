@@ -168,7 +168,7 @@ describe('aggregateContent()', function () {
       runtime: { quiet: true },
       content: {
         sources: [],
-        branches: ['v*', 'master'],
+        branches: ['HEAD', 'v{0..9}*'],
       },
     }
     clean()
@@ -286,6 +286,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: true }, () =>
           repoBuilder.checkoutBranch('v/2.1').then(() => repoBuilder.deleteBranch('master'))
         )
+        playbookSpec.content.branches = ['HEAD', 'v/*']
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
