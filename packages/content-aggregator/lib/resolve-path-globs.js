@@ -1,6 +1,6 @@
 'use strict'
 
-const { expand: expandBraces } = require('braces')
+const { expand: expandBraces, compile: bracesToGroup } = require('braces')
 const flattenDeep = require('./flatten-deep')
 const { promises: fsp } = require('fs')
 const git = require('./git')
@@ -10,8 +10,14 @@ const { makeRe: makePicomatchRx } = require('picomatch')
 const RX_ESCAPE_EXCEPT_GLOB = /[.+?^${}()|[\]\\]/g
 const RX_MAGIC_DETECTOR = /[*{]/
 const RX_QUESTION_MARK = /\?/g
-const PICOMATCH_OPTS = { nobracket: true, noextglob: true, noglobstar: true, noquantifiers: true }
-const PICOMATCH_NEGATED_OPTS = { nobracket: true, noextglob: true, noquantifiers: true }
+const PICOMATCH_OPTS = {
+  expandRange: (begin, end, step, opts) => bracesToGroup(opts ? `{${begin}..${end}..${step}}` : `{${begin}..${end}}`),
+  nobracket: true,
+  noextglob: true,
+  noglobstar: true,
+  noquantifiers: true,
+}
+const PICOMATCH_NEGATED_OPTS = Object.assign({}, PICOMATCH_OPTS, { noglobstar: undefined })
 
 function resolvePathGlobs (base, patterns, listDirents, retrievePath, tree = { path: '' }) {
   return patterns.reduce((paths, pattern) => {

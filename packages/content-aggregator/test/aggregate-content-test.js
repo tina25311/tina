@@ -843,6 +843,60 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should resolve start paths from pattern that contains a range following a wildcard', () => {
+      testAll(async (repoBuilder) => {
+        const startPath1 = 'docs/v19'
+        const startPath2 = 'docs/v20'
+        const componentDesc1 = { name: 'the-component', title: 'Component Title', version: '19', startPath: startPath1 }
+        const componentDesc2 = { name: 'the-component', title: 'Component Title', version: '20', startPath: startPath2 }
+        let componentDescEntry1
+        let componentDescEntry2
+        await repoBuilder
+          .init(componentDesc1.name)
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc1))
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc2))
+          .then(async () => {
+            componentDescEntry1 = await repoBuilder.findEntry(startPath1 + '/antora.yml')
+            componentDescEntry2 = await repoBuilder.findEntry(startPath2 + '/antora.yml')
+          })
+          .then(() => repoBuilder.close())
+        expect(componentDescEntry1).to.exist()
+        expect(componentDescEntry2).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc*/v{1..20}' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.deep.include(componentDesc1)
+        expect(aggregate[1]).to.deep.include(componentDesc2)
+      })
+    })
+
+    describe('should resolve start paths from pattern that contains a range with step following a wildcard', () => {
+      testAll(async (repoBuilder) => {
+        const startPath1 = 'docs/v8'
+        const startPath2 = 'docs/v9'
+        const componentDesc1 = { name: 'the-component', title: 'Component Title', version: '8', startPath: startPath1 }
+        const componentDesc2 = { name: 'the-component', title: 'Component Title', version: '9', startPath: startPath2 }
+        let componentDescEntry1
+        let componentDescEntry2
+        await repoBuilder
+          .init(componentDesc1.name)
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc1))
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc2))
+          .then(async () => {
+            componentDescEntry1 = await repoBuilder.findEntry(startPath1 + '/antora.yml')
+            componentDescEntry2 = await repoBuilder.findEntry(startPath2 + '/antora.yml')
+          })
+          .then(() => repoBuilder.close())
+        expect(componentDescEntry1).to.exist()
+        expect(componentDescEntry2).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc*/v{0..8..2}' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.deep.include(componentDesc1)
+      })
+    })
+
     describe('should match dot folders if wildcard pattern in brace pattern begins with dot', () => {
       testAll(async (repoBuilder) => {
         const startPath = 'docs'
