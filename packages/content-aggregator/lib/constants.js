@@ -11,10 +11,8 @@ module.exports = Object.freeze({
   GIT_PROGRESS_PHASES: ['Counting objects', 'Compressing objects', 'Receiving objects', 'Resolving deltas'],
   PICOMATCH_VERSION_OPTS: {
     bash: true,
-    debug: false,
     dot: true,
     fastpaths: false,
-    lookbehinds: false,
     noextglob: true,
     noglobstar: true,
     nonegate: true,
