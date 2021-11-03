@@ -29,7 +29,7 @@ This fallback mechanism has been deprecated because the xref macro can now refer
 Review the resource IDs in your xrefs and `page-aliases` attributes to ensure the _.adoc_ extension is specified.
 
 Are you depending on the default branches pattern in your playbook?::
-The previous default branches pattern, `[master, v*]`, has been deprecated and replaced with `[HEAD, v*]`.
+The previous default branches pattern, `[master, v*]`, has been deprecated and replaced with `[HEAD, v{0..9}*]`.
 It's unlikely this will cause a change when using remote repositories.
 For local repositories, it may result in the worktree being used in cases it wasn't previously.
 

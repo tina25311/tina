@@ -52,8 +52,8 @@ content:
 [#default]
 == Default branches filter
 
-When the `branches` key isn't set on the `content` key or a content source, Antora will inherit the [.term]*default branches filter*, `+[HEAD, v*]+`.
-That means Antora will use files from the current (for local) or default (for remote) branch (e.g., `main`) as well as any branch that begins with the letter `v` (e.g., `v2.0.x`).
+When the `branches` key isn't set on the `content` key or a content source, Antora will inherit the [.term]*default branches filter*, `+[HEAD, v{0..9}*]+`.
+That means Antora will use files from the current (for local) or default (for remote) branch (e.g., `main`) as well as any branch that begins with the letter `v` followed immediately by a number (e.g., `v2.0.x`).
 You can override this inherited value per content source by setting the `branches` key.
 
 .antora-playbook.yml
