@@ -13,9 +13,9 @@ function getPicomatchOpts (cache) {
     },
     fastpaths: false,
     nobracket: true,
-    noextglob: true,
     noglobstar: true,
     noquantifiers: true,
+    regex: false,
     strictSlashes: true,
   }
 }

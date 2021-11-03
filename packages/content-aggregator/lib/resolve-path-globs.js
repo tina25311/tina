@@ -8,26 +8,24 @@ const invariably = { true: () => true, false: () => false, void: () => undefined
 const { makeRe: makePicomatchRx } = require('picomatch')
 
 const NON_GLOB_SPECIAL_CHARS_RX = /[.+?^${}()|[\]\\]/g
-const RX_MAGIC_DETECTOR = /[*{]/
-const RX_QUESTION_MARK = /\?/g
+const RX_MAGIC_DETECTOR = /[*{(]/
 const PICOMATCH_OPTS = {
   expandRange: (begin, end, step, opts) => bracesToGroup(opts ? `{${begin}..${end}..${step}}` : `{${begin}..${end}}`),
+  fastpaths: false,
   nobracket: true,
-  noextglob: true,
   noglobstar: true,
   nonegate: true,
   noquantifiers: true,
+  regex: false,
   strictSlashes: true,
 }
-const PICOMATCH_NEGATED_OPTS = Object.assign({}, PICOMATCH_OPTS, { noglobstar: undefined })
 
 function resolvePathGlobs (base, patterns, listDirents, retrievePath, tree = { path: '' }) {
   return patterns.reduce((paths, pattern) => {
     if (pattern.charAt() === '!') {
       return paths.then((resolvedPaths) => {
         if (resolvedPaths.length) {
-          if (~pattern.indexOf('?')) pattern = pattern.replace(RX_QUESTION_MARK, '\\?')
-          const rx = makePicomatchRx(pattern.substr(1), PICOMATCH_NEGATED_OPTS)
+          const rx = makePicomatchRx(pattern.substr(1), PICOMATCH_OPTS)
           return resolvedPaths.filter((it) => !rx.test(it))
         } else {
           return resolvedPaths
@@ -46,13 +44,13 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
   let patternSegment = patternSegments[0]
   patternSegments = patternSegments.slice(1)
   if (RX_MAGIC_DETECTOR.test(patternSegment)) {
-    let isMatch
-    let explicit
+    let isMatch, explicit
     if (patternSegment === '*') {
       isMatch = (it) => it.charAt() !== '.'
+    } else if (~patternSegment.indexOf('(')) {
+      isMatch = (isMatch = makePicomatchRx(patternSegment, PICOMATCH_OPTS)).test.bind(isMatch)
     } else if (~patternSegment.indexOf('{')) {
       if (globbed) {
-        if (~patternSegment.indexOf('?')) patternSegment = patternSegment.replace(RX_QUESTION_MARK, '\\?')
         isMatch = (isMatch = makePicomatchRx(patternSegment, PICOMATCH_OPTS)).test.bind(isMatch)
       } else if (~patternSegment.indexOf('*')) {
         const [wildPatterns, literals] = expandBraces(patternSegment).reduce(

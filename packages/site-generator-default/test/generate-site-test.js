@@ -215,7 +215,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.removeFromWorktree('modules/ROOT/pages/index.adoc'))
       .then(() => repoBuilder.commitAll())
       .then(() => repoBuilder.close('master'))
-    playbookSpec.content.sources[0].version = { 'v(?<version>{0..9}+)*': 'lts-$<version>' }
+    playbookSpec.content.sources[0].version = { 'v(?<version>+({0..9}))*': 'lts-$<version>' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, 'the-component'))
