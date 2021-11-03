@@ -1,6 +1,6 @@
 'use strict'
 
-const { create: bracesToGroup } = require('braces')
+const { compile: bracesToGroup } = require('braces')
 const { makeRe: makePicomatchRx } = require('picomatch')
 
 function getPicomatchOpts (cache) {
