@@ -15,6 +15,7 @@ const PICOMATCH_OPTS = {
   nobracket: true,
   noextglob: true,
   noglobstar: true,
+  nonegate: true,
   noquantifiers: true,
 }
 const PICOMATCH_NEGATED_OPTS = Object.assign({}, PICOMATCH_OPTS, { noglobstar: undefined })
@@ -25,8 +26,8 @@ function resolvePathGlobs (base, patterns, listDirents, retrievePath, tree = { p
       return paths.then((resolvedPaths) => {
         if (resolvedPaths.length) {
           if (~pattern.indexOf('?')) pattern = pattern.replace(RX_QUESTION_MARK, '\\?')
-          const rx = makePicomatchRx(pattern, PICOMATCH_NEGATED_OPTS)
-          return resolvedPaths.filter(rx.test.bind(rx))
+          const rx = makePicomatchRx(pattern.substr(1), PICOMATCH_NEGATED_OPTS)
+          return resolvedPaths.filter((it) => !rx.test(it))
         } else {
           return resolvedPaths
         }
@@ -50,7 +51,6 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
       isMatch = (it) => it.charAt() !== '.'
     } else if (~patternSegment.indexOf('{')) {
       if (globbed) {
-        if (patternSegment.charAt() === '!') patternSegment = '\\' + patternSegment
         if (~patternSegment.indexOf('?')) patternSegment = patternSegment.replace(RX_QUESTION_MARK, '\\?')
         isMatch = (isMatch = makePicomatchRx(patternSegment, PICOMATCH_OPTS)).test.bind(isMatch)
       } else if (~patternSegment.indexOf('*')) {
