@@ -1039,6 +1039,32 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should not read component descriptors located at nested start paths that have been excluded', () => {
+      testAll(async (repoBuilder) => {
+        const startPath1 = 'docs'
+        const startPath2 = 'path/to/more/docs'
+        const componentDesc1 = { name: 'the-component', title: 'Component Title', version: '1', startPath: startPath1 }
+        const componentDesc2 = { name: 'the-component', title: 'Component Title', version: '2', startPath: startPath2 }
+        let componentDescEntry1
+        let componentDescEntry2
+        await repoBuilder
+          .init(componentDesc1.name)
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc1))
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc2))
+          .then(async () => {
+            componentDescEntry1 = await repoBuilder.findEntry(startPath1 + '/antora.yml')
+            componentDescEntry2 = await repoBuilder.findEntry(startPath2 + '/antora.yml')
+          })
+          .then(() => repoBuilder.close())
+        expect(componentDescEntry1).to.exist()
+        expect(componentDescEntry2).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'docs, path/to/more/docs, !*/docs' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.deep.include(componentDesc1)
+      })
+    })
+
     describe('should read component descriptors located at start paths in each reference', () => {
       testAll(async (repoBuilder) => {
         const componentDesc1v1 = { name: 'component-a', title: 'Component A', version: '1', startPath: 'docs' }

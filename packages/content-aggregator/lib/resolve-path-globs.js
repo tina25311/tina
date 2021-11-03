@@ -10,6 +10,7 @@ const { makeRe: makePicomatchRx } = require('picomatch')
 const NON_GLOB_SPECIAL_CHARS_RX = /[.+?^${}()|[\]\\]/g
 const RX_MAGIC_DETECTOR = /[*{(]/
 const PICOMATCH_OPTS = {
+  bash: true,
   expandRange: (begin, end, step, opts) => bracesToGroup(opts ? `{${begin}..${end}..${step}}` : `{${begin}..${end}}`),
   fastpaths: false,
   nobracket: true,
