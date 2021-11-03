@@ -7,7 +7,7 @@ const git = require('./git')
 const invariably = { true: () => true, false: () => false, void: () => undefined, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 
-const RX_ESCAPE_EXCEPT_GLOB = /[.+?^${}()|[\]\\]/g
+const NON_GLOB_SPECIAL_CHARS_RX = /[.+?^${}()|[\]\\]/g
 const RX_MAGIC_DETECTOR = /[*{]/
 const RX_QUESTION_MARK = /\?/g
 const PICOMATCH_OPTS = {
@@ -108,11 +108,6 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
   }
 }
 
-function regexpEscapeWithGlob (str) {
-  // we don't escape "-" since it's meaningless in a literal
-  return str.replace(RX_ESCAPE_EXCEPT_GLOB, '\\$&').replace('*', '.*')
-}
-
 function extractMagicBase (patternSegments, base) {
   let nextSegment
   if (patternSegments.length) {
@@ -147,7 +142,10 @@ function makeMatcherRx (pattern) {
 }
 
 function patternToRx (pattern) {
-  return (pattern.charAt() === '.' ? '' : '(?!\\.)') + regexpEscapeWithGlob(pattern)
+  return (pattern.charAt() === '.' ? '' : '(?!\\.)') + pattern
+    .replace(NON_GLOB_SPECIAL_CHARS_RX, '\\$&')
+    .replace('\\\\*', '\\x2a')
+    .replace('*', '.*?')
 }
 
 function readdirWithFileTypes (dir) {
