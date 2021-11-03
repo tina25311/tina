@@ -26,6 +26,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Change default branches pattern for content sources to `HEAD, v{0..9}*` to avoid matching words that begin with `v`
 * *playbook-builder*: Move logic for postprocessing config data to `beforeValidate` function defined in the schema (#864)
 * *content-aggregator*: Enable more powerful pattern matching for refname patterns (branches, tags, worktrees); align with pattern matching for start paths (#686)
+* *content-aggregator*: Ignore regex modifiers and enable extglob for all patterns (branches, tags, worktrees, version, start paths) (#870)
 * *site-generator-default*: Rename `getVars` and `updateVars` on GeneratorContext to `getVariables` and `updateVariables`, respectively
 * *site-generator-default*: Rename Pipeline class to GeneratorContext (#860)
 * *site-generator-default*: Bind the generator context to the register function of an extension unless declared as the first parameter (#860)

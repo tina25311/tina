@@ -308,7 +308,7 @@ describe('aggregateContent()', function () {
 
     describe('should extract version from refname if version key in component descriptor is a pattern map', () => {
       testAll(async (repoBuilder) => {
-        const componentDesc = { name: 'the-component', version: { 'v(?<version>{0..9}+.{0..9}+).x': '$<version>' } }
+        const componentDesc = { name: 'the-component', version: { 'v(?<version>+({0..9}).+({0..9})).x': '$<version>' } }
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
           repoBuilder.checkoutBranch('v2.1.x').then(() => repoBuilder.deleteBranch('master'))
         )
@@ -326,7 +326,7 @@ describe('aggregateContent()', function () {
         )
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
-          version: { 'v(?<version>{0..9}+.{0..9}+).x': '$<version>' },
+          version: { 'v(?<version>+({0..9}).+({0..9})).x': '$<version>' },
         })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -946,6 +946,51 @@ describe('aggregateContent()', function () {
       })
     }
 
+    describe('should resolve start paths using extglob', () => {
+      testAll(async (repoBuilder) => {
+        const startPath1 = 'docs-8'
+        const startPath2 = 'doc-10'
+        const componentDesc1 = { name: 'the-component', title: 'Component Title', version: '1', startPath: startPath1 }
+        const componentDesc2 = { name: 'the-component', title: 'Component Title', version: '2', startPath: startPath2 }
+        let componentDescEntry1
+        let componentDescEntry2
+        await repoBuilder
+          .init(componentDesc1.name)
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc1))
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc2))
+          .then(async () => {
+            componentDescEntry1 = await repoBuilder.findEntry(startPath1 + '/antora.yml')
+            componentDescEntry2 = await repoBuilder.findEntry(startPath2 + '/antora.yml')
+          })
+          .then(() => repoBuilder.close())
+        expect(componentDescEntry1).to.exist()
+        expect(componentDescEntry2).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc?(s)-+({0..9})' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.deep.include(componentDesc1)
+        expect(aggregate[1]).to.deep.include(componentDesc2)
+      })
+    })
+
+    describe('should exclude start paths using extglob', () => {
+      testAll(async (repoBuilder) => {
+        const componentDesc = { name: 'the-component', title: 'Component Title', version: '1', startPath: 'docs' }
+        let componentDescEntry
+        await initRepoWithFiles(repoBuilder, componentDesc, undefined, () =>
+          repoBuilder.findEntry('docs/antora.yml').then((entry) => (componentDescEntry = entry))
+            .then(() => repoBuilder.addToWorktree('src/hello.rb', 'puts 1'))
+            .then(() => repoBuilder.commitAll('add file'))
+        )
+        expect(componentDescEntry).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: ['*', '!!(docs)'] })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.deep.include(componentDesc)
+      })
+    })
+
     describe('should match dot folders if wildcard pattern in brace pattern begins with dot', () => {
       testAll(async (repoBuilder) => {
         const startPath = 'docs'
@@ -1487,7 +1532,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.checkoutBranch('master'))
           .then(() => repoBuilder.checkoutBranch('v10.0'))
           .then(() => repoBuilder.close('master'))
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v{0..9}+.0' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v+({0..9}).0' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(4)
         sortAggregate(aggregate)
@@ -1501,7 +1546,7 @@ describe('aggregateContent()', function () {
     describe('should filter branches using brace expression with nested range', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '{v{0..9}+.*,ma*}' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '{v+({0..9}).*,ma*}' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(4)
         sortAggregate(aggregate)
