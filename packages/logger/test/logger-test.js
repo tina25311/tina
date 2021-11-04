@@ -159,7 +159,7 @@ describe('logger', () => {
       const logger = configure({ format: 'pretty' }).get(null)
       const stream = getStream(logger)
       expect(stream.constructor.name).to.not.equal('SonicBoom')
-      expect(stream.chindings).to.be.instanceOf(Function)
+      expect(stream.stream.constructor.name).to.equal('SonicBoom')
       const lines = captureStderrSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.not.include('{')

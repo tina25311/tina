@@ -9,6 +9,7 @@ const {
   symbols: { streamSym },
   pino,
 } = require('pino')
+const pinoPretty = require('pino-pretty')
 const SonicBoom = require('sonic-boom')
 
 const closedLogger = { closed: true }
@@ -40,8 +41,9 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     logger = Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
   } else {
     const prettyPrint = format === 'pretty'
-    let colorize, dest
+    let colorize
     if (typeof (destination || (destination = {})).write !== 'function') {
+      let dest
       const { file, bufferSize, ...destOpts } = destination
       if (bufferSize != null) destOpts.minLength = bufferSize
       if (file && !(dest = standardStreams[file])) {
@@ -53,61 +55,32 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
       destOpts.dest = dest || 1
       destination = new SonicBoom(Object.assign({ mkdir: true, sync: true }, destOpts))
     }
-    close()
-    logger = pino(
-      {
-        name,
-        base: {},
-        level,
-        formatters: { level: levelFormat === 'number' ? (_, level) => ({ level }) : (level) => ({ level }) },
-        hooks: {
-          // NOTE logMethod only called if log level is enabled
-          logMethod (args, method) {
-            const arg0 = args[0]
-            if (arg0.constructor === Object) {
-              const { file, line, stack, ...obj } = arg0
-              // NOTE we assume file key is a file.src object
-              args[0] = file ? Object.assign(obj, reshapeFileForLog(arg0)) : obj
-            }
-            method.apply(this, args)
-          },
-        },
-        prettyPrint: prettyPrint && {
-          customPrettifiers: {
-            file: ({ path: path_, line }) => (line == null ? path_ : `${path_}:${line}`),
-            stack: (stack, _, log) => {
-              let prevSource = log.source
-              return stack
-                .map(({ file: { path: path_, line }, source }) => {
-                  const file = `${path_}:${line}`
-                  const repeatSource =
-                    prevSource &&
-                    source.url === prevSource.url &&
-                    source.refname === prevSource.refname &&
-                    source.startPath === prevSource.startPath
-                  prevSource = source
-                  if (repeatSource) return `\n    file: ${file}`
-                  const { url, worktree, refname, startPath } = source
-                  source = worktree
-                    ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
-                    : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`
-                  return `\n    file: ${file}\n    source: ${source}`
-                })
-                .join('')
-            },
-            source: ({ url, worktree, refname, startPath }) =>
-              worktree
-                ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
-                : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
-          },
-          translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
-          ...(colorize ? undefined : { colorize: false }),
+    const config = {
+      name,
+      base: {},
+      level,
+      formatters: { level: levelFormat === 'number' ? (_, level) => ({ level }) : (level) => ({ level }) },
+      hooks: {
+        // NOTE logMethod only called if log level is enabled
+        logMethod (args, method) {
+          const arg0 = args[0]
+          if (arg0.constructor === Object) {
+            const { file, line, stack, ...obj } = arg0
+            // NOTE we assume file key is a file.src object
+            args[0] = file ? Object.assign(obj, reshapeFileForLog(arg0)) : obj
+          }
+          method.apply(this, args)
         },
       },
-      destination
-    )
-    logger[streamSym].flushSync = logger.silent // better alternative to suppressFlushSyncWarning option
-    if (prettyPrint) logger[streamSym].stream = destination
+    }
+    close()
+    if (prettyPrint) {
+      logger = pino(config, createPrettyDestination(destination, colorize))
+      logger[streamSym].stream = destination
+    } else {
+      logger = pino(config, destination)
+    }
+    logger[streamSym].flushSync = logger.silent // we do our own flush
   }
   rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))
   return module.exports
@@ -140,6 +113,41 @@ function get (name) {
 function finalize () {
   close()
   return Promise.all(finalizers.splice(0, finalizers.length)).then(() => (rootLoggerHolder.get() || {}).failOnExit)
+}
+
+function createPrettyDestination (destination, colorize) {
+  return pinoPretty({
+    destination,
+    customPrettifiers: {
+      file: ({ path: path_, line }) => (line == null ? path_ : `${path_}:${line}`),
+      stack: (stack, _, log) => {
+        let prevSource = log.source
+        return stack
+          .map(({ file: { path: path_, line }, source }) => {
+            const file = `${path_}:${line}`
+            const sameSource =
+              prevSource &&
+              source.url === prevSource.url &&
+              source.refname === prevSource.refname &&
+              source.startPath === prevSource.startPath
+            prevSource = source
+            if (sameSource) return `\n    file: ${file}`
+            const { url, worktree, refname, startPath } = source
+            source = worktree
+              ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
+              : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`
+            return `\n    file: ${file}\n    source: ${source}`
+          })
+          .join('')
+      },
+      source: ({ url, worktree, refname, startPath }) =>
+        worktree
+          ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
+          : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
+    },
+    translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
+    ...(colorize ? undefined : { colorize: false }),
+  })
 }
 
 function reshapeFileForLog ({ file: { abspath, origin, path: vpath }, line, stack }) {
