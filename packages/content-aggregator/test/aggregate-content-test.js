@@ -5215,7 +5215,7 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const expectedMessage = `Error: self signed certificate (url: ${repoBuilder.url})`
+      const expectedMessage = new RegExp(`^Error: self.signed certificate \\(url: ${regexpEscape(repoBuilder.url)}\\)`)
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedMessage)
     })
