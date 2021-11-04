@@ -28,7 +28,7 @@ It's applied automatically at runtime when a resource ID is entered into an Asci
 == Embed a block image
 
 The example below assumes that the image and page belong to the same component version and module.
-Only the xref:resource-id-coordinates.adoc#id-resource[file coordinate] of the xref:resource-id-coordinates.adoc#target[target resource] needs to be entered in the resource ID when the xref:resource-id.adoc#current-page[current page] and target image belong to the same component version and module.
+Only the xref:resource-id-coordinates.adoc#id-resource[file coordinate] of the xref:resource-id-coordinates.adoc#target[target resource] needs to be entered in the resource ID when the xref:resource-id-coordinates.adoc#current[current page] and target image belong to the same component version and module.
 
 . On a new line, enter the macro's name followed by two colons, `image::`.
 Make sure there is a blank line between the previous element, such as a paragraph or source block, and the line where you place the image macro.

@@ -30,7 +30,7 @@ A few Antora keys and AsciiDoc attributes accept the resource ID of a page as a 
 When you reference a resource, the published result depends on the AsciiDoc syntax you use to reference the resource, the family of the resource, and, occasionally, the file format of the resource and a site visitor's browser settings.
 For example, if you enter the resource ID for an image into an image macro, the image will be embedded in the page at the image macro's location.
 However, if you enter the image's resource ID into an xref macro, a link to the image's published location will be displayed in the page.
-How many resource ID coordinates you need to specify when referencing a resource depends on the component version and module of the <<current-page,current page>> in relation to the <<target-page,target resource>>.
+How many resource ID coordinates you need to specify when referencing a resource depends on the component version and module of the xref:resource-id-coordinates.adoc#current[current page] in relation to the xref:resource-id-coordinates.adoc#target[target resource].
 ////
 
 [#important]
