@@ -1,6 +1,7 @@
 = What's New in Antora {page-component-version}
 :doctype: book
-:page-toclevels: 0
+//:page-toclevels: 0
+:leveloffset: 1
 :url-releases-asciidoctor: https://github.com/asciidoctor/asciidoctor/releases
 :url-releases-asciidoctorjs: https://github.com/asciidoctor/asciidoctor.js/releases
 :url-gitlab: https://gitlab.com
@@ -11,95 +12,58 @@
 NOTE: Interested in upgrading to Antora {page-component-display-version} and testing it out now?
 See xref:install:upgrade-antora.adoc[] for instructions and a list of features to update before upgrading.
 
-= Antora 3.0.0-alpha.10
+= Antora 3.0.0-beta.1
 
-_**Release date:** 2021.10.22 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
-
-== All about symlinks
-
-There's now documentation explaining how to create symlinks in git repositories and on Unix, Unix-like (*nix), and Windows operating systems.
-See xref:symlinks.adoc[] to learn how to remap files using symlinks, how Antora handles symlinks to files and directories, and what limitations to keep in mind when using symlinks with Antora.
-
-== Attachments now have resource IDs
-
-Attachments are now referenced using their Antora resource IDs and the xref macro.
-Like when including a partial or example, use the `attachment$` family coordinate to cross reference an attachment.
-
-[source]
-----
-Download xref:attachment$project.zip[The Sample Project].
-----
-
-See xref:page:attachments.adoc[] and xref:navigation:reference-resources.adoc[] for more examples.
-
-Using the AsciiDoc link macro (`+link:[]+`) and `+{attachmentsdir}+` attribute reference in the target value to reference an attachment has been deprecated in Antora 3 and will be removed in Antora 4.
+_**Release date:** 2021.11.03 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 == Resolved issues
 
 === Added
 
-Issue {url-issues}/428[#428^]:: Add support for `./` token at start of path in resource ID as shorthand for current topic path.
-Issue {url-issues}/603[#603^]:: Allow the xref macro (`+xref:[]+`) to be used to create a reference to any publishable resource, not just pages.
-Also allow the xref attribute (`xref=`) on image macros to be used to create a reference to any publishable resource, not just pages.
-Issue {url-issues}/735[#735^]:: Add support for `link=self` attribute on image macros.
-Issue {url-issues}/800[#800^]:: Log error if image with local target or value of xref attribute on image cannot be resolved.
-Issue {url-issues}/847[#847^]:: Add `gitlab` redirect facility for generating redirects that can be used with GitLab Pages, and add `gitlab` as a valid option for the `urls.redirect_facility` key.
-
-=== Fixed
-
-Issue {url-issues}/790[#790^]:: Don't warn if a page declares the manpage doctype.
-
-=== Changed
-
-Issue {url-issues}/603[#603^]::
-* Add the `xref` role to the link created from a non-internal xref macro (e.g., `xref page`).
-* Replace the `page` role with the `xref` role on the link created from an xref macro that could not be resolved (e.g., `xref unresolved`).
-* Rename the `link-page` role to `xref-` followed by the family name (e.g., `xref-page`) on element created for an image macro that has an non-internal xref target.
-* Don't add role to element created for an image macro that has an internal xref target.
-* Add only the `xref-unresolved` role to element created for an image macro that has an unresolved xref target.
-Issue {url-issues}/692[#692^]:: Add `unresolved` role to image if target is local and it cannot be resolved.
-Issue {url-issues}/788[#788^]:: Log unhandled error at fatal level.
-Issue {url-issues}/855[#855^]:: Begin CLI error message with name of base call (i.e., `antora:`) instead of generic `error:` prefix.
-
-= Antora 3.0.0-alpha.9
-
-_**Release date:** 2021.08.26 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
-
-== More new documentation
-
-* The reserved value `~`, when assigned to the `version` key, defines an unversioned component version.
-The `~` value replaces the deprecated value `master`.
-See xref:component-with-no-version.adoc[] to learn more.
-* Updated and improved information to help you choose xref:content-source-versioning-methods.adoc[a versioning strategy for your content].
-
-== Resolved issues
-
-=== Added
-
-Issue {url-issues}/779[#779^]:: Add `git.fetch_concurrency` key to playbook schema to control the maximum number of fetch or clone operations that are permitted to run at once.
-Issue {url-issues}/829[#829^]:: Don't use an HTTP(S) proxy if the value of the `network.no_proxy` key in the playbook is `*`.
+Issue {url-issues}/868[#868^]::
+* Allow Antora extensions to replace functions on generator context that get used by default site generator.
+Antora binds the generator context to each function automatically.
+* Add `GeneratorContext#getFunctions` method to access functions on generator context.
+Issue {url-issues}/857[#857^]:: Allow custom site generator to be configured in playbook using `antora.generator` key.
+Issue {url-issues}/856[#856^]:: Add a `beforeValidate` callback as the fourth parameter to `buildPlaybook`.
+Issue {url-issues}/813[#813^]::
+* Add `@antora/logger` as dependency to default site generator.
+* Add `GeneratorContext#getLogger` method to retrieve an instance of the logger.
+* Add `GeneratorContext#getVariables` method to access content variables.
 
 === Changed
 
-Issue {url-issues}/690[#690^]:: Switch back to using versionless default cache folder for managed content repositories.
-Issue {url-issues}/837[#837^]:: Upgrade sonic-boom to 2.0.x.
+Node.js:: Set Node.js 12.21.0 as minimum supported Node.js version.
+Update Antora Docker image to use Node.js 16.
+Dependencies:: Upgrade dependencies and drop workarounds for Node.js < 12.
+Issue {url-issues}/686[#686^]:: Enable more powerful pattern matching for refname patterns (branches, tags, worktrees); align with pattern matching for start paths.
+Issue {url-issues}/870[#870^]:: Ignore regex modifiers and instead enable extglob for all patterns (branches, tags, worktrees, version, start paths).
+Issue {url-issues}/864[#864^]:: Move logic for postprocessing playbook config data to `beforeValidate` function defined in the schema.
+Issue {url-issues}/862[#862^]:: Configure logger in the CLI instead of the playbook builder.
+Issue {url-issues}/860[#860^]:: Rename Pipeline class to GeneratorContext.
+Bind the generator context to the `register` function of an extension unless declared as the first parameter.
+Issue {url-issues}/859[#859^]:: Rename `pipeline` category key in playbook schema to `antora` (e.g., `antora.extensions`).
+Issue {url-issues}/857[#857^]:: If generator accepts a single parameter, build playbook in CLI and pass to generator.
+Default branch pattern:: Change default branches pattern for content sources to `HEAD, v{0..9}*` to avoid matching words that begin with `v`.
+Default site generator:: Rename `updateVars` on GeneratorContext to `updateVariables`.
 
 === Fixed
 
-Issue {url-issues}/828[#828^]:: Don't camelCase keys in value of `version` key on content source.
-Issue {url-issues}/779[#779^]:: If an error is thrown while loading or scanning a repository, allow any clone or fetch operations already underway to complete.
-Issue {url-issues}/838[#838^]:: Always sort prerelease versions before non-prerelease versions.
-Asciidoctor logger:: Sync Asciidoctor log level to Antora log level when Antora log level is `debug`.
-Set context on Asciidoctor logger before calling `register` function of extensions to match behavior of Asciidoctor.
+Issue {url-issues}/865[#865^]:: Handle symlink target that has trailing path separator.
 
-= Antora 3.0.0-alpha.8
+= Highlights
 
-_**Release date:** 2021.08.13 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+== Attachment resource IDs
 
-== Antora pipeline extensions
+Attachments are now referenced with the AsciiDoc xref macro and their Antora resource IDs.
+Make sure to enter the `attachment$` family coordinate in its resource ID when referencing it.
+See xref:page:attachments.adoc[] for examples.
+
+== Antora extensions
 
 Antora now provides a lightweight, event-based extension facility that you can tap into to augment or influence the functionality of the site generator.
 The extension facility is designed for users of all experience levels.
+Extensions can be configured using the `antora.extensions` keys in the playbook.
 
 To learn more, see:
 
@@ -117,290 +81,145 @@ To learn more, see:
 * xref:extend:generator-events-reference.adoc[]
 * xref:extend:generator-context-reference.adoc[]
 
-== More new documentation
+== Structured JSON and prettified logging
 
-Preliminary documentation for the following new features is now available:
+Antora now provides the infrastructure for logging, shaping, and reporting application messages with the introduction of the Antora Logger component.
+All application and Asciidoctor messages, except for CLI warnings, are routed through the logger by default.
+
+The logging in Antora 3 can be configured with the following keys:
 
 * The xref:playbook:runtime-log-format.adoc[log.format playbook key] specifies the format of the log messages.
-* The xref:playbook:urls-latest-version-segment.adoc[urls.latest_version_segment playbook key] replaces the actual version with the symbolic version in the published page and asset URLs of the latest component version.
-As the key's name implies, it only applies to the latest version of each component version in a site.
-* The xref:playbook:urls-latest-prerelease-version-segment.adoc[urls.latest_prerelease_version_segment playbook key] replaces the actual version with a symbolic prerelease version in the published page and asset URLs of the latest prereleases in your site.
-* The xref:playbook:urls-latest-version-segment-strategy.adoc[urls.latest_version_segment_strategy playbook key] controls the replacement and redirect direction between publishable URLs containing the actual version and URLs containing the symbolic version.
-* The xref:playbook:git-plugins.adoc[git.plugins key] provides a way to specify predefined plugins to load into the git client used by Antora.
-* The xref:playbook:content-worktrees.adoc[worktrees key] controls which worktrees Antora uses when locating branches in a location repository.
-* The author mode page now provides a step-by-step guide for setting up xref:playbook:author-mode.adoc#multiple-worktrees[multiple worktrees] for local authoring.
-
-To help support the new version and URL features, there's now documentation explaining xref:how-antora-builds-urls.adoc[] and high-level descriptions of Antora's xref:version-facets.adoc[] to help you decide what keys to use when configuring a version of a component.
-
-NOTE: The preliminary documentation mentions new configuration keys, such as `sources.version` ({url-issues}/762[#762^]), or changed values, such as `version: ~` ({url-issues}/760[#760^]), that haven't been documented yet.
-These new pages and updates are in the works.
-(There's a brief description of the new `~` value that <<versionless,defines an unversioned component version>> that may help you in the meantime.)
-
-== Resolved issues
-
-=== Added
-
-Issue {url-issues}/305[#305^]:: Assign location of git directory for local or cloned remote repository to `src.origin.gitdir` property on virtual file.
-Set `src.origin.worktree` property on virtual file to `null` if repository is local and reference is not mapped to a worktree.
-Issue {url-issues}/775[#775^]:: Allow git plugins to be specified in the playbook using the `git.plugins` key.
-Issue {url-issues}/799[#799^]::
-* Introduce an event-based extension facility that notifies listeners added by extensions of significant events, at the same time providing access to in-scope pipeline variables.
-* Add `pipeline` category to the playbook schema to configure the pipeline of the site generator.
-* Add `extensions` key to the `pipeline` category to specify extensions that listen for pipeline events.
-* Emit events at key transition points in the site generator, to which listeners added by extensions can respond to.
-* Introduce a Pipeline object that allows extensions to add listeners and provides helpers for writing extensions.
-Issue {url-issues}/810[#810^]:: Map repeatable CLI option named `--extension` to add an entry to or enable an existing entry in the `pipeline.extensions` key in the playbook.
-Don't register pipeline extension if extension configuration has a key named `enabled` with a value of `false` and the extension is not enabled from the CLI.
-
-=== Changed
-
-Issue {url-issues}/703[#703^]:: Output version of default site generator in addition to version of CLI when `antora -v` is called.
-Related to issue {url-issues}/764[#764^]:: Set `src.origin.url` property on virtual file when repository has no remote even when using worktree.
-In this case, the value is the file URI for the local repository.
-Issue {url-issues}/793[#793^]:: Ignore backup files (files that end with `+~+`) when reading supplemental UI files and UI bundle from directory.
-Issue {url-issues}/802[#802^]:: Integrate @antora/user-require-helper to require code provided by the user (i.e., Asciidoctor extensions, Antora pipeline extensions, custom providers for the site publisher, user scripts, custom site generator, etc).
-Issue {url-issues}/805[#805^]:: Attach map of environment variables to non-enumerable `env` property on playbook.
-Issue {url-issues}/817[#817^]:: Store files in content catalog by family and in UI catalog by type.
-_(Internal change only)._
-
-=== Fixed
-
-Issue {url-issues}/794[#794^]:: Publish dot files from UI bundle if matched by an entry in the list of static files in the UI descriptor.
-Issue {url-issues}/795[#795^]:: End destination stream for logger in finalize call when log format is pretty.
-Issue {url-issues}/804[#804^]:: Include source information in error message for duplicate alias when component is unknown.
-Issue {url-issues}/816[#816^]:: Gracefully handle case when remote URL for local content source uses explicit `ssh://` protocol and port.
-Issue {url-issues}/823[#823^]:: Show location and reason of syntax error in user code when `--stacktrace` option is specified.
-
-= Antora 3.0.0-alpha.7
-
-_**Release date:** 2021.06.26 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
-
-== Deprecations and breaking changes notice
-
-The following deprecations and breaking changes will be final with the release of Antora 3.0.
-
-=== Custom git credential manager
-
-Upgrading isomorphic-git forced a change to how a custom git credential manager is registered.
-Previously, this was done using `git.cores.create('antora').set('credentialManager', customCredentialManager)`.
-However, isomorphic-git no longer includes the `cores` (aka plugin) API, so this call is going to fail.
-Antora still honors the `cores` API, but the call to register the credential manager is now responsible for creating it (since it runs before Antora loads).
-Refer to xref:playbook:private-repository-auth.adoc#custom[Configure a custom credential manager] for the latest instructions.
-
-== New documentation
-
-Preliminary documentation for the following new features is now available:
-
 * The xref:playbook:runtime-log-level.adoc[log.level playbook key] specifies a severity threshold, such as `debug` or `error`, that must be met for a message to be logged.
 * The xref:playbook:runtime-log-failure-level.adoc[log.failure_level playbook key] specifies the severity threshold that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
+* The xref:playbook:runtime-log-format.adoc#level-format-key[log.level_format key] allows the log level format of JSON messages to be configured as numbers of labels.
 * The xref:playbook:asciidoc-sourcemap.adoc[asciidoc.sourcemap key] provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor extensions.
+* The `runtime.log.destination` category in the playbook supports writing log messages to a file or standard stream, with additional settings for buffer size, sync, and append.
+(_Documentation pending. See {url-issues}/819[#819^]_.)
 
-=== Asciidoctor 2 feature changes and suggested fixes
+== Latest version URL customizations
 
-In the <<alpha3-dependencies,previous Antora 3.0.0-alpha.3 release>>, support for Asciidoctor.js 1.5.9 (which provides Asciidoctor 1.5.8) was dropped and Antora switched to depending on the latest patch version of Asciidoctor.js 2.2 (which provides Asciidoctor 2.0.x).
+You can now configure the version segment in the URLs of your latest stable and prerelease component version.
+The xref:playbook:urls-latest-version-segment.adoc[urls.latest_version_segment playbook key] replaces the actual version with the symbolic version in the published page and asset URLs of the latest component version.
+As the key's name implies, it only applies to the latest version of each component version in a site.
+The xref:playbook:urls-latest-prerelease-version-segment.adoc[urls.latest_prerelease_version_segment playbook key] replaces the actual version with a symbolic prerelease version in the published page and asset URLs of the latest prereleases in your site.
 
-Asciidoctor 2 introduces a few substantive changes to existing features that may impact your documentation source content or UI.
-See xref:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora 3.
+You can also control the replacement and redirect direction between publishable URLs containing the actual version and URLs containing the symbolic version with the xref:playbook:urls-latest-version-segment-strategy.adoc[urls.latest_version_segment_strategy playbook key].
 
-To test your documentation for AsciiDoc syntax problems or try out Antora's new features before Antora 3 is final, see xref:install:upgrade-antora.adoc[] for instructions on how to upgrade to the latest prerelease of Antora.
+.Version Choices
+****
+Antora 3 provides several new features for configuring the version of a component.
+To help support these new version features, there's now documentation explaining xref:how-antora-builds-urls.adoc[] and high-level descriptions of Antora's xref:version-facets.adoc[] to help you decide what keys to use when configuring a version of a component.
+We've also updated the information about choosing xref:content-source-versioning-methods.adoc[a versioning strategy for your content].
+****
 
-== Resolved issues
+== New unversioned component version value
 
-IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+Since the first release of Antora, the version `master` has been given special meaning to identify a versionless component version.
+Using that term for this purpose was a mistake and we're correcting it.
 
-=== Added
+In Antora 3.0, we're deprecating the use of the version `master` for this purpose.
+The reason we're phasing out this term is because it's not descriptive, it infers that the version is coupled to the branch (which it's not), and it glorifies an immoral system based on human exploitation.
+In short, the term just isn't appropriate and we want to move away from it.
 
-Issue {url-issues}/220[#220^]:: Add a completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set).
-Issue {url-issues}/368[#368^]:: Catalog example and partial files that do not have a file extension (e.g., Dockerfile).
-Issue {url-issues}/403[#403^]:: Log error message when target of xref is not found.
-Issue {url-issues}/767[#767^]:: Add built-in support for writing log messages to a file or standard stream, configured using the `runtime.log.destination` category in the playbook, with additional settings for buffer size, sync, and append.
-Map the `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `runtime.log.destination.file` key in playbook.
-Issue {url-issues}/776[#776^]:: Add xref:playbook:asciidoc-sourcemap.adoc[sourcemap key] to `asciidoc` category (default: `false`), mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor.
-Issue {url-issues}/780[#780^]:: Add `level_format` key to `log` category (default: `label`), mapped to `--log-level-format` CLI option, to allow log level format to be configured.
-Use numeric log level in JSON log message if log level format is `number`.
+Now, you can identify a versionless component version by assigning the tilde (`~`) (shorthand for `null`) to the `version` key in the component version descriptor file ([.path]_antora.yml_).
+See xref:component-with-no-version.adoc[] to learn more.
 
-=== Changed
+== Map version to git refname
 
-Issue {url-issues}/403[#403^]:: Change "include target" to "target of include" in error message for missing include.
-Issue {url-issues}/706[#706^]:: Ignore backup files (files that end with `+~+`) when scanning content source.
-Issue {url-issues}/733[#733^]:: Upgrade CLI library to commander.js 7.2.
-Issue {url-issues}/769[#769^]:: Use converter registered for the html5 backend instead of always using the built-in HTML5 converter.
-Detect when registered html5 converter has changed and recreate extended converter to use it.
-Issue {url-issues}/774[#774^]:: Upgrade git client to isomorphic-git 1.8.x and update code to accommodate changes to its API.
-Issue {url-issues}/776[#776^]:: Include line number and correct file in xref error message when `sourcemap` is enabled on AsciiDoc processor.
-Issue {url-issues}/778[#778^]:: Configure CLI to recognize options that accept a fixed set of values and validate value before proceeding.
-Rename options to choices in help text.
-Combine choices and default value together in help text for option that accepts a fixed set of values.
-Issue {url-issues}/784[#784^]:: Remove `structured` as possible value of `log.format`, preferring `json` instead.
-Issue {url-issues}/785[#785^]:: Rename `--failure-level` option to `--log-failure-level`.
-Rename `silent` value on `runtime.log.failure_level` to `none`.
-Antora logger:: Set `fatal` as default value for `runtime.log.failure_level`; remove `all`, `debug`, and `info` from allowable set of values.
-Don't set name on root logger so it isn't included in raw JSON message.
-
-=== Fixed
-
-Issue {url-issues}/771[#771^]:: Port fixes for include tags processing from Asciidoctor.
-
-= Antora 3.0.0-alpha.6
-
-_**Release date:** 2021.06.07 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
-
-== Resolved issues
-
-IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
-
-=== Added
-
-Issue {url-issues}/145[#145^]:: Introduce a new component that provides the infrastructure for logging, shaping, and reporting application messages.
-+
---
-All application messages (except for CLI warnings and uncaught errors) are routed through the logger.
-This feature is enabled by default.
-The logger is configured once per run of Antora by the runtime.log category in the playbook.
-
-Messages are either emitted in a structured (JSON) log format so they can be piped to a separate application for processing/transport or in a pretty format to make them easier for an author to comprehend.
-But default, structured (JSON) messages are logged to stdout if the CI environment variable is set.
-Otherwise, pretty messages are logged to stderr.
-
-As part of this change, messages logged by Asciidoctor are routed to the Antora logger and decorated with additional context from Antora (e.g., file, line, and include stack details).
---
-Issue {url-issues}/749[#749^]:: Add support for proxy settings to the git client and UI downloader.
-Both components now use the same HTTP library (simple-get).
-+
-The git client and UI downloader honor proxy settings defined in the `network` category in the playbook.
-The `http_proxy`, `https_proxy`, and `no_proxy` environment variables are mapped to respective keys in the playbook.
-
-=== Changed
-
-Issue {url-issues}/766[#766^]:: Report include location in log message when include tag(s) cannot be found.
-+
-This change allows the location of the include file to be shown in log messages.
-
-=== Fixed
-
-Issue {url-issues}/764[#764^]:: Assign file URL to `src.origin.url` on virtual file if repository has no remote and not using worktree.
-This change allows the location of the local git repository to be shown in log messages.
-Issue {url-issues}/765[#765^]:: Add file info to reader before pushing include onto the stack so it stays in sync if file is empty.
-This change fixes how the target of an include that follows an empty include is resolved.
-
-= Antora 3.0.0-alpha.5
-
-_**Release date:** 2021.05.14 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
-
-== Resolved issues
-
-IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
-
-=== Added
-
-Issue {url-issues}/188[#188^]:: Add full support for resolving symlinks located in the git tree of a content source.
-Provide a clear error message when a broken symlink or symlink cycle is detected in the git tree.
-Issue {url-issues}/296[#296^]:: Allow the component version string for a content source to be derived from the git refname.
-+
-The mapping is defined using a map of pattern and replacements on the `version` key on the content source in the playbook or on the `version` key in the component descriptor.
+The version for a component version can be derived from the git refname.
+The mapping is defined using patterns and replacements on the `version` key on the content source in the playbook or on the `version` key in the component descriptor.
 The replacement that corresponds to first pattern that matches will be used.
 If no pattern is matched, or the value of version is `true`, the refname will be used as the version.
+(_Documentation pending. See {url-issues}/761[#761^] and {url-issues}/762[#762^]_.)
 
-=== Fixed
+== Symlinks
 
-Issue {url-issues}/747[#747^]:: Add full support for resolving symlinks that originate from the worktree of a local content source.
-Provide a clear error message when a broken symlink or symlink cycle is detected in worktree.
+Antora now supports symlinks in git repositories and on Unix, Unix-like (*nix), and Windows operating systems.
+See xref:symlinks.adoc[] to learn how to remap files using symlinks, how Antora handles symlinks to files and directories, and what limitations to keep in mind when using symlinks with Antora.
 
-NOTE: All symlink tests are now verified on Windows in addition to Linux.
+== Linked worktrees with filtering
 
-= Antora 3.0.0-alpha.4
+It's now possible to use linked worktrees with Antora.
+A linked worktree allows a user to keep multiple branches checked out at once.
+(In other words, have one worktree per branch).
+Linked worktrees can be useful for editing content across branches.
 
-_**Release date:** 2021.05.01 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+The xref:playbook:content-worktrees.adoc[worktrees key] controls which worktrees Antora uses when locating branches in a location repository.
+By default, Antora will only use the main worktree (i.e., `worktrees: .`), as it has always done.
+If you set the `worktrees` key on the content source to `true`, Antora will automatically discover and use linked worktrees as well.
+To give you even more control, you can filter which linked trees are discovered by specifying a pattern (e.g., `v2.*`).
+The author mode page provides a step-by-step guide for setting up xref:playbook:author-mode.adoc#multiple-worktrees[multiple worktrees] for local authoring.
 
-== Deprecations and breaking changes notice
+== New default branches pattern
 
-The following deprecations and breaking changes will be final with the release of Antora 3.0.
-
-=== Default branches pattern
-
-If the branches key is absent on both the `content` key and the content source, Antora will use the default branches pattern.
-This pattern has been changed from `[master, v*]` to `[HEAD, v*]`.
+If the `branches` key is absent on both the `content` and `content.sources` keys, Antora uses the default branches pattern.
+This pattern has changed from `[master, v*]` to `HEAD, v{0..9}*`.
 
 `HEAD` is a symbolic name that refers to the default branch for remote repositories (as set on the git host) and the current branch for local repositories.
 It's very unlikely this will cause a change when using remote repositories.
 For local repositories, it may result in the worktree being used in cases it wasn't previously.
 
-=== Using worktrees
+== New git playbook keys
 
-It's now possible to use https://git-scm.com/docs/git-worktree[linked worktrees^] with Antora.
-A linked worktree allows a user to keep multiple branches checked out at once. (In other words, have one worktree per branch).
-Linked worktrees can be very useful for editing content across branches.
+The xref:playbook:git-plugins.adoc[git.plugins key] provides a way to specify predefined plugins to load into the git client used by Antora.
 
-By default, Antora will only use the main worktree (i.e., `worktrees: .`), as it has always done.
-If you set the `worktrees` key on the content source to `true`, Antora will automatically discover and use linked worktrees as well.
-To give you even more control, you can filter which linked trees are discovered by specifying a pattern (e.g., `v2.*`).
+The `git.fetch_concurrency` key controls the maximum number of fetch or clone operations that are permitted to run at once.
+(_Documentation pending._)
 
-To disable use of the main worktree, either set the `worktrees` key to `false` or only specify a pattern (e.g., `*`).
-This is an alternative approach to pointing the content source directly at the [.path]_.git_ folder to disable the main worktree, as previously recommended.
+== Asciidoctor 2
 
-If you want to use the main worktree and filter the linked worktrees, add `.` as the first entry in the value (e.g., `+., v2.*+`).
+Antora 3.0 depends on the latest patch version of Asciidoctor.js 2.2, which provides Asciidoctor 2.0.x.
+Support for Asciidoctor.js 1.5.9 (Asciidoctor 1.5.8) has been removed.
+Asciidoctor 2 introduces a few substantive changes to existing features that may impact your documentation source content or UI.
+See xref:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora 3.
 
-== Resolved issues
+== Deprecations
 
-IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
+The following deprecations will be final with the release of Antora 3.0.
 
-=== Added
+* The default branches pattern of `[master, v*]` is deprecated; the default branches pattern is now `HEAD, v{0..9}*`.
+* Referencing attachments with the link macro (`+link:[]+`) is deprecated; use the AsciiDoc xref macro and the resource ID of the attachment instead.
+* The `attachmentsdir` attribute is deprecated.
+Don't use the `+{attachmentsdir}+` attribute reference to reference an attachment; use the xref:page:attachments.adoc[attachment's resource ID] instead.
+* Using parent references in the target of the AsciiDoc include directive; use the resource ID of the page, partial, or example instead.
+* The `partialsdir` and `examplesdir` attributes are deprecated.
+Use the resource ID of the xref:page:include-a-partial.adoc[partial] or xref:page:include-an-example.adoc[example] to reference the resource instead.
+* Using the value `master` to represent an unversioned (empty) version when assigned to the `version` key in a component descriptor file is deprecated; use the tilde symbol (`~`) to represent an unversioned component version instead.
+In Antora 4, the value `master`, when assigned to the `version` will be treated as a regular value.
+* The fallback mechanism that automatically assigned the _.adoc_ file extension to the resource IDs of pages if it was missing in AsciiDoc xref macros and `page-aliases` values is deprecated in to make way for using non-AsciiDoc pages in AsciiDoc xref macros.
+* isomorphic-git no longer includes the `cores` API.
+Antora still honors the `cores` API, but the call to register the credential manager is now responsible for creating it because it runs before Antora loads.
+Refer to xref:playbook:private-repository-auth.adoc#custom[Configure a custom credential manager] for the latest instructions.
 
-Issue {url-issues}/742[#742^]:: Automatically detect and use linked worktrees registered with a local content source (i.e., a local git clone).
-+
-Allow worktrees to be filtered or disabled using the `worktrees` key on the content source.
-This is an alternative approach to pointing the content source directly at the [.path]_.git_ folder as previously recommended.
+See <<deprecated>> and <<removed>> for more information.
 
-=== Changed
+= Issues resolved in Antora 3.0.0-alpha.x
 
-Issue {url-issues}/522[#522^] (revisited):: Release lock on Asciidoctor.js patch version so newer patch releases of Asciidoctor.js 2.2 are installed automatically when Antora is installed.
-Issue {url-issues}/737[#737^]:: Update default branches pattern for content sources to `[HEAD, v*]`.
+== Added
 
-=== Fixed
-
-Issue {url-issues}/700[#700^] (revisited):: Fix error message from being printed twice in certain cases when `--stacktrace` option is passed to CLI.
-Issue {url-issues}/739[#739^]:: Provide fallback link text for an xref when the target matches relative src path of current page.
-Previously, the link text would end up being `[]` in this scenario.
-Issue {url-issues}/745[#745^]:: Upgrade marky dependency to allow isomorphic-git to work on Node.js 16.
-Node.js 16 has also been added to the CI matrix so the test suite is run on Node.js 16 nightly.
-
-= Antora 3.0.0-alpha.3
-
-_**Release date:** 2021.04.15 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
-
-== Deprecations and breaking changes notice
-
-The following deprecations and breaking changes will be final with the release of Antora 3.0.
-
-[#alpha3-dependencies]
-=== Dependencies
-
-Antora now automatically depends on the latest patch version of Asciidoctor.js 2.2 (e.g., 2.2.3).
-Support for Asciidoctor.js 1.5.9 has been dropped.
-
-[#versionless]
-=== Specifying the versionless component version
-
-Since the first release of Antora, the version `master` has been given special meaning to identify a versionless component version.
-Using that term for this purpose was a mistake and we're correcting it.
-
-When a component version is "versionless", it means the URL for that component version and its resources do not have a version segment (e.g., [.path]_/component-name/module-name/page-name.html_ instead of [.path]_/component-name/module-name/version-name/page-name.html_).
-In Antora 3.0, we're deprecating the use of the version `master` for this purpose.
-The reason we're phasing out this term is because it's not descriptive, it infers that the version is coupled to the branch (which it's not), and it glorifies an immoral system based on human exploitation.
-In short, the term just isn't appropriate and we want to move away from it.
-
-Instead, you should identify a versionless component version by assigning the tilde (`~`) (shorthand for `null`) to the version key in the component version descriptor file ([.path]_antora.yml_).
-See xref:component-with-no-version.adoc[] to learn more.
-
-== Resolved issues
-
-IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
-
-=== Added
-
+Issue {url-issues}/145[#145^]:: Introduce the Antora Logger component to provide the infrastructure for logging, shaping, and reporting application messages.
+Issue {url-issues}/150[#150^]:: Allow extracted UI bundle to be loaded from directory.
+Issue {url-issues}/188[#188^]:: Add full support for resolving symlinks located in the git tree of a content source.
+Issue {url-issues}/220[#220^]:: Add a completion status message to stdout that shows file URI to local site when terminal is a TTY (and `--quiet` is not set).
+Issue {url-issues}/296[#296^]:: Allow the component version string for a content source to be derived from the git refname.
+Issue {url-issues}/305[#305^]:: Assign location of git directory for local or cloned remote repository to `src.origin.gitdir` property on virtual file.
+Set `src.origin.worktree` property on virtual file to `null` if repository is local and reference is not mapped to a worktree.
+Issue {url-issues}/314[#314^]::
+* Add `urls.latest_version_segment_strategy`, `urls.latest_version_segment`, and `urls.latest_prerelease_version_segment` keys to playbook schema.
+* Replace latest version or prerelease version segment in out path and pub URL (unless version is master) with symbolic name, if specified.
+* Define `latestPrerelease` property on component version (if applicable) and use when computing latest version segment.
+* Use redirect facility to implement `redirect:to` and `redirect:from` strategies for version segment in out path / pub URL of latest and latest prerelease versions.
+Issue {url-issues}/355[#355^]:: Assign author to `page` object in UI model
+Issue {url-issues}/368[#368^]:: Catalog example and partial files that do not have a file extension (e.g., Dockerfile).
+Issue {url-issues}/403[#403^]:: Log error message when target of xref is not found.
+Issue {url-issues}/425[#425^]:: Assign primary alias to `rel` property on target page.
+Issue {url-issues}/428[#428^]:: Add support for `./` token at start of path in resource ID as shorthand for current topic path.
+Issue {url-issues}/603[#603^]:: Allow the xref macro (`+xref:[]+`) to be used to create a reference to any publishable resource, not just pages.
+Also allow the xref attribute (`xref=`) on image macros to be used to create a reference to any publishable resource, not just pages.
+Issue {url-issues}/605[#605^]:: Extract method to register start page for component version (`ContentCatalog#registerComponentVersionStartPage`).
+Issue {url-issues}/615[#615^]:: Store computed web URL of content source on `src.origin.webUrl` property of virtual file.
 Issue {url-issues}/669[#669^]:: Allow value of the `version` key in a component descriptor file to be `~` (shorthand for `null`) to indicate a versionless component version.
 Null is assigned using the tilde symbol (`~`) or the keyword `null`.
-Empty string is also accepted, but not as elegant.
 Internally, the value is coerced to empty string for practical purposes.
 +
 * If the version is empty (`version: ~`), don't add a version segment to `pub.url` and `out.path` (even if it's a prerelease).
@@ -410,133 +229,159 @@ Internally, the value is coerced to empty string for practical purposes.
 * If the version is not specified on an alias that specifies an unknown component, set the version to empty string.
 We expect this change to be internal and not affect any sites.
 * Add support for `+_+` keyword to refer to an empty version in a resource ID (e.g., `+_@page.html+`).
-
-=== Changed
-
-Issue {url-issues}/522[#522^]:: Upgrade to Asciidoctor.js 2.2.3 and allow installation of newer patch versions automatically.
-Issue {url-issues}/731[#731^]:: Add support for Node.js 12 and Node.js 14.
-Run tests nightly on Node.js 12 and 14 (in addition to Node.js 10).
-
-=== Fixed
-
-Issue {url-issues}/663[#663^]:: Don't crash if a stem block is empty.
-
-=== Deprecated
-
-Issue {url-issues}/669[#669^]:: Deprecate the value `master` to represent an empty (versionless) version when assigned to the `version` key in a component descriptor file; replace with the tilde symbol (`~`).
-
-=== Removed
-
-Issue {url-issues}/522[#522^]:: Drop support for Asciidoctor.js 1.5.9.
-By using Antora 3, you will automatically be upgraded to using Asciidoctor.js 2.2.x.
-
-= Antora 3.0.0-alpha.2
-
-_**Release date:** 2021.04.08 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
-
-== Resolved issues
-
-IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
-
-=== Added
-
-Issue {url-issues}/150[#150^]:: Allow extracted UI bundle to be loaded from directory.
 Issue {url-issues}/694[#694^]:: Store refname of content source on `src.origin.refname` property of virtual file.
+Issue {url-issues}/735[#735^]:: Add support for `link=self` attribute on image macros.
+Issue {url-issues}/742[#742^]::
+* Automatically detect and use linked worktrees registered with a local content source (i.e., a local git clone).
+* Allow worktrees to be filtered or disabled using the `worktrees` key on the content source.
+This is an alternative approach to pointing the content source directly at the [.path]_.git_ folder as previously recommended.
+Issue {url-issues}/749[#749^]:: Add support for proxy settings to the git client and UI downloader.
+Both components now use the same HTTP library (simple-get).
++
+The git client and UI downloader honor proxy settings defined in the `network` category in the playbook.
+The `http_proxy`, `https_proxy`, and `no_proxy` environment variables are mapped to respective keys in the playbook.
+Issue {url-issues}/767[#767^]:: Add built-in support for writing log messages to a file or standard stream, configured using the `runtime.log.destination` category in the playbook, with additional settings for buffer size, sync, and append.
+Map the `--log-file` CLI option and `ANTORA_LOG_FILE` environment variable to the `runtime.log.destination.file` key in playbook.
+Issue {url-issues}/775[#775^]:: Allow git plugins to be specified in the playbook using the `git.plugins` key.
+Issue {url-issues}/776[#776^]:: Add xref:playbook:asciidoc-sourcemap.adoc[sourcemap key] to `asciidoc` category (default: `false`), mapped to `--asciidoc-sourcemap` CLI option, to enable sourcemap on AsciiDoc processor.
+Issue {url-issues}/779[#779^]:: Add `git.fetch_concurrency` key to playbook schema to control the maximum number of fetch or clone operations that are permitted to run at once.
+Issue {url-issues}/780[#780^]:: Add `level_format` key to `log` category (default: `label`), mapped to `--log-level-format` CLI option, to allow log level format to be configured.
+Use numeric log level in JSON log message if log level format is `number`.
+Issue {url-issues}/799[#799^]::
+* Introduce an event-based extension facility that notifies listeners added by extensions of significant events, at the same time providing access to in-scope pipeline variables.
+//* Add `pipeline` category to the playbook schema to configure the pipeline of the site generator.
+* Add `extensions` key to specify extensions that listen for events.
+* Emit events at key transition points in the site generator, to which listeners added by extensions can respond to.
+//* Introduce a Pipeline object that allows extensions to add listeners and provides helpers for writing extensions.
+Issue {url-issues}/800[#800^]:: Log error if image with local target or value of xref attribute on image cannot be resolved.
+Issue {url-issues}/810[#810^]:: Map repeatable CLI option named `--extension` to add an entry to or enable an existing entry in the `pipeline.extensions` key in the playbook.
+Don't register pipeline extension if extension configuration has a key named `enabled` with a value of `false` and the extension is not enabled from the CLI.
+Issue {url-issues}/829[#829^]:: Don't use an HTTP(S) proxy if the value of the `network.no_proxy` key in the playbook is `*`.
+Issue {url-issues}/847[#847^]:: Add `gitlab` redirect facility for generating redirects that can be used with GitLab Pages, and add `gitlab` as a valid option for the `urls.redirect_facility` key.
 
-=== Fixed
+== Changed
 
-Issue {url-issues}/698[#698^]:: Add `redirect` modifier to splat alias rewrite rule for nginx (when redirect-facility=nginx).
-Issue {url-issues}/700[#700^]:: Show error message with backtrace (if available) when `--stacktrace` option is set, even if the stack property is missing.
-
-[#removed-alpha-2]
-=== Removed
-
-Issue {url-issues}/689[#689^]:: Remove deprecated `page-relative` attribute; superseded by `page-relative-src-path`.
-
-= Antora 3.0.0-alpha.1
-
-_**Release date:** 2020.09.29 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
-
-== Deprecations and breaking changes notice
-
-The following deprecations and breaking changes will be final with the release of Antora 3.0.
-
-=== Syntax
-
-The ability to use parent references in the target of the AsciiDoc image macro (e.g., `image::../../../module-b/_images/image-filename.png[]`) has been removed.
-Replace any such image targets with resource IDs before upgrading.
-Additionally, if an image cannot be resolved, its path will be passed through as entered rather than being prefixed with the imagesdir value ([.path]___images/__).
-
-Antora has added the _.adoc_ file extension to a xref:page:page-id.adoc#id-coordinates[page coordinate] in page aliases and xrefs whenever it wasn't specified by the writer.
-This fallback mechanism has been deprecated in Antora 3.0 to make way for using non-AsciiDoc pages in the xref facility.
-Review the page IDs in your xrefs and `page-aliases` attributes to ensure the _.adoc_ extension is specified before upgrading.
-
-=== Dependencies
-
-Support for Node.js 8 has been dropped; the minimum required version is now Node 10.
-
-See the <<removed-alpha-1>> and <<deprecated-alpha-1>> sections for the entire list of breaking changes.
-
-== Resolved issues
-
-IMPORTANT: The added features and changes described below are in *ALPHA* and subject to change.
-
-=== Added
-
-Issue {url-issues}/314[#314^]::
-* Add `urls.latest_version_segment_strategy`, `urls.latest_version_segment`, and `urls.latest_prerelease_version_segment` keys to playbook schema.
-* Replace latest version or prerelease version segment in out path and pub URL (unless version is master) with symbolic name, if specified.
-* Define `latestPrerelease` property on component version (if applicable) and use when computing latest version segment.
-* Use redirect facility to implement `redirect:to` and `redirect:from` strategies for version segment in out path / pub URL of latest and latest prerelease versions.
-Issue {url-issues}/355[#355^]:: Assign author to `page` object in UI model
-Issue {url-issues}/425[#425^]:: Assign primary alias to `rel` property on target page.
-Issue {url-issues}/605[#605^]:: Extract method to register start page for component version (`ContentCatalog#registerComponentVersionStartPage`).
-Issue {url-issues}/615[#615^]:: Store computed web URL of content source on `src.origin.webUrl` property of virtual file.
-
-=== Changed
-
-Issue {url-issues}/314[#314^]:: Register all component versions before adding files to content catalog.
+//Issue {url-issues}/314[#314^]:: Register all component versions before adding files to content catalog.
+//Issue {url-issues}/403[#403^]:: Change "include target" to "target of include" in error message for missing include.
 Issue {url-issues}/425[#425^]:: Follow aliases when computing version lineage for page and canonical URL in UI model.
-Issue {url-issues}/598[#598^]:: Upgrade dependencies.
+Issue {url-issues}/522[#522^]:: Upgrade to Asciidoctor.js 2.2.3.
+Release lock on Asciidoctor.js patch version so newer patch releases of Asciidoctor.js 2.2 are installed automatically when Antora is installed.
+Issue {url-issues}/603[#603^]::
+* Add the `xref` role to the link created from a non-internal xref macro (e.g., `xref page`).
+* Replace the `page` role with the `xref` role on the link created from an xref macro that could not be resolved (e.g., `xref unresolved`).
+* Rename the `link-page` role to `xref-` followed by the family name (e.g., `xref-page`) on element created for an image macro that has an non-internal xref target.
+* Don't add role to element created for an image macro that has an internal xref target.
+* Add only the `xref-unresolved` role to element created for an image macro that has an unresolved xref target.
 Issue {url-issues}/605[#605^]:: Only register start page for component version in `ContentCatalog#registerComponentVersion` if value of `startPage` property in descriptor is truthy.
 Call `ContentCatalog#registerComponentVersionStartPage` in content classifier to register start page after adding files (instead of before).
 Issue {url-issues}/681[#681^]:: Don't use global git credentials path if custom git credentials path is specified, but does not exist.
-Issue {url-issues}/682[#682^]:: Replace the fs-extra dependency with calls to the promise-based fs API provided by Node.
+//Issue {url-issues}/682[#682^]:: Replace the fs-extra dependency with calls to the promise-based fs API provided by Node.
 Issue {url-issues}/689[#689^]::
 * Make check for [.path]_.adoc_ extension in value of xref attribute on image more accurate.
 * Require page ID spec for start page to include the [.path]_.adoc_ file extension.
 * Require page ID spec target in xref to include the [.path]_.adoc_ file extension.
 * Interpret every non-URI image target as a resource ID.
 * Rename exported `resolveConfig` function in AsciiDoc loader to `resolveAsciiDocConfig`; retain `resolveConfig` as deprecated alias.
+Issue {url-issues}/690[#690^]:: Switch back to using versionless default cache folder for managed content repositories.
+Issue {url-issues}/692[#692^]:: Add `unresolved` role to image if target is local and it cannot be resolved.
 Issue {url-issues}/693[#693^]:: Defer assignment of `mediaType` and `src.mediaType` properties on virtual file to content classifier.
 Enhance `ContentCatalog#addFile` to update `src` object if missing required properties, including `mediaType`.
+Issue {url-issues}/703[#703^]:: Output version of default site generator in addition to version of CLI when `antora -v` is called.
+Issue {url-issues}/706[#706^]:: Ignore backup files (files that end with `+~+`) when scanning content source.
+Issue {url-issues}/731[#731^]:: Add support for Node.js 12 and Node.js 14.
+//Issue {url-issues}/733[#733^]:: Upgrade CLI library to commander.js 7.2.
+Issue {url-issues}/737[#737^]:: Update default branches pattern for content sources to `[HEAD, v*]`.
+Related to issue {url-issues}/764[#764^]:: Set `src.origin.url` property on virtual file when repository has no remote even when using worktree.
+In this case, the value is the file URI for the local repository.
+Issue {url-issues}/766[#766^]:: Report include location in log message when include tag(s) cannot be found.
+This change allows the location of the include file to be shown in log messages.
+Issue {url-issues}/769[#769^]:: Use converter registered for the html5 backend instead of always using the built-in HTML5 converter.
+Detect when registered html5 converter has changed and recreate extended converter to use it.
+Issue {url-issues}/774[#774^]:: Upgrade git client to isomorphic-git 1.8.x and update code to accommodate changes to its API.
+Issue {url-issues}/776[#776^]:: Include line number and correct file in xref error message when `sourcemap` is enabled on AsciiDoc processor.
+Issue {url-issues}/778[#778^]::
+* Configure CLI to recognize options that accept a fixed set of values and validate value before proceeding.
+* Rename options to choices in help text.
+// * Combine choices and default value together in help text for option that accepts a fixed set of values.
+//Issue {url-issues}/784[#784^]:: Remove `structured` as possible value of `log.format`, preferring `json` instead.
+//Issue {url-issues}/785[#785^]:: Rename `--failure-level` option to `--log-failure-level`.
+//Rename `silent` value on `runtime.log.failure_level` to `none`.
+Issue {url-issues}/788[#788^]:: Log unhandled error at fatal level.
+Issue {url-issues}/793[#793^]:: Ignore backup files (files that end with `+~+`) when reading supplemental UI files and UI bundle from directory.
+//Issue {url-issues}/802[#802^]:: Integrate @antora/user-require-helper to require code provided by the user (i.e., Asciidoctor extensions, Antora pipeline extensions, custom providers for the site publisher, user scripts, custom site generator, etc).
+Issue {url-issues}/805[#805^]:: Attach map of environment variables to non-enumerable `env` property on playbook.
+//Issue {url-issues}/817[#817^]:: Store files in content catalog by family and in UI catalog by type.
+//_(Internal change only)._
+//Issue {url-issues}/837[#837^]:: Upgrade sonic-boom to 2.0.x.
+Issue {url-issues}/855[#855^]:: Begin CLI error message with name of base call (i.e., `antora:`) instead of generic `error:` prefix.
+Antora logger:: Set `fatal` as default value for `runtime.log.failure_level`.
+//remove `all`, `debug`, and `info` from allowable set of values.
+Don't set name on root logger so it isn't included in raw JSON message.
 
-=== Fixed
+== Fixed
 
+Issue {url-issues}/663[#663^]:: Don't crash if a stem block is empty.
 Issue {url-issues}/678[#678^]:: Add support for optional option on include directive to silence warning if target is missing.
 Issue {url-issues}/680[#680^]:: Show sensible error message if cache directory cannot be created.
 Issue {url-issues}/695[#695^]:: Don't crash when loading or converting AsciiDoc document if content catalog is not passed to `loadAsciiDoc`.
+Issue {url-issues}/698[#698^]:: Add `redirect` modifier to splat alias rewrite rule for nginx (when redirect-facility=nginx).
+Issue {url-issues}/700[#700^]::
+* Show error message with backtrace (if available) when `--stacktrace` option is set, even if the stack property is missing.
+* Fix error message from being printed twice in certain cases when `--stacktrace` option is passed to CLI.
+Issue {url-issues}/739[#739^]:: Provide fallback link text for an xref when the target matches relative src path of current page.
+Previously, the link text would end up being `[]` in this scenario.
+Issue {url-issues}/745[#745^]:: Upgrade marky dependency to allow isomorphic-git to work on Node.js 16.
+Node.js 16 has also been added to the CI matrix so the test suite is run on Node.js 16 nightly.
+Issue {url-issues}/747[#747^]:: Add full support for resolving symlinks that originate from the worktree of a local content source.
+Provide a clear error message when a broken symlink or symlink cycle is detected in worktree.
+Issue {url-issues}/764[#764^]:: Assign file URL to `src.origin.url` on virtual file if repository has no remote and not using worktree.
+This change allows the location of the local git repository to be shown in log messages.
+Issue {url-issues}/765[#765^]:: Add file info to reader before pushing include onto the stack so it stays in sync if file is empty.
+This change fixes how the target of an include that follows an empty include is resolved.
+Issue {url-issues}/771[#771^]:: Port fixes for include tags processing from Asciidoctor.
+Issue {url-issues}/779[#779^]:: If an error is thrown while loading or scanning a repository, allow any clone or fetch operations already underway to complete.
+Issue {url-issues}/790[#790^]:: Don't warn if a page declares the manpage doctype.
+Issue {url-issues}/794[#794^]:: Publish dot files from UI bundle if matched by an entry in the list of static files in the UI descriptor.
+Issue {url-issues}/795[#795^]:: End destination stream for logger in finalize call when log format is pretty.
+Issue {url-issues}/804[#804^]:: Include source information in error message for duplicate alias when component is unknown.
+Issue {url-issues}/816[#816^]:: Gracefully handle case when remote URL for local content source uses explicit `ssh://` protocol and port.
+Issue {url-issues}/823[#823^]:: Show location and reason of syntax error in user code when `--stacktrace` option is specified.
+Issue {url-issues}/828[#828^]:: Don't camelCase keys in value of `version` key on content source.
+Issue {url-issues}/838[#838^]:: Always sort prerelease versions before non-prerelease versions.
+Asciidoctor logger:: Sync Asciidoctor log level to Antora log level when Antora log level is `debug`.
+Set context on Asciidoctor logger before calling `register` function of extensions to match behavior of Asciidoctor.
 
-[#deprecated-alpha-1]
-=== Deprecated
+[#deprecated]
+== Deprecated
 
-Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on ContentCatalog; superseded by `getFiles`.
-Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on UiCatalog; superseded by `getFiles`.
-Issue {url-issues}/689[#689^]:: Deprecate exported `resolveConfig` function in AsciiDoc loader.
-Issue {url-issues}/689[#689^]:: Deprecate use of page ID spec without .adoc file for page alias.
-Issue {url-issues}/689[#689^]:: Deprecate use of non-resource ID spec (e.g., parent path) as target of include directive.
-Issue {url-issues}/689[#689^]:: Deprecate `getAll` method on site catalog; superseded by `getFiles`.
-Issue {url-issues}/689[#689^]:: Deprecate the `--google-analytics-key` CLI option; superseded by the `--key` option.
+Issue {url-issues}/603[#603^]:: Deprecate `:attachmentsdir:` attribute and use of link macro (`+link:[]+`) to reference an attachment; use the xref macro and the attachment's resource ID instead.
+Issue {url-issues}/669[#669^]:: Deprecate the value `master` to represent an empty (versionless) version when assigned to the `version` key in a component descriptor file; replace with the tilde symbol (`~`).
+Issue {url-issues}/689[#689^]::
+* Deprecate `getAll` method on ContentCatalog; superseded by `getFiles`.
+* Deprecate `getAll` method on UiCatalog; superseded by `getFiles`.
+* Deprecate exported `resolveConfig` function in AsciiDoc loader.
+* Deprecate use of page ID spec without _.adoc_ file for page alias.
+* Deprecate use of non-resource ID spec (e.g., parent path) as target of include directive.
+* Deprecate `getAll` method on site catalog; superseded by `getFiles`.
+* Deprecate the `--google-analytics-key` CLI option; superseded by the `--key` option.
+Issue {url-issues}/737[#737^]:: Deprecate default branches pattern `[master, v*]` for content sources; superseded by `HEAD, v{0..9}*`.
 
-[#removed-alpha-1]
-=== Removed
+[#removed]
+== Removed
 
-Issue {url-issues}/679[#679^]:: Drop support for Node.js 8 and set minimum required version to 10.
-Issue {url-issues}/689[#689^]:: Remove `pull` key from `runtime` category in playbook; superseded by `fetch` key.
-Issue {url-issues}/689[#689^]:: Remove `ensureGitSuffix` key from `git` category in playbook file (but not playbook model); renamed to `ensure_git_suffix`.
-Issue {url-issues}/689[#689^]:: Remove fallback to resolve site-wide AsciiDoc config in `classifyContent` function.
-Issue {url-issues}/689[#689^]:: Drop `latestVersion` property on component version object; superseded by `latest` property.
-Issue {url-issues}/689[#689^]:: Remove deprecated `getComponentMap` and `getComponentMapSortedBy` methods on `ContentCatalog`.
+Node.js:: Drop support for Node 10.
+Issue {url-issues}/522[#522^]:: Drop support for Asciidoctor.js 1.5.9.
+Automatically upgrade to using Asciidoctor.js 2.2.x.
+Issue {url-issues}/679[#679^]:: Drop support for Node.js 8.
+Issue {url-issues}/689[#689^]::
+* Remove deprecated `page-relative` attribute; superseded by `page-relative-src-path`.
+* Remove `pull` key from `runtime` category in playbook; superseded by `fetch` key.
+* Remove `ensureGitSuffix` key from `git` category in playbook file (but not playbook model); renamed to `ensure_git_suffix`.
+* Remove fallback to resolve site-wide AsciiDoc config in `classifyContent` function.
+* Drop `latestVersion` property on component version object; superseded by `latest` property.
+* Remove deprecated `getComponentMap` and `getComponentMapSortedBy` methods on `ContentCatalog`.
+Parent references for images::
+Remove ability to use parent references in the target of the AsciiDoc image macro (e.g., `image::../../../module-b/_images/image-filename.png[]`).
 
 ////
 [#thanks-3-0-0]
