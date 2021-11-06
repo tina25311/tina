@@ -1,4 +1,5 @@
 = What's a Component Version?
+:mdash: &#8212;
 
 == Component version
 
@@ -10,7 +11,7 @@ It also supplies additional configuration for that component version.
 [#docs-component]
 == Component
 
-A [.term]*component*&mdash;more formally a *documentation component* or shortened to *docs component*&mdash;refers to all of the component versions that share the same xref:component-name-key.adoc[component name].
+A [.term]*component*{mdash}more formally a *documentation component* or shortened to *docs component*{mdash}refers to all of the component versions that share the same xref:component-name-key.adoc[component name].
 A component is never declared directly.
 Instead, it gets created by having at least one component version.
 

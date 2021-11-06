@@ -1,4 +1,5 @@
 = Version Key
+:mdash: &#8212;
 
 A version is defined by assigning a value to the `version` key.
 It's important to understand <<usage,how Antora uses the version>> and its related facets before committing to a versioning scheme.
@@ -10,7 +11,7 @@ A version is a semantic or named identifier that often represents a unique or fi
 A version can also be defined as xref:component-with-no-version.adoc[unversioned] by assigning a tilde, `~`, to the `version` key.
 The value of a `version` key, in combination with the value of a `name` key, defines a xref:component-version.adoc[component version].
 
-Occasionally, the version is called the [.term]*actual version* when a distinction between version and the other version facets--xref:version-facets.adoc#prerelease[prerelease], xref:version-facets.adoc#display[display], and xref:version-facets.adoc#symbolic[symbolic]&mdash;needs to be made in a description or example.
+Occasionally, the version is called the [.term]*actual version* when a distinction between version and the other version facets--xref:version-facets.adoc#prerelease[prerelease], xref:version-facets.adoc#display[display], and xref:version-facets.adoc#symbolic[symbolic]{mdash}needs to be made in a description or example.
 
 [#usage]
 === How Antora uses version
