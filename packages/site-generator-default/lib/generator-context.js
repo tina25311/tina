@@ -60,7 +60,7 @@ class GeneratorContext extends EventEmitter {
 
   replaceFunctions (updates) {
     const fxns = this.#fxns
-    Object.entries(updates).map(([name, fxn]) => {
+    Object.entries(updates).forEach(([name, fxn]) => {
       if (name in fxns) fxns[name] = fxn.bind(this)
     })
   }
