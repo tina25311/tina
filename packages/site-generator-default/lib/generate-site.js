@@ -55,7 +55,7 @@ async function generateSite (playbook) {
         .then(() => vars.remove('publications'))
     })
   } catch (err) {
-    if (!GeneratorContext.isHaltSignal(err)) throw err
+    if (!GeneratorContext.isStopSignal(err)) throw err
   }
 }
 

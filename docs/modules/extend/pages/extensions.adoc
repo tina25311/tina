@@ -71,7 +71,7 @@ To give you an idea of the kinds of extensions you can write and what's possible
 * Require user code
 * Postprocess content, such as replacing strings in HTML files
 * Unpublish files
-* Halt the processing
+* Stop processing
 
 In general, an extension taps into the generator and tunes its behavior rather than doing a wholesale replacement of it.
 There are some limitations with this approach, but it's a trade-off for providing something that's broadly accessible.
@@ -81,6 +81,6 @@ There are some limitations with this approach, but it's a trade-off for providin
 An extension can't change the order of steps the generator performs.
 It also can't make the generator skip steps.
 It can only get in between two steps and modify the data as it flows through the site generator, which may include introducing new steps.
-The most drastic thing an extension can do is to halt the processing early.
+The most drastic thing an extension can do is to stop the processing early.
 This action is useful if the work of an extension is complete and no additional processing is necessary.
 For example, an extension may only need to report on the content in the site, in which case it can stop the generator before the publishing step.

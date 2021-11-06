@@ -20,7 +20,7 @@ const FUNCTION_PROVIDERS = {
   resolveAsciiDocConfig: 'asciidoc-loader',
 }
 
-class HaltSignal extends Error {}
+class StopSignal extends Error {}
 
 class GeneratorContext extends EventEmitter {
   #fxns
@@ -29,7 +29,7 @@ class GeneratorContext extends EventEmitter {
   constructor (playbook, module_) {
     super()
     // deprecated method aliases - remove for Antora 3.0.0
-    Object.defineProperties(this, { updateVars: { value: this.updateVariables } })
+    Object.defineProperties(this, { halt: { value: this.stop }, updateVars: { value: this.updateVariables } })
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
     this._registerFunctions(module_)
     this._registerExtensions(playbook, this._initVariables(playbook), module_)
@@ -46,10 +46,6 @@ class GeneratorContext extends EventEmitter {
 
   getVariables () {
     return Object.assign({}, this.#vars)
-  }
-
-  halt () {
-    throw new HaltSignal()
   }
 
   async notify (eventName) {
@@ -71,6 +67,10 @@ class GeneratorContext extends EventEmitter {
     return this.module.require(request)
   }
 
+  stop () {
+    throw new StopSignal()
+  }
+
   updateVariables (updates) {
     try {
       Object.assign(this.#vars, updates)
@@ -82,8 +82,8 @@ class GeneratorContext extends EventEmitter {
     }
   }
 
-  static isHaltSignal (err) {
-    return err instanceof HaltSignal
+  static isStopSignal (err) {
+    return err instanceof StopSignal
   }
 
   _initVariables (playbook) {
