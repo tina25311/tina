@@ -129,7 +129,9 @@ class GeneratorContext extends EventEmitter {
         }
       })
     }
-    this.notify = this.eventNames().length ? this.notify.bind(this) : async () => undefined
+    if (this.eventNames().length) return
+    const notify = async () => undefined
+    Object.defineProperty(this, 'notify', { value: notify })
   }
 
   _registerFunctions (module_) {
