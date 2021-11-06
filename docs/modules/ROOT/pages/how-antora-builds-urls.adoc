@@ -83,7 +83,7 @@ These segments often represent the component name, version, module, and resource
 image::ROOT:resource-url.svg[Diagram of the resource URL computed by Antora]
 
 Certain playbook keys can modify, add, or remove portions of a resource URL.
-Some resource URL segments are added or absent if a resource isn't a page or it belongs to an unversioned component version or a _ROOT_ module.
+Some resource URL segments are added or absent if a resource isn't a page or it belongs to a _ROOT_ component, an unversioned component version, or a _ROOT_ module.
 See <<segments>> for information about each segment and from where Antora extracts their values.
 
 Antora assigns the computed resource URL of a resource to the internal property, `pub.url`, where `pub` is the property group for properties that pertain to publishing.
@@ -161,6 +161,7 @@ image::ROOT:resource-url-segments-with-family.svg[Diagram of the resource URL se
 === Component segment
 
 The component segment of the URL is the name of the component the published resource belongs to.
+When the resource belongs to the specially named `ROOT` component, the component segment is dropped from the URL.
 A component name is specified by the xref:ROOT:component-name-key.adoc[name key] in an xref:ROOT:component-version-descriptor.adoc[_antora.yml_ file].
 
 The <<resource,resource URL>> that Antora computes and assigns to the `pub.url` property of a resource always starts with this segment.
