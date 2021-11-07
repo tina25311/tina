@@ -50,7 +50,8 @@ This method can be used to require Antora internals without having to declare th
 
 |stop
 |_none_
-|Stops the operation of the generator and exits successfully (without error).
+|Stops the operation of the generator (using an orderly shut down) and exits using the specified exit code.
+If an exit code is not specified, the process will use the exit code set on the process, or 0 if no exit code is set.
 
 |updateVariables
 |Object

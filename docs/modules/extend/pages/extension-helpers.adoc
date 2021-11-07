@@ -53,13 +53,13 @@ The site generator will not recognize or use these variables.
 However, other extensions, or listeners in the same extension, can use them.
 
 [#stop]
-== stop()
+== stop(Integer)
 
 The `stop` helper method provides a way to stop the operation of the generator.
-This method doesn't accept any arguments and doesn't return a value.
+This method accepts an optional exit code value and doesn't return a value.
 
 When called, if any messages are logged that exceed the xref:playbook:runtime-log-failure-level.adoc[failure level threshold], Antora will exit with a non-zero exit code.
-Otherwise, Antora will exit with a zero exit code (i.e., successfully).
+Otherwise, Antora will exit with the specified exit code or, if no exit code is specified, a zero exit code (i.e., successfully).
 
 The `stop` helper is useful if you only need to run Antora partially and don't want to throw an error to make Antora stop.
 You might use it for warming up a cache or performing reference validation.

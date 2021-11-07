@@ -67,7 +67,8 @@ class GeneratorContext extends EventEmitter {
     return this.module.require(request)
   }
 
-  stop () {
+  stop (code) {
+    if (code != null) process.exitCode = code
     throw new StopSignal()
   }
 
