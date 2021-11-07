@@ -52,25 +52,25 @@ You can also use the `updateVariables` method to introduce new variables into th
 The site generator will not recognize or use these variables.
 However, other extensions, or listeners in the same extension, can use them.
 
-[#halt]
-== halt()
+[#stop]
+== stop()
 
-The `halt` helper method provides a way to halt the operation of the Antora site generator.
+The `stop` helper method provides a way to stop the operation of the generator.
 This method doesn't accept any arguments and doesn't return a value.
 
 When called, if any messages are logged that exceed the xref:playbook:runtime-log-failure-level.adoc[failure level threshold], Antora will exit with a non-zero exit code.
 Otherwise, Antora will exit with a zero exit code (i.e., successfully).
 
-The `halt` helper is useful if you only need to run Antora partially and don't want to throw an error to make Antora stop.
+The `stop` helper is useful if you only need to run Antora partially and don't want to throw an error to make Antora stop.
 You might use it for warming up a cache or performing reference validation.
-Keep in mind that if you call `halt`, Antora won't publish a site.
+Keep in mind that if you call `stop` in any listener before the `sitePublished` event, Antora won't publish the site.
 
-Here's an example that shows how to halt Antora from a listener:
+Here's an example that shows how to signal to Antora in a listener to stop processing:
 
 [source,js]
 ----
-console.log('Our work is done here. Shut it down.')
-this.halt()
+console.log('Our work is done here. Wrap it up.')
+this.stop()
 ----
 
 [#get-logger]

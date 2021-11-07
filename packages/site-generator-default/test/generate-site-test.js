@@ -1375,12 +1375,12 @@ describe('generateSite()', function () {
       expect(lines[0]).to.equal(expectedMessage)
     })
 
-    it('should allow extension listener to invoke halt to immediately halt execution', async () => {
+    it('should allow extension listener to invoke stop to stop processing', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         module.exports.register = function () {
           this.on('beforePublish', function () {
-            this.halt()
+            this.stop()
           })
         }
       `
