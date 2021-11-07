@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *site-generator-default*: Rename `GeneratorContext#halt` to `GeneratorContext#stop` to more clearly convey intent (#874)
+* *site-generator-default*: Update `GeneratorContext#stop` to accept an exit code that is assigned to `process.exitCode` (#875)
 
 == 3.0.0-beta.1 (2021-11-04)
 
