@@ -28,6 +28,8 @@ class GeneratorContext extends EventEmitter {
 
   constructor (playbook, module_) {
     super()
+    // deprecated method aliases - remove for Antora 3.0.0
+    Object.defineProperties(this, { updateVars: { value: this.updateVariables } })
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
     this._registerFunctions(module_)
     this._registerExtensions(playbook, this._initVariables(playbook), module_)
@@ -78,11 +80,6 @@ class GeneratorContext extends EventEmitter {
       }
       throw err
     }
-  }
-
-  // TODO remove updateVars before Antora 3.0.0
-  updateVars (updates) {
-    return this.updateVariables(updates)
   }
 
   static isHaltSignal (err) {
