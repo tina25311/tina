@@ -761,6 +761,16 @@ describe('cli', function () {
     })
   }).timeout(timeoutOverride)
 
+  it('should exit with status code set by extension if Antora extension stops generator', () => {
+    const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-stop-before-publish.js'))
+    playbookSpec.antora = { extensions: [{ require: ext, exit_code: 2 }] }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return new Promise((resolve) => runAntora('the-site').on('exit', resolve)).then((exitCode) => {
+      expect(exitCode).to.equal(2)
+      expect(absDestDir).to.not.be.a.path()
+    })
+  }).timeout(timeoutOverride)
+
   it('should exit with status code 0 if log failure level is not reached', async () => {
     playbookSpec.content.sources[0].branches = 'v1.0-broken'
     playbookSpec.runtime = { log: { failure_level: 'fatal' } }
