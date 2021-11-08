@@ -109,7 +109,7 @@ describe('logger', () => {
     })
 
     it('should allow error to be logged at fatal level', () => {
-      const err = new Error('uh oh!')
+      const err = new TypeError('uh oh!')
       const logger = configure().get(null)
       const lines = captureStdoutSync(() => logger.fatal(err))
       expect(lines).to.have.lengthOf(1)
@@ -117,9 +117,10 @@ describe('logger', () => {
       expect(typeof time).to.equal('number')
       expect(message).to.not.have.property('err')
       expect(message).to.not.have.property('message')
+      // NOTE type is not the error name, but rather the generic name "Error"
       expect(message).to.include({ level: 'fatal', type: 'Error', msg: 'uh oh!' })
       expect(message.stack).to.exist()
-      expect(message.stack).to.startWith('Error: uh oh!\n    at ')
+      expect(message.stack).to.startWith('TypeError: uh oh!\n    at ')
     })
 
     it('should format log level as number of levelFormat is number', () => {
