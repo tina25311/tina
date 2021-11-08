@@ -16,17 +16,14 @@ const { configure, configureLogger, finalizeLogger, get, getLogger } = Logger
 const ospath = require('path')
 const { types } = require('util')
 const pino = require('pino')
+const { prettyFactory: pinoPrettyFactory } = require('pino-pretty')
 
 const WORK_DIR = ospath.join(__dirname, 'work')
 
 describe('logger', () => {
   const getStream = (logger) => logger[pino.symbols.streamSym]
 
-  const supportsColor = () => {
-    let verdict
-    pino({ prettyPrint: true }, { write: (msg) => (verdict = msg.includes('\u001b[39m')) }).info('message')
-    return verdict
-  }
+  const supportsColor = () => pinoPrettyFactory()({ level: 'info', msg: 'message' }).includes('\u001b[39m')
 
   describe('configure()', () => {
     const getHooks = (logger) => logger[pino.symbols.hooksSym]
