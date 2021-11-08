@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *logger*: Upgrade to pino 7 and flatten error object in structured (json) log message (#869)
 * *site-generator-default*: Rename `GeneratorContext#halt` to `GeneratorContext#stop` to more clearly convey intent (#874)
 * *site-generator-default*: Update `GeneratorContext#stop` to accept an exit code that is assigned to `process.exitCode` (#875)
 

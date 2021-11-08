@@ -6,7 +6,7 @@ const ospath = require('path')
 const { posix: path } = ospath
 const {
   levels: { labels: levelLabels, values: levelValues },
-  symbols: { streamSym },
+  symbols: { serializersSym, streamSym },
   pino,
 } = require('pino')
 const pinoPretty = require('pino-pretty')
@@ -64,9 +64,13 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
         // NOTE logMethod only called if log level is enabled
         logMethod (args, method) {
           const arg0 = args[0]
-          if (arg0.constructor === Object) {
+          if (arg0 instanceof Error) {
+            const { message, ...err } = this[serializersSym].err(arg0)
+            args[0] = Object.assign(err, { type: 'Error' })
+            if (message && args[1] === undefined) args[1] = message
+          } else if (arg0.constructor === Object) {
             const { file, line, stack, ...obj } = arg0
-            // NOTE we assume file key is a file.src object
+            // NOTE assume file key is a file.src object
             args[0] = file ? Object.assign(obj, reshapeFileForLog(arg0)) : obj
           }
           method.apply(this, args)
@@ -75,8 +79,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     }
     close()
     if (prettyPrint) {
-      logger = pino(config, createPrettyDestination(destination, colorize))
-      logger[streamSym].stream = destination
+      ;(logger = pino(config, createPrettyDestination(destination, colorize)))[streamSym].stream = destination
     } else {
       logger = pino(config, destination)
     }
@@ -121,6 +124,7 @@ function createPrettyDestination (destination, colorize) {
     customPrettifiers: {
       file: ({ path: path_, line }) => (line == null ? path_ : `${path_}:${line}`),
       stack: (stack, _, log) => {
+        if (!Array.isArray(stack)) return JSON.stringify(stack, null, 2)
         let prevSource = log.source
         return stack
           .map(({ file: { path: path_, line }, source }) => {
