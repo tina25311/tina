@@ -1393,20 +1393,24 @@ describe('generateSite()', function () {
     })
 
     it('should allow extension listener to invoke stop with code to stop processing', async () => {
-      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
-      const extensionCode = heredoc`
-        module.exports.register = function () {
-          this.on('playbookBuilt', function () {
-            this.stop(200)
-          })
-        }
-      `
-      fs.writeFileSync(extensionPath, extensionCode)
-      playbookSpec.antora.extensions = [extensionPath]
-      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      await generateSite(getPlaybook(playbookFile))
-      expect(absDestDir).to.not.be.a.path()
-      expect(process.exitCode).to.equal(200)
+      try {
+        const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+        const extensionCode = heredoc`
+          module.exports.register = function () {
+            this.on('playbookBuilt', function () {
+              this.stop(200)
+            })
+          }
+        `
+        fs.writeFileSync(extensionPath, extensionCode)
+        playbookSpec.antora.extensions = [extensionPath]
+        fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+        await generateSite(getPlaybook(playbookFile))
+        expect(absDestDir).to.not.be.a.path()
+        expect(process.exitCode).to.equal(200)
+      } finally {
+        delete process.exitCode
+      }
     })
 
     it('should allow register function to replace functions on the generator context', async () => {
