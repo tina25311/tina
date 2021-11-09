@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Added
 
 * *content-classifier*: Drop component segment in URL (and output path) of resources if component name is ROOT (#872)
+* *site-generator-default*: Emit context lifecycle events (`contextStarted`, `contentStopped`, `contextClosed`) (#871)
 
 === Changed
 

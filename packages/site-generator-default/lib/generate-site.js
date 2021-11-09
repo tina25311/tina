@@ -4,9 +4,9 @@ const GeneratorContext = require('./generator-context')
 const SiteCatalog = require('./site-catalog')
 
 async function generateSite (playbook) {
+  const context = new GeneratorContext(module)
   try {
-    const context = new GeneratorContext(playbook, module)
-    const { fxns, vars } = context
+    const { fxns, vars } = await GeneratorContext.start(context, playbook)
     await context.notify('playbookBuilt')
     playbook = vars.lock('playbook')
     vars.asciidocConfig = fxns.resolveAsciiDocConfig(playbook)
@@ -56,6 +56,9 @@ async function generateSite (playbook) {
     })
   } catch (err) {
     if (!GeneratorContext.isStopSignal(err)) throw err
+    await err.notify()
+  } finally {
+    await GeneratorContext.close(context)
   }
 }
 

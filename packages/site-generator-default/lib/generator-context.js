@@ -26,14 +26,11 @@ class GeneratorContext extends EventEmitter {
   #fxns
   #vars
 
-  constructor (playbook, module_) {
+  constructor (module_) {
     super()
     // deprecated method aliases - remove for Antora 3.0.0
     Object.defineProperties(this, { halt: { value: this.stop }, updateVars: { value: this.updateVariables } })
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
-    this._registerFunctions(module_)
-    this._registerExtensions(playbook, this._initVariables(playbook), module_)
-    Object.defineProperties(this, { _initVariables: {}, _registerExtensions: {}, _registerFunctions: {} })
   }
 
   getFunctions () {
@@ -69,7 +66,7 @@ class GeneratorContext extends EventEmitter {
 
   stop (code) {
     if (code != null) process.exitCode = code
-    throw new StopSignal()
+    throw Object.assign(new StopSignal(), { notify: this.notify.bind(this, 'contextStopped') })
   }
 
   updateVariables (updates) {
@@ -83,34 +80,44 @@ class GeneratorContext extends EventEmitter {
     }
   }
 
+  static async close (instance) {
+    await instance.notify('contextClosed').catch(() => undefined)
+  }
+
   static isStopSignal (err) {
     return err instanceof StopSignal
   }
 
-  _initVariables (playbook) {
-    Object.defineProperty(this, 'vars', {
-      configurable: true,
-      get: () => {
-        delete this.vars
-        return Object.setPrototypeOf(this.#vars, {
-          lock (name) {
-            return Object.defineProperty(this, name, { configurable: false, writable: false })[name]
-          },
-          remove (name) {
-            const currentValue = this[name]
-            delete this[name]
-            return currentValue
-          },
-        })
-      },
-    })
-    return (this.#vars = { playbook })
+  static async start (instance, playbook) {
+    const returnValue = instance._init(playbook)
+    await instance.notify('contextStarted')
+    return returnValue
   }
 
-  _registerExtensions (playbook, vars, module_) {
+  _init (playbook) {
+    this._registerFunctions()
+    this._registerExtensions(playbook, this._initVariables(playbook))
+    Object.defineProperties(this, { _init: {}, _initVariables: {}, _registerExtensions: {}, _registerFunctions: {} })
+    return { fxns: this.#fxns, vars: this.#vars }
+  }
+
+  _initVariables (playbook) {
+    return (this.#vars = Object.setPrototypeOf({ playbook }, {
+      lock (name) {
+        return Object.defineProperty(this, name, { configurable: false, writable: false })[name]
+      },
+      remove (name) {
+        const currentValue = this[name]
+        delete this[name]
+        return currentValue
+      },
+    }))
+  }
+
+  _registerExtensions (playbook, vars) {
     const extensions = (playbook.antora || {}).extensions || []
     if (extensions.length) {
-      const requireContext = { dot: playbook.dir, paths: [playbook.dir || '', module_.path] }
+      const requireContext = { dot: playbook.dir, paths: [playbook.dir || '', this.module.path] }
       extensions.forEach((ext) => {
         const { enabled = true, id, require: request, ...config } = ext.constructor === String ? { require: ext } : ext
         if (!enabled) return
@@ -132,14 +139,14 @@ class GeneratorContext extends EventEmitter {
     Object.defineProperty(this, 'notify', { value: notify })
   }
 
-  _registerFunctions (module_) {
+  _registerFunctions () {
     this.#fxns = Object.entries(
       Object.entries(FUNCTION_PROVIDERS).reduce((accum, [fxnName, moduleKey]) => {
         accum[moduleKey] = (accum[moduleKey] || []).concat(fxnName)
         return accum
       }, {})
     ).reduce((accum, [moduleKey, fxnNames]) => {
-      const defaultExport = module_.require('@antora/' + moduleKey)
+      const defaultExport = this.require('@antora/' + moduleKey)
       const defaultExportName = defaultExport.name
       fxnNames.forEach((fxnName) => {
         const fxn = fxnName === defaultExportName ? defaultExport : defaultExport[fxnName]
@@ -147,13 +154,6 @@ class GeneratorContext extends EventEmitter {
       })
       return accum
     }, {})
-    Object.defineProperty(this, 'fxns', {
-      configurable: true,
-      get: () => {
-        delete this.fxns
-        return this.#fxns
-      },
-    })
   }
 }
 
