@@ -1131,6 +1131,30 @@ describe('generateSite()', function () {
       expect(lines[1]).to.equal('before publish a')
     })
 
+    it('should allow listener to use context to listen for and emit custom events', async () => {
+      const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionACode = heredoc`
+        module.exports.register = function () {
+          this.on('beforePublish', () => {
+            this.emit('lunr:siteIndexed', 500)
+          })
+        }
+      `
+      const extensionBCode = heredoc`
+        module.exports.register = function () {
+          this.on('lunr:siteIndexed', (numRecords) => console.log('generated index with ' + numRecords + ' records'))
+        }
+      `
+      fs.writeFileSync(extensionAPath, extensionACode)
+      fs.writeFileSync(extensionBPath, extensionBCode)
+      playbookSpec.antora.extensions = [extensionAPath, extensionBPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('generated index with 500 records')
+    })
+
     it('should allow extension listener to access context variables via listener argument', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
