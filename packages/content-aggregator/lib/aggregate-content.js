@@ -15,7 +15,7 @@ const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
-const invariably = { true: () => true, false: () => false, void: () => undefined, emptyArray: () => [] }
+const invariably = { false: () => false, void: () => undefined, emptyArray: () => [] }
 const { makeRe: makePicomatchRx } = require('picomatch')
 const MultiProgress = require('multi-progress')
 const ospath = require('path')
@@ -122,14 +122,14 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
         })
       ),
   ])
-  let rejected, started
+  let rejection, started
   const startedContinuations = []
   const recordRejection = (err) => {
-    throw (rejected = true) && err
+    rejection = err
   }
   const runTask = (primary, continuation, idx) =>
     primary().then((value) => {
-      if (!rejected) startedContinuations[idx] = continuation(value).catch(recordRejection)
+      if (!rejection) startedContinuations[idx] = continuation(value).catch(recordRejection)
     }, recordRejection)
   if (tasks.length > concurrency) {
     started = []
@@ -140,17 +140,16 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
       )
       started.push(current)
       if (pending.push(current) < concurrency) continue
-      if (await Promise.race(pending).then(invariably.true, invariably.false)) continue
-      break
+      await Promise.race(pending)
+      if (rejection) break
     }
   } else {
     started = tasks.map(([primary, continuation], idx) => runTask(primary, continuation, idx))
   }
-  return Promise.allSettled(started).then((outcomes) =>
-    Promise.allSettled(startedContinuations).then((continuationOutcomes) => {
-      const rejection = outcomes.push(...continuationOutcomes) && outcomes.find(({ status }) => status === 'rejected')
-      if (rejection) throw rejection.reason
-      return continuationOutcomes.map(({ value }) => value)
+  return Promise.all(started).then(() =>
+    Promise.all(startedContinuations).then((result) => {
+      if (rejection) throw rejection
+      return result
     })
   )
 }

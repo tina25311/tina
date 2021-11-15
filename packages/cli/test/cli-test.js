@@ -711,6 +711,25 @@ describe('cli', function () {
       .done()
   })
 
+  it('should not emit UnhandledPromiseRejectionWarning if start path not found when using concurrency limit', () => {
+    const url = repoBuilder.url
+    playbookSpec.content.sources[0].url = url
+    playbookSpec.content.sources.unshift({ url: url.replace('//', '//git@'), branches: 'v1.0', start_path: 'invalid' })
+    playbookSpec.git = { fetch_concurrency: 1 }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const args = ['generate', '--fetch', 'the-site']
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(args)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages.join('\n')).to.not.include('UnhandledPromiseRejectionWarning')
+      expect(messages[0]).to.match(/"msg":"the start path 'invalid' does not exist in .*"/)
+    })
+  })
+
   it('should show error message if site generator cannot be found', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const args = ['--stacktrace', 'generate', 'the-site', '--generator', 'no-such-module']
