@@ -1,7 +1,5 @@
 'use strict'
 
-if (!Promise.allSettled) require('./promise-all-settled-polyfill')
-
 const camelCaseKeys = require('camelcase-keys')
 const { createHash } = require('crypto')
 const createHttpPlugin = require('./git-plugin-http')
