@@ -5,7 +5,6 @@
 const buildPlaybook = require('@antora/playbook-builder')
 const cli = require('./commander')
 const convict = require('@antora/playbook-builder/lib/solitary-convict')
-const { configureLogger, getLogger, finalizeLogger } = require('@antora/logger')
 const ospath = require('path')
 const userRequire = require('@antora/user-require-helper')
 
@@ -17,11 +16,13 @@ async function run (argv = process.argv) {
 }
 
 function exitWithError (err, opts, msg = undefined) {
+  const { getLogger, configureLogger } = requireLogger()
   if (!msg) msg = err.message || err
   const name = msg.startsWith('asciidoctor: FAILED: ') ? (msg = msg.slice(21)) && 'asciidoctor' : cli.name()
-  const logger = getLogger(null)
-    ? getLogger(name)
-    : configureLogger({ format: 'pretty', level: opts.silent ? 'silent' : 'fatal', failureLevel: 'fatal' }).get(name)
+  if (!getLogger(null)) {
+    configureLogger({ format: 'pretty', level: opts.silent ? 'silent' : 'fatal', failureLevel: 'fatal' })
+  }
+  const logger = getLogger(name)
   if (opts.stacktrace) {
     let loc, stack
     if ((stack = err.backtrace)) {
@@ -47,7 +48,9 @@ function exitWithError (err, opts, msg = undefined) {
 }
 
 function exit () {
-  return finalizeLogger().then((failOnExit) => process.exit(failOnExit ? 1 : process.exitCode))
+  return requireLogger()
+    .finalizeLogger()
+    .then((failOnExit) => process.exit(failOnExit ? 1 : process.exitCode))
 }
 
 function getTTYColumns () {
@@ -56,6 +59,16 @@ function getTTYColumns () {
 
 function outputError (str, write) {
   write(str.replace(/^error: /, cli.name() + ': '))
+}
+
+function requireLogger (fromPath = undefined, moduleName = '@antora/logger') {
+  try {
+    return (
+      requireLogger.cache ||
+      (requireLogger.cache = fromPath ? userRequire(moduleName, { paths: [fromPath] }) : require(moduleName))
+    )
+  } catch {}
+  return fromPath && (requireLogger.cache = require(moduleName))
 }
 
 cli
@@ -118,21 +131,23 @@ cli
       }
     }
     const args = command.optionArgs.concat('--playbook', playbookFile)
-    let playbook
+    let generator, generatorPath, playbook
     try {
       playbook = buildPlaybook(args, process.env, buildPlaybook.defaultSchema, (config) => {
         try {
-          configureLogger(config.getModel('runtime.log'), playbookDir)
+          generatorPath = userRequire.resolve((generator = config.get('antora.generator')), userRequireContext)
+        } catch {}
+        try {
+          requireLogger(generatorPath).configureLogger(config.getModel('runtime.log'), playbookDir)
         } catch {}
       })
     } catch (err) {
       return exitWithError(err, errorOpts)
     }
-    const generator = playbook.antora.generator
     let generateSite
     try {
       generateSite =
-        (generateSite = userRequire(generator, userRequireContext)).length === 1
+        (generateSite = require(generatorPath || userRequire.resolve(generator, userRequireContext))).length === 1
           ? generateSite.bind(null, playbook)
           : generateSite.bind(null, args, process.env)
     } catch (err) {
