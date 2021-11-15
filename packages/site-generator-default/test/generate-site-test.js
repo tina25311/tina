@@ -992,6 +992,7 @@ describe('generateSite()', function () {
     it('should allow extension to listen for events', async () => {
       const common = ['playbook', 'asciidocConfig', 'siteCatalog']
       const events = {
+        contextStarted: [common[0]],
         playbookBuilt: [common[0]],
         beforeProcess: common.slice().sort(),
         contentAggregated: [...common, 'contentAggregate'].sort(),
@@ -1004,6 +1005,7 @@ describe('generateSite()', function () {
         redirectsProduced: [...common, 'contentCatalog', 'uiCatalog'].sort(),
         beforePublish: [...common, 'contentCatalog', 'uiCatalog'].sort(),
         sitePublished: [...common, 'contentCatalog', 'uiCatalog', 'publications'].sort(),
+        contextClosed: [...common, 'contentCatalog', 'uiCatalog'].sort(),
       }
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
@@ -1435,6 +1437,33 @@ describe('generateSite()', function () {
       } finally {
         delete process.exitCode
       }
+    })
+
+    it('should notify event listeners of other extensions when context is stopped and closed', async () => {
+      const extensionAPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionBPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionACode = heredoc`
+        module.exports.register = function () {
+          this.on('contentClassified', () => this.stop())
+          this.on('beforePublish', () => console.log('never called'))
+        }
+      `
+      const extensionBCode = heredoc`
+        module.exports.register = function () {
+          this.on('contextStopped', () => console.log('context stopped'))
+          this.on('contextClosed', () => console.log('context closed'))
+        }
+      `
+      fs.writeFileSync(extensionAPath, extensionACode)
+      fs.writeFileSync(extensionBPath, extensionBCode)
+      playbookSpec.antora.extensions = [extensionAPath, extensionBPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.equal('context stopped')
+      expect(lines[1]).to.equal('context closed')
+      expect(absDestDir).to.not.be.a.path()
+      expect(process.exitCode).to.be.undefined()
     })
 
     it('should allow register function to replace functions on the generator context', async () => {
