@@ -1209,13 +1209,14 @@ describe('classifyContent()', () => {
       const files = contentCatalog.getFiles()
       expect(files).to.have.lengthOf(2)
       const expected = contentCatalog.getById({
-        component: '',
+        component: 'ROOT',
         version: '',
-        module: '',
+        module: 'ROOT',
         family: 'alias',
         relative: 'index.adoc',
       })
       expect(expected).to.exist()
+      expect(expected).to.have.property('synthetic', true)
       expect(expected.mediaType).to.equal('text/html')
       expect(expected.src.mediaType).to.equal('text/asciidoc')
     })
@@ -1310,6 +1311,60 @@ describe('classifyContent()', () => {
         moduleRootPath: '.',
         rootPath: '../..',
       })
+    })
+
+    it('page in ROOT component', () => {
+      Object.assign(aggregate[0], { name: 'ROOT' })
+      aggregate[0].files.push(createFile('modules/ROOT/pages/the-page.adoc'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.out).to.include({
+        dirname: 'v1.2.3',
+        basename: 'the-page.html',
+        path: 'v1.2.3/the-page.html',
+        moduleRootPath: '.',
+        rootPath: '..',
+      })
+      expect(file.pub.url).to.equal('/v1.2.3/the-page.html')
+    })
+
+    it('page in versionless ROOT component', () => {
+      Object.assign(aggregate[0], { name: 'ROOT', version: '' })
+      aggregate[0].files.push(createFile('modules/ROOT/pages/home.adoc'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.out).to.include({
+        dirname: '.',
+        basename: 'home.html',
+        path: 'home.html',
+        moduleRootPath: '.',
+        rootPath: '.',
+      })
+      expect(file.pub.url).to.equal('/home.html')
+    })
+
+    it('should not create duplicate site start page if ROOT component has index page', () => {
+      Object.assign(aggregate[0], { name: 'ROOT', version: '' })
+      const homePageContents = Buffer.from('= Home Page')
+      aggregate[0].files.push(
+        Object.assign(createFile('modules/ROOT/pages/index.adoc'), { contents: homePageContents })
+      )
+      playbook.site.startPage = 'ROOT::index.adoc'
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.out).to.include({
+        dirname: '.',
+        basename: 'index.html',
+        path: 'index.html',
+        moduleRootPath: '.',
+        rootPath: '.',
+      })
+      expect(file.pub.url).to.equal('/index.html')
+      expect(file).to.not.have.property('rel')
+      expect(file.contents).to.equal(homePageContents)
     })
 
     it('should not set out and pub on file with leading underscore', () => {

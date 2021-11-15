@@ -14,7 +14,7 @@ The value of a `name` key, in combination with the value of a `version` key, def
 The component name is fundamental to many of Antora's operations.
 Antora uses the name:
 
-* as the xref:how-antora-builds-urls.adoc#component[component segment] in page and asset URLs
+* as the xref:how-antora-builds-urls.adoc#component[component segment] in page and asset URLs, unless the name of the component is _ROOT_.
 
 Additionally, if the component title key isn't set, Antora uses the name:
 

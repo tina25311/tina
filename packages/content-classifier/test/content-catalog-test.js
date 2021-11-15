@@ -8,7 +8,7 @@ const ContentCatalog = require('@antora/content-classifier/lib/content-catalog')
 const File = require('@antora/content-classifier/lib/file')
 const { posix: path } = require('path')
 
-const { START_PAGE_ID } = require('@antora/content-classifier/lib/constants')
+const { ROOT_INDEX_PAGE_ID } = require('@antora/content-classifier/lib/constants')
 
 // TODO change these to pure unit tests that don't rely on the classifyContent function
 describe('ContentCatalog', () => {
@@ -1914,18 +1914,18 @@ describe('ContentCatalog', () => {
 
     it('should return undefined if site start page does not exist in catalog', () => {
       expect(contentCatalog.getSiteStartPage()).to.not.exist()
-      expect(contentCatalog.getById).to.have.been.called.with(START_PAGE_ID)
+      expect(contentCatalog.getById).to.have.been.called.with(ROOT_INDEX_PAGE_ID)
     })
 
     it('should return site start page if stored as a concrete page', () => {
-      const pageSrc = { ...START_PAGE_ID }
+      const pageSrc = { ...ROOT_INDEX_PAGE_ID }
       const expectedSrc = { ...pageSrc, basename: 'index.adoc', extname: '.adoc', stem: 'index' }
       contentCatalog.addFile({
         contents: Buffer.from('I am your home base!'),
         src: pageSrc,
       })
       const result = contentCatalog.getSiteStartPage()
-      expect(contentCatalog.getById).to.have.been.called.with(START_PAGE_ID)
+      expect(contentCatalog.getById).to.have.been.called.with(ROOT_INDEX_PAGE_ID)
       expect(result).to.exist()
       expect(result.src).to.include(expectedSrc)
       expect(result.contents.toString()).to.equal('I am your home base!')
@@ -1951,20 +1951,60 @@ describe('ContentCatalog', () => {
         src: thePageId,
       })
       contentCatalog.addFile({
-        src: { ...START_PAGE_ID, family: 'alias' },
+        src: { ...ROOT_INDEX_PAGE_ID, family: 'alias' },
         rel: contentCatalog.getById(thePageId),
       })
       contentCatalog.getById = spy(contentCatalog.getById)
       const result = contentCatalog.getSiteStartPage()
       expect(contentCatalog.getById)
         .on.nth(1)
-        .called.with(START_PAGE_ID)
+        .called.with(ROOT_INDEX_PAGE_ID)
       expect(contentCatalog.getById)
         .on.nth(2)
-        .called.with({ ...START_PAGE_ID, family: 'alias' })
+        .called.with({ ...ROOT_INDEX_PAGE_ID, family: 'alias' })
       expect(result).to.exist()
       expect(result.src).to.eql(expectedPageSrc)
       expect(result.contents.toString()).to.equal('I am your home base!')
+    })
+  })
+
+  describe('#registerSiteStartPage()', () => {
+    let contentCatalog
+
+    beforeEach(() => {
+      contentCatalog = new ContentCatalog()
+    })
+
+    it('should not register site start page if page already exists at that location', () => {
+      const pageSrc = { ...ROOT_INDEX_PAGE_ID }
+      const pageContents = Buffer.from('I am your home base!')
+      contentCatalog.addFile({ contents: pageContents, src: pageSrc })
+      const startPage = contentCatalog.registerSiteStartPage('ROOT::index.adoc')
+      expect(startPage).to.not.exist()
+      const files = contentCatalog.getFiles()
+      expect(files).to.have.lengthOf(1)
+      expect(files[0].src.family).to.equal('page')
+      expect(files[0].contents).to.equal(pageContents)
+    })
+
+    it('should return page registered as site start page', () => {
+      const thePageId = {
+        component: 'the-component',
+        version: '3.0',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'start.adoc',
+      }
+      const pageContents = Buffer.from('I am your home base!')
+      contentCatalog.addFile({ contents: pageContents, src: thePageId })
+      contentCatalog.registerComponentVersion('the-component', '3.0', { title: 'The Component' })
+      const startPageAlias = contentCatalog.registerSiteStartPage('the-component::start.adoc')
+      expect(startPageAlias).to.exist()
+      expect(startPageAlias.src.family).to.equal('alias')
+      expect(startPageAlias).to.have.property('synthetic', true)
+      const startPage = contentCatalog.getSiteStartPage()
+      expect(startPage.src).to.include(thePageId)
+      expect(startPage.contents).to.equal(pageContents)
     })
   })
 

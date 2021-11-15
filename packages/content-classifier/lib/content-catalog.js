@@ -9,7 +9,7 @@ const { posix: path } = require('path')
 const resolveResource = require('./util/resolve-resource')
 const versionCompare = require('./util/version-compare-desc')
 
-const { START_ALIAS_ID, START_PAGE_ID } = require('./constants')
+const { ROOT_INDEX_ALIAS_ID, ROOT_INDEX_PAGE_ID } = require('./constants')
 const SPACE_RX = / /g
 
 const $components = Symbol('components')
@@ -249,7 +249,7 @@ class ContentCatalog {
 
   // TODO add `follow` argument to control whether alias is followed
   getSiteStartPage () {
-    return this.getById(START_PAGE_ID) || (this.getById(START_ALIAS_ID) || {}).rel
+    return this.getById(ROOT_INDEX_PAGE_ID) || (this.getById(ROOT_INDEX_ALIAS_ID) || {}).rel
   }
 
   registerComponentVersionStartPage (name, componentVersion, startPageSpec = undefined) {
@@ -261,7 +261,7 @@ class ContentCatalog {
     }
     let startPage
     let startPageSrc
-    const indexPageId = { component: name, version, module: 'ROOT', family: 'page', relative: 'index.adoc' }
+    const indexPageId = Object.assign({}, ROOT_INDEX_PAGE_ID, { component: name, version })
     if (startPageSpec) {
       if (
         (startPage = this.resolvePage(startPageSpec, indexPageId)) &&
@@ -312,7 +312,8 @@ class ContentCatalog {
     if (!startPageSpec) return
     const rel = this.resolvePage(startPageSpec)
     if (rel) {
-      return this.addFile({ src: Object.assign({}, START_ALIAS_ID), rel })
+      if (!(this.getSiteStartPage() || { synthetic: true }).synthetic) return
+      return this.addFile({ src: Object.assign({}, ROOT_INDEX_ALIAS_ID), rel, synthetic: true })
     } else if (rel === false) {
       logger.warn('Start page specified for site has invalid syntax: %s', startPageSpec)
     } else if (~startPageSpec.indexOf(':')) {
@@ -450,6 +451,7 @@ function prepareSrc (src) {
 
 function computeOut (src, family, version, htmlUrlExtensionStyle) {
   let { component, module: module_, basename, extname, relative, stem } = src
+  if (component === 'ROOT') component = ''
   if (module_ === 'ROOT') module_ = ''
   let indexifyPathSegment = ''
   let familyPathSegment = ''
@@ -480,8 +482,11 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
   const pub = {}
   let url
   if (family === 'nav') {
-    const urlSegments = version ? [src.component, version] : [src.component]
-    if (src.module && src.module !== 'ROOT') urlSegments.push(src.module)
+    const component = src.component || 'ROOT'
+    const urlSegments = component === 'ROOT' ? [] : [component]
+    if (version) urlSegments.push(version)
+    const module_ = src.module || 'ROOT'
+    if (module_ !== 'ROOT') urlSegments.push(module_)
     // an artificial URL used for resolving page references in navigation model
     url = '/' + urlSegments.join('/') + '/'
     pub.moduleRootPath = '.'
