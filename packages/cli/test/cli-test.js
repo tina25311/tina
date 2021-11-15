@@ -711,7 +711,7 @@ describe('cli', function () {
       .done()
   })
 
-  it('should not emit UnhandledPromiseRejectionWarning if start path not found when using concurrency limit', () => {
+  it('should not show unhandled promise rejection warning if start path not found when using concurrency limit', () => {
     const url = repoBuilder.url
     playbookSpec.content.sources[0].url = url
     playbookSpec.content.sources.unshift({ url: url.replace('//', '//git@'), branches: 'v1.0', start_path: 'invalid' })
@@ -728,7 +728,7 @@ describe('cli', function () {
       expect(messages.join('\n')).to.not.include('UnhandledPromiseRejectionWarning')
       expect(messages[0]).to.match(/"msg":"the start path 'invalid' does not exist in .*"/)
     })
-  })
+  }).timeout(timeoutOverride)
 
   it('should show error message if site generator cannot be found', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
