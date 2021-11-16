@@ -12,11 +12,11 @@ class File extends Vinyl {
 class ReadableOutputFileArray extends Readable {
   constructor (array) {
     super({ objectMode: true })
-    this.array = array.slice().reverse()
+    this._array = array.slice().reverse()
   }
 
   _read (size) {
-    const array = this.array
+    const array = this._array
     while (size--) {
       const next = array.pop()
       if (next === undefined) break
