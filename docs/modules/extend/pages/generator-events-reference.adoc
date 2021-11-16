@@ -1,17 +1,16 @@
 = Generator Events Reference
-:nosp:
 
 Antora extensions listen for events emitted by the generator when Antora runs.
 Each listener can access variables that are in scope at the time the event is emitted.
 The following table lists the generator events in the order they're emitted and the context (in-scope) variables that correspond to each event.
-If the variable is locked, meaning it can't be replaced, it's marked with an asterisk (`*`).
+If the variable is locked, meaning it cannot be replaced, it's italicized.
 
 .Antora extension events and in-scope variables
 [cols="1,2"]
 |===
 |Event name | In-scope variables
 
-|_register()_{nosp}footnote:register[The register function isn't technically an event, but rather the function Antora calls to register listeners.]
+|register(){empty}footnote:register[The register function isn't technically an event, but rather the function Antora calls to register listeners.]
 |playbook, config
 
 |contextStarted
@@ -21,43 +20,43 @@ If the variable is locked, meaning it can't be replaced, it's marked with an ast
 |playbook
 
 |beforeProcess
-|playbook*, asciidocConfig, siteCatalog
+|_playbook_, asciidocConfig, siteCatalog
 
-|contentAggregated{nosp}footnote:event-sequence[The order of the `contentAggregated` and `uiLoaded` events relative to each other is not guaranteed.]
-|playbook*, asciidocConfig*, siteCatalog, contentAggregate
+|contentAggregated{empty}footnote:event-sequence[The order of the `contentAggregated` and `uiLoaded` events relative to each other is not guaranteed.]
+|_playbook_, _asciidocConfig_, siteCatalog, contentAggregate
 
-|uiLoaded{nosp}footnote:event-sequence[]
-|playbook*, asciidocConfig*, siteCatalog, uiCatalog
+|uiLoaded{empty}footnote:event-sequence[]
+|_playbook_, _asciidocConfig_, siteCatalog, uiCatalog
 
 |contentClassified
-|playbook*, asciidocConfig*, siteCatalog, uiCatalog, contentCatalog
+|_playbook_, _asciidocConfig_, siteCatalog, uiCatalog, contentCatalog
 
 |documentsConverted
-|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |navigationBuilt
-|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*, navigationCatalog
+|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_, navigationCatalog
 
 |pageComposed
-|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |redirectsProduced
-|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
-|siteMapped{nosp}footnote:[The `siteMapped` event is only emitted if the site URL is specified in the playbook.]
-|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+|siteMapped{empty}footnote:[The `siteMapped` event is only emitted if the site URL is specified in the playbook.]
+|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |beforePublish
-|playbook*, asciidocConfig*, siteCatalog, uiCatalog*, contentCatalog*
+|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |sitePublished
-|playbook*, asciidocConfig*, siteCatalog*, uiCatalog*, contentCatalog*, publications
+|_playbook_, _asciidocConfig_, _siteCatalog_, _uiCatalog_, _contentCatalog_, publications
 
 |contextStopped
-|playbook*, _whatever is still in scope at the time the context is stopped_
+|_playbook_, _whatever is still in scope at the time the context is stopped_
 
 |contextClosed
-|playbook*, _whatever is still in scope at the time the context is closed_
+|_playbook_, _whatever is still in scope at the time the context is closed_
 |===
 
 In addition to the built-in context variables listed in this table, your extension can also access context variables documented and published by other extensions.
