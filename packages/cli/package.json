@@ -13,7 +13,7 @@
   "bugs": {
     "url": "https://gitlab.com/antora/antora/issues"
   },
-  "main": "lib/cli.js",
+  "main": "lib/index.js",
   "bin": {
     "antora": "bin/antora"
   },
