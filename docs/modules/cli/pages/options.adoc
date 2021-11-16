@@ -80,7 +80,7 @@ See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>> 
 |`@antora/site-generator-default`
 |Node package name or filesystem path to a script
 |Intended for advanced users comfortable with the inner workings of Antora.
-Effectively substitutes Antora's entire pipeline with a user-defined function.
+Substitutes Antora's default site generator with a user-defined function.
 
 |[[git-credentials-path]]`--git-credentials-path`
 |_$HOME/.git-credentials_ or +
