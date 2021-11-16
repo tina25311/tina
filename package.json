@@ -5,6 +5,8 @@
     "version": "node scripts/version.js"
   },
   "devDependencies": {
+    "@babel/core": "~7.16",
+    "@babel/eslint-parser": "~7.16",
     "chai": "~4.3",
     "chai-fs": "~2.0",
     "chai-spies": "~1.0",
