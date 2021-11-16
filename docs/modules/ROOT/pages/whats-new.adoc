@@ -296,6 +296,7 @@ The TOC lists all the section titles on the page down to the specified level and
 When the page is not wide enough (such as on a mobile screen), the TOC is shown below the page title instead of in the sidebar.
 
 The TOC is enabled by default.
+You do not need to set the `toc::[]` macro on each page for the widget to appear.
 Here are ways you can configure the sidebar TOC:
 
 * Configure the text of the heading shown above the TOC using the page attribute named `page-toctitle` (default: "Contents")
