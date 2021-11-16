@@ -20,6 +20,9 @@ const FUNCTION_PROVIDERS = {
   resolveAsciiDocConfig: 'asciidoc-loader',
 }
 
+const FUNCTION_WITH_POSITIONAL_PARAMETER_RX = /^(?:function *)?(?:\w+ *)?\( *\w|^\w+(?: *, *\w+)* *=>/
+const NEWLINES_RX = /\r?\n/g
+
 class StopSignal extends Error {}
 
 class GeneratorContext extends EventEmitter {
@@ -124,7 +127,7 @@ class GeneratorContext extends EventEmitter {
         const { register } = userRequire(request, requireContext)
         if (typeof register !== 'function') return
         if (register.length) {
-          if (/^(?:function *)?(?:\w+ *)?\( *\w|^\w+(?: *, *\w+)* *=>/.test(register.toString().replace(/\r?\n/g, ' '))) {
+          if (FUNCTION_WITH_POSITIONAL_PARAMETER_RX.test(register.toString().replace(NEWLINES_RX, ' '))) {
             register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
           } else {
             register.call(this, Object.assign({ config }, vars))
