@@ -12,6 +12,28 @@
 NOTE: Interested in upgrading to Antora {page-component-display-version} and testing it out now?
 See xref:install:upgrade-antora.adoc[] for instructions and a list of features to update before upgrading.
 
+= Antora 3.0.0-beta.2
+
+_**Release date:** 2021.11.16 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+=== Added
+
+Issue {url-issues}/872[#872^]:: Drop the component segment in the publication URL and output path of all resources in the component named ROOT.
+Issue {url-issues}/871[#871^]:: Emit lifecycle events for generator context (`contextStarted`, `contextStopped`, `contextClosed`).
+
+=== Changed
+
+Issue {url-issues}/872[#872^]:: Set the component and module properties on the alias for the site start page to `ROOT` (instead of empty string).
+Issue {url-issues}/874[#874^]:: Rename `GeneratorContext#halt` to `GeneratorContext#stop` to more clearly convey intent.
+Issue {url-issues}/875[#875^]:: Update `GeneratorContext#stop` to accept an exit code that is assigned to `process.exitCode`.
+
+=== Fixed
+
+Issue {url-issues}/876[#876^]:: Configure the correct logger when Antora is installed globally.
+Prior to the fix, the log configuration in the playbook was being ignored if using a global Antora installation.
+
 = Antora 3.0.0-beta.1
 
 _**Release date:** 2021.11.03 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
@@ -123,6 +145,12 @@ In short, the term just isn't appropriate and we want to move away from it.
 
 Now, you can identify a versionless component version by assigning the tilde (`~`) (shorthand for `null`) to the `version` key in the component version descriptor file ([.path]_antora.yml_).
 See xref:component-with-no-version.adoc[] to learn more.
+
+== ROOT component
+
+Building on the special behavior of the ROOT module, if you name the component ROOT, the component name will be dropped from the pub(lication) URL and output path of all resources in that component.
+The significance of this behavior is that it means it is now possible to place pages at the root of the published site.
+To do so, set the component name to the special value `ROOT` and the version to `~`.
 
 == Map version to git refname
 
