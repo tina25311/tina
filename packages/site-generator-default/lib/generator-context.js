@@ -105,16 +105,19 @@ class GeneratorContext extends EventEmitter {
   }
 
   _initVariables (playbook) {
-    return (this.#vars = Object.setPrototypeOf({ playbook }, {
-      lock (name) {
-        return Object.defineProperty(this, name, { configurable: false, writable: false })[name]
-      },
-      remove (name) {
-        const currentValue = this[name]
-        delete this[name]
-        return currentValue
-      },
-    }))
+    return (this.#vars = Object.setPrototypeOf(
+      { playbook },
+      {
+        lock (name) {
+          return Object.defineProperty(this, name, { configurable: false, writable: false })[name]
+        },
+        remove (name) {
+          const currentValue = this[name]
+          delete this[name]
+          return currentValue
+        },
+      }
+    ))
   }
 
   _registerExtensions (playbook, vars) {
