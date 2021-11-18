@@ -314,6 +314,18 @@ describe('convertDocument()', () => {
     expect(inputFile.src.contents).to.equal(sourceContents)
   })
 
+  it('should backup AsciiDoc source to src.contents property on file object is keepSource is set on asciidocConfig', () => {
+    const sourceContents = (inputFile.contents = Buffer.from(heredoc`
+      = Get Started
+      :page-partial!:
+
+      article contents
+    `))
+    asciidocConfig.keepSource = true
+    convertDocument(inputFile, undefined, asciidocConfig)
+    expect(inputFile.src.contents).to.equal(sourceContents)
+  })
+
   it('should convert page reference to URL of page in content catalog', () => {
     inputFile.contents = Buffer.from('xref:module-b:page-b.adoc[Page B]')
     const targetFile = {

@@ -45,7 +45,8 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
   for (const [cacheKey, mainAsciiDocConfig] of mainAsciiDocConfigs) {
     headerAsciiDocConfigs.set(cacheKey, Object.assign({}, mainAsciiDocConfig, headerOverrides))
   }
-  return contentCatalog
+  const keepSource = siteAsciiDocConfig.keepSource
+  const pages = contentCatalog
     .getPages((page) => {
       if (page.out) {
         if (page.mediaType === 'text/asciidoc') {
@@ -59,7 +60,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
             },
           })
           registerPageAliases(attributes['page-aliases'], page, contentCatalog)
-          if ('page-partial' in attributes) page.src.contents = page.contents
+          if (keepSource || 'page-partial' in attributes) page.src.contents = page.contents
         }
         return true
       }
@@ -69,7 +70,8 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
         ? convertDocument(page, contentCatalog, mainAsciiDocConfigs.get(buildCacheKey(page.src)) || siteAsciiDocConfig)
         : page
     )
-    .map((page) => delete page.src.contents && page)
+  if (!keepSource) pages.forEach((page) => delete page.src.contents)
+  return pages
 }
 
 function buildCacheKey ({ component, version }) {
