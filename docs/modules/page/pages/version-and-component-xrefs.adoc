@@ -1,5 +1,21 @@
 = Link to Pages in other Components
 
+////
+[#component-versions]
+== Page links between component versions
+
+When the <<target,current and target pages>> belong to different docs components, you must, at a minimum, specify the target page's xref:resource-id-coordinates.adoc#id-component[component, module, and file coordinates].
+You'll almost always specify the version coordinate, too.
+
+.current-page.adoc
+[source#ex-component-version-base]
+----
+xref:version@component:module:target-page-file.adoc[link text]
+----
+
+For context, let's use the pages that belong to the component versions `colorado 5.2` and `wyoming 1.0` as the basis for the examples on this section.
+////
+
 Sometimes you'll need to create cross references to pages that belong to different docs components.
 You can also create xrefs to pages that belong to different versions of the same component.
 
@@ -29,7 +45,7 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
         📄 tour.adoc
     📂 la-garita
       📂 pages
-        📄 cochetopa-pass.adoc
+        📄 willow-creek.adoc
     📂 ROOT
       📂 pages
         📄 index.adoc
@@ -133,7 +149,7 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
         📄 tour.adoc
     📂 la-garita
       📂 pages
-        📄 cochetopa-pass.adoc
+        📄 willow-creek.adoc
     📂 ROOT
       📂 pages
         📄 index.adoc
@@ -144,7 +160,7 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
   📂 modules
     📂 la-garita
       📂 pages
-        📄 cochetopa-pass.adoc
+        📄 willow-creek.adoc
     📂 ROOT
       📂 pages
         📄 index.adoc
@@ -154,10 +170,10 @@ Their source files are stored in the xref:ROOT:standard-directories.adoc[standar
 Notice that the `colorado 5.2` component version has a [.path]_tour.adoc_ page that belongs to the `get-started` module.
 However, `colorado 6.0` has no such module or page.
 
-Let's reference the page [.path]_tour.adoc_ (target page), which belongs to `colorado 5.2`, from the page [.path]_cochetopa-pass.adoc_ (current page), which belongs to the `colorado 6.0` component version.
+Let's reference the page [.path]_tour.adoc_ (target page), which belongs to `colorado 5.2`, from the page [.path]_willow-creek.adoc_ (current page), which belongs to the `colorado 6.0` component version.
 In <<ex-across-versions>>, the xref specifies the target page's version, module, and file coordinates.
 
-.cochetopa-pass.adoc (current page) in colorado 6.0
+.willow-creek.adoc (current page) in colorado 6.0
 [source#ex-across-versions]
 ----
 Last year's xref:5.2@get-started:tour.adoc[excursions] were riveting!
