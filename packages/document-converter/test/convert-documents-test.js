@@ -589,7 +589,7 @@ describe('convertDocuments()', () => {
       },
     ])
     const thisAsciiDocConfig = Object.assign({}, asciidocConfig, {
-      attributes: Object.assign({}, asciidocConfig.attributes, { 'page-partial': null })
+      attributes: Object.assign({}, asciidocConfig.attributes, { 'page-partial': null }),
     })
     contentCatalog.getComponents().forEach((component) => {
       component.versions.forEach((version) => (version.asciidoc = thisAsciiDocConfig))
