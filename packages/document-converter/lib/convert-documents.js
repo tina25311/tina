@@ -46,22 +46,23 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
     headerAsciiDocConfigs.set(cacheKey, Object.assign({}, mainAsciiDocConfig, headerOverrides))
   }
   return contentCatalog
-    .getPages((page) => page.out)
-    .map((page) => {
-      if (page.mediaType === 'text/asciidoc') {
-        const asciidocConfig = headerAsciiDocConfigs.get(buildCacheKey(page.src))
-        const { attributes } = (page.asciidoc = extractAsciiDocMetadata(
-          loadAsciiDoc(page, contentCatalog, asciidocConfig || Object.assign({}, siteAsciiDocConfig, headerOverrides))
-        ))
-        Object.defineProperty(page, 'title', {
-          get () {
-            return this.asciidoc.doctitle
-          },
-        })
-        registerPageAliases(attributes['page-aliases'], page, contentCatalog)
-        if ('page-partial' in attributes) page.src.contents = page.contents
+    .getPages((page) => {
+      if (page.out) {
+        if (page.mediaType === 'text/asciidoc') {
+          const asciidocConfig = headerAsciiDocConfigs.get(buildCacheKey(page.src))
+          const { attributes } = (page.asciidoc = extractAsciiDocMetadata(
+            loadAsciiDoc(page, contentCatalog, asciidocConfig || Object.assign({}, siteAsciiDocConfig, headerOverrides))
+          ))
+          Object.defineProperty(page, 'title', {
+            get () {
+              return this.asciidoc.doctitle
+            },
+          })
+          registerPageAliases(attributes['page-aliases'], page, contentCatalog)
+          if ('page-partial' in attributes) page.src.contents = page.contents
+        }
+        return true
       }
-      return page
     })
     .map((page) =>
       page.mediaType === 'text/asciidoc'
