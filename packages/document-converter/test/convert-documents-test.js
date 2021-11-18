@@ -538,6 +538,8 @@ describe('convertDocuments()', () => {
       },
     ])
     const pages = convertDocuments(contentCatalog, asciidocConfig)
+    // verify page-partial is set by default
+    pages.forEach((page) => expect(page).to.have.nested.property('asciidoc.attributes.page-partial', ''))
     expect(pages[1].contents.toString()).to.include(heredoc`
       <div class="sect1">
       <h2 id="_recent_changes"><a class="anchor" href="#_recent_changes"></a>Recent Changes</h2>
