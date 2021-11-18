@@ -89,12 +89,13 @@ describe('convertDocuments()', () => {
         mediaType: 'text/asciidoc',
       },
     ])
-    expect(asciidocConfig).to.not.have.nested.property('attributes.page-partial')
-    const pages = convertDocuments(contentCatalog, asciidocConfig)
-    expect(pages).to.have.lengthOf(2)
-    pages.forEach((page) => {
-      expect(page.src).to.not.have.property('contents')
+    contentCatalog.getComponents((component) => {
+      component.versions.forEach((version) => (version.asciidoc = asciidocConfig))
     })
+    const pages = convertDocuments(contentCatalog, asciidocConfig)
+    expect(asciidocConfig).to.not.have.nested.property('attributes.page-partial')
+    expect(pages).to.have.lengthOf(2)
+    pages.forEach((page) => expect(page.src).to.not.have.property('contents'))
   })
 
   it('should assign relevant properties to asciidoc property on file object', () => {
@@ -538,7 +539,6 @@ describe('convertDocuments()', () => {
       },
     ])
     const pages = convertDocuments(contentCatalog, asciidocConfig)
-    // verify page-partial is set by default
     pages.forEach((page) => expect(page).to.have.nested.property('asciidoc.attributes.page-partial', ''))
     expect(pages[1].contents.toString()).to.include(heredoc`
       <div class="sect1">
@@ -554,6 +554,53 @@ describe('convertDocuments()', () => {
       </ul>
       </div>
       </div>
+      </div>
+      </div>
+    `)
+  })
+
+  it('should not be able to include a page which has already been converted if page-partial is not set', () => {
+    const contentsA = Buffer.from(heredoc`
+      = Changelog
+
+      // tag::entries[]
+      == Version 1.1
+
+      * Bug fixes.
+      // end::entries[]
+    `)
+    const contentsB = Buffer.from(heredoc`
+      = Page Title
+
+      == Recent Changes
+
+      include::changelog.adoc[tag=entries,leveloffset=+1]
+    `)
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'changelog.adoc',
+        contents: contentsA,
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'z-page.adoc',
+        contents: contentsB,
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    const thisAsciiDocConfig = Object.assign({}, asciidocConfig, {
+      attributes: Object.assign({}, asciidocConfig.attributes, { 'page-partial': null })
+    })
+    contentCatalog.getComponents().forEach((component) => {
+      component.versions.forEach((version) => (version.asciidoc = thisAsciiDocConfig))
+    })
+    const pages = convertDocuments(contentCatalog, thisAsciiDocConfig)
+    pages.forEach((page) => expect(page).to.not.have.nested.property('asciidoc.attributes.page-partial'))
+    expect(pages[1].contents.toString()).to.include(heredoc`
+      <div class="sect1">
+      <h2 id="_recent_changes"><a class="anchor" href="#_recent_changes"></a>Recent Changes</h2>
+      <div class="sectionbody">
+
       </div>
       </div>
     `)
