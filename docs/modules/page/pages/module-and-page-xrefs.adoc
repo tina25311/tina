@@ -1,5 +1,5 @@
 = Create Page Links
-//:page-aliases: version-and-component-xrefs.adoc
+:page-aliases: version-and-component-xrefs.adoc
 //module-and-page-xrefs.adoc,
 //This page walks through examples demonstrating how to determine the resource IDs for the target and current pages and how to assign the correct sequence of coordinates to an xref macro to create a valid page link.
 //* [x] how to assign the correct sequence of resource ID coordinates to an xref macro to create a valid page link
@@ -461,7 +461,3 @@ You'll need to specify the link text in the xref macro when using a fragment.
 TIP: Xrefs in a navigation file behave the same way with one additional feature.
 Navigation files use the xref:reftext-and-navtitle.adoc#navtitle[navtitle value] to populate missing link text.
 If `navtitle` isn't set, then they use the page's `reftext` value.
-
-== Learn more
-
-To learn how to create xrefs to pages that belong to other components and component versions see xref:version-and-component-xrefs.adoc[].
