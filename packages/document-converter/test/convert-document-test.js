@@ -303,7 +303,7 @@ describe('convertDocument()', () => {
     expect(inputFile.asciidoc.attributes).to.include(customAttributes)
   })
 
-  it('should backup contents to src.contents property on file object is page-partial attribute is set', () => {
+  it('should backup AsciiDoc source to src.contents property on file object is page-partial attribute is set', () => {
     const sourceContents = (inputFile.contents = Buffer.from(heredoc`
       = Get Started
       :page-partial:
