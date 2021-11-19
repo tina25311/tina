@@ -1,15 +1,30 @@
 = Image Resource ID Examples
 
-You can embed an image into any page in your site, regardless of the module, component, or version the target image file belongs to.
-Remember, don't include the family coordinate in an image's resource ID.
-It's applied automatically at runtime when a resource ID is entered into an AsciiDoc image macro.
+You can embed an image into any page in your site, regardless of the module, component, or version to which the target image file belongs.
 
 TIP: If you're looking for examples where the image and page belong to the same module and component version, see the xref:inline-images.adoc#insert-inline-image[Inline images] or  xref:block-images.adoc#insert-block-image[Block images] pages.
+
+[NOTE]
+====
+If you aren't familiar with the Antora resource ID or its coordinates, see:
+
+* xref:resource-id.adoc[]
+* xref:resource-id-coordinates.adoc[]
+====
 
 [#use-image-across-modules]
 == Use an image from another module
 
 The target resource's xref:resource-id-coordinates.adoc#id-module[module coordinate] and xref:resource-id-coordinates.adoc#id-resource[file coordinate] are required when the xref:resource-id-coordinates.adoc#target[current page and target image] belong to different modules of the same component version.
+
+[TIP]
+====
+// tag::target-current-def[]
+[[target]]The [.term]*target image* is the image source file that's being referenced by the current page.
+The target image is referenced by assigning its resource ID to an inline or block image macro in the content of the current page.
+[[current]]The [.term]*current page* is the page source file containing the image macro that references the target image.
+// end::target-current-def[]
+====
 
 .current-page.adoc
 [listing#ex-across-module-base]
