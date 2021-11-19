@@ -9,7 +9,7 @@ Cross references to pages in a navigation list are constructed using the xref:pa
 
 The xrefs in a navigation file's list most often target pages xref:organize-files.adoc[that belong to the same module as the navigation file].
 In these cases, the resource IDs don't require the version, component, or module coordinates.
-However, regardless of what component version a navigation file belongs to, you can still link to any page in the site from any navigation list, whether they belong to a xref:page:module-and-page-xrefs.adoc#xref-page-across-modules[different modules] or xref:page:module-and-page-xrefs.adoc#component-versions[components].
+However, regardless of what component version a navigation file belongs to, you can still link to any page in the site from any navigation list, whether they belong to a xref:page:page-links.adoc#modules[different modules] or xref:page:page-links.adoc#component-versions[components].
 
 .nav.adoc
 [source]

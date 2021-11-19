@@ -120,6 +120,6 @@ You've finished creating an cross reference to the target page ([.path]_modes.ad
 
 == More examples
 
-xref:module-and-page-xrefs.adoc[] shows how to create xrefs to pages that belong to the same module or component version as the current page.
+xref:page-links.adoc[] shows how to create xrefs to pages that belong to the same module or component version as the current page.
 
 xref:attachments.adoc[] shows how to create xrefs when the target resource is an attachment.

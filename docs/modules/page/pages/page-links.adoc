@@ -1,20 +1,19 @@
 = Create Page Links
-:page-aliases: version-and-component-xrefs.adoc
-//module-and-page-xrefs.adoc,
+:page-aliases: module-and-page-xrefs.adoc, version-and-component-xrefs.adoc
 //This page walks through examples demonstrating how to determine the resource IDs for the target and current pages and how to assign the correct sequence of coordinates to an xref macro to create a valid page link.
 //* [x] how to assign the correct sequence of resource ID coordinates to an xref macro to create a valid page link
 //* [x] how to determine the resource ID of the target page in relation to the current page when:
 
 On this page, you'll learn how to assign the correct resource ID coordinates to an xref macro when:
 
-* [x] <<xref-page-in-module>>: the target page and current page belong to the same component version and module
+* [x] <<pages>>: the target page and current page belong to the same component version and module
 * [x] <<pages-root>>: the target page is stored at the root of the [.path]_pages_ directory
 * [x] <<relative-path>>: the target page is stored in a subdirectory of the [.path]_pages_ directory
 * [x] <<token>>: the target page and current page are stored in the same subdirectory of the [.path]_pages_ directory
-* [x] <<xref-page-across-modules>>: the target page and current page belong to different modules
+* [x] <<modules>>: the target page and current page belong to different modules
 * [x] <<component-versions>>: the target page and current page belong to different component versions
 * [x] <<latest-version>>: the target page and current page don't belong to the same component version, and the page link should always use the latest version of the target page
-* [x] <<xref-page-in-different-version>>: the target page and current page belong to the same component, but the target page belongs to a different version
+* [x] <<versions>>: the target page and current page belong to the same component, but the target page belongs to a different version
 
 [NOTE]
 ====
@@ -25,7 +24,8 @@ If you aren't familiar with the Antora resource ID, its coordinates, or how to u
 * xref:xref.adoc[]
 ====
 
-[#xref-page-in-module]
+//[#xref-page-in-module]
+[#pages]
 == Page links within a module
 //Link to a page in the same module
 //Xref pages that belong to the same module
@@ -219,7 +219,8 @@ See the xref:./faq.adoc[].
 As shown in <<ex-token>>, the file coordinate for [.path]_faq.adoc_, when referenced from [.path]_signs.adoc_, is `./faq.adoc`.
 Both pages are stored in the [.path]_terms_ subdirectory, therefore, the relative path segment of the target page's file coordinate is replaced with the `./` token.
 
-[#xref-page-across-modules]
+//[#xref-page-across-modules]
+[#modules]
 == Page links between modules
 
 When the <<target,target page>> and <<current,current page>> don't belong to the same module, you must specify the target page's xref:resource-id-coordinates.adoc#id-module[module coordinate] and xref:resource-id-coordinates.adoc#id-resource[file coordinate] in the xref macro.
@@ -442,7 +443,8 @@ Because Antora now identifies _wyoming 1.5_ as the latest version of the _wyomin
 WARNING: This behavior of linking to the latest version only applies when the version coordinate is unspecified and the target page and current page belong to different components.
 If a version and component aren't specified in the resource ID, Antora assumes the target page's version and component are the same as the current page's version and component coordinates.
 
-[#xref-page-in-different-version]
+//[#xref-page-in-different-version]
+[#versions]
 == Page links between versions of a component
 
 When the <<current,current page>> and <<target,target page>> belong to the same docs component, but the target page belongs to a different version of the component, you'll specify the version, module (if it's different than the current page's module), and file coordinates.
