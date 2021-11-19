@@ -11,6 +11,7 @@
 * xref:start-page.adoc[]
 * xref:xref.adoc[]
 ** xref:page-links.adoc[]
+** xref:link-content.adoc[]
 //Rename, Move, and Delete Pages
 * xref:reftext-and-navtitle.adoc[]
 * xref:page-aliases.adoc[]

@@ -1,4 +1,4 @@
-= Page Links and Xref Macros
+= Xref Macros and Page Links
 //Cross References
 :page-aliases: page-id.adoc, asciidoc:page-to-page-xref.adoc
 :colon: :
@@ -55,14 +55,14 @@ A [.term]*fragment* is an element ID that links to a section, block, or inline l
 Fragments are also referred to as [.term]*deep links*.
 A fragment is optional.
 The fragment starts with the hash symbol (`#`) and is entered directly after the resource ID of the target page.
-A target page's default reference text (`reftext`) isn't used as <<link-text,link text>> when a fragment is specified.
+A target page's reference text, whether assigned by default or using the `reftext` attribute, isn't used as <<link-text,link text>> when a fragment is specified.
 
 [#link-text]
 [link text]::
 The xref macro is completed with a set of square brackets (`[]`) at the end of the target page's resource ID, or, if specified, at the end of the <<id-fragment,fragment>>.
 You can enter optional text between these brackets or leave them empty.
 When Antora converts the xref macro and its value into a link, the text entered between the square brackets is displayed in the current page when it's published to your site.
-If no link text is specified between the macro's square brackets, and the value of the xref macro doesn't contain a fragment, then the target page's xref:reftext-and-navtitle.adoc[default reference text] is displayed in the current page when it's published.
+If no link text is specified between the macro's square brackets, and the value of the xref macro doesn't contain a fragment, then the target page's xref:link-content.adoc#default[default reference text] or text assigned to the xref:reftext-and-navtitle.adoc[reftext attribute], is displayed in the current page when it's published.
 If a fragment is appended to the resource ID of the target page and no link text is entered between the brackets, then the URL of the published target page is displayed.
 
 The next section, <<make-link>>, explains how to create a cross reference step-by-step.
@@ -111,8 +111,8 @@ You don't need to enter the family coordinate in an xref macro when the target r
 See the xref:modes.adoc**[]** for more options.
 ----
 
-We didn't enter any text between the macro's square brackets because we want the target page's default reference text to be used as the link text.
-When Antora converts the xref macro and target page's resource ID, it will automatically populate the link text with the default reference text of the target page.
+We didn't enter any text between the macro's square brackets because we want the target page's reference text to be used as the link text.
+When Antora converts the xref macro and target page's resource ID, it will automatically populate the link text with the target page's xref:link-content.adoc#default[default reference text] or text assigned to the xref:reftext-and-navtitle.adoc[reftext attribute].
 --
 
 That's it!
