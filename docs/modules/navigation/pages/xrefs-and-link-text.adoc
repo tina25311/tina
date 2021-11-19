@@ -9,7 +9,7 @@ Cross references to pages in a navigation list are constructed using the xref:pa
 
 The xrefs in a navigation file's list most often target pages xref:organize-files.adoc[that belong to the same module as the navigation file].
 In these cases, the resource IDs don't require the version, component, or module coordinates.
-However, regardless of what component version a navigation file belongs to, you can still link to any page in the site from any navigation list, whether they belong to a xref:page:module-and-page-xrefs.adoc#xref-page-across-modules[different modules] or xref:page:version-and-component-xrefs.adoc[components].
+However, regardless of what component version a navigation file belongs to, you can still link to any page in the site from any navigation list, whether they belong to a xref:page:page-links.adoc#modules[different modules] or xref:page:page-links.adoc#component-versions[components].
 
 .nav.adoc
 [source]
@@ -40,9 +40,8 @@ Xrefs in a navigation file don't need to specify link text.
 ----
 <.> Xref that doesn't have any link text specified inside the macro's square brackets (`+[]+`).
 
-Antora uses the target page's default link text when the link text is unspecified.
-A page's default link text, when reference by a navigation file, is supplied by the xref:page:reftext-and-navtitle.adoc#navtitle[navtitle attribute].
-When `navtitle` isn't set in the target page's header, Antora automatically assigns it the value of the page's `reftext` attribute.
+Antora uses the value assigned to the optional xref:page:reftext-and-navtitle.adoc#navtitle[navtitle attribute] in the target page when the link text is unspecified.
+When `navtitle` isn't set in the target page's header, Antora automatically assigns it the value of the page's reference text, which may either be the target page's xref:page:link-content.adoc#default[default reference text] or text assigned to the xref:page:reftext-and-navtitle.adoc#navtitle[reftext attribute].
 
 NOTE: Antora doesn't populate an xref's link text when a xref:page:xref.adoc#id-fragment[fragment is appended to the resource ID of a page].
 In such cases, you still need to explicitly specify the link text.

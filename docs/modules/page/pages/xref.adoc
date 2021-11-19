@@ -1,4 +1,4 @@
-= Page Links
+= Xref Macros and Page Links
 //Cross References
 :page-aliases: page-id.adoc, asciidoc:page-to-page-xref.adoc
 :colon: :
@@ -6,66 +6,69 @@
 // page:page-id.adoc#important == Why are page IDs important?
 //[#whats-a-cross-reference]
 
+To create a page link, you need to know:
+
+* how to structure and use the AsciiDoc xref macro,
+* how to assign the resource ID of a page to an AsciiDoc xref macro,
+* the resource ID of the page you're linking to (the target page), and
+* the resource ID of the page where you want the link to be displayed (the current page).
+
 [#xref-macro]
 == AsciiDoc xref macro
 
-An AsciiDoc xref macro is used to create a source-to-source cross reference from one publishable resource to another publishable resource.
-In this documentation, the term [.term]*cross reference*, which is often abbreviated to [.term]*xref*, means to use the AsciiDoc xref macro to reference the source file of a publishable resource.
-The xref macro accepts a xref:resource-id.adoc[resource ID] specifying a publishable page, attachment, or, occasionally, an image, as a value.
-When Antora runs, the xref macros and their values are converted into links to the target resources`' published URLs.
-//When Antora runs, an xref macro with a valid resource ID is converted into a link that a site visitor can follow in their browser to access the published resource.
+An AsciiDoc xref macro is used to create a source-to-source cross reference from a resource to a publishable resource.
+The term [.term]*cross reference*, which is often abbreviated to [.term]*xref*, means to use the AsciiDoc xref macro to reference the source file of a publishable resource.
+The xref macro accepts an xref:resource-id.adoc[Antora resource ID] specifying a publishable page, attachment, or, occasionally, an image, as a value.
+When Antora runs, an xref macro and its value are converted into a link to the target resource's published URL.
 
+[#structure]
 === Xref macro structure
 
-This section focuses on how to create an AsciiDoc xref macro to reference a page.
 <<fig-xref-macro>> shows the structure of an xref macro.
 
 .Xref macro structure for referencing a page
 [#fig-xref-macro]
 image::xref-macro-with-resource-id-for-page.svg[Diagram of an AsciiDoc xref macro with an Antora resource ID for a page]
 
-At a minimum, an xref macro consists of the macro's prefix (`xref:`), followed by the resource ID of the target page, and ending with a set of square brackets (`[]`).
-[[target]]The [.term]*target page* is the source file of the page that's referenced, by specifying its resource ID, as the value in an xref macro.
+At a minimum, an xref macro consists of the macro's prefix (`xref:`), the resource ID of the target page, and a set of square brackets (`[]`).
+// tag::target-current-def[]
+[[target]]The [.term]*target page* is the page source file that's being referenced by the current page.
+The target page is referenced by assigning its resource ID to an xref macro in the content of the current page.
 [[current]]The [.term]*current page* is the page source file containing the xref macro that references the target page.
-
+// end::target-current-def[]
 Each part of the xref macro shown in <<fig-xref-macro>> is described in more detail below.
 
 xref{colon}::
 An xref macro begins with the macro's name, `xref`, followed by a single colon (`:`)
-The resource ID of the target page directly follows the colon.
 
 resource ID of target page::
-The value of an xref macro is entered directly after the colon that follows the macro's name (`xref:`).
 The xref macro accepts the resource ID of a page as its value.
-How many of the target page's resource ID coordinates you need to specify depends on the component version and module of the current page in relation to the target page.
+The value is entered directly after the colon that follows the macro's name (`xref:`).
+How many of the target page's xref:resource-id-coordinates.adoc[resource ID coordinates] you need to specify depends on the component version and module of the target page in relation to the current page.
 The `page$` family coordinate isn't required in the resource ID when the target resource is a page.
-//For example, if the current page and target page belong to the same component version and module, then only the file coordinate of the target page's resource ID needs to be specified.
-//If the target resource is in a subdirectory, the file coordinate of it resource ID must include that subdirectory, even if the current page is located in the same directory.
-//Alternatively, you can add `./` to the start of the file coordinate as a shorthand for the family-relative path of the target resource.
-//When the resource ID contains the module coordinate, and the module name ends with the name of a built-in macro (e.g., `monolink`), you may have to escape that portion of the name by prefixing it with a backslash (e.g., `mono\link`).
-//If the target resource is a page, the `page$` family coordinate doesn't need to be entered in the resource ID.
-//If the target resource is an attachment or an image, the `attachment$` or `image$` coordinate, respectively, is required.
+//Remember, the xref:resource-id-coordinates.adoc#id-resource[file coordinate] of a target page is calculated from the _pages_ family directory.
+//If the target page is stored in a subdirectory of _pages_, include the __pages__-relative path segment or `./` token in the target page's file coordinate.
 
 [#id-fragment]
 #fragment::
 A [.term]*fragment* is an element ID that links to a section, block, or inline location within the target page.
-Fragments are also referred to as [.term]*deep links* sometimes.
-A fragment is optional and only applies when the target resource is a page.
+Fragments are also referred to as [.term]*deep links*.
+A fragment is optional.
 The fragment starts with the hash symbol (`#`) and is entered directly after the resource ID of the target page.
-A target page's default reference text (`reftext`) isn't used as <<link-text,link text>> when a fragment is specified.
+A target page's reference text, whether assigned by default or using the `reftext` attribute, isn't used as <<link-text,link text>> when a fragment is specified.
 
 [#link-text]
 [link text]::
-The xref macro is completed with a set of square brackets (`[]`) at the end of the target page's resource ID, or, if present, at the end of the <<id-fragment,fragment>>.
+The xref macro is completed with a set of square brackets (`[]`) at the end of the target page's resource ID, or, if specified, at the end of the <<id-fragment,fragment>>.
 You can enter optional text between these brackets or leave them empty.
-When Antora converts the xref macro and its value into a link, the text you entered between the square brackets is displayed in the current page when it's published to your site.
-If no link text is specified between the macro's square brackets, and the value of the xref macro doesn't contain a fragment, then the target page's xref:reftext-and-navtitle.adoc[default reference text] is displayed in the current page when it's published.
-If a fragment is appended to the resource ID of the target page and no link text was entered between the brackets, then the URL of the published target page is displayed.
+When Antora converts the xref macro and its value into a link, the text entered between the square brackets is displayed in the current page when it's published to your site.
+If no link text is specified between the macro's square brackets, and the value of the xref macro doesn't contain a fragment, then the target page's xref:link-content.adoc#default[default reference text] or text assigned to the xref:reftext-and-navtitle.adoc[reftext attribute], is displayed in the current page when it's published.
+If a fragment is appended to the resource ID of the target page and no link text is entered between the brackets, then the URL of the published target page is displayed.
 
-The next section, <<create-link>>, shows how to create a cross reference step-by-step.
+The next section, <<make-link>>, explains how to create a cross reference step-by-step.
 
-[#create-link]
-== Create a link to a page
+[#make-link]
+== Make a link with the xref macro
 
 Let's break down the xref macro and resource ID coordinates you need to create a cross reference to a page (the <<target,target page>>) from a page that you're currently editing (the <<current,current page>>).
 For this exercise, let's assume that the filename of the target page is [.path]_modes.adoc_ and the filename of the current page is [.path]_satellites.adoc_.
@@ -84,11 +87,11 @@ See the **xref:**
 ----
 
 . Enter the resource ID of the target page.
-In this example, both [.path]_modes.adoc_ and [.path]_satellites.adoc_ belong to the same component version and module and neither file is stored in a subdirectory of the _pages_ folder.
+In this example, both [.path]_modes.adoc_ and [.path]_satellites.adoc_ belong to the same component version and module and neither file is stored in a subdirectory of the [.path]_pages_ folder.
 Therefore, only the filename and extension of [.path]_modes.adoc_ needs to be assigned as the value of the xref macro.
 +
-.satellites.adoc (current page)
 --
+.satellites.adoc (current page)
 [listing,subs=+quotes]
 ----
 See the xref:**modes.adoc**
@@ -101,15 +104,15 @@ You don't need to enter the family coordinate in an xref macro when the target r
 
 . Directly after the resource ID of the target page, enter an opening square bracket (`[`), then a closing square bracket (`]`), followed by any subsequent content.
 +
-.satellites.adoc (current page)
 --
+.satellites.adoc (current page)
 [listing,subs=+quotes]
 ----
 See the xref:modes.adoc**[]** for more options.
 ----
 
-We didn't enter any text between the macro's square brackets because we want the target page's default reference text to be used as the link text.
-When Antora converts the xref macro and target page's resource ID, it will automatically populate the link text with the default reference text of the target page.
+We didn't enter any text between the macro's square brackets because we want the target page's reference text to be used as the link text.
+When Antora converts the xref macro and target page's resource ID, it will automatically populate the link text with the target page's xref:link-content.adoc#default[default reference text] or text assigned to the xref:reftext-and-navtitle.adoc[reftext attribute].
 --
 
 That's it!
@@ -117,8 +120,6 @@ You've finished creating an cross reference to the target page ([.path]_modes.ad
 
 == More examples
 
-xref:module-and-page-xrefs.adoc[] shows how to create xrefs to pages that belong to the same module or component version as the current page.
-
-For xref examples where the target and current pages belong to different components or different versions of the same component, see xref:version-and-component-xrefs.adoc[].
+xref:page-links.adoc[] shows how to create xrefs to pages that belong to the same module or component version as the current page.
 
 xref:attachments.adoc[] shows how to create xrefs when the target resource is an attachment.
