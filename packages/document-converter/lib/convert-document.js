@@ -33,7 +33,7 @@ function convertDocument (file, contentCatalog = undefined, asciidocConfig = {})
   const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig)
   if (!file.asciidoc) {
     file.asciidoc = extractAsciiDocMetadata(doc)
-    if ('page-partial' in file.asciidoc.attributes) file.src.contents = file.contents
+    if (asciidocConfig.keepSource || 'page-partial' in file.asciidoc.attributes) file.src.contents = file.contents
   }
   file.contents = Buffer.from(doc.convert())
   file.mediaType = 'text/html'

@@ -98,6 +98,27 @@ describe('convertDocuments()', () => {
     pages.forEach((page) => expect(page.src).to.not.have.property('contents'))
   })
 
+  it('should not remove src.contents property if keepSource is set on site-wide asciidocConfg', () => {
+    const contentCatalog = mockContentCatalog([
+      {
+        relative: 'index.adoc',
+        contents: '= Home\n\nThis is the index page.',
+        mediaType: 'text/asciidoc',
+      },
+      {
+        relative: 'topic/index.adoc',
+        contents: '= Topic\n\nThis is a topic page.',
+        mediaType: 'text/asciidoc',
+      },
+    ])
+    expect(asciidocConfig).to.not.have.nested.property('attributes.page-partial')
+    const pages = convertDocuments(contentCatalog, Object.assign({}, asciidocConfig, { keepSource: true }))
+    expect(pages).to.have.lengthOf(2)
+    pages.forEach((page) => expect(page.src).to.have.property('contents'))
+    expect(pages[0].src.contents.toString()).to.equal('= Home\n\nThis is the index page.')
+    expect(pages[1].src.contents.toString()).to.equal('= Topic\n\nThis is a topic page.')
+  })
+
   it('should assign relevant properties to asciidoc property on file object', () => {
     const contentCatalog = mockContentCatalog([
       {
