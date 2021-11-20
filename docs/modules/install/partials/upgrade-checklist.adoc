@@ -9,7 +9,7 @@ Antora 3 doesn't support Node LTS versions that have reached end of life (EOL).
 See <<node>> for instructions.
 
 Have you updated your AsciiDoc syntax and Asciidoctor extensions to comply with the newest patch release of Asciidoctor.js 2.2?::
-Antora 3 dropped support for Asciidoctor.js 1.5.9 and now depends on the latest patch version of Asciidoctor.js 2.2 (which provides Asciidoctor 2.0.x).
+Antora 3 dropped support for Asciidoctor.js 1.5.9 (which provides Asciidoctor 1.5.8) and now depends on the latest patch version of Asciidoctor.js 2.2 (which provides Asciidoctor 2.0.x).
 Asciidoctor 2 introduces a few substantive changes to existing features that may impact your documentation source content or UI.
 See xref:ROOT:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora 3.
 
