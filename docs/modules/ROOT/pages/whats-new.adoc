@@ -25,9 +25,9 @@ Issue {url-issues}/871[#871^]:: Emit lifecycle events for generator context (`co
 
 === Changed
 
-Issue {url-issues}/872[#872^]:: Set the component and module properties on the alias for the site start page to `ROOT` (instead of empty string).
+Issue {url-issues}/872[#872^]:: Set the `component` and `module` properties on the alias for the site start page to the value `ROOT` (instead of an empty string).
 Issue {url-issues}/874[#874^]:: Rename `GeneratorContext#halt` to `GeneratorContext#stop` to more clearly convey intent.
-Issue {url-issues}/875[#875^]:: Update `GeneratorContext#stop` to accept an exit code that is assigned to `process.exitCode`.
+Issue {url-issues}/875[#875^]:: Update `GeneratorContext#stop` to accept an exit code to assign to `process.exitCode`.
 
 === Fixed
 
