@@ -9,8 +9,8 @@
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-repo}/merge_requests
 
-NOTE: Interested in upgrading to Antora {page-component-display-version} and testing it out now?
-See xref:install:upgrade-antora.adoc[] for instructions and a list of features to update before upgrading.
+NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
+Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
 = Antora 3.0.0-beta.2
 

@@ -1,3 +1,4 @@
+[#checklist]
 == Upgrade checklist
 
 If you're upgrading from Antora 2.3, you may need to make some of the following changes to your documentation system before using Antora {page-component-display-version}.
