@@ -39,7 +39,7 @@ The target page is referenced by assigning its resource ID to an xref macro in t
 Each part of the xref macro shown in <<fig-xref-macro>> is described in more detail below.
 
 xref{colon}::
-An xref macro begins with the macro's name, `xref`, followed by a single colon (`:`)
+An xref macro begins with the macro's name, `xref`, followed by a single colon (`:`).
 
 resource ID of target page::
 The xref macro accepts the resource ID of a page as its value.
