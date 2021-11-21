@@ -31,15 +31,12 @@ const ospath = require('path')
 function buildPlaybook (args = [], env = {}, schema = undefined, beforeValidate = undefined) {
   const config = loadConvictConfig(args, env, schema)
   const relSpecFilePath = config.get('playbook')
+  let absSpecFilePath
   if (relSpecFilePath) {
-    let absSpecFilePath = ospath.resolve(relSpecFilePath)
+    absSpecFilePath = ospath.resolve(relSpecFilePath)
     if (ospath.extname(absSpecFilePath)) {
       if (!fs.existsSync(absSpecFilePath)) {
-        let details = ''
-        if (relSpecFilePath !== absSpecFilePath) {
-          details = ` (path: ${relSpecFilePath}${ospath.isAbsolute(relSpecFilePath) ? '' : ', cwd: ' + process.cwd()})`
-        }
-        throw new Error(`playbook file not found at ${absSpecFilePath}${details}`)
+        throw new Error(`playbook file not found at ${absSpecFilePath}${getDetails(relSpecFilePath, absSpecFilePath)}`)
       }
     } else if (fs.existsSync(absSpecFilePath + '.yml')) {
       absSpecFilePath += '.yml'
@@ -48,19 +45,28 @@ function buildPlaybook (args = [], env = {}, schema = undefined, beforeValidate 
     } else if (fs.existsSync(absSpecFilePath + '.toml')) {
       absSpecFilePath += '.toml'
     } else {
-      const details = `(path: ${relSpecFilePath}${ospath.isAbsolute(relSpecFilePath) ? '' : ', cwd: ' + process.cwd()})`
       throw new Error(
-        `playbook file not found at ${absSpecFilePath}.yml, ${absSpecFilePath}.json, or ${absSpecFilePath}.toml ` +
-          details
+        `playbook file not found at ${absSpecFilePath}.yml, ${absSpecFilePath}.json, or ${absSpecFilePath}.toml` +
+          getDetails(relSpecFilePath, absSpecFilePath)
       )
     }
-    config.loadFile(absSpecFilePath)
-    if (relSpecFilePath !== absSpecFilePath) config.set('playbook', absSpecFilePath)
   }
-  const beforeValidateFromSchema = config._def[Symbol.for('convict.beforeValidate')]
-  if (beforeValidateFromSchema) beforeValidateFromSchema(config)
-  if (beforeValidate) beforeValidate(config)
-  return config.getModel()
+  try {
+    if (relSpecFilePath) {
+      config.loadFile(absSpecFilePath)
+      if (absSpecFilePath !== relSpecFilePath) config.set('playbook', absSpecFilePath)
+    }
+    const beforeValidateFromSchema = config._def[Symbol.for('convict.beforeValidate')]
+    if (beforeValidateFromSchema) beforeValidateFromSchema(config)
+    if (beforeValidate) beforeValidate(config)
+    return config.getModel()
+  } catch (err) {
+    if (!relSpecFilePath) throw err
+    const message = err.message.replace(/( in the schema)?$/m, (_, inSchema) => {
+      return `${inSchema ? inSchema + ' for' : ' in'} ${absSpecFilePath}${getDetails(relSpecFilePath, absSpecFilePath)}`
+    })
+    throw Object.assign(err, { message })
+  }
 }
 
 function loadConvictConfig (args, env, customSchema) {
@@ -101,6 +107,11 @@ function getStopPaths (schemaProperties, schemaPath = [], stopPaths = []) {
 function deepFreeze (o) {
   for (const v of Object.values(o)) Object.isFrozen(v) || deepFreeze(v)
   return Object.freeze(o)
+}
+
+function getDetails (relSpecFilePath, absSpecFilePath) {
+  if (relSpecFilePath === absSpecFilePath) return ''
+  return ` (${ospath.isAbsolute(relSpecFilePath) ? '' : 'cwd: ' + process.cwd() + ', '}playbook: ${relSpecFilePath})`
 }
 
 module.exports = Object.assign(buildPlaybook, { defaultSchema })
