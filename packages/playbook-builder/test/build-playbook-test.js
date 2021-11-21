@@ -203,11 +203,11 @@ describe('buildPlaybook()', () => {
   it('should throw error if specified playbook file does not exist', () => {
     const expectedMessage =
       `playbook file not found at ${ospath.resolve('non-existent/file.yml')} ` +
-      `(path: non-existent/file.yml, cwd: ${process.cwd()})`
+      `(cwd: ${process.cwd()}, playbook: non-existent/file.yml)`
     expect(() => buildPlaybook([], { PLAYBOOK: 'non-existent/file.yml' }, schema)).to.throw(expectedMessage)
   })
 
-  it('should not show details in error message if input path of playbook file matches resolved path', () => {
+  it('should not show details in error message if specified playbook file matches resolved path', () => {
     const playbookFilePath = ospath.resolve('non-existent/file.yml')
     const unexpectedMessage = `playbook file not found at ${playbookFilePath} (`
     const expectedMessage = `playbook file not found at ${playbookFilePath}`
@@ -215,10 +215,10 @@ describe('buildPlaybook()', () => {
     expect(() => buildPlaybook([], { PLAYBOOK: playbookFilePath }, schema)).to.throw(expectedMessage)
   })
 
-  it('should not show cwd in error message if input path of playbook file is absolute', () => {
+  it('should not show cwd in error message if specified playbook file does not match resolved path and is absolute', () => {
     const playbookFilePath = ospath.resolve('non-existent/file.yml')
     const requestedPlaybookFilePath = [process.cwd(), 'non-existent', '..', 'non-existent/file.yml'].join(ospath.sep)
-    const expectedMessage = `playbook file not found at ${playbookFilePath} (path: ${requestedPlaybookFilePath})`
+    const expectedMessage = `playbook file not found at ${playbookFilePath} (playbook: ${requestedPlaybookFilePath})`
     expect(() => buildPlaybook([], { PLAYBOOK: requestedPlaybookFilePath }, schema)).to.throw(expectedMessage)
   })
 
@@ -227,7 +227,7 @@ describe('buildPlaybook()', () => {
     const expectedMessage =
       'playbook file not found at ' +
       `${resolvedRootPath}.yml, ${resolvedRootPath}.json, or ${resolvedRootPath}.toml` +
-      ` (path: non-existent/file, cwd: ${process.cwd()})`
+      ` (cwd: ${process.cwd()}, playbook: non-existent/file)`
     expect(() => buildPlaybook([], { PLAYBOOK: 'non-existent/file' }, schema)).to.throw(expectedMessage)
   })
 
@@ -546,13 +546,30 @@ describe('buildPlaybook()', () => {
     )
   })
 
-  it('should throw error when trying to load values not declared in the schema', () => {
-    expect(() => buildPlaybook([], { PLAYBOOK: badSpec }, schema)).to.throw('not declared')
+  it('should throw error when key in playbook file is not declared in the schema', () => {
+    const expected = `not declared in the schema for ${badSpec}`
+    expect(() => buildPlaybook([], { PLAYBOOK: badSpec }, schema)).to.throw(expected)
+  })
+
+  it('should throw error with details when specified file is relative and has undeclared key', () => {
+    const cwd = process.cwd()
+    const playbook = ospath.relative(cwd, badSpec)
+    const expected = `not declared in the schema for ${badSpec} (cwd: ${cwd}, playbook: ${playbook})`
+    expect(() => buildPlaybook([], { PLAYBOOK: playbook }, schema)).to.throw(expected)
   })
 
   it('should throw error when playbook file uses values of the wrong format', () => {
     schema.two.format = String
-    expect(() => buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)).to.throw('must be of type String')
+    const expected = `must be of type String: value was 42 in ${ymlSpec}`
+    expect(() => buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)).to.throw(expected)
+  })
+
+  it('should throw error with details when specified file is relative and has invalid value', () => {
+    const cwd = process.cwd()
+    const playbook = ospath.relative(cwd, ymlSpec)
+    schema.two.format = String
+    const expected = `must be of type String: value was 42 in ${ymlSpec} (cwd: ${cwd}, playbook: ${playbook})`
+    expect(() => buildPlaybook([], { PLAYBOOK: playbook }, schema)).to.throw(expected)
   })
 
   it('should return an immutable playbook', () => {

@@ -13,6 +13,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *playbook-builder*: Include path of playbook file in message of any error thrown by playbook builder (#882)
 * *site-generator-default*: Rename `asciidocConfig` context variable to `siteAsciiDocConfig` to disambiguate its scope
 
 == 3.0.0-beta.2 (2021-11-16)
