@@ -194,12 +194,13 @@ describe('convertDocuments()', () => {
   it('should use AsciiDoc config scoped to component version, if available', () => {
     const contentCatalog = mockContentCatalog([
       {
+        version: '1.0',
         relative: 'index.adoc',
         contents: 'btn:[Save]',
         mediaType: 'text/asciidoc',
       },
     ])
-    const componentVersion = contentCatalog.getComponentVersion('component-a', 'master')
+    const componentVersion = contentCatalog.getComponentVersion('component-a', '1.0')
     componentVersion.asciidoc = resolveAsciiDocConfig({
       asciidoc: { attributes: { experimental: '' } },
     })

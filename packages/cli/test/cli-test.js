@@ -15,7 +15,7 @@ const ANTORA_CLI = ospath.resolve('node_modules', '.bin', process.platform === '
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const UI_BUNDLE_URL =
-  'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable'
+  'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable'
 const VERSION = pkg.version
 const WORK_DIR = ospath.join(__dirname, 'work')
 const ANTORA_CACHE_DIR = ospath.join(WORK_DIR, '.antora/cache')
@@ -51,7 +51,7 @@ describe('cli', function () {
       .then((builder) => builder.checkoutBranch('v1.0-broken'))
       .then((builder) => builder.addToWorktree('modules/ROOT/pages/broken.adoc', '= Broken\n\n{no-such-attribute}'))
       .then((builder) => builder.commitAll('add broken'))
-      .then((builder) => builder.close('master'))
+      .then((builder) => builder.close('main'))
 
   // NOTE run the antora command from WORK_DIR by default to simulate a typical use case
   const runAntora = (args = undefined, env = undefined, cwd = WORK_DIR) => {
