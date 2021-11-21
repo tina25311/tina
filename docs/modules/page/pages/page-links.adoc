@@ -41,7 +41,7 @@ include::xref.adoc[tag=target-current-def]
 <<ex-file-base>> shows the file coordinate of the target page assigned to an xref macro in the current page.
 
 .current-page.adoc
-[#ex-file-base]
+[listing#ex-file-base]
 ----
 xref:file-coordinate-of-target-page.adoc[optional link text] <.>
 ----
@@ -51,7 +51,7 @@ For general step-by-step instructions on how to set up an xref macro in a page, 
 The structure of the target page's file coordinate varies depending on whether the target page is stored at the root of the [.path]_pages_ family directory or in a subdirectory of the [.path]_pages_ directory.
 
 .current-page.adoc
-[#ex-file]
+[listing#ex-file]
 ----
 xref:target-page-filename.adoc[optional link text] <.>
 
@@ -74,7 +74,7 @@ The following sections provide examples showing the different file coordinate st
 When the target page is stored at the root of the [.path]_pages_ family directory, the file coordinate is the target page's filename and file extension.
 
 .File coordinate in xref macro when target page is stored at root of pages directory
-[#ex-page-base]
+[listing#ex-page-base]
 ----
 xref:target-page-filename.adoc[optional link text]
 ----
@@ -82,15 +82,15 @@ xref:target-page-filename.adoc[optional link text]
 Let's use the pages that belong to the component version _colorado 5.2_ as the basis for the examples in this section.
 The component version's source files are assigned to modules and families based on the xref:ROOT:standard-directories.adoc[set of standard directories] listed in <<ex-co>>.
 
-.Directories assigned to the colorado 5.2 component version
+.Directories and files assigned to colorado 5.2
 [listing#ex-co]
 ----
 📄 antora.yml <.>
 📂 modules
   📂 la-garita <.>
     📂 pages <.>
-      📄 willow-creek.adoc
       📄 ridge.adoc
+      📄 willow-creek.adoc
   📂 ROOT <.>
     📂 pages <.>
       📄 index.adoc
@@ -108,7 +108,7 @@ When the target page and current page belong to the same module, only the file c
 <<ex-page>> shows an xref macro in the [.path]_ridge.adoc_ page (current page) that links to the [.path]_willow-creek.adoc_ page (target page).
 
 .ridge.adoc (current page)
-[#ex-page]
+[listing#ex-page]
 ----
 The xref:willow-creek.adoc[trailhead] is north of town.
 ----
@@ -119,7 +119,7 @@ The file coordinate of the target page is always calculated from the root of the
 Let's look at another xref macro, shown in <<ex-in-root>>, that references the [.path]_ranges.adoc_ page (target page) from the [.path]_index.adoc_ page (current page).
 
 .index.adoc (current page)
-[#ex-in-root]
+[listing#ex-in-root]
 ----
 The Rocky Mountains consists of xref:ranges.adoc[numerous mountain ranges].
 ----
@@ -137,14 +137,14 @@ The __pages__-relative path of the <<target,target page>> is required in its fil
 If both pages are stored in the same subdirectory, see <<token>>.
 
 .File coordinate in xref macro when target page is stored in subdirectory of pages directory
-[#ex-subdir-base]
+[listing#ex-subdir-base]
 ----
 xref:path/to/target-page-filename.adoc[optional link text]
 ----
 
 Let's use the pages that belong to the component version shown in <<ex-co-subdir>> as the basis for the examples in this section.
 
-.Directories assigned to the colorado 5.2 component version
+.Directories and files assigned to colorado 5.2
 [listing#ex-co-subdir]
 ----
 📄 antora.yml <.>
@@ -167,7 +167,7 @@ As you can see in <<ex-co-subdir>> above, both pages belong to the _ROOT_ module
 In <<ex-subdir>>, an xref macro in the [.path]_ranges.adoc_ page (current page) links to the [.path]_faq.adoc_ page (target page).
 
 .ranges.adoc (current page)
-[#ex-subdir]
+[listing#ex-subdir]
 ----
 See the xref:terms/faq.adoc[].
 ----
@@ -182,14 +182,14 @@ If the current page and target page were stored in the same subdirectory, you co
 If the <<target,target page>> and <<current,current page>> are stored in the same subdirectory within the [.path]_pages_ directory, the __pages__-relative path segment of the target page's file coordinate can be replaced with the relative path token, `./`.
 
 .File coordinate in xref macro when target and current pages are stored in the same subdirectory
-[#ex-token-base]
+[listing#ex-token-base]
 ----
 xref:./target-page-filename.adoc[optional link text]
 ----
 
 Let's use the pages that belong to the component version shown in <<ex-co-token>> as the basis for the examples in this section.
 
-.Directories assigned to the colorado 5.2 component version
+.Directories and files assigned to colorado 5.2
 [listing#ex-co-token]
 ----
 📄 antora.yml
@@ -211,7 +211,7 @@ When the target page and current page are stored in the same subdirectory within
 In <<ex-token>>, the xref macro in the [.path]_signs.adoc_ page (current page) links to the [.path]_faq.adoc_ page (target page).
 
 .signs.adoc (current page)
-[#ex-token]
+[listing#ex-token]
 ----
 See the xref:./faq.adoc[].
 ----
@@ -226,7 +226,7 @@ Both pages are stored in the [.path]_terms_ subdirectory, therefore, the relativ
 When the <<target,target page>> and <<current,current page>> don't belong to the same module, you must specify the target page's xref:resource-id-coordinates.adoc#id-module[module coordinate] and xref:resource-id-coordinates.adoc#id-resource[file coordinate] in the xref macro.
 
 .Module and file coordinate in xref macro
-[#ex-module-base]
+[listing#ex-module-base]
 ----
 xref:module:target-page-filename.adoc[optional link text] <.>
 
@@ -241,7 +241,7 @@ The target page's file coordinate is its filename and file extension when the ta
 
 Let's use the pages that belong to the component version shown in <<ex-co-mod>> as the basis for the examples in this section.
 
-.Directories assigned to the colorado 5.2 component version
+.Directories and files assigned to colorado 5.2
 [listing#ex-co-mod]
 ----
 📄 antora.yml <.>
@@ -268,7 +268,7 @@ When the target page doesn't belong to the same module as the current page, the 
 The [.path]_willow-creek.adoc_ page belongs to the _la-garita_ module, but _ranges.adoc_ belongs to the _ROOT_ module.
 
 .willow-creek.adoc (current page)
-[#ex-module]
+[listing#ex-module]
 ----
 Only xref:ROOT:ranges.adoc[one pass is open] in the winter.
 ----
@@ -283,7 +283,7 @@ When the <<target,target page>> and <<current,current page>> belong to different
 You'll almost always specify the version coordinate, too.
 
 .Version, component, module, and file coordinates in xref macro
-[source#ex-component-version-base]
+[listing#ex-component-version-base]
 ----
 xref:version@component:module:target-page-filename.adoc[optional link text] <.>
 
@@ -302,7 +302,7 @@ This behavior only applies when the target page and current page belong to diffe
 
 Let's use the pages that belong to the component version _colorado 5.2_ (<<ex-co-v>>) and the component version _wyoming 1.0_ (<<ex-wy>>) as the basis for the example in this section.
 
-.Directories assigned to the colorado 5.2 component version
+.Directories and files assigned to colorado 5.2
 [listing#ex-co-v]
 ----
 📄 antora.yml <.>
@@ -321,7 +321,7 @@ Let's use the pages that belong to the component version _colorado 5.2_ (<<ex-co
 <.> Defines the _ROOT_ module
 <.> Defines subsequent source files as pages
 
-.Directories assigned to the wyoming 1.0 component version
+.Directories and files assigned to wyoming 1.0
 [listing#ex-wy]
 ----
 📄 antora.yml <.>
@@ -343,7 +343,7 @@ In <<ex-across-components>>, the xref macro in [.path]_index.adoc_ (current page
 The resource ID assigned to the xref macro specifies the version, component, module, and file coordinates of the target page because the target page belongs to the _wyoming 1.0_ component version whereas the current page belongs to _colorado 5.2_.
 
 .index.adoc (current page)
-[source#ex-across-components]
+[listing#ex-across-components]
 ----
 Do you know xref:1.0@wyoming:sierra-madre:elevation.adoc[how elevation is measured]?
 ----
@@ -354,14 +354,14 @@ In <<ex-across-components-short-root>>, the page [.path]_ranges.adoc_ is referen
 The target page, [.path]_ranges.adoc_, belongs to the _ROOT_ module of _colorado 5.2_.
 
 .elevation.adoc (current page)
-[source#ex-across-components-short-root]
+[listing#ex-across-components-short-root]
 ----
 xref:5.2@colorado::ranges.adoc[List of ranges by height]
 ----
 
 Notice in <<ex-across-components-short-root>> that the module coordinate `ROOT` seems to be missing from the resource ID.
 When a component coordinate is specified in a resource ID, and the target page belongs to the _ROOT_ module, the module coordinate `ROOT` doesn't have to be explicitly specified.
-But you must still enter the colon `:` that would follow the module coordinate.
+But you must still enter the colon (`:`) that would follow the module coordinate.
 You can see this `:` directly before the file coordinate `ranges.adoc`.
 This shorthand only works when a component coordinate is specified and the module coordinate of the target page is `ROOT`.
 In all other cases where the module coordinate is required, the name of the module must be specified.
@@ -376,7 +376,7 @@ If a version isn't specified in the resource ID assigned to an xref macro, *and 
 
 Let's use the pages that belong to the component version _wyoming 1.0_ (<<ex-wy1>>) and the component version _colorado 5.2_ (<<ex-co-latest>>)  as the basis for the examples in this section.
 
-.Directories assigned to the wyoming 1.0 component version
+.Directories and files assigned to wyoming 1.0
 [listing#ex-wy1]
 ----
 📄 antora.yml <.>
@@ -388,7 +388,7 @@ Let's use the pages that belong to the component version _wyoming 1.0_ (<<ex-wy1
 ----
 <.> Defines the component version as _wyoming 1.0_
 
-.Directories assigned to the colorado 5.2 component version
+.Directories and files assigned to colorado 5.2
 [listing#ex-co-latest]
 ----
 📄 antora.yml <.>
@@ -407,7 +407,7 @@ Antora identifies _wyoming 1.0_ as the latest version of the _wyoming_ component
 If you always want the xref macro in the [.path]_willow-creek.adoc_ page, shown in <<ex-across-components-latest>>, to link to the latest version of the [.path]_elevation.adoc_ page in the _wyoming_ component, don't specify a version coordinate in the target page's resource ID.
 
 .willow-creek.adoc (current page)
-[source#ex-across-components-latest]
+[listing#ex-across-components-latest]
 ----
 xref:wyoming:sierra-madre:elevation.adoc[How are peaks measured]? <.>
 ----
@@ -418,7 +418,7 @@ Remember, this behavior only applies if the target page and current page belong 
 
 After a few months, let's add the new component version _wyoming 1.5_, shown in <<ex-wy-latest>>, to your site.
 
-.Directories assigned to the wyoming 1.5 component version
+.Directories and files assigned to wyoming 1.5
 [listing#ex-wy-latest]
 ----
 📄 antora.yml <.>
@@ -433,7 +433,7 @@ After a few months, let's add the new component version _wyoming 1.5_, shown in 
 The next time the site is generated, Antora will determine that _wyoming 1.5_ (not _wyoming 1.0_) is the latest version of the _wyoming_ component.
 
 .willow-creek.adoc (current page)
-[source#ex-new-latest]
+[listing#ex-new-latest]
 ----
 xref:wyoming:sierra-madre:elevation.adoc[How are peaks measured]?
 ----
@@ -441,16 +441,16 @@ xref:wyoming:sierra-madre:elevation.adoc[How are peaks measured]?
 Because Antora now identifies _wyoming 1.5_ as the latest version of the _wyoming_ component, Antora will complete the resource ID of the target page in <<ex-new-latest>> with the version coordinate -- `1.5` -- of the latest _wyoming_ component at runtime.
 
 WARNING: This behavior of linking to the latest version only applies when the version coordinate is unspecified and the target page and current page belong to different components.
-If a version and component aren't specified in the resource ID, Antora assumes the target page's version and component are the same as the current page's version and component coordinates.
+If the version and component coordinates aren't specified in the resource ID, Antora assumes the target page belongs to the same component version as the current page and uses the current page's version and component coordinates to complete the target page's resource ID.
 
 //[#xref-page-in-different-version]
 [#versions]
 == Page links between versions of a component
 
-When the <<current,current page>> and <<target,target page>> belong to the same docs component, but the target page belongs to a different version of the component, you'll specify the version, module (if it's different than the current page's module), and file coordinates.
+When the <<current,current page>> and <<target,target page>> belong to the same component, but the target page belongs to a different version of the component, you'll specify the version, module (if it's different than the current page's module), and file coordinates.
 
 .current-page.adoc
-[source#ex-version-base]
+[listing#ex-version-base]
 ----
 xref:version@module:file-coordinate-of-target-page.adoc[optional link text] <.>
 
@@ -461,7 +461,7 @@ xref:version@file-coordinate-of-target-page.adoc[optional link text] <.>
 
 Let's use the pages that belong to the component version _colorado 5.2_ (<<ex-co5>>) and the component version _colorado 6.0_ (<<ex-co6>>) as the basis for the example in this section.
 
-.Directories assigned to the colorado 5.2 component version
+.Directories and files assigned to colorado 5.2
 [listing#ex-co5]
 ----
 📄 antora.yml <.>
@@ -475,7 +475,7 @@ Let's use the pages that belong to the component version _colorado 5.2_ (<<ex-co
 ----
 <.> Defines the component version as _colorado 5.2_
 
-.Directories assigned to the colorado 6.0 component version
+.Directories and files assigned to colorado 6.0
 [listing#ex-co6]
 ----
 📄 antora.yml <.>
@@ -493,7 +493,7 @@ Let's reference the page [.path]_tour.adoc_ (target page), which belongs to _col
 In <<ex-across-versions>>, the resource ID assigned to the xref macro specifies the target page's version, module, and file coordinates.
 
 .willow-creek.adoc (current page) in colorado 6.0
-[source#ex-across-versions]
+[listing#ex-across-versions]
 ----
 Last year's xref:5.2@get-started:tour.adoc[excursions] were riveting!
 ----
