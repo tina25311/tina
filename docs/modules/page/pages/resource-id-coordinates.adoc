@@ -146,7 +146,7 @@ The file coordinate for a resource stored at the root of a family directory is t
 
 For example, the file coordinate for [.path]_modes.adoc_, shown in <<ex-family>>, is `modes.adoc` because it's stored at the root of the [.path]_pages_ family directory.
 
-If the target resource is located in a subdirectory of a family directory, the file coordinate must specify the family-relative path to the target resource.
+If the target resource is located in a subdirectory of a family directory, the file coordinate must specify the family-relative directory path to the target resource.
 
 .Resource stored in subdirectory of family directory
 [listing#ex-sub]
@@ -172,7 +172,7 @@ If [.path]_modes.adoc_ (current page) references [.path]_terrain.adoc_ (target r
 If [.path]_terrain.adoc_ (current page) references [.path]_modes.adoc_ (target resource), the file coordinate specified in the target resource's resource ID is `modes.adoc`.
 *Remember, the file coordinate of the target resource is always calculated from the family directory.*
 
-When the target resource and current page are both located in the same subdirectory of a family directory, the relative path token, `./`, can be used to abbreviate family-relative path segment of the target resource's file coordinate.
+When the target resource and current page are both located in the same subdirectory of a family directory, the relative path token, `./`, can be used to abbreviate the family-relative directory path of the target resource's file coordinate.
 
 .Resources stored in the same subdirectory
 [listing#ex-token]

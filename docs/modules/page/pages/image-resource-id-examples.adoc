@@ -45,7 +45,7 @@ image:./target-image-filename.ext[optional attribute] <.>
 ----
 <.> File coordinate of the target image when it's stored at the root of the [.path]_images_ directory.
 <.> File coordinate of the target image when it's stored in a subdirectory of the [.path]_images_ directory.
-<.> File coordinate of the target image when the target image and current page are stored in a subdirectory with the same family-relative path.
+<.> File coordinate of the target image when the target image and current page are stored in a subdirectory with the same family-relative directory path.
 _This is an advanced use case._
 
 The following sections provide examples showing the different file coordinate structures.
@@ -98,13 +98,13 @@ image::wilderness-map.jpg[]
 In <<ex-image>>, the file coordinate for the [.path]_wilderness-map.jpg_ image is `wilderness-map.jpg`.
 Its file coordinate consists solely of its filename and file extension because [.path]_wilderness-map.jpg_ is stored at the root of the [.path]_images_ directory.
 
-If the target image is stored in a subdirectory of the [.path]_images_ directory, its file coordinate must specify the __images__-relative path, filename, and file extension.
+If the target image is stored in a subdirectory of the [.path]_images_ directory, its file coordinate must specify the __images__-relative directory path, filename, and file extension.
 See <<relative-path>> for file coordinate examples when the target image is stored in a subdirectory.
 
 [#relative-path]
-=== File coordinate with images-relative path
+=== File coordinate with images-relative directory path
 
-The __images__-relative path of the <<target,target image>> is required in its file coordinate when it's stored in a subdirectory of the [.path]_images_ directory.
+The __images__-relative directory path of the <<target,target image>> is required in its file coordinate when it's stored in a subdirectory of the [.path]_images_ directory.
 
 .File coordinate in an image macro when the target image is stored in a subdirectory of an images directory
 [listing#ex-subdir-base]
@@ -145,9 +145,9 @@ image::aerial/skyline.jpg[]
 ----
 
 As shown in <<ex-subdir>>, the file coordinate for [.path]_skyline.jpg_ is `aerial/skyline.jpg`.
-The file coordinate for [.path]_skyline.jpg_ consists of its [.path]__images__-relative path, filename, and file extension because it's stored in the subdirectory [.path]_aerial_.
+The file coordinate for [.path]_skyline.jpg_ consists of its [.path]__images__-relative directory path, filename, and file extension because it's stored in the subdirectory [.path]_aerial_.
 
-TIP: In special circumstances where the __images__-relative path of the target image and the __pages__-relative path of the current page are parallel, the __images__-relative path segment of the file coordinate can be replaced with the relative path token, `./`.
+TIP: In special circumstances where the __images__-relative directory path of the target image and the __pages__-relative directory path of the current page are parallel, the __images__-relative directory path of the file coordinate can be replaced with the relative path token, `./`.
 
 //[#use-image-across-modules]
 [#modules]
@@ -164,7 +164,7 @@ image:module:path/to/target-image-filename.ext[optional attribute] <.>
 ----
 <.> The image macro is assigned the module coordinate and file coordinate of the target image when the target image doesn't belong to the same module as the current page.
 The target image's file coordinate is its filename and file extension when the target image is <<images-root,stored at the root of an _images_ family directory>>.
-<.> If <<relative-path,the target image is stored in a subdirectory of an _images_ directory>>, the target image's file coordinate must specify its __images__-relative path, filename, and file extension.
+<.> If <<relative-path,the target image is stored in a subdirectory of an _images_ directory>>, the target image's file coordinate must specify its __images__-relative directory path, filename, and file extension.
 
 Let's use the files that belong to the component version shown in <<ex-co-mod>> as the basis for the examples in this section.
 
@@ -241,7 +241,7 @@ image:component:module:file-coordinate-of-target-image.ext[optional attribute] <
 ----
 <.> The image macro is assigned the version, component, module, and file coordinates of the target image when the target image and current page don't belong to the same component versions.
 The target image's file coordinate is its filename and file extension when the target image is <<images-root,stored at the root of an _images_ family directory>>.
-<.> If <<relative-path,the target image is stored in a subdirectory of an _images_ directory>>, the target image's file coordinate must specify its __images__-relative path, filename, and file extension.
+<.> If <<relative-path,the target image is stored in a subdirectory of an _images_ directory>>, the target image's file coordinate must specify its __images__-relative directory path, filename, and file extension.
 <.> If the version coordinate isn't specified, Antora uses the <<latest-version,latest version of the target image's component>> to complete the resource ID at runtime.
 This behavior only applies when the target image and current page belong to different docs components.
 

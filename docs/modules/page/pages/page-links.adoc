@@ -126,14 +126,14 @@ The Rocky Mountains consists of xref:ranges.adoc[numerous mountain ranges].
 
 Only the file coordinate of the target page needs to be specified in the xref macro because both pages belong to the _ROOT_ module.
 The file coordinate for [.path]_ranges.adoc_ is `ranges.adoc` because it's stored at the root of the [.path]_pages_ directory.
-If the target page is stored in a subdirectory of the [.path]_pages_ directory, its file coordinate must specify the [.path]__pages__-relative path or `./` token depending on its relation to the current page.
+If the target page is stored in a subdirectory of the [.path]_pages_ directory, its file coordinate must specify the __pages__-relative directory path or `./` token depending on its relation to the current page.
 See <<relative-path>> and <<token>> for file coordinate examples when the target page is stored in a subdirectory.
 
 [#relative-path]
-=== File coordinate with pages-relative path
+=== File coordinate with pages-relative directory path
 //Link to a page in a subdirectory
 
-The __pages__-relative path of the <<target,target page>> is required in its file coordinate when the <<current,current page>> isn't stored in the same subdirectory as the target page.
+The __pages__-relative directory path of the <<target,target page>> is required in its file coordinate when the <<current,current page>> isn't stored in the same subdirectory as the target page.
 If both pages are stored in the same subdirectory, see <<token>>.
 
 .File coordinate in xref macro when target page is stored in subdirectory of pages directory
@@ -173,13 +173,13 @@ See the xref:terms/faq.adoc[].
 ----
 
 As shown in <<ex-subdir>>, the file coordinate for [.path]_faq.adoc_ is `terms/faq.adoc`.
-The file coordinate for [.path]_faq.adoc_ consists of its [.path]__pages__-relative path, filename, and file extension because it's stored in the subdirectory [.path]_terms_ while the current page, [.path]_ranges.adoc_, is stored in the [.path]_pages_ directory.
-If the current page and target page were stored in the same subdirectory, you could use the relative path token, `./`, in place of the __pages__-relative path.
+The file coordinate for [.path]_faq.adoc_ consists of its __pages__-relative directory path, filename, and file extension because it's stored in the subdirectory [.path]_terms_ while the current page, [.path]_ranges.adoc_, is stored in the [.path]_pages_ directory.
+If the current page and target page were stored in the same subdirectory, you could use the relative path token, `./`, in place of the __pages__-relative directory path.
 
 [#token]
 === File coordinate with relative path token
 
-If the <<target,target page>> and <<current,current page>> are stored in the same subdirectory within the [.path]_pages_ directory, the __pages__-relative path segment of the target page's file coordinate can be replaced with the relative path token, `./`.
+If the <<target,target page>> and <<current,current page>> are stored in the same subdirectory within the [.path]_pages_ directory, the __pages__-relative directory path of the target page's file coordinate can be replaced with the relative path token, `./`.
 
 .File coordinate in xref macro when target and current pages are stored in the same subdirectory
 [listing#ex-token-base]
@@ -217,7 +217,7 @@ See the xref:./faq.adoc[].
 ----
 
 As shown in <<ex-token>>, the file coordinate for [.path]_faq.adoc_, when referenced from [.path]_signs.adoc_, is `./faq.adoc`.
-Both pages are stored in the [.path]_terms_ subdirectory, therefore, the relative path segment of the target page's file coordinate is replaced with the `./` token.
+Both pages are stored in the [.path]_terms_ subdirectory, therefore, the __pages__-relative directory path of the target page's file coordinate is replaced with the `./` token.
 
 //[#xref-page-across-modules]
 [#modules]
@@ -236,7 +236,7 @@ xref:module:file-coordinate-of-target-page.adoc#fragment[optional link text] <.>
 ----
 <.> The xref macro is assigned the module coordinate and file coordinate of the target page when the target page and current page don't belong to the same module.
 The target page's file coordinate is its filename and file extension when the target page is <<pages-root,stored at the root of a _pages_ family directory>>.
-<.> If <<relative-path,the target page is stored in a subdirectory of a _pages_ directory>>, the target page's file coordinate must specify its __pages__-relative path, filename, and file extension.
+<.> If <<relative-path,the target page is stored in a subdirectory of a _pages_ directory>>, the target page's file coordinate must specify its __pages__-relative directory path, filename, and file extension.
 <.> An optional fragment, representing an element ID in the target page, can be assigned after the target page's resource ID.
 
 Let's use the pages that belong to the component version shown in <<ex-co-mod>> as the basis for the examples in this section.
@@ -295,7 +295,7 @@ xref:version@component:module:file-coordinate-of-target-page.adoc#fragment[optio
 ----
 <.> The xref macro is assigned the version, component, module, and file coordinates of the target page when the target page and current page don't belong to the same component versions.
 The target page's file coordinate is its filename and file extension when the target page is <<pages-root,stored at the root of a _pages_ family directory>>.
-<.> If <<relative-path,the target page is stored in a subdirectory of a _pages_ directory>>, the target page's file coordinate must specify its __pages__-relative path, filename, and file extension.
+<.> If <<relative-path,the target page is stored in a subdirectory of a _pages_ directory>>, the target page's file coordinate must specify its __pages__-relative directory path, filename, and file extension.
 <.> If the version coordinate isn't specified, Antora uses the <<latest-version,latest version of the target page's component>> to complete the resource ID at runtime.
 This behavior only applies when the target page and current page belong to different docs components.
 <.> An optional fragment, representing an element ID in the target page, can be assigned after the target page's resource ID.

@@ -43,8 +43,8 @@ The xref locks on to the target page and produces a URL that points to it wherev
 
 *They're minimally coupled to the filesystem* by using an identifier based on the Antora's virtual component version classification system.
 
-*They've eliminated the relative path (../../) problem* by specifying the page as a pages-relative path.
-The path always starts from a module's [.path]_pages_ directory, even when the referencing page is located inside a topic folder.
+*They've eliminated the relative path (../../) problem* by specifying the resource as a family-relative directory path.
+The path always starts from a family directory, even when the referencing resource is located inside a subdirectory of the family directory.
 //If you move or rename a page within a module, you don't have to change any references to other pages.
 
 *This human-friendly referencing system saves you from having to do computations in your head while writing*.

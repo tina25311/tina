@@ -47,7 +47,7 @@ The value is entered directly after the colon that follows the macro's name (`xr
 How many of the target page's xref:resource-id-coordinates.adoc[resource ID coordinates] you need to specify depends on the component version and module of the target page in relation to the current page.
 The `page$` family coordinate isn't required in the resource ID when the target resource is a page.
 //Remember, the xref:resource-id-coordinates.adoc#id-resource[file coordinate] of a target page is calculated from the _pages_ family directory.
-//If the target page is stored in a subdirectory of _pages_, include the __pages__-relative path segment or `./` token in the target page's file coordinate.
+//If the target page is stored in a subdirectory of _pages_, include the __pages__-relative directory path or `./` token in the target page's file coordinate.
 
 [#id-fragment]
 #fragment::
