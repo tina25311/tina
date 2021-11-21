@@ -27,7 +27,7 @@ function registerParsers (convict) {
     {
       extension: '*',
       parse: () => {
-        throw new Error('Unexpected playbook file type (must be yml, json, or toml')
+        throw new Error('Unknown playbook file extension: must be .yml (or .yaml), .json, or .toml')
       },
     },
   ])

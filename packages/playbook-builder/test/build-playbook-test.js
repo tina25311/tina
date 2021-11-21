@@ -195,8 +195,9 @@ describe('buildPlaybook()', () => {
     expect(playbook).to.eql(expectedPlaybook)
   })
 
-  it('should throw error when loading unknown type file', () => {
-    expect(() => buildPlaybook([], { PLAYBOOK: iniSpec }, schema)).to.throw('Unexpected playbook file type')
+  it('should throw error when loading file with unknown extension', () => {
+    const expected = 'Unknown playbook file extension: must be .yml (or .yaml), .json, or .toml'
+    expect(() => buildPlaybook([], { PLAYBOOK: iniSpec }, schema)).to.throw(expected)
   })
 
   it('should throw error if specified playbook file does not exist', () => {
