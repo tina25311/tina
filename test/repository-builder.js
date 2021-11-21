@@ -51,11 +51,13 @@ class RepositoryBuilder {
       this.repoPath += '.git'
       this.url = `${this.gitServerProtocol}//localhost:${this.gitServerPort}/${repoName}.git`
     } else if (this.bare) this.url += ospath.sep + '.git'
-    this.repository = { cache: {}, dir: this.repoPath, fs, gitdir: ospath.join(this.repoPath, '.git'), http }
+    const dir = this.repoPath
+    const gitdir = ospath.join(dir, '.git')
+    this.repository = { cache: {}, defaultBranch: opts.branch || 'main', dir, fs, gitdir, http }
     await git.init(this.repository)
     if (opts.empty) return this
     await (await this.addToWorktree('.gitignore')).addToWorktree('.gitattributes', '* text=auto eol=lf')
-    // NOTE isomorphic-git does not require any commits to set up refs/heads/master, but tests still rely on these files
+    // NOTE isomorphic-git doesn't require any commits to set up the default branch, but tests still rely on these files
     await git.commit({ ...this.repository, author: this.author, message: 'init' })
     return this.commitAll()
   }

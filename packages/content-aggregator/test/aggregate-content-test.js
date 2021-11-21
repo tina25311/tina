@@ -234,7 +234,7 @@ describe('aggregateContent()', function () {
     describe('should throw if component descriptor cannot be found', () => {
       testAll(async (repoBuilder) => {
         await repoBuilder.init('the-component').then(() => repoBuilder.close())
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -249,7 +249,7 @@ describe('aggregateContent()', function () {
             .addToWorktree('antora.yml', ':\nname: the-component\nversion: v1.0\n')
             .then(() => repoBuilder.commitAll('mangle component descriptor'))
         )
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref})`
@@ -262,7 +262,7 @@ describe('aggregateContent()', function () {
     describe('should throw if component descriptor does not define name key', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { version: 'v1.0' })
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a name in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -273,7 +273,7 @@ describe('aggregateContent()', function () {
     describe('should throw if component descriptor does not define version key and content source does not define version key', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' })
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -284,7 +284,7 @@ describe('aggregateContent()', function () {
     describe('should use refname as version if version key in component descriptor is true', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: true }, () =>
-          repoBuilder.checkoutBranch('v/2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v/2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.branches = ['HEAD', 'v/*']
         playbookSpec.content.sources.push({ url: repoBuilder.url })
@@ -297,7 +297,7 @@ describe('aggregateContent()', function () {
     describe('should use refname as version if component descriptor does not define version key and content source sets version to true', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
-          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, version: true })
         const aggregate = await aggregateContent(playbookSpec)
@@ -310,7 +310,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         const componentDesc = { name: 'the-component', version: { 'v(?<version>+({0..9}).+({0..9})).x': '$<version>' } }
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
-          repoBuilder.checkoutBranch('v2.1.x').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v2.1.x').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
@@ -322,7 +322,7 @@ describe('aggregateContent()', function () {
     describe('should extract version from refname if component descriptor does not define version key and content source sets version to pattern map', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
-          repoBuilder.checkoutBranch('v2.1.x').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v2.1.x').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
@@ -337,7 +337,7 @@ describe('aggregateContent()', function () {
     describe('should extract version from refname with slash if component descriptor does not define version key and content source sets version to pattern map', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
-          repoBuilder.checkoutBranch('version/ga/2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('version/ga/2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, version: { '*/(*)': '$1' } })
         const aggregate = await aggregateContent(playbookSpec)
@@ -349,7 +349,7 @@ describe('aggregateContent()', function () {
     describe('should use refname as version if component descriptor does not define version key and version pattern on content source does not match', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
-          repoBuilder.checkoutBranch('version/2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('version/2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
@@ -364,7 +364,7 @@ describe('aggregateContent()', function () {
     describe('should use refname as version if component descriptor does not define version key and version pattern on content source maps to match', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
-          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, version: { '*': '$&' } })
         const aggregate = await aggregateContent(playbookSpec)
@@ -376,7 +376,7 @@ describe('aggregateContent()', function () {
     describe('should use next match if component descriptor does not define version key and previous version pattern on content source does not match', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
-          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
@@ -391,7 +391,7 @@ describe('aggregateContent()', function () {
     describe('should use refname as version if component descriptor does not define version key and version pattern on content source is invalid', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
-          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, version: { '(?<version>': '$<version>' } })
         const aggregate = await aggregateContent(playbookSpec)
@@ -403,7 +403,7 @@ describe('aggregateContent()', function () {
     describe('should use non-empty version specified in component descriptor even if content source defines version', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '2_1' }, () =>
-          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, version: true })
         const aggregate = await aggregateContent(playbookSpec)
@@ -415,7 +415,7 @@ describe('aggregateContent()', function () {
     describe('should use empty version specified in component descriptor even if content source defines version', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '' }, () =>
-          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('master'))
+          repoBuilder.checkoutBranch('v2.1').then(() => repoBuilder.deleteBranch('main'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, version: true })
         const aggregate = await aggregateContent(playbookSpec)
@@ -429,7 +429,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' }, () =>
           repoBuilder
             .checkoutBranch('v1.0')
-            .then(() => repoBuilder.deleteBranch('master'))
+            .then(() => repoBuilder.deleteBranch('main'))
             .then(() => repoBuilder.checkoutBranch('v2.0'))
             .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component' }))
             .then(() => repoBuilder.checkoutBranch('v2.1.x'))
@@ -467,7 +467,7 @@ describe('aggregateContent()', function () {
     describe('should throw if name defined in component descriptor contains a path segment', () => {
       testLocal(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'foo/bar', version: 'v1.0' })
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage =
           `name in ${COMPONENT_DESC_FILENAME} cannot have path segments: foo/bar` +
@@ -480,7 +480,7 @@ describe('aggregateContent()', function () {
     describe('should throw if version defined in component descriptor contains a path segment', () => {
       testLocal(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.1/0' })
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage =
           `version in ${COMPONENT_DESC_FILENAME} cannot have path segments: 1.1/0` +
@@ -540,7 +540,7 @@ describe('aggregateContent()', function () {
             .addToWorktree('docs/antora.yml', ':\nname: the-component\nversion: v1.0\n')
             .then(() => repoBuilder.commitAll('mangle component descriptor'))
         )
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'docs' })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref} | path: docs)`
@@ -1102,14 +1102,14 @@ describe('aggregateContent()', function () {
             componentDescEntry1v2 = await repoBuilder.findEntry('docs/antora.yml')
             componentDescEntry2v9 = await repoBuilder.findEntry('moredocs/antora.yml')
           })
-          .then(() => repoBuilder.close('master'))
+          .then(() => repoBuilder.close('main'))
         expect(componentDescEntry1v1).to.exist()
         expect(componentDescEntry1v2).to.exist()
         expect(componentDescEntry2v8).to.exist()
         expect(componentDescEntry2v9).to.exist()
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
-          branches: ['master', 'other'],
+          branches: ['main', 'other'],
           startPaths: ['docs', 'moredocs'],
         })
         const aggregate = await aggregateContent(playbookSpec)
@@ -1125,7 +1125,7 @@ describe('aggregateContent()', function () {
     describe('should throw if start path is not found', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'does-not-exist' })
         const expectedMessage = `the start path 'does-not-exist' does not exist in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1136,7 +1136,7 @@ describe('aggregateContent()', function () {
     describe('should throw if start path at reference is not a directory', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'antora.yml' })
         const expectedMessage = `the start path 'antora.yml' is not a directory in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1147,7 +1147,7 @@ describe('aggregateContent()', function () {
     describe('should throw if component descriptor cannot be found at start path', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithFiles(repoBuilder)
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'modules' })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref} | path: modules)`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1163,7 +1163,7 @@ describe('aggregateContent()', function () {
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
           repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry))
         )
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{more,}docs' })
         const expectedMessage = `the start path 'moredocs' does not exist in ${repoBuilder.url} (ref: ${ref})`
@@ -1181,7 +1181,7 @@ describe('aggregateContent()', function () {
           repoBuilder.findEntry(startPath + '/antora.yml').then((entry) => (componentDescEntry = entry))
         )
         expect(componentDescEntry).to.exist()
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc{s}' })
         const expectedMessage = `the start path 'doc{s}' does not exist in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1209,7 +1209,7 @@ describe('aggregateContent()', function () {
     describe('should throw if no start paths are resolved', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'does-not-exist-*' })
         const expectedMessage = `no start paths found in ${repoBuilder.url} (ref: ${ref})`
         const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -1220,7 +1220,7 @@ describe('aggregateContent()', function () {
     describe('should retain unresolved segments in start path if parent directory does not exist', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
-        const ref = repoBuilder.getRefInfo('master')
+        const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'does-not-exist/{foo,bar*}' })
         const expectedMessage = new RegExp(
           "^the start path 'does-not-exist/(foo|bar\\*)' does not exist in " +
@@ -1434,7 +1434,7 @@ describe('aggregateContent()', function () {
         .then(() => repoBuilder.checkoutBranch('v2.0'))
         .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: 'v2.0' }))
         .then(() => beforeClose && beforeClose())
-        .then(() => repoBuilder.close('master'))
+        .then(() => repoBuilder.close('main'))
 
     describe('should exclude all branches when global filter is undefined', () => {
       testAll(async (repoBuilder) => {
@@ -1458,7 +1458,7 @@ describe('aggregateContent()', function () {
     describe('should filter branches by exact name', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
@@ -1523,7 +1523,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.checkoutBranch('v3.0'))
           .then(() => repoBuilder.checkoutBranch('release/stable/3.0'))
-          .then(() => repoBuilder.close('master'))
+          .then(() => repoBuilder.close('main'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'release/*' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -1549,9 +1549,9 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
-          .then(() => repoBuilder.checkoutBranch('master'))
+          .then(() => repoBuilder.checkoutBranch('main'))
           .then(() => repoBuilder.checkoutBranch('v10.0'))
-          .then(() => repoBuilder.close('master'))
+          .then(() => repoBuilder.close('main'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v{1..10}.0' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(4)
@@ -1567,9 +1567,9 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
-          .then(() => repoBuilder.checkoutBranch('master'))
+          .then(() => repoBuilder.checkoutBranch('main'))
           .then(() => repoBuilder.checkoutBranch('v10.0'))
-          .then(() => repoBuilder.close('master'))
+          .then(() => repoBuilder.close('main'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v+({0..9}).0' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(4)
@@ -1599,9 +1599,9 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
-          .then(() => repoBuilder.checkoutBranch('master'))
+          .then(() => repoBuilder.checkoutBranch('main'))
           .then(() => repoBuilder.checkoutBranch('v10.0'))
-          .then(() => repoBuilder.close('master'))
+          .then(() => repoBuilder.close('main'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v{2..10..2}.0' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
@@ -1616,7 +1616,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
-          branches: ['master', 'v1*', 'v3.*', 5.6],
+          branches: ['main', 'v1*', 'v3.*', 5.6],
         })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(3)
@@ -1632,7 +1632,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
-          branches: 'master,v1* , v3.*',
+          branches: 'main,v1* , v3.*',
         })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(3)
@@ -1648,7 +1648,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({
           url: repoBuilder.url,
-          branches: ['v*', '!master', '!v2*'],
+          branches: ['v*', '!main', '!v2*'],
         })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
@@ -1740,7 +1740,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['master', 'HEAD'] })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['main', 'HEAD'] })
         deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
@@ -1754,7 +1754,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['master', '.'] })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['main', '.'] })
         deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
@@ -1768,7 +1768,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master,HEAD' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main,HEAD' })
         deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
@@ -1782,7 +1782,7 @@ describe('aggregateContent()', function () {
         await initRepoWithBranches(repoBuilder)
           .then(() => repoBuilder.open())
           .then(() => repoBuilder.close('v3.0'))
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master,.' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main,.' })
         deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
@@ -1797,7 +1797,7 @@ describe('aggregateContent()', function () {
           async (repoBuilder) => {
             await initRepoWithBranches(repoBuilder)
               .then(() => repoBuilder.open())
-              .then(() => repoBuilder.deleteBranch('master'))
+              .then(() => repoBuilder.deleteBranch('main'))
               .then(() => repoBuilder.checkoutBranch('v3.0'))
               .then(() => repoBuilder.checkoutBranch('main'))
               .then(() => repoBuilder.deleteBranch('v3.0'))
@@ -1807,6 +1807,31 @@ describe('aggregateContent()', function () {
             const aggregate = await aggregateContent(playbookSpec)
             expect(aggregate).to.have.lengthOf(1)
             expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
+          },
+          1,
+          true
+        )
+      })
+
+      describe('should select default branch if pattern is HEAD regardless of branch name', () => {
+        testAll(
+          async (repoBuilder) => {
+            await initRepoWithBranches(repoBuilder)
+              .then(() => repoBuilder.open())
+              .then(() => repoBuilder.deleteBranch('main'))
+              .then(() => repoBuilder.deleteBranch('v1.0'))
+              .then(() => repoBuilder.deleteBranch('v2.0'))
+              .then(() => repoBuilder.checkoutBranch('v3.0'))
+              .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-one.adoc'))
+              .then(() => repoBuilder.checkoutBranch('default'))
+              .then(() => repoBuilder.deleteBranch('v3.0'))
+              .then(() => repoBuilder.close('default'))
+            playbookSpec.content.sources.push({ url: repoBuilder.url })
+            deepFreeze(playbookSpec)
+            const aggregate = await aggregateContent(playbookSpec)
+            expect(aggregate).to.have.lengthOf(1)
+            expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
+            expect(aggregate[0].files[0]).to.have.nested.property('src.origin.branch', 'default')
           },
           1,
           true
@@ -1963,7 +1988,7 @@ describe('aggregateContent()', function () {
       it('should only select branch once if both HEAD and current branch name are listed', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         await initRepoWithBranches(repoBuilder)
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['HEAD', 'master'] })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['HEAD', 'main'] })
         deepFreeze(playbookSpec)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2204,7 +2229,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
           .then(() => repoBuilder.addFilesFromFixture(paths))
           .then(() => repoBuilder.createTag('v1.0.0'))
-          .then(() => repoBuilder.close('master'))
+          .then(() => repoBuilder.close('main'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: [], tags: 'v*' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2227,7 +2252,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
           .then(() => repoBuilder.addFilesFromFixture(paths))
           .then(() => repoBuilder.createTag('v1.0.0', 'HEAD', false))
-          .then(() => repoBuilder.close('master'))
+          .then(() => repoBuilder.close('main'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: [], tags: 'v*' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2298,7 +2323,7 @@ describe('aggregateContent()', function () {
             .checkoutBranch('v2.0')
             .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v2.0' }))
             .then(() => repoBuilder.commitAll())
-            .then(() => repoBuilder.checkoutBranch('master'))
+            .then(() => repoBuilder.checkoutBranch('main'))
         })
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
         const expectedMode = 0o100666 & ~process.umask()
@@ -2339,7 +2364,7 @@ describe('aggregateContent()', function () {
             .checkoutBranch('v2.0')
             .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: 'v2.0' }))
             .then(() => repoBuilder.commitAll())
-            .then(() => repoBuilder.checkoutBranch('master'))
+            .then(() => repoBuilder.checkoutBranch('main'))
         })
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v*' })
         // NOTE Windows doesn't support setting executable bit on file (and can't current emulate in git server)
@@ -2382,7 +2407,7 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
             repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const expectedMode =
             repoBuilder.remote || repoBuilder.bare
               ? 0o100666 & ~process.umask()
@@ -2412,7 +2437,7 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
             repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const expectedMode =
             repoBuilder.remote || repoBuilder.bare
               ? 0o100666 & ~process.umask()
@@ -2442,7 +2467,7 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
             repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const expectedMode =
             repoBuilder.remote || repoBuilder.bare
               ? 0o100666 & ~process.umask()
@@ -2476,7 +2501,7 @@ describe('aggregateContent()', function () {
               .addToWorktree(startPath + '/' + symlinkPath, startPath + '/' + targetPath, 'file')
               .then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main', startPath })
           const expectedMode =
             repoBuilder.remote || repoBuilder.bare
               ? 0o100666 & ~process.umask()
@@ -2510,7 +2535,7 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.addToWorktree(symlink2Path, symlink1Path, 'file'))
               .then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const expectedMode =
             repoBuilder.remote || repoBuilder.bare
               ? 0o100666 & ~process.umask()
@@ -2542,7 +2567,7 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
             repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir').then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const expectedMode =
             repoBuilder.remote || repoBuilder.bare
               ? 0o100666 & ~process.umask()
@@ -2574,7 +2599,7 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
             repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir').then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const expectedMode =
             repoBuilder.remote || repoBuilder.bare
               ? 0o100666 & ~process.umask()
@@ -2606,7 +2631,7 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
             repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir/').then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -2628,7 +2653,7 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder, {}, fixturePaths, () =>
             repoBuilder.addToWorktree(symlinkDir, targetDir, 'dir/').then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const expectedContents = await fsp.readFile(ospath.join(repoBuilder.repoPath, targetPath))
           const aggregate = await aggregateContent(playbookSpec)
           expect(aggregate).to.have.lengthOf(1)
@@ -2647,8 +2672,8 @@ describe('aggregateContent()', function () {
           await initRepoWithFiles(repoBuilder, {}, [], () =>
             repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const ref = repoBuilder.getRefInfo('master')
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
+          const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
           const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
@@ -2668,8 +2693,8 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.addToWorktree(symlink2Path, targetPath, 'file'))
               .then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const ref = repoBuilder.getRefInfo('master')
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
+          const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink2Path) : symlink2Path
           const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
@@ -2689,8 +2714,8 @@ describe('aggregateContent()', function () {
               .addToWorktree(startPath + '/' + symlinkPath, startPath + '/' + targetPath, 'file')
               .then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-          const ref = repoBuilder.getRefInfo('master')
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main', startPath })
+          const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
           const expectedMessage =
@@ -2712,8 +2737,8 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.addToWorktree('project/link-to-process.adoc', 'project/process.adoc', 'file'))
               .then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
-          const ref = repoBuilder.getRefInfo('master')
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main', startPath })
+          const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
           const expectedMessage =
@@ -2735,8 +2760,8 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.addToWorktree(symlink2Path, symlink1Path, 'file'))
               .then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-          const ref = repoBuilder.getRefInfo('master')
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
+          const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink1Path) : symlink1Path
           const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
@@ -2756,8 +2781,8 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addToWorktree(symlink2Path, symlink1Path, 'file'))
             .then(() => repoBuilder.commitAll('add symlink'))
         )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const ref = repoBuilder.getRefInfo('master')
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
+        const ref = repoBuilder.getRefInfo('main')
         const expectedMessage = new RegExp(
           `^Symbolic link cycle detected at (${symlink1Path}|${symlink2Path}) in ` +
             `${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)$`
@@ -2777,8 +2802,8 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addToWorktree('b/e', 'a', 'dir'))
             .then(() => repoBuilder.commitSelect(['a', 'b', 'b/c.adoc', 'b/d.adoc', 'b/e'], 'add symlink'))
         )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
-        const ref = repoBuilder.getRefInfo('master')
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
+        const ref = repoBuilder.getRefInfo('main')
         // NOTE could instead be reported as b/e, but I can't work out how to track the original symlink path
         const expectedPath = 'a/e'
         const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
@@ -2798,7 +2823,7 @@ describe('aggregateContent()', function () {
               .then(() => repoBuilder.addToWorktree(ospath.join(startPath, symlinkPath), targetPath, 'file'))
               .then(() => repoBuilder.commitAll('add symlink'))
           )
-          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master', startPath })
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main', startPath })
           const expectedMode =
             repoBuilder.remote || repoBuilder.bare
               ? 0o100666 & ~process.umask()
@@ -2828,7 +2853,7 @@ describe('aggregateContent()', function () {
         await initRepoWithFiles(repoBuilder, componentDesc, [], () =>
           repoBuilder.addToWorktree(symlinkPath, targetPath, 'file').then(() => repoBuilder.commitAll('add symlink'))
         )
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'master' })
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
         const expectedMode = (await fsp.stat(targetPath)).mode
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -2975,8 +3000,8 @@ describe('aggregateContent()', function () {
           extname: expectedFile.extname,
           origin: {
             type: 'git',
-            branch: 'master',
-            refname: 'master',
+            branch: 'main',
+            refname: 'main',
             startPath: '',
           },
         }
@@ -3033,8 +3058,8 @@ describe('aggregateContent()', function () {
           extname: expectedFile.extname,
           origin: {
             type: 'git',
-            branch: 'master',
-            refname: 'master',
+            branch: 'main',
+            refname: 'main',
             startPath: 'docs',
           },
         }
@@ -3091,8 +3116,8 @@ describe('aggregateContent()', function () {
           extname: expectedFile.extname,
           origin: {
             type: 'git',
-            branch: 'master',
-            refname: 'master',
+            branch: 'main',
+            refname: 'main',
             startPath: '',
           },
         }
@@ -3250,7 +3275,7 @@ describe('aggregateContent()', function () {
         ]
         const hostnames = ['github.com', 'private.github.com']
         const action = { branch: 'edit', tag: 'blob' }
-        const refs = [['master', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
+        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
@@ -3280,7 +3305,7 @@ describe('aggregateContent()', function () {
         ]
         const hostnames = ['gitlab.com', 'private.gitlab.com']
         const action = { branch: 'edit', tag: 'blob' }
-        const refs = [['master', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
+        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
@@ -3309,7 +3334,7 @@ describe('aggregateContent()', function () {
           'git@{hostname}:org-name/repo-name',
         ]
         const hostnames = ['bitbucket.org', 'private.bitbucket.org']
-        const refs = [['master', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
+        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
@@ -3338,7 +3363,7 @@ describe('aggregateContent()', function () {
           'git@{hostname}:group-name/repo-name',
         ]
         const hostnames = ['pagure.io', 'private.pagure.io']
-        const refs = [['master', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
+        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
@@ -3363,7 +3388,7 @@ describe('aggregateContent()', function () {
         const url = 'https://git.example.org/the-component.git'
         const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
         const gitdir = ospath.join(worktreePath, '.git')
-        const branch = 'master'
+        const branch = 'main'
         const expectedfileUriPattern = posixify ? `file:///${posixify(worktreePath)}/%s` : `file://${worktreePath}/%s`
         const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch' }, '', worktreePath)
         expect(origin.gitdir).to.equal(gitdir)
@@ -3378,7 +3403,7 @@ describe('aggregateContent()', function () {
       it('should generate correct origin data for file taken from worktree with no remote', () => {
         const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
         const gitdir = ospath.join(worktreePath, '.git')
-        const branch = 'master'
+        const branch = 'main'
         const url = posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath
         const expectedfileUriPattern = url + '/%s'
         const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch' }, '', worktreePath)
@@ -3394,7 +3419,7 @@ describe('aggregateContent()', function () {
       it('should set correct origin data if URL requires auth', () => {
         const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
         const gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(url))
-        const origin = computeOrigin(url, 'auth-required', gitdir, { shortname: 'master', type: 'branch' }, '')
+        const origin = computeOrigin(url, 'auth-required', gitdir, { shortname: 'main', type: 'branch' }, '')
         expect(origin.private).to.equal('auth-required')
       })
 
@@ -3444,7 +3469,7 @@ describe('aggregateContent()', function () {
           .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
           .then(() => repoBuilder.removeFromWorktree('modules/ROOT/pages/page-one.adoc'))
           .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
-          .then(() => repoBuilder.close('master'))
+          .then(() => repoBuilder.close('main'))
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.2.3-fixes', tags: 'v1.2.3' })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
@@ -3508,7 +3533,7 @@ describe('aggregateContent()', function () {
 
     describe('should reuse repository if url occurs multiple times in content sources', () => {
       testAll(async (repoBuilder) => {
-        await initRepoWithFiles(repoBuilder, { name: 'the-component', version: 'master' }, [], () =>
+        await initRepoWithFiles(repoBuilder, { name: 'the-component', version: 'main' }, [], () =>
           repoBuilder
             .checkoutBranch('v1.0')
             .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: '1.0' }))
@@ -3516,7 +3541,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.checkoutBranch('v2.0'))
             .then(() => repoBuilder.addComponentDescriptorToWorktree({ name: 'the-component', version: '2.0' }))
             .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
-            .then(() => repoBuilder.checkoutBranch('master'))
+            .then(() => repoBuilder.checkoutBranch('main'))
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.0' })
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v2.0' })
@@ -3816,7 +3841,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
             .then(() => repoBuilder.checkoutBranch('v1.2.x'))
             .then(() => repoBuilder.checkoutBranch('v2.0.x'))
-            .then(() => repoBuilder.checkoutBranch('master'))
+            .then(() => repoBuilder.checkoutBranch('main'))
         )
         await initRepoWithFilesAndWorktree(
           linkedWorktreeRepoBuilder,
@@ -3864,7 +3889,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/commondir', '../..\n'))
             .then(() => repoBuilder.addToWorktree('.git/worktrees/v1.2.x/gitdir', linkedWorktreeDotgit + '\n'))
             .then(() => repoBuilder.checkoutBranch('v1.2.x'))
-            .then(() => repoBuilder.checkoutBranch('master'))
+            .then(() => repoBuilder.checkoutBranch('main'))
         )
         await initRepoWithFilesAndWorktree(
           linkedWorktreeRepoBuilder,
@@ -4087,7 +4112,7 @@ describe('aggregateContent()', function () {
       const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
       const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
       // create an unclonable repository
-      await initRepoWithFiles(repoBuilder, {}, [], () => repoBuilder.deleteBranch('master'))
+      await initRepoWithFiles(repoBuilder, {}, [], () => repoBuilder.deleteBranch('main'))
       playbookSpec.runtime.cacheDir = customCacheDir
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
@@ -4116,7 +4141,7 @@ describe('aggregateContent()', function () {
         .and.be.empty()
       expect(headFile)
         .to.be.a.file()
-        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+        .and.have.contents.that.match(/^ref: refs\/heads\/main(?=$|\n)/)
       await fsp.writeFile(validFile, 'marker')
       await fsp.writeFile(headFile, '')
       await fsp.unlink(validFile)
@@ -4128,7 +4153,7 @@ describe('aggregateContent()', function () {
         .and.be.empty()
       expect(headFile)
         .to.be.a.file()
-        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+        .and.have.contents.that.match(/^ref: refs\/heads\/main(?=$|\n)/)
     })
 
     it('should create valid file on clone if another repository fails to clone', async () => {
@@ -4485,7 +4510,7 @@ describe('aggregateContent()', function () {
       const headFile = ospath.join(cachedRepoDir, 'HEAD')
       expect(headFile)
         .to.be.a.file()
-        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+        .and.have.contents.that.match(/^ref: refs\/heads\/main(?=$|\n)/)
       // NOTE corrupt the cloned repository
       await fsp.unlink(headFile)
       await fsp.writeFile(ospath.join(cachedRepoDir, 'config'), '')
@@ -4495,7 +4520,7 @@ describe('aggregateContent()', function () {
       expect(cachedRepoDir).to.be.a.directory()
       expect(headFile)
         .to.be.a.file()
-        .and.have.contents.that.match(/^ref: refs\/heads\/master(?=$|\n)/)
+        .and.have.contents.that.match(/^ref: refs\/heads\/main(?=$|\n)/)
     })
 
     it('should fetch tags not reachable from fetched commits when runtime.fetch option is enabled', async () => {
@@ -4687,9 +4712,9 @@ describe('aggregateContent()', function () {
         .then(() => repoBuilder.commitAll('add submodule'))
         .then(() => repoBuilder.checkoutBranch('other'))
         .then(() => repoBuilder.close())
-      playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'master' })
+      playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'main' })
       // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
-      const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: master)`
+      const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: main)`
       const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       expect(aggregateContentDeferred).to.throw(expectedMessage)
     })
@@ -4759,7 +4784,7 @@ describe('aggregateContent()', function () {
             .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
             .then(() => repoBuilder.commitSelect(['antora.yml'], 'add version'))
         }
-        await repoBuilder.checkoutBranch('master')
+        await repoBuilder.checkoutBranch('main')
       })
       playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1' })
       const aggregate = await aggregateContent(playbookSpec)
@@ -4797,7 +4822,7 @@ describe('aggregateContent()', function () {
       name: 'the-component',
       version: 'v2.0',
     }
-    // NOTE master branch in remote will get shadowed
+    // NOTE main branch in remote will get shadowed
     await initRepoWithFiles(remoteRepoBuilder, remoteComponentDesc, undefined, () =>
       remoteRepoBuilder.checkoutBranch('v2.0')
     )

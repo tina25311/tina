@@ -25,7 +25,7 @@ const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const WORK_DIR = ospath.join(__dirname, 'work')
 const UI_BUNDLE_URL =
-  'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable'
+  'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable'
 const TMP_DIR = require('os').tmpdir()
 
 describe('generateSite()', function () {
@@ -88,7 +88,7 @@ describe('generateSite()', function () {
         })
       )
       .then(() => repoBuilder.importFilesFromFixture('the-component'))
-      .then(() => repoBuilder.close('master'))
+      .then(() => repoBuilder.close('main'))
     playbookSpec = {
       runtime: { quiet: true },
       site: { title: 'The Site' },
@@ -214,7 +214,7 @@ describe('generateSite()', function () {
       )
       .then(() => repoBuilder.removeFromWorktree('modules/ROOT/pages/index.adoc'))
       .then(() => repoBuilder.commitAll())
-      .then(() => repoBuilder.close('master'))
+      .then(() => repoBuilder.close('main'))
     playbookSpec.content.sources[0].version = { 'v(?<version>+({0..9}))*': 'lts-$<version>' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
@@ -270,7 +270,7 @@ describe('generateSite()', function () {
         })
       )
       .then(() => repoBuilder.commitAll())
-      .then(() => repoBuilder.close('master'))
+      .then(() => repoBuilder.close('main'))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
     expect(messages).to.have.lengthOf(1)
@@ -289,7 +289,7 @@ describe('generateSite()', function () {
       .then(() => repoBuilder.checkoutBranch('v2.0'))
       .then(() => repoBuilder.removeFromWorktree('modules/ROOT/pages/new-page.adoc'))
       .then(() => repoBuilder.commitAll())
-      .then(() => repoBuilder.close('master'))
+      .then(() => repoBuilder.close('main'))
     playbookSpec.content.sources[0].url = repoBuilder.url
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
@@ -419,7 +419,7 @@ describe('generateSite()', function () {
           nav: ['modules/ROOT/nav.adoc'],
         })
       )
-      .then(() => repoBuilder.close('master'))
+      .then(() => repoBuilder.close('main'))
     playbookSpec.content.sources[0].branches = ['v2.0', 'v1.0']
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
@@ -591,7 +591,7 @@ describe('generateSite()', function () {
           exclude: ['modules/ROOT/pages/new-page.adoc'],
         })
       )
-      .then(() => repoBuilder.close('master'))
+      .then(() => repoBuilder.close('main'))
     playbookSpec.content.sources[0].branches = ['v2.0', 'v1.0']
     playbookSpec.runtime.log = { level: 'silent' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -645,6 +645,41 @@ describe('generateSite()', function () {
     expect($('.nav-panel-explore .component.is-current .version.is-current a')).to.have.text('1.0')
   }).timeout(timeoutOverride)
 
+  it('should provide navigation to version named master', async () => {
+    await repoBuilder
+      .open()
+      .then(() => repoBuilder.checkoutBranch('main'))
+      .then(() => repoBuilder.deleteBranch('v2.0'))
+      .then(() =>
+        repoBuilder.addComponentDescriptorToWorktree({
+          name: 'the-other-component',
+          version: 'master',
+          start_page: 'core:index.adoc',
+          nav: ['modules/core/nav.adoc'],
+        })
+      )
+      .then(() => repoBuilder.importFilesFromFixture('the-other-component'))
+      .then(() => repoBuilder.close('main'))
+    delete playbookSpec.content.sources[0].branches
+    playbookSpec.runtime.log = { level: 'silent' }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    await generateSite(getPlaybook(playbookFile))
+    expect(ospath.join(absDestDir, 'the-other-component')).to.be.a.directory()
+    expect(ospath.join(absDestDir, 'the-other-component/core/index.html')).to.be.a.file()
+    $ = loadHtmlFile('the-other-component/core/index.html')
+    expect($('.nav-panel-explore .component')).to.have.lengthOf(1)
+    // assert correct component is marked as current
+    expect($('.nav-panel-explore .component').eq(0)).to.have.class('is-current')
+    expect($('.nav-panel-explore .component.is-current a')).to.have.lengthOf(2)
+    expect($('.nav-panel-explore .component.is-current a.title')).to.have.lengthOf(1)
+    expect($('.nav-panel-explore .component.is-current a.title').eq(0)).to.have.text('The Other Component')
+    expect($('.nav-panel-explore .component.is-current .versions a')).to.have.lengthOf(1)
+    expect($('.nav-panel-explore .component.is-current .versions a').eq(0)).to.have.text('master')
+    expect($('.nav-panel-explore .component.is-current .version').eq(0))
+      .to.have.class('is-current')
+      .and.to.have.class('is-latest')
+  }).timeout(timeoutOverride)
+
   it('should provide navigation to all versions of all components', async () => {
     await repoBuilder
       .open()
@@ -661,13 +696,13 @@ describe('generateSite()', function () {
           exclude: ['modules/ROOT/pages/new-page.adoc'],
         })
       )
-      .then(() => repoBuilder.close('master'))
+      .then(() => repoBuilder.close('main'))
     await repoBuilder
       .init('the-other-component')
       .then(() =>
         repoBuilder.addComponentDescriptorToWorktree({
           name: 'the-other-component',
-          version: 'master',
+          version: '',
           start_page: 'core:index.adoc',
           nav: ['modules/core/nav.adoc'],
         })
@@ -683,12 +718,12 @@ describe('generateSite()', function () {
         })
       )
       .then(() => repoBuilder.commitAll('add component descriptor for 1.0'))
-      .then(() => repoBuilder.close('master'))
+      .then(() => repoBuilder.close('main'))
 
     playbookSpec.content.sources[0].branches = ['v2.0', 'v1.0']
     playbookSpec.content.sources.push({
       url: repoBuilder.repoPath,
-      branches: ['master', 'v1.0'],
+      branches: ['main', 'v1.0'],
     })
     playbookSpec.runtime.log = { level: 'silent' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -713,7 +748,7 @@ describe('generateSite()', function () {
     expect($('.nav-panel-explore .component.is-current a')).to.have.lengthOf(3)
     expect($('.nav-panel-explore .component.is-current a.title')).to.have.lengthOf(1)
     expect($('.nav-panel-explore .component.is-current .versions a')).to.have.lengthOf(2)
-    expect($('.nav-panel-explore .component.is-current .versions a').eq(0)).to.have.text('master')
+    expect($('.nav-panel-explore .component.is-current .versions a').eq(0)).to.have.text('default')
     expect($('.nav-panel-explore .component.is-current .version').eq(0))
       .to.have.class('is-current')
       .and.to.have.class('is-latest')

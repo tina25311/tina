@@ -166,14 +166,14 @@ describe('classifyContent()', () => {
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
-        version: 'master',
+        version: 'main',
         files: [],
       })
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       expect(component).to.exist()
       expect(component.name).to.equal('the-component')
       const versions = component.versions.map((version) => version.version)
-      expect(versions).to.eql(['master', 'dev', 'v1.2.3'])
+      expect(versions).to.eql(['main', 'dev', 'v1.2.3'])
     })
 
     it('should insert versionless version first if there are no prereleases', () => {

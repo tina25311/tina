@@ -60,15 +60,15 @@ describe('versionCompareDesc()', () => {
 
   it('should order non-semantic version strings before semantic version strings', () => {
     const versionFixtures = [
-      ['1.0', 'master'],
-      ['master', '1.0'],
+      ['1.0', 'main'],
+      ['main', '1.0'],
       ['2.0.1', 'dev'],
       ['dev', '2.0.1'],
       ['3.0', ''],
     ]
     const expected = [
-      ['master', '1.0'],
-      ['master', '1.0'],
+      ['main', '1.0'],
+      ['main', '1.0'],
       ['dev', '2.0.1'],
       ['dev', '2.0.1'],
       ['', '3.0'],
@@ -88,10 +88,10 @@ describe('versionCompareDesc()', () => {
   })
 
   it('should order non-semantic versions as strings', () => {
-    const versions = ['badger', 'master', '', 'rev99', 'alligator', 'camel']
+    const versions = ['badger', 'main', '', 'rev99', 'alligator', 'camel']
 
     versions.sort(versionCompareDesc)
-    expect(versions).to.eql(['', 'rev99', 'master', 'camel', 'badger', 'alligator'])
+    expect(versions).to.eql(['', 'rev99', 'main', 'camel', 'badger', 'alligator'])
   })
 
   it('should order numbers in descending numeric order', () => {

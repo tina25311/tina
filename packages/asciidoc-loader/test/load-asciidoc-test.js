@@ -43,7 +43,7 @@ describe('loadAsciiDoc()', () => {
       src: {
         path: 'modules/module-a/pages/page-a.adoc',
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'page',
         relative: 'page-a.adoc',
@@ -519,8 +519,8 @@ describe('loadAsciiDoc()', () => {
         examplesdir: 'example$',
         // page
         'page-component-name': 'component-a',
-        'page-component-version': 'master',
-        'page-version': 'master',
+        'page-component-version': '',
+        'page-version': '',
         'page-module': 'module-a',
         'page-relative-src-path': 'page-a.adoc',
         // computed
@@ -923,7 +923,7 @@ describe('loadAsciiDoc()', () => {
       ).withReturnValue()
       expect(contentCatalog.getById).to.have.been.called.with({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'partial',
         relative: 'does-not-exist.adoc',
@@ -956,7 +956,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'does-not-exist.adoc',
@@ -1014,7 +1014,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'does-not-exist.adoc',
@@ -1049,7 +1049,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'example',
           relative: 'visit.rb',
@@ -1071,7 +1071,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'paragraph.adoc',
@@ -1096,7 +1096,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'undefined-contents.adoc',
@@ -1120,7 +1120,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'greeting.adoc',
@@ -1144,7 +1144,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'greeting.adoc',
@@ -1173,7 +1173,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'example',
           relative: 'ruby/hello.rb',
@@ -1203,7 +1203,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'example',
           relative: 'ruby/hello.rb',
@@ -1229,7 +1229,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'another-module',
           family: 'partial',
           relative: 'greeting.adoc',
@@ -1252,7 +1252,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'partial',
           relative: 'empty.adoc',
@@ -1261,7 +1261,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'target.adoc',
@@ -1381,7 +1381,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'outer.adoc',
@@ -1390,7 +1390,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
@@ -1414,7 +1414,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'outer.adoc',
@@ -1423,7 +1423,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
@@ -1476,7 +1476,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           path: 'modules/other-module/pages/_partials/deeply/nested.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
@@ -1518,7 +1518,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with('yet-another-module:partial$deeply/nested.adoc', {
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'other-module',
           family: 'partial',
           relative: 'outer.adoc',
@@ -1563,7 +1563,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-b',
-          version: 'master',
+          version: '',
           path: 'modules/ROOT/pages/_partials/deeply/nested.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
@@ -1607,7 +1607,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with('another-module:partial$deeply/nested.adoc', {
           component: 'component-b',
-          version: 'master',
+          version: '',
           module: 'ROOT',
           family: 'partial',
           relative: 'outer.adoc',
@@ -1651,7 +1651,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with('component-a:module-a:partial$deeply/nested.adoc', {
           component: 'component-b',
-          version: 'master',
+          version: '',
           module: 'ROOT',
           family: 'partial',
           relative: 'outer.adoc',
@@ -1744,7 +1744,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'greeting.adoc',
@@ -1775,7 +1775,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'greeting.adoc',
@@ -1804,7 +1804,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'greeting.adoc',
@@ -2231,7 +2231,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'partial',
           relative: 'paragraph.adoc',
@@ -2826,7 +2826,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           path: 'modules/module-a/pages/changelog.adoc',
         })
       const firstBlock = doc.getBlocks()[0]
@@ -2939,7 +2939,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'page-a.adoc',
@@ -2948,7 +2948,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'page-a.adoc',
@@ -3214,7 +3214,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-missing-page.adoc',
@@ -3223,7 +3223,7 @@ describe('loadAsciiDoc()', () => {
         .nth(3)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'that-missing-page.adoc',
@@ -3257,7 +3257,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-page.adoc.adoc',
@@ -3283,7 +3283,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: '_hidden.adoc',
@@ -3547,6 +3547,34 @@ describe('loadAsciiDoc()', () => {
     it('should convert a page reference with component, module, topic, and page', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-b',
+        version: '',
+        module: 'module-b',
+        family: 'page',
+        relative: 'the-topic/the-page.adoc',
+      }).spyOn('getById', 'getComponent')
+      setInputFileContents('xref:component-b:module-b:the-topic/the-page.adoc[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getComponent)
+        .nth(1)
+        .called.with('component-a')
+      expect(contentCatalog.getComponent)
+        .nth(2)
+        .called.with('component-b')
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '',
+          module: 'module-b',
+          family: 'page',
+          relative: 'the-topic/the-page.adoc',
+        })
+      expectPageLink(html, inputFile.pub.rootPath + '/component-b/module-b/the-topic/the-page.html', 'The Page Title')
+    })
+
+    it('should convert a page reference with component, master version, module, topic, and page', () => {
+      const contentCatalog = mockContentCatalog({
+        component: 'component-b',
         version: 'master',
         module: 'module-b',
         family: 'page',
@@ -3602,7 +3630,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: '@the-page.adoc',
@@ -3683,7 +3711,7 @@ describe('loadAsciiDoc()', () => {
     it('should convert a page reference with module and page', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-b',
         family: 'page',
         relative: 'the-page.adoc',
@@ -3694,7 +3722,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'the-page.adoc',
@@ -3705,7 +3733,7 @@ describe('loadAsciiDoc()', () => {
     it('should convert a page reference with module, topic, and page', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-b',
         family: 'page',
         relative: 'the-topic/the-page.adoc',
@@ -3716,7 +3744,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'the-topic/the-page.adoc',
@@ -3727,7 +3755,7 @@ describe('loadAsciiDoc()', () => {
     it('should convert a basic page reference', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'page',
         relative: 'the-page.adoc',
@@ -3738,7 +3766,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-page.adoc',
@@ -3749,7 +3777,7 @@ describe('loadAsciiDoc()', () => {
     it('should convert a basic page reference relative to the current top-level page', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'page',
         relative: 'the-page.adoc',
@@ -3760,7 +3788,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-page.adoc',
@@ -3771,7 +3799,7 @@ describe('loadAsciiDoc()', () => {
     it('should convert a page reference that contains spaces', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'page',
         relative: 'i like spaces.adoc',
@@ -3782,7 +3810,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'i like spaces.adoc',
@@ -3808,7 +3836,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-page.adoc',
@@ -3834,7 +3862,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-topic/the-sibling-page.adoc',
@@ -3852,7 +3880,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-page.adoc',
@@ -3891,7 +3919,7 @@ describe('loadAsciiDoc()', () => {
     it('should convert a page reference to a non-AsciiDoc page', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'page',
         relative: 'the-page.html',
@@ -3903,7 +3931,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-page.html',
@@ -3914,7 +3942,7 @@ describe('loadAsciiDoc()', () => {
     it('should convert a reference to a non-page resource', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'attachment',
         relative: 'sample.zip',
@@ -3926,7 +3954,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'attachment',
           relative: 'sample.zip',
@@ -3937,7 +3965,7 @@ describe('loadAsciiDoc()', () => {
     it('should pass on attributes defined in xref macro', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'page',
         relative: 'the-page.adoc',
@@ -3948,7 +3976,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-page.adoc',
@@ -3959,7 +3987,7 @@ describe('loadAsciiDoc()', () => {
     it('should convert a page reference with topic and page', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'page',
         relative: 'the-topic/the-page.adoc',
@@ -3970,7 +3998,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-topic/the-page.adoc',
@@ -3996,7 +4024,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'topic-b/the-page.adoc',
@@ -4016,7 +4044,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4036,7 +4064,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4056,7 +4084,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4076,7 +4104,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4096,7 +4124,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4134,7 +4162,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'that-page.adoc',
@@ -4164,7 +4192,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'that-page.adoc',
@@ -4192,7 +4220,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'the-topic/that-page.adoc',
@@ -4221,7 +4249,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'that-page.adoc',
@@ -4242,7 +4270,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4263,7 +4291,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4284,7 +4312,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4305,7 +4333,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'page',
           relative: 'this-page.adoc',
@@ -4316,7 +4344,7 @@ describe('loadAsciiDoc()', () => {
     it('should use xreftext of target page as content if content not specified', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-b',
         family: 'page',
         relative: 'the-topic/the-page.adoc',
@@ -4329,7 +4357,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'the-topic/the-page.adoc',
@@ -4340,7 +4368,7 @@ describe('loadAsciiDoc()', () => {
     it('should use page ID spec of target page as content if content not specified and target has no xreftext', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-b',
         family: 'page',
         relative: 'the-topic/the-page.adoc',
@@ -4351,7 +4379,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'the-topic/the-page.adoc',
@@ -4362,7 +4390,7 @@ describe('loadAsciiDoc()', () => {
     it('should use page ID spec as content for page reference with fragment if content not specified', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-b',
         family: 'page',
         relative: 'the-topic/the-page.adoc',
@@ -4375,7 +4403,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'the-topic/the-page.adoc',
@@ -4387,7 +4415,7 @@ describe('loadAsciiDoc()', () => {
     it('should not fail to process page reference if fragment attribute is not set', () => {
       const contentCatalog = mockContentCatalog({
         component: 'component-a',
-        version: 'master',
+        version: '',
         module: 'module-a',
         family: 'page',
         relative: 'the-page.adoc',
@@ -4478,7 +4506,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'image',
           relative: 'no-such-image.png',
@@ -4504,7 +4532,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'no-such-image.png',
@@ -4549,7 +4577,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'image',
           relative: 'the-image.png',
@@ -4569,7 +4597,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4593,7 +4621,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'image',
           relative: 'the-topic/the-image.png',
@@ -4637,7 +4665,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'image',
           relative: 'no-such-image.png',
@@ -4663,7 +4691,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'no-such-image.png',
@@ -4708,7 +4736,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-a',
           family: 'image',
           relative: 'the-image.png',
@@ -4728,7 +4756,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4767,7 +4795,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4805,7 +4833,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4833,7 +4861,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4865,7 +4893,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'no-such-page.adoc',
@@ -4874,7 +4902,7 @@ describe('loadAsciiDoc()', () => {
         .nth(0)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4901,7 +4929,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'the-page.adoc',
@@ -4910,7 +4938,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4930,7 +4958,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'attachment',
           relative: 'the-attachment.zip',
@@ -4939,7 +4967,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4965,7 +4993,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -4987,7 +5015,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'the-page.adoc',
@@ -4996,7 +5024,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -5019,7 +5047,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -5047,7 +5075,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'no-such-page.adoc',
@@ -5056,7 +5084,7 @@ describe('loadAsciiDoc()', () => {
         .nth(0)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -5084,7 +5112,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -5114,7 +5142,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'page',
           relative: 'the-page.adoc',
@@ -5123,7 +5151,7 @@ describe('loadAsciiDoc()', () => {
         .nth(2)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',
@@ -5146,7 +5174,7 @@ describe('loadAsciiDoc()', () => {
         .nth(1)
         .called.with({
           component: 'component-a',
-          version: 'master',
+          version: '',
           module: 'module-b',
           family: 'image',
           relative: 'the-image.png',

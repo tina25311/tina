@@ -660,12 +660,12 @@ describe('ContentCatalog', () => {
           latestVersionSegment: 'current',
         },
       })
-      const componentVersion = contentCatalog.registerComponentVersion('the-component', 'master', {
+      const componentVersion = contentCatalog.registerComponentVersion('the-component', '', {
         title: 'The Component',
         startPage: undefined,
       })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
-      expect(componentVersion.version).to.equal('master')
+      expect(componentVersion.version).to.equal('')
       expect(componentVersion.url).to.equal('/the-component/index.html')
       const splatVersionAlias = contentCatalog.getById({
         component: 'the-component',
@@ -779,16 +779,16 @@ describe('ContentCatalog', () => {
           latestVersionSegment: 'current',
         },
       })
-      const componentVersion = contentCatalog.registerComponentVersion('the-component', 'master', {
+      const componentVersion = contentCatalog.registerComponentVersion('the-component', '', {
         title: 'The Component',
         startPage: undefined,
       })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
-      expect(componentVersion.version).to.equal('master')
+      expect(componentVersion.version).to.equal('')
       expect(componentVersion.url).to.equal('/the-component/index.html')
       const splatVersionAlias = contentCatalog.getById({
         component: 'the-component',
-        version: 'master',
+        version: '',
         module: 'ROOT',
         family: 'alias',
         relative: '',
@@ -1359,7 +1359,7 @@ describe('ContentCatalog', () => {
     it('should only set pub property on file in navigation family', () => {
       const src = {
         component: 'the-component',
-        version: 'master',
+        version: '',
         module: 'ROOT',
         family: 'nav',
         relative: 'nav.adoc',
@@ -1377,7 +1377,7 @@ describe('ContentCatalog', () => {
     it('should set pub property on file in navigation family even if filename begins with underscore', () => {
       const src = {
         component: 'the-component',
-        version: 'master',
+        version: '',
         module: 'ROOT',
         family: 'nav',
         relative: 'pages/_nav.adoc',
