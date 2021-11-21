@@ -6,18 +6,25 @@
 Attachments are resources, such as PDFs or the ZIP archives of sample projects.
 Attachment files are stored in an xref:ROOT:attachments-directory.adoc[_attachments_ family directory].
 
-== Attachment resource ID
+== Attachment resource IDs and xref macros
 
-An attachment can be cross referenced from pages, other resources, and navigation files using an xref:xref.adoc[AsciiDoc xref macro] and the xref:resource-id.adoc[resource ID] of the attachment.
-The `{coordinate}` family coordinate must be specified in the attachment's resource ID.
+The xref:resource-id.adoc[resource ID of an attachment] must always specify its family coordinate (`{coordinate}`) when it's referenced.
+An attachment can be cross referenced from pages, other resources, and navigation files using an xref:xref.adoc#xref-macro[AsciiDoc xref macro].
 
-<<ex-base>> shows the structure of an AsciiDoc xref macro with an {family}'s fully qualified resource ID.
+<<ex-base>> shows the structure of an xref macro with an {family}'s fully qualified resource ID.
 
 .Xref and attachment resource ID syntax
 [#ex-base,subs=attributes+]
 ----
-xref:version@component:module:{coordinate}filename.ext[link text]
+xref:version@component:module:{coordinate}file-coordinate-of-attachment.ext[optional link text]
 ----
+
+When referencing an attachment, the xref macro is structured and behaves much like when it's assigned the resource ID of a page, with three differences:
+
+* The attachment's resource ID must specify the `{coordinate}` family coordinate, otherwise Antora will assume the value is that of a page at runtime.
+* A fragment (element ID) can't be appended to the end of the attachment's resource ID.
+* An attachment doesn't have default reference text.
+If you don't specify link text in the xref macro, the URL of the published attachment is displayed as the link text in the current page.
 
 How many coordinates of the attachment's resource ID you need to specify as the value of the xref macro depends on the component version and module of the current page in relation to the attachment.
 
