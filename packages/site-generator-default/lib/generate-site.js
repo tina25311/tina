@@ -9,14 +9,14 @@ async function generateSite (playbook) {
     const { fxns, vars } = await GeneratorContext.start(context, playbook)
     await context.notify('playbookBuilt')
     playbook = vars.lock('playbook')
-    vars.asciidocConfig = fxns.resolveAsciiDocConfig(playbook)
+    vars.siteAsciiDocConfig = fxns.resolveAsciiDocConfig(playbook)
     vars.siteCatalog = new SiteCatalog()
     await context.notify('beforeProcess')
-    const asciidocConfig = vars.lock('asciidocConfig')
+    const siteAsciiDocConfig = vars.lock('siteAsciiDocConfig')
     await Promise.all([
       fxns.aggregateContent(playbook).then((contentAggregate) =>
         context.notify('contentAggregated', Object.assign(vars, { contentAggregate })).then(() => {
-          vars.contentCatalog = fxns.classifyContent(playbook, vars.remove('contentAggregate'), asciidocConfig)
+          vars.contentCatalog = fxns.classifyContent(playbook, vars.remove('contentAggregate'), siteAsciiDocConfig)
         })
       ),
       fxns.loadUi(playbook).then((uiCatalog) => context.notify('uiLoaded', Object.assign(vars, { uiCatalog }))),
@@ -24,9 +24,9 @@ async function generateSite (playbook) {
     await context.notify('contentClassified')
     const contentCatalog = vars.lock('contentCatalog')
     const uiCatalog = vars.lock('uiCatalog')
-    fxns.convertDocuments(contentCatalog, asciidocConfig)
+    fxns.convertDocuments(contentCatalog, siteAsciiDocConfig)
     await context.notify('documentsConverted')
-    vars.navigationCatalog = fxns.buildNavigation(contentCatalog, asciidocConfig)
+    vars.navigationCatalog = fxns.buildNavigation(contentCatalog, siteAsciiDocConfig)
     await context.notify('navigationBuilt')
     ;(() => {
       const navigationCatalog = vars.remove('navigationCatalog')

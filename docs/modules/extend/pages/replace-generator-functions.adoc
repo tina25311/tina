@@ -56,9 +56,9 @@ The list of functions that can be replaced by an extension, shown along with the
 
 * aggregateContent(playbook): Promise<Object>
 * buildNavigation(contentCatalog, siteAsciiDocConfig): NavigationCatalog
-* classifyContent(playbook, contentAggregate, asciidocConfig): ContentCatalog
-* convertDocument(file, contentCatalog, asciidocConfig): File
-* convertDocuments(contentCatalog, asciidocConfig): void
+* classifyContent(playbook, contentAggregate, siteAsciiDocConfig): ContentCatalog
+* convertDocument(file, contentCatalog, siteAsciiDocConfig): File
+* convertDocuments(contentCatalog, siteAsciiDocConfig): void
 * createPageComposer(playbook, contentCatalog, uiCatalog, env): Function
 * extractAsciiDocMetadata(doc): Object
 * loadAsciiDoc(file, contentCatalog, config): Document

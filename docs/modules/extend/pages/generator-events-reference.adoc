@@ -20,37 +20,37 @@ If the variable is locked, meaning it cannot be replaced, it's italicized.
 |playbook
 
 |beforeProcess
-|_playbook_, asciidocConfig, siteCatalog
+|_playbook_, siteAsciiDocConfig, siteCatalog
 
 |contentAggregated{empty}footnote:event-sequence[The order of the `contentAggregated` and `uiLoaded` events relative to each other is not guaranteed.]
-|_playbook_, _asciidocConfig_, siteCatalog, contentAggregate
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, contentAggregate
 
 |uiLoaded{empty}footnote:event-sequence[]
-|_playbook_, _asciidocConfig_, siteCatalog, uiCatalog
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, uiCatalog
 
 |contentClassified
-|_playbook_, _asciidocConfig_, siteCatalog, uiCatalog, contentCatalog
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, uiCatalog, contentCatalog
 
 |documentsConverted
-|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |navigationBuilt
-|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_, navigationCatalog
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_, navigationCatalog
 
 |pageComposed
-|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |redirectsProduced
-|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |siteMapped{empty}footnote:[The `siteMapped` event is only emitted if the site URL is specified in the playbook.]
-|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |beforePublish
-|_playbook_, _asciidocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 
 |sitePublished
-|_playbook_, _asciidocConfig_, _siteCatalog_, _uiCatalog_, _contentCatalog_, publications
+|_playbook_, _siteAsciiDocConfig_, _siteCatalog_, _uiCatalog_, _contentCatalog_, publications
 
 |contextStopped
 |_playbook_, _whatever is still in scope at the time the context is stopped_

@@ -990,7 +990,7 @@ describe('generateSite()', function () {
     })
 
     it('should allow extension to listen for events', async () => {
-      const common = ['playbook', 'asciidocConfig', 'siteCatalog']
+      const common = ['playbook', 'siteAsciiDocConfig', 'siteCatalog']
       const events = {
         contextStarted: [common[0]],
         playbookBuilt: [common[0]],
