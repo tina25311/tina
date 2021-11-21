@@ -9,32 +9,34 @@ const userRequire = require('@antora/user-require-helper')
 const { version: VERSION } = require('../package.json')
 
 async function run (argv = process.argv) {
-  const args = argv.slice(2)
-  return cli.parseAsync(args.length ? args : ['help'], { from: 'user' })
+  return cli.parseAsync((argv = argv.slice(2)).length ? argv : ['help'], { from: 'user' })
 }
 
 function exitWithError (err, opts, msg = undefined) {
   const { getLogger, configureLogger } = requireLogger()
-  if (!msg) msg = err.message || err
-  const name = msg.startsWith('asciidoctor: FAILED: ') ? (msg = msg.slice(21)) && 'asciidoctor' : cli.name()
+  let errMessage = String(
+    (err instanceof Error ? err.message : Object.assign((err = new Error(String(err))), { stack: undefined }).message)
+  )
+  const name = errMessage.startsWith('asciidoctor: FAILED: ')
+    ? (errMessage = errMessage.slice(21)) && 'asciidoctor'
+    : cli.name()
+  if (!msg) msg = errMessage
   if (!getLogger(null)) {
     configureLogger({ format: 'pretty', level: opts.silent ? 'silent' : 'fatal', failureLevel: 'fatal' })
   }
   const logger = getLogger(name)
   if (opts.stacktrace) {
-    let loc, stack
+    let stack
     if ((stack = err.backtrace)) {
-      err = Object.assign(new Error(msg), { stack: ['Error', ...stack.slice(1)].join('\n') })
+      err = Object.assign(new Error(errMessage), { stack: ['Error', ...stack.slice(1)].join('\n') })
     } else if ((stack = err.stack)) {
       if (err instanceof SyntaxError && stack.includes('\nSyntaxError: ')) {
-        ;[loc, stack] = stack.split(/\n+SyntaxError: [^\n]+/)
-        err = Object.assign(new SyntaxError(msg), { stack: stack.replace('\n', `SyntaxError\n    at ${loc}\n`) })
-      } else if (stack.startsWith(`${err.name}: ${msg}`)) {
-        stack = stack.replace(`${err.name}: ${msg}`, '').replace(/^\n/, '')
-        err = Object.assign(new err.constructor(msg), { stack: stack ? `${err.name}\n${stack}` : undefined })
+        const [, loc, expl, rest] = stack.match(/^([\S\s]*?)\n+SyntaxError: ([^\n]+)([\S\s]*)/)
+        err.stack = rest.replace('\n', `SyntaxError${errMessage === msg ? '' : ': ' + expl}\n    at ${loc}\n`)
+      } else if (errMessage === msg && stack.startsWith(`${err.name}: ${errMessage}`)) {
+        stack = stack.replace(`${err.name}: ${errMessage}`, err.name)
+        err.stack = stack === err.name ? undefined : stack
       }
-    } else {
-      err = Object.assign(new Error(msg), { stack: undefined })
     }
     if ({}.propertyIsEnumerable.call(err, 'name')) Object.defineProperty(err, 'name', { enumerable: false })
     err.stack = `Cause: ${err.stack || '(no stacktrace)'}`
