@@ -73,7 +73,7 @@ describe('cli', function () {
     absBuildDir = ospath.join(WORK_DIR, buildDir)
     destDir = ospath.join(buildDir, 'site')
     absDestDir = ospath.join(WORK_DIR, destDir)
-    playbookFile = ospath.join(WORK_DIR, 'the-site.json')
+    playbookFile = ospath.join(WORK_DIR, 'antora-playbook.json')
     uiBundleUrl = UI_BUNDLE_URL
   })
 
@@ -245,19 +245,25 @@ describe('cli', function () {
   })
 
   it('should show error message if generate command is run with multiple arguments', () => {
-    return runAntora('generate the-site extra-cruft')
+    return runAntora('generate antora-playbook extra-cruft')
       .assert("antora: too many arguments for 'generate'. Expected 1 argument but got 2.")
       .done()
   })
 
+  it('should show error message if command is run with unknown global option', () => {
+    return runAntora('--unknown generate antora-playbook')
+      .assert("antora: unknown option '--unknown'")
+      .done()
+  })
+
   it('should show error message if generate command is run with unknown option', () => {
-    return runAntora('generate does-not-exist.json --unknown')
+    return runAntora('generate antora-playbook --unknown')
       .assert("antora: unknown option '--unknown'")
       .done()
   })
 
   it('should show error message if default command is run with unknown option', () => {
-    return runAntora('--unknown the-site')
+    return runAntora('antora-playbook --unknown')
       .assert("antora: unknown option '--unknown'")
       .done()
   })
@@ -266,7 +272,7 @@ describe('cli', function () {
     const expected =
       "antora: option '--html-url-extension-style <choice>' argument 'none' is invalid. " +
       'Allowed choices are default, drop, indexify.'
-    return runAntora('generate antora-playbook.yml --html-url-extension-style=none')
+    return runAntora('generate antora-playbook --html-url-extension-style=none')
       .assert(expected)
       .done()
   })
@@ -277,10 +283,16 @@ describe('cli', function () {
       .done()
   }).timeout(timeoutOverride)
 
+  it('should show error message if default command is run and specified playbook file does not exist', () => {
+    return runAntora('does-not-exist.json')
+      .assert(/playbook file not found at /)
+      .done()
+  }).timeout(timeoutOverride)
+
   it('should use fallback logger to log fatal message if error is thrown before playbook is built', () => {
     playbookSpec.runtime = { log: { level: 'verbose' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('generate --log-format=json the-site')
+    return runAntora('generate --log-format=json antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.level: must be one of/)
       .done()
   }).timeout(timeoutOverride)
@@ -288,7 +300,7 @@ describe('cli', function () {
   it('should use configured logger to log fatal message if error is thrown after playbook is built', () => {
     playbookSpec.ui.bundle.url = 'does-not-exist.zip'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('generate --log-format=json the-site')
+    return runAntora('generate --log-format=json antora-playbook')
       .assert(/"msg":"Specified UI bundle does not exist: .*"/)
       .done()
   }).timeout(timeoutOverride)
@@ -296,7 +308,7 @@ describe('cli', function () {
   it('should show stack if --stacktrace option is specified and an exception is thrown during generation', () => {
     playbookSpec.runtime = { log: { format: 'fancy' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('--stacktrace generate the-site')
+    return runAntora('--stacktrace generate antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.format: must be one of/)
       .assert(/^Cause: Error$/)
       .assert(/^at /)
@@ -306,7 +318,7 @@ describe('cli', function () {
   it('should show nested cause if --stacktrace option is specified and an exception is nested', () => {
     playbookSpec.output = { destinations: [{ provider: 'unknown' }] }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('--stacktrace generate --log-format=pretty the-site')
+    return runAntora('--stacktrace generate --log-format=pretty antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): Unsupported destination provider: unknown/)
       .assert(/^Cause: Error$/)
       .assert(/^at /)
@@ -318,7 +330,7 @@ describe('cli', function () {
   it('should show stack if --stacktrace option is specified and a Ruby exception with backtrace property is thrown', () => {
     playbookSpec.asciidoc = { attributes: { idseparator: 1 } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('--stacktrace generate --log-format=pretty the-site')
+    return runAntora('--stacktrace generate --log-format=pretty antora-playbook')
       .assert(/^\[.+?\] FATAL \(asciidoctor\): .*: Failed to load AsciiDoc document/)
       .assert(/^Cause: Error$/)
       .assert(/^at Number\./)
@@ -328,7 +340,7 @@ describe('cli', function () {
   it('should show message if --stacktrace option is specified and an exception with no stack is thrown', () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-fail-tree-processor'))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora(`-r ${ext} --stacktrace generate --log-format=pretty the-site`)
+    return runAntora(`-r ${ext} --stacktrace generate --log-format=pretty antora-playbook`)
       .assert(/^\[.+?\] FATAL \(antora\): not today!$/)
       .assert(/^Cause: \(no stacktrace\)$/)
       .done()
@@ -338,7 +350,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
-      runAntora(`--stacktrace generate --cache-dir="${playbookFile}" the-site`)
+      runAntora(`--stacktrace generate --cache-dir="${playbookFile}" antora-playbook`)
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -362,8 +374,8 @@ describe('cli', function () {
         bundle:
           url: ${uiBundleUrl}
     `
-    fs.writeFileSync(ospath.join(WORK_DIR, 'the-site-bad.yml'), playbookContents)
-    return runAntora('--stacktrace generate --log-format=pretty the-site-bad.yml')
+    fs.writeFileSync(ospath.join(WORK_DIR, 'bad-antora-playbook.yml'), playbookContents)
+    return runAntora('--stacktrace generate --log-format=pretty bad-antora-playbook.yml')
       .assert(/^\[.+?\] FATAL \(antora\): end of the stream or a document separator is expected/)
       .ignoreUntil(/^-+\^/)
       .ignoreUntil(/^Cause: YAMLException$/)
@@ -375,7 +387,7 @@ describe('cli', function () {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-with-syntax-error.js'))
     playbookSpec.asciidoc = { extensions: [ext] }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('--stacktrace generate --log-format=pretty the-site')
+    return runAntora('--stacktrace generate --log-format=pretty antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): missing \) after argument list$/)
       .assert(/^Cause: SyntaxError$/)
       .assert(/^at .*extension-with-syntax-error\.js:6/)
@@ -391,8 +403,8 @@ describe('cli', function () {
         bundle:
           url: ${uiBundleUrl}
     `
-    fs.writeFileSync(ospath.join(WORK_DIR, 'the-site-bad.json'), playbookContents)
-    return runAntora('--stacktrace generate --log-format=pretty the-site-bad.json')
+    fs.writeFileSync(ospath.join(WORK_DIR, 'bad-antora-playbook.json'), playbookContents)
+    return runAntora('--stacktrace generate --log-format=pretty bad-antora-playbook.json')
       .assert(/^\[.+?\] FATAL \(antora\): JSON5: invalid character 's' at 1:1/)
       .assert(/^Cause: SyntaxError$/)
       .assert(/^at syntaxError/)
@@ -402,30 +414,35 @@ describe('cli', function () {
   it('should recommend --stacktrace option if not specified and an exception is thrown during generation', () => {
     playbookSpec.runtime = { log: { format: 'fancy' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return runAntora('generate the-site')
+    return runAntora('generate antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.format: must be one of/)
       .assert('Add the --stacktrace option to see the cause of the error.')
       .done()
   }).timeout(timeoutOverride)
 
   // NOTE this test also verifies the --playbook option is correctly inserted into the args array
-  it('should generate site to output directory when playbook file is passed to generate command', () => {
-    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+  it('should generate site to output directory when extensionless playbook file is passed to generate command', () => {
+    const myPlaybookFile = ospath.join(ospath.dirname(playbookFile), 'my-antora-playbook.json')
+    fs.writeFileSync(myPlaybookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) =>
-      runAntora('--stacktrace generate --title the-site the-site --quiet').on('exit', resolve)
-    ).then((exitCode) => {
-      expect(exitCode).to.equal(0)
-      expect(absDestDir)
-        .to.be.a.directory()
-        .with.subDirs(['_', 'the-component'])
-      expect(ospath.join(absDestDir, 'the-component'))
-        .to.be.a.directory()
-        .with.subDirs(['1.0'])
-      expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
-        .to.be.a.file()
-        .with.contents.that.match(/:: the-site<\/title>/)
-    })
+      runAntora('--stacktrace generate --title site-title my-antora-playbook --quiet').on('exit', resolve)
+    )
+      .then((exitCode) => {
+        expect(exitCode).to.equal(0)
+        expect(absDestDir)
+          .to.be.a.directory()
+          .with.subDirs(['_', 'the-component'])
+        expect(ospath.join(absDestDir, 'the-component'))
+          .to.be.a.directory()
+          .with.subDirs(['1.0'])
+        expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
+          .to.be.a.file()
+          .with.contents.that.match(/:: site-title<\/title>/)
+      })
+      .finally(() => {
+        fs.unlinkSync(myPlaybookFile)
+      })
   }).timeout(timeoutOverride)
 
   it('should generate site to output directory when absolute playbook file is passed to generate command', () => {
@@ -478,7 +495,7 @@ describe('cli', function () {
       expect(absCacheDir).to.not.be.a.path()
       // Q: how do we assert w/ kapok when there's no output; use promise as workaround
       return new Promise((resolve) =>
-        runAntora(['generate', 'the-site', '--cache-dir', '.antora-cache-override']).on('exit', resolve)
+        runAntora(['generate', 'antora-playbook', '--cache-dir', '.antora-cache-override']).on('exit', resolve)
       ).then((exitCode) => {
         expect(exitCode).to.equal(0)
         expect(absCacheDir)
@@ -501,7 +518,7 @@ describe('cli', function () {
       expect(absCacheDir).to.not.be.a.path()
       // Q: how do we assert w/ kapok when there's no output; use promise as workaround
       return new Promise((resolve) =>
-        runAntora('generate the-site', { ANTORA_CACHE_DIR: '.antora-cache-override' }).on('exit', resolve)
+        runAntora('generate antora-playbook', { ANTORA_CACHE_DIR: '.antora-cache-override' }).on('exit', resolve)
       ).then((exitCode) => {
         expect(exitCode).to.equal(0)
         expect(absCacheDir)
@@ -523,7 +540,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) =>
-      runAntora(['generate', 'the-site', '--title', 'Awesome Docs', '--silent']).on('exit', resolve)
+      runAntora(['generate', 'antora-playbook', '--title', 'Awesome Docs', '--silent']).on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
@@ -536,7 +553,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const env = { ...process.env, URL: 'https://docs.example.com' }
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
-    return new Promise((resolve) => runAntora('generate the-site --quiet', env).on('exit', resolve)).then(
+    return new Promise((resolve) => runAntora('generate antora-playbook --quiet', env).on('exit', resolve)).then(
       (exitCode) => {
         expect(exitCode).to.equal(0)
         expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
@@ -550,7 +567,7 @@ describe('cli', function () {
     playbookSpec.site.keys = { google_analytics: 'UA-12345-1' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // NOTE we're treating hyphens and underscores in the key name as equivalent
-    const args = ['generate', 'the-site', '--key', 'foo=bar', '--key', 'google-analytics=UA-67890-1']
+    const args = ['generate', 'antora-playbook', '--key', 'foo=bar', '--key', 'google-analytics=UA-67890-1']
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)
@@ -563,7 +580,7 @@ describe('cli', function () {
   it('should remap legacy --google-analytics-key option', () => {
     playbookSpec.site.keys = { google_analytics: 'UA-12345-1' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['generate', 'the-site', '--google-analytics-key', 'UA-67890-1']
+    const args = ['generate', 'antora-playbook', '--google-analytics-key', 'UA-67890-1']
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)
@@ -576,7 +593,7 @@ describe('cli', function () {
   it('should pass attributes defined using options to AsciiDoc processor', () => {
     playbookSpec.asciidoc = { attributes: { idprefix: '' } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['generate', 'the-site', '--attribute', 'sectanchors=~', '--attribute', 'experimental', '--quiet']
+    const args = 'generate antora-playbook --attribute sectanchors=~ --attribute experimental --quiet'.split(' ')
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)
@@ -592,7 +609,7 @@ describe('cli', function () {
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     // TODO once we have common options, we'll need to be sure they get moved before the default command
     return new Promise((resolve) =>
-      runAntora('the-site.json --url https://docs.example.com --quiet').on('exit', resolve)
+      runAntora('antora-playbook --url https://docs.example.com --quiet').on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
@@ -606,7 +623,7 @@ describe('cli', function () {
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     // TODO once we have common options, we'll need to be sure they get moved before the default command
     return new Promise((resolve) =>
-      runAntora('--title=#allthedocs --url=https://docs.example.com --quiet the-site.json').on('exit', resolve)
+      runAntora('--title=#allthedocs --url=https://docs.example.com --quiet antora-playbook').on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
@@ -620,7 +637,7 @@ describe('cli', function () {
     const generator = ospath.resolve(FIXTURES_DIR, 'simple-generator')
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return new Promise((resolve) =>
-      runAntora(`generate the-site.json --generator ${generator}`).on('exit', resolve)
+      runAntora(`generate antora-playbook --generator ${generator}`).on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, '418.html'))
@@ -632,7 +649,7 @@ describe('cli', function () {
   it('should use the generator specified in playbook', () => {
     playbookSpec.antora = { generator: ospath.resolve(FIXTURES_DIR, 'simple-generator') }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return new Promise((resolve) => runAntora('generate the-site.json').on('exit', resolve)).then((exitCode) => {
+    return new Promise((resolve) => runAntora('generate antora-playbook').on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, '418.html'))
         .to.be.a.file()
@@ -646,7 +663,7 @@ describe('cli', function () {
     fs.writeFileSync(residualFile, '<!DOCTYPE html><html><body>contents</body></html>')
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
-    return new Promise((resolve) => runAntora('generate the-site.json --clean --quiet').on('exit', resolve)).then(
+    return new Promise((resolve) => runAntora('generate antora-playbook --clean --quiet').on('exit', resolve)).then(
       (exitCode) => {
         expect(exitCode).to.equal(0)
         expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file()
@@ -662,7 +679,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) =>
-      runAntora(['generate', 'the-site.json', '--to-dir', betaDestDir, '--quiet']).on('exit', resolve)
+      runAntora(['generate', 'antora-playbook', '--to-dir', betaDestDir, '--quiet']).on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(absBetaDestDir).to.be.a.directory()
@@ -706,7 +723,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     // NOTE --log-format=pretty only required if playbook is built before scripts are required
-    return runAntora('-r no-such-module generate --log-format=pretty the-site')
+    return runAntora('-r no-such-module generate --log-format=pretty antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): Cannot find module/)
       .done()
   })
@@ -717,7 +734,7 @@ describe('cli', function () {
     playbookSpec.content.sources.unshift({ url: url.replace('//', '//git@'), branches: 'v1.0', start_path: 'invalid' })
     playbookSpec.git = { fetch_concurrency: 1 }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['generate', '--fetch', 'the-site']
+    const args = ['generate', '--fetch', 'antora-playbook']
     const messages = []
     return new Promise((resolve) =>
       runAntora(args)
@@ -732,7 +749,7 @@ describe('cli', function () {
 
   it('should show error message if site generator cannot be found', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['--stacktrace', 'generate', 'the-site', '--generator', 'no-such-module']
+    const args = ['--stacktrace', 'generate', 'antora-playbook', '--generator', 'no-such-module']
     const messages = []
     return new Promise((resolve) =>
       runAntora(args)
@@ -753,7 +770,7 @@ describe('cli', function () {
     fs.writeFileSync(ospath.join(localModulePath, 'index.js'), 'throw false')
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['--stacktrace', 'generate', 'the-site', '--generator', '.:@antora/site-generator-default']
+    const args = ['--stacktrace', 'generate', 'antora-playbook', '--generator', '.:@antora/site-generator-default']
     const messages = []
     return new Promise((resolve) =>
       runAntora(args)
@@ -774,7 +791,7 @@ describe('cli', function () {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-stop-before-publish.js'))
     playbookSpec.antora = { extensions: [ext] }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return new Promise((resolve) => runAntora('the-site').on('exit', resolve)).then((exitCode) => {
+    return new Promise((resolve) => runAntora('antora-playbook').on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(absDestDir).to.not.be.a.path()
     })
@@ -784,7 +801,7 @@ describe('cli', function () {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-stop-before-publish.js'))
     playbookSpec.antora = { extensions: [{ require: ext, exit_code: 2 }] }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    return new Promise((resolve) => runAntora('the-site').on('exit', resolve)).then((exitCode) => {
+    return new Promise((resolve) => runAntora('antora-playbook').on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(2)
       expect(absDestDir).to.not.be.a.path()
     })
@@ -796,7 +813,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
-      runAntora('generate the-site')
+      runAntora('generate antora-playbook')
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -815,7 +832,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
-      runAntora('generate the-site')
+      runAntora('generate antora-playbook')
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -833,7 +850,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
-      runAntora(`generate -r ${ext} --stacktrace --log-failure-level=none the-site`)
+      runAntora(`generate -r ${ext} --stacktrace --log-failure-level=none antora-playbook`)
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -854,7 +871,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
-      runAntora('generate --silent the-site')
+      runAntora('generate --silent antora-playbook')
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -869,7 +886,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
-      runAntora(`generate -r ${ext} --stacktrace --log-level=silent the-site`)
+      runAntora(`generate -r ${ext} --stacktrace --log-level=silent antora-playbook`)
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -882,7 +899,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const r1 = ospath.resolve(FIXTURES_DIR, 'warming-up.js')
     const r2 = '.' + ospath.sep + ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-postprocessor'))
-    const args = ['--require', r1, '-r', r2, 'generate', 'the-site', '--quiet']
+    const args = ['--require', r1, '-r', r2, 'generate', 'antora-playbook', '--quiet']
     const messages = []
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) =>
@@ -911,7 +928,7 @@ describe('cli', function () {
       },
     }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['generate', 'the-site']
+    const args = ['generate', 'antora-playbook']
     const messages = []
     const logFile = ospath.join(WORK_DIR, buildDir, 'antora.log')
     return new Promise((resolve) =>
@@ -941,7 +958,7 @@ describe('cli', function () {
     }
     playbookSpec.output = { destinations: [{ provider: 's3' }] }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['generate', '--log-format=json', 'the-site']
+    const args = ['generate', '--log-format=json', 'antora-playbook']
     const messages = []
     const logFile = ospath.join(WORK_DIR, buildDir, 'antora.log')
     return new Promise((resolve) =>
@@ -967,7 +984,7 @@ describe('cli', function () {
     const requirePath = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
     const messages = []
     return new Promise((resolve) =>
-      runAntora(['generate', 'the-site', '-r', requirePath, '--quiet'])
+      runAntora(['generate', 'antora-playbook', '-r', requirePath, '--quiet'])
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -986,7 +1003,7 @@ describe('cli', function () {
       const requirePath = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
       const messages = []
       return new Promise((resolve) =>
-        runAntora(['generate', 'the-site', '--quiet'], { NODE_OPTIONS: `-r "${requirePath}"` })
+        runAntora(['generate', 'antora-playbook', '--quiet'], { NODE_OPTIONS: `-r "${requirePath}"` })
           .on('data', (data) => messages.push(data.message))
           .on('exit', resolve)
       ).then((exitCode) => {
@@ -1004,7 +1021,7 @@ describe('cli', function () {
     const requirePath = ospath.resolve(FIXTURES_DIR, 'use-logger.js')
     const messages = []
     return new Promise((resolve) =>
-      runAntora(['generate', '-r', requirePath, '--log-level', 'info', 'the-site', '--quiet'])
+      runAntora(['generate', '-r', requirePath, '--log-level', 'info', 'antora-playbook', '--quiet'])
         .on('data', (data) => messages.push(data.message))
         .on('exit', resolve)
     ).then((exitCode) => {
@@ -1018,7 +1035,7 @@ describe('cli', function () {
   it('should allow require script to replace base html5 converter that Antora extends', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const r1 = ospath.resolve(FIXTURES_DIR, 'custom-html5-converter.js')
-    const args = ['--require', r1, 'generate', 'the-site', '--quiet']
+    const args = ['--require', r1, 'generate', 'antora-playbook', '--quiet']
     return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))

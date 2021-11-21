@@ -53,9 +53,9 @@ describe('generateSite()', function () {
   }
 
   before(async () => {
-    destDir = '_site'
+    destDir = 'public'
     absDestDir = ospath.join(WORK_DIR, destDir)
-    playbookFile = ospath.join(WORK_DIR, 'the-site.json')
+    playbookFile = ospath.join(WORK_DIR, 'antora-playbook.json')
     gitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })
     const gitServerPort = await new Promise((resolve, reject) =>
       gitServer.listen(0, function (err) {
