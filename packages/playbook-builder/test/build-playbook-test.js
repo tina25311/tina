@@ -209,8 +209,9 @@ describe('buildPlaybook()', () => {
 
   it('should not show details in error message if input path of playbook file matches resolved path', () => {
     const playbookFilePath = ospath.resolve('non-existent/file.yml')
+    const unexpectedMessage = `playbook file not found at ${playbookFilePath} (`
     const expectedMessage = `playbook file not found at ${playbookFilePath}`
-    // FIXME: technically this does not assert that the details are absent
+    expect(() => buildPlaybook([], { PLAYBOOK: playbookFilePath }, schema)).to.not.throw(unexpectedMessage)
     expect(() => buildPlaybook([], { PLAYBOOK: playbookFilePath }, schema)).to.throw(expectedMessage)
   })
 
