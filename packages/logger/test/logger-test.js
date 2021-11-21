@@ -264,6 +264,16 @@ describe('logger', () => {
       expect(messages[0]).to.eql(expectedData)
     })
 
+    it('should not reshape object if file property is not an object', () => {
+      const logObject = { file: 'config.yml' }
+      const name = 'foobar'
+      const logger = get(name)
+      const messages = captureStdoutLogSync(() => logger.warn(logObject, 'duplicate entry'))
+      expect(messages).to.have.lengthOf(1)
+      const expectedData = { level: 'warn', name, file: 'config.yml', msg: 'duplicate entry' }
+      expect(messages[0]).to.eql(expectedData)
+    })
+
     it('should reshape the file object from worktree', () => {
       const name = 'foobar'
       const logger = get(name)

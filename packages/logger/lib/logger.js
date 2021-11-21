@@ -68,10 +68,10 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
             const { message, ...err } = this[serializersSym].err(arg0)
             args[0] = Object.assign(err, { type: 'Error' })
             if (message && args[1] === undefined) args[1] = message
-          } else if (arg0.constructor === Object) {
+          } else if (arg0.constructor === Object && typeof arg0.file === 'object') {
             const { file, line, stack, ...obj } = arg0
             // NOTE assume file key is a file.src object
-            args[0] = file ? Object.assign(obj, reshapeFileForLog(arg0)) : obj
+            args[0] = Object.assign(obj, reshapeFileForLog(arg0))
           }
           method.apply(this, args)
         },
