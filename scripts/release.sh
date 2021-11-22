@@ -61,13 +61,13 @@ done
 # release!
 npm -v
 if case $RELEASE_VERSION in major|minor|patch) ;; *) false;; esac; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --no-verify-access --yes
 elif case $RELEASE_VERSION in pre*) ;; *) false;; esac; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=testing} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=testing} --no-verify-access --yes
 elif [ -z $RELEASE_NPM_TAG ] && [ "$RELEASE_VERSION" != "${RELEASE_VERSION/-/}" ]; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=testing --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=testing --no-verify-access --yes
 else
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --yes
+  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --no-verify-access --yes
 fi
 
 exit_code=$?
