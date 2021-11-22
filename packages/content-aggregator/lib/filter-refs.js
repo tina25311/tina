@@ -3,6 +3,8 @@
 const { compile: bracesToGroup } = require('braces')
 const { makeRe: makePicomatchRx } = require('picomatch')
 
+const MATCH_ALL_RX = { test: () => true }
+
 function getPicomatchOpts (cache) {
   return {
     bash: true,
@@ -21,7 +23,7 @@ function getPicomatchOpts (cache) {
 }
 
 function compileRx (pattern, opts) {
-  if (pattern === '*' || pattern === '**') return { test: () => true }
+  if (pattern === '*' || pattern === '**') return MATCH_ALL_RX
   return pattern.charAt() === '!' // do our own negate
     ? Object.defineProperty(makePicomatchRx(pattern.substr(1), opts), 'negated', { value: true })
     : makePicomatchRx(pattern, opts)
@@ -34,16 +36,18 @@ function createMatcher (patterns, cache) {
       cache.get(pattern) ||
       cache.set(pattern, compileRx(pattern, opts || (opts = getPicomatchOpts(cache)))).get(pattern)
   )
+  if (rxs[0].negated) rxs.unshift(MATCH_ALL_RX)
   return (candidate) => {
-    let first = true
     let matched
     for (const rx of rxs) {
+      let voteIfMatched = true
       if (matched) {
-        if (rx.negated && rx.test(candidate)) return
-      } else if (first || !rx.negated) {
-        matched = rx.test(candidate)
+        if (!rx.negated) continue
+        voteIfMatched = false
+      } else if (rx.negated) {
+        continue
       }
-      first = false
+      if (rx.test(candidate)) matched = voteIfMatched
     }
     return matched
   }
