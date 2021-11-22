@@ -1399,6 +1399,46 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
     })
 
+    // notice that this use getByPath even though it's technically a resource ID
+    it('should resolve ./ relative target of nested include relative to current file', () => {
+      const outerIncludeContents = 'include::./deeply/nested.adoc[]'
+      const nestedIncludeContents = 'All that is nested is not lost.'
+      const contentCatalog = mockContentCatalog([
+        {
+          family: 'partial',
+          relative: 'outer.adoc',
+          contents: outerIncludeContents,
+        },
+        {
+          family: 'partial',
+          relative: 'deeply/nested.adoc',
+          contents: nestedIncludeContents,
+        },
+      ]).spyOn('getById', 'getByPath')
+      setInputFileContents('include::partial$outer.adoc[]')
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(contentCatalog.getById)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '',
+          module: 'module-a',
+          family: 'partial',
+          relative: 'outer.adoc',
+        })
+      expect(contentCatalog.getByPath)
+        .nth(1)
+        .called.with({
+          component: 'component-a',
+          version: '',
+          path: 'modules/module-a/pages/_partials/deeply/nested.adoc',
+        })
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('paragraph')
+      expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
+    })
+
     it('should skip nested include directive if target cannot be resolved relative to current file', () => {
       const outerIncludeContents = 'include::deeply/nested.adoc[]'
       const contentCatalog = mockContentCatalog({
@@ -1531,6 +1571,50 @@ describe('loadAsciiDoc()', () => {
 
     it('should resolve relative target of nested include in separate component relative to current file', () => {
       const outerIncludeContents = 'include::deeply/nested.adoc[]'
+      const nestedIncludeContents = 'All that is nested is not lost.'
+      const contentCatalog = mockContentCatalog([
+        {
+          component: 'component-b',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'outer.adoc',
+          contents: outerIncludeContents,
+        },
+        {
+          component: 'component-b',
+          module: 'ROOT',
+          family: 'partial',
+          relative: 'deeply/nested.adoc',
+          contents: nestedIncludeContents,
+        },
+      ]).spyOn('resolveResource', 'getByPath')
+      setInputFileContents('include::component-b::partial$outer.adoc[]')
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(contentCatalog.resolveResource)
+        .nth(1)
+        .called.with('component-b::partial$outer.adoc', {
+          component: inputFile.src.component,
+          version: inputFile.src.version,
+          module: inputFile.src.module,
+          family: 'page',
+          relative: 'page-a.adoc',
+        })
+      expect(contentCatalog.getByPath)
+        .nth(1)
+        .called.with({
+          component: 'component-b',
+          version: '',
+          path: 'modules/ROOT/pages/_partials/deeply/nested.adoc',
+        })
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('paragraph')
+      expect(firstBlock.getSourceLines()).to.eql([nestedIncludeContents])
+    })
+
+    // notice that this use getByPath even though it's technically a resource ID
+    it('should resolve ./ relative target of nested include in separate component relative to current file', () => {
+      const outerIncludeContents = 'include::./deeply/nested.adoc[]'
       const nestedIncludeContents = 'All that is nested is not lost.'
       const contentCatalog = mockContentCatalog([
         {
