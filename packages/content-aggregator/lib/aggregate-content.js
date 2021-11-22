@@ -272,99 +272,100 @@ async function selectReferences (source, repo, remote) {
   const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
   const noWorktree = repo.url ? undefined : null
   const refs = new Map()
-  if (tagPatterns) {
-    tagPatterns = Array.isArray(tagPatterns)
+  if (
+    tagPatterns &&
+    (tagPatterns = Array.isArray(tagPatterns)
       ? tagPatterns.map((pattern) => String(pattern))
-      : splitRefPatterns(String(tagPatterns))
-    if (tagPatterns.length) {
-      const tags = await git.listTags(repo)
-      for (const shortname of tags.length ? filterRefs(tags, tagPatterns, patternCache) : tags) {
+      : splitRefPatterns(String(tagPatterns))).length
+  ) {
+    const tags = await git.listTags(repo)
+    if (tags.length) {
+      for (const shortname of filterRefs(tags, tagPatterns, patternCache)) {
         // NOTE tags are stored using symbol keys to distinguish them from branches
         refs.set(Symbol(shortname), { shortname, fullname: 'tags/' + shortname, type: 'tag', head: noWorktree })
       }
     }
   }
-  if (branchPatterns) {
-    if (worktreePatterns) {
-      if (worktreePatterns === '.') {
-        worktreePatterns = ['.']
-      } else if (worktreePatterns === true) {
-        worktreePatterns = ['.', '*']
-      } else {
-        worktreePatterns = Array.isArray(worktreePatterns)
-          ? worktreePatterns.map((pattern) => String(pattern))
-          : splitRefPatterns(String(worktreePatterns))
-      }
-    }
-    const branchPatternsString = String(branchPatterns)
-    if (branchPatternsString === 'HEAD' || branchPatternsString === '.') {
-      const currentBranch = await getCurrentBranchName(repo, remote)
-      if (currentBranch) {
-        branchPatterns = [currentBranch]
-      } else {
-        if (!isBare) {
-          // NOTE current branch is undefined when HEAD is detached
-          const head = worktreePatterns[0] === '.' ? repo.dir : noWorktree
-          refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true, head })
-        }
-        return [...refs.values()]
-      }
-    } else if (
-      (branchPatterns = Array.isArray(branchPatterns)
-        ? branchPatterns.map((pattern) => String(pattern))
-        : splitRefPatterns(branchPatternsString)).length
-    ) {
-      let headBranchIdx
-      // NOTE we can assume at least two entries if HEAD or . are present
-      if (~(headBranchIdx = branchPatterns.indexOf('HEAD')) || ~(headBranchIdx = branchPatterns.indexOf('.'))) {
-        const currentBranch = await getCurrentBranchName(repo, remote)
-        if (currentBranch) {
-          // NOTE ignore if current branch is already in list
-          if (~branchPatterns.indexOf(currentBranch)) {
-            branchPatterns.splice(headBranchIdx, 1)
-          } else {
-            branchPatterns[headBranchIdx] = currentBranch
-          }
-        } else {
-          if (!isBare) {
-            let head = noWorktree
-            if (worktreePatterns[0] === '.') {
-              worktreePatterns = worktreePatterns.slice(1)
-              head = repo.dir
-            }
-            // NOTE current branch is undefined when HEAD is detached
-            refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true, head })
-          }
-          branchPatterns.splice(headBranchIdx, 1)
-        }
-      }
+  if (!branchPatterns) return [...refs.values()]
+  if (worktreePatterns) {
+    if (worktreePatterns === '.') {
+      worktreePatterns = ['.']
+    } else if (worktreePatterns === true) {
+      worktreePatterns = ['.', '*']
     } else {
+      worktreePatterns = Array.isArray(worktreePatterns)
+        ? worktreePatterns.map((pattern) => String(pattern))
+        : splitRefPatterns(String(worktreePatterns))
+    }
+  }
+  const branchPatternsString = String(branchPatterns)
+  if (branchPatternsString === 'HEAD' || branchPatternsString === '.') {
+    const currentBranch = await getCurrentBranchName(repo, remote)
+    if (currentBranch) {
+      branchPatterns = [currentBranch]
+    } else if (isBare) {
+      return [...refs.values()]
+    } else {
+      // NOTE current branch is undefined when HEAD is detached
+      const head = worktreePatterns[0] === '.' ? repo.dir : noWorktree
+      refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true, head })
       return [...refs.values()]
     }
-    // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
-    const remoteBranches = (await git.listBranches(Object.assign({ remote }, repo))).filter((it) => it !== 'HEAD')
-    if (remoteBranches.length) {
-      for (const shortname of filterRefs(remoteBranches, branchPatterns, patternCache)) {
-        const fullname = 'remotes/' + remote + '/' + shortname
-        refs.set(shortname, { shortname, fullname, type: 'branch', remote, head: noWorktree })
+  } else if (
+    (branchPatterns = Array.isArray(branchPatterns)
+      ? branchPatterns.map((pattern) => String(pattern))
+      : splitRefPatterns(branchPatternsString)).length
+  ) {
+    let headBranchIdx
+    // NOTE we can assume at least two entries if HEAD or . are present
+    if (~(headBranchIdx = branchPatterns.indexOf('HEAD')) || ~(headBranchIdx = branchPatterns.indexOf('.'))) {
+      const currentBranch = await getCurrentBranchName(repo, remote)
+      if (currentBranch) {
+        // NOTE ignore if current branch is already in list
+        if (~branchPatterns.indexOf(currentBranch)) {
+          branchPatterns.splice(headBranchIdx, 1)
+        } else {
+          branchPatterns[headBranchIdx] = currentBranch
+        }
+      } else if (isBare) {
+        branchPatterns.splice(headBranchIdx, 1)
+      } else {
+        let head = noWorktree
+        if (worktreePatterns[0] === '.') {
+          worktreePatterns = worktreePatterns.slice(1)
+          head = repo.dir
+        }
+        // NOTE current branch is undefined when HEAD is detached
+        refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true, head })
+        branchPatterns.splice(headBranchIdx, 1)
       }
     }
-    // NOTE only consider local branches if repo has a worktree or there are no remote tracking branches
-    if (!isBare) {
-      const localBranches = await git.listBranches(repo)
-      if (localBranches.length) {
-        const worktrees = await findWorktrees(repo, worktreePatterns)
-        for (const shortname of filterRefs(localBranches, branchPatterns, patternCache)) {
-          const head = worktrees.get(shortname) || noWorktree
-          refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head })
-        }
+  } else {
+    return [...refs.values()]
+  }
+  // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
+  const remoteBranches = (await git.listBranches(Object.assign({ remote }, repo))).filter((it) => it !== 'HEAD')
+  if (remoteBranches.length) {
+    for (const shortname of filterRefs(remoteBranches, branchPatterns, patternCache)) {
+      const fullname = 'remotes/' + remote + '/' + shortname
+      refs.set(shortname, { shortname, fullname, type: 'branch', remote, head: noWorktree })
+    }
+  }
+  // NOTE only consider local branches if repo has a worktree or there are no remote tracking branches
+  if (!isBare) {
+    const localBranches = await git.listBranches(repo)
+    if (localBranches.length) {
+      const worktrees = await findWorktrees(repo, worktreePatterns)
+      for (const shortname of filterRefs(localBranches, branchPatterns, patternCache)) {
+        const head = worktrees.get(shortname) || noWorktree
+        refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head })
       }
-    } else if (!remoteBranches.length) {
-      const localBranches = await git.listBranches(repo)
-      if (localBranches.length) {
-        for (const shortname of filterRefs(localBranches, branchPatterns, patternCache)) {
-          refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head: noWorktree })
-        }
+    }
+  } else if (!remoteBranches.length) {
+    const localBranches = await git.listBranches(repo)
+    if (localBranches.length) {
+      for (const shortname of filterRefs(localBranches, branchPatterns, patternCache)) {
+        refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head: noWorktree })
       }
     }
   }
