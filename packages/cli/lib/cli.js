@@ -15,7 +15,7 @@ async function run (argv = process.argv) {
 function exitWithError (err, opts, msg = undefined) {
   const { getLogger, configureLogger } = requireLogger()
   let errMessage = String(
-    (err instanceof Error ? err.message : Object.assign((err = new Error(String(err))), { stack: undefined }).message)
+    err instanceof Error ? err.message : Object.assign((err = new Error(String(err))), { stack: undefined }).message
   )
   const name = errMessage.startsWith('asciidoctor: FAILED: ')
     ? (errMessage = errMessage.slice(21)) && 'asciidoctor'
