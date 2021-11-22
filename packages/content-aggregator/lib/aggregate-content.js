@@ -1020,7 +1020,7 @@ function findWorktrees (repo, patterns) {
   return (patterns.length
     ? fsp
       .readdir((worktreesDir = ospath.join(repo.dir, '.git', 'worktrees')))
-      .then((worktreeNames) => filterRefs(worktreeNames, [...patterns], patternCache), invariably.emptyArray)
+      .then((worktreeNames) => filterRefs(worktreeNames, patterns, patternCache), invariably.emptyArray)
       .then((worktreeNames) =>
         worktreeNames.length
           ? Promise.all(
