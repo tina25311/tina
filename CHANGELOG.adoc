@@ -20,6 +20,7 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Continue processing entries after exclusion in refname patterns (branches, tags, worktrees)
 * *content-aggregator*: Properly expand brace expressions in version pattern that contain multi-digit numbers and/or a step
+* *cli*: Use existing non-zero exit code if log failure level is met (#883)
 * *cli*: Don't overwrite message on unhandled error
 * *cli*: Remove message from stack if it matches message on error
 

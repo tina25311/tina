@@ -870,6 +870,27 @@ describe('cli', function () {
     })
   }).timeout(timeoutOverride)
 
+  it('should exit with existing non-zero exit code if log failure level is reached', async () => {
+    const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-stop-before-publish.js'))
+    playbookSpec.antora = { extensions: [{ require: ext, exit_code: 2 }] }
+    playbookSpec.content.sources[0].branches = 'v1.0-broken'
+    playbookSpec.runtime = { log: { failure_level: 'warn' } }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora('generate antora-playbook')
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(2)
+      expect(messages).to.have.lengthOf(1)
+      const message = messages[0]
+      expect(message).to.include('{"')
+      const { time, ...parsedMessage } = JSON.parse(message)
+      expect(parsedMessage.msg).to.eql('skipping reference to missing attribute: no-such-attribute')
+    })
+  }).timeout(timeoutOverride)
+
   it('should exit with status code 0 if error is thrown but log failure level is not reached', async () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-fail-tree-processor'))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
