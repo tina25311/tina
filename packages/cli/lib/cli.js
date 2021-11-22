@@ -50,7 +50,7 @@ function exitWithError (err, opts, msg = undefined) {
 function exit () {
   return requireLogger()
     .finalizeLogger()
-    .then((failOnExit) => process.exit(failOnExit ? 1 : process.exitCode))
+    .then((failOnExit) => process.exit(process.exitCode || (failOnExit ? 1 : 0)))
 }
 
 function getTTYColumns () {
