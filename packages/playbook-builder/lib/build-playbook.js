@@ -25,45 +25,44 @@ const ospath = require('path')
  *   config before validating it.
  *
  * @returns {Object} A playbook object containing a hierarchical structure that
- *   mirrors the configuration schema. With the exception of the top-level asciidoc
- *   key and its descendants, all keys in the playbook are camelCased.
+ *   mirrors the configuration schema. With the exception of keys and descendants
+ *   marked in the schema as preserve, all keys in the playbook are camelCased.
  */
 function buildPlaybook (args = [], env = {}, schema = undefined, beforeValidate = undefined) {
   const config = loadConvictConfig(args, env, schema)
-  const relSpecFilePath = config.get('playbook')
-  let absSpecFilePath
-  if (relSpecFilePath) {
-    absSpecFilePath = ospath.resolve(relSpecFilePath)
-    if (ospath.extname(absSpecFilePath)) {
-      if (!fs.existsSync(absSpecFilePath)) {
-        throw new Error(`playbook file not found at ${absSpecFilePath}${getDetails(relSpecFilePath, absSpecFilePath)}`)
+  const playbook = config.get('playbook')
+  let absPlaybookPath
+  if (playbook) {
+    if (ospath.extname((absPlaybookPath = ospath.resolve(playbook)))) {
+      if (!fs.existsSync(absPlaybookPath)) {
+        throw new Error(`playbook file not found at ${absPlaybookPath}${getDetails(playbook, absPlaybookPath)}`)
       }
-    } else if (fs.existsSync(absSpecFilePath + '.yml')) {
-      absSpecFilePath += '.yml'
-    } else if (fs.existsSync(absSpecFilePath + '.json')) {
-      absSpecFilePath += '.json'
-    } else if (fs.existsSync(absSpecFilePath + '.toml')) {
-      absSpecFilePath += '.toml'
+    } else if (fs.existsSync(absPlaybookPath + '.yml')) {
+      absPlaybookPath += '.yml'
+    } else if (fs.existsSync(absPlaybookPath + '.json')) {
+      absPlaybookPath += '.json'
+    } else if (fs.existsSync(absPlaybookPath + '.toml')) {
+      absPlaybookPath += '.toml'
     } else {
       throw new Error(
-        `playbook file not found at ${absSpecFilePath}.yml, ${absSpecFilePath}.json, or ${absSpecFilePath}.toml` +
-          getDetails(relSpecFilePath, absSpecFilePath)
+        `playbook file not found at ${absPlaybookPath}.yml, ${absPlaybookPath}.json, or ${absPlaybookPath}.toml` +
+          getDetails(playbook, absPlaybookPath)
       )
     }
   }
   try {
-    if (relSpecFilePath) {
-      config.loadFile(absSpecFilePath)
-      if (absSpecFilePath !== relSpecFilePath) config.set('playbook', absSpecFilePath)
+    if (playbook) {
+      config.loadFile(absPlaybookPath)
+      if (playbook !== absPlaybookPath) config.set('playbook', absPlaybookPath)
     }
     const beforeValidateFromSchema = config._def[Symbol.for('convict.beforeValidate')]
     if (beforeValidateFromSchema) beforeValidateFromSchema(config)
     if (beforeValidate) beforeValidate(config)
     return config.getModel()
   } catch (err) {
-    if (!relSpecFilePath) throw err
-    const message = err.message.replace(/( in the schema)?$/m, (_, inSchema) => {
-      return `${inSchema ? inSchema + ' for' : ' in'} ${absSpecFilePath}${getDetails(relSpecFilePath, absSpecFilePath)}`
+    if (!playbook) throw err
+    const message = err.message.replace(/( in the schema)?$/m, (_, inTheSchema) => {
+      return `${inTheSchema ? inTheSchema + ' for' : ' in'} ${absPlaybookPath}${getDetails(playbook, absPlaybookPath)}`
     })
     throw Object.assign(err, { message })
   }
@@ -109,9 +108,9 @@ function deepFreeze (o) {
   return Object.freeze(o)
 }
 
-function getDetails (relSpecFilePath, absSpecFilePath) {
-  if (relSpecFilePath === absSpecFilePath) return ''
-  return ` (${ospath.isAbsolute(relSpecFilePath) ? '' : 'cwd: ' + process.cwd() + ', '}playbook: ${relSpecFilePath})`
+function getDetails (playbook, absPlaybookPath) {
+  if (playbook === absPlaybookPath) return ''
+  return ` (${ospath.isAbsolute(playbook) ? '' : 'cwd: ' + process.cwd() + ', '}playbook: ${playbook})`
 }
 
 module.exports = Object.assign(buildPlaybook, { defaultSchema })
