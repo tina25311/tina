@@ -1,5 +1,7 @@
 'use strict'
 
+const { compile: bracesToGroup } = require('braces')
+
 module.exports = Object.freeze({
   COMPONENT_DESC_FILENAME: 'antora.yml',
   CONTENT_CACHE_FOLDER: 'content',
@@ -13,6 +15,7 @@ module.exports = Object.freeze({
     bash: true,
     dot: true,
     fastpaths: false,
+    expandRange: (begin, end, step, opts) => bracesToGroup(opts ? `{${begin}..${end}..${step}}` : `{${begin}..${end}}`),
     nobracket: true,
     noglobstar: true,
     nonegate: true,

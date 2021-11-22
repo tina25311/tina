@@ -388,6 +388,36 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should use version derived from refname if version pattern contains a brace range with multi-digits numbers', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('v10.0').then(() => repoBuilder.deleteBranch('main'))
+        )
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          version: { 'v({1..10}).0': '$1' },
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '10')
+      })
+    })
+
+    describe('should use version derived from refname if version pattern contains a brace range with step', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder.checkoutBranch('v3.0').then(() => repoBuilder.deleteBranch('main'))
+        )
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          version: { 'v({1..9..2}).0': '$1' },
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '3')
+      })
+    })
+
     describe('should use refname as version if component descriptor does not define version key and version pattern on content source is invalid', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
