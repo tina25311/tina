@@ -767,7 +767,7 @@ describe('cli', function () {
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
     const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
     fs.mkdirSync(localModulePath, { recursive: true })
-    fs.writeFileSync(ospath.join(localModulePath, 'index.js'), 'throw false')
+    fs.writeFileSync(ospath.join(localModulePath, 'index.js'), 'throw undefined')
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const args = ['--stacktrace', 'generate', 'antora-playbook', '--generator', '.:@antora/site-generator-default']
@@ -784,6 +784,31 @@ describe('cli', function () {
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.match(/"msg":"Generator not found or failed to load\."/)
       expect(messages[0]).to.match(/"stack":"Cause: \(no stacktrace\)"/)
+    })
+  })
+
+  it('should show error message if site generator has syntax error', () => {
+    const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
+    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
+    fs.mkdirSync(localModulePath, { recursive: true })
+    const generatorSource = 'module.exports = async (playbook) => {\n  const context = new GeneratorContext(module\n}'
+    fs.writeFileSync(ospath.join(localModulePath, 'index.js'), generatorSource)
+    fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const args = ['--stacktrace', 'generate', 'antora-playbook', '--generator', '.:@antora/site-generator-default']
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(args)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', (exitCode) => {
+          wipeSync(localNodeModules)
+          resolve(exitCode)
+        })
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.match(/"msg":"Generator not found or failed to load\."/)
+      expect(messages[0]).to.match(/"stack":"Cause: SyntaxError: missing \) after argument list\\n.*"/)
     })
   })
 

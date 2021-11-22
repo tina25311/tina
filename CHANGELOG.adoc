@@ -16,6 +16,11 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Include path of playbook file in message of any error thrown by playbook builder (#882)
 * *site-generator-default*: Rename `asciidocConfig` context variable to `siteAsciiDocConfig` to disambiguate its scope
 
+=== Fixed
+
+* *cli*: Don't overwrite message on unhandled error
+* *cli*: Remove message from stack if it matches message on error
+
 == 3.0.0-beta.2 (2021-11-16)
 
 === Added
