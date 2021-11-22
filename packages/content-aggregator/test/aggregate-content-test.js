@@ -1643,7 +1643,7 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should apply branch exclusion filter', () => {
+    describe('should apply branch exclusion filter to matched branches', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({
@@ -1655,6 +1655,48 @@ describe('aggregateContent()', function () {
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
         expect(aggregate[1]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should include all branches if filter starts with exclusion, then apply exclusion filter', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          branches: ['!main'],
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(3)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.0' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: 'v2.0' })
+        expect(aggregate[2]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should include branches after branches have been excluded', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          branches: ['v*', '!v*.0', 'v3.*'],
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
+      })
+    })
+
+    describe('should ignore exclusion if no branches have been matched by initial filter', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithBranches(repoBuilder)
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          branches: ['release/*', '!main', 'v3.*'],
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: 'v3.0' })
       })
     })
 

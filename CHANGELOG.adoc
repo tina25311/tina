@@ -18,6 +18,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *content-aggregator*: Continue processing entries after exclusion in refname patterns (branches, tags, worktrees)
 * *cli*: Don't overwrite message on unhandled error
 * *cli*: Remove message from stack if it matches message on error
 
