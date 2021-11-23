@@ -155,7 +155,7 @@ TIP: In special circumstances where the __images__-relative directory path of th
 
 When the <<target,target image>> and <<current,current page>> don't belong to the same module, you must specify the target image's xref:resource-id-coordinates.adoc#id-module[module coordinate] and xref:resource-id-coordinates.adoc#id-resource[file coordinate] in the image macro.
 
-.Module and file coordinate in image macro
+.Module and file coordinates assigned to an image macro
 [listing#ex-module-base]
 ----
 image:module:target-image-filename.ext[optional attribute] <.>
@@ -200,7 +200,7 @@ From the _colorado 5.2_ component version, shown in <<ex-co-mod>> above, let's i
 That means the source file [.path]_peak.svg_ is the target image and [.path]_willow-creek.adoc_ is the current page.
 
 <<ex-module>> shows an inline image macro in [.path]_willow-creek.adoc_ (current page) that references the image file [.path]_peak.svg_ (target image).
-When the target image doesn't belong to the same module as the current page, the module coordinate and file coordinate of the target image's resource ID needs to be entered into the image macro.
+The module and file coordinates of the target image's resource ID are assigned to the image macro.
 The [.path]_willow-creek.adoc_ page belongs to the _la-garita_ module.
 The [.path]_peak.svg_ image belongs to the _ROOT_ module.
 
@@ -230,7 +230,7 @@ As shown in <<ex-module-subdir>>, the target image's module coordinate is `la-ga
 When the <<target,target image>> and <<current,current page>> belong to different documentation components, you must specify, at a minimum, the target image's xref:resource-id-coordinates.adoc#id-component[component, module, and file coordinates] in the image macro.
 You'll almost always specify the version coordinate, too.
 
-.Version, component, module, and file coordinates in image macro
+.Version, component, module, and file coordinates assigned to an image macro
 [listing#ex-component-version-base]
 ----
 image:version@component:module:target-image-filename.ext[optional attribute] <.>
@@ -239,13 +239,13 @@ image:version@component:module:path/to/target-image-filename.ext[optional attrib
 
 image:component:module:file-coordinate-of-target-image.ext[optional attribute] <.>
 ----
-<.> The image macro is assigned the version, component, module, and file coordinates of the target image when the target image and current page don't belong to the same component versions.
+<.> The image macro is assigned the version, component, module, and file coordinates of the target image when the target image and current page don't belong to the same component version.
 The target image's file coordinate is its filename and file extension when the target image is <<images-root,stored at the root of an _images_ family directory>>.
 <.> If <<relative-path,the target image is stored in a subdirectory of an _images_ directory>>, the target image's file coordinate must specify its __images__-relative directory path, filename, and file extension.
 <.> If the version coordinate isn't specified, Antora uses the <<latest-version,latest version of the target image's component>> to complete the resource ID at runtime.
 This behavior only applies when the target image and current page belong to different docs components.
 
-Let's use the files that belong to the component version _colorado 5.2_ (<<ex-co-v>>) and the component version _wyoming 1.0_ (<<ex-wy>>) as the basis for the example in this section.
+Let's use the files that belong to the component versions _colorado 5.2_ (<<ex-co-v>>) and _wyoming 1.0_ (<<ex-wy>>) as the basis for the example in this section.
 
 .Directories and files assigned to colorado 5.2
 [listing#ex-co-v]
@@ -353,9 +353,8 @@ image::wyoming:sierra-madre:panorama.png[]
 
 When Antora runs, it will identify _wyoming 1.5_ as the latest version of the _wyoming_ component according to its xref:ROOT:how-component-versions-are-sorted.adoc#version-sorting-rules[version sorting rules] and xref:ROOT:how-component-versions-are-sorted.adoc#latest-version[latest version criteria].
 Because a version coordinate isn't specified in <<ex-across-components-latest>>, Antora will complete the resource ID assigned to the image macro using the version coordinate -- `1.5` -- of the latest _wyoming_ component.
-Remember, this behavior only applies if the target image and current page belong to different components.
 
-WARNING: This behavior of linking to the latest version only applies when the version coordinate is unspecified and the target image and current page belong to different docs components.
+WARNING: This behavior of linking to the latest version only applies when the version coordinate is unspecified and the target image and current page belong to different components.
 If the version and component coordinates aren't specified in the resource ID, Antora assumes the target image belongs to the same component version as the current page and uses the current page's version and component coordinates to complete the target image's resource ID.
 
 //[#use-image-in-different-version]
