@@ -388,6 +388,28 @@ describe('aggregateContent()', function () {
       })
     })
 
+    describe('should allow use of negated match to map all other refnames to a derived version', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
+          repoBuilder
+            .checkoutBranch('v1.0')
+            .then(() => repoBuilder.checkoutBranch('v2.0'))
+            .then(() => repoBuilder.checkoutBranch('main'))
+            .then(() => repoBuilder.addComponentDescriptor({ name: 'the-component' }))
+        )
+        playbookSpec.content.sources.push({
+          url: repoBuilder.url,
+          branches: ['v*', 'main'],
+          version: { '!main': '$&', main: 'v3.0', '*': 'fail' },
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.have.property('version', 'v1.0')
+        expect(aggregate[1]).to.have.property('version', 'v2.0')
+        expect(aggregate[2]).to.have.property('version', 'v3.0')
+      })
+    })
+
     describe('should use version derived from refname if version pattern contains a brace range with multi-digits numbers', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
