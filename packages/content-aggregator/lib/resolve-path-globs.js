@@ -3,7 +3,7 @@
 const flattenDeep = require('./flatten-deep')
 const { promises: fsp } = require('fs')
 const git = require('./git')
-const invariably = { true: () => true, false: () => false, void: () => undefined, emptyArray: () => [] }
+const invariably = require('./invariably')
 const { expandBraces, makeMatcherRx, pathMatcherOpts: MATCHER_OPTS } = require('./matcher')
 
 const NON_GLOB_SPECIAL_CHARS_RX = /[.+?^${}()|[\]\\]/g

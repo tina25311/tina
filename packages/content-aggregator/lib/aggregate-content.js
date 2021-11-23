@@ -15,7 +15,7 @@ const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
-const invariably = { false: () => false, void: () => undefined, emptyArray: () => [] }
+const invariably = require('./invariably')
 const { makeMatcherRx, versionMatcherOpts: VERSION_MATCHER_OPTS } = require('./matcher')
 const MultiProgress = require('multi-progress')
 const ospath = require('path')

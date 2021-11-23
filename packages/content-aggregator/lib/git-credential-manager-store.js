@@ -2,8 +2,8 @@
 
 const { homedir } = require('os')
 const expandPath = require('@antora/expand-path-helper')
-const invariably = { void: () => undefined }
 const { promises: fsp } = require('fs')
+const invariably = require('./invariably')
 const ospath = require('path')
 
 class GitCredentialManagerStore {
