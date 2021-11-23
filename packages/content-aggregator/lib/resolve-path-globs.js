@@ -1,32 +1,20 @@
 'use strict'
 
-const { expand: expandBraces, compile: bracesToGroup } = require('braces')
 const flattenDeep = require('./flatten-deep')
 const { promises: fsp } = require('fs')
 const git = require('./git')
 const invariably = { true: () => true, false: () => false, void: () => undefined, emptyArray: () => [] }
-const { makeRe: makePicomatchRx } = require('picomatch')
+const { expandBraces, makeMatcherRx, pathMatcherOpts: MATCHER_OPTS } = require('./matcher')
 
 const NON_GLOB_SPECIAL_CHARS_RX = /[.+?^${}()|[\]\\]/g
 const RX_MAGIC_DETECTOR = /[*{(]/
-const PICOMATCH_OPTS = {
-  bash: true,
-  expandRange: (begin, end, step, opts) => bracesToGroup(opts ? `{${begin}..${end}..${step}}` : `{${begin}..${end}}`),
-  fastpaths: false,
-  nobracket: true,
-  noglobstar: true,
-  nonegate: true,
-  noquantifiers: true,
-  regex: false,
-  strictSlashes: true,
-}
 
 function resolvePathGlobs (base, patterns, listDirents, retrievePath, tree = { path: '' }) {
   return patterns.reduce((paths, pattern) => {
     if (pattern.charAt() === '!') {
       return paths.then((resolvedPaths) => {
         if (resolvedPaths.length) {
-          const rx = makePicomatchRx(pattern.substr(1), PICOMATCH_OPTS)
+          const rx = makeMatcherRx(pattern.substr(1), MATCHER_OPTS)
           return resolvedPaths.filter((it) => !rx.test(it))
         } else {
           return resolvedPaths
@@ -49,10 +37,10 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
     if (patternSegment === '*') {
       isMatch = (it) => it.charAt() !== '.'
     } else if (~patternSegment.indexOf('(')) {
-      isMatch = (isMatch = makePicomatchRx(patternSegment, PICOMATCH_OPTS)).test.bind(isMatch)
+      isMatch = (isMatch = makeMatcherRx(patternSegment, MATCHER_OPTS)).test.bind(isMatch)
     } else if (~patternSegment.indexOf('{')) {
       if (globbed) {
-        isMatch = (isMatch = makePicomatchRx(patternSegment, PICOMATCH_OPTS)).test.bind(isMatch)
+        isMatch = (isMatch = makeMatcherRx(patternSegment, MATCHER_OPTS)).test.bind(isMatch)
       } else if (~patternSegment.indexOf('*')) {
         const [wildPatterns, literals] = expandBraces(patternSegment).reduce(
           ([wild, literal], it) => (~it.indexOf('*') ? [[...wild, it], literal] : [wild, [...literal, it]]),
@@ -64,7 +52,7 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
         return expandBraces(patternSegment).map((it) => joinPath(path, it))
       }
     } else {
-      isMatch = (isMatch = makeMatcherRx(patternSegment)).test.bind(isMatch)
+      isMatch = (isMatch = makeSingleMatcherRx(patternSegment)).test.bind(isMatch)
     }
     let dirents = await listDirents(base, oid || path)
     if (explicit) dirents = dirents.filter((dirent) => !explicit.has(dirent.name))
@@ -134,7 +122,7 @@ function makeAlternationMatcherRx (patterns) {
   return new RegExp('^(?:' + patterns.map(patternToRx).join('|') + ')$')
 }
 
-function makeMatcherRx (pattern) {
+function makeSingleMatcherRx (pattern) {
   return new RegExp('^' + patternToRx(pattern) + '$')
 }
 

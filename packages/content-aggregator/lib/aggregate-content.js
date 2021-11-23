@@ -16,7 +16,7 @@ const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
 const invariably = { false: () => false, void: () => undefined, emptyArray: () => [] }
-const { makeRe: makePicomatchRx } = require('picomatch')
+const { makeMatcherRx, versionMatcherOpts: VERSION_MATCHER_OPTS } = require('./matcher')
 const MultiProgress = require('multi-progress')
 const ospath = require('path')
 const { posix: path } = ospath
@@ -37,7 +37,6 @@ const {
   GIT_CORE,
   GIT_OPERATION_LABEL_LENGTH,
   GIT_PROGRESS_PHASES,
-  PICOMATCH_VERSION_OPTS,
   REF_PATTERN_CACHE_KEY,
   SYMLINK_FILE_MODE,
   VALID_STATE_FILENAME,
@@ -691,7 +690,7 @@ function loadComponentDescriptor (files, ref, version) {
       matched = version[refname]
     } else if (
       !Object.entries(version).some(([pattern, replacement]) => {
-        const result = refname.replace(makePicomatchRx(pattern, PICOMATCH_VERSION_OPTS), '\0' + replacement)
+        const result = refname.replace(makeMatcherRx(pattern, VERSION_MATCHER_OPTS), '\0' + replacement)
         if (result === refname) return false
         matched = result.substr(1)
         return true
