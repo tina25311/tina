@@ -1,48 +1,83 @@
-<<ex-base>> shows the structure of an include directive with a {family}'s fully qualified resource ID.
+<<ex-base>> shows the structure of an include directive with the fully qualified resource ID of {article} {family}.
 
-.Include directive and resource ID syntax
+.Include directive assigned the fully qualified resource ID of {article} {family}
 [#ex-base,subs=attributes+]
 ----
-\include::version@component:module:{coordinate}filename{ext}[]
+\include::version@component:module:{coordinate}file-coordinate-of-target-{family}{ext}[]
 ----
 
-Let's break down the AsciiDoc syntax and resource ID coordinates you need to include a {family} resource into a page.
+Let's break down the AsciiDoc include directive and resource ID coordinates you need to include {article} {family} (the target {family}) into a page (the current page).
+// tag::target-current-def[]
+[[target]]The [.term]*target {family}* is the source file of {article} {family} that's being referenced by the current page.
+The target {family} is referenced by assigning its resource ID to an include directive in the content of the current page.
+[[current]]The [.term]*current page* is the page source file containing the include directive that references the target {family}.
+// end::target-current-def[]
+The following steps assume the target {family} and current page belong to the same component version and module.
 
-The steps below assume that the target {family} and current page belong to the same component version and module, so only the xref:resource-id-coordinates.adoc#id-family[family ({coordinate})] and xref:resource-id-coordinates.adoc#id-resource[file] coordinates of the xref:resource-id-coordinates.adoc#target[target {family}] are entered in the resource ID.
-
-. On a new line, enter the name of the directive followed by two colons, `include::`.
+. In your IDE or plain text editor, open the page where you want to insert the {family}.
+. Select the line in the current page where you want the {family}'s content to be inserted.
+At the beginning of the line, enter the name of the directive followed by two colons, `include::`.
 +
+.current-page.adoc
 [listing,subs=+quotes]
 ----
 **include::**
 ----
 
-. Enter the resource ID of the target {family} file, making sure to specify the `{coordinate}` family coordinate.
+. Enter the resource ID of the target {family}.
+In this example, both the target {family} and current page belong to the same component version and module and the target {family} is stored at the root of the [.path]_{family}s_ directory.
+Therefore, only the `{coordinate}` family coordinate and filename and extension of the target {family} needs to be assigned as the value of the include directive.
 +
 --
+.current-page.adoc
 [listing,subs="attributes+,+quotes"]
 ----
-include::**{coordinate}filename{ext}**
+include::**{coordinate}target-{family}-filename{ext}**
 ----
 
-By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
+NOTE: By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
 If you forget to use the `{coordinate}` coordinate, Antora will report an error because it won't be able to find the {family}.
 --
 
-. Complete the directive with a set of square brackets (`+[]+`).
+. Directly after the resource ID of the target {family}, complete the directive with a set of square brackets (`+[]+`).
 +
+.current-page.adoc
 [listing,subs="attributes+,+quotes"]
 ----
-include::{coordinate}filename{ext}**[]**
+include::{coordinate}target-{family}-filename{ext}**[]**
 ----
 
-. The brackets can contain an optional list of attributes.
+. The brackets can contain an optional list of attributes, such as `lines`, `tag`, or `tags`.
 The attributes are entered as key-value pairs separated by commas.
 +
+.current-page.adoc
 [listing,subs="attributes+,+quotes"]
 ----
-\include::{coordinate}filename{ext}[**attribute,attribute**]
+\include::{coordinate}target-{family}-filename{ext}[**optional attribute**]
 ----
+
+That's it!
+You've finished creating an include directive that will insert the target {family} into the current page.
+
+The preceding instructions showed you how to insert {article} {family} into a page under the most common scenario--the target {family} and current page belong to the same component version and module and the target {family} is stored at the root of {article} [.path]_{family}s_ folder.
+However, the structure of the target {family}'s file coordinate varies depending on whether the target {family} is stored at the root of the [.path]_{family}s_ family directory or in a subdirectory of the [.path]_{family}s_ directory.
+
+.current-page.adoc
+[listing#ex-file,subs="attributes+"]
+----
+include::{coordinate}target-{family}-filename{ext}[] <.>
+
+include::{coordinate}path/to/target-{family}-filename{ext}[] <.>
+
+include::{coordinate}./target-{family}-filename{ext}[] <.>
+----
+<.> File coordinate of the target {family} when it's stored at the root of the [.path]_{family}s_ directory.
+<.> File coordinate of the target {family} when it's stored in a subdirectory of the [.path]_{family}s_ directory.
+<.> File coordinate of the target {family} when the target {family} and current page are stored in a subdirectory with parallel family-relative directory paths.
+_This is an advanced use case._
+
+Also, the resource ID of the target {family} needs to specify additional coordinates when the target {family} and current page don't belong to the same module or component version.
+The following sections provide examples showing the various resource ID scenarios.
 
 Antora supports filtering the lines of an example or partial by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
 Filtering by line numbers takes precedence.

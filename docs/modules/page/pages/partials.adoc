@@ -16,10 +16,10 @@ A partial is usually regular content marked up with AsciiDoc, but it isn't requi
 
 === Set up an AsciiDoc partial file
 
-. Open a new file in your preferred IDE or plain text editor.
+. Open a new file in your IDE or plain text editor.
 
 . On the first line of the file, enter your content, such as paragraph text, a table, or an attribute entry.
-In this example, let's create an admonition that's going to be used on several pages throughout the site.
+In this example, let's create an admonition that's going to be used on several pages throughout a site.
 +
 [source]
 ----
@@ -46,8 +46,8 @@ rapidly changing weather conditions.
 You've created a partial!
 Now, it's ready to be xref:include-a-partial.adoc[included in a page].
 
-[#current-page-context-and-structure]
-== Keep the current page's context and structure in mind
+[#current-context]
+== Current page context and structure
 
 As you create the content in a partial, there are certain AsciiDoc elements that you may need to adjust according to the current page's context and structure.
 A partial is converted after it's inserted into a page.
