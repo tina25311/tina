@@ -342,7 +342,7 @@ describe('cli', function () {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora(`-r ${ext} --stacktrace generate --log-format=pretty antora-playbook`)
       .assert(/^\[.+?\] FATAL \(antora\): not today!$/)
-      .assert(/^Cause: \(no stacktrace\)$/)
+      .assert(/^Cause: Error \(no stacktrace\)$/)
       .done()
   }).timeout(timeoutOverride)
 
@@ -359,9 +359,10 @@ describe('cli', function () {
       const message = messages[0]
       expect(message).to.include('{"')
       const { time, ...parsedMessage } = JSON.parse(message)
-      expect(parsedMessage.type).to.eql('Error')
       expect(parsedMessage.msg).to.match(/Failed to create .* cache directory: .* ENOTDIR: not a directory, mkdir/)
-      expect(parsedMessage.stack).to.eql('Cause: (no stacktrace)')
+      expect(parsedMessage.err.type).to.eql('Error')
+      expect(parsedMessage.err).to.not.have.property('message')
+      expect(parsedMessage.err.stack).to.eql('Error (no stacktrace)')
     })
   }).timeout(timeoutOverride)
 
@@ -758,8 +759,14 @@ describe('cli', function () {
     ).then((exitCode) => {
       expect(exitCode).to.equal(1)
       expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.match(/"msg":"Generator not found or failed to load\. Try installing .*"/)
-      expect(messages[0]).to.match(/"stack":"Cause: Error: Cannot find module 'no-such-module'.*"/)
+      const message = messages[0]
+      expect(message).to.include('{"')
+      const parsedMessage = JSON.parse(message)
+      expect(parsedMessage.msg).to.match(/^Generator not found or failed to load\. Try installing /)
+      expect(parsedMessage.err.message).to.match(/^Cannot find module 'no-such-module'/)
+      expect(parsedMessage.err.stack).to.match(/^Error\n *at /)
+      expect(parsedMessage.err.code).to.equal('MODULE_NOT_FOUND')
+      expect(parsedMessage.err).to.have.property('requireStack')
     })
   })
 
@@ -782,8 +789,13 @@ describe('cli', function () {
     ).then((exitCode) => {
       expect(exitCode).to.equal(1)
       expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.match(/"msg":"Generator not found or failed to load\."/)
-      expect(messages[0]).to.match(/"stack":"Cause: \(no stacktrace\)"/)
+      const message = messages[0]
+      expect(message).to.include('{"')
+      const parsedMessage = JSON.parse(message)
+      expect(parsedMessage.msg).to.equal('Generator not found or failed to load.')
+      expect(parsedMessage.err.type).to.equal('Error')
+      expect(parsedMessage.err.message).to.equal('undefined')
+      expect(parsedMessage.err.stack).to.equal('Error (no stacktrace)')
     })
   })
 
@@ -807,8 +819,40 @@ describe('cli', function () {
     ).then((exitCode) => {
       expect(exitCode).to.equal(1)
       expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.match(/"msg":"Generator not found or failed to load\."/)
-      expect(messages[0]).to.match(/"stack":"Cause: SyntaxError: missing \) after argument list\\n.*"/)
+      const message = messages[0]
+      expect(message).to.include('{"')
+      const parsedMessage = JSON.parse(message)
+      expect(parsedMessage.msg).to.equal('Generator not found or failed to load.')
+      expect(parsedMessage.err.type).to.equal('SyntaxError')
+      expect(parsedMessage.err.message).to.equal('missing ) after argument list')
+      expect(parsedMessage.err.stack).to.match(/^SyntaxError\n *at /)
+    })
+  })
+
+  it('should show error message in pretty log if site generator has syntax error', () => {
+    const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
+    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
+    fs.mkdirSync(localModulePath, { recursive: true })
+    const generatorSource = 'module.exports = async (playbook) => {\n  const context = new GeneratorContext(module\n}'
+    fs.writeFileSync(ospath.join(localModulePath, 'index.js'), generatorSource)
+    fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const args = '--stacktrace antora-playbook --log-format=pretty --generator .:@antora/site-generator-default'
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora(args)
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', (exitCode) => {
+          wipeSync(localNodeModules)
+          resolve(exitCode)
+        })
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      const lines = messages.join('').split('\n')
+      expect(lines[0]).to.match(/^\[.+?\] FATAL \(antora\): Generator not found or failed to load\.$/)
+      expect(lines[1]).to.match(/^ +Cause: SyntaxError: missing \) after argument list$/)
+      expect(lines[2]).to.match(/^ +at .*index\.js:2/)
+      expect(lines[3]).to.match(/^ +const context = new GeneratorContext\(module/)
     })
   })
 
@@ -905,9 +949,10 @@ describe('cli', function () {
       const message = messages[0]
       expect(message).to.include('{"')
       const { time, ...parsedMessage } = JSON.parse(message)
-      expect(parsedMessage.type).to.eql('Error')
-      expect(parsedMessage.msg).to.eql('not today!')
-      expect(parsedMessage.stack).to.eql('Cause: (no stacktrace)')
+      expect(parsedMessage.msg).to.equal('not today!')
+      expect(parsedMessage.err.type).to.equal('Error')
+      expect(parsedMessage.err).to.not.have.property('message')
+      expect(parsedMessage.err.stack).to.equal('Error (no stacktrace)')
     })
   }).timeout(timeoutOverride)
 

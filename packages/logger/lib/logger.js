@@ -6,7 +6,7 @@ const ospath = require('path')
 const { posix: path } = ospath
 const {
   levels: { labels: levelLabels, values: levelValues },
-  symbols: { serializersSym, streamSym },
+  symbols: { serializersSym: $serializers, streamSym: $stream },
   pino,
 } = require('pino')
 const pinoPretty = require('pino-pretty')
@@ -23,7 +23,7 @@ const standardStreams = { 1: 'stdout', 2: 'stderr', stderr: 2, stdout: 1 }
 function close () {
   const rootLogger = rootLoggerHolder.get() || closedLogger
   if (rootLogger.closed) return
-  const dest = Object.assign(rootLogger, closedLogger)[streamSym].stream || rootLogger[streamSym]
+  const dest = Object.assign(rootLogger, closedLogger)[$stream].stream || rootLogger[$stream]
   if (dest instanceof EventEmitter && typeof dest.end === 'function') {
     if (!(dest.fd in standardStreams)) {
       finalizers.push(once(dest, 'close').catch(() => undefined)) && dest.end()
@@ -65,9 +65,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
         logMethod (args, method) {
           const arg0 = args[0]
           if (arg0 instanceof Error) {
-            const { message, ...err } = this[serializersSym].err(arg0)
-            args[0] = Object.assign(err, { type: 'Error' })
-            if (message && args[1] === undefined) args[1] = message
+            reshapeErrorForLog(arg0, args[1], prettyPrint && this[$serializers].err).forEach((v, i) => (args[i] = v))
           } else if (arg0.constructor === Object && typeof arg0.file === 'object') {
             const { file, line, stack, ...obj } = arg0
             // NOTE assume file key is a file.src object
@@ -79,11 +77,11 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     }
     close()
     if (prettyPrint) {
-      ;(logger = pino(config, createPrettyDestination(destination, colorize)))[streamSym].stream = destination
+      ;(logger = pino(config, createPrettyDestination(destination, colorize)))[$stream].stream = destination
     } else {
       logger = pino(config, destination)
     }
-    logger[streamSym].flushSync = logger.silent // we do our own flush
+    logger[$stream].flushSync = logger.silent // we do our own flush
   }
   rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))
   return module.exports
@@ -152,6 +150,28 @@ function createPrettyDestination (destination, colorize) {
     translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
     ...(colorize ? undefined : { colorize: false }),
   })
+}
+
+function reshapeErrorForLog (err, msg, prettyPrint, serialize) {
+  const { name, message } = err
+  let stack
+  if ({}.propertyIsEnumerable.call(err, 'name')) Object.defineProperty(err, 'name', { enumerable: false })
+  if (msg === undefined) msg = message
+  if (message && message === msg) err.message = undefined
+  if ((stack = err.backtrace)) {
+    stack = ['Error', ...stack.slice(1)].join('\n')
+  } else if ((stack = err.stack || name) && err instanceof SyntaxError && stack.includes('\nSyntaxError: ')) {
+    stack = `SyntaxError: ${message}\n    at ` + stack.split(/\n+SyntaxError: [^\n]+\n?/).join('\n')
+  }
+  if (message && (message === msg || !prettyPrint) && stack.startsWith(`${name}: ${message}`)) {
+    stack = stack.replace(`${name}: ${message}`, name)
+  }
+  err.stack = (prettyPrint ? 'Cause: ' : '') + (stack === name ? `${name} (no stacktrace)` : stack)
+  if (prettyPrint) {
+    const { message: _discard, ...flatErr } = prettyPrint(err)
+    err = Object.assign(flatErr, { type: 'Error' })
+  }
+  return [err, msg]
 }
 
 function reshapeFileForLog ({ file: { abspath, origin, path: vpath }, line, stack }) {
