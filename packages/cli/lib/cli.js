@@ -24,25 +24,10 @@ function exitWithError (err, opts, msg = undefined) {
   if (!getLogger(null)) {
     configureLogger({ format: 'pretty', level: opts.silent ? 'silent' : 'fatal', failureLevel: 'fatal' })
   }
-  const logger = getLogger(name)
   if (opts.stacktrace) {
-    let stack
-    if ((stack = err.backtrace)) {
-      err = Object.assign(new Error(errMessage), { stack: ['Error', ...stack.slice(1)].join('\n') })
-    } else if ((stack = err.stack)) {
-      if (err instanceof SyntaxError && stack.includes('\nSyntaxError: ')) {
-        const [, loc, expl, rest] = stack.match(/^([\S\s]*?)\n+SyntaxError: ([^\n]+)([\S\s]*)/)
-        err.stack = rest.replace('\n', `SyntaxError${errMessage === msg ? '' : ': ' + expl}\n    at ${loc}\n`)
-      } else if (errMessage === msg && stack.startsWith(`${err.name}: ${errMessage}`)) {
-        stack = stack.replace(`${err.name}: ${errMessage}`, err.name)
-        err.stack = stack === err.name ? undefined : stack
-      }
-    }
-    if ({}.propertyIsEnumerable.call(err, 'name')) Object.defineProperty(err, 'name', { enumerable: false })
-    err.stack = `Cause: ${err.stack || '(no stacktrace)'}`
-    logger.fatal(err, msg)
+    getLogger(name).fatal(err, msg)
   } else {
-    logger.fatal(msg + '\nAdd the --stacktrace option to see the cause of the error.')
+    getLogger(name).fatal(msg + '\nAdd the --stacktrace option to see the cause of the error.')
   }
   return exit()
 }
