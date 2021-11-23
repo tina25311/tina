@@ -30,8 +30,7 @@
     "progress": "~2.0",
     "should-proxy": "~1.0",
     "simple-get": "~4.0",
-    "vinyl": "~2.2",
-    "vinyl-fs": "~3.0"
+    "vinyl": "~2.2"
   },
   "engines": {
     "node": ">=12.21.0"

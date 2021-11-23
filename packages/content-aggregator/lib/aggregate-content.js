@@ -15,6 +15,7 @@ const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
+const globStream = require('glob-stream')
 const invariably = require('./invariably')
 const { makeMatcherRx, versionMatcherOpts: VERSION_MATCHER_OPTS } = require('./matcher')
 const MultiProgress = require('multi-progress')
@@ -22,10 +23,9 @@ const ospath = require('path')
 const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const { fs: resolvePathGlobsFs, git: resolvePathGlobsGit } = require('./resolve-path-globs')
-const { Transform } = require('stream')
-const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
+const { pipeline, Transform } = require('stream')
+const map = (transform) => new Transform({ objectMode: true, transform })
 const userRequire = require('@antora/user-require-helper')
-const vfs = require('vinyl-fs')
 const yaml = require('js-yaml')
 
 const {
@@ -41,7 +41,6 @@ const {
   SYMLINK_FILE_MODE,
   VALID_STATE_FILENAME,
 } = require('./constants')
-
 const ANY_SEPARATOR_RX = /[:/]/
 const CSV_RX = /\s*,\s*/
 const VENTILATED_CSV_RX = /\s*,\s+/
@@ -439,26 +438,9 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
 function readFilesFromWorktree (worktreePath, startPath) {
   const cwd = ospath.join(worktreePath, startPath)
   return fsp.stat(cwd).then(
-    (stat) => {
-      if (!stat.isDirectory()) throw new Error(`the start path '${startPath}' is not a directory`)
-      return new Promise((resolve, reject) =>
-        vfs
-          .src(CONTENT_SRC_GLOB, Object.assign({ cwd }, CONTENT_SRC_OPTS))
-          .on('error', (err) => {
-            if (err.code === 'ENOENT' && err.syscall === 'stat') {
-              try {
-                if (fs.lstatSync(err.path).isSymbolicLink()) {
-                  err.message = `Broken symbolic link detected at ${ospath.relative(cwd, err.path)}`
-                }
-              } catch {}
-            } else if (err.code === 'ELOOP') {
-              err.message = `Symbolic link cycle detected at ${ospath.relative(cwd, err.path)}`
-            }
-            reject(err)
-          })
-          .pipe(relativizeFiles())
-          .pipe(collectDataFromStream(resolve))
-      )
+    (startPathStat) => {
+      if (!startPathStat.isDirectory()) throw new Error(`the start path '${startPath}' is not a directory`)
+      return srcFs(cwd)
     },
     () => {
       throw new Error(`the start path '${startPath}' does not exist`)
@@ -466,40 +448,42 @@ function readFilesFromWorktree (worktreePath, startPath) {
   )
 }
 
-/**
- * Transforms the path of every file in the stream to a relative posix path.
- *
- * Applies a mapping function to all files in the stream so they end up with a
- * posixified path relative to the file's base instead of the filesystem root.
- * This mapper also filters out any directories (indicated by file.isNull())
- * that got caught up in the glob.
- */
-function relativizeFiles () {
-  return map((file, enc, next) => {
-    if (file.isNull()) {
-      next()
-    } else {
-      next(
-        null,
-        new File({
-          path: posixify ? posixify(file.relative) : file.relative,
-          contents: file.contents,
-          stat: file.stat,
-          src: { abspath: file.path },
-        })
-      )
-    }
-  })
-}
-
-function collectDataFromStream (done) {
-  const accum = []
-  return map(
-    (obj, _, next) => {
-      accum.push(obj)
-      next()
-    },
-    () => done(accum)
+function srcFs (cwd) {
+  return new Promise((resolve, reject, cache = {}, files = []) =>
+    pipeline(
+      globStream(CONTENT_SRC_GLOB, Object.assign({ cache, cwd }, CONTENT_SRC_OPTS)),
+      map(({ path: abspathPosix }, _, next) => {
+        if (Array.isArray(cache[abspathPosix])) return next() // optimization, but not guaranteed
+        const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
+        const relpath = abspath.substr(cwd.length + 1)
+        symlinkAwareStat(abspath).then(
+          (stat) => {
+            if (stat.isDirectory()) return next()
+            fsp.readFile(abspath).then(
+              (contents) => {
+                files.push(new File({ path: posixify ? posixify(relpath) : relpath, contents, stat, src: { abspath } }))
+                next()
+              },
+              (readErr) => {
+                next(Object.assign(readErr, { message: readErr.message.replace(`'${abspath}'`, relpath) }))
+              }
+            )
+          },
+          (statErr) => {
+            if (statErr.symlink) {
+              statErr.message =
+                statErr.code === 'ELOOP'
+                  ? `Symbolic link cycle detected at ${relpath}`
+                  : `Broken symbolic link detected at ${relpath}`
+            } else {
+              statErr.message = statErr.message.replace(`'${abspath}'`, relpath)
+            }
+            next(statErr)
+          }
+        )
+      }),
+      (err) => (err ? reject(err) : resolve(files))
+    )
   )
 }
 
@@ -918,6 +902,15 @@ function resolveRemoteUrl (repo, remoteName) {
  */
 function isDirectory (url) {
   return fsp.stat(url).then((stat) => stat.isDirectory(), invariably.false)
+}
+
+function symlinkAwareStat (path_) {
+  return fsp.lstat(path_).then((lstat) => {
+    if (!lstat.isSymbolicLink()) return lstat
+    return fsp.stat(path_).catch((statErr) => {
+      throw Object.assign(statErr, { symlink: true })
+    })
+  })
 }
 
 function tagsSpecified (sources) {
