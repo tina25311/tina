@@ -508,6 +508,27 @@ describe('loadUi()', () => {
       }
     })
 
+    it('should match static files using match patterns', async () => {
+      const supplementalFilesAbsDir = ospath.join(FIXTURES_DIR, 'supplemental-files')
+      playbook.ui.supplementalFiles = supplementalFilesAbsDir
+      const uiConfigFilePath = ospath.join(supplementalFilesAbsDir, 'ui.yml')
+      const staticDotfilePath = ospath.join(supplementalFilesAbsDir, '.htaccess-10')
+      const staticDotfileContents = Buffer.from('ErrorDocument 404 /404-fun.html\n')
+      try {
+        await fsp.writeFile(uiConfigFilePath, 'static_files:\n- .hta+(c)ess{-{8..12..2},}\n')
+        await fsp.writeFile(staticDotfilePath, staticDotfileContents)
+        const uiCatalog = await loadUi(playbook)
+        const staticFiles = uiCatalog.findByType('static')
+        const staticDotfile = staticFiles.find((it) => it.path === '.htaccess-10')
+        expect(staticDotfile).to.exist()
+        expect(staticDotfile.contents).to.eql(staticDotfileContents)
+        expect(uiCatalog.getFiles().find((it) => it.path === '.hidden-file.txt')).to.be.undefined()
+      } finally {
+        await fsp.unlink(staticDotfilePath).catch(() => {})
+        await fsp.unlink(uiConfigFilePath).catch(() => {})
+      }
+    })
+
     it('skips supplemental files when scan finds no files', async () => {
       const emptyDir = ospath.join(WORK_DIR, 'empty-directory')
       fs.mkdirSync(emptyDir, { recursive: true })

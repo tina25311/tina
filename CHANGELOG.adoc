@@ -18,6 +18,7 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Include path of playbook file in message of any error thrown by playbook builder (#882)
 * *content-aggregator*: Replace vinyl-fs.src with glob-stream in a stream.pipeline (#839)
 * *ui-loader*: Replace vinyl-fs.src with glob-stream in a stream.pipeline (#839)
+* *ui-loader*: Replace minimatch-all with picomatch
 * *site-generator-default*: Rename `asciidocConfig` context variable to `siteAsciiDocConfig` to disambiguate its scope
 
 === Fixed
