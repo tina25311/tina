@@ -15,6 +15,8 @@ This project utilizes semantic versioning.
 
 * *logger*: Move error to `err` property on structured log object; deduplicate information (#878)
 * *logger*: Move all error formatting from CLI to logger (#878)
+* *logger*: Use more modest colorization of prettified log message; only colorize first line; colorize hint as dim neutral (#884)
+* *logger*: Set hint on hint key of log object instead of appending it to the bottom of the message (#884)
 * *playbook-builder*: Include path of playbook file in message of any error thrown by playbook builder (#882)
 * *content-aggregator*: Replace vinyl-fs.src with glob-stream in a stream.pipeline (#839)
 * *ui-loader*: Replace vinyl-fs.src with glob-stream in a stream.pipeline (#839)

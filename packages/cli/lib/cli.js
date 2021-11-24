@@ -27,7 +27,7 @@ function exitWithError (err, opts, msg = undefined) {
   if (opts.stacktrace) {
     getLogger(name).fatal(err, msg)
   } else {
-    getLogger(name).fatal(msg + '\nAdd the --stacktrace option to see the cause of the error.')
+    getLogger(name).fatal({ hint: 'Add the --stacktrace option to see the cause of the error.' }, msg)
   }
   return exit()
 }

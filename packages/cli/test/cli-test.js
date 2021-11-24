@@ -1063,9 +1063,8 @@ describe('cli', function () {
         .to.be.a.file()
         //.with.json() // .with.json() doesn't understand the json lines format
         .and.have.contents.that.match(/"msg":"Start page specified for site not found: .+"/)
-        .and.have.contents.that.match(
-          /"msg":"Unsupported destination provider: s3\\nAdd the --stacktrace option to see the cause of the error\."/
-        )
+        .and.have.contents.that.match(/"msg":"Unsupported destination provider: s3"/)
+        .and.have.contents.that.match(/"hint":"Add the --stacktrace option to see the cause of the error\."/)
     })
   })
 

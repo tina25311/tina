@@ -109,6 +109,13 @@ describe('logger', () => {
       expect(message).to.eql({ level: 'info', msg: 'love is the message' })
     })
 
+    it('should include hint key if specified in merging object', () => {
+      const logger = configure().get(null)
+      const lines = captureStdoutSync(() => logger.info({ hint: 'let the music play' }, 'love is the message'))
+      expect(lines).to.have.lengthOf(1)
+      expect(JSON.parse(lines[0])).to.include({ hint: 'let the music play', msg: 'love is the message' })
+    })
+
     it('should allow fatal message to be logged', () => {
       const logger = configure().get(null)
       const lines = captureStdoutSync(() => logger.fatal("You've sunk my battleship!"))
@@ -494,6 +501,15 @@ describe('logger', () => {
     })
 
     if (supportsColor) {
+      it('should not colorize pretty log message if NO_COLOR environment variable is set', () => {
+        process.env.NO_COLOR = '1'
+        const logger = configure({ name: 'antora', format: 'pretty' }).get()
+        const lines = captureStderrSync(() => logger.info('love is the message'))
+        expect(lines).to.have.lengthOf(1)
+        const expectedLine = 'INFO (antora): love is the message'
+        expect(lines[0]).to.include(expectedLine)
+      })
+
       it('should colorize pretty log message if supported by environment', () => {
         delete process.env.NO_COLOR
         const logger = configure({ name: 'antora', format: 'pretty' }).get()
@@ -503,15 +519,38 @@ describe('logger', () => {
         expect(lines[0]).to.include(expectedLine)
       })
 
-      it('should not colorize pretty log message if NO_COLOR environment variable is set', () => {
-        process.env.NO_COLOR = '1'
+      it('should colorize only first line of pretty log message if supported by environment', () => {
+        delete process.env.NO_COLOR
         const logger = configure({ name: 'antora', format: 'pretty' }).get()
-        const lines = captureStderrSync(() => logger.info('love is the message'))
-        expect(lines).to.have.lengthOf(1)
-        const expectedLine = 'INFO (antora): love is the message'
-        expect(lines[0]).to.include(expectedLine)
+        const lines = captureStderrSync(() => logger.info('love is the message\nmusic is the answer'))
+        expect(lines).to.have.lengthOf(2)
+        const expectedLine1 = '\u001b[32mINFO\u001b[39m (antora): \u001b[36mlove is the message'
+        const expectedLine2 = '\u001b[0mmusic is the answer\u001b[39m'
+        expect(lines[0]).to.include(expectedLine1)
+        expect(lines[1]).to.include(expectedLine2)
+      })
+
+      it('should colorize hint of pretty log message if supported by environment', () => {
+        delete process.env.NO_COLOR
+        const logger = configure({ name: 'antora', format: 'pretty' }).get()
+        const lines = captureStderrSync(() => logger.info({ hint: 'let the music play' }, 'love is the message'))
+        expect(lines).to.have.lengthOf(2)
+        const expectedLine1 = '\u001b[32mINFO\u001b[39m (antora): \u001b[36mlove is the message'
+        const expectedLine2 = '\u001b[0m\u001b[2mlet the music play\u001b[22m'
+        expect(lines[0]).to.include(expectedLine1)
+        expect(lines[1]).to.include(expectedLine2)
       })
     }
+
+    it('should append hint in merging object below message', () => {
+      const logger = configure({ name: 'antora', format: 'pretty' }).get()
+      const lines = captureStderrSync(() => logger.info({ hint: 'let the music play' }, 'love is the message'))
+      expect(lines).to.have.lengthOf(2)
+      const expectedLine1 = 'INFO (antora): love is the message'
+      const expectedLine2 = 'let the music play'
+      expect(lines[0]).to.include(expectedLine1)
+      expect(lines[1]).to.include(expectedLine2)
+    })
 
     it('should not log warning that flushSync is not supported when fatal message is logged', () => {
       const logger = configure({ format: 'pretty' }).get()
