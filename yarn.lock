@@ -4433,10 +4433,10 @@ pino-std-serializers@^4.0.0:
   resolved "https://registry.yarnpkg.com/pino-std-serializers/-/pino-std-serializers-4.0.0.tgz#1791ccd2539c091ae49ce9993205e2cd5dbba1e2"
   integrity sha512-cK0pekc1Kjy5w9V2/n+8MkZwusa6EyyxfeQCB799CQRhRt/CqYKiWs5adeu8Shve2ZNffvfC/7J64A2PJo1W/Q==
 
-pino@~7.2:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/pino/-/pino-7.2.0.tgz#73cf31d71466d7f8158555eafdb1b9e226d33241"
-  integrity sha512-85EiMfTy2E7S+QSHgaN7oCfnfgxv/8PxG6Yf+CRXUZbRL+Rb9qHQAEATLubjJMSl3RvfrTKNkAP3D2hNNx41Aw==
+pino@~7.4:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/pino/-/pino-7.4.0.tgz#c9efaf965a070149b9c78548d5a84d59bfa7410e"
+  integrity sha512-qEHLtKcmYcid6s2qjlGTxaLe9Lq1IiGmd74IZb9Obi/FRTaA+ymb8FD/cmOIL4vt6ug/EtmhGwxZbiGhI+7cuQ==
   dependencies:
     fast-redact "^3.0.0"
     fastify-warning "^0.2.0"
@@ -5995,7 +5995,7 @@ yargs-parser@^18.1.2:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
-yargs-parser@^20.2.2, yargs-parser@^20.2.7, yargs-parser@~20.2:
+yargs-parser@^20.2.2, yargs-parser@^20.2.7:
   version "20.2.9"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.9.tgz#2eb7dc3b0289718fc295f362753845c41a0c94ee"
   integrity sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==
@@ -6007,6 +6007,11 @@ yargs-parser@^5.0.1:
   dependencies:
     camelcase "^3.0.0"
     object.assign "^4.1.0"
+
+yargs-parser@~21.0:
+  version "21.0.0"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-21.0.0.tgz#a485d3966be4317426dd56bdb6a30131b281dc55"
+  integrity sha512-z9kApYUOCwoeZ78rfRYYWdiU/iNL6mwwYlkkZfJoyMR1xps+NEBX5X7XmRpxkZHhXJ6+Ey00IwKxBBSW9FIjyA==
 
 yargs-unparser@2.0.0:
   version "2.0.0"

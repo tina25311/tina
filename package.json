@@ -28,7 +28,7 @@
     "prettier-eslint-cli": "~5.0",
     "stream-to-array": "~2.3",
     "vinyl-fs": "~3.0",
-    "yargs-parser": "~20.2"
+    "yargs-parser": "~21.0"
   },
   "engines": {
     "node": ">=12.21.0"
