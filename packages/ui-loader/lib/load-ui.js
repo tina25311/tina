@@ -8,15 +8,15 @@ const { File, MemoryFile, ReadableFile } = require('./file')
 const { promises: fsp } = require('fs')
 const { concat: get } = require('simple-get')
 const getCacheDir = require('cache-directory')
+const globStream = require('glob-stream')
 const minimatchAll = require('minimatch-all')
 const ospath = require('path')
 const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
-const { Transform } = require('stream')
+const { pipeline, Transform } = require('stream')
 const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
 const UiCatalog = require('./ui-catalog')
 const yaml = require('js-yaml')
-const vfs = require('vinyl-fs')
 const vzip = require('gulp-vinyl-zip')
 
 const { UI_CACHE_FOLDER, UI_DESC_FILENAME, UI_SRC_GLOB, UI_SRC_OPTS } = require('./constants')
@@ -94,11 +94,7 @@ async function loadUi (playbook) {
     resolveBundle.then((bundleFile) =>
       new Promise((resolve, reject) =>
         bundleFile.isDirectory()
-          ? vfs
-            .src(UI_SRC_GLOB, Object.assign({ cwd: bundleFile.path }, UI_SRC_OPTS))
-            .on('error', reject)
-            .pipe(relativizeFiles())
-            .pipe(collectFiles(resolve))
+          ? srcFs(bundleFile.path).then(resolve, reject)
           : vzip
             .src(bundleFile.path)
             .on('error', (err) => reject(Object.assign(err, { message: `not a valid zip file; ${err.message}` })))
@@ -280,32 +276,12 @@ function srcSupplementalFiles (filesSpec, startDir) {
     const cwd = expandPath(filesSpec, { dot: startDir })
     return fsp
       .access(cwd)
-      .then(
-        () =>
-          new Promise((resolve, reject) =>
-            vfs
-              .src(UI_SRC_GLOB, Object.assign({ cwd, dot: true }, UI_SRC_OPTS))
-              .on('error', reject)
-              .pipe(relativizeFiles())
-              .pipe(collectFiles(resolve))
-          )
-      )
+      .then(() => srcFs(cwd))
       .catch((err) => {
         // Q: should we skip unreadable files?
         throw Object.assign(err, { message: `problem encountered while reading ui.supplemental_files: ${err.message}` })
       })
   }
-}
-
-function relativizeFiles () {
-  return map((file, _, next) => {
-    if (file.isNull()) {
-      next()
-    } else {
-      const path_ = posixify ? posixify(file.relative) : file.relative
-      next(null, new File({ cwd: file.cwd, path: path_, contents: file.contents, stat: file.stat, local: true }))
-    }
-  })
 }
 
 function mergeFiles (files, supplementalFiles) {
@@ -362,6 +338,54 @@ function resolveOut (file, outputDir = '_') {
   if (dirname.charAt() === '/') dirname = dirname.substr(1)
   const basename = file.basename
   return { dirname, basename, path: path.join(dirname, basename) }
+}
+
+function srcFs (cwd) {
+  return new Promise((resolve, reject, cache = {}, files = new Map()) =>
+    pipeline(
+      globStream(UI_SRC_GLOB, Object.assign({ cache, cwd }, UI_SRC_OPTS)),
+      map(({ path: abspathPosix }, _, next) => {
+        const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
+        const relpath = abspath.substr(cwd.length + 1)
+        symlinkAwareStat(abspath).then(
+          (stat) => {
+            if (stat.isDirectory()) return next()
+            fsp.readFile(abspath).then(
+              (contents) => {
+                const path_ = posixify ? posixify(relpath) : relpath
+                files.set(path_, new File({ cwd, path: path_, contents, stat, local: true }))
+                next()
+              },
+              (readErr) => {
+                next(Object.assign(readErr, { message: readErr.message.replace(`'${abspath}'`, relpath) }))
+              }
+            )
+          },
+          (statErr) => {
+            if (statErr.symlink) {
+              statErr.message =
+                statErr.code === 'ELOOP'
+                  ? `Symbolic link cycle detected at ${relpath}`
+                  : `Broken symbolic link detected at ${relpath}`
+            } else {
+              statErr.message = statErr.message.replace(`'${abspath}'`, relpath)
+            }
+            next(statErr)
+          }
+        )
+      }),
+      (err) => (err ? reject(err) : resolve(files))
+    )
+  )
+}
+
+function symlinkAwareStat (path_) {
+  return fsp.lstat(path_).then((lstat) => {
+    if (!lstat.isSymbolicLink()) return lstat
+    return fsp.stat(path_).catch((statErr) => {
+      throw Object.assign(statErr, { symlink: true })
+    })
+  })
 }
 
 module.exports = loadUi

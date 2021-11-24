@@ -2492,6 +2492,20 @@ describe('aggregateContent()', function () {
       expect(fixtureFile.stat.mode).to.equal(expectedMode)
     })
 
+    if (process.platform !== 'win32' && process.getuid()) {
+      it('should report file path if file from worktree cannot be read', async () => {
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const fixturePath = 'modules/ROOT/assets/attachments/installer.sh'
+        await initRepoWithFiles(repoBuilder, {}, fixturePath)
+        await fsp.chmod(ospath.join(repoBuilder.repoPath, fixturePath), 0o000)
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const ref = repoBuilder.getRefInfo('main')
+        const expectedMessage = `permission denied, open ${fixturePath} in ${repoBuilder.url} (ref: ${ref})`
+        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        expect(aggregateContentDeferred).to.throw(expectedMessage)
+      })
+    }
+
     describe('resolve symlinks', () => {
       describe('should resolve file symlink to sibling file', () => {
         testAll(async (repoBuilder) => {
