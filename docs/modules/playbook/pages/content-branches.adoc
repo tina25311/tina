@@ -122,10 +122,10 @@ content:
 
 === Negate glob patterns
 
-If a pattern starts with a `!` character, then it is negated (i.e., the matches are excluded).
+If a pattern starts with a `!` character, then it is negated (i.e., existing matches are excluded).
 This is how you can deselect branches that were matched by a previous glob.
 
-Here's how you'd exclude all branches that end in `-beta`.
+Here's how you'd exclude all branches that begin with `v` and end with `-beta`.
 
 .Exclude branches ending in -beta
 [source,yaml]
@@ -135,6 +135,22 @@ content:
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: [v*, !v*-beta]
 ----
+
+If the negated pattern appears first in the list, its meaning slightly changes.
+Since it doesn't make sense to exclude when nothing has been selected, the negated pattern in this position implies that there's a `+*+` pattern before it.
+
+.Include all branches except main
+[source,yaml]
+----
+content:
+  sources:
+  - url: https://gitlab.com/antora/demo/demo-component-b.git
+    branches: [!main] <1>
+----
+<1> This branches pattern is shorthand for `[*, !main]`.
+
+Generally, we recommend against using this notation since it can select a lot of branches you probably don't want.
+It's better to be specific about the branches you want to match, then use exclusions to refine that list.
 
 [#current-local-branch]
 == Use the current, local branch
