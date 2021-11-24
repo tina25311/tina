@@ -1,5 +1,6 @@
 'use strict'
 
+const { compile: bracesToGroup } = require('braces')
 const camelCaseKeys = require('camelcase-keys')
 const concat = require('simple-concat')
 const { createHash } = require('crypto')
@@ -9,9 +10,9 @@ const { promises: fsp } = require('fs')
 const { concat: get } = require('simple-get')
 const getCacheDir = require('cache-directory')
 const globStream = require('glob-stream')
-const minimatchAll = require('minimatch-all')
 const ospath = require('path')
 const { posix: path } = ospath
+const picomatch = require('picomatch')
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const { pipeline, Transform } = require('stream')
 const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
@@ -19,6 +20,14 @@ const UiCatalog = require('./ui-catalog')
 const yaml = require('js-yaml')
 const vzip = require('gulp-vinyl-zip')
 
+const STATIC_FILE_MATCHER_OPTS = {
+  expandRange: (begin, end, step, opts) => bracesToGroup(opts ? `{${begin}..${end}..${step}}` : `{${begin}..${end}}`),
+  fastpaths: false,
+  nobracket: true,
+  noquantifiers: true,
+  regex: false,
+  strictSlashes: true,
+}
 const { UI_CACHE_FOLDER, UI_DESC_FILENAME, UI_SRC_GLOB, UI_SRC_OPTS } = require('./constants')
 const URI_SCHEME_RX = /^https?:\/\//
 const EXT_RX = /\.[a-z]{2,3}$/
@@ -294,15 +303,9 @@ function loadConfig (files, outputDir) {
   if (configFile) {
     files.delete(UI_DESC_FILENAME)
     const config = camelCaseKeys(yaml.load(configFile.contents.toString()), { deep: true })
-    if (outputDir !== undefined) config.outputDir = outputDir
     const staticFiles = config.staticFiles
-    if (staticFiles) {
-      if (!Array.isArray(staticFiles)) {
-        config.staticFiles = [staticFiles]
-      } else if (staticFiles.length === 0) {
-        delete config.staticFiles
-      }
-    }
+    if (staticFiles && staticFiles.length) config.isStaticFile = picomatch(staticFiles, STATIC_FILE_MATCHER_OPTS)
+    if (outputDir !== undefined) config.outputDir = outputDir
     return config
   } else {
     return { outputDir }
@@ -310,7 +313,7 @@ function loadConfig (files, outputDir) {
 }
 
 function classifyFile (file, config) {
-  if (config.staticFiles && isStaticFile(file, config.staticFiles)) {
+  if (config.isStaticFile && config.isStaticFile(file.path)) {
     file.type = 'static'
     file.out = resolveOut(file, '')
   } else if (file.isDot()) {
@@ -319,10 +322,6 @@ function classifyFile (file, config) {
     file.out = resolveOut(file, config.outputDir)
   }
   return file
-}
-
-function isStaticFile (file, staticFiles) {
-  return minimatchAll(file.path, staticFiles)
 }
 
 function resolveType (file) {
