@@ -22,7 +22,7 @@ content:
   - url: https://git-service.com/org/repo-y.git
     branches: main # <2>
   - url: https://git-service.com/org/repo-x.git
-    branches: [edge, v*, !v1.*] # <3>
+    branches: [edge, v*, '!v1.*'] # <3>
 ----
 <1> Enclose multiple values in a set of square brackets (`+[]+`).
 Separate each value with a comma (`,`).
@@ -65,7 +65,7 @@ content:
     branches: [rawhide, 90.0, 93.0, dev] # <1>
   - url: https://git-service.com/org/repo-y.git # <2>
   - url: https://git-service.com/org/repo-x.git
-    branches: [edge, v*, !v1.*] # <3>
+    branches: [edge, v*, '!v1.*'] # <3>
 ----
 <1> This content source will use the exact branch names specified.
 <2> This content source will use the default branches filter.
@@ -83,7 +83,7 @@ content:
   sources:
   - url: https://git-service.com/org/repo-z.git # <2>
   - url: https://git-service.com/org/repo-x.git
-    branches: [edge, v*, !v1.*] # <3>
+    branches: [edge, v*, '!v1.*'] # <3>
   - url: https://git-service.com/org/repo-y.git # <4>
 ----
 <1> Specify `branches` under the `content` key to change the default branches filter.
@@ -133,7 +133,7 @@ Here's how you'd exclude all branches that begin with `v` and end with `-beta`.
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches: [v*, !v*-beta]
+    branches: [v*, '!v*-beta']
 ----
 
 If the negated pattern appears first in the list, its meaning slightly changes.
@@ -145,9 +145,9 @@ Since it doesn't make sense to exclude when nothing has been selected, the negat
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches: [!main] <1>
+    branches: ['!main'] # <1>
 ----
-<1> This branches pattern is shorthand for `[*, !main]`.
+<1> This branches pattern is shorthand for `[*, '!main']`.
 
 Generally, we recommend against using this notation since it can select a lot of branches you probably don't want.
 It's better to be specific about the branches you want to match, then use exclusions to refine that list.

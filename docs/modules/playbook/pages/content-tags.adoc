@@ -21,7 +21,7 @@ content:
   - url: https://git-service.com/org/repo-z.git
     tags: [90.0, 93.0] # <1>
   - url: https://git-service.com/org/repo-x.git
-    tags: [95.0, releases/*, !v1.*] # <2>
+    tags: [95.0, releases/*, '!v1.*'] # <2>
     branches: ~ # <3>
 ----
 <1> Enclose multiple values in a set of square brackets (`+[]+`).
@@ -49,7 +49,7 @@ content:
   sources:
   - url: https://git-service.com/org/repo-z.git # <3>
   - url: https://git-service.com/org/repo-x.git
-    tags: [v*, !v1.*] # <4>
+    tags: [v*, '!v1.*'] # <4>
   - url: https://git-service.com/org/repo-y.git # <5>
 ----
 <1> Specify `tags` under the `content` key to create a default tags filter.
