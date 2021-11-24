@@ -12,6 +12,47 @@
 NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
 Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
+= Antora 3.0.0-beta.3
+
+_**Release date:** 2021.11.24 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+=== Added
+
+Issue {url-issues}/879[#879^]:: Keep AsciiDoc source on `src.contents` property of virtual file if `keepSource` property is set in AsciiDoc config by extension.
+
+=== Changed
+
+Issue {url-issues}/878[#878^]::
+* Move logged error to `err` property on structured log object.
+* Move all error formatting from CLI to logger.
+* Format errors consistently, regardless of the level at which they are logged.
+* Remove message from stack if it matches the log message.
+Issue {url-issues}/884[#884^]::
+* Use more modest colorization of prettified log message (only colorize first line, colorize hint as dim neutral).
+* Set hint on `hint` key of log object instead of appending it to the bottom of the message.
+Issue {url-issues}/882[#882^]:: Include path of playbook file in any error message that pertains to the playbook.
+Issue {url-issues}/839[#839^]::
+* Replace vinyl-fs with direct glob-stream call to scan for files in worktree
+* Report path of a file correctly if it cannot be read.
+
+Default to pretty format if logger is used before being configured.
+
+Rename `asciidocConfig` context variable in extensions to `siteAsciiDocConfig` to disambiguate its scope.
+
+Use same matcher in UI loader that's used elsewhere in Antora (picomatch).
+
+=== Fixed
+
+Issue {url-issues}/883[#883^]:: Use existing non-zero exit code if log failure level is met.
+
+Don't colorize pretty log output if `NO_COLOR` environment variable is set.
+
+Continue processing entries after exclusion in refname patterns (branches, tags, worktrees) (e.g., `+v*, !v2.*, v2.0+`).
+
+Properly expand brace expressions in version pattern that contain multi-digit numbers (e.g., `{1..20}`) and/or a step (e.g., `{8..12..2}`).
+
 = Antora 3.0.0-beta.2
 
 _**Release date:** 2021.11.16 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
