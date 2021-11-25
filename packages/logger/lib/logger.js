@@ -148,6 +148,14 @@ function createPrettyDestination (destination, colorize) {
           ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
           : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
     },
+    ignore: 'hint',
+    messageFormat: (log, msgKey) => {
+      let hint, msg
+      if (typeof (msg = log[msgKey]) !== 'string') return
+      if ((hint = log.hint)) msg += '\n' + (colorize ? `\x1b[2m${hint}\x1b[22m` : hint)
+      if (colorize) msg = msg.replace('\n', '\n\x1b[0m')
+      return msg
+    },
     translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
   })
 }
