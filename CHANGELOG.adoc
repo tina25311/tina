@@ -23,6 +23,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *logger*: Honor `NO_COLOR` environment variable; don't colorize pretty log output if environment variable is set
 * *content-aggregator*: Continue processing entries after exclusion in refname patterns (branches, tags, worktrees)
 * *content-aggregator*: Properly expand brace expressions in version pattern that contain multi-digit numbers and/or a step
 * *cli*: Use existing non-zero exit code if log failure level is met (#883)

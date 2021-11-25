@@ -9,7 +9,7 @@ const {
   symbols: { serializersSym: $serializers, streamSym: $stream },
   pino,
 } = require('pino')
-const pinoPretty = require('pino-pretty')
+const { default: pinoPretty, prettyFactory } = require('pino-pretty')
 const SonicBoom = require('sonic-boom')
 
 const closedLogger = { closed: true }
@@ -41,16 +41,16 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     logger = Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
   } else {
     const prettyPrint = format === 'pretty'
-    let colorize
+    let colorize = process.env.NO_COLOR == null && prettyFactory()({ msg: 'colorize' }).includes('\u001b[')
     if (typeof (destination || (destination = {})).write !== 'function') {
       let dest
       const { file, bufferSize, ...destOpts } = destination
       if (bufferSize != null) destOpts.minLength = bufferSize
       if (file && !(dest = standardStreams[file])) {
         dest = expandPath(file, { dot: baseDir })
+        colorize = false
       } else if (prettyPrint) {
         dest = dest || 2
-        if (process.env.NODE_ENV !== 'test') colorize = true
       }
       destOpts.dest = dest || 1
       destination = new SonicBoom(Object.assign({ mkdir: true, sync: true }, destOpts))
@@ -119,6 +119,7 @@ function finalize () {
 function createPrettyDestination (destination, colorize) {
   return pinoPretty({
     destination,
+    colorize,
     customPrettifiers: {
       file: ({ path: path_, line }) => (line == null ? path_ : `${path_}:${line}`),
       stack: (stack, _, log) => {
@@ -148,7 +149,6 @@ function createPrettyDestination (destination, colorize) {
           : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
     },
     translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
-    ...(colorize ? undefined : { colorize: false }),
   })
 }
 

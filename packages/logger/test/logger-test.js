@@ -23,7 +23,17 @@ const WORK_DIR = ospath.join(__dirname, 'work')
 describe('logger', () => {
   const getStream = (logger) => logger[pino.symbols.streamSym]
 
-  const supportsColor = () => pinoPrettyFactory()({ level: 'info', msg: 'message' }).includes('\u001b[39m')
+  const supportsColor = pinoPrettyFactory()({ msg: 'colorize' }).includes('\u001b[')
+
+  const NO_COLOR = process.env.NO_COLOR
+
+  beforeEach(() => {
+    process.env.NO_COLOR = '1'
+  })
+
+  afterEach(() => {
+    if ((process.env.NO_COLOR = NO_COLOR) == null) delete process.env.NO_COLOR
+  })
 
   describe('configure()', () => {
     const getHooks = (logger) => logger[pino.symbols.hooksSym]
@@ -483,19 +493,23 @@ describe('logger', () => {
       expect(lines[0]).to.match(expectedLine)
     })
 
-    if (supportsColor()) {
+    if (supportsColor) {
       it('should colorize pretty log message if supported by environment', () => {
-        const nodeEnv = process.env.NODE_ENV
-        try {
-          delete process.env.NODE_ENV
-          const logger = configure({ name: 'antora', format: 'pretty' }).get()
-          const lines = captureStderrSync(() => logger.info('love is the message'))
-          expect(lines).to.have.lengthOf(1)
-          const expectedLine = '\u001b[32mINFO\u001b[39m (antora): \u001b[36mlove is the message\u001b[39m'
-          expect(lines[0]).to.include(expectedLine)
-        } finally {
-          process.env.NODE_ENV = nodeEnv
-        }
+        delete process.env.NO_COLOR
+        const logger = configure({ name: 'antora', format: 'pretty' }).get()
+        const lines = captureStderrSync(() => logger.info('love is the message'))
+        expect(lines).to.have.lengthOf(1)
+        const expectedLine = '\u001b[32mINFO\u001b[39m (antora): \u001b[36mlove is the message\u001b[39m'
+        expect(lines[0]).to.include(expectedLine)
+      })
+
+      it('should not colorize pretty log message if NO_COLOR environment variable is set', () => {
+        process.env.NO_COLOR = '1'
+        const logger = configure({ name: 'antora', format: 'pretty' }).get()
+        const lines = captureStderrSync(() => logger.info('love is the message'))
+        expect(lines).to.have.lengthOf(1)
+        const expectedLine = 'INFO (antora): love is the message'
+        expect(lines[0]).to.include(expectedLine)
       })
     }
 
