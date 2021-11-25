@@ -14,7 +14,7 @@ An attachment can be cross referenced from pages, other resources, and navigatio
 <<ex-base>> shows the structure of an xref macro with an {family}'s fully qualified resource ID.
 
 .Xref and attachment resource ID syntax
-[#ex-base,subs=attributes+]
+[listing#ex-base,subs=attributes+]
 ----
 xref:version@component:module:{coordinate}file-coordinate-of-attachment.ext[optional link text]
 ----
@@ -61,7 +61,7 @@ See the xref:{coordinate}filename.ext**[optional link text]** for more options.
 If you don't specify link text in an xref macro that references an attachment, Antora displays the URL of the attachment as the link in the published page.
 
 .Attachment xref with no link text
-[source#ex-no-text]
+[listing#ex-no-text]
 ----
 Download xref:attachment$practice-project.zip[] to try it out!
 ----
@@ -75,7 +75,7 @@ Download https://docs.example.com/component/version/module/_attachments/practice
 You can specify link text by entering it between the square brackets of the xref macro.
 
 .Attachment xref with link text
-[source#ex-text]
+[listing#ex-text]
 ----
 Download xref:attachment$practice-project.zip[The Sample Project] to try it out!
 ----

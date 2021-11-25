@@ -19,7 +19,7 @@ In all other cases, Antora uses the `pretty` value.
 The `format` key is configured under the xref:configure-runtime.adoc[runtime and log] keys in a playbook.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 runtime:
   log:
@@ -52,7 +52,7 @@ Antora uses this environment variable to determine when it's running in a CI env
 To emit formatted log messages, assign the `pretty` value to the `format` key in your playbook.
 
 .Assign pretty value to format key
-[source#ex-pretty,yaml]
+[#ex-pretty,yaml]
 ----
 runtime:
   log:
@@ -78,7 +78,7 @@ If you run Antora from your terminal, the formatted log messages are displayed t
 To emit structured log messages in JSON format, assign the `json` value to the `format` key in your playbook.
 
 .Assign json value to format key
-[source#ex-json,yaml]
+[#ex-json,yaml]
 ----
 runtime:
   log:
@@ -140,7 +140,7 @@ The format of the level can be configured with the `level_format` key.
 The `level_format` key is configured under the xref:configure-runtime.adoc[runtime and log] keys in a playbook.
 
 .Assign number value to level_format key
-[source#ex-number,yaml]
+[#ex-number,yaml]
 ----
 runtime:
   log:

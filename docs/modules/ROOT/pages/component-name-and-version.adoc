@@ -39,7 +39,7 @@ Its component name will be _silver-leaf_, and its version will be _7.1_.
 . Press the kbd:[Spacebar] to insert a space after the colon, and then type the value you want to assign to `name`.
 The `name` key doesn't accept certain characters or spaces in its value, see xref:component-name-key.adoc#requirements[name requirements] for details.
 +
-[source,yaml]
+[,yaml]
 ----
 name: silver-leaf
 ----
@@ -49,7 +49,7 @@ name: silver-leaf
 . Type the value you want to assign to `version`.
 In this example, the value is enclosed in a set of single quote marks (`'`) because it starts with a number.
 +
-[source,yaml]
+[,yaml]
 ----
 name: silver-leaf
 version: '7.1'

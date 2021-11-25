@@ -10,9 +10,9 @@ The `sourcemap` key, when activated, provides additional file and line number in
 == What is the sourcemap?
 
 The sourcemap is an AsciiDoc processor feature that tracks and stores the file and line number for each parsed AsciiDoc block.
-Some Asciidoctor extensions rely on this information to run sucessfully or return the correct output.
+Some Asciidoctor extensions rely on this information to run successfully or return the correct output.
 Antora's logger uses this information to add line number and include directive source file location context to the error, warning, and info messages it logs that concern the AsciiDoc syntax.
-For example, when the AsciiDoc processor's sourcemap is turned on (activated), Antora's logger can provide the line number where an unresolve xref is located in a file.
+For example, when the AsciiDoc processor's sourcemap is turned on (activated), Antora's logger can provide the line number where an unresolved xref is located in a file.
 If the sourcemap is turned off, the logger can only provide the location of the page file that contains the broken xref.
 
 The sourcemap feature is turned on by activating the `sourcemap` key in your playbook or using the <<sourcemap-option,--asciidoc-sourcemap option>>.
@@ -41,7 +41,7 @@ This may increase the time it takes to generate your site.
 The optional `sourcemap` key is mapped to the xref:configure-asciidoc.adoc[asciidoc key].
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 asciidoc:
   sourcemap: true

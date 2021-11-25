@@ -9,7 +9,6 @@ That is, the target doesn't belong to a component version.
 Links to external websites and materials are created using the xref:asciidoc:external-urls.adoc#url-syntax[AsciiDoc URL syntax].
 AsciiDoc's URL syntax requires that the target have a valid URI scheme (e.g., `https://`) and address.
 
-[source]
 ----
 * xref:get-started.adoc[]
 ** xref:install.adoc[]

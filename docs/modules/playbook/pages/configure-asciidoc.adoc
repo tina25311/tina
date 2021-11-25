@@ -9,7 +9,7 @@ The `asciidoc` key specifies the attributes that are assigned and made available
 It also registers Asciidoctor extensions and activates additional AsciiDoc syntax error reporting features.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 asciidoc: # <.>
   sourcemap: true # <.>

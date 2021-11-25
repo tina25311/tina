@@ -44,7 +44,7 @@ The key accepts a URL pattern that contains the URL segments of the git solution
 Antora automatically fulfills these placeholders with the file's origin information at processing time.
 
 .edit_url key and value
-[source#ex-key,yaml]
+[#ex-key,yaml]
 ----
 edit_url: '{web_url}/blob/{refname}/{path}' # <.>
 ----
@@ -72,9 +72,8 @@ It includes the `start_path` if one is specified.
 
 To see an example of the values Antora would compute for the placeholders, we'll use the content source, branches, and edit URL pattern inputs shown in <<ex-value>>.
 
-[#ex-value]
 .edit_url placeholders
-[source,yaml]
+[#ex-value,yaml]
 ----
 content:
   sources:
@@ -102,7 +101,7 @@ Since this source doesn't have a specified start path, the resulting path is [.p
 When a content source has an assigned `start_path`, Antora prepends it to `+{path}+`.
 
 .Content source with start_path and edit_url set
-[source#ex-start,yaml]
+[#ex-start,yaml]
 ----
 content:
   sources:
@@ -125,7 +124,7 @@ https://app.company.com/the-group/zap/_src/v1.2.5/u890/learn/docs/modules/ROOT/p
 When all or most of your content sources use the same `edit_url`, you can set it directly on the `content` key.
 
 .Set edit_url on the content key
-[source#ex-content,yaml]
+[#ex-content,yaml]
 ----
 content:
   edit_url: '{web_url}/_src/{refname}/u890/{path}' # <.>
@@ -140,7 +139,7 @@ content:
 As seen in <<ex-source>>, the `edit_url` key can be set on an individual content source even when it's set on the `content` key.
 
 .Set edit_url on the content key and an individual source
-[source#ex-source,yaml]
+[#ex-source,yaml]
 ----
 content:
   edit_url: '{web_url}/_src/{refname}/u890/{path}' # <.>
@@ -167,7 +166,7 @@ With the `edit_url` key you can change this behavior.
 For instance, in <<ex-view>>, each page's computed edit URL will now be the URL for GitLab's rendered file view of the corresponding source file.
 
 .Route the edit URL to an alternate source file view
-[source#ex-view,yaml]
+[#ex-view,yaml]
 ----
 content:
   edit_url: '{web_url}/blob/{refname}/{path}' # <.>
@@ -190,7 +189,7 @@ However, if the repository is public, and you want to disable the link, or nulli
 The `edit_url` key can turn off the edit URL feature on all of your content sources or per individual content source.
 To disable the edit URL, assign a tilde (`~`) or the word `false` to the `edit_url` key.
 
-[source,yaml]
+[,yaml]
 ----
 content:
   branches: v*
@@ -205,7 +204,7 @@ An edit URL won't be produced for any of the pages sourced from the content sour
 
 The `edit_url` can also be disabled on an individual content source.
 
-[source,yaml]
+[,yaml]
 ----
 content:
   branches: v*
@@ -223,7 +222,7 @@ You can revert to the <<default,default edit URL behavior>> for an individual co
 On the source, set `edit_url` and assign it the value `true`.
 
 .Reset edit_url to the default behavior
-[source#ex-reset,yaml]
+[#ex-reset,yaml]
 ----
 content:
   branches: v*

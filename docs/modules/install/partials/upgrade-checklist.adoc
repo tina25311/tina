@@ -44,6 +44,6 @@ See xref:install:upgrade-antora.adoc[Upgrade Antora] for instructions.
 
 == Software Lifecycle Notices
 
-Antora 2.3 will enter maintenance on November 30, 2021.
+Antora 2.3 will enter maintenance on January 3, 2022.
 See the xref:ROOT:project/release-schedule.adoc[release schedule] for details.
 endif::[]

@@ -24,7 +24,7 @@ Bounded characters are characters that are:
 You don't need to use double backticks when an entire word or phrase marked as monospace is directly followed by a common punctuation mark, such as `;`, `"`, and `!`.
 
 .Monospace inline formatting
-[source#ex-monospace]
+[#ex-monospace]
 ----
 A monospace `word`, and a monospace `phrase of text`.
 
@@ -44,7 +44,7 @@ Monospace c``hara``cter``s`` within a word.
 You can add multiple emphasis styles to monospace text as long as the syntax is placed in the correct order.
 
 .Order of inline formatting syntax
-[source#ex-order]
+[#ex-order]
 ----
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----

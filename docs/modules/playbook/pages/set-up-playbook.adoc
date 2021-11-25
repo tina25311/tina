@@ -13,7 +13,7 @@ First, let's configure your site's title and URL.
 press kbd:[Enter] to go to the next line.
 +
 --
-[source,yaml]
+[,yaml]
 ----
 site:
 ----
@@ -25,7 +25,7 @@ The xref:configure-site.adoc[site key] accepts a map of key-value pairs that def
 Type `++title: ++` and then the text that will become the title of your site.
 Press kbd:[Enter].
 +
-[source,yaml]
+[,yaml]
 ----
 site:
   title: My Demo Site
@@ -34,7 +34,7 @@ site:
 . Type `++url: ++` and then the base URL of your site.
 +
 --
-[source,yaml]
+[,yaml]
 ----
 site:
   title: My Demo Site
@@ -47,7 +47,7 @@ Assigning an xref:site-url.adoc[absolute URL to the url key] activates secondary
 . On the next line, enter `++start_page: ++` and the page ID of the page Antora should use as the site's home page.
 +
 --
-[source,yaml]
+[,yaml]
 ----
 site:
   title: My Demo Site
@@ -69,7 +69,7 @@ Let's define these keys in the playbook file you started in the previous section
 . Type `content:` flush against the left side of the file.
 Press kbd:[Enter] to go to the next line.
 +
-[source,yaml]
+[,yaml]
 ----
 # ...
   start_page: component-b::index.adoc
@@ -80,7 +80,7 @@ content:
 Type `sources:` and press kbd:[Enter].
 +
 --
-[source,yaml]
+[,yaml]
 ----
 # ...
   start_page: component-b::index.adoc
@@ -96,7 +96,7 @@ Let's assign the URL for a remote repository named _Demo Component A_ to `url` i
 Then type `++url: ++` and the URL of a content source repository.
 +
 --
-[source,yaml]
+[,yaml]
 ----
 # ...
   start_page: component-b::index.adoc
@@ -116,7 +116,7 @@ Since the _Demo Component A_ repository only has one branch, and that branch's n
 On a new line, type `++- url: ++` and the repository's URL.
 +
 --
-[source,yaml]
+[,yaml]
 ----
 # ...
   start_page: component-b::index.adoc
@@ -140,7 +140,7 @@ At the end of the list, type a closing square bracket (`+]+`).
 Press kbd:[Enter].
 +
 --
-[source,yaml]
+[,yaml]
 ----
 # ...
   start_page: component-b::index.adoc
@@ -164,7 +164,7 @@ You'll need to set the `start_path` key on `url` so Antora can locate the conten
 . Type `++start_path: ++` and the repository root relative path.
 +
 --
-[source,yaml]
+[,yaml]
 ----
 # ...
   start_page: component-b::index.adoc
@@ -189,7 +189,7 @@ Let's tell Antora to use it's reference UI bundle by defining the required keys 
 . Flush against the left side of the file, type `ui:`.
 Press kbd:[Enter] to go to the next line.
 +
-[source,yaml]
+[,yaml]
 ----
 # ...
     start_path: docs
@@ -199,7 +199,7 @@ ui:
 . The `bundle` key is a child of `ui`.
 Type `bundle:` and press kbd:[Enter].
 +
-[source,yaml]
+[,yaml]
 ----
 # ...
     start_path: docs
@@ -211,7 +211,7 @@ ui:
 Type `++url: ++` and then the URL of Antora's reference UI bundle.
 +
 --
-[source,yaml]
+[,yaml]
 ----
 # ...
     start_path: docs
@@ -226,7 +226,7 @@ Antora's reference UI archive changes over time, but its URL doesn't, so you nee
 . On the next line, enter `++snapshot: ++` and the value `true`.
 +
 --
-[source,yaml]
+[,yaml]
 ----
 # ...
     start_path: docs
@@ -242,7 +242,7 @@ When `snapshot` is set to `true`, Antora will download the UI bundle whenever xr
 You're almost done!
 Here's the entire playbook file you've assembled so far.
 
-[source,yaml]
+[,yaml]
 ----
 site:
   title: My Demo Site

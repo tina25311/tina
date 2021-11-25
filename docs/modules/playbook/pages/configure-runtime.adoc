@@ -9,7 +9,7 @@ The global log, console output, fetch, and cache directory properties are define
 These settings are applied to the Antora pipeline when it starts.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 runtime: # <.>
   cache_dir: ./.cache/antora # <.>
@@ -35,7 +35,7 @@ If you do set it in a playbook, you must nest it under the <<runtime-key,runtime
 The `log` key accepts a list of built-in key-value pairs that configure the log level (`level`), failure level (`failure_level`), and display format (`format`).
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 runtime:
   log: # <.>

@@ -8,23 +8,23 @@ The playbook keys configured under `site` manage the site's published identity a
 Global generated site files, service accounts, and other common properties are defined under the `site` key in a playbook file.
 These settings are applied to the entire site when it's generated.
 
-[source,yaml]
+[,yaml]
 ----
-site: # <1>
-  title: Docs Site # <2>
-  url: https://docs.example.org # <3>
-  start_page: component-b::index.adoc # <4>
-  robots: allow # <5>
-  keys: # <6>
-    google_analytics: XX-123456 # <7>
+site: # <.>
+  title: Docs Site # <.>
+  url: https://docs.example.org # <.>
+  start_page: component-b::index.adoc # <.>
+  robots: allow # <.>
+  keys: # <.>
+    google_analytics: XX-123456 # <.>
 ----
-<1> Required `site` key
-<2> Required `title` key
-<3> Optional `url` key
-<4> Optional `start_page` key
-<5> Optional `robots` key
-<6> Optional `keys` key
-<7> Example `google_analytics` key
+<.> Required `site` key
+<.> Required `title` key
+<.> Optional `url` key
+<.> Optional `start_page` key
+<.> Optional `robots` key
+<.> Optional `keys` key
+<.> Example `google_analytics` key
 
 The `title` key in the `site` category is required.
 The `url` key is optional, but recommended.

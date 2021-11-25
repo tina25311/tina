@@ -20,7 +20,7 @@ The specified layout file is expected to be located in the UI bundle's [.path]_l
 For example, if you want the layout file [.path]_article.hbs_ to be used as the default page layout, you'd set `default_layout` to `article`.
 
 .Default layout value
-[source,yaml]
+[,yaml]
 ----
 ui:
   bundle:

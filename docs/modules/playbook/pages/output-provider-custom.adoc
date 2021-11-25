@@ -12,7 +12,7 @@ Otherwise, Antora will require the value as a Node module installed in the playb
 
 The custom provider is a JavaScript function that matches the following signature:
 
-[source,js]
+[,js]
 ----
 async function publish (destConfig, files, playbook)
 ----

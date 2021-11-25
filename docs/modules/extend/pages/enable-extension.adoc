@@ -12,7 +12,7 @@ To prevent Antora from enabling an extension specified in the playbook file, set
 When Antora sees that the `enabled` key has a value of `false`, it will not register the extension.
 
 .An extension that is not enabled
-[source,yaml]
+[,yaml]
 ----
 antora:
   extensions:
@@ -30,7 +30,7 @@ The `id` key specifies a value you can reference using the `--extension` CLI opt
 First, let's give our extension an ID:
 
 .An extension with an ID that is not enabled
-[source,yaml]
+[,yaml]
 ----
 antora:
   extensions:

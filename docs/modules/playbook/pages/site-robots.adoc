@@ -15,7 +15,7 @@ Its accepted values are:
 custom multi-line string:: Non-empty, user-specified string that's used as the contents of the generated [.path]_robots.txt_ file.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Site Title
@@ -34,7 +34,7 @@ If the `url` key isn't assigned a value, Antora won't generate a [.path]_robots.
 Let's assume the `url` and `robots` keys are defined as follows:
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Demo Docs Site
@@ -53,7 +53,7 @@ Allow: /
 Similarly, if the `url` and `robots` keys are defined as follows:
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Demo Docs Site
@@ -75,7 +75,7 @@ Any other non-empty value assigned to `robots` will be used as the contents of t
 For example, let's assume the `robots` key is declared as follows:
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Demo Docs Site

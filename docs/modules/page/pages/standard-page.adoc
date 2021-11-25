@@ -16,19 +16,18 @@ The header encapsulates the following elements:
 * Optional xref:attributes.adoc[custom attributes] where the attribute name and value are defined by you
 
 .Common elements in a page header
-[source]
 ----
-= Page Title <1>
-:description: A description of the page stored in an HTML meta tag. <2>
-:sectanchors: <3>
-:url-repo: https://my-git-repo.com <4>
-:page-tags: name of a tag, name of a tag <5>
+= Page Title <.>
+:description: A description of the page stored in an HTML meta tag. <.>
+:sectanchors: <.>
+:url-repo: https://my-git-repo.com <.>
+:page-tags: name of a tag, name of a tag <.>
 ----
-<1> Required page title entered on the first line of the file
-<2> Optional built-in `description` metadata attribute
-<3> Optional built-in AsciiDoc attribute
-<4> Optional custom AsciiDoc attribute
-<5> Optional custom Antora `page-` attribute
+<.> Required page title entered on the first line of the file
+<.> Optional built-in `description` metadata attribute
+<.> Optional built-in AsciiDoc attribute
+<.> Optional custom AsciiDoc attribute
+<.> Optional custom Antora `page-` attribute
 
 The attribute entries, whether built-in or custom, must each be entered on its own line.
 The header can also contain xref:asciidoc:comments.adoc[comment lines].
@@ -40,22 +39,21 @@ The page header ends by entering one or more blank lines.
 The page header is separated from the page body by at least one blank line.
 The next line that contains content initiates the body of the page.
 
-[source]
 ----
 = Page Title
 :description: A description of the page stored in an HTML meta tag.
 :sectanchors:
 :url-repo: https://my-git-repo.com
 :page-tags: name of a tag, name of a tag
-<1>
-This is the first line of the page body. <2>
+<.>
+This is the first line of the page body. <.>
 
 == Section heading
 
 This is a paragraph in a section.
 ----
-<1> A blank line ends the page header.
-<2> After the blank line, the next line with content starts the body or the page.
+<.> A blank line ends the page header.
+<.> After the blank line, the next line with content starts the body or the page.
 
 The first line of the page body can be any valid AsciiDoc content, such as a section heading, paragraph, table, include directive, image, etc.
 
@@ -73,7 +71,6 @@ If the filename starts with an underscore (`+_+`), it will be added to the conte
 . On the first line of the file, enter a page title.
 A page title is specified by one equals sign (`=`), followed by one blank space, and then the text of the title.
 +
-[source]
 ----
 = The Title of My New Page
 ----
@@ -82,7 +79,6 @@ A page title is specified by one equals sign (`=`), followed by one blank space,
 Separate the header block from the body block by one blank line.
 Write your content.
 +
-[source]
 ----
 = The Title of My New Page
 

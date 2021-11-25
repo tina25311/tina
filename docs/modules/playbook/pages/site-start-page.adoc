@@ -9,26 +9,26 @@ The `start_page` key is optional.
 It's configured under the xref:configure-site.adoc[site key] in a playbook.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Site Title
   url: https://example.org
-  start_page: component:module:filename.adoc
+  start_page: component:module:file-coordinate-of-page.adoc
 ----
 
 You can use any page that belongs to a component version as the index page for your site.
 The `start_page` key accepts the resource ID of a page as a value.
-*The resource ID must include the xref:page:resource-id-coordinates.adoc[component, module, and file coordinates]*.
-The version coordinate can be specified if you want to use a specific version of a page instead of the latest version.
+*The resource ID must include the xref:page:resource-id-coordinates.adoc#id-component[component, module, and file coordinates]*.
+The xref:page:resource-id-coordinates.adoc#id-versopm[version coordinate] can be specified if you want to use a specific version of a page instead of the latest version.
 Alternatively, `start_page` can be assigned from the xref:cli:options.adoc#start-page[CLI].
 
 == Use a page's latest version
 
-To have the `start_page` key always point to the last version of the specified page, don't enter the version coordinate in the resource ID of the page.
+To have the `start_page` key always point to the xref:ROOT:how-component-versions-are-sorted.adoc#latest-version[latest version] of the specified page, don't enter the version coordinate in the resource ID of the page.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Demo Docs Site
@@ -44,7 +44,7 @@ In this case, _\https://demo.antora.org/index.html_ will redirect to _\https://d
 If you want the site's start page to be a specific version of the designated page, include the xref:page:resource-id-coordinates.adoc#id-version[version coordinate in the resource ID].
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Demo Docs Site

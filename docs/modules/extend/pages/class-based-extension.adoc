@@ -3,7 +3,7 @@
 If your extension is going to listen for multiple events and keep track of state, you may want to consider defining your extension as a JavaScript class.
 A class is a template for creating an object.
 It encapsulates both data and the methods that operate on that data.
-This encapsultation can help keep your extension more organized.
+This encapsulation can help keep your extension more organized.
 The challenge is to work out how to define a class in such a way that it can be used as an Antora extension.
 This page shows you how.
 
@@ -19,7 +19,7 @@ The basic structure of a class-based extension is as follows:
 
 Here's the skeleton of our extension class:
 
-[source,js]
+[,js]
 ----
 class MyExtension {
 }
@@ -33,7 +33,7 @@ Antora won't create an instance of your class, but you can use the static regist
 If you're coming from Java, you can think of it like the main method of the class.
 Here's how that entry point looks:
 
-[source,js]
+[,js]
 ----
 class MyExtension {
   static register () {
@@ -57,7 +57,7 @@ They will get invoked just like any other listener function, only they will have
 That way, they can access both properties on the extension (extension state) and context variables in the generator.
 Here's the extension class again with the listener methods:
 
-[source,js]
+[,js]
 ----
 class MyExtension {
   static register () {
@@ -85,7 +85,7 @@ Now all that's left is to wire these listeners to events.
 The next step is to create a constructor the accepts the generator context and adds listeners.
 Here's the extension class again with the constructor:
 
-[source,js]
+[,js]
 ----
 class MyExtension {
   static register () {
@@ -117,4 +117,4 @@ Otherwise, the listeners won't be able to access the properties on the extension
 The listener can still access the generator context using the `context` property, to which the constructor assigns the generator context.
 
 As you have seen, using a class-based extension can keep your extension code more organized.
-It also allows your extension to take advantages of other object-oriented patterns, such as inheritence, composition, and delegation.
+It also allows your extension to take advantages of other object-oriented patterns, such as inheritance, composition, and delegation.

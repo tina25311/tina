@@ -24,7 +24,6 @@ A navigation list is an xref:asciidoc:ordered-and-unordered-lists.adoc#unordered
 Each top-level list item can nested items up to level five (`+*****+`).
 
 .Single list structure
-[source]
 ----
 * Top level item
 ** Second level item
@@ -42,7 +41,6 @@ A top-level list item is a list title, which is denoted by a dot (`.`), or, when
 When a xref:multiple-lists.adoc[file contains multiple lists], each list must be initiated with a list title.
 
 .Multiple list structure
-[source]
 ----
 .List title and top level item
 * List item
@@ -65,7 +63,6 @@ See xref:include-lists.adoc[] to learn how to create a navigation list using mul
 List titles and items in a navigation file can contain several types of content, such as cross references to pages, links to external sites, and regular and formatted text.
 The most common items in a navigation file are xrefs to pages that belong to the same component version and module, but a target resource ID can be for pages in other modules and components, too.
 
-[source]
 ----
 .The Special Project <.>
 * xref:index.adoc[] <.>

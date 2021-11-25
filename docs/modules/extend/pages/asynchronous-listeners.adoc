@@ -11,7 +11,7 @@ Of course, these operations will all be resolved before Antora proceeds, so they
 Let's look at an example of fetching a file from a URL and publishing it to the site.
 
 .fetch-and-publish-readme-extension.js
-[source,js]
+[,js]
 ----
 include::example$fetch-and-publish-readme-extension.js[]
 ----
@@ -29,7 +29,7 @@ Let's look at the same example as earlier, except it downloads the README.adoc i
 To help manage the state of the pending promise, it has also been rewritten as a xref:class-based-extension.adoc[class-based extension].
 
 .background-fetch-and-publish-readme-extension.js
-[source,js]
+[,js]
 ----
 include::example$background-fetch-and-publish-readme-extension.js[]
 ----

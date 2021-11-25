@@ -19,7 +19,7 @@ If a logged message meets the `fatal` severity threshold, Antora will exit with 
 The `failure_level` key is configured under the xref:configure-runtime.adoc[runtime and log] keys in a playbook.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 runtime:
   log:
@@ -47,7 +47,7 @@ When the `failure_level` key is assigned the value `none`, Antora always exits w
 Let's assign the value `warn` to the `failure_level` key in the playbook shown in <<ex-failure>>.
 
 .Assign warn severity threshold to failure_level key
-[source#ex-failure,yaml]
+[#ex-failure,yaml]
 ----
 runtime:
   log:

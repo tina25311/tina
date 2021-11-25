@@ -23,7 +23,7 @@ The in-scope variables for each event are defined on the xref:generator-events-r
 Let's build on our extension to retrieve the site catalog and add a [.path]_.nojekyll_ file to it as an alternative to using the supplemental UI for this purpose.
 
 .nojekyll-extension.js
-[source#ex-nojekyll,js]
+[#ex-nojekyll,js]
 ----
 include::example$nojekyll-extension.js[]
 ----
@@ -55,7 +55,7 @@ But we can create a new playbook, change it's properties, and pass our copy back
 The following example shows how this would work by listening to the `playbookBuilt` event (when the playbook is not yet locked) and creating a replacement.
 
 .exclude-private-content-sources-extension.js
-[source,js]
+[,js]
 ----
 include::example$exclude-private-content-sources-extension.js[]
 ----
@@ -68,7 +68,7 @@ Let's consider another case where we proxy the content catalog to prevent it fro
 In <<ex-proxy>>, we will listen for the `contentClassified` event, retrieve the `contentCatalog` context variable, and replace the variable with a proxy of the object.
 
 .Replace variable with a proxy of the object
-[source#ex-proxy,js]
+[#ex-proxy,js]
 ----
 module.exports.register = function () {
   this.on('contentClassified', function ({ contentCatalog }) {

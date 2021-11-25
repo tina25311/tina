@@ -9,7 +9,7 @@ As the key's name implies, it only applies to the latest version of each compone
 The `latest_version_segment` key is configured in the playbook under the `urls` key.
 
 .antora-playbook.yml
-[source#ex-replace,yaml]
+[#ex-replace,yaml]
 ----
 urls: # <.>
   latest_version_segment: current # <.>
@@ -39,7 +39,7 @@ The examples in this section use the component versions defined by the component
 <<ex-actual>> defines a component version with the name `colorado` and version `5.2`.
 
 .Component version descriptor (antora.yml file) defining the colorado 5.2 component version
-[source#ex-actual,yaml]
+[#ex-actual,yaml]
 ----
 name: colorado
 version: '5.2' # <.>
@@ -49,7 +49,7 @@ version: '5.2' # <.>
 <<ex-latest>> defines a component version with the name `colorado` and version `5.6`.
 
 .Component version descriptor (antora.yml file) defining the colorado 5.6 component version
-[source#ex-latest,yaml]
+[#ex-latest,yaml]
 ----
 name: colorado
 version: '5.6' # <.>
@@ -63,7 +63,7 @@ That is, when the `latest_version_segment` key isn't set in the playbook.
 <<ex-site>> specifies the site URL, assigned to the `url` key, that Antora uses when building absolute URLs and when the URLs are displayed in a browser address bar.
 
 .Playbook (antora-playbook.yml file) showing site url value
-[source#ex-site,yaml]
+[#ex-site,yaml]
 ----
 site:
   title: The Ranges
@@ -95,7 +95,7 @@ The `latest_version_segment` key is configured in the playbook file, not the com
 <<ex-playbook>> shows a truncated playbook file with the `latest_version_segment` key defined.
 
 .Playbook (antora-playbook.yml file) defining a symbolic version
-[source#ex-playbook,yaml]
+[#ex-playbook,yaml]
 ----
 site:
   title: The Ranges

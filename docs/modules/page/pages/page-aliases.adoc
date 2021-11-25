@@ -17,7 +17,6 @@ A source page's resource ID--its xref:resource-id.adoc[resource ID] before it wa
 Multiple resource IDs can be assigned to the attribute in a comma-separated list.
 
 .Header of target page
-[source]
 ----
 = Title of Target Page
 :page-aliases: source-page-filename.adoc, version@component:module:source-page-filename.adoc
@@ -26,7 +25,6 @@ Multiple resource IDs can be assigned to the attribute in a comma-separated list
 You can split this list across multiple lines using a line continuation (a space followed by a backslash at the end of the line):
 
 .Page aliases split across multiple lines
-[source]
 ----
 = Title of Target Page
 :page-aliases: source-page-filename.adoc, \
@@ -55,7 +53,6 @@ While a resource ID assigned to `page-aliases` works in xrefs, the xref:navigati
 If you change a source page's filename from [.path]_old-name.adoc_ to [.path]_new-name.adoc_, assign the file's former resource ID to `page-aliases` in its header.
 
 .new-name.adoc
-[source]
 ----
 = Title of Target Page
 :page-aliases: old-name.adoc
@@ -72,7 +69,7 @@ In <<ex-module>>, the page `source-1.adoc` has moved from `module-1` to `module-
 Both `module-1` and `module-z` are modules in version `5.0` of `component-1`.
 
 .source-1.adoc
-[source#ex-module]
+[#ex-module]
 ----
 = Title of Target Page
 :page-aliases: module-1:source-1.adoc <.>
@@ -85,7 +82,7 @@ When a page is moved from one component to another component, assign the source 
 In <<ex-component>>, the page `source-w.adoc` has moved from version `1.4` of `component-8`, `module-u` to version `3.0` of `component-delta`, `ROOT`.
 
 .source-w.adoc
-[source#ex-component]
+[#ex-component]
 ----
 = Title of Target Page
 :page-aliases: 1.4@component-8:module-u:source-w.adoc
@@ -108,7 +105,7 @@ You shouldn't create a redirect to a target page that doesn't have much in commo
 If it's appropriate to redirect the deleted page's URL to another page, assign the deleted page's ID to the `page-aliases` attribute, making sure to specify the necessary coordinates.
 
 .Target page
-[source#ex-deleted]
+[#ex-deleted]
 ----
 = Title of Target Page
 :page-aliases: source-page-filename.adoc

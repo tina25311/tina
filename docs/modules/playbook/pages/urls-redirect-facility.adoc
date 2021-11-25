@@ -28,7 +28,7 @@ nginx::
 A redirect file for nginx named [.path]_rewrite.conf_ is generated and placed at the location [.path]_.etc/nginx/rewrite.conf_ in the published site.
 +
 CAUTION: By default, nginx will not know to look for the file in this location.
-You either need to move it to where nginx can find it or configure nginx to for it at this location.
+You either need to move it to where nginx can find it or configure nginx to use it at this location.
 [[static-value]]static::
 (default) A static HTML file with the `http-equiv` meta element set to `refresh` is generated at the source page's URL.
 The file provides a redirect notice and routes the source page URL to the target page URL.
@@ -40,7 +40,7 @@ Antora automatically assigns the value `static` to the `redirect_facility` key u
 The `redirect_facility` key is configured in the playbook under the `urls` key.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 urls:
   redirect_facility: netlify
@@ -113,7 +113,7 @@ The `0` indicates that the visitor will be redirected to the target page in 0 se
 . A redirect notice, letting the visitor know that the xref:page:page-aliases.adoc#source-page[source page] no longer exists and providing a link to the target page.
 
 .Generated static refresh page for old-name.html that redirects to new-name.html
-[source,html]
+[,html]
 ....
 <!DOCTYPE html>
 <meta charset="utf-8">

@@ -52,7 +52,7 @@ A playbook project only has one top-level dependency, which is (pending release)
 You can see that this is the only dependency declared in [.path]_package.json_:
 
 .package.json (excerpt)
-[source,json,subs=attributes+]
+[,json,subs=attributes+]
 ----
 "dependencies": {
   "antora": "{uri-antora-repo}#v1.0.3"

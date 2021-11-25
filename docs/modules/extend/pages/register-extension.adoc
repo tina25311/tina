@@ -12,7 +12,7 @@ We prefix the path with `./` to indicate that its location is relative to the pl
 // TODO link to docs for @antora/user-require-helper
 
 .antora-playbook.yml with extension
-[source,yaml]
+[,yaml]
 ----
 antora:
   extensions:
@@ -29,7 +29,7 @@ Antora is building the Example Docs.
 You can also specify the extension to require using the explicit `require` key, which leaves room for configuration settings.
 
 .antora-playbook.yml with extension specified using require key
-[source,yaml]
+[,yaml]
 ----
 antora:
   extensions:

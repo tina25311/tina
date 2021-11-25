@@ -15,7 +15,7 @@ When the default value is applied, all messages that meet or exceed the `warn` t
 The `level` key is configured under the xref:configure-runtime.adoc[runtime and log] keys in a playbook.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 runtime:
   log:
@@ -49,7 +49,7 @@ Messages that don't meet the severity threshold are not reported.
 Let's assign the value `info` to the `level` key in the playbook shown in <<ex-level>>.
 
 .Assign info severity threshold to level key
-[source#ex-level,yaml]
+[#ex-level,yaml]
 ----
 runtime: # <.>
   log: # <.>

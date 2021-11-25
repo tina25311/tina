@@ -5,7 +5,7 @@ To xref:page:attachments.adoc[reference an attachment], use the AsciiDoc xref ma
 The `attachment$` family coordinate must be specified in the attachment's resource ID.
 
 .nav.adoc
-[source#ex-base]
+[#ex-base]
 ----
 * xref:attachment$filename.pdf[Our Brochure] <.>
 * xref:version@component:module:attachment$filename.epub[Our Book] <.>
@@ -16,7 +16,7 @@ The `attachment$` family coordinate must be specified in the attachment's resour
 If you don't specify link text in an xref macro that targets an attachment, Antora displays the URL of the attachment as the link in the component version's page menu.
 
 .nav.adoc
-[source#ex-no-text]
+[#ex-no-text]
 ----
 * xref:attachment$sample-project.zip[]
 ----
@@ -26,7 +26,7 @@ The computed URL resulting from <<ex-no-text>>, _+https://docs.example.com/compo
 You can specify link text by entering it between the square brackets of the xref macro.
 
 .nav.adoc
-[source#ex-text]
+[#ex-text]
 ----
 * xref:attachment$sample-project.zip[Practice Project]
 ----

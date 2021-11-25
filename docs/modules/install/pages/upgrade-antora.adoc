@@ -90,7 +90,7 @@ This is typically where your Antora playbook file, [.path]_antora-playbook.yml_,
 . Change the version number of the site generator.
 We recommend specifying a partial version number (major.minor) so that you receive the latest patch update.
 +
-[source,json,subs=attributes+]
+[,json,subs=attributes+]
 ----
 {
   "dependencies": {

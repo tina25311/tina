@@ -13,7 +13,7 @@ The specified strategy and symbolic version are only applied to the xref:ROOT:ho
 The URLs for all other component versions use the actual version in the version segment of the URL.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 urls: # <.>
   latest_version_segment_strategy: redirect:to # <.>
@@ -51,7 +51,7 @@ Since creating temporary redirect rules is only something a web server can do, w
 When `replace` is your preferred strategy, you don't need to set the `latest_version_segment_strategy` key as long as you assign a value to the `latest_version_segment` key or `latest_prerelease_version_segment` key in the playbook.
 
 .Use replace by default at runtime
-[source#ex-replace,yaml]
+[#ex-replace,yaml]
 ----
   # ...
 urls:
@@ -71,7 +71,7 @@ The examples in this section use the component versions defined by the component
 <<ex-actual>> defines a component version with the component name `colorado` and the version `5.2`.
 
 .Component version descriptor (antora.yml file) defining the colorado 5.2 component version
-[source#ex-actual,yaml]
+[#ex-actual,yaml]
 ----
 name: colorado
 version: '5.2' # <.>
@@ -81,7 +81,7 @@ version: '5.2' # <.>
 <<ex-latest>> defines a component version with the name `colorado` and the version `5.6`.
 
 .Component version descriptor (antora.yml file) defining the colorado 5.6 component version
-[source#ex-latest,yaml]
+[#ex-latest,yaml]
 ----
 name: colorado
 version: '5.6' # <.>
@@ -96,7 +96,7 @@ The `latest_version_segment_strategy` and `latest_version_segment` keys are conf
 <<ex-playbook>> shows these keys defined in a playbook file.
 
 .Playbook (antora-playbook.yml file) defining a latest version segment strategy
-[source#ex-playbook,yaml]
+[#ex-playbook,yaml]
 ----
 site:
   title: The Ranges
@@ -138,7 +138,7 @@ Continuing the scenario presented in the <<redirect-to,previous section>>, let's
 <<ex-new>> defines a component version with the name `colorado` and the actual version `6.0`.
 
 .Component version descriptor (antora.yml file) defining the colorado 6.0 component version
-[source#ex-new,yaml]
+[#ex-new,yaml]
 ----
 name: colorado
 version: '6.0'

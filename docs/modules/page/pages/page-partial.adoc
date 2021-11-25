@@ -16,7 +16,7 @@ The downside of retaining the AsciiDoc source is that it _may_ increase the peak
 If that's a concern, you can revert to the previous "`a la carte`" behavior.
 To revert to the previous behavior (prior to Antora 2.2), set the following property in the playbook file:
 
-[source,yaml]
+[,yaml]
 ----
 asciidoc:
   attributes:
@@ -27,7 +27,6 @@ The `page-partial` attribute will no longer be set globally.
 Now you *must* set the `page-partial` attribute on any page you want to use in an include directive.
 For example:
 
-[source]
 ----
 = Shared Page
 :page-partial:
@@ -37,7 +36,6 @@ Page contents.
 
 With the `page-partial` attribute set, you can safely refer to that page using the include directive:
 
-[source]
 ----
 \include::shared-page.adoc[]
 ----

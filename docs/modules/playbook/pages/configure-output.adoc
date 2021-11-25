@@ -8,21 +8,21 @@ The playbook keys configured under `output` define where the site files are writ
 The `output` key contains common output settings and a list of destination specifications.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
-output: # <1>
-  clean: true # <2>
-  dir: ./public # <3>
-  destinations: # <4>
-  - provider: archive # <5>
-    path: ./public/blue.zip # <6>
+output: # <.>
+  clean: true # <.>
+  dir: ./public # <.>
+  destinations: # <.>
+  - provider: archive # <.>
+    path: ./public/blue.zip # <.>
 ----
-<1> Optional `output` key
-<2> Optional `clean` key
-<3> Optional `dir` key
-<4> Optional `destinations` key
-<5> Optional `provider` key
-<6> Optional `path` key
+<.> Optional `output` key
+<.> Optional `clean` key
+<.> Optional `dir` key
+<.> Optional `destinations` key
+<.> Optional `provider` key
+<.> Optional `path` key
 
 The `output` key and the key-value pairs it can accept are optional.
 When `output` isn't set in a playbook, Antora uses the `fs` provider and publishes the site to the output directory [.path]_build/site_ by default.

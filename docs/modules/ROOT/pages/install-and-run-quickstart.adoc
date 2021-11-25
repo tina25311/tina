@@ -87,26 +87,26 @@ Save this file as [.path]_antora-playbook.yml_ in the [.path]_docs-site_ directo
 This playbook file will create a site using the {url-demo}[Antora demo repositories].
 
 .antora-playbook.yml
-[source#demo-playbook,yaml]
+[#demo-playbook,yaml]
 ----
 site:
   title: Antora Docs
-  start_page: component-b::index.adoc # <1>
+  start_page: component-b::index.adoc # <.>
 content:
-  sources: # <2>
+  sources: # <.>
   - url: https://gitlab.com/antora/demo/demo-component-a.git
     branches: HEAD
   - url: https://gitlab.com/antora/demo/demo-component-b.git
     branches: [v2.0, v1.0]
     start_path: docs
-ui: # <3>
+ui: # <.>
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
 ----
-<1> A page from a component version to be used as the home page for your site.
-<2> The `sources` category contains the list of git repository locations, branch name patterns, and other repository properties that Antora uses when aggregating the site content.
-<3> The `ui` category contains keys that specify the location of the UI bundle and how it should be processed.
+<.> A page from a component version to be used as the home page for your site.
+<.> The `sources` category contains the list of git repository locations, branch name patterns, and other repository properties that Antora uses when aggregating the site content.
+<.> The `ui` category contains keys that specify the location of the UI bundle and how it should be processed.
 
 TIP: See the xref:playbook:index.adoc[Antora playbook] for more detailed information about the playbook file.
 

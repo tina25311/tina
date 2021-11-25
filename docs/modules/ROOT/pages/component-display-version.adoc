@@ -13,14 +13,14 @@ If `display_version` isn't set, the reference UI falls back to xref:component-ve
 Unlike `version`, the value of `display_version` can contain spaces, uppercase letters, and most characters (e.g., `3.0 Beta`, `RED WREN!`, `rawhide`).
 
 .antora.yml
-[source,yaml]
+[,yaml]
 ----
 name: colorado
 title: Colorado ∆
 version: '5.6'
-display_version: '5.6 EOL' # <1>
+display_version: '5.6 EOL' # <.>
 ----
-<1> If the value starts with a number, enclose it in a set of single quote marks (`'`).
+<.> If the value starts with a number, enclose it in a set of single quote marks (`'`).
 
 The `display_version` key should be used when a version contains spaces or characters that would break Antora's resource IDs, prevent portability between web servers, and aren't recommended in URLs.
 It's useful when the component version is a xref:component-prerelease.adoc[prerelease], xref:component-with-no-version.adoc[unversioned], or archived because the value of `display_version` doesn't affect publishable resource URLs and resource IDs.
@@ -38,7 +38,7 @@ Since `version` can't contain blank spaces, let's set `display_version` in the c
 . Open the component version's [.path]_antora.yml_ file in the text editor or IDE of your choice.
 +
 .antora.yml for the component version silver-leaf 7.1
-[source,yaml]
+[,yaml]
 ----
 name: silver-leaf
 title: Silver Leaf
@@ -49,7 +49,7 @@ version: '7.1'
 . Insert a blank space after the colon, and then type the value you want to assign to `display_version`.
 Since the value begins with a number, enclose it in a set of single quote marks (`'`).
 +
-[source,yaml]
+[,yaml]
 ----
 name: silver-leaf
 title: Silver Leaf

@@ -8,7 +8,7 @@ The `latest_prerelease_version_segment` key replaces the actual version with a s
 The `latest_prerelease_version_segment` key is configured in the playbook under the `urls` key.
 
 .antora-playbook.yml
-[source#ex-replace,yaml]
+[#ex-replace,yaml]
 ----
 urls:
   latest_prerelease_version_segment: unstable
@@ -35,7 +35,7 @@ The examples in this section use the component version defined by the component 
 <<ex-actual>> defines a component version with the name `colorado` and version `6.0`.
 
 .Component version descriptor (antora.yml file) defining the colorado 6.0 component version
-[source#ex-actual,yaml]
+[#ex-actual,yaml]
 ----
 name: colorado
 version: '6.0' # <.>
@@ -59,7 +59,7 @@ The `latest_prerelease_version_segment` key is configured in the playbook file, 
 <<ex-playbook>> shows a truncated playbook file with the `latest_prerelease_version_segment` key defined.
 
 .Playbook (antora-playbook.yml file) defining a symbolic prerelease version
-[source#ex-playbook,yaml]
+[#ex-playbook,yaml]
 ----
 site:
   title: The Ranges

@@ -9,7 +9,7 @@ In order to publish a site's files as a ZIP archive, your playbook must set the 
 The `provider` value `archive` publishes a site to a {url-zip-file-format}[ZIP] file.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 output:
   destinations: # <.>
@@ -38,7 +38,7 @@ In <<ex-rel>>, the site will be published to
 the target file [.path]_blue.zip_ relative to the playbook file.
 
 .Assign a relative path to the path key
-[source#ex-rel,yaml]
+[#ex-rel,yaml]
 ----
 output:
   destinations:
@@ -52,7 +52,7 @@ output:
 In <<ex-abs>>, the site will be published to [.path]_/home/user/projects/launch/blue.zip_, regardless of where the playbook is located.
 
 .Assign an absolute path to the path key
-[source#ex-abs,yaml]
+[#ex-abs,yaml]
 ----
 output:
   destinations:
@@ -67,7 +67,7 @@ output:
 In <<ex-multiple>>, Antora is running on a playbook file in the [.path]_tmp_ directory and publishing the site to two locations, one relative and one absolute.
 
 .Specify multiple providers
-[source#ex-multiple,yaml]
+[#ex-multiple,yaml]
 ----
 output:
   destinations:

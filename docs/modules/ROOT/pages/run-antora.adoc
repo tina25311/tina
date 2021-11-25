@@ -49,12 +49,12 @@ For the examples on this page, we'll use the demo playbook and content repositor
 Or, you can download {url-demo-playbook}[the playbook file] from the demo project repository.
 +
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Antora Demo Site
-  url: https://my-antora-demo-site.org # <1>
-  start_page: component-b::index.adoc # <2>
+  url: https://my-antora-demo-site.org # <.>
+  start_page: component-b::index.adoc # <.>
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git
@@ -67,9 +67,9 @@ ui:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
 ----
-<1> The 404 page and sitemap files are only generated if the site `url` key is set.
+<.> The 404 page and sitemap files are only generated if the site `url` key is set.
 The sitemap files are only generated if the value of the site `url` key is an absolute URL.
-<2> The site `start_page` key accepts the same resource ID syntax that's used in xrefs.
+<.> The site `start_page` key accepts the same resource ID syntax that's used in xrefs.
 
 . Save the playbook as [.path]_antora-playbook.yml_ in the [.path]_demo-site_ directory you made in Step 1.
 

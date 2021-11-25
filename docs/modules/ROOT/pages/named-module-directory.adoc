@@ -1,6 +1,4 @@
 = Named Module Directory
-:xrefstyle: short
-:listing-caption: Example
 
 == What's a named module directory?
 
@@ -11,25 +9,25 @@ You can create as many named module directories as you need.
 [listing#ex-named]
 ----
 📒 repository
-  📂 docs <1>
-    📄 antora.yml <2>
-    📂 modules <3>
-      📂 a-named-module <4>
-        📂 pages <5>
-          📄 a-source-file.adoc <6>
-        📄 nav.adoc <7>
-      📂 get-started <8>
+  📂 docs <.>
+    📄 antora.yml <.>
+    📂 modules <.>
+      📂 a-named-module <.>
+        📂 pages <.>
+          📄 a-source-file.adoc <.>
+        📄 nav.adoc <.>
+      📂 get-started <.>
         📂 pages
           📄 a-source-file.adoc
 ----
-<1> Content source root
-<2> Required [.path]_antora.yml_ file
-<3> Required [.path]_modules_ directory
-<4> A named module directory
-<5> [.path]_pages_ family directory
-<6> A source file for a page
-<7> A navigation file
-<8> Another module directory, named [.path]_get-started_
+<.> Content source root
+<.> Required [.path]_antora.yml_ file
+<.> Required [.path]_modules_ directory
+<.> A named module directory
+<.> [.path]_pages_ family directory
+<.> A source file for a page
+<.> A navigation file
+<.> Another module directory, named [.path]_get-started_
 
 Antora uses a module's directory name to create a <<named-module,module's name>>.
 For this reason, it's important to carefully consider xref:module-directory-names.adoc[what you name your named module directories].

@@ -9,15 +9,15 @@ The [.path]_modules_ directory is required wherever a component version descript
 [listing]
 ----
 📒 repository
-  📂 docs <1>
-    📄 antora.yml <2>
-    📂 modules <3>
-    📂 non-docs-directory <4>
+  📂 docs <.>
+    📄 antora.yml <.>
+    📂 modules <.>
+    📂 non-docs-directory <.>
 ----
-<1> Content source root
-<2> Required component version descriptor file
-<3> Required [.path]_modules_ directory
-<4> Antora won't process the files in this directory because it's located outside the [.path]_modules_ directory
+<.> Content source root
+<.> Required component version descriptor file
+<.> Required [.path]_modules_ directory
+<.> Antora won't process the files in this directory because it's located outside the [.path]_modules_ directory
 
 Except for [.path]_antora.yml_, the standard directories and their files must reside in a valid hierarchy in the [.path]_modules_ directory.
 A [.path]_modules_ directory can contain as many <<module-dir,module directories>> as you require.
@@ -34,19 +34,19 @@ The source files stored in a module directory become part of a <<module,module>>
 [listing]
 ----
 📒 repository
-  📂 docs <1>
+  📂 docs <.>
     📄 antora.yml
     📂 modules
-      📂 a-named-module <2>
-        📂 pages <3>
-          📄 a-source-file.adoc <4>
-        📄 nav.adoc <5>
+      📂 a-named-module <.>
+        📂 pages <.>
+          📄 a-source-file.adoc <.>
+        📄 nav.adoc <.>
 ----
-<1> Content source root
-<2> A named module directory
-<3> _pages_ family directory
-<4> A source file for a page
-<5> A navigation file
+<.> Content source root
+<.> A named module directory
+<.> _pages_ family directory
+<.> A source file for a page
+<.> A navigation file
 
 At a minimum, a module directory must contain at least one xref:family-directories.adoc[family directory] with at least one source file.
 A module directory may also contain zero or more navigation files.

@@ -8,23 +8,23 @@ The playbook keys configured under `ui` define the location of the UI bundle and
 The `ui` key specifies the UI bundle's location, state, default page template name, and output directory.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
-ui: # <1>
-  bundle: # <2>
-    url: https://example.org/docs-ui/download/latest/ui-bundle.zip # <3>
-    snapshot: true # <4>
-    start_path: dark # <5>
-  default_layout: base # <6>
-  output_dir: _/dark # <7>
+ui: # <.>
+  bundle: # <.>
+    url: https://example.org/docs-ui/download/latest/ui-bundle.zip # <.>
+    snapshot: true # <.>
+    start_path: dark # <.>
+  default_layout: base # <.>
+  output_dir: _/dark # <.>
 ----
-<1> Required `ui` key
-<2> Required `bundle` key
-<3> Required `url` key
-<4> Optional `snapshot` key
-<5> Optional `start_path` key
-<6> Optional `default_layout` key
-<7> Optional `output_dir` key
+<.> Required `ui` key
+<.> Required `bundle` key
+<.> Required `url` key
+<.> Optional `snapshot` key
+<.> Optional `start_path` key
+<.> Optional `default_layout` key
+<.> Optional `output_dir` key
 
 The `ui`, `bundle`, and `url` keys are required.
 Alternatively, the `url` key can be assigned from the xref:cli:options.adoc#ui-bundle[CLI].

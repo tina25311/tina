@@ -14,7 +14,6 @@ On this page, you'll learn:
 
 A page title is specified by one equals sign (`=`), followed by one blank space, and then the text of the title.
 
-[source]
 ----
 = Title of This Page
 ----
@@ -25,7 +24,6 @@ If set, `description` is output to an HTML `<meta>` tag with the same name.
 You can break long values across several lines by ending each line with a backslash `\` that is preceded by a space.
 
 .Description attribute syntax
-[source]
 ----
 = Page Title
 :description: A description of the page stored in an HTML meta tag. This page is \
@@ -35,7 +33,6 @@ about all kinds of interesting things.
 The keywords attribute contains a list of comma-separated values that are assigned to an HTML `<meta>` tag with the same name.
 
 .Keywords attribute syntax
-[source]
 ----
 = Page Title
 :keywords: comma-separated values, stored, in an HTML, meta, tag
@@ -49,7 +46,6 @@ An optional email address or contact URL can follow an author’s name inside a 
 When a page has multiple authors, each author is separated by a semicolon (`;`).
 
 .Multiple authors and author information syntax
-[source]
 ----
 = Page Title
 First Middle Last <author@email.com>; First Last <author@email.com>
@@ -61,7 +57,6 @@ Whether any author information is also displayed on a published page depends on 
 Refer to the AsciiDoc documentation for {url-author}[additional author attributes^] and methods for specifying author information.
 
 ////
-[source]
 ----
 = The Title of My New Page
 :attribute-a: value-a

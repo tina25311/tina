@@ -10,7 +10,7 @@ You define the `keys` key under the xref:configure-site.adoc[site key] in a play
 `keys` accepts a list of name-value pairs (aka subkeys) that specify account identifiers.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Site Title
@@ -27,13 +27,13 @@ For example, you can access the keys defined in the example above as `site.keys.
 Site keys can also be configured from the xref:cli:options.adoc#key[CLI].
 
 [#google-analytics-key]
-== Add a Google analytics account
+== Add a Google Analytics account
 
 The `google_analytics` key assigns a Google Analytics account to the site.
 Setting this option implicitly enables the Google Analytics / Tag Manager embed code when using the default UI.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Demo Docs Site

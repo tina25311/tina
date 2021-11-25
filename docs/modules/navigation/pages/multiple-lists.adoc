@@ -8,7 +8,6 @@ When a navigation file contains multiple lists:
 * each list must start with a list title, and
 * each list must be separated by at least one blank line.
 
-[source]
 ----
 .List title <.>
 * List item
@@ -29,7 +28,6 @@ The blank line between the lists is not present in the published menu.
 Each navigation list is made up of list items.
 
 .Navigation file with multiple lists
-[source]
 ----
 .List title <.>
 * List item <.>
@@ -62,7 +60,6 @@ That means the resource IDs won't need to specify version, component, or module 
 . Open a new file in the text editor or IDE of your choice.
 . On the first line, type a dot (`.`), directly followed by an xref macro prefix and the resource ID of the target page.
 +
-[source]
 ----
 .xref:get-started.adoc
 ----
@@ -71,7 +68,6 @@ That means the resource IDs won't need to specify version, component, or module 
 Press kbd:[Enter] to go to the next line.
 +
 --
-[source]
 ----
 .xref:get-started.adoc[]
 ----
@@ -85,7 +81,6 @@ This time, enter link text inside the set of square brackets (`+[]+`).
 Press kbd:[Enter]
 +
 --
-[source]
 ----
 .xref:get-started.adoc[]
 * xref:install.adoc[Installation Setup and Steps]
@@ -99,7 +94,6 @@ Press kbd:[Enter] to insert a blank like between the lists.
 On a new line, type a dot (`.`), directly followed by regular text.
 This list title won't reference a page.
 +
-[source]
 ----
 .xref:get-started.adoc[]
 * xref:install.adoc[Installation Setup and Steps]
@@ -110,7 +104,6 @@ This list title won't reference a page.
 . On the next line, type an asterisk (`+*+`), a blank space, and then an xref macro.
 This item is a cross reference that will use the target page's default link text.
 +
-[source]
 ----
 .xref:get-started.adoc[]
 * xref:install.adoc[Installation Setup and Steps]
@@ -122,7 +115,6 @@ This item is a cross reference that will use the target page's default link text
 . Finally, nest a list item under the previous item.
 Type two asterisks (`+**+`), followed by a blank space, and then an xref.
 +
-[source]
 ----
 .xref:get-started.adoc[]
 * xref:install.adoc[Installation Setup and Steps]

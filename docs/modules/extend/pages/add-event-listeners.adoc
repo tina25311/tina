@@ -13,7 +13,7 @@ We'll listen for the `playbookBuilt` and `sitePublished` events, which are the f
 This gives us the opportunity to roughly measure how long it took to generate and publish the site.
 
 .time-generation-extension.js
-[source#ex-listen,js]
+[#ex-listen,js]
 ----
 include::example$time-generation-extension.js[]
 ----
@@ -28,7 +28,7 @@ There are two changes we must make to get this to work.
 First, we can use the `prependListener` method as an alternative to `on` to add the `playbookBuilt` listener before other listeners that have already been associated with that event.
 
 .time-generation-extension.js
-[source,js]
+[,js]
 ----
 include::example$better-time-generation-extension.js[]
 ----
@@ -43,3 +43,4 @@ That opens up the possibility that one extension can rearrange listeners added b
 
 To do something more interesting than time the execution and print messages to the console, we need to xref:use-context-variables.adoc[use context variables].
 Let's learn how that's done next.
+[

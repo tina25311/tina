@@ -11,7 +11,7 @@ You can add as many `url` keys as you need.
 Each `url` key tells Antora where to find a git repository that contains content source files.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -34,7 +34,7 @@ If the value matches either of the two rules listed below, the value will always
 
 Remote content repositories can be fetched via URLs (http, https), SSH URIs, and git URIs.
 
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -54,7 +54,7 @@ Antora can connect to private git repositories as long as a xref:private-reposit
 
 Antora permits the value of `url` to be a relative or absolute filesystem path.
 
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -78,7 +78,7 @@ This behavior is central to the xref:author-mode.adoc[author mode] in Antora.
 It means you *don't have to commit files locally* before Antora can use them.
 
 .Use files from the worktree
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -92,7 +92,7 @@ Instead of specifying the name of the current branch explicitly, you can use the
 This saves you the trouble of having to update your playbook when you switch branches.
 
 .Use files from the worktree
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -110,7 +110,7 @@ To ensure Antora *doesn't* use files from the worktree, even if the branch filte
 This effectively hides the worktree from Antora so it won't get used.
 
 .Refers directly at the .git folder to bypass files in the worktree
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -123,7 +123,7 @@ content:
 A better way to bypass the git worktree is to set the `worktrees` key to `false`.
 
 .Sets worktrees to false to bypass files in the worktree
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:

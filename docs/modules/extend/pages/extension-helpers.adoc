@@ -41,7 +41,7 @@ Keep in mind that locked variables can't be replaced.
 
 Here's an example that shows how to replace the `playbook` and `siteCatalog` variables from a listener:
 
-[source,js]
+[,js]
 ----
 playbook = JSON.parse(JSON.stringify(playbook))
 siteCatalog = new Proxy(siteCatalog, {})
@@ -68,7 +68,7 @@ Keep in mind that if you call `stop` in any listener before the `sitePublished` 
 
 Here's an example that shows how to signal to Antora in a listener to stop processing:
 
-[source,js]
+[,js]
 ----
 console.log('Our work is done here. Wrap it up.')
 this.stop()
@@ -81,7 +81,7 @@ The `getLogger` helper method allows you to retrieve an instance of the logger.
 
 Here's an example that shows how to retrieve an instance of the logger and use it in a listener:
 
-[source,js]
+[,js]
 ----
 module.exports.register = function () {
   const logger = this.getLogger('extension-name')
@@ -114,7 +114,7 @@ This method provides a way to require that code.
 
 Here's an example that shows how to get the version of the site generator that is currently running from a listener:
 
-[source,js]
+[,js]
 ----
 const { name, version } = this.require('@antora/site-generator-default/package')
 console.log(`Running ${name} version ${version}`)
@@ -122,7 +122,7 @@ console.log(`Running ${name} version ${version}`)
 
 Since the extension is already running in the context of the site generator, here's a slightly simpler way to achieve the same result:
 
-[source,js]
+[,js]
 ----
 const { name, version } = this.require('../package')
 console.log(`Running ${name} version ${version}`)
@@ -131,7 +131,7 @@ console.log(`Running ${name} version ${version}`)
 For a more practical example, you can use the `require` helper method to create a child logger for your extension.
 Typically, you'd do so in the `register` function, then access the same instance of the logger throughout your extension.
 
-[source,js]
+[,js]
 ----
 module.exports.register = function () {
   const logger = this.require('@antora/logger')('extension-name')
