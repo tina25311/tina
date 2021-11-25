@@ -24,7 +24,7 @@ The include directive accepts the xref:resource-id.adoc[Antora resource ID] of e
 Because the include directive is used to reference other resources, the `example$` family coordinate must be specified in the example's resource ID when it's assigned to an include directive.
 
 .Include directive assigned the fully qualified resource ID of an example
-[#ex-base]
+[listing#ex-base]
 ----
 \include::version@component:module:example$file-coordinate-of-target-example.ext[optional attribute]
 ----

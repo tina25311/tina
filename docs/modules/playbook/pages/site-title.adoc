@@ -7,7 +7,7 @@ The `title` key is required.
 It's configured under the xref:configure-site.adoc[site key] in a playbook.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Site Title
@@ -23,7 +23,7 @@ The `title` key can also be xref:cli:options.adoc#title[assigned from the CLI].
 Use the `title` key to add a title to your site.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Demo Docs Site

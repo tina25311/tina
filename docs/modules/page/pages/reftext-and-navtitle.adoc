@@ -11,7 +11,7 @@ By default, Antora assigns a page's title to the `reftext` attribute at runtime.
 In <<ex-page>>, let's reference the [.path]_install-prerequisites.adoc_ file and leave the link text field empty.
 
 .current-page.adoc
-[source#ex-page]
+[#ex-page]
 ----
 Make sure you xref:install-prerequisites.adoc[].
 ----
@@ -19,7 +19,7 @@ Make sure you xref:install-prerequisites.adoc[].
 Now, let's look at the header of the [.path]_install-prerequisites.adoc_ file.
 
 .install-prerequisites.adoc
-[source#ex-default-reftext]
+[#ex-default-reftext]
 ----
 = Installing and Testing Silver Leaf's Prerequisites
 
@@ -33,7 +33,7 @@ If you don't want a page's title to be used as its default `reftext`, assign the
 <<ex-custom-reftext>> shows the `reftext` attribute being assigned a custom value.
 
 .Assign a custom reftext value
-[source#ex-custom-reftext]
+[#ex-custom-reftext]
 ----
 = Installing and Testing Silver Leaf's Prerequisites
 :reftext: Install Silver Leaf's Prerequisites
@@ -57,7 +57,7 @@ A <<reftext,page's reftext>> is often automatically assigned the page's title.
 In <<ex-nav>>, let's reference the [.path]_get-started.adoc_ file from a navigation file, and leave the link text field empty.
 
 .nav.adoc
-[source#ex-nav]
+[#ex-nav]
 ----
 * xref:index.adoc[]
 * xref:get-started.adoc[]
@@ -66,7 +66,7 @@ In <<ex-nav>>, let's reference the [.path]_get-started.adoc_ file from a navigat
 Now, let's look at the header of the [.path]_get-started.adoc_ file in <<ex-default-navtitle>>.
 
 .get-started.adoc
-[source#ex-default-navtitle]
+[#ex-default-navtitle]
 ----
 = Get Started with Silver Leaf
 
@@ -80,7 +80,7 @@ If you don't want a page's default or custom `reftext` value to be assigned as t
 <<ex-custom-navtitle>> shows the `navtitle` attribute being assigned a custom value.
 
 .Assign a custom navtitle value
-[source#ex-custom-navtitle]
+[#ex-custom-navtitle]
 ----
 = Get Started with Silver Leaf
 :navtitle: Getting Started

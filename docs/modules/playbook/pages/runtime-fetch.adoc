@@ -18,7 +18,7 @@ You can tell Antora to refresh the cache by setting the `fetch` key to `true`.
 The optional `fetch` key is configured under the xref:configure-runtime.adoc[runtime key] in a playbook.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 runtime:
   fetch: true

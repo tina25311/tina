@@ -14,7 +14,7 @@ Of course, the extension won't know who to credit, so we'll need to pass it some
 Let's start by registering our new extension in the playbook and passing in the list of people using the `names` key.
 The value of this key will be an array of names.
 
-[source,yaml]
+[,yaml]
 ----
 antora:
   extensions:
@@ -32,7 +32,7 @@ That leaves room to define additional keys, in this case `names`.
 Now let's write an extension that accepts this configuration and uses it to create the [.path]_humans.txt_ file:
 
 .humans-txt-extension.js
-[source,js]
+[,js]
 ----
 include::example$humans-txt-extension.js[]
 ----
@@ -59,7 +59,7 @@ Any keys inside the `data` key (at any depth) are passed through without being m
 Let's assume that we want to specify structured content for our [.path]_humans.txt_ file.
 We don't need Antora to transform this structured content, so we can store it inside a key named `data`.
 
-[source,yaml]
+[,yaml]
 ----
 antora:
   extensions:
@@ -77,7 +77,7 @@ antora:
 
 Now, the extension can iterate over the keys in `config.data` and layout the contents of the [.path]_humans.txt_ file.
 
-[source,js]
+[,js]
 ----
 const contents = Buffer.from(
   Object.entries(config.data).reduce((accum, [category, entries]) => {

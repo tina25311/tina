@@ -10,21 +10,21 @@ A [.path]_ROOT_ directory stores content source files in one or more of the xref
 [listing]
 ----
 📒 repository
-  📂 docs <1>
-    📄 antora.yml <2>
-    📂 modules <3>
-      📂 ROOT <4>
-        📂 pages <5>
-          📄 a-source-file.adoc <6>
-        📄 nav.adoc <7>
+  📂 docs <.>
+    📄 antora.yml <.>
+    📂 modules <.>
+      📂 ROOT <.>
+        📂 pages <.>
+          📄 a-source-file.adoc <.>
+        📄 nav.adoc <.>
 ----
-<1> Content source root
-<2> Required [.path]_antora.yml_ file
-<3> Required [.path]_modules_ directory
-<4> [.path]_ROOT_ module directory
-<5> [.path]_pages_ family directory
-<6> A source file for a page
-<7> A navigation file
+<.> Content source root
+<.> Required [.path]_antora.yml_ file
+<.> Required [.path]_modules_ directory
+<.> [.path]_ROOT_ module directory
+<.> [.path]_pages_ family directory
+<.> A source file for a page
+<.> A navigation file
 
 At a minimum, a [.path]_ROOT_ module directory must contain at least one xref:family-directories.adoc[family directory] with at least one source file.
 It can also contain an optional navigation file.

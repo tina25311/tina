@@ -27,7 +27,7 @@ When the output directory is specified from the CLI using the xref:cli:options.a
 In <<ex-rel>>, the site will be published to a folder named [.path]_launch_ relative to the playbook file.
 
 .Assign a relative path to the dir key
-[source#ex-rel,yaml]
+[#ex-rel,yaml]
 ----
 output:
   dir: ./launch
@@ -39,7 +39,7 @@ output:
 In <<ex-abs>>, the site will be published to [.path]_home/dev/docs-site/beta_, regardless of where the playbook is located.
 
 .Assign an absolute path to the dir key
-[source#ex-abs,yaml]
+[#ex-abs,yaml]
 ----
 output:
   dir: /home/dev/docs-site/beta
@@ -52,7 +52,7 @@ The `clean` key is optional and is deactivated (assigned the value `false`) by d
 When it's assigned the value `true` in a playbook, it removes the path assigned to `dir` recursively before generating the site.
 
 .Activate the clean key
-[source#ex-clean,yaml]
+[#ex-clean,yaml]
 ----
 output:
   clean: true # <.>

@@ -18,7 +18,7 @@ Only the contents of registered navigation files are assembled into, and publish
 In <<ex-register>>, two navigation files have been registered.
 
 .Register two navigation files in an antora.yml file
-[source#ex-register,yaml]
+[#ex-register,yaml]
 ----
 name: component-b
 title: Component B

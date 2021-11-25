@@ -16,7 +16,7 @@ The attribute `experimental` must be set as a xref:page:define-and-modify-attrib
 Communicate that a user should press a button with the button macro.
 
 .Button UI macro
-[source#ex-btn]
+[#ex-btn]
 ----
 Press the btn:[Submit] button when you are finished the survey.
 
@@ -37,7 +37,7 @@ Select a file in the file navigator and click btn:[Open].
 Create keyboard shortcuts with the keybinding macro.
 
 .Keybinding UI macro
-[source#ex-kbd]
+[#ex-kbd]
 ----
 Press kbd:[esc] to exit insert mode.
 
@@ -62,7 +62,7 @@ kbd:[Ctrl+Shift+N] will open a new incognito window.
 Show readers how to select a menu item with the menu macro.
 
 .Menu UI macro
-[source#ex-menu]
+[#ex-menu]
 ----
 To save the file, select menu:File[Save].
 

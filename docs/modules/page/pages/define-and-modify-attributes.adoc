@@ -20,7 +20,6 @@ Each attribute entry must be entered on its own line in a page header.
 An attribute entry starts with an opening colon (`:`), directly followed by the attribute's name, and then a closing colon (`:`).
 This activates, or [.term]*sets*, the attribute so you can use it in your page.
 
-[source]
 ----
 = Page Title
 :name-of-an-attribute: <.>
@@ -30,7 +29,6 @@ This activates, or [.term]*sets*, the attribute so you can use it in your page.
 In many cases, you explicitly assign a value to an attribute by entering information after its name in the attribute entry.
 The value must be offset from the closing colon (`:`) by at least one space.
 
-[source]
 ----
 = Page Title
 :name-of-an-attribute: value of the attribute <.>
@@ -41,7 +39,6 @@ At the end of the value, press kbd:[Enter].
 [#boolean]
 Some built-in AsciiDoc attributes don't require a value to be explicitly assigned in an attribute entry because they're a boolean attribute or have a default value.
 
-[source]
 ----
 = Page Title
 :name-of-an-attribute: <.>
@@ -59,7 +56,6 @@ Let's activate the AsciiDoc attribute named `sectanchors`.
 The attribute is set by entering its name in an <<attribute-entry,attribute entry>> in the header of the page.
 
 .Set a built-in attribute
-[source]
 ----
 = Page Title
 :sectanchors: <.>
@@ -74,7 +70,6 @@ When set, `sectanchors` adds an anchor to the left of each xref:asciidoc:section
 In the next example, let's assign a value to a built-in AsciiDoc attribute.
 The attribute `xrefstyle` has three built-in values it can accept, `short`, `full`, and `basic`.
 
-[source]
 ----
 = Page Title
 :xrefstyle: short <.>
@@ -111,7 +106,7 @@ Attribute values can:
 In <<ex-custom>>, a custom attribute's name and value are defined using an <<attribute-entry,attribute entry>>.
 
 .Define a custom attribute using an attribute entry
-[source#ex-custom]
+[#ex-custom]
 ----
 = Page Title
 :url-repo: https://gitlab.com/antora/demo/docs-site
@@ -124,7 +119,6 @@ You can see another example of a custom attribute being used to replace a comple
 
 Built-in and custom attributes can be [.term]*unset*, that is, turned off, with a leading or trailing bang symbol (`!`) added to its name in an attribute entry.
 
-[source]
 ----
 = Page Title
 :!sectanchors:
@@ -138,7 +132,7 @@ Once unset, an attribute's behavior and value are no longer available to the pag
 Attributes can be xref:playbook:asciidoc-attributes.adoc[scoped to a whole site] by declaring them in a site's playbook file.
 You can apply attributes to xref:ROOT:component-attributes.adoc[a single component version] by declaring them in a component descriptor file (i.e., [.path]_antora.yml_).
 Attributes which are hard set or hard unset in the playbook or component descriptor take precedence over attributes defined in a page.
-This precendence order can be inverted using the xref:playbook:asciidoc-attributes.adoc#precedence-rules[precedence modifier].
+This precedence order can be inverted using the xref:playbook:asciidoc-attributes.adoc#precedence-rules[precedence modifier].
 
 xref:intrinsic-attributes.adoc[Intrinsic attributes] can never be modified and are thus considered read-only.
 

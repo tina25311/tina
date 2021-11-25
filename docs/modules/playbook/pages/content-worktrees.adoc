@@ -14,14 +14,14 @@ If a match is made, Antora uses the files from the worktree instead of the files
 By default, Antora only uses the main worktree (not to be confused with the main branch), not linked worktrees.
 To customize this behavior, you can set the `worktrees` key.
 
-The `worktrees` key is specified on the entry for a content source.
+The `worktrees` key is specified on the entry for a content .
 The key accepts a keyword or a list of branch name patterns.
 Each branch name pattern can either be an exact branch name or a positive or negative glob pattern.
 
 To enable the use of all worktrees, simply set the `worktrees` key to the keyword value `true`.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -45,7 +45,7 @@ false (or ~):: Do not use any worktrees (not the main worktree and not any linke
 If you want Antora to bypass all worktrees, set the value of the `worktrees` key to the keyword `false`.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -66,7 +66,7 @@ Let's configure Antora to use the main worktree as well as the linked worktree f
 The files for the v1.0 branch will be read from the git tree, even if there is a linked worktree associated with that branch.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:

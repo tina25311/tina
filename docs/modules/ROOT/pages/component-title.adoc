@@ -13,7 +13,7 @@ If `title` isn't set, the reference UI uses the xref:component-name-key.adoc[val
 Unlike `name`, the value of `title` can contain spaces, uppercase letters, and a broader range of characters (e.g., `SUSE Manager`, `APIkit`).
 
 .antora.yml
-[source,yaml]
+[,yaml]
 ----
 name: colorado
 title: Colorado ∆
@@ -33,7 +33,7 @@ Since `name` can't contain blank spaces, let's set `title` in the component vers
 . Open the component version's [.path]_antora.yml_ file in the text editor or IDE of your choice.
 +
 .antora.yml for the component version silver-leaf 7.1
-[source,yaml]
+[,yaml]
 ----
 name: silver-leaf
 version: '7.1'
@@ -42,7 +42,7 @@ version: '7.1'
 . On a new line, type `title`, directly followed by a colon (`:`).
 . Insert a blank space after the colon, and then type the value you want to assign to `title`.
 +
-[source,yaml]
+[,yaml]
 ----
 name: silver-leaf
 title: Silver Leaf

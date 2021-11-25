@@ -20,7 +20,7 @@ It can contain uppercase letters and a broad range of characters.
 The component version defined in <<ex-append-identifier>> is a prerelease.
 
 .antora.yml with prerelease assigned the identifier -rc.3
-[source#ex-append-identifier,yaml]
+[#ex-append-identifier,yaml]
 ----
 name: colorado
 title: Colorado ∆
@@ -43,7 +43,7 @@ Antora separates the identifier from the `version` key's value with one blank sp
 +
 --
 .antora.yml with prerelease assigned the identifier Beta
-[source#ex-compute,yaml]
+[#ex-compute,yaml]
 ----
 name: colorado
 title: Colorado ∆
@@ -64,7 +64,7 @@ However, the component version is still <<sort-and-route,sorted according to the
 A component version becomes a prerelease when the `prerelease` key is set in [.path]_antora.yml_ and assigned the value `true`.
 
 .antora.yml with prerelease defined as true
-[source#ex-true,yaml]
+[#ex-true,yaml]
 ----
 name: colorado
 title: Colorado ∆

@@ -13,7 +13,7 @@ The `output_dir` key allows you to specify an alternate directory where Antora s
 The path is relative to the root of the published site.
 
 .Relative UI output path
-[source,yaml]
+[,yaml]
 ----
 ui:
   bundle:
@@ -30,7 +30,7 @@ This is thanks in part to the use of the `+{{uiRootPath}}+` placeholder in the U
 In the next example, the site's output directory (`dir`) is specified in addition to the UI output directory.
 
 .Custom site and UI output directories
-[source,yaml]
+[,yaml]
 ----
 ui:
   bundle:

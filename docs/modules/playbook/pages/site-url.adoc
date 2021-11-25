@@ -8,7 +8,7 @@ If this key isn't set, certain features of the site that require a site URL are 
 See <<when-should-the-site-url-be-set>> for details.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Site Title
@@ -31,7 +31,7 @@ An absolute URL value starts with a URL scheme directly followed by a colon and 
 *Do not put a trailing forward slash at the end of the URL.*
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Docs for Example Site
@@ -44,7 +44,7 @@ If your site is published to a subfolder of your domain, then the absolute site 
 The subpath has the same syntax as a root-relative URL.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Docs for Example Site
@@ -62,7 +62,7 @@ The root-relative URL is a URL that's relative to the domain, but without having
 A root-relative URL must start with a forward slash (_/products_).
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: Docs Hosted Somewhere
@@ -77,7 +77,7 @@ Antora assigns the root-relative URL directly to the xref:ROOT:how-antora-builds
 If you want to set `url` to a root-relative URL, but want the site pathname to be empty, set the value to a single forward slash.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 site:
   title: The Docs
@@ -111,7 +111,7 @@ This does not affect the static redirect facility, which uses relative URLs.
 When the site URL is set to an absolute URL, the following additional features are enabled:
 
 * The sitemap files are generated.
-* The `page.canonicalUrl` is set in the UI model, which gets used by the resference UI to create the canonical link tag in the head.
+* The `page.canonicalUrl` is set in the UI model, which gets used by the reference UI to create the canonical link tag in the head.
 
 If the site URL is not set, all the aforementioned features are deactivated.
 
@@ -122,7 +122,7 @@ The subpath of a site URL represents the location from the root of the domain wh
 In other words, the site URL takes the visitor to the URL where the redirect for the site start page is located.
 If your site is published to a subfolder of your domain, then the site URL should include this path (e.g., _/path/to/subfolder_).
 
-When required, Antora uses the site URL to construct absolute and doamin-relative URLs to pages in your site, which will always include the subpath, if specified.
+When required, Antora uses the site URL to construct absolute and domain-relative URLs to pages in your site, which will always include the subpath, if specified.
 This includes URLs in the sitemap (absolute URLs) as well as rewrite rules (domain-relative URLs).
 
 Let's consider an example of how the subpath is used when creating a server redirect rule.

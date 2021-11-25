@@ -21,7 +21,7 @@ Site attributes are mapped under the `attributes` key in a playbook.
 The attributes key must be set under the `asciidoc` key.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 asciidoc:
   attributes:
@@ -39,25 +39,25 @@ Site attributes are applied and available to all of a site's pages according to 
 Each site attribute is entered on its own line as a key-value pair under the `attributes` key.
 
 .Declare attributes in the playbook
-[source#ex-hard-set,yaml]
+[#ex-hard-set,yaml]
 ----
-asciidoc: # <1>
-  attributes: # <2>
-    listing-caption: Snippet # <3>
-    hide-uri-scheme: '' # <4>
-    page-team: Coco B # <5>
-    db: graphical-peaks-pack.db # <6>
+asciidoc: # <.>
+  attributes: # <.>
+    listing-caption: Snippet # <.>
+    hide-uri-scheme: '' # <.>
+    page-team: Coco B # <.>
+    db: graphical-peaks-pack.db # <.>
 ----
-<1> Enter the `asciidoc` key, followed by a colon (`:`), and press kbd:[Enter].
-<2> The `attributes` key is nested under the `asciidoc` key.
+<.> Enter the `asciidoc` key, followed by a colon (`:`), and press kbd:[Enter].
+<.> The `attributes` key is nested under the `asciidoc` key.
 Enter `attributes`, followed by a colon (`:`), and press kbd:[Enter].
-<3> Site attributes are nested under the `attributes` key.
+<.> Site attributes are nested under the `attributes` key.
 Enter the name of the attribute, followed by a colon (`:`).
 Press kbd:[spacebar] once after the colon, then enter the value of the attribute.
-<4> To assign the default value, or in the case of a boolean attribute, the _empty string_ value to a built-in attribute, type two consecutive single quotation marks (`''`) in the value field.
-<5> To declare a custom page attribute, type `page-` and the name of your attribute, followed by a colon (`:`).
+<.> To assign the default value, or in the case of a boolean attribute, the _empty string_ value to a built-in attribute, type two consecutive single quotation marks (`''`) in the value field.
+<.> To declare a custom page attribute, type `page-` and the name of your attribute, followed by a colon (`:`).
 Press kbd:[spacebar] once after the colon, then enter the value of the attribute.
-<6> This custom attribute, like the previous three attributes, is hard set.
+<.> This custom attribute, like the previous three attributes, is hard set.
 
 The attributes in <<ex-hard-set>> are all hard set.
 [.term]*Hard set* site attributes cannot be overridden from a component version descriptor or a page.
@@ -74,15 +74,15 @@ Soft set site attributes can be overridden from a component version descriptor o
 An attribute is soft set in a playbook by attaching the `@` modifier to the end of its value.
 
 .Assign soft set precedence to attributes
-[source#ex-soft-set,yaml]
+[#ex-soft-set,yaml]
 ----
 asciidoc:
   attributes:
-    page-team: Coco B@ # <1>
-    hide-uri-scheme: '@' # <2>
+    page-team: Coco B@ # <.>
+    hide-uri-scheme: '@' # <.>
 ----
-<1> To soft set an attribute that's assigned an explicit value, attach the `@` modifier to the end of its value.
-<2> To soft set and assign a built-in attribute's default value, or in the case of a boolean attribute, the _empty string_ value, type an opening single quotation mark, followed by the `@` modifier, and then a closing single quotation mark (`'`).
+<.> To soft set an attribute that's assigned an explicit value, attach the `@` modifier to the end of its value.
+<.> To soft set and assign a built-in attribute's default value, or in the case of a boolean attribute, the _empty string_ value, type an opening single quotation mark, followed by the `@` modifier, and then a closing single quotation mark (`'`).
 
 Since the site attributes in <<ex-soft-set>> are soft set, a component version descriptor or page could modify their values or unset them.
 
@@ -94,16 +94,16 @@ Site attributes are hard unset when they're assigned the reserved tilde symbol (
 Each site attribute is entered on its own line as a key-value pair under the `attributes` key.
 
 .Hard unset site attributes in the playbook
-[source#ex-hard-unset,yaml]
+[#ex-hard-unset,yaml]
 ----
 asciidoc:
   attributes:
-    figure-caption: ~ # <1>
-    hide-uri-scheme: ~ # <2>
+    figure-caption: ~ # <.>
+    hide-uri-scheme: ~ # <.>
 ----
-<1> To hard unset an attribute, assign it the tilde symbol (`~`).
+<.> To hard unset an attribute, assign it the tilde symbol (`~`).
 The `~` is a reserved value that hard unsets a site attribute.
-<2> Boolean attributes are also hard unset when assigned the tilde symbol (`~`).
+<.> Boolean attributes are also hard unset when assigned the tilde symbol (`~`).
 
 [.term]*Hard unset* site attributes cannot be overridden from a component version descriptor or a page.
 When a site attribute is hard unset, its behavior is turned off and it isn't available to the site's pages.
@@ -115,15 +115,15 @@ Soft unset site attributes can be overridden from a component version descriptor
 An attribute is soft unset in a playbook by assigning it the reserved value `false`.
 
 .Assign soft unset precedence to attributes
-[source#ex-soft-unset,yaml]
+[#ex-soft-unset,yaml]
 ----
 asciidoc:
   attributes:
-    figure-caption: false # <1>
-    hide-uri-scheme: false # <2>
+    figure-caption: false # <.>
+    hide-uri-scheme: false # <.>
 ----
-<1> To soft unset an attribute, assign it the value `false`.
-<2> Boolean attributes are also soft unset when assigned `false`.
+<.> To soft unset an attribute, assign it the value `false`.
+<.> Boolean attributes are also soft unset when assigned `false`.
 
 Since the site attributes in <<ex-soft-unset>> are soft unset, a component version descriptor or page could reset them.
 

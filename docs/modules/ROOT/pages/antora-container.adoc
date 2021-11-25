@@ -140,13 +140,13 @@ The image comes preconfigured with Yarn so you can install additional extension 
 . Populate the file with the following contents:
 +
 .Dockerfile.custom
-[source,docker]
+[,docker]
 ----
 FROM antora/antora
 
-RUN yarn global add asciidoctor-kroki # <1>
+RUN yarn global add asciidoctor-kroki # <.>
 ----
-<1> Adds a custom extension to the base image.
+<.> Adds a custom extension to the base image.
 
 . Build the image using the following command:
 

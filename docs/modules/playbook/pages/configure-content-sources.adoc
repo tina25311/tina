@@ -9,25 +9,25 @@ The content sources git references and other source location properties are defi
 The `branches`, `tags`, and `edit_url` keys can be specified directly on `content`.
 They can also be listed under `sources` or under both `content` and `sources` in a playbook.
 
-[source,yaml]
+[,yaml]
 ----
-content: # <1>
-  branches: [v2.0, v2.5, v3.0] # <2>
-  tags: [release/*, '!release/*-patch'] # <3>
-  edit_url: '{web_url}/blob/{refname}/{path}' # <4>
-  sources: # <5>
-  - url: https://git-service.com/org/repo-z.git # <6>
-    start_path: path-to/content-source-root # <7>
-  - url: https://git-service.com/org/repo-y.git # <8>
+content: # <.>
+  branches: [v2.0, v2.5, v3.0] # <.>
+  tags: [release/*, '!release/*-patch'] # <.>
+  edit_url: '{web_url}/blob/{refname}/{path}' # <.>
+  sources: # <.>
+  - url: https://git-service.com/org/repo-z.git # <.>
+    start_path: path-to/content-source-root # <.>
+  - url: https://git-service.com/org/repo-y.git # <.>
 ----
-<1> Required `content` key
-<2> Optional `branches` key
-<3> Optional `tags` key
-<4> Optional `edit_url` key
-<5> Required `sources` key
-<6> Required `url` key
-<7> Optional `start_path` key
-<8> Another `url` key
+<.> Required `content` key
+<.> Optional `branches` key
+<.> Optional `tags` key
+<.> Optional `edit_url` key
+<.> Required `sources` key
+<.> Required `url` key
+<.> Optional `start_path` key
+<.> Another `url` key
 
 The `content` and `sources` keys are required.
 The `sources` key must contain at least one entry with the `url` key defined.
@@ -43,29 +43,29 @@ The `sources` key is required and nested under the `content` key.
 The `sources` key contains a list of source entries, which consist of a git repository location, branch and/or tag name patterns, and other repository properties that Antora uses when aggregating the site content.
 The `sources` key must contain at least one entry with a `url` key defined.
 
-[source,yaml]
+[,yaml]
 ----
-content: # <1>
-  sources: # <2>
-  - url: https://git-service.com/org/repo-z.git # <3>
-    branches: [v1.*, v2.*, !v1.2] # <4>
-    start_paths: path-to/content-source-root-{item..item} # <5>
-  - url: https://git-service.com/org/repo-y.git # <6>
-    branches: [] # <7>
-    tags: [release/*, '!release/*-patch'] # <8>
-    start_path: path-to/content-source-root # <9>
-    edit_url: '{web_url}/blob/{refname}/{path}' # <10>
+content: # <.>
+  sources: # <.>
+  - url: https://git-service.com/org/repo-z.git # <.>
+    branches: [v1.*, v2.*, !v1.2] # <.>
+    start_paths: path-to/content-source-root-{item..item} # <.>
+  - url: https://git-service.com/org/repo-y.git # <.>
+    branches: [] # <.>
+    tags: [release/*, '!release/*-patch'] # <.>
+    start_path: path-to/content-source-root # <.>
+    edit_url: '{web_url}/blob/{refname}/{path}' # <.>
 ----
-<1> Required `content` key
-<2> Required `sources` key
-<3> Required `url` key
-<4> Optional `branches` key
-<5> Optional `start_paths` key
-<6> Another `url` key
-<7> Optional `branches` key
-<8> Optional `tags` key
-<9> Optional `start_path` key
-<10> Optional `edit_url` key
+<.> Required `content` key
+<.> Required `sources` key
+<.> Required `url` key
+<.> Optional `branches` key
+<.> Optional `start_paths` key
+<.> Another `url` key
+<.> Optional `branches` key
+<.> Optional `tags` key
+<.> Optional `start_path` key
+<.> Optional `edit_url` key
 
 The `content` and `sources` keys are required.
 The `sources` key must contain at least one entry with the `url` key defined.

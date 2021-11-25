@@ -8,13 +8,13 @@ The `xref` element attribute can be set in the attribute list of block and inlin
 The attribute accepts the resource ID of a publishable resource (page, attachment, or image) or the xref:xref.adoc#id-fragment[ID of an element (fragment)] in the current page.
 
 .Reference a publishable resource from an image macro
-[source#ex-base]
+[#ex-base]
 ----
 image::my-image.jpg[xref=version@component:module:family$file.ext]
 ----
 
 .Reference an element in the current page from an image macro
-[source#ex-id]
+[#ex-id]
 ----
 image::my-image.jpg[xref=#fragment] <.>
 ----
@@ -30,7 +30,7 @@ Therefore, the resource ID of the target page only requires the file coordinate.
 The block image macro shown in <<ex-page>> will embed the image _peak.svg_ and create a link from the image to the published URL of the page _modes.adoc_.
 
 .current-page.adoc (block)
-[source#ex-page]
+[#ex-page]
 ----
 image::peak.svg[xref=modes.adoc]
 ----
@@ -38,7 +38,7 @@ image::peak.svg[xref=modes.adoc]
 The `xref` attribute behaves the same way when set and assigned in an inline image macro.
 
 .current-page.adoc (inline)
-[listing#ex-inline-page]
+[#ex-inline-page]
 ----
 image:peak.svg[xref=modes.adoc]
 ----

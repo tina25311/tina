@@ -65,7 +65,7 @@ We'll assume the domain is *example.com*, the subpath is *site-a*, and the web s
 . Define site.url with the subpath in the playbook file, either using an absolute URL:
 +
 --
-[source,yaml]
+[,yaml]
 ----
 site:
   url: https://example.com/site-a
@@ -73,7 +73,7 @@ site:
 
 or a root-relative path:
 
-[source,yaml]
+[,yaml]
 ----
 site:
   url: /site-a

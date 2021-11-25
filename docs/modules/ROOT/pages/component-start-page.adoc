@@ -28,7 +28,7 @@ The `start_page` key accepts the xref:page:resource-id.adoc[resource ID of a pag
 The resource ID must start from the xref:page:resource-id-coordinates.adoc#id-module[module coordinate].
 
 .antora.yml
-[source#ex-start,yaml]
+[#ex-start,yaml]
 ----
 name: colorado
 title: Colorado ∆

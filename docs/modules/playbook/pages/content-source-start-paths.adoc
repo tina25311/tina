@@ -96,7 +96,7 @@ Naturally, the repository may have many other files and folders that do not pert
 If you only have a couple of paths to register, you might find that using exact path patterns is suitable.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -144,7 +144,7 @@ Wildcard matching reduces the number of values you need to assign to a `start_pa
 For instance, if you have multiple components stored in a branch, you could list them all in a comma-separated list like the one shown in <<ex-no-wildcard>>.
 
 .antora-playbook.yml
-[source#ex-no-wildcard,yaml]
+[#ex-no-wildcard,yaml]
 ----
 content:
   sources:
@@ -156,7 +156,7 @@ content:
 Or, as shown in <<ex-wildcard>>, you could use a wildcard segment and reduce the number of values you need to declare.
 
 .antora-playbook.yml
-[source#ex-wildcard,yaml]
+[#ex-wildcard,yaml]
 ----
 content:
   sources:
@@ -185,7 +185,7 @@ If you specify `docs/product-{a,b}` as a `start_paths` value, the following path
 You can use a prefix in your file path before a brace expression to simplify what Antora checks for in the expression.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -197,7 +197,7 @@ content:
 You can also use wildcards in brace expressions to help expand values.
 
 .antora-playbook.yml
-[source#ex-wild-braces,yaml]
+[#ex-wild-braces,yaml]
 ----
 content:
   sources:
@@ -220,7 +220,7 @@ Use negated patterns to exclude patterns previously matched.
 This approach is useful if you want to match all directories except for those that match a certain pattern.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:

@@ -25,7 +25,7 @@ Bounded characters are characters that are:
 You don't need to use double underscores when an entire word or phrase marked as italic is directly followed by a common punctuation mark, such as `;`, `"`, and `!`.
 
 .Italic inline formatting
-[source#ex-italic]
+[#ex-italic]
 ----
 An italic _word_, and an italic _phrase of text_.
 
@@ -45,7 +45,7 @@ Italic c__hara__cter__s__ within a word.
 You can add multiple emphasis styles to italic text as long as the syntax is placed in the correct order.
 
 .Order of inline formatting syntax
-[source#ex-order]
+[#ex-order]
 ----
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----

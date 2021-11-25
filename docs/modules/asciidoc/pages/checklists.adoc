@@ -14,7 +14,7 @@ Task lists are xref:ordered-and-unordered-lists.adoc#unordered[unordered lists] 
 Here’s an example:
 
 .Checklist syntax
-[source#ex-checklist]
+[#ex-checklist]
 ----
 * [*] checked
 * [x] also checked
@@ -30,7 +30,7 @@ The result of <<ex-checklist>> is rendered below.
 If you want to make the checkbox clickable, add the `interactive` option to the checklist, which is shown here using the shorthand syntax (`%`) for `options`.
 
 .Interactive checklist syntax
-[source#ex-interactive]
+[#ex-interactive]
 ----
 [%interactive]
 * [ ] Binge watch Death in Paradise

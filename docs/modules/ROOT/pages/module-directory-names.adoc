@@ -1,6 +1,4 @@
 = Recommendations for Module Directory Names
-:xrefstyle: short
-:listing-caption: Example
 
 When you're creating module directories, you need to consider how your team will use the files stored in them and how their names will affect your site's URLs.
 
@@ -28,26 +26,26 @@ Good module names are short and descriptive.
   📂 docs
     📄 antora.yml
     📂 modules
-      📂 gear <1>
+      📂 gear <.>
         📂 images
           📄 a-source-file.jpg
-      📂 la-garita <2>
+      📂 la-garita <.>
         📂 pages
           📄 a-source-file.adoc
-      📂 ROOT <3>
+      📂 ROOT <.>
         📂 pages
           📄 a-source-file.adoc
         📄 nav.adoc
-      📂 sdk <4>
+      📂 sdk <.>
         📂 examples
           📄 a-source-file.js
         📂 pages
           📄 a-source-file.adoc
         📄 nav.adoc
 ----
-<1> Module directory named [.path]_gear_
-<2> Module directory named [.path]_la-garita_
-<3> [.path]_ROOT_ module directory
-<4> Module directory named [.path]_sdk_
+<.> Module directory named [.path]_gear_
+<.> Module directory named [.path]_la-garita_
+<.> [.path]_ROOT_ module directory
+<.> Module directory named [.path]_sdk_
 
 Antora would calculate the following module names from the named module directories in <<ex-named>>: `gear`, `la-garita`, and `sdk`.

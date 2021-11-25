@@ -9,7 +9,7 @@ The `provider` value `fs` publishes the site to a directory on a filesystem.
 It's the formal equivalent to specifying the output directory using the `dir` key.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 output:
   destinations: # <.>
@@ -41,7 +41,7 @@ When the output directory is specified from the CLI using the xref:cli:options.a
 In <<ex-rel>>, the site will be published to a folder named [.path]_launch_ relative to the playbook file.
 
 .Assign a relative path
-[source#ex-rel,yaml]
+[#ex-rel,yaml]
 ----
 output:
   destinations:
@@ -55,7 +55,7 @@ output:
 In <<ex-abs>>, the site will be published to [.path]_home/dev/site/beta_, regardless of where the playbook is located.
 
 .Assign an absolute path
-[source#ex-abs,yaml]
+[#ex-abs,yaml]
 ----
 output:
   destinations:
@@ -70,7 +70,7 @@ The `clean` key is optional and is deactivated (assigned the value `false`) by d
 It can be applied as part of an `fs` provider configuration instead of xref:output-dir.adoc#clean-key[directly under the output key].
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 output:
   destinations:

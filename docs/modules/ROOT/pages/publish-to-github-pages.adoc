@@ -42,7 +42,7 @@ To avoid the need for the extra command, the other way to do it is to inject the
 To do so, add the following `supplemental_files` block under the `ui` category in your playbook file:
 
 .antora-playbook.yml that adds .nojekyll file using supplemental UI
-[source,yaml]
+[,yaml]
 ----
 ui:
   bundle:
@@ -72,7 +72,7 @@ This workflow assumes that the name of the default branch of your playbook repos
 If your site uses different settings, update the values in the workflow file accordingly.
 
 ..github/workflows/publish.yml that uses the Antora Site Action
-[source#github-actions-workflow,yaml]
+[#github-actions-workflow,yaml]
 ----
 include::example$github-actions-workflow.yml[]
 ----
@@ -86,7 +86,7 @@ Instead, you can install and invoke Antora directly from the workflow.
 <<custom-github-actions-workflow>> shows an example of a GitHub Actions workflow that uses a specific release of Antora to build and publish your site to GitHub Pages.
 
 ..github/workflow/publish.yml that installs Antora itself
-[source#custom-github-actions-workflow,yaml]
+[#custom-github-actions-workflow,yaml]
 ----
 include::example$custom-github-actions-workflow.yml[]
 ----

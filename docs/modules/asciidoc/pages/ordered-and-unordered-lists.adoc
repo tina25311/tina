@@ -19,7 +19,6 @@ First level list items are created with a single dot (a period) and nested items
 The dot (or dots) is separated from the content of the list item by a single space.
 
 .Ordered list with nested levels
-[source]
 ----
 . Step 1
 . Step 2
@@ -66,7 +65,6 @@ When your list doesn't need to be numbered, use an unordered list.
 First level list items are marked using an asterisk (`+*+`) and nested items by two or more asterisk.
 
 .Unordered list with nested levels
-[source]
 ----
 * Item A
 * Item B
@@ -101,6 +99,7 @@ List items can be any AsciiDoc element.
 You can also mix ordered and unordered list items.
 Let's look at an example that contains a variety of content and list item types.
 
+//Don't replace the callouts in this block with <.> or remove source
 [source]
 ....
 * A list item can contain two or more paragraphs or blocks of content.
@@ -126,7 +125,7 @@ An example block
 + <1>
 term:: A description list term and content.
 ....
-<1> A [.term]_list continuation_ is a plus symbol (`{plus}`) on a line by itself that is immediately adjacent to the block being attached.
+<1> A [.term]*list continuation* is a plus symbol (`{plus}`) on a line by itself that is immediately adjacent to the block being attached.
 
 To add additional paragraphs or blocks to a list item, you must attach them with a list continuation (`{plus}`).
 
@@ -135,7 +134,7 @@ Here's how the complex list above is rendered.
 --
 * A list item can contain two or more paragraphs or blocks of content.
 +
-[source,yaml]
+[,yaml]
 ----
   artifacts:
     expire_in: 1 week
@@ -160,6 +159,7 @@ term:: A description list term and content.
 Alternatively, when a list item contains multiple blocks, you can wrap them in a delimited open block (`+--+`).
 Then you only need a single list continuation line to attach the open block to the list item.
 
+//Don't replace the callouts in this block with <.> or remove source
 .Use an open block instead of multiple list continuations
 [source,line-comment=]
 ....
@@ -187,7 +187,7 @@ Here's how that example looks when rendered.
 * A list item that includes several blocks wrapped in an open block.
 +
 --
-[source,yaml]
+[,yaml]
 ----
   artifacts:
     expire_in: 1 week

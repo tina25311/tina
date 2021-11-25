@@ -18,32 +18,32 @@ In <<ex-standard-dirs-root>>, the content source root is located at the root of 
 .A complete Antora content source hierarchy located at the repository root
 [listing#ex-standard-dirs-root]
 ----
-📒 repository <1>
-  📄 antora.yml <2>
-  📂 modules <3>
-    📂 ROOT <4>
-      📂 attachments <5>
-      📂 examples <6>
-      📂 images <7>
-      📂 pages <8>
-      📂 partials <9>
-      📄 nav.adoc <10>
-    📂 another-module <11>
+📒 repository <.>
+  📄 antora.yml <.>
+  📂 modules <.>
+    📂 ROOT <.>
+      📂 attachments <.>
+      📂 examples <.>
+      📂 images <.>
+      📂 pages <.>
+      📂 partials <.>
+      📄 nav.adoc <.>
+    📂 another-module <.>
       📂 pages
 ----
-<1> xref:content-source-repositories.adoc#content-source-root[Repository root and content source root].
-<2> Required xref:component-version-descriptor.adoc[component version descriptor file].
+<.> xref:content-source-repositories.adoc#content-source-root[Repository root and content source root].
+<.> Required xref:component-version-descriptor.adoc[component version descriptor file].
 This file indicates to Antora that the contents of the _modules_ directory should be collected and processed.
-<3> Required [.path]_modules_ directory.
+<.> Required [.path]_modules_ directory.
 This directory contains xref:module-directories.adoc[one or more module directories].
-<4> Optional xref:root-module-directory.adoc[_ROOT_ module directory].
-<5> Optional xref:attachments-directory.adoc[_attachments_ family directory].
-<6> Optional xref:examples-directory.adoc[_examples_ family directory].
-<7> Optional xref:images-directory.adoc[_images_ family directory].
-<8> Optional xref:pages-directory.adoc[_pages_ family directory].
-<9> Optional xref:partials-directory.adoc[_partials_ family directory].
-<10> Optional navigation file named [.path]_nav.adoc_.
-<11> Optional xref:named-module-directory.adoc[named module directory], which can have any of the same folders shown in the ROOT module.
+<.> Optional xref:root-module-directory.adoc[_ROOT_ module directory].
+<.> Optional xref:attachments-directory.adoc[_attachments_ family directory].
+<.> Optional xref:examples-directory.adoc[_examples_ family directory].
+<.> Optional xref:images-directory.adoc[_images_ family directory].
+<.> Optional xref:pages-directory.adoc[_pages_ family directory].
+<.> Optional xref:partials-directory.adoc[_partials_ family directory].
+<.> Optional navigation file named [.path]_nav.adoc_.
+<.> Optional xref:named-module-directory.adoc[named module directory], which can have any of the same folders shown in the ROOT module.
 
 The content source root does not have to be at the root of the repository.
 In <<ex-standard-dirs-sub>>, the content source root is located inside a subdirectory of the repository.
@@ -67,8 +67,8 @@ In Antora, this subdirectory is referred to as the start path of the content sou
       📂 another-module
         📂 pages
 ----
-<.> Repository root.
-<.> xref:content-source-repositories.adoc#content-source-root[Content source root].
+<.> Repository root
+<.> xref:content-source-repositories.adoc#content-source-root[Content source root]
 
 As you can see in the descriptions above, navigation files and many of the directories are optional.
 For instance, if you aren't inserting any images into the content stored in a module directory, then you don't need to create an [.path]_images_ directory.
@@ -94,19 +94,19 @@ In turn, the _ROOT_ module directory contains a family directory that contains o
 .Valid standard file and directory set containing a ROOT module directory
 [listing#ex-root]
 ----
-📒 repository <1>
-  📄 antora.yml <2>
-  📂 modules <3>
-    📂 ROOT <4>
-      📂 pages <5>
-        📄 a-source-file.adoc <6>
+📒 repository <.>
+  📄 antora.yml <.>
+  📂 modules <.>
+    📂 ROOT <.>
+      📂 pages <.>
+        📄 a-source-file.adoc <.>
 ----
-<1> Content source root
-<2> Required [.path]_antora.yml_ file
-<3> Required [.path]_modules_ directory
-<4> [.path]_ROOT_ module directory
-<5> [.path]_pages_ family directory
-<6> Source file for a page
+<.> Content source root
+<.> Required [.path]_antora.yml_ file
+<.> Required [.path]_modules_ directory
+<.> [.path]_ROOT_ module directory
+<.> [.path]_pages_ family directory
+<.> Source file for a page
 
 In <<ex-image>>, the content source root is located at the directory [.path]_ops-training_.
 
@@ -115,19 +115,19 @@ In <<ex-image>>, the content source root is located at the directory [.path]_ops
 ----
 📒 repository
   📂 courses
-    📂 ops-training <1>
-      📄 antora.yml <2>
-      📂 modules <3>
-        📂 rz-interface <4>
-          📂 images <5>
-            📄 an-image-file.png <6>
+    📂 ops-training <.>
+      📄 antora.yml <.>
+      📂 modules <.>
+        📂 rz-interface <.>
+          📂 images <.>
+            📄 an-image-file.png <.>
 ----
-<1> Content source root
-<2> Required component version descriptor file
-<3> Required [.path]_modules_ directory
-<4> A module directory named [.path]_rz-interface_
-<5> [.path]_images_ family directory
-<6> Source file for an image
+<.> Content source root
+<.> Required component version descriptor file
+<.> Required [.path]_modules_ directory
+<.> A module directory named [.path]_rz-interface_
+<.> [.path]_images_ family directory
+<.> Source file for an image
 
 The standard directory and file set in <<ex-image>> is also valid.
 

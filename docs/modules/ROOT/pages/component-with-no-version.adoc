@@ -10,7 +10,7 @@ To define a component version that doesn't have a version, assign a tilde, `~`, 
 The `~` is shorthand for the value `null`, which has the same effect.
 
 .antora.yml for a versionless component version
-[source,yaml]
+[,yaml]
 ----
 name: component-name
 version: ~ # <.>

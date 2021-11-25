@@ -22,7 +22,6 @@ These attributes are set on every page in the site.
 You might use these attributes in an preprocessor conditional to include or exclude content based on whether the document is being process by Antora.
 For example:
 
-[source]
 ----
 \ifndef::site-gen-antora[]
 \include::local-preview-settings.adoc[]

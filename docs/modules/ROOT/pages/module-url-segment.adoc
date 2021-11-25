@@ -1,6 +1,4 @@
 = Module Segment in Page URLs
-:xrefstyle: short
-:listing-caption: Example
 
 [#root-module-urls]
 == URLs for ROOT module pages

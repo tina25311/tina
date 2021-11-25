@@ -16,7 +16,7 @@ If [.path]_antora.yml_ isn't stored at the root of a content source repository a
 A `start_path` key can only be configured per `url` key (it can't be set directly on `content`).
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
@@ -52,7 +52,7 @@ Let's define a `start_path` value for the repository shown in <<ex-root>>.
 In order for Antora to locate the content source root in <<ex-root>>, the value of the `start_path` key needs to point to the directory where [.path]_antora.yml_ is located.
 
 .Assign start_path value
-[source#ex-root-start,yaml]
+[#ex-root-start,yaml]
 ----
 content:
   sources:

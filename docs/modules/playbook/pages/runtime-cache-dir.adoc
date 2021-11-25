@@ -25,7 +25,7 @@ The optional `cache_dir` key is configured under the xref:configure-runtime.adoc
 It accepts a relative or absolute filesystem path.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 runtime:
   cache_dir: ./.cache/antora

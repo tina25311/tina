@@ -7,7 +7,7 @@ The playbook keys configured under `urls` manage the site's published URLs and r
 
 The global properties of your site's published URLs and redirect facility are defined under the `urls` key in a playbook file.
 
-[source,yaml]
+[,yaml]
 ----
 urls: # <.>
   html_extension_style: drop # <.>

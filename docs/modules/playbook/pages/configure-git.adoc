@@ -8,21 +8,21 @@ The playbook keys configured under `git` control the behavior of the git client 
 The `git` key holds all the git-related playbook keys, such as the git credentials, automatic URL suffix, and plugins.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
-git: # <1>
-  ensure_git_suffix: false # <2>
-  credentials: # <3>
-    path: ./.git-credentials # <4>
-  plugins: # <5>
-    credential_manager: ./system-git-credential-manager.js # <6>
+git: # <.>
+  ensure_git_suffix: false # <.>
+  credentials: # <.>
+    path: ./.git-credentials # <.>
+  plugins: # <.>
+    credential_manager: ./system-git-credential-manager.js # <.>
 ----
-<1> Optional `git` category key
-<2> Optional `ensure_git_suffix` key
-<3> Optional `credentials` category key
-<4> `path` key to specify the location of optional credentials; mutually exclusive with the `contents` key
-<5> Optional `plugins` category key
-<6> Optional `credential_manager` key
+<.> Optional `git` category key
+<.> Optional `ensure_git_suffix` key
+<.> Optional `credentials` category key
+<.> `path` key to specify the location of optional credentials; mutually exclusive with the `contents` key
+<.> Optional `plugins` category key
+<.> Optional `credential_manager` key
 
 The `git` category key and the child keys it accepts are all optional.
 When the `git` key isn't present in the playbook, Antora falls back to using the default configuration for the git client.

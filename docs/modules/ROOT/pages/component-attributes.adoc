@@ -19,30 +19,30 @@ First, the `asciidoc` and `attributes` keys must be set.
 Then, each component version attribute is entered on its own line as a key-value pair under `attributes`.
 
 .Declare attributes in antora.yml
-[source#ex-hard-set,yaml]
+[#ex-hard-set,yaml]
 ----
 name: light
 title: Data Light
 version: '2.3'
-asciidoc: # <1>
-  attributes: # <2>
-    table-caption: Data Set # <3>
-    hide-uri-scheme: '' # <4>
-    page-level: Advanced # <5>
-    page-category: Statistics; Cloud Infrastructure # <6>
+asciidoc: # <.>
+  attributes: # <.>
+    table-caption: Data Set # <.>
+    hide-uri-scheme: '' # <.>
+    page-level: Advanced # <.>
+    page-category: Statistics; Cloud Infrastructure # <.>
 nav:
 - modules/ROOT/nav.adoc
 ----
-<1> On a new line, type `asciidoc`, followed by a colon (`:`), and press kbd:[Enter].
-<2> Nest the `attributes` key on the line directly underneath the `asciidoc` key.
+<.> On a new line, type `asciidoc`, followed by a colon (`:`), and press kbd:[Enter].
+<.> Nest the `attributes` key on the line directly underneath the `asciidoc` key.
 Type `attributes`, followed by a colon (`:`), and press kbd:[Enter].
-<3> Each component version attribute is nested under the `attributes` key and defined on its own line.
+<.> Each component version attribute is nested under the `attributes` key and defined on its own line.
 Type the name of the attribute, followed by a colon (`:`).
 Press the kbd:[spacebar] once after the colon, then type the value of the attribute.
-<4> To assign the default value, or in the case of a boolean attribute, the _empty string_ value, to a built-in attribute, type two consecutive single quotation marks (`''`) in the value field.
-<5> To declare a custom page attribute, type `page-` and the name of your attribute, followed by a colon (`:`).
+<.> To assign the default value, or in the case of a boolean attribute, the _empty string_ value, to a built-in attribute, type two consecutive single quotation marks (`''`) in the value field.
+<.> To declare a custom page attribute, type `page-` and the name of your attribute, followed by a colon (`:`).
 Press kbd:[spacebar] once after the colon, then enter the value of the attribute.
-<6> When an attribute has multiple, independent values, separate each value with a semicolon (`;`).
+<.> When an attribute has multiple, independent values, separate each value with a semicolon (`;`).
 
 A set component version attribute is applied and available to every page that belongs to the component version.
 The values of custom attributes, such as `page-level`, can be displayed in a page using the attribute reference syntax (e.g., `+{page-level}+`).
@@ -59,15 +59,15 @@ Soft set component version attributes can be overridden from a page.
 An attribute is soft set by attaching the `@` modifier to the end of its value.
 
 .Assign soft set precedence to attributes
-[source#ex-soft-set,yaml]
+[#ex-soft-set,yaml]
 ----
 asciidoc:
   attributes:
-    table-caption: Data Set@ # <1>
-    hide-uri-scheme: '@' # <2>
+    table-caption: Data Set@ # <.>
+    hide-uri-scheme: '@' # <.>
 ----
-<1> To soft set an attribute that's assigned an explicit value, attach the `@` modifier to the end of its value.
-<2> To soft set and assign a built-in attribute's default value, or in the case of a boolean attribute, the _empty string_ value, type an opening single quotation mark, followed by the `@` modifier, and then a closing single quotation mark (`'`).
+<.> To soft set an attribute that's assigned an explicit value, attach the `@` modifier to the end of its value.
+<.> To soft set and assign a built-in attribute's default value, or in the case of a boolean attribute, the _empty string_ value, type an opening single quotation mark, followed by the `@` modifier, and then a closing single quotation mark (`'`).
 
 Since the component version attributes in <<ex-soft-set>> are soft set, a page could modify their values or unset them.
 
@@ -79,16 +79,16 @@ Component version attributes are hard unset when they're assigned the reserved t
 Each attribute is entered on its own line as a key-value pair under the `attributes` key.
 
 .Hard unset attributes
-[source#ex-hard-unset,yaml]
+[#ex-hard-unset,yaml]
 ----
 asciidoc:
   attributes:
-    table-caption: ~ # <1>
-    hide-uri-scheme: ~ # <2>
+    table-caption: ~ # <.>
+    hide-uri-scheme: ~ # <.>
 ----
-<1> To hard unset an attribute, assign it the tilde symbol (`~`).
+<.> To hard unset an attribute, assign it the tilde symbol (`~`).
 The `~` is a reserved value that hard unsets a component version attribute.
-<2> Boolean attributes are also hard unset when assigned the tilde symbol (`~`).
+<.> Boolean attributes are also hard unset when assigned the tilde symbol (`~`).
 
 [.term]*Hard unset* component version attributes cannot be overridden from a page.
 When a component version attribute is hard unset, its behavior is turned off and it isn't available to the component version's pages.
@@ -100,15 +100,15 @@ Soft unset component version attributes can be overridden from a page.
 An attribute is soft unset by assigning it the reserved value `false`.
 
 .Assign soft unset precedence to attributes
-[source#ex-soft-unset,yaml]
+[#ex-soft-unset,yaml]
 ----
 asciidoc:
   attributes:
-    table-caption: false # <1>
-    hide-uri-scheme: false # <2>
+    table-caption: false # <.>
+    hide-uri-scheme: false # <.>
 ----
-<1> To soft unset an attribute, assign it the value `false`.
-<2> Boolean attributes are also soft unset when assigned `false`.
+<.> To soft unset an attribute, assign it the value `false`.
+<.> Boolean attributes are also soft unset when assigned `false`.
 
 Since the attributes in <<ex-soft-unset>> are soft unset, a page could reset them.
 

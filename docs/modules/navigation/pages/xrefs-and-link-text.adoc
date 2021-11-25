@@ -12,7 +12,6 @@ In these cases, the resource IDs don't require the version, component, or module
 However, regardless of what component version a navigation file belongs to, you can still link to any page in the site from any navigation list, whether they belong to a xref:page:page-links.adoc#modules[different modules] or xref:page:page-links.adoc#component-versions[components].
 
 .nav.adoc
-[source]
 ----
 * xref:filename.adoc[Optional link text] <.>
 * xref:module:filename.adoc[] <.>
@@ -34,7 +33,6 @@ The link text, regardless of whether it's the default link text or specified in 
 Xrefs in a navigation file don't need to specify link text.
 
 .nav.adoc
-[source]
 ----
 * xref:get-started.adoc[] <.>
 ----
@@ -51,7 +49,6 @@ In such cases, you still need to explicitly specify the link text.
 You can enter link text directly in the xref macro and override the default link text supplied by the target page.
 
 .nav.adoc
-[source]
 ----
 .The Special Project
 * xref:index.adoc[What's Silver Leaf] <.>

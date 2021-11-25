@@ -27,7 +27,7 @@ Antora will append [.path]_.git_ to any remote content sources repository URLs t
 If you use Team Foundation Server (TFS) or Azure DevOps, you may need to set `ensure_git_suffix` to `false` if your content sources repositories fail to clone.
 
 .antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 git:
   ensure_git_suffix: false

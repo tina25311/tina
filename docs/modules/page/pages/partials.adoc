@@ -21,7 +21,6 @@ A partial is usually regular content marked up with AsciiDoc, but it isn't requi
 . On the first line of the file, enter your content, such as paragraph text, a table, or an attribute entry.
 In this example, let's create an admonition that's going to be used on several pages throughout a site.
 +
-[source]
 ----
 [WARNING]
 ====

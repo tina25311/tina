@@ -29,14 +29,14 @@ Next, open your new playbook file and configure it to use the cloned repository 
 You can specify the repository either as a xref:content-source-url.adoc#local-urls[path relative to the playbook file or as an absolute path].
 
 .local-antora-playbook.yml
-[source,yaml]
+[,yaml]
 ----
 content:
   sources:
   - url: ./workspace/server-docs
-    branches: HEAD # <1>
+    branches: HEAD # <.>
 ----
-<1> In author mode, you usually want to use the currently checked out HEAD of the local repository
+<.> In author mode, you usually want to use the currently checked out HEAD of the local repository
 
 Build your Antora site using the new playbook file.
 

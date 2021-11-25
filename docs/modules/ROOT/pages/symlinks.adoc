@@ -177,7 +177,7 @@ Start by creating the [.path]_examples_ folder under the ROOT module where the s
           📄 MyClass.java
 ----
 
-Next, let's create a symlink from the [.path]_examples_ folder to [.path]_MyClass.java_ to pull it into the Antora hierachy.
+Next, let's create a symlink from the [.path]_examples_ folder to [.path]_MyClass.java_ to pull it into the Antora hierarchy.
 Start by switching to that directory in your terminal.
 
  $ cd docs/modules/ROOT/examples
@@ -199,7 +199,7 @@ Here's the result.
   📂 modules
     📂 ROOT
       📂 examples
-        🔗 MyClass.java <1>
+        🔗 MyClass.java <.>
       📂 pages
         📄 index.adoc
       📄 nav.adoc
@@ -210,7 +210,7 @@ Here's the result.
         📒 example
           📄 MyClass.java
 ----
-<1> MyClass.java is a symlink to the MyClass.java file under src/main/java/org/example
+<.> MyClass.java is a symlink to the MyClass.java file under src/main/java/org/example
 
 TIP: If you're sourcing your documentation content from a git reference, commit the symlink to the git repository, just like you would any other file.
 
@@ -247,7 +247,7 @@ Here's the result:
   📂 modules
     📂 ROOT
       📂 examples
-        🔗 src <1>
+        🔗 src <.>
       📂 pages
         📄 index.adoc
       📄 nav.adoc
@@ -258,7 +258,7 @@ Here's the result:
         📒 example
           📄 MyClass.java
 ----
-<1> src is a symlink to the src folder at the project/repository root
+<.> src is a symlink to the src folder at the project/repository root
 
 TIP: If you're sourcing your documentation content from a git reference, commit the symlink to the git repository, just like you would any other file.
 Even though the symlink points to a directory, in git, it's still treated like a file.

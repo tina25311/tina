@@ -5,7 +5,6 @@
 A single list navigation file contains one xref:asciidoc:ordered-and-unordered-lists.adoc#unordered[unordered AsciiDoc list].
 An unordered list is made up of list items.
 
-[source]
 ----
 * List item <.>
 * List item <.>
@@ -36,7 +35,6 @@ The top-level list item in a single list navigation file is marked by either a s
 A list title is optional.
 Unlike list items, there must be *no spaces* between the `.` and the content of the title.
 
-[source]
 ----
 .List title <.>
 * List item
@@ -50,7 +48,6 @@ Therefore, all of the other list items will be nested beneath the title.
 
 When a list doesn't have a title, each item with a single asterisk marker (`+*+`) becomes a top-level item to any list items that are nested directly under it.
 
-[source]
 ----
 * List item <.>
 ** A nested list item <.>
@@ -74,7 +71,6 @@ That means the resource IDs won't need to specify version, component, or module 
 . On the first line, type an asterisk (`+*+`), directly followed by a blank space.
 Then type an xref macro prefix and the resource ID of the target page.
 +
-[source]
 ----
 * xref:get-started.adoc
 ----
@@ -83,7 +79,6 @@ Then type an xref macro prefix and the resource ID of the target page.
 Press kbd:[Enter] to go to the next line.
 +
 --
-[source]
 ----
 * xref:get-started.adoc[]
 ----
@@ -96,7 +91,6 @@ Type two asterisks (`+**+`), followed by a blank space, and then an xref.
 This time, enter link text inside the set of square brackets (`+[]+`).
 +
 --
-[source]
 ----
 * xref:get-started.adoc[]
 ** xref:install.adoc[Installation Setup and Steps]
@@ -108,7 +102,6 @@ The link text, _Installation Setup and Steps_, will be displayed in the componen
 . Let's create another top-level item that's only text, i.e., it isn't a page reference.
 On the next line, type an asterisk (`+*+`), a blank space, and then your text.
 +
-[source]
 ----
 * xref:get-started.adoc[]
 ** xref:install.adoc[Installation Setup and Steps]
@@ -118,7 +111,6 @@ On the next line, type an asterisk (`+*+`), a blank space, and then your text.
 . Now, nest a list item under the previous top-level item.
 This item is a cross reference that will use the target page's default link text.
 +
-[source]
 ----
 * xref:get-started.adoc[]
 ** xref:install.adoc[Installation Setup and Steps]
@@ -129,7 +121,6 @@ This item is a cross reference that will use the target page's default link text
 . Finally, nest a list item under the previous item.
 Type three asterisks (`+***+`), followed by a blank space, and then an xref.
 +
-[source]
 ----
 * xref:get-started.adoc[]
 ** xref:install.adoc[Installation Setup and Steps]

@@ -22,7 +22,6 @@ Each item in a description list consists of a term or phrase followed by:
 
 Here's an example of a description list with two terms and their content.
 
-[source]
 ----
 Keyboard::
 Used to enter text or control items on the screen. <.>
@@ -46,7 +45,7 @@ It can even contain other list types.
 Let's look at an example that includes content other than a single paragraph.
 
 .A description list including complex content
-[source#ex-complex]
+[#ex-complex]
 ----
 term 1::
 This description needs two paragraphs.

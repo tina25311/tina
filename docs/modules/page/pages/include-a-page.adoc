@@ -16,7 +16,7 @@ You can include a page from anywhere in the site, including pages from other doc
 <<ex-base>> shows the structure of an include directive with a {family}'s fully qualified resource ID.
 
 .Include directive and resource ID syntax
-[#ex-base,subs=attributes+]
+[listing#ex-base,subs=attributes+]
 ----
 \include::version@component:module:filename{ext}[]
 ----

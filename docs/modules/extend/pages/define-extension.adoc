@@ -14,7 +14,7 @@ We refer to this export as the register function.
 Exporting the function allows Antora to access it.
 
 .my-extension.js
-[source,js]
+[,js]
 ----
 'use strict'
 
@@ -25,7 +25,7 @@ module.exports.register = () => {
 You can split out the function definition from the export statement, if you prefer that style.
 
 .my-extension.js
-[source,js]
+[,js]
 ----
 'use strict'
 
@@ -53,7 +53,7 @@ Since the register method is a kind of listener, you can use it as an opportunit
 Let's use it to say hi.
 
 .my-extension.js
-[source,js]
+[,js]
 ----
 module.exports.register = () => {
   console.log('Hello from Antora!')
@@ -68,7 +68,7 @@ If the register function can be bound, meaning it's defined using the `function`
 The `this` keyword is one way the extension can access the generator context.
 
 .my-extension.js
-[source,js]
+[,js]
 ----
 module.exports.register = function () {
   this.on(...)
@@ -78,7 +78,7 @@ module.exports.register = function () {
 Alternately, if the function accepts the generator context as the first parameter (using any name that begins with a letter), Antora will pass it as the first argument of the function instead of binding it to the `this` keyword.
 
 .my-extension.js without binding
-[source,js]
+[,js]
 ----
 module.exports.register = (context) {
   context.on(...)
@@ -96,7 +96,7 @@ All event listeners can retrieve the playbook, but you might need it earlier whe
 Here's how you can access the playbook from the register function:
 
 .my-extension.js
-[source,js]
+[,js]
 ----
 module.exports.register = function ({ playbook }) => {
   console.log(`Antora is building the ${playbook.site.title}.`)

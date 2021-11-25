@@ -15,7 +15,7 @@ Normal substitutions are applied to example content.
 If the example content is contiguous, i.e., not interrupted by blank lines, the block name `example` can be placed directly on top of the text in an attribute list (`[]`).
 
 .Example paragraph syntax
-[source#ex-name]
+[#ex-name]
 ----
 .Optional title
 [example]
@@ -35,7 +35,7 @@ If the example content contains elements separated by blank lines, place the con
 You don't need to set the block name when you use a delimited block.
 
 .Delimited example block syntax
-[source#ex-block]
+[#ex-block]
 ----
 .Onomatopoeia
 ====

@@ -41,7 +41,7 @@ To learn about specify an unversioned component version, see xref:component-with
 The following examples describe how to assign a named or semantic identifier to `version`.
 
 .antora.yml with named identifier assigned to version
-[source#ex-name,yaml]
+[#ex-name,yaml]
 ----
 name: star
 version: rigel # <.>
@@ -54,7 +54,7 @@ Antora allows the identifier to be prefixed with the letter _v_, which it ignore
 Enclose values that start with a number, like the one shown in <<ex-semver>>, in a set of single quote marks (`'`).
 
 .antora.yml with semantic identifier assigned to version
-[source#ex-semver,yaml]
+[#ex-semver,yaml]
 ----
 name: colorado
 version: '5.6' # <.>
