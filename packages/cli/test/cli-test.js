@@ -1080,9 +1080,13 @@ describe('cli', function () {
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
       expect(messages).to.have.lengthOf(2)
-      expect(messages[0]).to.include('"level":"warn"')
-      expect(messages[0]).to.include('"msg":"logger not configured;')
-      expect(messages[1]).to.include('"msg":"Let\'s go!"')
+      // a) use these assertions if the default format is json
+      //expect(messages[0]).to.include('"level":"warn"')
+      //expect(messages[0]).to.include('"msg":"logger not configured;')
+      //expect(messages[1]).to.include('"msg":"Let\'s go!"')
+      // b) use these assertions if the default format is pretty
+      expect(messages[0]).to.include('WARN: logger not configured;')
+      expect(messages[1]).to.include("INFO: Let's go!")
     })
   })
 

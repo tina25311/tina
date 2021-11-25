@@ -93,7 +93,7 @@ function get (name) {
     resolveTarget () {
       if ((this.ownRootLogger || closedLogger).closed) {
         if ((this.ownRootLogger = rootLoggerHolder.get() || closedLogger).closed) {
-          ;(this.ownRootLogger = configure().get(null)).warn(
+          ;(this.ownRootLogger = configure({ format: 'pretty' }).get(null)).warn(
             'logger not configured; creating logger with default settings'
           )
         }

@@ -218,13 +218,21 @@ describe('logger', () => {
     // NOTE this test also verifies the behavior of the close function
     it('should create logger with default settings and warn if logger is used before configure() is called', () => {
       Logger.close()
-      const messages = captureStdoutLogSync(() => get().info('too soon!'))
-      expect(messages).to.have.lengthOf(2)
-      expect(messages[0]).to.include({
-        level: 'warn',
-        msg: 'logger not configured; creating logger with default settings',
-      })
-      expect(messages[1]).to.include({ level: 'info', msg: 'too soon!' })
+      // a) use these assertions if the default format is json
+      //const messages = captureStdoutLogSync(() => get().info('too soon!'))
+      //expect(messages).to.have.lengthOf(2)
+      //expect(messages[0]).to.include({
+      //  level: 'warn',
+      //  msg: 'logger not configured; creating logger with default settings',
+      //})
+      //expect(messages[1]).to.include({ level: 'info', msg: 'too soon!' })
+      // b) use these assertions if the default format is pretty
+      const lines = captureStderrSync(() => get().info('too soon!'))
+      expect(lines).to.have.lengthOf(2)
+      const expectedLine1 = /^\[.+\] WARN: logger not configured; creating logger with default settings$/
+      const expectedLine2 = /^\[.+\] INFO: too soon!/
+      expect(lines[0]).to.match(expectedLine1)
+      expect(lines[1]).to.match(expectedLine2)
     })
 
     it('should return proxy of the root logger if no name is specified', () => {
