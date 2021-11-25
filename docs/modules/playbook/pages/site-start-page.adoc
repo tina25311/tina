@@ -20,7 +20,7 @@ site:
 You can use any page that belongs to a component version as the index page for your site.
 The `start_page` key accepts the resource ID of a page as a value.
 *The resource ID must include the xref:page:resource-id-coordinates.adoc#id-component[component, module, and file coordinates]*.
-The xref:page:resource-id-coordinates.adoc#id-versopm[version coordinate] can be specified if you want to use a specific version of a page instead of the latest version.
+The xref:page:resource-id-coordinates.adoc#id-version[version coordinate] can be specified if you want to use a specific version of a page instead of the latest version.
 Alternatively, `start_page` can be assigned from the xref:cli:options.adoc#start-page[CLI].
 
 == Use a page's latest version

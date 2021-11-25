@@ -34,7 +34,7 @@ Issue {url-issues}/884[#884^]::
 * Set hint on `hint` key of log object instead of appending it to the bottom of the message.
 Issue {url-issues}/882[#882^]:: Include path of playbook file in any error message that pertains to the playbook.
 Issue {url-issues}/839[#839^]::
-* Replace vinyl-fs with direct glob-stream call to scan for files in worktree
+* Replace vinyl-fs with direct glob-stream call to scan for files in worktree.
 * Report path of a file correctly if it cannot be read.
 
 Default to pretty format if logger is used before being configured.
