@@ -19,7 +19,7 @@ To see if you have Node.js installed, and which version, open a terminal and typ
 
  $ node -v
 
-This command should return an {url-node-releases}[active Node LTS version number], for example:
+This command should return an {url-node-releases}[active Node.js LTS version number], for example:
 
 [subs=+attributes]
  $ node --version
@@ -28,7 +28,7 @@ This command should return an {url-node-releases}[active Node LTS version number
 If you have an active Node.js LTS version on your machine, you're ready to <<install-antora,install Antora>>.
 
 If *no version number is displayed in your terminal*, you need to install Node.js.
-We recommend using nvm to install Node, though you are free to take a different path.
+We recommend using nvm to install Node.js, though you are free to take a different path.
 Follow one of these guides to learn how to install nvm and Node.js on your platform.
 
 * xref:install:linux-requirements.adoc#install-nvm[Install nvm and Node.js on Linux]
@@ -48,7 +48,7 @@ To upgrade to the latest Node.js LTS version and set it as your default version,
  $ nvm install {version-node}
  $ nvm alias default {version-node}
 
-Once you've installed Node, it's time to install Antora.
+Once you've installed Node.js, it's time to install Antora.
 
 [#install-antora]
 == Install Antora

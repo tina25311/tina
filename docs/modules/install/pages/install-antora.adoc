@@ -14,7 +14,7 @@ On this page, you'll learn:
 We recommend installing Antora globally, especially if you're managing several documentation sites.
 When we say "`globally`" here, it does not imply system-wide.
 It means the location where Node.js is installed.
-If you used nvm to install Node, this location will be inside your home directory (thus not requiring elevated permissions).
+If you used nvm to install Node.js, this location will be inside your home directory (thus not requiring elevated permissions).
 However, you can also install Antora in a project directory if you prefer.
 
 == Install Antora globally using npm

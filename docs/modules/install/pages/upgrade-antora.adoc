@@ -13,7 +13,7 @@ include::partial$upgrade-checklist.adoc[]
 == Upgrade Node.js (optional)
 
 You can use any active LTS or maintenance LTS version of Node.js with Antora, but we recommend using the most recent active LTS version so that you benefit from the latest performance and security enhancements.
-The {url-node-releases}[Node release schedule^] shows the active Node.js LTS versions.
+The {url-node-releases}[Node.js release schedule^] shows the active Node.js LTS versions.
 
 To check which Node.js version you have installed, open a terminal and run:
 

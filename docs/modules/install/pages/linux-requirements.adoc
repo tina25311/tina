@@ -79,5 +79,5 @@ To set the latest version of Node.js as the default for any new terminal, type:
 [subs=attributes+]
  $ nvm alias default {version-node-major}
 
-Now that you're on the latest LTS version of Node, you can xref:install-antora.adoc[install Antora].
+Now that you're on the latest LTS version of Node.js, you can xref:install-antora.adoc[install Antora].
 //end::shared[]

@@ -13,7 +13,7 @@ If you've never installed Antora before, you'll need to complete the steps on th
 == Node.js
 
 You can use any active LTS or maintenance LTS version of Node.js with Antora, but we recommend using the most recent active LTS version so that you benefit from the latest performance and security enhancements.
-The {url-node-releases}[Node release schedule^] shows the active Node.js LTS versions.
+The {url-node-releases}[Node.js release schedule^] shows the active Node.js LTS versions.
 
 To see if you have Node.js installed, and which version, open PowerShell and type:
 
@@ -94,4 +94,4 @@ IMPORTANT: When using nvm for Windows, you must enter the full version of Node.j
 
 == Learn more
 
-Once you've installed Node, you're ready to xref:install-antora.adoc[install Antora].
+Once you've installed Node.js, you're ready to xref:install-antora.adoc[install Antora].
