@@ -26,7 +26,6 @@
     "js-yaml": "~4.1",
     "picomatch": "~2.3",
     "should-proxy": "~1.0",
-    "simple-concat": "~1.0",
     "simple-get": "~4.0",
     "vinyl": "~2.2"
   },

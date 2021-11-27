@@ -2,7 +2,6 @@
 
 const { compile: bracesToGroup } = require('braces')
 const camelCaseKeys = require('camelcase-keys')
-const concat = require('simple-concat')
 const { createHash } = require('crypto')
 const expandPath = require('@antora/expand-path-helper')
 const { File, MemoryFile, ReadableFile } = require('./file')
@@ -234,11 +233,11 @@ function bufferizeContents () {
   return map((file, _, next) => {
     // NOTE gulp-vinyl-zip automatically converts the contents of an empty file to a Buffer
     if (file.isStream()) {
-      concat(file.contents, (err, contents) => {
-        if (err) return next(err)
-        file.contents = contents
-        next(null, file)
-      })
+      const buffer = []
+      file.contents
+        .on('error', next)
+        .on('data', (chunk) => buffer.push(chunk))
+        .on('end', () => next(null, Object.assign(file, { contents: Buffer.concat(buffer) })))
     } else {
       next(null, file)
     }
