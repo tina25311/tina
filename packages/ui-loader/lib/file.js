@@ -40,7 +40,7 @@ class ReadableFile extends Readable {
 
   _read () {
     this.push(this._file)
-    this._file = null
+    this.push((this._file = null))
   }
 }
 
