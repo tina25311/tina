@@ -538,11 +538,11 @@ To see which version of Node you have installed, open a terminal and type:
 
 If `node --version` doesn't return any information, you don't yet have Node installed.
 
-The minimum required version of Node is *10.17.0*, as indicated in [.path]_package.json_.
-However, we recommend using the latest LTS release.
+The minimum required version of Node is *12.21.0*, as indicated in the `engines.node` key in [.path]_package.json_.
+However, we recommend using the Active LTS release (currently Node 16).
 These are also the recommended versions of Node for development.
 
-.Why Node 10 and above?
+.Why Node 12 and above?
 ****
 Antora tracks the {url-node-releases}[Node.js release schedule].
 This ensures maximum compatibility with dependencies and ensures you always receive the latest security updates.
