@@ -45,9 +45,12 @@ async function generateSite (playbook) {
     await context.notify('beforePublish')
     return fxns.publishSite(playbook, [contentCatalog, uiCatalog, vars.lock('siteCatalog')]).then((publications) => {
       if (!playbook.runtime.quiet && process.stdout.isTTY) {
-        const log = console.log
+        const indexPath = contentCatalog.getSiteStartPage() ? '/index.html' : ''
+        const log = (msg) => process.stdout.write(msg + '\n')
         log('Site generation complete!')
-        publications.forEach(({ fileUri }) => fileUri && log(`View the site by visiting ${fileUri} in a browser.`))
+        publications.forEach(
+          ({ fileUri }) => fileUri && log(`Open ${fileUri}${indexPath} in a browser to view your site.`)
+        )
       }
       return context
         .notify('sitePublished', Object.assign(vars, { publications }))

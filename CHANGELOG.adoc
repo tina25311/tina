@@ -7,6 +7,11 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *site-generator-default*: Append /index.html to file URI in completion status message if site start page is defined (#889)
+* *site-generator-default*: Reword completion status message (#889)
+
 === Fixed
 
 * *content-aggregator*: Add missing glob-stream dependency declaration in package.json

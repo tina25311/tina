@@ -19,6 +19,7 @@ const buildPlaybook = require('@antora/playbook-builder')
 const GitServer = require('node-git-server')
 const { once } = require('events')
 const ospath = require('path')
+const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const RepositoryBuilder = require('../../../test/repository-builder')
 
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
@@ -550,10 +551,9 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
-    const editLinkUrl =
-      ospath.sep === '\\'
-        ? 'file:///' + ospath.join(repoBuilder.repoPath, thePagePath).replace(/\\/g, '/')
-        : 'file://' + ospath.join(repoBuilder.repoPath, thePagePath)
+    const editLinkUrl = 'file://' + (posixify
+      ? '/' + posixify(ospath.join(repoBuilder.repoPath, thePagePath))
+      : ospath.join(repoBuilder.repoPath, thePagePath))
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
   }).timeout(timeoutOverride)
 
@@ -1608,7 +1608,6 @@ describe('generateSite()', function () {
       }
     }).timeout(timeoutOverride)
 
-    // NOTE we can't test this in the cli tests since child_process.spawn does not allocate a tty
     it('should report completion message if runtime.quiet is false', async () => {
       playbookSpec.runtime.quiet = false
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -1630,8 +1629,37 @@ describe('generateSite()', function () {
         await generateSite(getPlaybook(playbookFile))
         expect(messages).to.have.lengthOf(2)
         expect(messages[0]).to.equal('Site generation complete!\n')
-        const expectedFileUri = `file://${ospath.sep === '\\' ? '/' + absDestDir.replace(/\\/g, '/') : absDestDir}`
-        expect(messages[1]).to.equal(`View the site by visiting ${expectedFileUri} in a browser.\n`)
+        const expectedFileUri = `file://${posixify ? '/' + posixify(absDestDir) : absDestDir}`
+        expect(messages[1]).to.equal(`Open ${expectedFileUri} in a browser to view your site.\n`)
+      } finally {
+        Object.assign(process.stdout, defaultStdout)
+      }
+    }).timeout(timeoutOverride)
+
+    it('should append index path to file URI in completion message if start page is set', async () => {
+      playbookSpec.site.start_page = 'the-component::the-page.adoc'
+      playbookSpec.runtime.quiet = false
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const defaultStdout = 'clearLine columns cursorTo isTTY moveCursor write'.split(' ').reduce((accum, name) => {
+        accum[name] = process.stdout[name]
+        return accum
+      }, {})
+      const columns = 9 + repoBuilder.url.length * 2
+      const messages = []
+      try {
+        Object.assign(process.stdout, {
+          clearLine: () => {},
+          columns,
+          cursorTo: () => {},
+          isTTY: true,
+          moveCursor: () => {},
+          write: (line) => messages.push(line),
+        })
+        await generateSite(getPlaybook(playbookFile))
+        expect(messages).to.have.lengthOf(2)
+        expect(messages[0]).to.equal('Site generation complete!\n')
+        const expectedFileUri = `file://${posixify ? '/' + posixify(absDestDir) : absDestDir}/index.html`
+        expect(messages[1]).to.equal(`Open ${expectedFileUri} in a browser to view your site.\n`)
       } finally {
         Object.assign(process.stdout, defaultStdout)
       }
