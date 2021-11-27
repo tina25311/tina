@@ -48,11 +48,28 @@ class GeneratorContext extends EventEmitter {
     return Object.assign({}, this.#vars)
   }
 
+  lockVariable (name) {
+    return Object.defineProperty(this.#vars, name, { configurable: false, writable: false })[name]
+  }
+
   async notify (eventName) {
     if (!this.listenerCount(eventName)) return
     for (const listener of this.rawListeners(eventName)) {
       const outcome = listener.length === 1 ? listener.call(this, this.getVariables()) : listener.call(this)
       if (outcome instanceof Promise) await outcome
+    }
+  }
+
+  removeVariable (name) {
+    try {
+      const value = this.#vars[name]
+      delete this.#vars[name]
+      return value
+    } catch (err) {
+      if (err instanceof TypeError) {
+        err.message = err.message.replace(/ delete property '(.+?)' .*/, " remove locked variable '$1'")
+      }
+      throw err
     }
   }
 
@@ -105,19 +122,7 @@ class GeneratorContext extends EventEmitter {
   }
 
   _initVariables (playbook) {
-    return (this.#vars = Object.setPrototypeOf(
-      { playbook },
-      {
-        lock (name) {
-          return Object.defineProperty(this, name, { configurable: false, writable: false })[name]
-        },
-        remove (name) {
-          const currentValue = this[name]
-          delete this[name]
-          return currentValue
-        },
-      }
-    ))
+    return (this.#vars = { playbook })
   }
 
   _registerExtensions (playbook, vars) {
