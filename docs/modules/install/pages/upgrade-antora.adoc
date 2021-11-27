@@ -3,7 +3,7 @@
 
 On this page, you'll learn:
 
-* [x] How to upgrade Node.
+* [x] How to upgrade Node.js.
 * [x] How to upgrade Antora globally.
 * [x] How to upgrade the Antora CLI and default site generator individually.
 

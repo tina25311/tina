@@ -364,7 +364,6 @@ Issue {url-issues}/603[#603^]::
 Issue {url-issues}/605[#605^]:: Only register start page for component version in `ContentCatalog#registerComponentVersion` if value of `startPage` property in descriptor is truthy.
 Call `ContentCatalog#registerComponentVersionStartPage` in content classifier to register start page after adding files (instead of before).
 Issue {url-issues}/681[#681^]:: Don't use global git credentials path if custom git credentials path is specified, but does not exist.
-//Issue {url-issues}/682[#682^]:: Replace the fs-extra dependency with calls to the promise-based fs API provided by Node.
 Issue {url-issues}/689[#689^]::
 * Make check for [.path]_.adoc_ extension in value of xref attribute on image more accurate.
 * Require page ID spec for start page to include the [.path]_.adoc_ file extension.

@@ -6,7 +6,7 @@
 
 On this page, you'll learn:
 
-* [x] How to install Node.
+* [x] How to install Node.js.
 
 Since Antora is built on Node.js, you'll need Node.js installed on your machine to install and run Antora.
 

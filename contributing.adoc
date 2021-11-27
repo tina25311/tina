@@ -397,7 +397,7 @@ Please adhere to the following style and performance rules which are not current
 * Use the `Array` constructor + `Array#fill` + `Array#map` to populate a new fixed-length array (e.g., `+Array(10).fill(undefined).map(() => <logic>)+`)
  ** Do not use `Array.from` since its performance is abysmal in Node.js 10.
 * Use the spread syntax to combine arrays instead of `Array#concat` (e.g., `+[...accum, value]+` or `+[...current, ...more]+`).
- ** The spread syntax is substantially faster across all versions of Node.
+ ** The spread syntax is substantially faster across all versions of Node.js.
  ** It's also clearer when you're adding a single value versus combining arrays.
  ** Always make sure the spread operator is used on the first argument.
 * Use `Object.assign` to duplicate an object or combine objects (e.g., `+Object.assign({}, object)+` or `+Object.assign({}, more, { key: 'val' })+`.

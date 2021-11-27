@@ -5,7 +5,7 @@
 On this page, you'll learn:
 
 * [x] How to install Chocolatey, the Windows package manager.
-* [x] How to install Node.
+* [x] How to install Node.js.
 
 If you've never installed Antora before, you'll need to complete the steps on this page before you can install Antora and use it to generate a documentation site.
 
@@ -46,7 +46,7 @@ The best way to install the Node Version Manager (nvm) and Node.js is with {url-
 
  $ Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-You're now ready to install nvm and Node.
+You're now ready to install nvm and Node.js.
 
 [#install-nvm]
 == Install nvm and Node.js
