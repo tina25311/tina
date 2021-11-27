@@ -40,7 +40,7 @@ All the work of publishing the virtual files to a concrete location or endpoint 
 The site publisher should load the destination providers on demand.
 Some of the providers, such as `fs` and `archive`, are built-in.
 If the provider is built-in, the site publisher should load it directly from the site publisher module.
-If the provider is not built-in, the site publisher should load the provider from a path relative to the playbook file, an absolute path, or the Node require path, depending on whether the value begins with a dot (`.`), a filesystem root, or neither, respectively.
+If the provider is not built-in, the site publisher should load the provider from a path relative to the playbook file, an absolute path, or the Node.js require path, depending on whether the value begins with a dot (`.`), a filesystem root, or neither, respectively.
 
 Once the provider functions are loaded, the site publisher should query the file catalogs to create a stream of publishable files.
 It should then iterate over each destination configuration entry and pass the files, destination configuration, and playbook to the corresponding publish function.

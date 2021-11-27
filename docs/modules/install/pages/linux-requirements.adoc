@@ -8,14 +8,15 @@ On this page, you'll learn:
 
 * [x] How to install Node.
 
-Since Antora is built on Node.js, you'll need Node installed on your machine to install and run Antora.
+Since Antora is built on Node.js, you'll need Node.js installed on your machine to install and run Antora.
 
-== Node
+[#node]
+== Node.js
 
-You can use any active LTS or maintenance LTS version of Node with Antora, but we recommend using the most recent active LTS version so that you benefit from the latest performance and security enhancements.
-The {url-node-releases}[Node release schedule^] shows the active Node LTS versions.
+You can use any active LTS or maintenance LTS version of Node.js with Antora, but we recommend using the most recent active LTS version so that you benefit from the latest performance and security enhancements.
+The {url-node-releases}[Node.js release schedule^] shows the active Node.js LTS versions.
 
-To see if you have Node installed, and which version, open a terminal and type:
+To see if you have Node.js installed, and which version, open a terminal and type:
 
  $ node --version
 
@@ -26,18 +27,18 @@ You should see a version string, such as:
 v{version-node}
 ....
 
-If *the command fails with an error*, it means you don't have Node installed.
-The best way to install Node is to use nvm (Node Version Manager).
+If *the command fails with an error*, it means you don't have Node.js installed.
+The best way to install Node.js is to use nvm (Node Version Manager).
 Skip to <<install-nvm>> to find instructions.
 
 ifeval::["{platform}" == "Linux"]
-NOTE: If your package manager provides Node and npm packages, _and you're familiar with using the tools installed system-wide_, you may choose to go that route.
+NOTE: If your package manager provides Node.js and npm packages, _and you're familiar with using the tools installed system-wide_, you may choose to go that route.
 However, we believe you'll be more successful if you choose <<install-nvm,nvm>>.
 endif::[]
 
-If *the command returns a version that isn't an active LTS version*, upgrade to the latest Node LTS version <<upgrade-node,using nvm>> (or your package manager).
+If *the command returns a version that isn't an active LTS version*, upgrade to the latest Node.js LTS version <<upgrade-node,using nvm>> (or your package manager).
 
-If *the command returns an active Node LTS version*, make sure that version is set as your default version by typing the following command in your terminal:
+If *the command returns an active Node.js LTS version*, make sure that version is set as your default version by typing the following command in your terminal:
 
 [subs=attributes+]
  $ nvm alias default {version-node-major}
@@ -45,9 +46,9 @@ If *the command returns an active Node LTS version*, make sure that version is s
 Now you're ready to xref:install-antora.adoc[install Antora].
 
 [#install-nvm]
-== Install nvm and Node
+== Install nvm and Node.js
 
-We recommend using the {url-nvm}[Node Version Manager (nvm)^] to manage your Node installations, though this is not a requirement.
+We recommend using the {url-nvm}[Node Version Manager (nvm)^] to manage your Node.js installations, though this is not a requirement.
 Follow the {url-nvm-install}[nvm installation guide^] to set up nvm on your machine.
 Once you've successfully installed nvm, close your current terminal, open a new one, and return here.
 
@@ -55,25 +56,25 @@ NOTE: If you get `nvm: command not found` after running the install script, then
 Be sure to follow all prompts issued by the install script.
 Consult the troubleshooting section in the {url-nvm-install}[install guide^] if you run into problems.
 
-TIP: Many CI environments use nvm to manage the version of Node used in the build job.
+TIP: Many CI environments use nvm to manage the version of Node.js used in the build job.
 By using nvm, you can align your setup with the environment used to generate and publish your production site.
 
-Once you've installed nvm, open a new terminal and install the latest Node LTS release.
+Once you've installed nvm, open a new terminal and install the active Node.js LTS release.
 
  $ nvm install --lts
 
-The above command will install the latest LTS release of Node and automatically set it as your default alias.
+The above command will install the active LTS release of Node.js and automatically set it as your default alias.
 
-Now that you have Node set up, you can xref:install-antora.adoc[install Antora].
+Now that you have Node.js set up, you can xref:install-antora.adoc[install Antora].
 
 [#upgrade-node]
-== Upgrade Node using nvm
+== Upgrade Node.js using nvm
 
 If you have nvm installed, but don't have the latest LTS version installed, type the following command in your terminal:
 
  $ nvm install --lts
 
-To set the latest version of Node as the default for any new terminal, type:
+To set the latest version of Node.js as the default for any new terminal, type:
 
 [subs=attributes+]
  $ nvm alias default {version-node-major}

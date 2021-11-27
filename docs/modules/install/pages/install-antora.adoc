@@ -4,7 +4,7 @@ To generate and publish documentation sites with Antora, you need the Antora com
 
 Assumptions:
 
-* [x] You've installed an active Node LTS release on your xref:linux-requirements.adoc#node[Linux], xref:windows-requirements.adoc#node[Windows], or xref:macos-requirements.adoc#node[macOS] machine.
+* [x] You've installed an active Node.js LTS release on your xref:linux-requirements.adoc#node[Linux], xref:windows-requirements.adoc#node[Windows], or xref:macos-requirements.adoc#node[macOS] machine.
 
 On this page, you'll learn:
 
@@ -13,7 +13,7 @@ On this page, you'll learn:
 
 We recommend installing Antora globally, especially if you're managing several documentation sites.
 When we say "`globally`" here, it does not imply system-wide.
-It means the location where Node is installed.
+It means the location where Node.js is installed.
 If you used nvm to install Node, this location will be inside your home directory (thus not requiring elevated permissions).
 However, you can also install Antora in a project directory if you prefer.
 
@@ -41,7 +41,7 @@ If installation was successful, the command should report the version of Antora 
  @antora/cli: {page-component-version}.x
  @antora/site-generator-default: {page-component-version}.x
 
-CAUTION: If you're using a system-wide Node installation managed by your operating system's package manager, you may run into permission problems when installing packages globally.
+CAUTION: If you're using a system-wide Node.js installation managed by your operating system's package manager, you may run into permission problems when installing packages globally.
 In that case, you'll need to <<install-dir,install Antora directly in your project repository>>.
 
 == Install Antora globally using Yarn

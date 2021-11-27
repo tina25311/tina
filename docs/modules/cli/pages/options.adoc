@@ -23,7 +23,7 @@ See xref:index.adoc#help[Display Antora CLI help].
 
 |[[require]]`-r`, `--require`
 |Not set
-|Node package name or filesystem path to a script
+|Node.js package (i.e., module) name or filesystem path to a script
 |Can specify multiple times.
 See xref:playbook:asciidoc-extensions.adoc#preload-extensions[Preload Asciidoctor extensions].
 
@@ -78,7 +78,7 @@ See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>> 
 
 |`--generator`
 |`@antora/site-generator-default`
-|Node package name or filesystem path to a script
+|Node.js package (i.e., module) name or filesystem path to a script
 |Intended for advanced users comfortable with the inner workings of Antora.
 Substitutes Antora's default site generator with a user-defined function.
 

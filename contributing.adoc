@@ -393,15 +393,15 @@ Please adhere to the following style and performance rules which are not current
 
 * Store regular expressions in constants using the suffix `_RX`.
 * Use the spread operator to convert an Iterator (or similar) to an Array (e.g., `+[...map.values()]+`).
- ** Do not use `Array.from` since its performance is abysmal in Node 10.
+ ** Do not use `Array.from` since its performance is abysmal in Node.js 10.
 * Use the `Array` constructor + `Array#fill` + `Array#map` to populate a new fixed-length array (e.g., `+Array(10).fill(undefined).map(() => <logic>)+`)
- ** Do not use `Array.from` since its performance is abysmal in Node 10.
+ ** Do not use `Array.from` since its performance is abysmal in Node.js 10.
 * Use the spread syntax to combine arrays instead of `Array#concat` (e.g., `+[...accum, value]+` or `+[...current, ...more]+`).
  ** The spread syntax is substantially faster across all versions of Node.
  ** It's also clearer when you're adding a single value versus combining arrays.
  ** Always make sure the spread operator is used on the first argument.
 * Use `Object.assign` to duplicate an object or combine objects (e.g., `+Object.assign({}, object)+` or `+Object.assign({}, more, { key: 'val' })+`.
- ** The performance of the spread operator on objects has degraded significantly in Node 12.
+ ** The performance of the spread operator on objects has degraded significantly in Node.js 12.
  ** Keep in mind that `Object.assign` modifies the first argument.
  ** Place the new object first to reduce the number of arguments, but only do so if the object to append doesn't have those properties.
  ** Prefer object spread in the test suite.
@@ -449,7 +449,10 @@ You can also select individual tests to run.
 
 == Project Organization
 
-Antora is a JavaScript project organized and packaged as a set of Node packages.
+Antora is a Node.js project organized as a set of Node.js packages that are published to the npm registry at npmjs.com.
+Node.js is a JavaScript runtime based on the V8 JavaScript engine.
+A Node.js package is a folder tree described by a [.path]_package.json_ file.
+
 This section describes the organization of the project at a high level so you know where to look for files.
 
 === Project Structure
@@ -484,7 +487,7 @@ package.json  <8>
 yarn.lock     <9>
 ....
 <1> The end user documentation for Antora.
-<2> A local installation of Node modules used for the development of this project.
+<2> A local installation of Node.js modules used for the development of this project.
 <3> Discrete software components (i.e., packages) used in the documentation pipeline.
 <4> The main code, test code, and architecture documentation for the content aggregator component.
 Developer documentation for each software component lives alongside the code.
@@ -504,7 +507,7 @@ This section gives you all the information you need to set up your development w
 In order to obtain the source code, run the test suite, and launch Antora, you'll need the following prerequisites:
 
 * git
-* Node / npm
+* Node.js / npm
 * Yarn
 * Gulp (CLI only)
 * Lerna
@@ -526,56 +529,56 @@ If not, {url-git-dl}[download and install] the git package for your system.
 
 Although Antora doesn't use git at runtime, git is used in the test suite to provide a local git server for testing interactions with remote repositories.
 
-==== Node / npm
+==== Node.js / npm
 
 Antora is built on {url-node}[Node.js] ("`Node`") (command: `node`).
-To work with the project, you must have Node installed on your machine.
-The Node installation also provides npm (command: `npm`), which you'll use to install additional Node modules.
+To work with the project, you must have Node.js installed on your machine.
+The Node.js installation also provides npm (command: `npm`), which you'll use to install additional Node.js modules.
 
-To see which version of Node you have installed, open a terminal and type:
+To see which version of Node.js you have installed, open a terminal and type:
 
- $ node --version
+ $ node -v
 
-If `node --version` doesn't return any information, you don't yet have Node installed.
+If `node -v` doesn't return any information, you don't yet have Node.js installed.
 
-The minimum required version of Node is *12.21.0*, as indicated in the `engines.node` key in [.path]_package.json_.
-However, we recommend using the Active LTS release (currently Node 16).
-These are also the recommended versions of Node for development.
+The minimum required version of Node.js is *12.21.0*, as indicated in the `engines.node` key in [.path]_package.json_.
+However, we recommend using the active LTS release (currently Node.js 16).
+These are also the recommended versions of Node.js for development.
 
-.Why Node 12 and above?
+.Why Node.js 12 and above?
 ****
 Antora tracks the {url-node-releases}[Node.js release schedule].
 This ensures maximum compatibility with dependencies and ensures you always receive the latest security updates.
 It also means Antora can leverage the latest and greatest features of ECMAScript to deliver the best features and performance.
 ****
 
-If you don't yet have Node installed, or the version of Node you have isn't Node 10 or greater, we strongly recommend using {url-nvm}[nvm] (Node Version Manager) to manage your Node installations.
+If you don't yet have Node.js installed, or the version of Node.js you have isn't Node.js 12 or greater, we strongly recommend using {url-nvm}[nvm] (Node Version Manager) to manage your Node.js installations.
 Follow the {url-nvm-install}[nvm installation instructions] to set up nvm on your machine.
 
-TIP: Many CI environments use nvm to install the version of Node used for the build job.
+TIP: Many CI environments use nvm to install the version of Node.js used for the build job.
 By using nvm, you can closely align your setup with the environment that is used to generate and publish the production site.
 
-Once you've installed nvm, open a new terminal and install Node 12 using:
+Once you've installed nvm, open a new terminal and install Node.js 12 using:
 
  $ nvm install 12
 
-The above command will install the latest version of Node 12.
+The above command will install the latest version of Node.js 12.
 
-If you already have other Node versions installed, you can configure Node 12 as the default for any new terminal.
+If you already have other Node.js versions installed, you can configure Node.js 12 as the default for any new terminal.
 
  $ nvm alias default 12
 
-You can skip this step if you didn't previously have any Node versions installed because `nvm install` automatically adds the default alias to the first version of Node you install.
+You can skip this step if you didn't previously have any Node.js versions installed because `nvm install` automatically adds the default alias to the first version of Node.js you install.
 
-Verify the version of Node you have selected using:
+Verify the version of Node.js you have selected using:
 
- $ node --version
+ $ node -v
 
-The rest of the software you need is installable from Node (specifically npm).
+The rest of the software you need is installable from Node.js (specifically npm).
 
 ==== Yarn
 
-{url-yarn}[Yarn] (command: `yarn`) is the preferred package manager and script runner for the Node ecosystem.
+{url-yarn}[Yarn] (command: `yarn`) is the preferred package manager and script runner for the Node.js ecosystem.
 
 You'll use the `npm` command (part of Node) to install Yarn.
 You should install Yarn globally, which resolves to a location in your user directory if you're using nvm, using:
@@ -624,7 +627,7 @@ If you see a version, you're all set.
 
 ==== Development Libraries
 
-Some Node packages require development libraries, such as a C compiler, to be available on your machine.
+Some Node.js packages require development libraries, such as a C compiler, to be available on your machine.
 It's very likely you already have these libraries.
 If for some reason you don't, you can return to this section to satisfy this prerequisite.
 

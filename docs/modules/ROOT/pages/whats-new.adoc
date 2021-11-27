@@ -458,7 +458,7 @@ Issue {url-issues}/737[#737^]:: Deprecate default branches pattern `[master, v*]
 [#removed]
 == Removed
 
-Node.js:: Drop support for Node 10.
+Node.js:: Drop support for Node.js 10.
 Issue {url-issues}/522[#522^]:: Drop support for Asciidoctor.js 1.5.9.
 Automatically upgrade to using Asciidoctor.js 2.2.x.
 Issue {url-issues}/679[#679^]:: Drop support for Node.js 8.

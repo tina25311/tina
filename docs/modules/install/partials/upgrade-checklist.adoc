@@ -5,8 +5,8 @@ If you're upgrading from Antora 2.3, you may need to make some of the following 
 
 Are you using an active LTS version of Node.js?::
 We recommend upgrading to the {url-node-releases}[latest active long term support (LTS) release of Node].
-Antora 3 supports Node 14 LTS and 16 LTS.
-Antora 3 doesn't support Node LTS versions that have reached end of life (EOL).
+Antora 3 supports Node.js 14 LTS and 16 LTS.
+Antora 3 doesn't support Node.js LTS versions that have reached end of life (EOL).
 See <<node>> for instructions.
 
 Have you updated your AsciiDoc syntax and Asciidoctor extensions to comply with the newest patch release of Asciidoctor.js 2.2?::

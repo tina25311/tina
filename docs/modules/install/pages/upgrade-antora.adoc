@@ -10,16 +10,16 @@ On this page, you'll learn:
 include::partial$upgrade-checklist.adoc[]
 
 [#node]
-== Upgrade Node (optional)
+== Upgrade Node.js (optional)
 
-You can use any active LTS or maintenance LTS version of Node with Antora, but we recommend using the most recent active LTS version so that you benefit from the latest performance and security enhancements.
-The {url-node-releases}[Node release schedule^] shows the active Node LTS versions.
+You can use any active LTS or maintenance LTS version of Node.js with Antora, but we recommend using the most recent active LTS version so that you benefit from the latest performance and security enhancements.
+The {url-node-releases}[Node release schedule^] shows the active Node.js LTS versions.
 
-To check which Node version you have installed, open a terminal and run:
+To check which Node.js version you have installed, open a terminal and run:
 
  $ node --version
 
-If you need to upgrade to the latest Node LTS version, run:
+If you need to upgrade to the active Node.js LTS version, run:
 
 .Linux and macOS
  $ nvm install --lts
@@ -28,7 +28,7 @@ If you need to upgrade to the latest Node LTS version, run:
 [subs=attributes+]
  $ nvm install {version-node}
 
-Next, to set the latest version of Node as the default for any new terminal, run:
+Next, to set the latest version of Node.js as the default for any new terminal, run:
 
 .Linux and macOS
 [subs=attributes+]
@@ -53,13 +53,13 @@ npm will automatically install the latest version of Antora.
 
 .Do I have Antora installed globally?
 ****
-To list your globally installed Node packages, type the following command in your terminal:
+To list your globally installed Node.js packages, type the following command in your terminal:
 
  $ npm ls -g --depth=0
 
 If you installed the Antora CLI and site generator globally, you'll see them listed in the terminal output alongside their version numbers (where `.x` represents the latest patch number).
 
-.List of globally installed Node packages
+.List of globally installed Node.js packages
 [subs=attributes+]
 ....
 /home/user/.nvm/versions/node/v{version-node}/lib

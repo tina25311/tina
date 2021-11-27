@@ -15,9 +15,9 @@ On this page, you’ll learn:
 == Install Node.js
 
 Antora requires an active long term support (LTS) release of Node.js.
-To see if you have Node installed, and which version, open a terminal and type:
+To see if you have Node.js installed, and which version, open a terminal and type:
 
- $ node --version
+ $ node -v
 
 This command should return an {url-node-releases}[active Node LTS version number], for example:
 
@@ -25,18 +25,18 @@ This command should return an {url-node-releases}[active Node LTS version number
  $ node --version
  v{version-node}
 
-If you have an active Node LTS version on your machine, you're ready to <<install-antora,install Antora>>.
+If you have an active Node.js LTS version on your machine, you're ready to <<install-antora,install Antora>>.
 
 If *no version number is displayed in your terminal*, you need to install Node.
 We recommend using nvm to install Node, though you are free to take a different path.
-Follow one of these guides to learn how to install nvm and Node on your platform.
+Follow one of these guides to learn how to install nvm and Node.js on your platform.
 
-* xref:install:linux-requirements.adoc#install-nvm[Install nvm and Node on Linux]
-* xref:install:macos-requirements.adoc#install-nvm[Install nvm and Node on macOS]
-* xref:install:windows-requirements.adoc[Install nvm and Node on Windows]
+* xref:install:linux-requirements.adoc#install-nvm[Install nvm and Node.js on Linux]
+* xref:install:macos-requirements.adoc#install-nvm[Install nvm and Node.js on macOS]
+* xref:install:windows-requirements.adoc[Install nvm and Node.js on Windows]
 
-If *you have Node installed, but it isn't an active LTS version*, you need to upgrade Node.
-To upgrade to the latest Node LTS version and set it as your default version, type the following commands in your terminal:
+If *you have Node.js installed, but it isn't an active LTS version*, you need to upgrade Node.
+To upgrade to the latest Node.js LTS version and set it as your default version, type the following commands in your terminal:
 
 .Linux and macOS
 [subs=+attributes]

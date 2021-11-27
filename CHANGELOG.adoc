@@ -267,7 +267,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *playbook-builder*: Update default branches pattern for content sources to `[HEAD, v*]` (#737)
-* *infrastructure*: Run tests in CI on Node 16 (#745)
+* *infrastructure*: Run tests in CI on Node.js 16 (#745)
 
 == 3.0.0-alpha.3 (2021-04-16)
 
@@ -284,7 +284,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: If an alias refers to an unknown component, and the version is not specified, set the version to empty string (#669)
 * *asciidoc-loader*: Upgrade to Asciidoctor.js 2 and allow use of newer patch versions (#522)
 * *infrastructure*: Migrate Windows CI pipeline from AppVeyor CI to GitLab CI (#732)
-* *infrastructure*: Run tests nightly on Node 12 and Node 14 (in addition to Node 10) (#731)
+* *infrastructure*: Run tests nightly on Node.js 12 and Node.js 14 (in addition to Node.js 10) (#731)
 
 === Fixed
 
@@ -333,7 +333,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * Upgrade dependencies (#598)
-* Replace the fs-extra dependency with calls to the promise-based fs API provided by Node (#682)
+* Replace the fs-extra dependency with calls to the promise-based fs API provided by Node.js (#682)
 * *content-aggregator*: Don't use global git credentials path if custom git credentials path is specified, but does not exist (#681)
 * *content-aggregator*: Defer assignment of `mediaType` and `src.mediaType` properties on virtual file to content classifier (#693)
 * *content-classifier*: Register all component versions before adding files to content catalog (#314)
@@ -366,7 +366,7 @@ This project utilizes semantic versioning.
 
 === Removed
 
-* Drop support for Node.js 8 and set minimum required version to 10.17.0 (the version of Node 10 in which fs.promises became a stable API) (#679)
+* Drop support for Node.js 8 and set minimum required version to 10.17.0 (the version of Node.js 10 in which fs.promises became a stable API) (#679)
 * *playbook-builder*: Remove `pull` key from `runtime` category in playbook; superceded by `fetch` key (#689)
 * *playbook-builder*: Remove `ensureGitSuffix` key from `git` category in playbook file (but not playbook model); renamed to `ensure_git_suffix` (#689)
 * *content-classifier*: Remove fallback to resolve site-wide AsciiDoc config in `classifyContent` function (#689)
@@ -700,7 +700,7 @@ _No changes since previous release._
 
 * *asciidoc-loader*: Implement include tag warnings (#389)
 * *ADR*: Add ADR 0010: Replace Git Client describing decision to replace nodegit with isomorphic-got (#380)
-* *ADR*: Add ADR 0011: Align Node Support with Node LTS Schedule (#381)
+* *ADR*: Add ADR 0011: Align Node.js Support with Node.js LTS Schedule (#381)
 
 === Changed
 
@@ -758,7 +758,7 @@ _No changes since previous release._
 
 === Added
 
-* Add support for Node 10
+* Add support for Node.js 10
 * *playbook-builder*: Map `content.tags` in playbook schema
 * *playbook-builder*: Allow git credentials file path or contents to be configured using `git.credentials` key (path or contents) in playbook (#264)
 * _(breaking)_ *playbook-builder*: Rename `PLAYBOOK` environment variable to `ANTORA_PLAYBOOK`
