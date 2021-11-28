@@ -344,11 +344,12 @@ function srcFs (cwd) {
     pipeline(
       globStream(UI_SRC_GLOB, Object.assign({ cache, cwd }, UI_SRC_OPTS)),
       forEach(({ path: abspathPosix }, _, next) => {
+        if (Array.isArray(cache[abspathPosix])) return next() // detects some directories, but not all
         const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
         const relpath = abspath.substr(cwd.length + 1)
         symlinkAwareStat(abspath).then(
           (stat) => {
-            if (stat.isDirectory()) return next()
+            if (stat.isDirectory()) return next() // detects remaining directories
             fsp.readFile(abspath).then(
               (contents) => {
                 const path_ = posixify ? posixify(relpath) : relpath
