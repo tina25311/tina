@@ -70,10 +70,10 @@ class RepositoryBuilder {
       gitdir = ospath.join(dir, '.git')
       if (
         this.bare &&
-        !(await fsp
-          .stat(gitdir)
-          .then((stat) => stat.isDirectory())
-          .catch(() => false))
+        !(await fsp.stat(gitdir).then(
+          (stat) => stat.isDirectory(),
+          () => false
+        ))
       ) {
         gitdir = dir
       }
