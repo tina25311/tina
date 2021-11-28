@@ -449,13 +449,14 @@ function readFilesFromWorktree (worktreePath, startPath) {
 }
 
 function srcFs (cwd) {
+  const relpathStart = cwd.length + 1
   return new Promise((resolve, reject, cache = {}, files = []) =>
     pipeline(
       globStream(CONTENT_SRC_GLOB, Object.assign({ cache, cwd }, CONTENT_SRC_OPTS)),
       forEach(({ path: abspathPosix }, _, next) => {
         if (Array.isArray(cache[abspathPosix])) return next() // detects some directories, but not all
         const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
-        const relpath = abspath.substr(cwd.length + 1)
+        const relpath = abspath.substr(relpathStart)
         symlinkAwareStat(abspath).then(
           (stat) => {
             if (stat.isDirectory()) return next() // detects remaining directories
