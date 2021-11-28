@@ -186,12 +186,12 @@ function downloadBundle (url, to, agent) {
         .on('error', (err) =>
           reject(Object.assign(err, { message: `not a valid zip file; ${err.message}`, summary: 'Invalid UI bundle' }))
         )
-        .on('finish', function () {
+        .on('finish', () =>
           fsp
             .mkdir(ospath.dirname(to), { recursive: true })
             .then(() => fsp.writeFile(to, contents))
             .then(() => resolve(new File({ path: to, stat: { isDirectory: () => false } })))
-        })
+        )
     })
   }).catch((err) => {
     const wrapped = new Error(`${err.summary || 'Failed to download UI bundle'}: ${url}`)
