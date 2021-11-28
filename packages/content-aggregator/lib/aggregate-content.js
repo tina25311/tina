@@ -449,7 +449,7 @@ function readFilesFromWorktree (worktreePath, startPath) {
 
 function srcFs (cwd) {
   const relpathStart = cwd.length + 1
-  return new Promise((resolve, reject, cache = {}, files = []) =>
+  return new Promise((resolve, reject, cache = Object.create(null), files = []) =>
     pipeline(
       globStream(CONTENT_SRC_GLOB, Object.assign({ cache, cwd }, CONTENT_SRC_OPTS)),
       forEach(({ path: abspathPosix }, _, next) => {

@@ -341,7 +341,7 @@ function resolveOut (file, outputDir = '_') {
 
 function srcFs (cwd) {
   const relpathStart = cwd.length + 1
-  return new Promise((resolve, reject, cache = {}, files = new Map()) =>
+  return new Promise((resolve, reject, cache = Object.create(null), files = new Map()) =>
     pipeline(
       globStream(UI_SRC_GLOB, Object.assign({ cache, cwd }, UI_SRC_OPTS)),
       forEach(({ path: abspathPosix }, _, next) => {
