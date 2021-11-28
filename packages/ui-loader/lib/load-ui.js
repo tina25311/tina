@@ -344,21 +344,21 @@ function srcFs (cwd) {
   return new Promise((resolve, reject, cache = Object.create(null), files = new Map()) =>
     pipeline(
       globStream(UI_SRC_GLOB, Object.assign({ cache, cwd }, UI_SRC_OPTS)),
-      forEach(({ path: abspathPosix }, _, next) => {
-        if (Array.isArray(cache[abspathPosix])) return next() // detects some directories, but not all
+      forEach(({ path: abspathPosix }, _, done) => {
+        if (Array.isArray(cache[abspathPosix])) return done() // detects some directories, but not all
         const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
         const relpath = abspath.substr(relpathStart)
         symlinkAwareStat(abspath).then(
           (stat) => {
-            if (stat.isDirectory()) return next() // detects remaining directories
+            if (stat.isDirectory()) return done() // detects remaining directories
             fsp.readFile(abspath).then(
               (contents) => {
                 const path_ = posixify ? posixify(relpath) : relpath
-                files.set(path_, new File({ cwd, path: path_, contents, stat, local: true }))
-                next()
+                files.set(path_, new File({ path: path_, contents, stat, local: true }))
+                done()
               },
               (readErr) => {
-                next(Object.assign(readErr, { message: readErr.message.replace(`'${abspath}'`, relpath) }))
+                done(Object.assign(readErr, { message: readErr.message.replace(`'${abspath}'`, relpath) }))
               }
             )
           },
