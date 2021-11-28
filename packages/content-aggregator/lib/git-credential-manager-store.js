@@ -9,10 +9,9 @@ const ospath = require('path')
 class GitCredentialManagerStore {
   configure ({ config, startDir }) {
     this.entries = undefined
+    this.path = undefined
     this.urls = {}
-    if ((this.contents = (config = config || {}).contents) || !config.path) {
-      this.path = undefined
-    } else {
+    if (!(this.contents = (config = config || {}).contents) && config.path) {
       this.path = expandPath(config.path, { dot: startDir })
     }
     return this
@@ -35,14 +34,13 @@ class GitCredentialManagerStore {
           'git',
           'credentials'
         )
-        contentsPromise = fsp
-          .access(homeGitCredentialsPath)
-          .then(() => fsp.readFile(homeGitCredentialsPath, 'utf8'))
-          .catch(() =>
+        contentsPromise = fsp.access(homeGitCredentialsPath).then(
+          () => fsp.readFile(homeGitCredentialsPath, 'utf8'),
+          () =>
             fsp
               .access(xdgConfigGitCredentialsPath)
               .then(() => fsp.readFile(xdgConfigGitCredentialsPath, 'utf8'), invariably.void)
-          )
+        )
       }
       contentsPromise.then((contents) => {
         if (contents) {
