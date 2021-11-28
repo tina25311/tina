@@ -371,7 +371,7 @@ function srcFs (cwd) {
             } else {
               statErr.message = statErr.message.replace(`'${abspath}'`, relpath)
             }
-            next(statErr)
+            done(statErr)
           }
         )
       }),
