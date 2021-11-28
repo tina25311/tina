@@ -248,9 +248,9 @@ function bufferizeContents () {
 
 function collectFiles (resolve, files = new Map()) {
   return forEach(
-    (file, _, next) => {
+    (file, _, done) => {
       files.set(file.path, file)
-      next()
+      done()
     },
     (done) => done() || resolve(files)
   )
