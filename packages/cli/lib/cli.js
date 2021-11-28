@@ -52,8 +52,9 @@ function requireLogger (fromPath = undefined, moduleName = '@antora/logger') {
       requireLogger.cache ||
       (requireLogger.cache = fromPath ? userRequire(moduleName, { paths: [fromPath] }) : require(moduleName))
     )
-  } catch {}
-  return fromPath && (requireLogger.cache = require(moduleName))
+  } catch {
+    return fromPath && (requireLogger.cache = require(moduleName))
+  }
 }
 
 cli
@@ -140,9 +141,7 @@ cli
       if (generator && generator.charAt() !== '.') msg += ` Try installing the '${generator}' package.`
       return exitWithError(err, errorOpts, msg)
     }
-    return generateSite()
-      .then(exit)
-      .catch((err) => exitWithError(err, errorOpts))
+    return generateSite().then(exit, (err) => exitWithError(err, errorOpts))
   })
   .options.sort((a, b) => a.long.localeCompare(b.long))
 
