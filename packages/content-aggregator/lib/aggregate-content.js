@@ -186,16 +186,22 @@ async function loadRepository (url, opts) {
         const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetchTags, 'fetch')
         await git
           .fetch(fetchOpts)
-          .then(() => {
-            const credentialManager = gitPlugins.credentialManager
-            authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
-            return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
-          })
-          .catch((fetchErr) => {
-            if (fetchOpts.onProgress) fetchOpts.onProgress.finish(fetchErr)
-            if (HTTP_ERROR_CODE_RX.test(fetchErr.code) && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
-            throw fetchErr
-          })
+          .then(
+            () => {
+              const credentialManager = gitPlugins.credentialManager
+              authStatus = credentials
+                ? 'auth-embedded'
+                : credentialManager.status({ url })
+                  ? 'auth-required'
+                  : undefined
+              return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
+            },
+            (fetchErr) => {
+              if (fetchOpts.onProgress) fetchOpts.onProgress.finish(fetchErr)
+              if (HTTP_ERROR_CODE_RX.test(fetchErr.code) && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
+              throw fetchErr
+            }
+          )
           .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
           .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
       } else {
@@ -208,16 +214,18 @@ async function loadRepository (url, opts) {
       await git
         .clone(fetchOpts)
         .then(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)))
-        .then(() => {
-          const credentialManager = gitPlugins.credentialManager
-          authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
-          return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
-        })
-        .catch((cloneErr) => {
-          // FIXME triggering the error handler here causes assertion problems in the test suite
-          //if (fetchOpts.onProgress) fetchOpts.onProgress.finish(cloneErr)
-          throw transformGitCloneError(cloneErr, displayUrl)
-        })
+        .then(
+          () => {
+            const credentialManager = gitPlugins.credentialManager
+            authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
+            return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
+          },
+          (cloneErr) => {
+            // FIXME triggering the error handler here causes assertion problems in the test suite
+            //if (fetchOpts.onProgress) fetchOpts.onProgress.finish(cloneErr)
+            throw transformGitCloneError(cloneErr, displayUrl)
+          }
+        )
         .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
         .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
     }
@@ -421,18 +429,19 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
   return (worktreePath
     ? readFilesFromWorktree(worktreePath, startPath)
     : readFilesFromGitTree(repo, ref.oid, startPath)
-  )
-    .then((files) => {
+  ).then(
+    (files) => {
       const componentVersionBucket = loadComponentDescriptor(files, ref, version)
       const origin = computeOrigin(originUrl, authStatus, repo.gitdir, ref, startPath, worktreePath, editUrl)
       componentVersionBucket.files = files.map((file) => assignFileProperties(file, origin))
       return componentVersionBucket
-    })
-    .catch((err) => {
+    },
+    (err) => {
       const refInfo = `ref: ${ref.fullname.replace(HEADS_DIR_RX, '')}${worktreePath ? ' <worktree>' : ''}`
       const pathInfo = !startPath || err.message.startsWith('the start path ') ? '' : ' | path: ' + startPath
       throw Object.assign(err, { message: `${err.message} in ${repo.url || repo.dir} (${refInfo}${pathInfo})` })
-    })
+    }
+  )
 }
 
 function readFilesFromWorktree (worktreePath, startPath) {
