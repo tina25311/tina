@@ -283,13 +283,13 @@ function srcSupplementalFiles (filesSpec, startDir) {
     ).then((files) => files.reduce((accum, file) => accum.set(file.path, file) && accum, new Map()))
   } else {
     const cwd = expandPath(filesSpec, { dot: startDir })
-    return fsp
-      .access(cwd)
-      .then(() => srcFs(cwd))
-      .catch((err) => {
+    return fsp.access(cwd).then(
+      () => srcFs(cwd),
+      (err) => {
         // Q: should we skip unreadable files?
         throw Object.assign(err, { message: `problem encountered while reading ui.supplemental_files: ${err.message}` })
-      })
+      }
+    )
   }
 }
 
