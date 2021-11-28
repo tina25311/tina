@@ -40,7 +40,7 @@ const EXT_RX = /\.[a-z]{2,3}$/
  * the playbook. If the path is a URI, it downloads the file and caches it at a
  * unique path to avoid this step in future calls. It then reads all the files
  * from the bundle into memory, skipping any files that fall outside of the
- * start path specified in the ui.startPath property of the playbook.  Finally,
+ * start path specified in the ui.startPath property of the playbook. Finally,
  * it classifies the files and adds them to a UiCatalog, which is then
  * returned.
  *
@@ -354,7 +354,7 @@ function srcFs (cwd) {
             fsp.readFile(abspath).then(
               (contents) => {
                 const path_ = posixify ? posixify(relpath) : relpath
-                files.set(path_, new File({ path: path_, contents, stat, local: true }))
+                files.set(path_, new File({ cwd, path: path_, contents, stat, local: true }))
                 done()
               },
               (readErr) => {
