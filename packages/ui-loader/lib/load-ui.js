@@ -13,8 +13,9 @@ const ospath = require('path')
 const { posix: path } = ospath
 const picomatch = require('picomatch')
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
-const { pipeline, Transform } = require('stream')
-const map = (transform, flush = undefined) => new Transform({ objectMode: true, transform, flush })
+const { pipeline, Transform, Writable } = require('stream')
+const forEach = (write, final) => new Writable({ objectMode: true, write, final })
+const map = (transform) => new Transform({ objectMode: true, transform })
 const UiCatalog = require('./ui-catalog')
 const yaml = require('js-yaml')
 const vzip = require('gulp-vinyl-zip')
@@ -234,24 +235,24 @@ function bufferizeContents () {
     // NOTE gulp-vinyl-zip automatically converts the contents of an empty file to a Buffer
     if (file.isStream()) {
       const buffer = []
-      file.contents
-        .on('error', next)
-        .on('data', (chunk) => buffer.push(chunk))
-        .on('end', () => next(null, Object.assign(file, { contents: Buffer.concat(buffer) })))
+      pipeline(
+        file.contents,
+        forEach((chunk, _, done) => buffer.push(chunk) && done()),
+        (err) => (err ? next(err) : next(null, Object.assign(file, { contents: Buffer.concat(buffer) })))
+      )
     } else {
       next(null, file)
     }
   })
 }
 
-function collectFiles (done) {
-  const files = new Map()
-  return map(
+function collectFiles (resolve, files = new Map()) {
+  return forEach(
     (file, _, next) => {
       files.set(file.path, file)
       next()
     },
-    () => done(files)
+    (done) => done() || resolve(files)
   )
 }
 
@@ -342,7 +343,7 @@ function srcFs (cwd) {
   return new Promise((resolve, reject, cache = {}, files = new Map()) =>
     pipeline(
       globStream(UI_SRC_GLOB, Object.assign({ cache, cwd }, UI_SRC_OPTS)),
-      map(({ path: abspathPosix }, _, next) => {
+      forEach(({ path: abspathPosix }, _, next) => {
         const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
         const relpath = abspath.substr(cwd.length + 1)
         symlinkAwareStat(abspath).then(

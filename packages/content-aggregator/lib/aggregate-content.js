@@ -23,8 +23,8 @@ const ospath = require('path')
 const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const { fs: resolvePathGlobsFs, git: resolvePathGlobsGit } = require('./resolve-path-globs')
-const { pipeline, Transform } = require('stream')
-const map = (transform) => new Transform({ objectMode: true, transform })
+const { pipeline, Writable } = require('stream')
+const forEach = (write) => new Writable({ objectMode: true, write })
 const userRequire = require('@antora/user-require-helper')
 const yaml = require('js-yaml')
 
@@ -452,7 +452,7 @@ function srcFs (cwd) {
   return new Promise((resolve, reject, cache = {}, files = []) =>
     pipeline(
       globStream(CONTENT_SRC_GLOB, Object.assign({ cache, cwd }, CONTENT_SRC_OPTS)),
-      map(({ path: abspathPosix }, _, next) => {
+      forEach(({ path: abspathPosix }, _, next) => {
         if (Array.isArray(cache[abspathPosix])) return next() // optimization, but not guaranteed
         const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
         const relpath = abspath.substr(cwd.length + 1)
