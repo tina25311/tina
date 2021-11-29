@@ -32,36 +32,30 @@ const CWD = process.cwd()
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const WORK_DIR = ospath.join(__dirname, 'work')
 
-// FIXME figure out a way to avoid having to use a global here
-let gitServerPort
+describe('aggregateContent()', function () {
+  let gitServer
+  let gitServerPort
+  let playbookSpec
 
-function testAll (testBlock, numRepoBuilders = 1, remoteBare = undefined) {
-  const makeTest = (repoBuilderOpts) => {
-    return testBlock(
-      ...Array(numRepoBuilders)
-        .fill(undefined)
-        .map(() => new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, repoBuilderOpts))
-    )
+  const testAll = (testBlock, numRepoBuilders = 1, remoteBare = undefined) => {
+    const createTest = (repoBuilderOpts) =>
+      testBlock(
+        ...Array(numRepoBuilders)
+          .fill(undefined)
+          .map(() => new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, repoBuilderOpts))
+      )
+    it('on local repo', () => createTest())
+    it('on local bare repo', () => createTest({ bare: true }))
+    it('on remote repo', () => createTest({ remote: { gitServerPort } }))
+    if (remoteBare) it('on remote bare repo', () => createTest({ bare: true, remote: { gitServerPort } }))
   }
 
-  it('on local repo', () => makeTest())
-  it('on local bare repo', () => makeTest({ bare: true }))
-  it('on remote repo', () => makeTest({ remote: { gitServerPort } }))
-  if (remoteBare) it('on remote bare repo', () => makeTest({ bare: true, remote: { gitServerPort } }))
-}
+  const testLocal = (block) =>
+    it('on local repo', () => block(new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)))
 
-function testLocal (block) {
-  it('on local repo', () => block(new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)))
-}
-
-function testRemote (block) {
-  it('on remote repo', () =>
-    block(new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })))
-}
-
-describe('aggregateContent()', function () {
-  let playbookSpec
-  let gitServer
+  const testRemote = (block) =>
+    it('on remote repo', () =>
+      block(new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })))
 
   const initRepoWithFiles = async (repoBuilder, componentDesc, paths, beforeClose) => {
     let repoName
