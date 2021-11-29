@@ -460,7 +460,7 @@ Here are a few rules when writing tests and assertions:
  ** `beforeEach()` is most useful when it's used to setup spies (the call counts get reset for each test).
  ** Giving a name to a spy makes things easy in test logs.
 * Place fixtures in the [.path]_fixtures/_ subdirectory of the [.path]_test_ folder.
-* Use `deferExceptions` to trap an excepted Error so you can assert it using `.to.throw(message)`.
+* Use `trapAsyncError` to trap an expected Error of an async function so you can assert it using `.to.throw(message)`.
 
 You can run the whole <<run-tests,test suite>> manually or continuously.
 You can also select individual tests to run.

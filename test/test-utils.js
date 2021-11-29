@@ -192,18 +192,6 @@ module.exports = {
       return [message]
     }),
   configureLogger,
-  deferExceptions: async (fn, ...args) => {
-    let deferredFn
-    try {
-      const result = await fn(...args)
-      deferredFn = () => result
-    } catch (err) {
-      deferredFn = () => {
-        throw err
-      }
-    }
-    return deferredFn
-  },
   emptyDirSync,
   expect: chai.expect,
   heredoc: (literals, ...values) => {
@@ -226,7 +214,14 @@ module.exports = {
     cert: fs.readFileSync(ospath.join(__dirname, 'ssl.cert')),
     key: fs.readFileSync(ospath.join(__dirname, 'ssl.key')),
   }),
-  wipeSync,
   spy: chai.spy,
   toJSON: (obj) => JSON.stringify(obj, undefined, '  '),
+  trapAsyncError: (fn, ...args) =>
+    fn(...args).then(
+      (returnValue) => () => returnValue,
+      (err) => () => {
+        throw err
+      }
+    ),
+  wipeSync,
 }

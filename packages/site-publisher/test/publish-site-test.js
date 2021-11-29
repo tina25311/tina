@@ -3,10 +3,10 @@
 
 const {
   bufferizeContents,
-  deferExceptions,
   emptyDirSync,
   expect,
   heredoc,
+  trapAsyncError,
   wipeSync,
 } = require('../../../test/test-utils')
 
@@ -239,8 +239,7 @@ describe('publishSite()', () => {
     // NOTE put a file in our way
     await fsp.writeFile(resolvedDestDir, '')
     playbook.output.destinations.push({ provider: 'fs', path: destDir })
-    const publishSiteDeferred = await deferExceptions(publishSite, playbook, catalogs)
-    expect(publishSiteDeferred).to.throw('mkdir')
+    expect(await trapAsyncError(publishSite, playbook, catalogs)).to.throw('mkdir')
   })
 
   it('should publish a large number of files', async () => {
@@ -565,8 +564,7 @@ describe('publishSite()', () => {
 
   it('should throw error if destination provider is unsupported', async () => {
     playbook.output.destinations.push({ provider: 'unknown' })
-    const publishSiteDeferred = await deferExceptions(publishSite, playbook, catalogs)
-    expect(publishSiteDeferred)
+    expect(await trapAsyncError(publishSite, playbook, catalogs))
       .to.throw(Error, 'Unsupported destination provider: unknown')
       .with.property('stack')
       .that.matches(/^Error: Unsupported destination provider: unknown/)
@@ -578,8 +576,7 @@ describe('publishSite()', () => {
     await fsp.mkdir(ospath.dirname(absProviderPath), { recursive: true })
     await fsp.writeFile(absProviderPath, "throw 'not implemented'")
     playbook.output.destinations.push({ provider: './provider-not-implemented.js' })
-    const publishSiteDeferred = await deferExceptions(publishSite, playbook, catalogs)
-    expect(publishSiteDeferred)
+    expect(await trapAsyncError(publishSite, playbook, catalogs))
       .to.throw(Error, 'Unsupported destination provider: ./provider-not-implemented.js')
       .with.property('stack')
       .that.matches(/^Error: Unsupported destination provider: \.\/provider-not-implemented\.js/)

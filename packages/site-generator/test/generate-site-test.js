@@ -4,10 +4,10 @@
 const {
   captureStdout,
   captureStdoutLog,
-  deferExceptions,
   expect,
   heredoc,
   loadHtml,
+  trapAsyncError,
   wipeSync,
   toJSON,
 } = require('../../../test/test-utils')
@@ -869,8 +869,7 @@ describe('generateSite()', function () {
       playbookSpec.antora.extensions = [{ key: 'value' }]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const expectedMessage = 'The "request" argument must be of type string. Received type undefined'
-      const generateSiteDeferred = await deferExceptions(generateSite, getPlaybook(playbookFile))
-      expect(generateSiteDeferred).to.throw(TypeError, expectedMessage)
+      expect(await trapAsyncError(generateSite, getPlaybook(playbookFile))).to.throw(TypeError, expectedMessage)
     })
 
     it('should not attempt to invoke register function if register method is not defined on module', async () => {
@@ -1354,8 +1353,7 @@ describe('generateSite()', function () {
       playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const expectedMessage = "Cannot update read-only var 'playbook'"
-      const generateSiteDeferred = await deferExceptions(generateSite, getPlaybook(playbookFile))
-      expect(generateSiteDeferred).to.throw(TypeError, expectedMessage)
+      expect(await trapAsyncError(generateSite, getPlaybook(playbookFile))).to.throw(TypeError, expectedMessage)
     })
 
     it('should allow extension listener to require internal modules', async () => {

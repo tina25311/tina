@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { deferExceptions, expect, loadSslConfig, wipeSync } = require('../../../test/test-utils')
+const { expect, loadSslConfig, trapAsyncError, wipeSync } = require('../../../test/test-utils')
 const RepositoryBuilder = require('../../../test/repository-builder')
 
 const File = require('vinyl')
@@ -198,7 +198,7 @@ describe('loadUi()', () => {
 
   describe('should throw error if bundle cannot be found', () => {
     testAll('no-such-bundle.zip', async (playbook) => {
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
+      const loadUiDeferred = await trapAsyncError(loadUi, playbook)
       if (~playbook.ui.bundle.url.indexOf('://')) {
         const expectedMessage = `Failed to download UI bundle: ${playbook.ui.bundle.url}`
         expect(loadUiDeferred)
@@ -222,7 +222,7 @@ describe('loadUi()', () => {
       const expectedMessage = ~playbook.ui.bundle.url.indexOf('://')
         ? `Invalid UI bundle: ${playbook.ui.bundle.url}`
         : 'Failed to read UI bundle:'
-      expect(await deferExceptions(loadUi, playbook))
+      expect(await trapAsyncError(loadUi, playbook))
         .to.throw(expectedMessage)
         .with.property('stack')
         .that.includes('not a valid zip file')
@@ -296,8 +296,7 @@ describe('loadUi()', () => {
       fs.copyFileSync(bundleFixture, 'the-ui-bundle.zip')
       playbook.ui = { bundle: { url: 'the-ui-bundle.zip' } }
       let uiCatalog
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
@@ -314,8 +313,7 @@ describe('loadUi()', () => {
         },
       }
       let uiCatalog
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
@@ -329,8 +327,7 @@ describe('loadUi()', () => {
         },
       }
       let uiCatalog
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
@@ -347,8 +344,7 @@ describe('loadUi()', () => {
         },
       }
       let uiCatalog
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
@@ -362,8 +358,7 @@ describe('loadUi()', () => {
       fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let uiCatalog
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
       expect(paths).to.have.members(expectedFilePaths)
@@ -446,8 +441,7 @@ describe('loadUi()', () => {
 
     it('throws error when directory does not exist', async () => {
       playbook.ui.supplementalFiles = ospath.join(FIXTURES_DIR, 'does-not-exist')
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(loadUiDeferred).to.throw('problem encountered')
+      expect(await trapAsyncError(loadUi, playbook)).to.throw('problem encountered')
     })
 
     it('from absolute directory', async () => {
@@ -470,8 +464,7 @@ describe('loadUi()', () => {
       fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let uiCatalog
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       verifySupplementalFiles(uiCatalog, true, supplementalFilesAbsDir)
     })
 
@@ -588,8 +581,7 @@ describe('loadUi()', () => {
           contents: ospath.join(FIXTURES_DIR, 'does-not-exist/head.hbs'),
         },
       ]
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(loadUiDeferred).to.throw('no such file')
+      expect(await trapAsyncError(loadUi, playbook)).to.throw('no such file')
     })
 
     it('from files with absolute paths', async () => {
@@ -640,8 +632,7 @@ describe('loadUi()', () => {
         contents: prefixPath('~', ospath.relative(os.homedir(), ospath.join(supplementalFilesDir, path_))),
       }))
       let uiCatalog
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       verifySupplementalFiles(uiCatalog)
     })
 
@@ -656,8 +647,7 @@ describe('loadUi()', () => {
       fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let uiCatalog
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(() => (uiCatalog = loadUiDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       verifySupplementalFiles(uiCatalog)
     })
 
@@ -1157,9 +1147,8 @@ describe('loadUi()', () => {
       runtime: { fetch: true },
       ui: { bundle: { url: httpServerUrl + 'the-ui-bundl.zip', snapshot: true } },
     }
-    const loadUiDeferred = await deferExceptions(loadUi, playbook)
     const expectedMessage = 'Failed to download UI bundle'
-    expect(loadUiDeferred).to.throw(expectedMessage)
+    expect(await trapAsyncError(loadUi, playbook)).to.throw(expectedMessage)
   })
 
   it('should cache bundle if a valid zip file', async () => {
@@ -1190,7 +1179,7 @@ describe('loadUi()', () => {
     const playbook = {
       ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.tar.gz' } },
     }
-    expect(await deferExceptions(loadUi, playbook)).to.throw()
+    expect(await trapAsyncError(loadUi, playbook)).to.throw()
     expect(CACHE_DIR)
       .to.be.a.directory()
       .with.subDirs([UI_CACHE_FOLDER])
@@ -1214,7 +1203,7 @@ describe('loadUi()', () => {
     const cachedBundlePath = ospath.join(UI_CACHE_DIR, cachedBundleBasename)
     await fsp.copyFile(ospath.join(FIXTURES_DIR, 'the-ui-bundle.tar.gz'), cachedBundlePath)
 
-    expect(await deferExceptions(loadUi, playbook))
+    expect(await trapAsyncError(loadUi, playbook))
       .to.throw(`Failed to read UI bundle: ${cachedBundlePath}`)
       .with.property('stack')
       .that.includes('not a valid zip file')
@@ -1273,8 +1262,7 @@ describe('loadUi()', () => {
       }
       const customUiCacheDir = ospath.join(customCacheDir, UI_CACHE_FOLDER)
       const expectedMessage = `Failed to create UI cache directory: ${customUiCacheDir};`
-      const loadUiDeferred = await deferExceptions(loadUi, playbook)
-      expect(loadUiDeferred).to.throw(expectedMessage)
+      expect(await trapAsyncError(loadUi, playbook)).to.throw(expectedMessage)
     })
   })
 })

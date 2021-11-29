@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { deferExceptions, expect, heredoc, loadSslConfig, wipeSync, spy } = require('../../../test/test-utils')
+const { expect, heredoc, loadSslConfig, spy, trapAsyncError, wipeSync } = require('../../../test/test-utils')
 
 const aggregateContent = require('@antora/content-aggregator')
 const computeOrigin = aggregateContent._computeOrigin
@@ -237,8 +237,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -253,7 +252,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await trapAsyncError(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedMessageStart)
         expect(aggregateContentDeferred).to.throw(expectedMessageEnd)
       })
@@ -265,8 +264,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a name in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -276,8 +274,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -524,8 +521,7 @@ describe('aggregateContent()', function () {
         const expectedMessage =
           `name in ${COMPONENT_DESC_FILENAME} cannot have path segments: foo/bar` +
           ` in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -537,8 +533,7 @@ describe('aggregateContent()', function () {
         const expectedMessage =
           `version in ${COMPONENT_DESC_FILENAME} cannot have path segments: 1.1/0` +
           ` in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -596,7 +591,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'docs' })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref} | path: docs)`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
+        const aggregateContentDeferred = await trapAsyncError(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedMessageStart)
         expect(aggregateContentDeferred).to.throw(expectedMessageEnd)
       })
@@ -1180,8 +1175,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'does-not-exist' })
         const expectedMessage = `the start path 'does-not-exist' does not exist in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -1191,8 +1185,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'antora.yml' })
         const expectedMessage = `the start path 'antora.yml' is not a directory in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -1202,8 +1195,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'modules' })
         const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref} | path: modules)`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -1219,8 +1211,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{more,}docs' })
         const expectedMessage = `the start path 'moredocs' does not exist in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -1236,8 +1227,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc{s}' })
         const expectedMessage = `the start path 'doc{s}' does not exist in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -1252,8 +1242,7 @@ describe('aggregateContent()', function () {
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'docs, !doc{s}' })
         let aggregate
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+        expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
         expect(aggregate).to.have.lengthOf(1)
       })
     })
@@ -1264,8 +1253,7 @@ describe('aggregateContent()', function () {
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'does-not-exist-*' })
         const expectedMessage = `no start paths found in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -1278,8 +1266,7 @@ describe('aggregateContent()', function () {
           "^the start path 'does-not-exist/(foo|bar\\*)' does not exist in " +
             `${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)$`
         )
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -1375,8 +1362,7 @@ describe('aggregateContent()', function () {
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: ospath.relative(newWorkDir, repoBuilder.url) })
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
     })
@@ -1395,8 +1381,7 @@ describe('aggregateContent()', function () {
       fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
     })
@@ -1411,8 +1396,7 @@ describe('aggregateContent()', function () {
       await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
       playbookSpec.content.sources.push({ url: prefixPath('.', ospath.relative(WORK_DIR, repoBuilder.url)) })
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
     })
@@ -1427,8 +1411,7 @@ describe('aggregateContent()', function () {
       await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
       playbookSpec.content.sources.push({ url: prefixPath('~', ospath.relative(os.homedir(), repoBuilder.url)) })
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
     })
@@ -1447,8 +1430,7 @@ describe('aggregateContent()', function () {
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: prefixPath('~+', ospath.relative(newWorkDir, repoBuilder.url)) })
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
     })
@@ -1467,8 +1449,7 @@ describe('aggregateContent()', function () {
       fs.mkdirSync(newWorkDir, { recursive: true })
       process.chdir(newWorkDir)
       let aggregate
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(() => (aggregate = aggregateContentDeferred())).to.not.throw()
+      expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
     })
@@ -2404,8 +2385,7 @@ describe('aggregateContent()', function () {
         )
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = `The filepath "${maliciousPath}" contains unsafe character sequences`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -2501,8 +2481,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const ref = repoBuilder.getRefInfo('main')
         const expectedMessage = `permission denied, open ${fixturePath} in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     }
 
@@ -2785,8 +2764,7 @@ describe('aggregateContent()', function () {
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
           const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
-          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-          expect(aggregateContentDeferred).to.throw(expectedMessage)
+          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
         })
       })
 
@@ -2806,8 +2784,7 @@ describe('aggregateContent()', function () {
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink2Path) : symlink2Path
           const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
-          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-          expect(aggregateContentDeferred).to.throw(expectedMessage)
+          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
         })
       })
 
@@ -2829,8 +2806,7 @@ describe('aggregateContent()', function () {
           const expectedMessage =
             `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} ` +
             `(ref: ${ref} | path: ${startPath})`
-          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-          expect(aggregateContentDeferred).to.throw(expectedMessage)
+          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
         })
       })
 
@@ -2852,8 +2828,7 @@ describe('aggregateContent()', function () {
           const expectedMessage =
             `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} ` +
             `(ref: ${ref} | path: ${startPath})`
-          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-          expect(aggregateContentDeferred).to.throw(expectedMessage)
+          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
         })
       })
 
@@ -2873,8 +2848,7 @@ describe('aggregateContent()', function () {
           const expectedPath =
             unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink1Path) : symlink1Path
           const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
-          const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-          expect(aggregateContentDeferred).to.throw(expectedMessage)
+          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
         })
       })
 
@@ -2895,8 +2869,7 @@ describe('aggregateContent()', function () {
           `^Symbolic link cycle detected at (${symlink1Path}|${symlink2Path}) in ` +
             `${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)$`
         )
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
 
       // NOTE vinyl-fs doesn't throw an exception in this case; rather, it just stops traversing at a certain depth
@@ -2915,8 +2888,7 @@ describe('aggregateContent()', function () {
         // NOTE could instead be reported as b/e, but I can't work out how to track the original symlink path
         const expectedPath = 'a/e'
         const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
 
       describe('should resolve symlink that points outside of start path', () => {
@@ -4223,8 +4195,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder, {}, [], () => repoBuilder.deleteBranch('main'))
       playbookSpec.runtime.cacheDir = customCacheDir
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw()
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw()
       expect(customContentCacheDir)
         .to.be.a.directory()
         .with.subDirs.empty()
@@ -4471,8 +4442,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const customContentCacheDir = ospath.join(customCacheDir, CONTENT_CACHE_FOLDER)
         const expectedMessage = `Failed to create content cache directory: ${customContentCacheDir};`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -4575,8 +4545,7 @@ describe('aggregateContent()', function () {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
         await repoBuilder.init('the-component').then(() => repoBuilder.close())
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw()
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw()
 
         expect(fetches).to.have.lengthOf(1)
         expect(fetches[0]).to.equal(repoBuilder.url)
@@ -4823,8 +4792,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'main' })
       // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
       const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: main)`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
     })
   })
 
@@ -5144,7 +5112,7 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.pop()
         playbookSpec.content.sources.push({ url: 'https://gitlab.com/antora/no-such-repository-a.git' })
         playbookSpec.content.sources.push({ url: 'https://gitlab.com/antora/no-such-repository-b.git' })
-        await deferExceptions(aggregateContent, playbookSpec)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw('Content repository not found')
         expect(process.stdout.clearLine).to.have.been.called.exactly(3)
       })
     })
@@ -5349,8 +5317,7 @@ describe('aggregateContent()', function () {
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedMessage = new RegExp(`^Error: self.signed certificate \\(url: ${regexpEscape(repoBuilder.url)}\\)`)
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
     })
 
     it('should honor http_proxy setting when cloning repository over http', async () => {
@@ -5554,9 +5521,8 @@ describe('aggregateContent()', function () {
       const urlWithoutAuth = repoBuilder.url
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${urlWithoutAuth})`
-      expect(aggregateContentDeferred)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
@@ -5570,9 +5536,8 @@ describe('aggregateContent()', function () {
       const urlWithoutAuth = repoBuilder.url
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${urlWithoutAuth})`
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(CONTENT_CACHE_DIR)
         .to.be.a.directory()
@@ -5733,8 +5698,7 @@ describe('aggregateContent()', function () {
       playbookSpec.git = { credentials: { path: customGitCredentialsPath } }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedMessage = `Content repository not found or requires credentials (url: ${repoBuilder.url})`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
     })
 
     it('should read credentials from specified path if auth is required', async () => {
@@ -5767,9 +5731,8 @@ describe('aggregateContent()', function () {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${repoBuilder.url})`
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.be.undefined()
       expect(credentialsSent).to.be.undefined()
     })
@@ -5791,9 +5754,8 @@ describe('aggregateContent()', function () {
       playbookSpec.runtime.quiet = false
       playbookSpec.runtime.fetch = true
       return withMockStdout(async (lines) => {
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
         const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${repoBuilder.url})`
-        expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
         expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(credentialsRequestCount).to.equal(1)
@@ -5919,16 +5881,14 @@ describe('aggregateContent()', function () {
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: invalidDir })
       const expectedErrorMessage = `Local content source does not exist: ${absInvalidDir} (url: ${invalidDir})`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
     })
 
     it('should throw meaningful error if local absolute content directory does not exist', async () => {
       const absInvalidDir = ospath.join(WORK_DIR, 'no-such-directory')
       playbookSpec.content.sources.push({ url: absInvalidDir })
       const expectedErrorMessage = `Local content source does not exist: ${absInvalidDir}`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
     })
 
     it('should throw meaningful error if local relative content directory is not a git repository', async () => {
@@ -5939,8 +5899,7 @@ describe('aggregateContent()', function () {
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: regularDir })
       const expectedErrorMessage = `Local content source must be a git repository: ${absRegularDir} (url: ${regularDir})`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
     })
 
     it('should throw meaningful error if local absolute content directory is not a git repository', async () => {
@@ -5949,8 +5908,7 @@ describe('aggregateContent()', function () {
       fs.writeFileSync(ospath.join(absRegularDir, 'antora.xml'), 'name: the-component\nversion: 1.0')
       playbookSpec.content.sources.push({ url: absRegularDir })
       const expectedErrorMessage = `Local content source must be a git repository: ${absRegularDir}`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
     })
 
     // NOTE on Windows, : is a reserved filename character, so we can't use this test there
@@ -5960,8 +5918,7 @@ describe('aggregateContent()', function () {
         const repoName = 'no-such-user@localhost:no-such-repository'
         await initRepoWithFiles(repoBuilder, { repoName })
         playbookSpec.content.sources.push({ url: repoName })
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw()
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw()
       })
     }
   })
@@ -6016,8 +5973,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
     })
 
     // NOTE this test also verifies that the SSH URL is still shown in the progress indicator and error message
@@ -6029,8 +5985,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url })
       await withMockStdout(async (lines) => {
         playbookSpec.runtime.quiet = false
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
         expect(lines[0]).to.include(url)
       })
       if (oldSshAuthSock) process.env.SSH_AUTH_SOCK = oldSshAuthSock
@@ -6040,8 +5995,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/500/bar.git`
       const expectedErrorMessage = `HTTP Error: 500 Internal Server Error (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 500 Internal Server Error')
@@ -6055,8 +6009,7 @@ describe('aggregateContent()', function () {
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` +
         `but received: 001e# service=git-upload-pack\n0007ref (url: ${url})`
       const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: ' + expectedCauseMessage)
@@ -6070,8 +6023,7 @@ describe('aggregateContent()', function () {
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` +
         `but received: 001e# service=git-upload-pack\n0009ref\x00 (url: ${url})`
       const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: ' + expectedCauseMessage)
@@ -6084,8 +6036,7 @@ describe('aggregateContent()', function () {
       const expectedErrorMessage =
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` + `but received: 0000 (url: ${url})`
       const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: ' + expectedCauseMessage)
@@ -6095,8 +6046,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/404/invalid-repository.git`
       const expectedErrorMessage = `Content repository not found (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 404 Not Found')
@@ -6108,8 +6058,7 @@ describe('aggregateContent()', function () {
         playbookSpec.git = { ensureGitSuffix: false }
         playbookSpec.content.sources.push({ url: repoBuilder.url.replace(/\.git$/, '') })
         const expectedErrorMessage = `Content repository not found (url: ${repoBuilder.url.replace(/\.git$/, '')})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
       })
     })
 
@@ -6117,8 +6066,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
@@ -6131,8 +6079,7 @@ describe('aggregateContent()', function () {
       return withMockStdout(async (lines) => {
         playbookSpec.runtime.quiet = false
         playbookSpec.content.sources.push({ url })
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
         expect(lines[0]).to.not.include('0123456789@')
       }, GIT_OPERATION_LABEL_LENGTH + 1 + url.length * 2)
     })
@@ -6142,8 +6089,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url })
       const commonErrorMessage = 'Remote did not reply using the "smart" HTTP protocol.'
       const expectedErrorMessage = `${commonErrorMessage} Expected "001e# service=git-upload-pack"`
-      const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-      expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
     })
 
     // NOTE Windows CI can get stuck resolving an unknown host
@@ -6152,8 +6098,7 @@ describe('aggregateContent()', function () {
         const url = 'https://gitlab.info/org/repository.git'
         playbookSpec.content.sources.push({ url })
         const expectedErrorMessage = `Content repository host could not be resolved: gitlab.info (url: ${url})`
-        const aggregateContentDeferred = await deferExceptions(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedErrorMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
       })
     }
   })
