@@ -5,7 +5,6 @@ process.env.NODE_ENV = 'test'
 const chai = require('chai')
 const cheerio = require('cheerio')
 const fs = require('fs')
-const { Transform } = require('stream')
 const ospath = require('path')
 const { configureLogger } = require('@antora/logger')
 
