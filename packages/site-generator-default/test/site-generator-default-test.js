@@ -10,6 +10,11 @@ describe('site-generator-default', function () {
     expect(actual).to.equal(expected)
     expect(actual.name).to.equal('generateSite')
     expect(actual).to.have.lengthOf(1)
-    expect(actual.toString().split('\n')[0].replace(' (', '(')).to.include('generateSite(playbook)')
+    expect(
+      actual
+        .toString()
+        .split('\n')[0]
+        .replace(' (', '(')
+    ).to.include('generateSite(playbook)')
   })
 })
