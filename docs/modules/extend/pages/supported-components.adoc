@@ -113,7 +113,7 @@ These files, which are intended to be read by crawlers, provide a list of all pu
 |{url-antora-lcs}[MPL-2.0^]
 
 |Site Publisher
-|Publishes (i.e., writing) the generated files to the destination(s) specified in the playbook.
+|Publishes (i.e., writes) the generated files to the destination(s) specified in the playbook.
 |&#10003;
 |
 |{url-antora-lcs}[MPL-2.0^]
