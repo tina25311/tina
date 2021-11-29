@@ -55,7 +55,6 @@
 :url-prettier: https://github.com/prettier/prettier
 :url-standardjs: https://standardjs.com/
 :url-standardjs-rules: https://standardjs.com/rules.html
-:url-yarn: https://yarnpkg.com
 
 == You're Invited!
 
@@ -484,7 +483,7 @@ gulp.d/
 test/         <6>
 gulpfile.js   <7>
 package.json  <8>
-yarn.lock     <9>
+package-lock.json <9>
 ....
 <1> The end user documentation for Antora.
 <2> A local installation of Node.js modules used for the development of this project.
@@ -508,7 +507,6 @@ In order to obtain the source code, run the test suite, and launch Antora, you'l
 
 * git
 * Node.js / npm
-* Yarn
 * Gulp (CLI only)
 * Lerna
 * Development libraries (e.g., a C compiler)
@@ -541,7 +539,7 @@ To see which version of Node.js you have installed, open a terminal and type:
 
 If `node -v` doesn't return any information, you don't yet have Node.js installed.
 
-The minimum required version of Node.js is *12.21.0*, as indicated in the `engines.node` key in [.path]_package.json_.
+The minimum required version of Node.js is *12.21.0*, as indicated in [.path]_package.json_.
 However, we recommend using the active LTS release (currently Node.js 16).
 These are also the recommended versions of Node.js for development.
 
@@ -576,21 +574,6 @@ Verify the version of Node.js you have selected using:
 
 The rest of the software you need is installable from Node.js (specifically npm).
 
-==== Yarn
-
-{url-yarn}[Yarn] (command: `yarn`) is the preferred package manager and script runner for the Node.js ecosystem.
-
-You'll use the `npm` command (part of Node) to install Yarn.
-You should install Yarn globally, which resolves to a location in your user directory if you're using nvm, using:
-
- $ npm install -g yarn
-
-Verify Yarn is installed by checking the version:
-
- $ yarn --version
-
-If you see a version, you're all set.
-
 ==== Gulp (CLI only)
 
 This project uses {url-gulp}[Gulp] (command: `gulp`) to manage various tasks, such as test, lint, etc.
@@ -604,9 +587,15 @@ To launch these tasks, you need to install the CLI interface for Gulp using:
 The gulp-cli module provides the `gulp` command.
 You can verify this command is on your path using:
 
- $ gulp --version
+ $ gulp -v
 
 If you see a version, you're all set.
+
+As an alternative, you can run Gulp via `npx`.
+
+ $ npx gulp -v
+
+This saves you from having to install the Gulp CLI globally.
 
 ==== Lerna
 
@@ -663,26 +652,41 @@ The command will clone the repository, then switch to the newly created project 
 === Install Dependencies
 
 Initializing the project means downloading and installing the dependencies (i.e., the required software) for the project.
-That's the job of Yarn.
+That's the job of npm.
+
+[IMPORTANT]
+====
+You must have at least npm 8 to install the development dependencies for Antora.
+If you don't have npm 8, install it into the project using:
+
+ $ npm i --no-package-lock --no-save npm@8.1
+
+You can use the version of npm installed in the project by adding `npx` in front of any `npm` command.
+For example:
+
+ $ npx npm i
+
+To avoid having to do this, build Antora using Node.js 16 (or better), which ships with at least npm 8.
+====
 
 In your terminal, execute the following command from the root folder of the project:
 
- $ yarn
+ $ npm i
 
-The default command in Yarn is `install`, so running `yarn` by itself is the equivalent of running `yarn install`.
-The install command uses dependency information defined in [.path]_package.json_ and [.path]_yarn.lock_ to resolve dependencies, which Yarn then installs inside the project under the [.path]_node_modules/_ folder.
+The command `i` is shorthand for `install`.
+The install command uses dependency information defined in [.path]_package.json_ and [.path]_package-lock.lock_ to resolve dependencies, which npm then installs inside the project under the [.path]_node_modules/_ folder (and, in some cases, under the [.path]_node_modules/_ folder inside each package).
 
 After pulling the latest source, you may need to update the dependencies.
 It's best to start with a fresh slate by removing the previously install dependencies, then installing them again.
 To do so, run the following commands in sequence:
 
  $ lerna clean --yes
-   rm -rf node_modules
-   yarn
+   rm -rf node_modules packages/*/node_modules
+   npm i
 
 NOTE: If you run into problems while installing dependencies, return to <<Development Libraries>>.
 
-NOTE: It's a good idea to run `yarn` each time after you run `git pull` to make sure your dependencies are up to date.
+NOTE: It's a good idea to run `npm i` each time after you run `git pull` to make sure your dependencies are up to date.
 Running gulp does not install any updated dependencies.
 
 [#build-project]
@@ -795,7 +799,7 @@ By committing your code first, then running prettier and committing those change
 
 After fixing critical bugs or implementing your wonderful new feature, you'll probably want to test out your local Antora version on your projects.
 The code in [.path]_packages_ is already set up to be run from source.
-When you ran `yarn` to install the dependencies, it set up a bin stub from [.path]_node_modules/.bin/antora_ to [.path]_packages/cli/bin/antora_.
+When you ran `npm i` to install the dependencies, it set up a bin stub from [.path]_node_modules/.bin/antora_ to [.path]_packages/cli/bin/antora_.
 
 Therefore, the most convenient way to run your development code is to use the local bin stub:
 
@@ -856,7 +860,7 @@ The pipeline consists of the following stages:
 These stages, as well as any global configuration settings, are defined in the [.path]_.gitlab-ci.yml_ file at the root of the project.
 The CI pipeline essentially boils down to these three commands:
 
-* `yarn`
+* `npm i`
 * `gulp lint`
 * `gulp test`
 
@@ -909,12 +913,12 @@ RUN mkdir $NVM_DIR \
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-RUN npm install -g gulp-cli yarn # install dependencies
+RUN npm install -g gulp-cli # install dependencies
 
 RUN cd $HOME \
     && git clone https://gitlab.com/antora/antora \
     && cd "$(basename "$_")" \
-    && yarn # install packages
+    && npm i # install packages
 
 WORKDIR /home/node/antora
 
@@ -1008,6 +1012,6 @@ For example:
 ----
 merge !46
 
-resolves #59 configure lerna and yarn workspaces
+resolves #59 configure lerna and npm workspaces
 ----
 * Press _Merge_.
