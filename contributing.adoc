@@ -424,24 +424,43 @@ Please adhere to the following style and performance rules which are not current
 === Test structure and coverage expectations
 
 Tests should mirror the structure of the application code to make it easy for developers to find the tests that correspond to the application code.
+That means each package should have a [.path]_test/_ folder adjacent to the [.path]_lib/_ folder and the test file names should match the file with the function under test.
 
-If you need to add a new test to the suite, you can use [.path]_test/example-test.js_ as a reference.
-It already follows the structure of the project and contains various comments and hints to help you.
-Be sure to follow the directions on what to require and various traps to avoid.
+If you need to add a new test to the suite, you can use a test in one of the packages as a reference (e.g., [.path]_packages/site-publisher/test/publish-site-test.js_).
+Those tests already follow the structure of the project and demonstrate how to use mocha, chai, and the numerous helpers provided by the test harness.
 
 Apart from the classic {url-chai}[chai] assertions, several plugins are enabled.
 You'll find the documentation for their APIs here:
 
 * {url-chai-spies}[chai-spies] to create and test spies on callbacks
 * {url-chai-fs}[chai-fs] to assert files and directory structures
-* {url-chai-cheerio}[chai-cheerio] to assert HTML structures
+* {url-chai-cheerio}[chai-cheerio] to assert HTML structures (though Antora has its own implementation)
 * {url-dirty-chai}[dirty-chai] (more like clean chai) to allow all terminal assertions to end with ()
 
-Here are a few rules when writing assertions:
+Here are a few rules when writing tests and assertions:
 
-* Use BDD-style assertions (e.g., `expect(object).to.have.property('foo')`)
-* When creating a negated assertion, please write it as `.to.not` instead of `.not.to` (e.g., `expect(object).to.not.have.property('bar')`)
-* Use `.equal` instead of `.eql` to compare strings (e.g., `expect(value).to.equal('foo')`)
+* Name the test file using the _-test.js_ file extension.
+* Always require test-utils, importing at least the `expect` function.
+* Require any functions under test using the corresponding module name / path, not a relative path (npm will resolve them).
+* Use `describe` to group tests into categories.
+* You can use the `await` keyword in any test or before/after function, as long as you add `async` to the function declaration.
+* Use BDD-style assertions (e.g., `expect(actual).to.have.property('foo')`).
+* All assertions should be a function call (e.g., `to.be.true()`), not a terminal expression (e.g., `to.be.true`).
+ ** See https://eslint.org/docs/rules/no-unused-expressions
+ ** The functional assertion syntax is provided by the dirty-chai plugin.
+* When creating a negated assertion, please write it as `.to.not` instead of `.not.to` (e.g., `expect(actual).to.not.have.property('bar')`).
+ ** To help you remember, the assertion should always begin wtih `.to`.
+* Use `.equal` instead of `.eql` to compare strings (e.g., `expect(actual).to.equal('foo')`).
+ ** expect#equal is a strict === comparison
+* Use `.eql` to compare arrays and objects (e.g., `expect(actual).to.equal(['a', 'b', 'c'])`).
+ ** expect#eql compares each item in the array or object, not the instance itself
+ ** expect#equal always fails on two different array or object instances
+* If the expected result is used many times, consider using a variable named expected.
+* If you need to set up mock/spy objects for several tests, consider using `beforeEach()`.
+ ** `beforeEach()` is most useful when it's used to setup spies (the call counts get reset for each test).
+ ** Giving a name to a spy makes things easy in test logs.
+* Place fixtures in the [.path]_fixtures/_ subdirectory of the [.path]_test_ folder.
+* Use `deferExceptions` to trap an excepted Error so you can assert it using `.to.throw(message)`.
 
 You can run the whole <<run-tests,test suite>> manually or continuously.
 You can also select individual tests to run.
@@ -460,8 +479,6 @@ Here are some of the files and directories you will see when developing this pro
 
 ....
 docs/         <1>
-lib-example/
-  capitalize.js
 node_modules/ <2>
 packages/     <3>
   asciidoc-loader/

@@ -14,8 +14,8 @@ const glob = opts.package
       testFiles: [`packages/${opts.package}/test/**/*-test.js`],
     }
   : {
-      sourceFiles: ['gulpfile.js', '{gulp.d,lib-example,scripts,test}/**/*.js', 'packages/*/{lib,test}/**/*.js'],
-      testFiles: ['test/**/*-test.js', 'packages/*/test/**/*-test.js'],
+      sourceFiles: ['gulpfile.js', '{gulp.d,scripts,test}/**/*.js', 'packages/*/{lib,test}/**/*.js'],
+      testFiles: ['packages/*/test/**/*-test.js'],
     }
 const sharedOpts = { '--package <name>': 'Only run on files in the specified package' }
 

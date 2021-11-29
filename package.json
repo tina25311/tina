@@ -28,7 +28,6 @@
     "nyc": "~15.1",
     "plugin-error": "~1.0",
     "prettier-eslint-cli": "~5.0",
-    "stream-to-array": "~2.3",
     "yargs-parser": "~21.0"
   },
   "engines": {
@@ -38,7 +37,6 @@
     "cache": true,
     "cacheDir": "node_modules/.cache/nyc",
     "include": [
-      "lib-example/*.js",
       "packages/*/{bin,lib}/**/*.js"
     ],
     "reporter": [
