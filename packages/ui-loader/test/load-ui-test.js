@@ -1263,7 +1263,7 @@ describe('loadUi()', () => {
       await testCacheDir('~' + ospath.sep + ospath.relative(os.homedir(), ospath.join(WORK_DIR, '.antora-cache')))
     })
 
-    it('should show sensible error message if catch dir cannot be created', async () => {
+    it('should show sensible error message if cache dir cannot be created', async () => {
       const customCacheDir = ospath.join(WORK_DIR, '.antora-cache')
       // NOTE: put a file in the location of the cache directory
       await fsp.writeFile(customCacheDir, '')
