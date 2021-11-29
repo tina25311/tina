@@ -34,9 +34,8 @@ const { DEFAULT_DEST_FS } = require('./constants.js')
  *   access to the output destinations.
  * @param {Array<Catalog>} catalogs - The collection of catalogs from which to retrieve the
  *   publishable virtual files.
- * @returns Nothing.
+ * @returns {Array<Object>} An array of reports that provide information about where the files were published.
  */
-// QUESTION should this function return a report of virtual files that were published (by provider)
 async function publishSite (playbook, catalogs) {
   const output = playbook.output
   const destinations = getDestinations(output)
