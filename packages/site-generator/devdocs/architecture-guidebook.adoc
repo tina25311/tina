@@ -39,7 +39,7 @@ The generator should delegate to the following functions imported from the speci
 * createPageComposer (page-composer)
 * mapSite (site-mapper)
 * produceRedirects (redirect-producer)
-* publishSite (site-publisher)
+* publishFiles (file-publisher)
 
 The generator should do as little work as possible.
 If it looks like it's doing too much work, then the component to which it's delegating should be improved.
@@ -57,7 +57,7 @@ This ensures background processes can make the best use of the execution time.
 == Code
 
 The site generator is implemented as a dedicated node package (i.e., module).
-The site generator API exports the asynchronous function `generateSite()`, which accepts an array of command-line arguments (in the form `--name=value`), a map of environment variables, and an output directory (though this parameter will be eliminated once the site publisher is available).
+The site generator API exports the asynchronous function `generateSite()`, which accepts an array of command-line arguments (in the form `--name=value`), a map of environment variables, and an output directory (though this parameter will be eliminated once the file publisher is available).
 The `generateSite()` function does not return a value.
 
 The API for the site generator should be used as follows:

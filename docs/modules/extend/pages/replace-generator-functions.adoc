@@ -33,13 +33,13 @@ This method accepts the same object signature that the `getFunctions` method ret
 You only have to specify the functions you want to replace.
 The generator will fall back to using its own functions for any function that is not replaced by an extension.
 
-Here's an example that shows how to replace the `publishSite` function in an extension:
+Here's an example that shows how to replace the `publishFiles` function in an extension:
 
 [,js]
 ----
 module.exports.register = function () {
   this.replaceFunctions({
-    async publishSite () {
+    async publishFiles () {
       console.log('Not publishing today')
       return []
     }
@@ -65,7 +65,7 @@ The list of functions that can be replaced by an extension, shown along with the
 * loadUi(uiCatalog): Promise<UiCatalog>
 * mapSite(playbook, publishablePages): File[]
 * produceRedirects(playbook, contentCatalog): File[]
-* publishSite(playbook, catalogs): Promise<Object[]>
+* publishFiles(playbook, catalogs): Promise<Object[]>
 * resolveAsciiDocConfig(playbook): Object
 
 To learn more about these functions, consult the https://gitlab.com/antora/antora/-/tree/main/packages[Antora source code].

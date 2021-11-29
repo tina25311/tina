@@ -92,7 +92,7 @@ const produceRedirects = require('@antora/redirect-producer')
 const siteFiles = produceRedirects(playbook, contentCatalog)
 ----
 
-These files then need to be put into one of the catalogs (e.g., the site catalog) and passed to the site publisher so that they get published.
+These files then need to be put into one of the catalogs (e.g., the site catalog) and passed to the file publisher so that they get published.
 
 == Data
 
@@ -155,7 +155,7 @@ Without page aliases, reorganizing pages can cause references that originate fro
 Page aliases provide a way to map these old pages to current pages.
 
 The redirect producer component translates these pages aliases into redirects, either in the form of static bounce pages or rewrite/redirect rules in a configuration file.
-These files can then be put back into a catalog so they'll be published by the site publisher along with the other publishable files.
+These files can then be put back into a catalog so they'll be published by the file publisher along with the other publishable files.
 As a result, the URLs of old pages can be preserved.
 
 The redirect producer can also handle the site start page capability, which is simply a redirect from the root of the site to a concrete page in the site.

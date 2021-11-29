@@ -24,7 +24,7 @@ If you make a custom site generator, you are responsible for keeping each indivi
 == Extended components
 
 Extended components provide key functionality for special use cases.
-An example of an Extended component is a site publisher provider for an Amazon S3 bucket.
+An example of an Extended component is a file publisher provider for an Amazon S3 bucket.
 Once ready for xref:ROOT:project/release-schedule.adoc[general availability], Extended components are released and versioned individually.
 
 [#component-matrix]
@@ -112,8 +112,8 @@ These files, which are intended to be read by crawlers, provide a list of all pu
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Site Publisher
-|Publishes (i.e., writes) the generated files to the destination(s) specified in the playbook.
+|File Publisher
+|Publishes (i.e., writes) the publishable files in the virtual file catalogs to the destination(s) specified in the playbook.
 |&#10003;
 |
 |{url-antora-lcs}[MPL-2.0^]

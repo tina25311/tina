@@ -16,7 +16,7 @@ const FUNCTION_PROVIDERS = {
   loadUi: 'ui-loader',
   mapSite: 'site-mapper',
   produceRedirects: 'redirect-producer',
-  publishSite: 'site-publisher',
+  publishFiles: 'file-publisher',
   resolveAsciiDocConfig: 'asciidoc-loader',
 }
 
@@ -59,6 +59,7 @@ class GeneratorContext extends EventEmitter {
   replaceFunctions (updates) {
     const fxns = this.#fxns
     Object.entries(updates).forEach(([name, fxn]) => {
+      if (name === 'publishSite') name = 'publishFiles'
       if (name in fxns) fxns[name] = fxn.bind(this)
     })
   }

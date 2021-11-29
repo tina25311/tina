@@ -7,7 +7,7 @@
 The site needs to include a sitemap that a search engine can use to accurately index the site.
 A sitemap is an XML file (or collection of XML files) that lists all of the HTML pages in the site.
 Since Antora maintains a catalog of all publishable files, the site mapper component can easily generate a sitemap from this catalog.
-The sitemap files can then be inserted back into a file catalog as additional files to be published by the site publisher.
+The sitemap files can then be inserted back into a file catalog as additional files to be published by the file publisher.
 
 == Functional Overview
 
@@ -71,7 +71,7 @@ const mapSite = require('@antora/site-mapper')
 const sitemaps = mapSite(playbook, pages)
 ----
 
-The sitemap files then need to be put into one of the catalogs passed to the site publisher so that these files get published.
+The sitemap files then need to be put into one of the catalogs passed to the file publisher so that these files get published.
 
 == Data
 
@@ -145,4 +145,4 @@ Since Antora knows about every page being published, the site mapper component c
 To make the sitemap more manageable and avoid size limits, the site mapper component can leverage Antora's natural content partitioning and group the entries by component into individual sitemap files and also give the entries in those files a stable order.
 The component sitemaps can then be listed in a sitemap index.
 
-These sitemap files can then be put back into a catalog so they'll be published by the site publisher along with the other publishable files.
+These sitemap files can then be put back into a catalog so they'll be published by the file publisher along with the other publishable files.

@@ -1509,13 +1509,13 @@ describe('generateSite()', function () {
           return []
         }
 
-        const publishSite = async () => {
+        const publishFiles = async () => {
           console.log('not publishing today')
           return []
         }
 
         module.exports.register = function () {
-          this.replaceFunctions({ mapSite, publishSite })
+          this.replaceFunctions({ mapSite, publishFiles })
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
@@ -1526,6 +1526,25 @@ describe('generateSite()', function () {
       expect(lines).to.have.lengthOf(2)
       expect(lines[0]).to.equal('creating sitemap with 3 files for https://docs.example.org')
       expect(lines[1]).to.equal('not publishing today')
+    })
+
+    it('should map publishSite function to publishFiles', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        const publishSite = async () => {
+          console.log('not publishing today')
+          return []
+        }
+
+        module.exports.register = function () {
+          this.replaceFunctions({ publishSite })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.eql(['not publishing today'])
     })
 
     it('should allow extension listener to access generator functions via getFunctions', async () => {

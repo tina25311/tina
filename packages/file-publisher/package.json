@@ -1,7 +1,7 @@
 {
-  "name": "@antora/site-publisher",
+  "name": "@antora/file-publisher",
   "version": "3.0.0-beta.3",
-  "description": "An alias for the @antora/file-publisher package.",
+  "description": "Publishes the publishable files in the virtual file catalog(s) to the destination(s) specified in the playbook.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
   "contributors": [
@@ -15,7 +15,11 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@antora/file-publisher": "3.0.0-beta.3"
+    "@antora/expand-path-helper": "~2.0",
+    "@antora/user-require-helper": "~2.0",
+    "gulp-vinyl-zip": "~2.5",
+    "vinyl": "~2.2",
+    "vinyl-fs": "~3.0"
   },
   "engines": {
     "node": ">=12.21.0"

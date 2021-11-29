@@ -13,6 +13,7 @@ This project utilizes semantic versioning.
 * *site-generator-default*: Rename site-generator-default package to site-generator and repurpose old package as its alias (#886)
 * *site-generator*: Append /index.html to file URI in completion status message if site start page is defined (#889)
 * *site-generator*: Reword completion status message (#889)
+* *site-publisher*: Rename site-publisher package to file-publisher and repurpose old package as its alias (#887)
 
 === Fixed
 

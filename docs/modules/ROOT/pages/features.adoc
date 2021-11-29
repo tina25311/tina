@@ -222,7 +222,7 @@ All in a single build.
 
 *No need for a separate step, tool or script in the pipeline.*
 
-Antora's site publisher saves you a step in the pipeline.
+Antora's file publisher saves you a step in the pipeline.
 Most site generators write the output to a local directory, which you then have to turn around and publish.
 Antora sends the output directly to the destinations you specify.
 And since the references in the site are not coupled to the publishing environment, you can even preview the site offline by publishing it to a local directory.

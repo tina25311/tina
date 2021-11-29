@@ -1,0 +1,35 @@
+= ADR 0020: Rename packages
+:revdate: 2021-11-29
+
+== Status
+
+Accepted
+
+== Context
+
+Antora now provides an extension facility which is managed by the default site generator.
+That extension facility allows functions used by the generator to be replaced.
+
+We're now pushing users towards using extensions for customization and encouraging them to replace the site generator only as a last resort.
+Since the default site generator now provides an essential backbone of Antora, and all functions provided by Antora are, by their very nature, a default, the -default qualifier on the site-generator-default seems confusing and redundant.
+
+When we look at reusability and what functions we are exposing, it's also clear that the site publisher is actually a general purpose file publisher.
+Its one and only function is to publish virtual files (as returned by `getFiles()` of each entry in the catalogs argument) which are publishable to one or more destinations (as defined in the playbook argument).
+The name of the package should reflect this purpose.
+There's no need to get "site" involved in the terminology here.
+
+== Decision
+
+Rename the site-generator-default package to site-generator and reconfigure the existing package as its alias for backwards compatibility.
+Rename the site-publisher package to file-publisher and reconfigure the existing package as its alias for backwards compatibility.
+Also rename the `publishSite` function to `publishFiles` and treat `publishSite` as an alias in the extension facility.
+
+== Consequences
+
+We will publish two additional packages.
+However, since we'll set up the old packages as aliases that map to the same function, this should not break any existing Antora workflows.
+The package names can be used interchangeably.
+We will encourage users to use the new names.
+
+When the user installs Antora, the user no longer has to qualify the site generator package name with `-default`, thus saving some typing and making the intent more clear.
+If a user does want to create a custom site generator, depending on `@antora/site-generator` instead of `@antora/site-generator-default` makes it feel more like the built-in functionality is being extend.

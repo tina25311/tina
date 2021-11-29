@@ -28,7 +28,7 @@ const { DEFAULT_DEST_FS } = require('./constants.js')
  * on the output property of the playbook (i.e., `output.clean`), the clean
  * property is added to the configuration for each provider.
  *
- * @memberof site-publisher
+ * @memberof file-publisher
  *
  * @param {Object} playbook - The configuration object for Antora that provides
  *   access to the output destinations.
@@ -36,7 +36,7 @@ const { DEFAULT_DEST_FS } = require('./constants.js')
  *   publishable virtual files.
  * @returns {Array<Object>} An array of reports that provide information about where the files were published.
  */
-async function publishSite (playbook, catalogs) {
+async function publishFiles (playbook, catalogs) {
   const output = playbook.output
   const destinations = getDestinations(output)
 
@@ -98,4 +98,4 @@ function resolveDestination (destination, clean) {
   return { provider, options }
 }
 
-module.exports = publishSite
+module.exports = publishFiles
