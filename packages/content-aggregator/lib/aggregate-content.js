@@ -18,7 +18,7 @@ const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } =
 const globStream = require('glob-stream')
 const invariably = require('./invariably')
 const { makeMatcherRx, versionMatcherOpts: VERSION_MATCHER_OPTS } = require('./matcher')
-const MultiProgress = require('multi-progress')
+const MultiProgress = require('multi-progress') // calls require('progress') as a peer dependencies
 const ospath = require('path')
 const { posix: path } = ospath
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined

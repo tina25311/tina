@@ -46,7 +46,7 @@ function outputError (str, write) {
   write(str.replace(/^error: /, cli.name() + ': '))
 }
 
-function requireLogger (fromPath = undefined, moduleName = '@antora/logger') {
+function requireLogger (fromPath = undefined, moduleName = '@antora/logger') { // require('@antora/logger')
   try {
     return (
       requireLogger.cache ||
