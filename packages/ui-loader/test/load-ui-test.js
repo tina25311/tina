@@ -81,16 +81,16 @@ describe('loadUi()', () => {
 
   const testAll = (bundle, testBlock) => {
     const isArchive = !!ospath.extname(bundle)
-    const makeTest = (url) => testBlock({ ui: { bundle: { url } } })
+    const createTest = (url) => testBlock({ ui: { bundle: { url } } })
     it(`with dot-relative ${isArchive ? 'bundle' : 'directory'} path`, () =>
-      makeTest(prefixPath('.', ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, bundle)))))
-    it(`with absolute ${isArchive ? 'bundle' : 'directory'} path`, () => makeTest(ospath.join(FIXTURES_DIR, bundle)))
+      createTest(prefixPath('.', ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, bundle)))))
+    it(`with absolute ${isArchive ? 'bundle' : 'directory'} path`, () => createTest(ospath.join(FIXTURES_DIR, bundle)))
     if (isArchive) {
-      it('with http bundle URL', () => makeTest(httpServerUrl + bundle))
+      it('with http bundle URL', () => createTest(httpServerUrl + bundle))
       it('with https bundle URL', () => {
         const env = process.env
         process.env = Object.assign({}, env, { NODE_TLS_REJECT_UNAUTHORIZED: '0' })
-        return makeTest(httpsServerUrl + bundle).finally(() => (process.env = env))
+        return createTest(httpsServerUrl + bundle).finally(() => (process.env = env))
       })
     }
   }
