@@ -6,7 +6,6 @@ const chai = require('chai')
 const cheerio = require('cheerio')
 const fs = require('fs')
 const { Transform } = require('stream')
-const map = (transform) => new Transform({ objectMode: true, transform })
 const ospath = require('path')
 const { configureLogger } = require('@antora/logger')
 
