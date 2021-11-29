@@ -165,7 +165,13 @@ describe('publishFiles()', () => {
     verifyFsOutput(DEFAULT_DEST_FS)
   })
 
-  it('should use deprecate getAll method on catalogs if getFile method is not found', async () => {
+  it('should wrap value of catalogs argument in an array if not already an array', async () => {
+    playbook.output.destinations = undefined
+    await publishFiles(playbook, { getFiles: () => catalogs[0].getFiles().concat(catalogs[1].getFiles()) })
+    verifyFsOutput(DEFAULT_DEST_FS)
+  })
+
+  it('should use deprecated getAll method on catalogs if getFile method is not found', async () => {
     playbook.output.destinations = undefined
     catalogs.forEach((catalog) => {
       catalog.getAll = catalog.getFiles
