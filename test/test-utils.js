@@ -122,8 +122,7 @@ function emptyDirSync (dir) {
     if (err.code === 'ENOENT') {
       fs.mkdirSync(dir, { recursive: true })
       return
-    }
-    if (err.code === 'ENOTDIR') {
+    } else if (err.code === 'ENOTDIR') {
       unlinkSync(dir)
       fs.mkdirSync(dir, { recursive: true })
       return
@@ -134,22 +133,6 @@ function emptyDirSync (dir) {
 }
 
 module.exports = {
-  bufferizeContents: () =>
-    map((file, enc, next) => {
-      if (file.isStream()) {
-        const data = []
-        const readChunk = (chunk) => data.push(chunk)
-        const stream = file.contents
-        stream.on('data', readChunk)
-        stream.once('end', () => {
-          stream.removeListener('data', readChunk)
-          file.contents = Buffer.concat(data)
-          next(null, file)
-        })
-      } else {
-        next(null, file)
-      }
-    }),
   captureLogSync: (fn) => {
     const messages = []
     configureLogger({

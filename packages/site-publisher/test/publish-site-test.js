@@ -1,20 +1,15 @@
 /* eslint-env mocha */
 'use strict'
 
-const {
-  bufferizeContents,
-  emptyDirSync,
-  expect,
-  heredoc,
-  trapAsyncError,
-  wipeSync,
-} = require('../../../test/test-utils')
+const { emptyDirSync, expect, heredoc, trapAsyncError, wipeSync } = require('../../../test/test-utils')
 
 const File = require('vinyl')
 const { promises: fsp } = require('fs')
 const os = require('os')
 const ospath = require('path')
 const publishSite = require('@antora/site-publisher')
+const { pipeline, Writable } = require('stream')
+const forEach = (write) => new Writable({ objectMode: true, write })
 const vzip = require('gulp-vinyl-zip')
 
 const CWD = process.cwd()
@@ -47,15 +42,22 @@ describe('publishSite()', () => {
   `
 
   const collectFilesFromZip = async (zipFile) =>
-    new Promise((resolve, reject) => {
-      const files = []
-      vzip
-        .src(zipFile)
-        .pipe(bufferizeContents())
-        .on('data', (file) => files.push(file))
-        .on('error', reject)
-        .on('end', resolve.bind(null, files))
-    })
+    new Promise((resolve, reject, files = []) =>
+      pipeline(
+        vzip.src(zipFile),
+        forEach((file, _, done) => {
+          files.push(file)
+          if (!file.isStream()) return done()
+          const buffer = []
+          pipeline(
+            file.contents,
+            forEach((chunk, _, readDone) => buffer.push(chunk) && readDone()),
+            (readErr) => (readErr ? done(readErr) : Object.assign(file, { contents: Buffer.concat(buffer) }) && done())
+          )
+        }),
+        (err) => (err ? reject(err) : resolve(files))
+      )
+    )
 
   const verifyArchiveOutput = (destFile) => {
     let absDestFile
