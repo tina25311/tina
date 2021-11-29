@@ -396,7 +396,7 @@ Issue {url-issues}/778[#778^]::
 //Rename `silent` value on `runtime.log.failure_level` to `none`.
 Issue {url-issues}/788[#788^]:: Log unhandled error at fatal level.
 Issue {url-issues}/793[#793^]:: Ignore backup files (files that end with `+~+`) when reading supplemental UI files and UI bundle from directory.
-//Issue {url-issues}/802[#802^]:: Integrate @antora/user-require-helper to require code provided by the user (i.e., Asciidoctor extensions, Antora pipeline extensions, custom providers for the site publisher, user scripts, custom site generator, etc).
+//Issue {url-issues}/802[#802^]:: Integrate @antora/user-require-helper to require code provided by the user (i.e., Asciidoctor extensions, Antora pipeline extensions, custom providers for the file publisher, user scripts, custom site generator, etc).
 Issue {url-issues}/805[#805^]:: Attach map of environment variables to non-enumerable `env` property on playbook.
 //Issue {url-issues}/817[#817^]:: Store files in content catalog by family and in UI catalog by type.
 //_(Internal change only)._

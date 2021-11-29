@@ -7,7 +7,7 @@
  * (a stream transform function) and returns a Promise that resolves when the
  * stream ends.
  *
- * @memberof site-publisher
+ * @memberof file-publisher
  *
  * @param {Function} destAdapter - A Vinyl destination adapter, preconfigured to
  *   write to a destination (e.g., `require('vinyl-fs').dest('path/to/dir')`).

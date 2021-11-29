@@ -24,7 +24,7 @@
     "@antora/page-composer": "3.0.0-beta.3",
     "@antora/redirect-producer": "3.0.0-beta.3",
     "@antora/site-mapper": "3.0.0-beta.3",
-    "@antora/site-publisher": "3.0.0-beta.3",
+    "@antora/file-publisher": "3.0.0-beta.3",
     "@antora/ui-loader": "3.0.0-beta.3",
     "@antora/user-require-helper": "~2.0"
   },

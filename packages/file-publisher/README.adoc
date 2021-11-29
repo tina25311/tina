@@ -1,9 +1,9 @@
-= Antora Default Site Generator
+= Antora File Publisher
 
-This is the site generator for Antora.
-This generator is invoked by the `generate` command of Antora's CLI to produce and publish static documentation sites.
-
-*This package is an alias for the `@antora/site-generator` package.*
+The File Publisher is a component in Antora responsible for publishing (i.e., writing) the publishable files in the virtual file catalog(s) to the destination(s) specified in the playbook.
+This component supports different destination types (via providers) such as a filesystem directory or an archive file.
+More than one destination may be specified.
+Custom providers can be used to add support for additional destinations.
 
 https://antora.org[Antora] is a modular static site generator designed for creating documentation sites from AsciiDoc documents.
 Its site generator aggregates documents from versioned content repositories and processes them using https://asciidoctor.org[Asciidoctor].
