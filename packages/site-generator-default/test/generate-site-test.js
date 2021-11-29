@@ -551,9 +551,11 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
-    const editLinkUrl = 'file://' + (posixify
-      ? '/' + posixify(ospath.join(repoBuilder.repoPath, thePagePath))
-      : ospath.join(repoBuilder.repoPath, thePagePath))
+    const editLinkUrl =
+      'file://' +
+      (posixify
+        ? '/' + posixify(ospath.join(repoBuilder.repoPath, thePagePath))
+        : ospath.join(repoBuilder.repoPath, thePagePath))
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
   }).timeout(timeoutOverride)
 
