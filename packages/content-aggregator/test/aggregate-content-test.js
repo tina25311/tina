@@ -50,8 +50,7 @@ describe('aggregateContent()', function () {
     if (remoteBare) it('on remote bare repo', () => createTest({ bare: true, remote: { gitServerPort } }))
   }
 
-  const testLocal = (block) =>
-    it('on local repo', () => block(new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)))
+  const testLocal = (block) => it('on local repo', () => block(new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)))
 
   const testRemote = (block) =>
     it('on remote repo', () =>
