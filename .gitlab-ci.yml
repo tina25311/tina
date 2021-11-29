@@ -3,14 +3,17 @@ stages: [init, verify, deploy]
 variables:
   GIT_DEPTH: '5'
   MOCHA_TIMEOUT: '5000'
+  #npm_config_audit: 'false'
+  npm_config_cache: &npm_cache_dir .cache/npm
+  npm_config_fund: 'false'
+  npm_config_prefer_offline: 'true'
 .defs:
 # only_code not used when an MR is created, hence the need for except_docs
 - &only_code
   only:
     changes:
     - .gitlab-ci.yml
-    - package.json
-    - yarn.lock
+    - 'package{-lock,}.json'
     - gulpfile.js
     - '{gulp.d,packages,test}/**/*'
 - &except_docs
@@ -21,44 +24,51 @@ variables:
     refs:
     - schedules
     - releases@antora/antora
-- &yarn_cache_config
-  key: yarn-cache
+- &npm_cache_config
+  key: npm-cache
   paths:
-  - .cache/yarn
-- &yarn_cache_pull_push
+  - *npm_cache_dir
+- &npm_cache_pull_push
   cache:
-    <<: *yarn_cache_config
+    <<: *npm_cache_config
     policy: pull-push
-- &yarn_cache_pull_only
+- &npm_cache_pull_only
   cache:
-    <<: *yarn_cache_config
+    <<: *npm_cache_config
     policy: pull
-- &yarn_install
+- &npm_install
   before_script:
   - node -p '`Node.js ${process.version}`'
-  - yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile > /dev/null
+  - mv package-lock.json package-lock.json~
+  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p 'require("./package.json").devDependencies.npm')
+  - mv package-lock.json~ package-lock.json
+  - npx npm i --quiet
+- &save_coverage
+  artifacts:
+    paths:
+    - coverage
 # this step also seeds the dependency cache
 lint:
   stage: init
   <<: *except_docs
   <<: *only_code
-  <<: *yarn_cache_pull_push
-  <<: *yarn_install
-  script: $(npm bin)/gulp lint
+  <<: *npm_cache_pull_push
+  <<: *npm_install
+  script: npx --no-install gulp lint
 test:node-12-linux:
   image: node:12-buster
   stage: verify
   <<: *only_schedules
-  <<: *yarn_cache_pull_only
-  <<: *yarn_install
-  script: $(npm bin)/gulp test
+  <<: *npm_cache_pull_only
+  <<: *npm_install
+  script: npx --no-install gulp test
 test:node-14-linux:
   image: node:14-buster
   stage: verify
   <<: *only_schedules
-  <<: *yarn_cache_pull_only
-  <<: *yarn_install
-  script: $(npm bin)/gulp test
+  <<: *npm_cache_pull_only
+  <<: *npm_install
+  script: npx --no-install gulp test
 test:node-16-linux:
   image: node:16-buster
   stage: verify
@@ -66,19 +76,17 @@ test:node-16-linux:
     COVERAGE: 'true'
   <<: *except_docs
   <<: *only_code
-  <<: *yarn_cache_pull_only
-  <<: *yarn_install
-  script: $(npm bin)/gulp test
-  artifacts:
-    paths:
-    - coverage/
+  <<: *npm_cache_pull_only
+  <<: *npm_install
+  script: npx --no-install gulp test
+  <<: *save_coverage
 test:node-17-linux:
   image: node:17-buster
   stage: verify
   <<: *only_schedules
-  <<: *yarn_cache_pull_only
-  <<: *yarn_install
-  script: $(npm bin)/gulp test
+  <<: *npm_cache_pull_only
+  <<: *npm_install
+  script: npx --no-install gulp test
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
 test:windows:
   tags: [windows]
@@ -89,23 +97,22 @@ test:windows:
   <<: *except_docs
   <<: *only_code
   # cache does not currently work on the Windows runner
-  #<<: *yarn_cache_pull_only
+  #<<: *npm_cache_pull_only
   before_script:
   - choco upgrade -y nodejs --version=12.22.7
   - node -p '`Node.js ${process.version}`'
-  - npx yarn --cache-folder=.cache/yarn --prefer-offline --pure-lockfile
-  script: node_modules/.bin/gulp test
-  artifacts:
-    paths:
-    - coverage/
+  - npm i --no-package-lock --no-save --no-audit --silent npm@~8.1
+  - npx npm i --quiet
+  script: npx --no-install gulp test
+  <<: *save_coverage
 release:
   stage: deploy
   only:
   - releases@antora/antora
   environment: releases
   before_script:
-  - yarn global add lerna@$(node -p 'require("./lerna.json").lerna') > /dev/null
-  - NODE_PATH=$(yarn global dir)/node_modules node scripts/patch-libnpmpublish.js
+  - npm i -g --no-audit --silent lerna@$(node -p 'require("./lerna.json").lerna')
+  - NODE_PATH=$(npm -g prefix)/lib/node_modules/lerna/node_modules node scripts/patch-libnpmpublish.js
   script:
   - scripts/release.sh
   # triggers release of Docker image

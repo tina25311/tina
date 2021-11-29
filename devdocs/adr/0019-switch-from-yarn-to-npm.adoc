@@ -1,0 +1,39 @@
+= ADR 0018: Switch from Yarn to npm
+:revdate: 2021-11-27
+
+== Status
+
+Accepted
+
+== Context
+
+The main Antora project is organized as a monorepo (i.e., multi-package repository).
+This arrangement allows the projects to be developed and released together, which drastically simplifies the workflow.
+
+In order for these packages to work together, they rely on a capability known as workspaces.
+At the time the Antora project was started, npm did not support workspaces, but Yarn did.
+Therefore, we choose to build the project with Yarn (with help from Lerna).
+
+Since then, npm 8 has been released with support for npm workspaces, which are compatible with Yarn workspaces.
+Using npm has the advantage of being bundled with Node.js.
+Therefore, it's now possible to eliminate the use of Yarn and manage the dependencies of the project with npm instead.
+
+== Decision
+
+Reconfigure the project to install development dependencies using `npm i` instead of `yarn`.
+Remove the [.path]_yarn.lock_ file and commit the [.path]_package-lock.json_ file that the `npm i` command creates.
+Update the contributing guide by removing the section about Yarn and updating instructions for how to install dependencies using `npm i`.
+Also add a note that if you aren't using a version of Node.js that provides at least npm 8, you'll need to install npm 8 or greater locally and install dependencies using `npx npm i`.
+
+== Consequences
+
+This change has no impact on the end user of Antora.
+
+This change also does not affect the release process.
+The project will continue to use Lerna to orchestrate the release.
+Lerna is already configured to publish packages using `npm` rather than `yarn`.
+
+The change will impact developers who are contributing to the project.
+Instead of installing development dependencies using the `yarn` command, developers will need to install them using the `npm i` command instead.
+If the developer does not have npm 8 installed (Node.js or greater), the developer will need to either a) upgrade npm in the Node.js installation, or b) install npm 8 locally and run npm using `npx npm`.
+Once the packages have been installed, all the commands needed to develop the project are the same (e.g., `gulp test`, `gulp lint`, etc.).
