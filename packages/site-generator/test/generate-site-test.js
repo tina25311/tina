@@ -14,7 +14,7 @@ const {
 
 const { configureLogger } = require('@antora/logger')
 const fs = require('fs')
-const generateSite = require('@antora/site-generator-default')
+const generateSite = require('@antora/site-generator')
 const buildPlaybook = require('@antora/playbook-builder')
 const GitServer = require('node-git-server')
 const { once } = require('events')
@@ -1433,7 +1433,7 @@ describe('generateSite()', function () {
       playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
-      const expectedMessage = ospath.dirname(require.resolve('@antora/site-generator-default'))
+      const expectedMessage = ospath.dirname(require.resolve('@antora/site-generator'))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal(expectedMessage)
     })

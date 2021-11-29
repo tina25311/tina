@@ -77,10 +77,10 @@ See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>> 
 |See xref:playbook:runtime-fetch.adoc[].
 
 |`--generator`
-|`@antora/site-generator-default`
+|`@antora/site-generator`
 |Node.js package (i.e., module) name or filesystem path to a script
 |Intended for advanced users comfortable with the inner workings of Antora.
-Substitutes Antora's default site generator with a user-defined function.
+Substitutes Antora's default site generator with an alternate implementation exported by the specified module or script.
 
 |[[git-credentials-path]]`--git-credentials-path`
 |_$HOME/.git-credentials_ or +

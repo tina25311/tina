@@ -10,8 +10,9 @@ This project utilizes semantic versioning.
 === Changed
 
 * Switch from Yarn to npm to manage project dependencies (#890)
-* *site-generator-default*: Append /index.html to file URI in completion status message if site start page is defined (#889)
-* *site-generator-default*: Reword completion status message (#889)
+* *site-generator*: Rename site-generator-default package to site-generator and repurpose old package as its alias (#886)
+* *site-generator*: Append /index.html to file URI in completion status message if site start page is defined (#889)
+* *site-generator*: Reword completion status message (#889)
 
 === Fixed
 

@@ -116,7 +116,7 @@ Here's an example that shows how to get the version of the site generator that i
 
 [,js]
 ----
-const { name, version } = this.require('@antora/site-generator-default/package')
+const { name, version } = this.require('@antora/site-generator/package')
 console.log(`Running ${name} version ${version}`)
 ----
 

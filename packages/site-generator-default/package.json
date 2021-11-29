@@ -1,7 +1,7 @@
 {
   "name": "@antora/site-generator-default",
   "version": "3.0.0-beta.3",
-  "description": "The default site generator for producing and publishing static documentation sites with Antora.",
+  "description": "An alias for the @antora/site-generator package.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
   "contributors": [
@@ -15,22 +15,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@antora/asciidoc-loader": "3.0.0-beta.3",
-    "@antora/content-aggregator": "3.0.0-beta.3",
-    "@antora/content-classifier": "3.0.0-beta.3",
-    "@antora/document-converter": "3.0.0-beta.3",
-    "@antora/logger": "3.0.0-beta.3",
-    "@antora/navigation-builder": "3.0.0-beta.3",
-    "@antora/page-composer": "3.0.0-beta.3",
-    "@antora/redirect-producer": "3.0.0-beta.3",
-    "@antora/site-mapper": "3.0.0-beta.3",
-    "@antora/site-publisher": "3.0.0-beta.3",
-    "@antora/ui-loader": "3.0.0-beta.3",
-    "@antora/user-require-helper": "~2.0"
-  },
-  "devDependencies": {
-    "@antora/playbook-builder": "3.0.0-beta.3",
-    "node-git-server": "~0.6"
+    "@antora/site-generator": "3.0.0-beta.3"
   },
   "engines": {
     "node": ">=12.21.0"

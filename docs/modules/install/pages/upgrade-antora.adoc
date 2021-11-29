@@ -5,7 +5,7 @@ On this page, you'll learn:
 
 * [x] How to upgrade Node.js.
 * [x] How to upgrade Antora globally.
-* [x] How to upgrade the Antora CLI and default site generator individually.
+* [x] How to upgrade the Antora CLI and site generator individually.
 
 include::partial$upgrade-checklist.adoc[]
 
@@ -42,12 +42,12 @@ Now you're ready to upgrade to the latest version of Antora.
 
 == Upgrade Antora globally
 
-If you installed the Antora CLI and default site generator globally, you can upgrade them at the same time.
+If you installed the Antora CLI and site generator globally, you can upgrade them at the same time.
 
 In a terminal, run:
 
 [subs=attributes+]
- $ npm i -g @antora/cli@{page-component-display-version} @antora/site-generator-default@{page-component-display-version}
+ $ npm i -g @antora/cli@{page-component-display-version} @antora/site-generator@{page-component-display-version}
 
 npm will automatically install the latest version of Antora.
 
@@ -64,7 +64,7 @@ If you installed the Antora CLI and site generator globally, you'll see them lis
 ....
 /home/user/.nvm/versions/node/v{version-node}/lib
 ├── @antora/cli@{page-component-version}.x
-├── @antora/site-generator-default@{page-component-version}.x
+├── @antora/site-generator@{page-component-version}.x
 ├── npm@{version-npm}
 └── ...
 ....
@@ -94,7 +94,7 @@ We recommend specifying a partial version number (major.minor) so that you recei
 ----
 {
   "dependencies": {
-    "@antora/site-generator-default": "{page-component-display-version}"
+    "@antora/site-generator": "{page-component-display-version}"
   }
 }
 ----

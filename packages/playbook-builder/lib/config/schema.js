@@ -11,7 +11,7 @@ module.exports = {
     generator: {
       doc: 'A require request for the generator package name or script to use.',
       format: String,
-      default: '@antora/site-generator-default',
+      default: '@antora/site-generator',
       arg: 'generator',
     },
     extensions: {

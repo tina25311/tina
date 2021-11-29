@@ -110,21 +110,21 @@ describe('cli', function () {
   it('should output version when called with "-v"', () => {
     return runAntora('-v')
       .assert(`@antora/cli: ${VERSION}`)
-      .assert(`@antora/site-generator-default: ${VERSION}`)
+      .assert(`@antora/site-generator: ${VERSION}`)
       .done()
   })
 
   it('should output version when invoked with "version"', () => {
     return runAntora('version')
       .assert(`@antora/cli: ${VERSION}`)
-      .assert(`@antora/site-generator-default: ${VERSION}`)
+      .assert(`@antora/site-generator: ${VERSION}`)
       .done()
   })
 
   it('should report site generator version when invoked outside installation directory', () => {
     return runAntora('-v', { cwd: TMP_DIR })
       .assert(`@antora/cli: ${VERSION}`)
-      .assert(`@antora/site-generator-default: ${VERSION}`)
+      .assert(`@antora/site-generator: ${VERSION}`)
       .done()
   })
 
@@ -227,7 +227,7 @@ describe('cli', function () {
           )
           expect(optionForms).to.include('--generator <generator>')
           // NOTE this assertion verifies the default value for an option defined in cli.js is not quoted
-          expect(options['--generator <generator>']).to.have.string('(default: @antora/site-generator-default)')
+          expect(options['--generator <generator>']).to.have.string('(default: @antora/site-generator)')
           // check options are sorted, except drop -h as we know it always comes last
           expect(optionForms.slice(0, -1)).to.eql(
             Object.keys(options)
@@ -658,6 +658,18 @@ describe('cli', function () {
     })
   })
 
+  it('should be able to use the alias @antora/site-generator-default as the generator', () => {
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return new Promise((resolve) =>
+      runAntora('generate antora-playbook --generator @antora/site-generator-default').on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(absDestDir)
+        .to.be.a.directory()
+        .with.subDirs(['_', 'the-component'])
+    })
+  })
+
   it('should clean output directory before generating when --clean switch is used', () => {
     const residualFile = ospath.join(absDestDir, 'the-component/1.0/old-page.html')
     fs.mkdirSync(ospath.dirname(residualFile), { recursive: true })
@@ -691,9 +703,9 @@ describe('cli', function () {
   // NOTE this test verifies backwards compatibility with a legacy site generator
   it('should discover locally installed default site generator', () => {
     const runCwd = __dirname
-    const globalModulePath = require.resolve('@antora/site-generator-default')
+    const globalModulePath = require.resolve('@antora/site-generator')
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
-    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
+    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator')
     fs.mkdirSync(localModulePath, { recursive: true })
     const localScript = heredoc`module.exports = (args, env) => {
       console.log('Using custom site generator')
@@ -772,12 +784,12 @@ describe('cli', function () {
 
   it('should show error message if site generator fails to load', () => {
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
-    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
+    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator')
     fs.mkdirSync(localModulePath, { recursive: true })
     fs.writeFileSync(ospath.join(localModulePath, 'index.js'), 'throw undefined')
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['--stacktrace', 'generate', 'antora-playbook', '--generator', '.:@antora/site-generator-default']
+    const args = ['--stacktrace', 'generate', 'antora-playbook', '--generator', '.:@antora/site-generator']
     const messages = []
     return new Promise((resolve) =>
       runAntora(args)
@@ -801,13 +813,13 @@ describe('cli', function () {
 
   it('should show error message if site generator has syntax error', () => {
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
-    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
+    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator')
     fs.mkdirSync(localModulePath, { recursive: true })
     const generatorSource = 'module.exports = async (playbook) => {\n  const context = new GeneratorContext(module\n}'
     fs.writeFileSync(ospath.join(localModulePath, 'index.js'), generatorSource)
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = ['--stacktrace', 'generate', 'antora-playbook', '--generator', '.:@antora/site-generator-default']
+    const args = ['--stacktrace', 'generate', 'antora-playbook', '--generator', '.:@antora/site-generator']
     const messages = []
     return new Promise((resolve) =>
       runAntora(args)
@@ -831,13 +843,13 @@ describe('cli', function () {
 
   it('should show error message in pretty log if site generator has syntax error', () => {
     const localNodeModules = ospath.join(WORK_DIR, 'node_modules')
-    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator-default')
+    const localModulePath = ospath.join(localNodeModules, '@antora/site-generator')
     fs.mkdirSync(localModulePath, { recursive: true })
     const generatorSource = 'module.exports = async (playbook) => {\n  const context = new GeneratorContext(module\n}'
     fs.writeFileSync(ospath.join(localModulePath, 'index.js'), generatorSource)
     fs.writeFileSync(ospath.join(localModulePath, 'package.json'), toJSON({ main: 'index.js' }))
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const args = '--stacktrace antora-playbook --log-format=pretty --generator .:@antora/site-generator-default'
+    const args = '--stacktrace antora-playbook --log-format=pretty --generator .:@antora/site-generator'
     const messages = []
     return new Promise((resolve) =>
       runAntora(args)
