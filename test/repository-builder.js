@@ -23,8 +23,13 @@ const git = ((git$1) => {
   if (!(git$1.cores || (git$1.cores = git$1.default.cores))) git$1.cores = git$1.default.cores = new Map()
   return git$1
 })(require('isomorphic-git'))
-const vfs = require('vinyl-fs')
+const globStream = require('glob-stream')
+const { pipeline, Writable } = require('stream')
+const forEach = (write) => new Writable({ objectMode: true, write })
 const yaml = require('js-yaml')
+
+const FIXTURE_SRC_GLOB = '**/*.*'
+const FIXTURE_SRC_OPTS = { dot: true, nodir: true, nomount: true, nosort: true, nounique: true }
 
 class RepositoryBuilder {
   constructor (repoBase, fixtureBase, opts = {}) {
@@ -177,17 +182,19 @@ class RepositoryBuilder {
 
   async importFilesFromFixture (fixtureName = '', opts = {}) {
     return new Promise((resolve, reject) => {
+      const cwd = ospath.join(this.fixtureBase, fixtureName)
       const exclude = opts.exclude && opts.exclude.map((path_) => ospath.normalize(path_))
       const paths = []
-      const cwd = ospath.join(this.fixtureBase, fixtureName)
-      vfs
-        .src('**/*.*', { cwd, dot: true, nomount: true, nosort: true, nounique: true, read: false, uniqueBy: (m) => m })
-        .on('data', (file) => (exclude && exclude.includes(file.relative) ? null : paths.push(file.relative)))
-        .on('end', () =>
-          this.addFilesFromFixture(paths, fixtureName)
-            .then(resolve)
-            .catch(reject)
-        )
+      pipeline(
+        globStream(FIXTURE_SRC_GLOB, Object.assign({ cwd }, FIXTURE_SRC_OPTS)),
+        forEach(({ path: abspathPosix }, _, done) => {
+          const abspath = ospath.sep === '\\' ? ospath.normalize(abspathPosix) : abspathPosix
+          const relpath = abspath.substr(cwd.length + 1)
+          if (exclude && exclude.includes(relpath)) return done()
+          fsp.stat(abspath).then(() => paths.push(relpath) && done(), done)
+        }),
+        (err) => (err ? reject(err) : this.addFilesFromFixture(paths, fixtureName).then(resolve, reject))
+      )
     })
   }
 

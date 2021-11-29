@@ -4,19 +4,21 @@
 const { deferExceptions, expect, loadSslConfig, wipeSync } = require('../../../test/test-utils')
 const RepositoryBuilder = require('../../../test/repository-builder')
 
+const File = require('vinyl')
 const fs = require('fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
+const globStream = require('glob-stream')
 const http = require('http')
 const https = require('https')
 const loadUi = require('@antora/ui-loader')
 const { once } = require('events')
 const os = require('os')
 const ospath = require('path')
-const { Transform } = require('stream')
+const { pipeline, Transform, Writable } = require('stream')
+const sink = () => new Writable({ objectMode: true, write: (_chunk, _, done) => done() })
 const map = (transform) => new Transform({ objectMode: true, transform })
 const net = require('net')
-const vfs = require('vinyl-fs')
 const zip = require('gulp-vinyl-zip')
 
 const { UI_CACHE_FOLDER } = require('@antora/ui-loader/lib/constants')
@@ -59,20 +61,22 @@ describe('loadUi()', () => {
 
   const zipDir = (dir) =>
     new Promise((resolve, reject) =>
-      vfs
-        .src('**/*', { buffer: false, cwd: dir, dot: true, removeBOM: false })
-        // NOTE set stable file permissions
-        .pipe(
-          map((file, _, next) => {
-            const stat = file.stat
+      pipeline(
+        globStream('**/*', { cwd: dir, dot: true, nomount: true, nosort: true, nounique: true }),
+        map(({ path: abspath }, _, next) => {
+          if (ospath.sep === '\\') abspath = ospath.normalize(abspath)
+          fsp.stat(abspath).then((stat) => {
+            // NOTE set stable file permissions
             if (stat.isFile()) stat.mode = 33188
             else if (stat.isDirectory()) stat.mode = 16877
-            next(null, file)
-          })
-        )
-        .pipe(zip.dest(`${dir}.zip`))
-        .on('error', reject)
-        .on('end', resolve)
+            const contents = stat.isFile() ? fs.createReadStream(abspath) : undefined
+            next(null, new File({ cwd: dir, path: abspath, contents, stat }))
+          }, next)
+        }),
+        zip.dest(`${dir}.zip`),
+        sink(),
+        (err) => (err ? reject(err) : resolve())
+      )
     )
 
   const testAll = (bundle, testBlock) => {

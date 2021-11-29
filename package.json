@@ -17,6 +17,7 @@
     "eslint-plugin-import": "~2.25",
     "eslint-plugin-node": "~11.1",
     "eslint-plugin-promise": "~5.1",
+    "glob-stream": "~7.0",
     "gulp": "~4.0",
     "isomorphic-git": "~1.10",
     "js-yaml": "~4.1",
@@ -27,7 +28,6 @@
     "plugin-error": "~1.0",
     "prettier-eslint-cli": "~5.0",
     "stream-to-array": "~2.3",
-    "vinyl-fs": "~3.0",
     "yargs-parser": "~21.0"
   },
   "engines": {
