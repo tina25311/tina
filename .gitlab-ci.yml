@@ -49,6 +49,7 @@ variables:
     - coverage
 # this step also seeds the dependency cache
 lint:
+  interruptible: true
   stage: init
   <<: *except_docs
   <<: *only_code
@@ -56,6 +57,7 @@ lint:
   <<: *npm_install
   script: npx --no-install gulp lint
 test:node-12-linux:
+  interruptible: true
   image: node:12-buster
   stage: verify
   <<: *only_schedules
@@ -63,6 +65,7 @@ test:node-12-linux:
   <<: *npm_install
   script: npx --no-install gulp test
 test:node-14-linux:
+  interruptible: true
   image: node:14-buster
   stage: verify
   <<: *only_schedules
@@ -70,6 +73,7 @@ test:node-14-linux:
   <<: *npm_install
   script: npx --no-install gulp test
 test:node-16-linux:
+  interruptible: true
   image: node:16-buster
   stage: verify
   variables:
@@ -81,6 +85,7 @@ test:node-16-linux:
   script: npx --no-install gulp test
   <<: *save_coverage
 test:node-17-linux:
+  interruptible: true
   image: node:17-buster
   stage: verify
   <<: *only_schedules
@@ -91,6 +96,7 @@ test:node-17-linux:
 test:windows:
   tags: [windows]
   stage: verify
+  interruptible: true
   variables:
     COVERAGE: 'true'
     MOCHA_TIMEOUT: '10000'
