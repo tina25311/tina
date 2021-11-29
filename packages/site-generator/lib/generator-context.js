@@ -59,7 +59,6 @@ class GeneratorContext extends EventEmitter {
   replaceFunctions (updates) {
     const fxns = this.#fxns
     Object.entries(updates).forEach(([name, fxn]) => {
-      if (name === 'publishSite') name = 'publishFiles'
       if (name in fxns) fxns[name] = fxn.bind(this)
     })
   }
@@ -161,6 +160,15 @@ class GeneratorContext extends EventEmitter {
       })
       return accum
     }, {})
+    Object.defineProperty(this.#fxns, 'publishSite', {
+      enumerable: true,
+      get () {
+        return this.publishFiles
+      },
+      set (value) {
+        this.publishFiles = value
+      },
+    })
   }
 }
 
