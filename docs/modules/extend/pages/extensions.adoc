@@ -7,10 +7,10 @@ Subsequent pages step you through creating your first extension.
 
 == Generator events
 
-As described in xref:ROOT:how-antora-works.adoc[], Antora's default site generator is a sequence of discrete steps that progressively work to generate a static site.
+As described in xref:ROOT:how-antora-works.adoc[], Antora's site generator is a sequence of discrete steps that progressively work to generate a static site.
 This process of steps begins with reading the playbook and gathering the source material.
 It ends with publishing the HTML files and web assets to the output destination.
-Antora's extension facility, which is implemented by Antora's default site generator, provides a way to hook custom code into the generator's build process.
+Antora's extension facility, which is implemented by Antora's site generator, provides a way to hook custom code into the generator's build process.
 
 Antora's extension facility is event-driven, meaning it works by emitting events.
 Once each discrete step in the generator is complete, and at other key transition points, Antora emits a named event, such as `contentAggregated`.
@@ -22,7 +22,7 @@ The listeners of an event are called synchronously and in sequence.
 Any value returned by an event listener is ignored.
 Once all the listeners for an event have finished running, the generator proceeds.
 
-In brief, Antora extensions register listeners that respond to transition events raised by the default site generator.
+In brief, Antora extensions register listeners that respond to transition events raised by the site generator.
 Subsequent pages go into detail about how to set up listeners, which events those listeners can observe, and how to access context variables.
 
 == The generator context

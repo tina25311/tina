@@ -350,7 +350,7 @@ If you've installed Antora globally using `npm`, you may run into problems getti
 Either you'll encounter the error `Cannot find module 'isomorphic-git'` or your custom credential manager won't be called.
 To fix this problem, set the `NODE_PATH` environment variable to tell Node.js where to look for Antora's dependencies:
 
- $ NODE_PATH=$(npm -g list --parseable=true @antora/site-generator-default)/node_modules \
+ $ NODE_PATH=$(npm -g list --parseable=true @antora/site-generator)/node_modules \
    antora -r ./custom-git-credential-manager.js antora-playbook.yml
 
 The alternate solution is to install Antora locally (i.e., add the Antora packages to the dependencies in [.path]_package.json_ file and run `npm i`).

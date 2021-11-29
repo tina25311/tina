@@ -1,15 +1,15 @@
-= Default Site Generator Guidebook
+= Site Generator Guidebook
 
 == Context
 
-The generation of a typical documentation site depends on a default arrangement of available Antora components.
+The generation of a typical documentation site depends on a predefined arrangement of available Antora components.
 The components need to be assembled into an execution pipeline by connecting component inputs and outputs.
 The component that orchestrates this functionality should delegate all work to the functions it imports from other components.
 
 == Functional Overview
 
 Each component in Antora focuses on accomplishing a well-defined task.
-The default site generator assembles these tasks into a pipeline so they come together to generate a site in a standard way.
+The site generator assembles these tasks into a pipeline so they come together to generate a site in a standard way.
 The main purpose of the site generator is to arrange the tasks in a logical sequence and connect the output of one task to the input of a subsequent task.
 It should start with the provided user input and end when the site is published to the configured destination(s).
 
@@ -24,7 +24,8 @@ In the future, this component may be able to dynamically load extensions or regi
 
 == Software Architecture
 
-The default site generator is provided by the site-generator-default module.
+The site generator is provided by the site-generator module.
+The site-generator-default is an alias for this module.
 The qualifier goes at the end of the name so alternate implementations get listed together alphabetically (e.g., site-generator-acme).
 
 The generator should delegate to the following functions imported from the specified module:
@@ -55,15 +56,15 @@ This ensures background processes can make the best use of the execution time.
 
 == Code
 
-The default site generator is implemented as a dedicated node package (i.e., module).
-The default site generator API exports the asynchronous function `generateSite()`, which accepts an array of command-line arguments (in the form `--name=value`), a map of environment variables, and an output directory (though this parameter will be eliminated once the site publisher is available).
+The site generator is implemented as a dedicated node package (i.e., module).
+The site generator API exports the asynchronous function `generateSite()`, which accepts an array of command-line arguments (in the form `--name=value`), a map of environment variables, and an output directory (though this parameter will be eliminated once the site publisher is available).
 The `generateSite()` function does not return a value.
 
-The API for the default site generator should be used as follows:
+The API for the site generator should be used as follows:
 
 [source,js]
 ----
-const generateSite = require('@antora/default-site-generator')
+const generateSite = require('@antora/site-generator')
 
 //...
 
@@ -78,9 +79,9 @@ Aside from user input in the form of arguments and environment variables, all da
 
 Each component in Antora performs a well-defined task.
 But those components need to be assembled into a logical pipeline in order to generate a functional documentation site.
-That's the default site generator's job.
-The default site generator provides a composite function that uses all the other components to generate a site.
+That's the site generator's job.
+The site generator provides a composite function that uses all the other components to generate a site.
 
-The default site generator also provides an off-the-shelf experience to satisfy the typical use case and to demonstrate Antora's capabilities.
+The site generator also provides an off-the-shelf experience to satisfy the typical use case and to demonstrate Antora's capabilities.
 However, it is just one way to arrange Antora's components.
 Due to Antora's open architecture, users will be able to assemble their own pipelines to meet additional requirements and custom use cases.

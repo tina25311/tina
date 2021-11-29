@@ -246,7 +246,7 @@ It means you have the ability to teach Antora new tricks.
 Perhaps you need to incorporate additional content into Antora's catalog.
 Or maybe you want to perform custom processing somewhere along the line.
 You can even introduce your own behavior to reconfigure Antora to fit your needs.
-Antora was designed so you can use it as a foundation when the default site generator pipeline doesn't suit you.
+Antora was designed so you can use it as a foundation when the provided site generator doesn't suit you.
 
 // Not yet
 ////

@@ -1,12 +1,6 @@
 'use strict'
 
 /**
- * Default Site Generator component for Antora
- *
- * Coordinates a default set of software components to produce and publish a
- * documentation site. This component represents just one way the Antora
- * components can be organized to make a documentation generator.
- *
- * @namespace site-generator-default
+ * An alias for the @antora/site-generator package.
  */
-module.exports = require('./generate-site')
+module.exports = require('@antora/site-generator')

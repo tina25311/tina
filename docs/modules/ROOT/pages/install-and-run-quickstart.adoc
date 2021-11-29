@@ -62,18 +62,18 @@ To generate documentation sites with Antora, you need the Antora command line in
 Let's install these packages globally to make them available on your PATH:
 
 [subs=+attributes]
- $ npm i -g @antora/cli@{page-component-display-version} @antora/site-generator-default@{page-component-display-version}
+ $ npm i -g @antora/cli@{page-component-display-version} @antora/site-generator@{page-component-display-version}
 
 Verify the `antora` command is now available on your PATH by running:
 
  $ antora -v
 
-If the installation was successful, the command should report the latest, stable version of Antora for both the CLI and default site generator packages (where `.x` is a placeholder for the latest patch version).
+If the installation was successful, the command should report the latest, stable version of Antora for both the CLI and site generator packages (where `.x` is a placeholder for the latest patch version).
 
 [subs=+attributes]
  $ antora -v
  @antora/cli: {page-component-version}.x
- @antora/site-generator-default: {page-component-version}.x
+ @antora/site-generator: {page-component-version}.x
 
 Now you're ready to create your first playbook.
 

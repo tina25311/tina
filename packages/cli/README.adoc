@@ -24,10 +24,10 @@ antora -v
 ```
 
 Next, install a site generator.
-The default site generator will be sufficient for most users.
+The site generator provided by Antora will be sufficient for most users.
 
 ```sh
-npm install -g @antora/site-generator-default
+npm install -g @antora/site-generator
 ```
 
 The `antora` command (specifically the implicit `generate` subcommand) will look for this package by default.

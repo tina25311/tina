@@ -18,7 +18,7 @@ The Core components are versioned together.
 At this time, only Core components with the same version are designed to work together.
 For example, if you want to use the Content Classifier and Page Composer in a custom site generator, make sure each component has the same version.
 
-If you use the CLI (`@antora/cli`) with the default site generator (`@antora/site-generator-default`), then you just have to keep the versions of the CLI and the default site generator in sync.
+If you use the CLI (`@antora/cli`) with the site generator (`@antora/site-generator`), then you just have to keep the versions of the CLI and the site generator in sync.
 If you make a custom site generator, you are responsible for keeping each individual component you use in sync.
 
 == Extended components
@@ -97,8 +97,8 @@ This step yields the standalone HTML pages in the generated site.
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Site Generator Default
-|The default site generator pipeline for Antora.
+|Site Generator
+|The site generator for Antora.
 Invoked by the `generate` command of Antora's CLI to produce and publish static documentation sites.
 This package groups (i.e., has a dependency on) all the other packages in core except for the CLI.
 |&#10003;
