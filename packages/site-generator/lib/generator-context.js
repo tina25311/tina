@@ -77,7 +77,7 @@ class GeneratorContext extends EventEmitter {
       Object.assign(this.#vars, updates)
     } catch (err) {
       if (err instanceof TypeError) {
-        err.message = err.message.replace(/ assign to read.only property '(.+)' .*/, " update read-only var '$1'")
+        err.message = err.message.replace(/ assign to read.only property '(.+?)' .*/, " update read-only var '$1'")
       }
       throw err
     }
