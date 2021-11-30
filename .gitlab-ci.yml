@@ -3,27 +3,26 @@ stages: [init, verify, deploy]
 variables:
   GIT_DEPTH: '5'
   MOCHA_TIMEOUT: '5000'
-  #npm_config_audit: 'false'
   npm_config_cache: &npm_cache_dir .cache/npm
   npm_config_fund: 'false'
   npm_config_prefer_offline: 'true'
 .defs:
-# only_code not used when an MR is created, hence the need for except_docs
-- &only_code
-  only:
-    changes:
-    - .gitlab-ci.yml
-    - 'package{-lock,}.json'
-    - gulpfile.js
-    - '{gulp.d,packages,test}/**/*'
-- &except_docs
-  except:
-  - /^docs\/./
-- &only_schedules
-  only:
-    refs:
-    - schedules
-    - releases@antora/antora
+- &if_code_pushed
+  if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH
+  changes:
+  - .gitlab-ci.yml
+  - package{-lock,}.json
+  - gulpfile.js
+  - '{gulp.d,packages,test}/**/*'
+- &unless_docs_mr
+  if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^docs\//
+  when: never
+- &if_releases
+  if: $CI_PIPELINE_SOURCE == "push" && $CI_PROJECT_PATH == "antora/antora" && $CI_COMMIT_BRANCH == "releases"
+  exists:
+  - releaserc
+- &if_schedule
+  if: $CI_PIPELINE_SOURCE == "schedule"
 - &npm_cache_config
   key: npm-cache
   paths:
@@ -32,7 +31,7 @@ variables:
   cache:
     <<: *npm_cache_config
     policy: pull-push
-- &npm_cache_pull_only
+- &npm_cache_pull
   cache:
     <<: *npm_cache_config
     policy: pull
@@ -51,8 +50,10 @@ variables:
 lint:
   interruptible: true
   stage: init
-  <<: *except_docs
-  <<: *only_code
+  rules:
+  - *unless_docs_mr
+  - *if_releases
+  - *if_code_pushed
   <<: *npm_cache_pull_push
   <<: *npm_install
   script: npx --no-install gulp lint
@@ -60,16 +61,20 @@ test:node-12-linux:
   interruptible: true
   image: node:12-buster
   stage: verify
-  <<: *only_schedules
-  <<: *npm_cache_pull_only
+  rules:
+  - *if_releases
+  - *if_schedule
+  <<: *npm_cache_pull
   <<: *npm_install
   script: npx --no-install gulp test
 test:node-14-linux:
   interruptible: true
   image: node:14-buster
   stage: verify
-  <<: *only_schedules
-  <<: *npm_cache_pull_only
+  rules:
+  - *if_releases
+  - *if_schedule
+  <<: *npm_cache_pull
   <<: *npm_install
   script: npx --no-install gulp test
 test:node-16-linux:
@@ -78,9 +83,11 @@ test:node-16-linux:
   stage: verify
   variables:
     COVERAGE: 'true'
-  <<: *except_docs
-  <<: *only_code
-  <<: *npm_cache_pull_only
+  rules:
+  - *unless_docs_mr
+  - *if_releases
+  - *if_code_pushed
+  <<: *npm_cache_pull
   <<: *npm_install
   script: npx --no-install gulp test
   <<: *save_coverage
@@ -88,8 +95,10 @@ test:node-17-linux:
   interruptible: true
   image: node:17-buster
   stage: verify
-  <<: *only_schedules
-  <<: *npm_cache_pull_only
+  rules:
+  - *if_releases
+  - *if_schedule
+  <<: *npm_cache_pull
   <<: *npm_install
   script: npx --no-install gulp test
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
@@ -100,10 +109,12 @@ test:windows:
   variables:
     COVERAGE: 'true'
     MOCHA_TIMEOUT: '10000'
-  <<: *except_docs
-  <<: *only_code
+  rules:
+  - *unless_docs_mr
+  - *if_releases
+  - *if_code_pushed
   # cache does not currently work on the Windows runner
-  #<<: *npm_cache_pull_only
+  #<<: *npm_cache_pull
   before_script:
   - choco upgrade -y nodejs --version=12.22.7
   - node -p '`Node.js ${process.version}`'
@@ -113,9 +124,9 @@ test:windows:
   <<: *save_coverage
 release:
   stage: deploy
-  only:
-  - releases@antora/antora
   environment: releases
+  rules:
+  - *if_releases
   before_script:
   - npm i -g --no-audit --silent lerna@$(node -p 'require("./lerna.json").lerna')
   - NODE_PATH=$(npm -g prefix)/lib/node_modules/lerna/node_modules node scripts/patch-libnpmpublish.js
