@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *site-generator*: Add `lockVariable` and `removeVariable` methods to generator context (#888)
+
 === Changed
 
 * Switch from Yarn to npm to manage project dependencies (#890)

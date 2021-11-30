@@ -1356,6 +1356,78 @@ describe('generateSite()', function () {
       expect(await trapAsyncError(generateSite, getPlaybook(playbookFile))).to.throw(TypeError, expectedMessage)
     })
 
+    it('should allow extension listener to lock a context variable which is not locked', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this
+            .on('beforeProcess', () => {
+              this.updateVariables({ foo: 'bar' })
+              this.lockVariable('foo')
+            })
+            .on('contentClassified', () => {
+              this.removeVariable('foo')
+            })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const expectedMessage = "Cannot remove locked variable 'foo'"
+      expect(await trapAsyncError(generateSite, getPlaybook(playbookFile))).to.throw(TypeError, expectedMessage)
+    })
+
+    it('should allow extension listener to lock a context variable which is already locked', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this
+            .on('beforeProcess', () => {
+              this.updateVariables({ foo: 'bar' })
+              this.lockVariable('foo')
+            })
+            .on('contentClassified', () => {
+              this.lockVariable('foo')
+              this.stop()
+            })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      expect(await trapAsyncError(generateSite, getPlaybook(playbookFile))).to.not.throw()
+    })
+
+    it('should allow context variable to be named lock', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this
+            .on('playbookBuilt', () => this.updateVariables({ lock: 'safe' }))
+            .on('beforeProcess', () => this.stop())
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      expect(await trapAsyncError(generateSite, getPlaybook(playbookFile))).to.not.throw()
+    })
+
+    it('should allow context variable to be named remove', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this
+            .on('playbookBuilt', () => this.updateVariables({ remove: 'safe' }))
+            .on('beforeProcess', () => this.stop())
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      expect(await trapAsyncError(generateSite, getPlaybook(playbookFile))).to.not.throw()
+    })
+
     it('should allow extension listener to require internal modules', async () => {
       const extensionPath = ospath.join(TMP_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
