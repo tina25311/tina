@@ -1551,6 +1551,9 @@ describe('generateSite()', function () {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         module.exports.register = function () {
+          this.on('beforeProcess', ({ playbook }) => {
+            playbook.env.OBSERVED = Object.keys(this.getFunctions()).sort()
+          })
           this.on('beforePublish', ({ contentCatalog, siteCatalog }) => {
             const { loadAsciiDoc } = this.getFunctions()
             const file = {
@@ -1568,6 +1571,22 @@ describe('generateSite()', function () {
       playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
+      expect(env.OBSERVED).to.eql([
+        'aggregateContent',
+        'buildNavigation',
+        'classifyContent',
+        'convertDocument',
+        'convertDocuments',
+        'createPageComposer',
+        'extractAsciiDocMetadata',
+        'loadAsciiDoc',
+        'loadUi',
+        'mapSite',
+        'produceRedirects',
+        'publishFiles',
+        'publishSite',
+        'resolveAsciiDocConfig',
+      ])
       expect(ospath.join(absDestDir, 'generated-page.html'))
         .to.be.a.file()
         .with.contents.that.match(/href="the-component\/2.0\/the-page.html"[^>]*>The Page</)
