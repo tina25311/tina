@@ -17,7 +17,7 @@ EOF
   done
 done
 
-npm_config_registry=$npm_config_registry lerna publish ${1:-prerelease} --exact --force-publish=*
+npm_config_registry=$npm_config_registry lerna publish ${1:-prerelease} --exact --force-publish=* --no-verify-access --yes
 
 exit_code=$?
 
