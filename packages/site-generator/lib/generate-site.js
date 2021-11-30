@@ -29,12 +29,11 @@ async function generateSite (playbook) {
     await context.notify('documentsConverted')
     vars.navigationCatalog = fxns.buildNavigation(contentCatalog, siteAsciiDocConfig)
     await context.notify('navigationBuilt')
-    ;(() => {
+    ;((composePage) => {
       const navigationCatalog = context.removeVariable('navigationCatalog')
-      const composePage = fxns.createPageComposer(playbook, contentCatalog, uiCatalog, playbook.env)
       contentCatalog.getPages((page) => page.out && composePage(page, contentCatalog, navigationCatalog))
       if (playbook.site.url) vars.siteCatalog.addFile(composePage(create404Page()))
-    })()
+    })(fxns.createPageComposer(playbook, contentCatalog, uiCatalog, playbook.env))
     await context.notify('pagesComposed')
     vars.siteCatalog.addFiles(fxns.produceRedirects(playbook, contentCatalog))
     await context.notify('redirectsProduced')
