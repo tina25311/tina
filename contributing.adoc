@@ -419,6 +419,9 @@ Please adhere to the following style and performance rules which are not current
 * Use `err` instead of `e` for the error variable, using an optional prefix (e.g., `cloneErr`).
 * If a function is not declared as async, but can return a Promise, always return a Promise (or else it is not guaranteed to response to .then)
  ** It's best to mark functions that return a Promise as async just to be sure.
+* Only throw Error and derivatives of Error such as TypeError and user-defined objects that extend Error.
+Although JavaScript can throw any type of object, using Error and derivatives of Error is considered a best practice.
+Using any other type of value will not generate a stack trace and makes handling errors more difficult.
 
 [#test-rq]
 === Test structure and coverage expectations
