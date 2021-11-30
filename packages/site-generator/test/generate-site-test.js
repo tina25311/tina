@@ -1352,7 +1352,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-      const expectedMessage = "Cannot update read-only var 'playbook'"
+      const expectedMessage = "Cannot update locked variable 'playbook'"
       expect(await trapAsyncError(generateSite, getPlaybook(playbookFile))).to.throw(TypeError, expectedMessage)
     })
 
