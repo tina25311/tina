@@ -3,21 +3,6 @@
 const ospath = require('path')
 const fs = require('fs')
 const { promises: fsp } = fs
-const patchedFs = (() => {
-  if (ospath.sep !== '\\') return fs
-  const posixifyPathBuffer = (buffer) => {
-    let idx
-    while (~(idx = buffer.indexOf(92))) buffer[idx] = 47
-    return buffer
-  }
-  return {
-    ...fs,
-    promises: {
-      ...fsp,
-      readlink: (...args) => fsp.readlink(...args).then(posixifyPathBuffer),
-    },
-  }
-})()
 const http = require('isomorphic-git/http/node')
 const git = ((git$1) => {
   if (!(git$1.cores || (git$1.cores = git$1.default.cores))) git$1.cores = git$1.default.cores = new Map()
@@ -207,7 +192,7 @@ class RepositoryBuilder {
 
   async commitSelect (filepaths = [], message = 'make it so') {
     const repo = this.repository
-    if (filepaths.length) await Promise.all(filepaths.map((filepath) => git.add({ ...repo, fs: patchedFs, filepath })))
+    if (filepaths.length) await Promise.all(filepaths.map((filepath) => git.add({ ...repo, fs, filepath })))
     await git.commit({ ...repo, author: this.author, message })
     return this
   }
@@ -229,7 +214,7 @@ class RepositoryBuilder {
       Promise.all(
         status.map(([filepath, _, worktreeStatus]) =>
           // NOTE sometimes isomorphic-git reports a changed file as unmodified, so always add if not removing
-          worktreeStatus === 0 ? git.remove({ ...repo, filepath }) : git.add({ ...repo, fs: patchedFs, filepath })
+          worktreeStatus === 0 ? git.remove({ ...repo, filepath }) : git.add({ ...repo, fs, filepath })
         )
       )
     )
