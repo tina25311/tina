@@ -242,6 +242,18 @@ describe('loadUi()', () => {
     testAll('the-ui-bundle', testBlock)
   })
 
+  describe('should load all files in the UI bundle directory when specified with a trailing slash', () => {
+    const testBlock = async (playbook) => {
+      const uiCatalog = await loadUi(playbook)
+      const files = uiCatalog.getFiles()
+      const paths = files.map((file) => file.path)
+      expect(paths).to.have.members(expectedFilePaths)
+      const relativePaths = files.map((file) => file.relative)
+      expect(paths).to.eql(relativePaths)
+    }
+    testAll('the-ui-bundle/', testBlock)
+  })
+
   describe('should ignore backup files when reading bundle from directory', () => {
     const testBlock = async (playbook) => {
       const uiCatalog = await loadUi(playbook)
@@ -379,34 +391,51 @@ describe('loadUi()', () => {
       testAll('the-ui-bundle', testBlock)
     })
 
+    describe('when startPath is empty', () => {
+      const testBlock = async (playbook) => {
+        playbook.ui.bundle.startPath = ''
+        const uiCatalog = await loadUi(playbook)
+        const paths = uiCatalog.getFiles().map((file) => file.path)
+        expect(paths).to.have.members(expectedFilePaths)
+      }
+      testAll('the-ui-bundle.zip', testBlock)
+      testAll('the-ui-bundle', testBlock)
+    })
+
     describe('when startPath is absolute', () => {
-      testAll('the-ui-bundle-with-start-path.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         playbook.ui.bundle.startPath = '/the-ui-bundle'
         const uiCatalog = await loadUi(playbook)
         const paths = uiCatalog.getFiles().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
         expect(paths).to.not.include('the-ui-bundle.txt')
-      })
+      }
+      testAll('the-ui-bundle-with-start-path.zip', testBlock)
+      testAll('the-ui-bundle-with-start-path', testBlock)
     })
 
     describe('when startPath is relative', () => {
-      testAll('the-ui-bundle-with-start-path.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         playbook.ui.bundle.startPath = 'the-ui-bundle'
         const uiCatalog = await loadUi(playbook)
         const paths = uiCatalog.getFiles().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
         expect(paths).to.not.include('the-ui-bundle.txt')
-      })
+      }
+      testAll('the-ui-bundle-with-start-path.zip', testBlock)
+      testAll('the-ui-bundle-with-start-path', testBlock)
     })
 
     describe('when startPath has trailing slash', () => {
-      testAll('the-ui-bundle-with-start-path.zip', async (playbook) => {
+      const testBlock = async (playbook) => {
         playbook.ui.bundle.startPath = 'the-ui-bundle/'
         const uiCatalog = await loadUi(playbook)
         const paths = uiCatalog.getFiles().map((file) => file.path)
         expect(paths).to.have.members(expectedFilePaths)
         expect(paths).to.not.include('the-ui-bundle.txt')
-      })
+      }
+      testAll('the-ui-bundle-with-start-path.zip', testBlock)
+      testAll('the-ui-bundle-with-start-path', testBlock)
     })
   })
 

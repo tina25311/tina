@@ -24,6 +24,8 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Add missing glob-stream dependency declaration in package.json
 * *ui-loader*: Add missing glob-stream dependency declaration in package.json
+* *ui-loader*: Honor `ui.bundle.start_path` when value of `ui.bundle.url` is a local directory (#893)
+* *ui-loader*: Ignore trailing slash in `ui.bundle.url` or `ui.bundle.start_path` when reading UI files from local directory (#893)
 
 == 3.0.0-beta.3 (2021-11-25)
 
