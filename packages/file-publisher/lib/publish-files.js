@@ -33,7 +33,7 @@ const { DEFAULT_DEST_FS } = require('./constants.js')
  * @param {Object} playbook - The configuration object for Antora that provides
  *   access to the output destinations.
  * @param {Array<Catalog>} catalogs - The collection of catalogs from which to retrieve the
- *   publishable virtual files.
+ *   publishable virtual files. If catalogs is not an array, it will be wrapped in one.
  * @returns {Array<Object>} An array of reports that provide information about where the files were published.
  */
 async function publishFiles (playbook, catalogs) {
@@ -62,7 +62,7 @@ async function publishFiles (playbook, catalogs) {
   })
 
   // Q: add getPublishableFiles / getOutFiles; return a stream? or getOutFilesAsStream?
-  const filesToPublish = catalogs.reduce((accum, catalog) => {
+  const filesToPublish = (Array.isArray(catalogs) ? catalogs : [catalogs]).reduce((accum, catalog) => {
     // remove fallback check for getFiles on site catalog in Antora 4
     accum.push(...(catalog.getFiles || catalog.getAll).apply(catalog).filter((file) => file.out))
     return accum
