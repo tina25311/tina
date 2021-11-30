@@ -2,14 +2,16 @@
 :url-zip-file-format: https://en.wikipedia.org/wiki/Zip_(file_format)
 
 A UI bundle is a {url-zip-file-format}[ZIP archive] that contains one or more UIs for a site.
-Antora fetches and loads a UI bundle when generating a site.
+The only required file in the UI bundle is the default layout for pages (e.g., [.path]_layouts/default.hbs_).
+Antora automatically fetches and loads a UI bundle when generating a site.
 
 [#url-key]
 == url key
 
 The `url` key is required.
-It's configured under the xref:configure-ui.adoc[ui and bundle keys] in a playbook.
+This key is configured under the xref:configure-ui.adoc[bundle key] of the ui category key in a playbook.
 The `url` key accepts a URL or filesystem path from where Antora can locate and fetch the site's UI bundle.
+The filesystem path may be a directory where the UI bundle has been extracted.
 
 .antora-playbook.adoc
 [source,yaml]
@@ -93,6 +95,18 @@ ui:
   bundle:
     url: /home/user/projects/docs-ui/build/ui-bundle.zip
 ----
+
+Here's the path to the location where the UI bundle has been extracted (or perhaps was never a ZIP archive in the first place):
+
+.Extracted UI bundle path
+[,yaml]
+----
+ui:
+  bundle:
+    url: ./../docs-ui/build/ui-bundle-extracted
+----
+
+Loading the UI bundle from a local directory is a good way to debug the logic.
 
 [#start-path-key]
 == start_path key
