@@ -106,10 +106,18 @@ These scripts are wrappers that turn around and invoke the following two scripts
 * https://gitlab.com/antora/antora/blob/main/scripts/postpublish.js[postpublish.js]
 
 In the *prepublish* script, the [.path]_README.adoc_ file is moved out of the way, its contents are transformed to Markdown and saved as [.path]_README.md_.
+The [.path]_package.json_ is also updated to include a `readmeFilename` key that points to this file.
 The packaging script then picks up the generated [.path]_README.md_ file and bundles it with the package (ignoring the hidden README.adoc).
 
 The *postpublish* script restores the original state by removing the [.path]_README.md_ file and moving [.path]_README.adoc_ back into place.
+The [.path]_package.json_ is also updated to remove the `readmeFilename` key.
 As a result, the npm registry displays the Markdown version of the README, but we get to maintain the content in AsciiDoc format.
+
+As part of this dance, we need to patch the version of libnpmpublish that lerna uses so that it includes the `readmeFilename` key in the metadata it uploads.
+We think this allows the Yarn registry to find the README file.
+That patch is applied by [.path]_scripts/patch-libnpmpublish.js_.
+To verify that patch when testing a release, print the metadata built in [.path]_lerna/node_modules/@evocateur/libnpmpublish/publish.js_ to a file.
+On the other site of the wire, write the metadata passed to the `afterChange` callback in verdaccio to a file to see that it is included.
 
 In addition to these two package-scope scripts, the https://gitlab.com/antora/antora/blob/main/scripts/postpublish.js[version.js] script runs once at the start of the Lerna lifecycle to apply the following changes before the files are committed and tagged for the release:
 
