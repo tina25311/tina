@@ -1446,6 +1446,21 @@ describe('aggregateContent()', function () {
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.include(componentDesc)
     })
+
+    it('should ignore trailing slash on repository path when start path is not set', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+      const componentDesc = {
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v1.2.3',
+      }
+      await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
+      playbookSpec.content.sources.push({ url: ospath.join(repoBuilder.url, '/') })
+      let aggregate
+      expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.include(componentDesc)
+    })
   })
 
   describe('filter refs', () => {

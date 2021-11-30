@@ -435,7 +435,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
 }
 
 function readFilesFromWorktree (worktreePath, startPath) {
-  const cwd = ospath.join(worktreePath, startPath)
+  const cwd = ospath.join(worktreePath, startPath, '.') // . shaves off trailing slash
   return fsp.stat(cwd).then(
     (startPathStat) => {
       if (!startPathStat.isDirectory()) throw new Error(`the start path '${startPath}' is not a directory`)
