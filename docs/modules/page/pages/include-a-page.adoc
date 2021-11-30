@@ -1,115 +1,295 @@
 = Include a Page
-:family: page
-:coordinate: page$
-:ext: .adoc
 :page-aliases: asciidoc:include-page.adoc
 // URLs
 :url-include: {url-asciidoc}/directives/include/
 :url-tags: {url-asciidoc}/directives/include-tagged-regions/
 :url-leveloffset: {url-asciidoc}/directives/include-with-leveloffset/
 
-In Antora, the AsciiDoc include directive is configured to include another page or portion of a page into the current page.
-You can include a page from anywhere in the site, including pages from other docs components.
+A page or portion of a page can be inserted into any other page in your site using the AsciiDoc include directive and the page's resource ID.
 
-== Include a page into another page
+== AsciiDoc include directive for pages
 
-<<ex-base>> shows the structure of an include directive with a {family}'s fully qualified resource ID.
+An AsciiDoc include directive inserts content from the source file of a page into another page.
+The include directive accepts the xref:resource-id.adoc[Antora resource ID] of partials, examples, and pages as a value.
 
-.Include directive and resource ID syntax
-[listing#ex-base,subs=attributes+]
+<<ex-base>> shows the structure of an include directive with the fully qualified resource ID of a page.
+By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
+
+.Include directive assigned the fully qualified resource ID of a page
+[listing#ex-base]
 ----
-\include::version@component:module:filename{ext}[]
+\include::version@component:module:file-coordinate-of-target-page.adoc[optional attribute]
 ----
 
-Let's break down the AsciiDoc syntax and resource ID coordinates you need to include a {family} resource into a page.
-The following steps assume that the target {family} and xref:resource-id-coordinates.adoc#current[current page] belong to the same component version and module.
-Therefore, the resource ID of the target {family} only requires the family-relative path of the {family} file.
+At a minimum, an include directive consists of the directive's prefix (`+include::+`), the resource ID of the target page, and a set of square brackets (`[]`).
+You can specify optional attributes within the square brackets as key-value pairs separated by commas.
+[[target]]The [.term]*target page* is the source file of a page that's being referenced by the current page.
+The target page is referenced by assigning its resource ID to an include directive in the content of the current page.
+[[current]]The [.term]*current page* is the page source file containing the include directive that references the target page.
 
-. On a new line, enter the name of the directive followed by two colons, `include::`.
+When Antora runs, the source content from the target page is inserted into the current page <<placement,at the location where the include directive is entered>>.
+The target page's content is converted after it's inserted into the current page.
+This means the current page's component version, module, attributes, and other elements are applied to or may impact the content included from the target page.
+See xref:partials.adoc#current-context[Current page context and structure] to learn more.
+
+[#pages-root]
+== Embed a page into a page
+
+Let's break down the AsciiDoc include directive and resource ID coordinates you need to insert a <<target,target page>> into the <<current,current page>>.
+
+. In your IDE or plain text editor, open the page where you want to include content from the target page.
+For this exercise, we've opened the file [.path]_ranges.adoc_.
+[.path]_ranges.adoc_ is the current page and belongs to the _ROOT_ module of the component version _colorado 5.2_ shown in <<ex-co>>.
 +
+.Directories and files assigned to colorado 5.2
+[listing#ex-co]
+----
+📄 antora.yml <.>
+📂 modules
+  📂 ROOT <.>
+    📂 pages <.>
+      📄 cottonwood-pass.adoc
+      📄 index.adoc
+      📄 ranges.adoc
+----
+<.> Defines the component version as _colorado 5.2_
+<.> Defines the _ROOT_ module
+<.> Defines subsequent files as pages
+
+. Let's reference the target page, [.path]_cottonwood-pass.adoc_, from the current page, [.path]_ranges.adoc_, using an include directive.
+Select the line in the current page where you want the page's content to be inserted.
+At the beginning of the line, enter the name of the directive followed by two colons, `include::`.
++
+.ranges.adoc (current page)
 [listing,subs=+quotes]
 ----
+There are three mountain passes in the Sawatch Range.
+
 **include::**
 ----
 
-. Enter the resource ID of the target {family} file.
+. Enter the resource ID of the target page.
+As shown in <<ex-co>>, both [.path]_cottonwood-pass.adoc_ and [.path]_ranges.adoc_ belong to the same component version and module.
+Therefore, only the file coordinate of the target page needs to be assigned as the value of the include directive.
 +
 --
-[listing,subs="attributes+,+quotes"]
+.ranges.adoc (current page)
+[listing,subs=+quotes]
 ----
-include::**filename{ext}**
+There are three mountain passes in the Sawatch Range.
+
+include::**cottonwood-pass.adoc**
 ----
 
-You can use the `{coordinate}` family coordinate in the resource ID if you prefer, but it isn't required when including a page.
-The include directive assumes the family coordinate is `{coordinate}` when it isn't specified.
+The file coordinate for the [.path]_cottonwood-pass.adoc_ page is `cottonwood-pass.adoc`.
+The target page's file coordinate consists solely of its filename and file extension because [.path]_cottonwood-pass.adoc_ is stored at the root of the [.path]_pages_ directory.
+
+You can use the `page$` family coordinate in the resource ID if you prefer, but it isn't required when including a page.
+The include directive assumes the family coordinate is `page$` when it isn't specified.
 --
 
-. Close the directive with a set of square brackets (`+[]+`).
+. Directly after the resource ID of the target page, complete the directive with a set of square brackets (`+[]+`).
 +
-[listing,subs="attributes+,+quotes"]
+--
+.ranges.adoc (current page)
+[listing,subs=+quotes]
 ----
-include::filename{ext}**[]**
+There are three mountain passes in the Sawatch Range.
+
+include::cottonwood-pass.adoc**[]**
 ----
 
-. The brackets can contain an optional list of attributes.
+The brackets of the include directive can contain an optional list of attributes, such as `lines`, `tag`, or `tags`.
 The attributes are entered as key-value pairs separated by commas.
-+
-[listing,subs="attributes+,+quotes"]
-----
-\include::filename{ext}[**attribute,attribute**]
-----
-
-Antora supports filtering the lines of an include file by either line numbers using the `lines` attribute or tags using the `tag` or `tags` attributes.
-Filtering by line numbers takes precedence.
 See the {url-include}[AsciiDoc include directive documentation] for full details about the `lines`, `tag`, and `tags` syntax.
-
-== Include a page using a relative path
-
-. On a new line, enter the name of the directive followed by two colons.
-+
-[listing,subs=+quotes]
-----
-*include::*
-----
-
-. Next, enter the relative path of the target page in the target slot.
-A relative path include is resolved from the current page (not the root of the pages family).
-The relative path must be prefixed with `./`.
-+
---
-[listing,subs=+quotes]
-----
-include::**./relative-page-filename.adoc**
-----
-
-CAUTION: You may find that the relative path works without this prefix, but that could change in the future.
 --
 
-. Close the directive using a set of square brackets (`[]`).
-+
-[listing,subs=+quotes]
+That's it!
+You've finished creating an include directive that will insert the target page into the current page.
+
+The structure of the target page's file coordinate varies depending on whether the target page is stored at the root of the [.path]_pages_ family directory, like in the preceding instructions, or in a subdirectory of the [.path]_pages_ directory.
+
+.current-page.adoc
+[listing#ex-file]
 ----
-include::./relative-page-filename.adoc**[]**
+include::target-page-filename.adoc[] <.>
+
+include::path/to/target-page-filename.adoc[] <.>
+
+include::./target-page-filename.adoc[] <.>
+----
+<.> File coordinate of the target page when it's stored at the root of the [.path]_pages_ directory.
+<.> File coordinate of the target page when it's stored in a subdirectory of the [.path]_pages_ directory.
+<.> File coordinate of the target page when the target page and current page are stored in the same subdirectory of the [.path]_pages_ directory.
+
+Also, you'll need to specify additional resource ID coordinates when the target page and current page don't belong to the <<module-or-component,same module>> or <<module-or-component,component version>>.
+The following sections provide examples showing the various resource ID scenarios.
+
+The following sections describe how to specify a file coordinate with a <<relative-path,pages-relative directory path>> or <<token,relative path token>>.
+
+[#relative-path]
+=== File coordinate with pages-relative directory path
+
+The __pages__-relative directory path of the <<target,target page>> is required in its file coordinate when it's stored in a subdirectory of the [.path]_pages_ directory.
+
+.File coordinate when the target page is stored in a subdirectory of a pages directory
+[listing#ex-subdir-base]
+----
+\include::path/to/target-page-filename.adoc[optional attribute]
 ----
 
-. The brackets may contain an optional list of attributes.
-Attributes are entered as key-value pairs separated by commas.
-+
---
-[listing,subs=+quotes]
+Let's use the files that belong to the component version in <<ex-co-subdir>> as the basis for the example in this section.
+
+.Directories and files assigned to colorado 5.2
+[listing#ex-co-subdir]
 ----
-\include::./relative-page-filename.adoc[**attribute,attribute**]
+📄 antora.yml <.>
+📂 modules
+  📂 ROOT <.>
+    📂 pages <.>
+      📄 cottonwood-pass.adoc
+      📄 index.adoc
+      📄 ranges.adoc
+      📂 supplies <.>
+        📄 gear.adoc
+        📄 safety.adoc
+----
+<.> Defines the component version as _colorado 5.2_
+<.> Defines the _ROOT_ module
+<.> Defines subsequent files as pages
+<.> A subdirectory in _pages_ containing the source files of pages
+
+Let's reference [.path]_safety.adoc_ from [.path]_cottonwood-pass.adoc_.
+As you can see in <<ex-co-subdir>> above, the target page and current page belong to the _ROOT_ module.
+In <<ex-subdir>>, an include directive in the [.path]_cottonwood-pass.adoc_ page (current page) references the [.path]_safety.adoc_ file (target page).
+
+.cottonwood-pass.adoc (current page)
+[listing#ex-subdir]
+----
+== Trip planning
+
+\include::supplies/safety.adoc[]
 ----
 
-All the attributes (e.g., `lines`, `tags`, `leveloffset`, `indent`) on the include directive are supported.
---
+As shown in <<ex-subdir>>, the file coordinate for [.path]_safety.adoc_ is `supplies/safety.adoc.adoc`.
+The file coordinate for [.path]_safety.adoc_ consists of its [.path]__pages__-relative directory path, filename, and file extension because it's stored in the subdirectory [.path]_supplies_ while the current page, [.path]_cottonwood-pass.adoc_, is stored in the [.path]_pages_ directory.
+If the current page and target page were stored in the same subdirectory, you could use the relative path token, `./`, in place of the __pages__-relative directory path.
+
+[#token]
+=== File coordinate with relative path token
+
+If the <<target,target page>> and <<current,current page>> are stored in the same subdirectory within the [.path]_pages_ directory, the __pages__-relative directory path of the target page's file coordinate can be replaced with the relative path token, `./`.
+
+.File coordinate in include directive when target and current pages are stored in the same subdirectory
+[listing#ex-token-base]
+----
+\include::./target-page-filename.adoc[]
+----
+
+Let's use the pages that belong to the component version shown in <<ex-co-token>> as the basis for the examples in this section.
+
+.Directories and files assigned to colorado 5.2
+[listing#ex-co-token]
+----
+📄 antora.yml <.>
+📂 modules
+  📂 ROOT <.>
+    📂 pages <.>
+      📄 cottonwood-pass.adoc
+      📄 index.adoc
+      📄 ranges.adoc
+      📂 supplies <.>
+        📄 gear.adoc
+        📄 safety.adoc
+----
+<.> Defines the component version as _colorado 5.2_
+<.> Defines the _ROOT_ module
+<.> Defines subsequent files as pages
+<.> A subdirectory in _pages_ containing the source files of pages
+
+Let's reference [.path]_gear.adoc_ from [.path]_safety.adoc_.
+<<ex-co-token>> shows that both files are stored in the [.path]_supplies_ subdirectory of the [.path]_pages_ directory, and that both files belong to the _ROOT_ module of the same component version.
+When the target page and current page are stored in the same subdirectory within the [.path]_pages_ directory, the relative path token, `./`, can be used to abbreviate the target page's file coordinate.
+
+In <<ex-token>>, the include directive in the [.path]_safety.adoc_ page (current page) references the [.path]_gear.adoc_ page (target page).
+
+.safety.adoc (current page)
+[listing#ex-token]
+----
+\include::./gear.adoc[]
+----
+
+As shown in <<ex-token>>, the file coordinate for [.path]_gear.adoc_, when referenced from [.path]_safety.adoc_, is `./gear.adoc`.
+Both pages are stored in the [.path]_supplies_ subdirectory, therefore, the __pages__-relative directory path of the target page's file coordinate is replaced with the `./` token.
+
+CAUTION: You may find that the include directive resolves the target page without specifying the `./` token in its file coordinate.
+Any scenarios where relative includes work without the `./` token are deprecated in Antora 3 and won't work in Antora 4.
+We strongly recommend that you use the `./` token when referencing a target page that is stored in the same subdirectory as the current page.
+
+[#module-or-component]
+== Embed a page from another module or component version
+
+You can include a page from any module or component version into another page that belongs to your site by assigning the target page's module coordinate or version, component, and module coordinates, respectively, to the include directive.
+
+.current-page.adoc
+[listing#ex-module-component-base]
+----
+include::module:file-coordinate-of-target-page.adoc[optional attribute] <.>
+
+include::version@component:module:file-coordinate-of-target-page.adoc[optional attribute] <.>
+
+include::component:module:file-coordinate-of-target-page.adoc[optional attribute] <.>
+----
+<.> If the target page and current page belong to the same component version, but don't belong to the same module, the include directive is assigned the module and file coordinates of the target page.
+<.> The include directive is assigned the version, component, module, and file coordinates of the target page when the target page and current page don't belong to the same component version.
+<.> If the version coordinate isn't specified, Antora uses the xref:ROOT:how-component-versions-are-sorted.adoc#latest-version[latest version of the target page's component] to complete the resource ID at runtime.
+This behavior only applies when the target page and current page belong to different docs components.
+
+For example, to embed the content of [.path]_cottonwood-pass.adoc_ (target page) into a page (current page) that belongs to a different module of the _colorado 5.2_ component version, specify the target page's module coordinate in the include directive.
+
+.current-page.adoc
+[listing#ex-module]
+----
+\include::ROOT:cottonwood-pass.adoc[]
+----
+
+If the current page belongs to a different component version than [.path]_cottonwood-pass.adoc_ (target page), specify the target page's version, component, module, and file coordinates.
+
+.current-page.adoc
+[listing#ex-components]
+----
+\include::5.2@colorado:ROOT:cottonwood-pass.adoc[]
+----
+
+As shown in <<ex-components>>, the target page's version coordinate is `5.2`, its component coordinate is `colorado`, its module coordinate is `ROOT`, and its file coordinate is `cottonwood-pass.adoc`.
+
+[#placement]
+== Include directive placement
+
+An include directive is placed at the beginning of a new line.
+The content from the target page will be displayed as a standalone block when you enter an empty line above and below the include directive.
+You can attach content from the target page to a block in the current page by placing the include directive on a new line directly adjacent to the content to which it should be attached.
+
+.current-page.adoc
+[listing]
+----
+A paragraph in the page.
+
+include::cli-options.adoc[tag=compass] <.>
+
+A line of content.
+include::addendum.adoc[] <.>
+Another line of content.
+----
+<.> To display the included content as a standalone block, make sure there is an empty line before the include directive and after the include directive.
+<.> To attach the included content to a block in the current page, enter the include directive on a new line directly above, between, or below the content lines of the block.
 
 == Learn more
 
-* xref:page-partial.adoc[page-partial attribute]
-* xref:resource-id.adoc[Resource IDs]
-* xref:include-a-partial.adoc[Include a partial]
-* xref:include-an-example.adoc[Include an example]
+* xref:page-partial.adoc[]
+* xref:include-a-partial.adoc[]
+* xref:include-an-example.adoc[]
+* xref:resource-id.adoc[]
 
 .*AsciiDoc and Asciidoctor resources*
 * {url-tags}[Select regions of content with tags^]

@@ -15,9 +15,9 @@ If you aren't familiar with the Antora resource ID and its coordinates, see:
 * xref:resource-id-coordinates.adoc[]
 ====
 
-== AsciiDoc include directive and examples
+== AsciiDoc include directive for examples
 
-An AsciiDoc include directive macro inserts content from an example's source file into a partial or a page.
+An AsciiDoc include directive inserts content from an example's source file into a partial or a page.
 The include directive accepts the xref:resource-id.adoc[Antora resource ID] of examples, partials, and pages as a value.
 
 <<ex-base>> shows the structure of an include directive with the fully qualified resource ID of an example.
@@ -30,8 +30,7 @@ Because the include directive is used to reference other resources, the `example
 ----
 
 An include directive consists of the directive's prefix (`+include::+`), the resource ID of the target example, and a set of square brackets (`[]`).
-You can specify one or more optional attributes within the square brackets.
-The attributes are entered as key-value pairs separated by commas.
+You can specify optional attributes within the square brackets as key-value pairs separated by commas.
 [[target]]The [.term]*target example* is the source file of an example that's being referenced by the current page.
 The target example is referenced by assigning its resource ID to an include directive in the content of the current page.
 [[current]]The [.term]*current page* is the page source file containing the include directive that references the target example.
@@ -330,7 +329,7 @@ However, you must still enter the colon (`:`) that would follow the module coord
 This shorthand only works when a component coordinate is specified and the module coordinate of the target example is `ROOT`.
 
 [#latest-version]
-=== Link to the latest version of an example
+=== Use the latest version of an example
 
 TIP: This behavior only applies when the target example and current page belong to different docs components!
 
@@ -411,9 +410,9 @@ If the version and component coordinates aren't specified in the resource ID, An
 
 == Learn more
 
-* xref:include-a-partial.adoc[Include a partial]
-* xref:include-a-page.adoc[Include a standard page]
-* xref:resource-id.adoc[Resource IDs]
+* xref:include-a-partial.adoc[]
+* xref:include-a-page.adoc[]
+* xref:resource-id.adoc[]
 
 .*AsciiDoc and Asciidoctor resources*
 * {url-tags}[Select regions of content with tags^]
