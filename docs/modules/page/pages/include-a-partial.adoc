@@ -129,7 +129,7 @@ include::partial$./target-partial-filename.adoc[] <.>
 ----
 <.> File coordinate of the target partial when it's stored at the root of the [.path]_partials_ directory.
 <.> File coordinate of the target partial when it's stored in a subdirectory of the [.path]_partials_ directory.
-<.> File coordinate of the target partial when the target partial and current page are stored in a subdirectory with parallel family-relative directory paths.
+<.> File coordinate of the target partial when the target partial and current page are stored in subdirectories with parallel family-relative directory paths.
 _This is an advanced use case._
 
 Also, you'll need to specify additional resource ID coordinates when the target partial and current page don't belong to the <<modules,same module>> or <<component-versions,component version>>.

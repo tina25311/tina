@@ -132,7 +132,7 @@ include::example$./target-example-filename.ext[] <.>
 ----
 <.> File coordinate of the target example when it's stored at the root of the [.path]_examples_ directory.
 <.> File coordinate of the target example when it's stored in a subdirectory of the [.path]_examples_ directory.
-<.> File coordinate of the target example when the target example and current page are stored in a subdirectory with parallel family-relative directory paths.
+<.> File coordinate of the target example when the target example and current page are stored in subdirectories with parallel family-relative directory paths.
 _This is an advanced use case._
 
 Also, you'll need to specify additional resource ID coordinates when the target example and current page don't belong to the <<modules,same module>> or <<component-versions,component version>>.
