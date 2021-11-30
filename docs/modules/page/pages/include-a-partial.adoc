@@ -14,9 +14,9 @@ If you aren't familiar with the Antora resource ID and its coordinates, see:
 * xref:resource-id-coordinates.adoc[]
 ====
 
-== AsciiDoc include directive and partials
+== AsciiDoc include directive for partials
 
-An AsciiDoc include directive macro inserts content from a partial's source file into another partial or a page.
+An AsciiDoc include directive inserts content from a partial's source file into another partial or a page.
 The include directive accepts the xref:resource-id.adoc[Antora resource ID] of partials, examples, and pages as a value.
 
 <<ex-base>> shows the structure of an include directive with the fully qualified resource ID of a partial.
@@ -29,13 +29,12 @@ Because the include directive is used to reference other resources, the `partial
 ----
 
 At a minimum, an include directive consists of the directive's prefix (`+include::+`), the resource ID of the target partial, and a set of square brackets (`[]`).
-You can specify one or more optional attributes within the square brackets.
-The attributes are entered as key-value pairs separated by commas.
+You can specify optional attributes within the square brackets as key-value pairs separated by commas.
 [[target]]The [.term]*target partial* is the source file of a partial that's being referenced by the current page.
 The target partial is referenced by assigning its resource ID to an include directive in the content of the current page.
 [[current]]The [.term]*current page* is the page source file containing the include directive that references the target partial.
 
-When Antora runs, content from the target partial is inserted into the current page at the location where the include directive is entered.
+When Antora runs, content from the target partial is inserted into the current page <<placement,at the location where the include directive is entered>>.
 The target partial's content is converted after it's inserted into the current page.
 This means the current page's component version, module, attributes, and other elements are applied to or may impact the content included from the target partial.
 See xref:partials.adoc#current-context[Current page context and structure] to learn more.
@@ -305,7 +304,7 @@ However, you must still enter the colon (`:`) that would follow the module coord
 This shorthand only works when a component coordinate is specified and the module coordinate of the target partial is `ROOT`.
 
 [#latest-version]
-=== Link to the latest version of a partial
+=== Use the latest version of a partial
 
 TIP: This behavior only applies when the target partial and current page belong to different docs components!
 
@@ -370,27 +369,32 @@ Because a version coordinate isn't specified in <<ex-across-components-latest>>,
 WARNING: This behavior of linking to the latest version only applies when the version coordinate is unspecified and the target partial and current page belong to different components.
 If the version and component coordinates aren't specified in the resource ID, Antora assumes the target partial belongs to the same component version as the current page and uses the current page's version and component coordinates to complete the target partial's resource ID.
 
+[#placement]
 == Include directive placement
+
+An include directive is placed at the beginning of a new line.
+The content from the target partial will be displayed as a standalone block when you enter an empty line above and below the include directive.
+You can attach content from the target partial to a block in the current page by placing the include directive on a new line directly adjacent to the content to which it should be attached.
 
 .current-page.adoc
 [listing]
 ----
 A paragraph in the page.
 
-include::partial$cli-options.adoc[] <.>
+include::partial$cli-options.adoc[tag=compass] <.>
 
-Another paragraph in the page.
+A line of content.
 include::partial$addendum.adoc[] <.>
+Another line of content.
 ----
-<.> Enter the include on a new line.
-If you want the partial contents to be a standalone block, make sure there's a blank line above and below it.
-<.> To attach the partial to another block, enter it on a new line but don't insert a blank line between the include and the block content.
+<.> To display the included content as a standalone block, make sure there is an empty line above the include directive and after the include directive.
+<.> To attach the included content to a block in the current page, enter the include directive on a new line directly above, between, or below the content lines of the block.
 
 == Learn more
 
-* xref:include-an-example.adoc[Include an example]
-* xref:include-a-page.adoc[Include a standard page]
-* xref:resource-id.adoc[Resource IDs]
+* xref:include-an-example.adoc[]
+* xref:include-a-page.adoc[]
+* xref:resource-id.adoc[]
 
 .*AsciiDoc and Asciidoctor resources*
 * {url-leveloffset}[Offset section headings with leveloffset^]
