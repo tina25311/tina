@@ -103,7 +103,7 @@ async function loadUi (playbook) {
     resolveBundle.then((bundleFile) =>
       new Promise((resolve, reject) =>
         bundleFile.isDirectory()
-          ? srcFs(bundleFile.path).then(resolve, reject)
+          ? srcFs(ospath.join(bundleFile.path, bundle.startPath || '', '.')).then(resolve, reject)
           : vzip
             .src(bundleFile.path)
             .on('error', (err) => reject(Object.assign(err, { message: `not a valid zip file; ${err.message}` })))
