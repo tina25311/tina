@@ -27,9 +27,9 @@
 :url-nav-builder-arch: {url-packages}/navigation-builder/devdocs/architecture-guidebook.adoc
 :url-page-composer-arch: {url-packages}/page-composer/devdocs/architecture-guidebook.adoc
 :url-playbook-builder-arch: {url-packages}/playbook-builder/devdocs/architecture-guidebook.adoc
-:url-site-generator-arch: {url-packages}/site-generator-default/devdocs/architecture-guidebook.adoc
+:url-site-generator-arch: {url-packages}/site-generator/devdocs/architecture-guidebook.adoc
 :url-site-mapper-arch: {url-packages}/site-mapper/devdocs/architecture-guidebook.adoc
-:url-site-publisher-arch: {url-packages}/site-publisher/devdocs/architecture-guidebook.adoc
+:url-file-publisher-arch: {url-packages}/file-publisher/devdocs/architecture-guidebook.adoc
 :url-ui-loader-arch: {url-packages}/ui-loader/devdocs/architecture-guidebook.adoc
 // External URLs (alphebetized)
 :url-asciidoc-recommended: https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line
@@ -302,9 +302,9 @@ If you make a significant modification to a package, you should also update the 
 {url-ui-loader-arch}[UI Loader]
 {url-nav-builder-arch}[Navigation Builder]
 {url-page-composer-arch}[Page Composer]
-{url-site-generator-arch}[Site Generator Default]
+{url-site-generator-arch}[Site Generator]
 {url-site-mapper-arch}[Site Mapper]
-{url-site-publisher-arch}[Site Publisher]
+{url-file-publisher-arch}[File Publisher]
 
 [#lint-rq]
 === Code structure and style expectations
@@ -426,7 +426,7 @@ Please adhere to the following style and performance rules which are not current
 Tests should mirror the structure of the application code to make it easy for developers to find the tests that correspond to the application code.
 That means each package should have a [.path]_test/_ folder adjacent to the [.path]_lib/_ folder and the test file names should match the file with the function under test.
 
-If you need to add a new test to the suite, you can use a test in one of the packages as a reference (e.g., [.path]_packages/site-publisher/test/publish-site-test.js_).
+If you need to add a new test to the suite, you can use a test in one of the packages as a reference (e.g., [.path]_packages/file-publisher/test/publish-files-test.js_).
 Those tests already follow the structure of the project and demonstrate how to use mocha, chai, and the numerous helpers provided by the test harness.
 
 Apart from the classic {url-chai}[chai] assertions, several plugins are enabled.
@@ -573,15 +573,15 @@ Follow the {url-nvm-install}[nvm installation instructions] to set up nvm on you
 TIP: Many CI environments use nvm to install the version of Node.js used for the build job.
 By using nvm, you can closely align your setup with the environment that is used to generate and publish the production site.
 
-Once you've installed nvm, open a new terminal and install Node.js 12 using:
+Once you've installed nvm, open a new terminal and install Node.js 16 using:
 
- $ nvm install 12
+ $ nvm install 16
 
-The above command will install the latest version of Node.js 12.
+The above command will install the latest version of Node.js 16.
 
-If you already have other Node.js versions installed, you can configure Node.js 12 as the default for any new terminal.
+If you already have other Node.js versions installed, you can configure Node.js 16 as the default for any new terminal.
 
- $ nvm alias default 12
+ $ nvm alias default 16
 
 You can skip this step if you didn't previously have any Node.js versions installed because `nvm install` automatically adds the default alias to the first version of Node.js you install.
 
@@ -846,13 +846,13 @@ Otherwise, the `npm` command (or `yarn` command) will not pick up the prerelease
 
 If you install packages globally using the `npm i -g` command, append `@testing` to the name of each package:
 
- $ npm i -g @antora/cli@testing @antora/site-generator-default@testing
+ $ npm i -g @antora/cli@testing @antora/site-generator@testing
 
 If you install packages from [.path]_package.json_ using the `npm` command, use the keyword `testing` as the version for each entry:
 
 ----
 "@antora/cli": "testing",
-"@antora/site-generator-default": "testing",
+"@antora/site-generator": "testing",
 ----
 
 Once install, you can run Antora in the normal way.
