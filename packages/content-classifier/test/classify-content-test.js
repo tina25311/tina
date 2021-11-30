@@ -1249,6 +1249,22 @@ describe('classifyContent()', () => {
       expect(messages[0].level).to.equal('warn')
       expect(messages[0].msg).to.match(expectedMessage)
     })
+
+    it('should favor site start page over start page for versionless ROOT component', () => {
+      playbook.site.startPage = 'the-component::start.adoc'
+      aggregate[0].files.push(createFile('modules/ROOT/pages/start.adoc'))
+      aggregate.push({
+        name: 'ROOT',
+        version: '',
+        start_page: 'home.adoc',
+        files: [createFile('modules/ROOT/pages/home.adoc')],
+      })
+      const contentCatalog = classifyContent(playbook, aggregate)
+      const startPage = contentCatalog.getSiteStartPage()
+      expect(startPage).to.exist()
+      expect(startPage).to.have.nested.property('src.component', 'the-component')
+      expect(startPage).to.have.nested.property('src.relative', 'start.adoc')
+    })
   })
 
   describe('assign correct out and pub properties to files', () => {

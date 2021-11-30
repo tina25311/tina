@@ -509,6 +509,73 @@ describe('ContentCatalog', () => {
   })
 
   describe('#registerComponentVersionStartPage()', () => {
+    it('should register component version start page as synthetic alias', () => {
+      const name = 'the-component'
+      const version = '1.0.0'
+      const contentCatalog = new ContentCatalog()
+      const componentVersion = contentCatalog.registerComponentVersion(name, version)
+      contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'home.adoc',
+        },
+      })
+      const homePage = contentCatalog.getFiles()[0]
+      contentCatalog.registerComponentVersionStartPage(name, componentVersion, 'home.adoc')
+      expect(contentCatalog.getFiles()).to.have.lengthOf(2)
+      const indexAlias = contentCatalog.getById({
+        component: name,
+        version,
+        module: 'ROOT',
+        family: 'alias',
+        relative: 'index.adoc',
+      })
+      expect(indexAlias).to.exist()
+      expect(indexAlias.rel).to.equal(homePage)
+      expect(indexAlias.synthetic).to.be.true()
+    })
+
+    it('should allow synthetic component version start page to be updated', () => {
+      const name = 'the-component'
+      const version = '1.0.0'
+      const contentCatalog = new ContentCatalog()
+      const componentVersion = contentCatalog.registerComponentVersion(name, version)
+      contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'home.adoc',
+        },
+      })
+      contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'start.adoc',
+        },
+      })
+      contentCatalog.registerComponentVersionStartPage(name, componentVersion, 'home.adoc')
+      contentCatalog.registerComponentVersionStartPage(name, componentVersion, 'start.adoc')
+      expect(contentCatalog.getFiles()).to.have.lengthOf(3)
+      const indexAlias = contentCatalog.getById({
+        component: name,
+        version,
+        module: 'ROOT',
+        family: 'alias',
+        relative: 'index.adoc',
+      })
+      expect(indexAlias).to.exist()
+      expect(indexAlias.rel.src.relative).to.equal('start.adoc')
+      expect(indexAlias.synthetic).to.be.true()
+    })
+
     it('should use url from specified start page', () => {
       const name = 'the-component'
       const version = '1.0.0'
@@ -2005,6 +2072,51 @@ describe('ContentCatalog', () => {
       const startPage = contentCatalog.getSiteStartPage()
       expect(startPage.src).to.include(thePageId)
       expect(startPage.contents).to.equal(pageContents)
+    })
+
+    it('should register site start page over synthetic component version start page', () => {
+      const name = 'ROOT'
+      const version = ''
+      const contentCatalog = new ContentCatalog()
+      const componentVersion = contentCatalog.registerComponentVersion(name, version)
+      contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'start.adoc',
+        },
+      })
+      contentCatalog.addFile({
+        src: {
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'page',
+          relative: 'new-start.adoc',
+        },
+      })
+      contentCatalog.registerComponentVersionStartPage(name, componentVersion, 'start.adoc')
+      expect(
+        contentCatalog.getById({
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'alias',
+          relative: 'index.adoc',
+        })
+      ).to.have.nested.property('rel.src.relative', 'start.adoc')
+      contentCatalog.registerSiteStartPage('ROOT::new-start.adoc')
+      expect(
+        contentCatalog.getById({
+          component: name,
+          version,
+          module: 'ROOT',
+          family: 'alias',
+          relative: 'index.adoc',
+        })
+      ).to.have.nested.property('rel.src.relative', 'new-start.adoc')
     })
   })
 

@@ -14,6 +14,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * Switch from Yarn to npm to manage project dependencies (#890)
+* *content-classifier*: Look for synthetic alias in correct location when registering site start page (#892)
 * *site-generator-default*: Rename site-generator-default package to site-generator and repurpose old package as its alias (#886)
 * *site-generator*: Append /index.html to file URI in completion status message if site start page is defined (#889)
 * *site-generator*: Reword completion status message (#889)
@@ -24,6 +25,7 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Add missing glob-stream dependency declaration in package.json
 * *content-aggregator*: Ignore trailing slash on local repository URL when start path(s) are not specified
+* *content-classifier*: Align logic to register component version start page with logic to register site start page (#892)
 * *ui-loader*: Add missing glob-stream dependency declaration in package.json
 * *ui-loader*: Honor `ui.bundle.start_path` when value of `ui.bundle.url` is a local directory (#893)
 * *ui-loader*: Ignore trailing slash in `ui.bundle.url` or `ui.bundle.start_path` when reading UI files from local directory (#893)
