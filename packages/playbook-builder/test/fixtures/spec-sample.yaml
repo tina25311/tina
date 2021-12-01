@@ -1,5 +1,6 @@
+ext: .yaml
 one:
-  one: yaml-spec-value-one
+  one: !!str 1
 two: 42
 three: false
 four:

@@ -18,6 +18,10 @@ describe('buildPlaybook()', () => {
         default: undefined,
         env: 'PLAYBOOK',
       },
+      ext: {
+        format: String,
+        default: undefined,
+      },
       one: {
         one: {
           format: String,
@@ -90,10 +94,12 @@ describe('buildPlaybook()', () => {
   const badSpec = ospath.join(FIXTURES_DIR, 'bad-spec-sample.yml')
   const coerceValueSpec = ospath.join(FIXTURES_DIR, 'coerce-value-spec-sample.yml')
   const invalidPrimitiveMapSpec = ospath.join(FIXTURES_DIR, 'invalid-primitive-map-spec-sample.yml')
+  const invalidTypeTagSpec = ospath.join(FIXTURES_DIR, 'invalid-type-tag-spec-sample.yml')
   const invalidMapSpec = ospath.join(FIXTURES_DIR, 'invalid-map-spec-sample.yml')
   const nullMapSpec = ospath.join(FIXTURES_DIR, 'null-map-spec-sample.yml')
   const invalidDirOrFilesSpec = ospath.join(FIXTURES_DIR, 'invalid-dir-or-files-spec-sample.yml')
   const invalidStringOrBooleanSpec = ospath.join(FIXTURES_DIR, 'invalid-string-or-boolean-spec-sample.yml')
+  const invalidDuplicateKeySpec = ospath.join(FIXTURES_DIR, 'invalid-duplicate-key-spec-sample.yml')
   const preserveAllKeysSpec = ospath.join(FIXTURES_DIR, 'preserve-all-keys-spec-sample.yml')
   const preserveSpecifiedKeysSpec = ospath.join(FIXTURES_DIR, 'preserve-specified-keys-spec-sample.yml')
   const runtimeLogFormatSpec = ospath.join(FIXTURES_DIR, 'runtime-log-format-spec-sample.yml')
@@ -139,7 +145,8 @@ describe('buildPlaybook()', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(ymlSpec)
     expectedPlaybook.file = ymlSpec
-    expectedPlaybook.one.one = 'yml-spec-value-one'
+    expectedPlaybook.ext = '.yml'
+    expectedPlaybook.one.one = '1'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
@@ -147,7 +154,8 @@ describe('buildPlaybook()', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: yamlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(yamlSpec)
     expectedPlaybook.file = yamlSpec
-    expectedPlaybook.one.one = 'yaml-spec-value-one'
+    expectedPlaybook.ext = '.yaml'
+    expectedPlaybook.one.one = '1'
     expectedPlaybook.four = [
       { lastname: 'Starr', name: 'Ringo' },
       { lastname: 'Harrison', name: 'George' },
@@ -159,7 +167,8 @@ describe('buildPlaybook()', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: jsonSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(jsonSpec)
     expectedPlaybook.file = jsonSpec
-    expectedPlaybook.one.one = 'json-spec-value-one'
+    expectedPlaybook.ext = '.json'
+    expectedPlaybook.one.one = '1'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
@@ -167,7 +176,8 @@ describe('buildPlaybook()', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: tomlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(tomlSpec)
     expectedPlaybook.file = tomlSpec
-    expectedPlaybook.one.one = 'toml-spec-value-one'
+    expectedPlaybook.ext = '.toml'
+    expectedPlaybook.one.one = '1'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
@@ -175,7 +185,8 @@ describe('buildPlaybook()', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: extensionlessSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(extensionlessSpec)
     expectedPlaybook.file = extensionlessSpec + '.yml'
-    expectedPlaybook.one.one = 'yml-spec-value-one'
+    expectedPlaybook.ext = '.yml'
+    expectedPlaybook.one.one = '1'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
@@ -183,7 +194,8 @@ describe('buildPlaybook()', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: extensionlessJsonSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(extensionlessJsonSpec)
     expectedPlaybook.file = extensionlessJsonSpec + '.json'
-    expectedPlaybook.one.one = 'json-spec-value-one'
+    expectedPlaybook.ext = '.json'
+    expectedPlaybook.one.one = '1'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
@@ -191,7 +203,8 @@ describe('buildPlaybook()', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: extensionlessTomlSpec }, schema)
     expectedPlaybook.dir = ospath.dirname(extensionlessTomlSpec)
     expectedPlaybook.file = extensionlessTomlSpec + '.toml'
-    expectedPlaybook.one.one = 'toml-spec-value-one'
+    expectedPlaybook.ext = '.toml'
+    expectedPlaybook.one.one = '1'
     expect(playbook).to.eql(expectedPlaybook)
   })
 
@@ -232,7 +245,8 @@ describe('buildPlaybook()', () => {
   })
 
   it('should use default value if playbook file is not specified', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
+    schema = Object.assign({}, schema, { playbook: { format: String, default: ymlSpec } })
+    const playbook = buildPlaybook([], {}, schema)
     expect(playbook.one.two).to.equal('default-value')
   })
 
@@ -296,7 +310,7 @@ describe('buildPlaybook()', () => {
   })
 
   it('should coerce Boolean values in env', () => {
-    const env = { PLAYBOOK: ymlSpec, ANTORA_THREE: 'true' }
+    const env = { PLAYBOOK: ymlSpec, ANTORA_THREE: 'TRUE' }
     const playbook = buildPlaybook([], env, schema)
     expect(playbook.three).to.be.true()
   })
@@ -808,6 +822,14 @@ describe('buildPlaybook()', () => {
     expect(() => buildPlaybook([], { PLAYBOOK: invalidStringOrBooleanSpec }, schema)).to.throw(
       'must be a boolean or string'
     )
+  })
+
+  it('should throw error if key is repeated in YAML', () => {
+    expect(() => buildPlaybook([], { PLAYBOOK: invalidDuplicateKeySpec }, schema)).to.throw('duplicated mapping key')
+  })
+
+  it('should throw error if unrecognized YAML type tag is used', () => {
+    expect(() => buildPlaybook([], { PLAYBOOK: invalidTypeTagSpec }, schema)).to.throw('unknown tag')
   })
 
   it('should not configure runtime.log.level if runtime.log is not present in schema', () => {

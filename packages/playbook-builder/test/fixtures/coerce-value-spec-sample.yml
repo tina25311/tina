@@ -1,3 +1,4 @@
+ext: .yml
 one:
   one: one
 two: 42
