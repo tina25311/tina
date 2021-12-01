@@ -268,8 +268,12 @@ class ContentCatalog {
         (startPageSrc = startPage.src).component === name &&
         startPageSrc.version === version
       ) {
-        if ((startPageSrc.module !== 'ROOT' || startPageSrc.relative !== 'index.adoc') && !this.getById(indexPageId)) {
-          this.addFile({ src: Object.assign({}, indexPageId, { family: 'alias' }), rel: startPage })
+        if (!this.getById(indexPageId)) {
+          const indexAliasId = Object.assign({}, ROOT_INDEX_ALIAS_ID, { component: name, version })
+          const indexAlias = this.getById(indexAliasId)
+          indexAlias
+            ? indexAlias.synthetic && Object.assign(indexAlias, { rel: startPage })
+            : this.addFile({ src: indexAliasId, rel: startPage, synthetic: true })
         }
       } else {
         // TODO pass componentVersion as logObject
@@ -312,7 +316,9 @@ class ContentCatalog {
     if (!startPageSpec) return
     const rel = this.resolvePage(startPageSpec)
     if (rel) {
-      if (!(this.getSiteStartPage() || { synthetic: true }).synthetic) return
+      if (this.getById(ROOT_INDEX_PAGE_ID)) return
+      const indexAlias = this.getById(ROOT_INDEX_ALIAS_ID)
+      if (indexAlias) return indexAlias.synthetic ? Object.assign(indexAlias, { rel }) : undefined
       return this.addFile({ src: Object.assign({}, ROOT_INDEX_ALIAS_ID), rel, synthetic: true })
     } else if (rel === false) {
       logger.warn('Start page specified for site has invalid syntax: %s', startPageSpec)
