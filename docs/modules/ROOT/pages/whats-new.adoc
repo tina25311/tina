@@ -12,6 +12,41 @@
 NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
 Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
+= Antora 3.0.0-beta.4
+
+_**Release date:** 2021.11.30 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+//Issue {url-issues}/000[#000^]:: ...
+
+=== Added
+
+Issue {url-issues}/888[#888^]:: Add `lockVariable` and `removeVariable` methods to the generator context to lock and remove a context variable, respectively.
+Issue {url-issues}/886[#886^]:: Add the *@antora/site-generator* package (as a replacement for *@antora/site-generator-default*).
+Issue {url-issues}/887[#887^]:: Add the *@antora/file-publisher* package (as a replacement for *@antora/site-publisher*).
+
+=== Changed
+
+Issue {url-issues}/894[#894^]:: Default to json log format unless stdout is TTY (interactive terminal) or CI=true.
+Issue {url-issues}/892[#892^]:: Look for synthetic alias in correct location when registering site start page.
+Issue {url-issues}/886[#886^]:: Change the *@antora/site-generator-default* package as an alias for the *@antora/site-generator* package.
+Issue {url-issues}/887[#887^]:: Change the *@antora/site-publisher* package as an alias for the *@antora/file-publisher* package.
+Issue {url-issues}/889[#889^]:: Append /index.html to file URI in completion status message if site start page is defined.
+Reword the completion status message.
+Issue {url-issues}/891[#891^]:: Update the `publishFiles` function exported by the file publisher to accept a single catalog.
+
+=== Fixed
+
+Issue {url-issues}/892[#892^]:: Align logic to register component version start page with logic to register site start page.
+Allow site start page to overwrite start page for versionless ROOT component.
+Issue {url-issues}/893[#893^]:: Honor `ui.bundle.start_path` when value of `ui.bundle.url` is a local directory.
+Ignore trailing slash in `ui.bundle.url` or `ui.bundle.start_path` when reading UI files from local directory.
+
+Ignore trailing slash on local repository URL when start path(s) are not specified.
+
+Add missing glob-stream dependency declaration in content aggregator and UI loader.
+
 = Antora 3.0.0-beta.3
 
 _**Release date:** 2021.11.24 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
