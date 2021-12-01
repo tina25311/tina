@@ -3,17 +3,17 @@
 
 const {
   captureLogSync,
-  captureStdoutLogSync,
   captureStderrSync,
+  captureStdoutLogSync,
   configureLogger,
   expect,
   heredoc,
-} = require('../../../test/test-utils')
+  mockContentCatalog,
+} = require('@antora/test-harness')
 
 // NOTE use separate require statement to verify loadAsciiDoc is default export
 const loadAsciiDoc = require('@antora/asciidoc-loader')
 const { extractAsciiDocMetadata, resolveAsciiDocConfig } = loadAsciiDoc
-const mockContentCatalog = require('../../../test/mock-content-catalog')
 const ospath = require('path')
 
 const Opal = global.Opal

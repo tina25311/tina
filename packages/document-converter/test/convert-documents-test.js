@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, heredoc, spy } = require('../../../test/test-utils')
+const { expect, heredoc, mockContentCatalog, spy } = require('@antora/test-harness')
 
 const convertDocuments = require('@antora/document-converter')
 const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
-const mockContentCatalog = require('../../../test/mock-content-catalog')
 
 describe('convertDocuments()', () => {
   const asciidocConfig = resolveAsciiDocConfig()

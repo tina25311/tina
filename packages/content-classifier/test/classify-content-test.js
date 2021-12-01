@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureLogSync, expect } = require('../../../test/test-utils')
+const { captureLogSync, expect } = require('@antora/test-harness')
 
 const classifyContent = require('@antora/content-classifier')
 const { posix: path } = require('path')

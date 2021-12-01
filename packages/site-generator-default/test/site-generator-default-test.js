@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('../../../test/test-utils')
+const { expect } = require('@antora/test-harness')
 
 describe('site-generator-default', function () {
   it('should serve as alias for @antora/site-generator', () => {

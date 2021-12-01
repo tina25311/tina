@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, spy } = require('../../../test/test-utils')
+const { expect, spy } = require('@antora/test-harness')
+
 const {
   buildBaseUiModel,
   buildPageUiModel,

@@ -1,10 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('../../../test/test-utils')
+const { expect, mockContentCatalog } = require('@antora/test-harness')
 
 const produceRedirects = require('@antora/redirect-producer')
-const mockContentCatalog = require('../../../test/mock-content-catalog')
 
 describe('produceRedirects()', () => {
   let contentCatalog

@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureLogSync, expect, heredoc } = require('../../../test/test-utils')
+const { captureLogSync, expect, heredoc, mockContentCatalog } = require('@antora/test-harness')
 
 const buildNavigation = require('@antora/navigation-builder')
 const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
-const mockContentCatalog = require('../../../test/mock-content-catalog')
 
 describe('buildNavigation()', () => {
   it('should run on all files in the navigation family', () => {

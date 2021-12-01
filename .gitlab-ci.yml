@@ -13,7 +13,7 @@ variables:
   - .gitlab-ci.yml
   - package{-lock,}.json
   - gulpfile.js
-  - '{gulp.d,packages,test}/**/*'
+  - '{gulp.d,packages}/**/*'
 - &unless_docs_mr
   if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^docs\//
   when: never

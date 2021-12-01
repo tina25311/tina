@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, spy } = require('../../../test/test-utils')
+const { expect, spy } = require('@antora/test-harness')
 
 const resolveResource = require('@antora/content-classifier/lib/util/resolve-resource')
 

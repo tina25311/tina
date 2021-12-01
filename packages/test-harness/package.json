@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "@antora/test-harness",
+  "main": "lib/index.js",
+  "devDependencies": {
+    "chai": "~4.3",
+    "chai-fs": "~2.0",
+    "chai-spies": "~1.0",
+    "cheerio": "1.0.0-rc.10",
+    "dirty-chai": "~2.0",
+    "glob-stream": "~7.0",
+    "isomorphic-git": "~1.10",
+    "js-yaml": "~4.1",
+    "node-git-server": "~0.6"
+  },
+  "engines": {
+    "node": ">=12.21.0"
+  }
+}

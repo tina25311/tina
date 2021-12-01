@@ -1,15 +1,21 @@
 /* eslint-env mocha */
 'use strict'
 
-const { emptyDirSync, expect, heredoc, wipeSync, toJSON } = require('../../../test/test-utils')
+const {
+  emptyDirSync,
+  expect,
+  GitServer,
+  heredoc,
+  RepositoryBuilder,
+  toJSON,
+  wipeSync,
+} = require('@antora/test-harness')
 
 const fs = require('fs')
-const GitServer = require('node-git-server')
 const { default: Kapok } = require('kapok-js')
 const pkg = require('@antora/cli/package.json')
 const { once } = require('events')
 const ospath = require('path')
-const RepositoryBuilder = require('../../../test/repository-builder')
 
 const ANTORA_CLI = ospath.resolve('node_modules', '.bin', process.platform === 'win32' ? 'antora.cmd' : 'antora')
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')

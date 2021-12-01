@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { emptyDirSync, expect, heredoc, trapAsyncError, wipeSync } = require('../../../test/test-utils')
+const { emptyDirSync, expect, heredoc, trapAsyncError, wipeSync } = require('@antora/test-harness')
 
 const File = require('vinyl')
 const { promises: fsp } = require('fs')

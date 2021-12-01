@@ -5,22 +5,22 @@ const {
   captureStdout,
   captureStdoutLog,
   expect,
+  GitServer,
   heredoc,
   loadHtml,
+  RepositoryBuilder,
+  toJSON,
   trapAsyncError,
   wipeSync,
-  toJSON,
-} = require('../../../test/test-utils')
+} = require('@antora/test-harness')
 
 const { configureLogger } = require('@antora/logger')
 const fs = require('fs')
 const generateSite = require('@antora/site-generator')
 const buildPlaybook = require('@antora/playbook-builder')
-const GitServer = require('node-git-server')
 const { once } = require('events')
 const ospath = require('path')
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
-const RepositoryBuilder = require('../../../test/repository-builder')
 
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')

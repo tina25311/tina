@@ -1,8 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, loadSslConfig, trapAsyncError, wipeSync } = require('../../../test/test-utils')
-const RepositoryBuilder = require('../../../test/repository-builder')
+const { expect, loadSslConfig, RepositoryBuilder, trapAsyncError, wipeSync } = require('@antora/test-harness')
 
 const File = require('vinyl')
 const fs = require('fs')

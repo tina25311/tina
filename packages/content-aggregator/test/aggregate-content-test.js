@@ -1,7 +1,16 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, heredoc, loadSslConfig, spy, trapAsyncError, wipeSync } = require('../../../test/test-utils')
+const {
+  expect,
+  GitServer,
+  heredoc,
+  loadSslConfig,
+  RepositoryBuilder,
+  spy,
+  trapAsyncError,
+  wipeSync,
+} = require('@antora/test-harness')
 
 const aggregateContent = require('@antora/content-aggregator')
 const computeOrigin = aggregateContent._computeOrigin
@@ -10,14 +19,12 @@ const { execFile } = require('child_process')
 const fs = require('fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
-const GitServer = require('node-git-server')
 const http = require('http')
 const net = require('net')
 const { once } = require('events')
 const os = require('os')
 const ospath = require('path')
 const { Readable } = require('stream')
-const RepositoryBuilder = require('../../../test/repository-builder')
 
 const {
   COMPONENT_DESC_FILENAME,

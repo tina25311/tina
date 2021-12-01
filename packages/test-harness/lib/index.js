@@ -3,41 +3,22 @@
 process.env.NODE_ENV = 'test'
 
 const chai = require('chai')
-const cheerio = require('cheerio')
-const fs = require('fs')
-const ospath = require('path')
-const { configureLogger } = require('@antora/logger')
-
 chai.use(require('chai-fs'))
-chai.use(require('./chai-cheerio'))
+chai.use(require('./chai/cheerio'))
 chai.use(require('chai-spies'))
-chai.Assertion.addMethod('endWith', function (expected) {
-  const subject = this._obj
-  let verdict = false
-  if (typeof subject === 'string' && typeof expected === 'string') verdict = subject.endsWith(expected)
-  return this.assert(
-    verdict,
-    'expected #{this} to end with #{exp}',
-    'expected #{this} to not end with #{exp}',
-    expected,
-    undefined
-  )
-})
-chai.Assertion.addMethod('startWith', function (expected) {
-  const subject = this._obj
-  let verdict = false
-  if (typeof subject === 'string' && typeof expected === 'string') verdict = subject.startsWith(expected)
-  return this.assert(
-    verdict,
-    'expected #{this} to start with #{exp}',
-    'expected #{this} to not start with #{exp}',
-    expected,
-    undefined
-  )
-})
+chai.use(require('./chai/end-with'))
+chai.use(require('./chai/start-with'))
 // dirty-chai must be loaded after the other plugins
 // see https://github.com/prodatakey/dirty-chai#plugin-assertions
 chai.use(require('dirty-chai'))
+
+const cheerio = require('cheerio')
+const fs = require('fs')
+const { configureLogger } = require('@antora/logger')
+const GitServer = require('node-git-server')
+const mockContentCatalog = require('./mock-content-catalog')(chai)
+const ospath = require('path')
+const RepositoryBuilder = require('./repository-builder')
 
 beforeEach(() => configureLogger({ level: 'silent' })) // eslint-disable-line no-undef
 
@@ -175,6 +156,7 @@ module.exports = {
   configureLogger,
   emptyDirSync,
   expect: chai.expect,
+  GitServer,
   heredoc: (literals, ...values) => {
     const str =
       literals.length > 1
@@ -192,9 +174,11 @@ module.exports = {
   },
   loadHtml: (str) => cheerio.load(str),
   loadSslConfig: () => ({
-    cert: fs.readFileSync(ospath.join(__dirname, 'ssl.cert')),
-    key: fs.readFileSync(ospath.join(__dirname, 'ssl.key')),
+    cert: fs.readFileSync(ospath.join(__dirname, '..', 'fixtures', 'ssl.cert')),
+    key: fs.readFileSync(ospath.join(__dirname, '..', 'fixtures', 'ssl.key')),
   }),
+  mockContentCatalog,
+  RepositoryBuilder,
   spy: chai.spy,
   toJSON: (obj) => JSON.stringify(obj, undefined, '  '),
   trapAsyncError: (fn, ...args) =>

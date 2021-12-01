@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureLogSync, expect, heredoc, spy } = require('../../../test/test-utils')
+const { captureLogSync, expect, heredoc, spy } = require('@antora/test-harness')
+
 const createPageComposer = require('@antora/page-composer')
 const { version: VERSION } = require('@antora/page-composer/package.json')
 
