@@ -88,6 +88,7 @@ describe('cli', function () {
     wipeSync(absBuildDir)
     wipeSync(ospath.join(WORK_DIR, '.antora-cache-override'))
     playbookSpec = {
+      runtime: { log: { format: 'json' } },
       site: { title: 'The Site' },
       content: {
         sources: [{ url: repoBuilder.repoPath, branches: 'v1.0' }],
@@ -290,7 +291,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should use fallback logger to log fatal message if error is thrown before playbook is built', () => {
-    playbookSpec.runtime = { log: { level: 'verbose' } }
+    playbookSpec.runtime.log.level = 'verbose'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('generate --log-format=json antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.level: must be one of/)
@@ -305,8 +306,18 @@ describe('cli', function () {
       .done()
   }).timeout(timeoutOverride)
 
+  // NOTE process.stdout.isTTY is always undefined when Antora is run with with kapok
+  it('should use pretty log format if CI=true', () => {
+    delete playbookSpec.runtime
+    playbookSpec.ui.bundle.url = 'does-not-exist.zip'
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return runAntora('generate antora-playbook', { CI: 'true' })
+      .assert(/^\[.+?\] FATAL \(antora\): Specified UI bundle does not exist: /)
+      .done()
+  }).timeout(timeoutOverride)
+
   it('should show stack if --stacktrace option is specified and an exception is thrown during generation', () => {
-    playbookSpec.runtime = { log: { format: 'fancy' } }
+    playbookSpec.runtime.log.format = 'fancy'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('--stacktrace generate antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.format: must be one of/)
@@ -413,7 +424,7 @@ describe('cli', function () {
   }).timeout(timeoutOverride)
 
   it('should recommend --stacktrace option if not specified and an exception is thrown during generation', () => {
-    playbookSpec.runtime = { log: { format: 'fancy' } }
+    playbookSpec.runtime.log.format = 'fancy'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     return runAntora('generate antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.format: must be one of/)
@@ -890,7 +901,7 @@ describe('cli', function () {
 
   it('should exit with status code 0 if log failure level is not reached', async () => {
     playbookSpec.content.sources[0].branches = 'v1.0-broken'
-    playbookSpec.runtime = { log: { failure_level: 'fatal' } }
+    playbookSpec.runtime.log.failure_level = 'fatal'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
@@ -909,7 +920,7 @@ describe('cli', function () {
 
   it('should exit with status code 1 if log failure level is reached', async () => {
     playbookSpec.content.sources[0].branches = 'v1.0-broken'
-    playbookSpec.runtime = { log: { failure_level: 'warn' } }
+    playbookSpec.runtime.log.failure_level = 'warn'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
@@ -930,7 +941,7 @@ describe('cli', function () {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-stop-before-publish.js'))
     playbookSpec.antora = { extensions: [{ require: ext, exit_code: 2 }] }
     playbookSpec.content.sources[0].branches = 'v1.0-broken'
-    playbookSpec.runtime = { log: { failure_level: 'warn' } }
+    playbookSpec.runtime.log.failure_level = 'warn'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
@@ -970,7 +981,7 @@ describe('cli', function () {
 
   // this test also verifies that the --stacktrace option hint is not routed to stderr
   it('should not show error message thrown before playbook is built if --silent flag is specified', async () => {
-    playbookSpec.runtime = { log: { foo: 'bar' } }
+    playbookSpec.runtime.log.foo = 'bar'
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const messages = []
     return new Promise((resolve) =>
@@ -1022,6 +1033,7 @@ describe('cli', function () {
     playbookSpec.site.start_page = 'no-such-component::index.adoc'
     playbookSpec.runtime = {
       log: {
+        format: 'json',
         failure_level: 'warn',
         destination: {
           file: '.' + ospath.sep + buildDir + ospath.sep + 'antora.log',
@@ -1052,6 +1064,7 @@ describe('cli', function () {
     playbookSpec.site.start_page = 'no-such-component::index.adoc'
     playbookSpec.runtime = {
       log: {
+        format: 'json',
         destination: {
           file: '.' + ospath.sep + buildDir + ospath.sep + 'antora.log',
           buffer_size: 4096,

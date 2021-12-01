@@ -68,7 +68,7 @@ describe('generateSite()', function () {
   })
 
   beforeEach(async () => {
-    env = { ANTORA_CACHE_DIR: (cacheDir = ospath.join(WORK_DIR, '.antora/cache')) }
+    env = { ANTORA_CACHE_DIR: (cacheDir = ospath.join(WORK_DIR, '.antora/cache')), ANTORA_LOG_FORMAT: 'json' }
     wipeSync(CONTENT_REPOS_DIR)
     fs.mkdirSync(WORK_DIR, { recursive: true })
     try {

@@ -259,7 +259,7 @@ module.exports = {
       },
       format: new Proxy(
         {
-          doc: 'Set the format of log messages. Defaults to json if CI=true, pretty otherwise.',
+          doc: 'Set the format of log messages. Defaults to pretty if CI=true or stdout is a TTY, json otherwise.',
           format: ['json', 'pretty'],
           default: undefined,
           arg: 'log-format',
@@ -268,7 +268,7 @@ module.exports = {
         {
           get (target, property) {
             if (property !== 'default') return target[property]
-            return process.env.CI === 'true' || process.env.NODE_ENV === 'test' ? 'json' : 'pretty'
+            return process.env.CI === 'true' || process.stdout.isTTY ? 'pretty' : 'json'
           },
         }
       ),
