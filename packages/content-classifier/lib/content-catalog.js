@@ -571,15 +571,9 @@ function createSymbolicVersionAlias (component, version, symbolicVersionSegment,
       family
     ),
   }
-  if (strategy === 'redirect:to') {
-    originalVersionAlias.out = undefined
-    originalVersionAlias.rel = symbolicVersionAlias
-    return originalVersionAlias
-  } else {
-    symbolicVersionAlias.out = undefined
-    symbolicVersionAlias.rel = originalVersionAlias
-    return symbolicVersionAlias
-  }
+  return strategy === 'redirect:to'
+    ? Object.assign(originalVersionAlias, { out: undefined, rel: symbolicVersionAlias })
+    : Object.assign(symbolicVersionAlias, { out: undefined, rel: originalVersionAlias })
 }
 
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {
