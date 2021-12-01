@@ -29,8 +29,7 @@
     "@antora/user-require-helper": "~2.0"
   },
   "devDependencies": {
-    "@antora/playbook-builder": "3.0.0-beta.4",
-    "node-git-server": "~0.6"
+    "@antora/playbook-builder": "3.0.0-beta.4"
   },
   "engines": {
     "node": ">=12.21.0"

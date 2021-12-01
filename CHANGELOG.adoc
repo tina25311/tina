@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Changed
+
+* reorganize the test utils as a test harness package (#897)
+
 == 3.0.0-beta.4 (2021-12-01)
 
 === Added

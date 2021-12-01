@@ -10,7 +10,8 @@ const {
   emptyDirSync,
   expect,
   wipeSync,
-} = require('../../../test/test-utils')
+} = require('@antora/test-harness')
+
 const Logger = require('@antora/logger')
 const { configure, configureLogger, finalizeLogger, get, getLogger } = Logger
 const ospath = require('path')

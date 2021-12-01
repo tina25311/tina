@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('../../../test/test-utils')
+const { expect } = require('@antora/test-harness')
+
 const versionCompareDesc = require('@antora/content-classifier/lib/util/version-compare-desc')
 
 describe('versionCompareDesc()', () => {

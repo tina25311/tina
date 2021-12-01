@@ -2,11 +2,10 @@
 
 const { posix: path } = require('path')
 const resolveResource = require('@antora/content-classifier/lib/util/resolve-resource')
-const { spy } = require('./test-utils')
 
 const SPACE_RX = / /g
 
-function mockContentCatalog (seed = []) {
+function mockContentCatalog (spy, seed = []) {
   if (!Array.isArray(seed)) seed = [seed]
   const familyDirs = {
     alias: 'pages',
@@ -123,4 +122,4 @@ function buildComponentVersionKey (component, version) {
   return version + '@' + component + ':'
 }
 
-module.exports = mockContentCatalog
+module.exports = ({ spy }) => mockContentCatalog.bind(null, spy)

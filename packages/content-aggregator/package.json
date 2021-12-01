@@ -33,9 +33,6 @@
     "simple-get": "~4.0",
     "vinyl": "~2.2"
   },
-  "devDependencies": {
-    "node-git-server": "~0.6"
-  },
   "engines": {
     "node": ">=12.21.0"
   },

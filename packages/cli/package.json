@@ -27,8 +27,7 @@
     "@antora/site-publisher": "3.0.0-beta.4",
     "@asciidoctor/core": "~2.2",
     "convict": "~6.2",
-    "kapok-js": "~0.10",
-    "node-git-server": "~0.6"
+    "kapok-js": "~0.10"
   },
   "engines": {
     "node": ">=12.21.0"

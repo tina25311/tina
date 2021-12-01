@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureLogSync, expect, heredoc, spy } = require('../../../test/test-utils')
+const { captureLogSync, expect, heredoc, spy } = require('@antora/test-harness')
 
 const { convertDocument } = require('@antora/document-converter')
 const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')

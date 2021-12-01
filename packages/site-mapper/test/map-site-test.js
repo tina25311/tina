@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('../../../test/test-utils')
+const { expect, mockContentCatalog } = require('@antora/test-harness')
 
 const { DOMParser } = require('xmldom')
 const mapSite = require('@antora/site-mapper')
-const mockContentCatalog = require('../../../test/mock-content-catalog')
 
 describe('mapSite()', () => {
   let playbook

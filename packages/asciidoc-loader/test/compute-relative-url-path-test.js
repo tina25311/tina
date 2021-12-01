@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('../../../test/test-utils')
+const { expect } = require('@antora/test-harness')
 
 const computeRelativeUrlPath = require('@antora/asciidoc-loader/lib/util/compute-relative-url-path')
 

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('../../../test/test-utils')
+const { expect } = require('@antora/test-harness')
 
 const buildPlaybook = require('@antora/playbook-builder')
 const ospath = require('path')

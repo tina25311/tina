@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('../../../test/test-utils')
+const { expect } = require('@antora/test-harness')
 
 const parseResourceId = require('@antora/content-classifier/lib/util/parse-resource-id')
 
