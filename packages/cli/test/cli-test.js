@@ -552,7 +552,7 @@ describe('cli', function () {
 
   it('should allow environment variable to override properties set in playbook file', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const env = { ...process.env, URL: 'https://docs.example.com' }
+    const env = { URL: 'https://docs.example.com' }
     // Q: how do we assert w/ kapok when there's no output; use promise as workaround
     return new Promise((resolve) => runAntora('generate antora-playbook --quiet', env).on('exit', resolve)).then(
       (exitCode) => {
