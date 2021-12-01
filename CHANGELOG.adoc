@@ -14,6 +14,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * Switch from Yarn to npm to manage project dependencies (#890)
+* *logger*: default to json log output unless stdout is TTY or CI=true (#894)
 * *content-classifier*: Look for synthetic alias in correct location when registering site start page (#892)
 * *site-generator-default*: Rename site-generator-default package to site-generator and repurpose old package as its alias (#886)
 * *site-generator*: Append /index.html to file URI in completion status message if site start page is defined (#889)
