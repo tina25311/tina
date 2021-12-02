@@ -105,7 +105,9 @@ function updatePackageLock () {
         }
       }
     }
-    return fsp.writeFile(PACKAGE_LOCK_FILE, JSON.stringify(packageLock, undefined, 2) + '\n', 'utf8')
+    return fsp
+      .writeFile(PACKAGE_LOCK_FILE, JSON.stringify(packageLock, undefined, 2) + '\n', 'utf8')
+      .then(() => promisify(exec)('git add package-lock.json', { cwd: PROJECT_ROOT_DIR }))
   })
 }
 
