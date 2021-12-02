@@ -1,4 +1,5 @@
-one.one = "toml-spec-value-one"
+ext = ".toml"
+one.one = "1"
 two = 42
 three = false
 [[four]]

@@ -9,7 +9,9 @@ This project utilizes semantic versioning.
 
 === Changed
 
-* reorganize the test utils as a test harness package (#897)
+* *playbook-builder*: Enforce core YAML schema when reading YAML playbook files and values (#898)
+* *content-aggregator*: Enforce core YAML schema when reading component descriptor file (#898)
+* Reorganize the test utils as a test harness package (#897)
 
 == 3.0.0-beta.4 (2021-12-01)
 

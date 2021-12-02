@@ -22,8 +22,8 @@ function registerParsers (convict) {
   convict.addParser([
     { extension: 'json', parse: json.parse },
     { extension: 'toml', parse: toml.parse },
-    { extension: 'yaml', parse: yaml.load },
-    { extension: 'yml', parse: yaml.load },
+    { extension: 'yaml', parse: (source) => yaml.load(source, { schema: yaml.CORE_SCHEMA }) },
+    { extension: 'yml', parse: (source) => yaml.load(source, { schema: yaml.CORE_SCHEMA }) },
     {
       extension: '*',
       parse: () => {
@@ -46,7 +46,7 @@ function registerFormats (convict) {
       ARGS_SCANNER_RX.lastIndex = 0
       while ((match = ARGS_SCANNER_RX.exec(val))) {
         const [, k, v] = match
-        if (k) accum[k] = v ? (v === '-' ? '-' : yaml.load(v)) : ''
+        if (k) accum[k] = v ? (v === '-' ? '-' : yaml.load(v, { schema: yaml.CORE_SCHEMA })) : ''
       }
       return accum
     },

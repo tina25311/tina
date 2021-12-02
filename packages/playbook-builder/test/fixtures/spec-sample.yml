@@ -1,8 +1,9 @@
-one:
-  one: yml-spec-value-one
+ext: .yml
+one: !!map
+  one: '1'
 two: 42
 three: false
-four:
+four: !!seq
 - name: John
   lastname: Lennon
 - name: Paul

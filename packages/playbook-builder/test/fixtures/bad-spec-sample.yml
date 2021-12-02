@@ -1,5 +1,6 @@
+ext: .yml
 one:
-  one: yml-spec-value-one
+  one: '1'
 two: 42
 three: false
 four:

@@ -218,15 +218,15 @@ describe('aggregateContent()', function () {
         const componentDesc = {
           name: 'the-component',
           title: 'The Component',
-          version: 'v1.2.3',
-          display_version: '1.2.3',
+          version: 'v1.0',
+          display_version: 'Version 1.0 (Current release)',
           start_page: 'home.adoc',
         }
         await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
-        expect(aggregate[0]).to.have.property('displayVersion', '1.2.3')
+        expect(aggregate[0]).to.have.property('displayVersion', 'Version 1.0 (Current release)')
         expect(aggregate[0]).to.have.property('startPage', 'home.adoc')
       })
     })
@@ -245,7 +245,7 @@ describe('aggregateContent()', function () {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: 'v1.0' }, () =>
           repoBuilder
-            .addToWorktree('antora.yml', ':\nname: the-component\nversion: v1.0\n')
+            .addToWorktree('antora.yml', 'name: the-component\nversion: !!binary v1.0\n')
             .then(() => repoBuilder.commitAll('mangle component descriptor'))
         )
         const ref = repoBuilder.getRefInfo('main')
@@ -255,6 +255,21 @@ describe('aggregateContent()', function () {
         const aggregateContentDeferred = await trapAsyncError(aggregateContent, playbookSpec)
         expect(aggregateContentDeferred).to.throw(expectedMessageStart)
         expect(aggregateContentDeferred).to.throw(expectedMessageEnd)
+      })
+    })
+
+    describe('should allow version to be coerced to string using !!str tag', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: 'v1.0' }, () =>
+          repoBuilder
+            .addToWorktree('antora.yml', 'name: the-component\nversion: !!str 1.0\n')
+            .then(() => repoBuilder.commitAll('coerce version to string'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('name', 'the-component')
+        expect(aggregate[0]).to.have.property('version', '1.0')
       })
     })
 
