@@ -11,21 +11,26 @@ There are two AsciiDoc image macro types, block and inline.
 A xref:block-images.adoc[block image] is displayed as a discrete element on a page.
 
 .Block image macro
-[listing]
 ----
 This is a paragraph.
 
-image::resource-id.ext[optional attribute] <.>
+image::resource-id-of-target-image.ext[]
 ----
-<.> A block image is designated by two colons (`::`) after the macro name.
-It's preceded by a blank line, entered on a line by itself, and then followed by blank line.
 
 An xref:inline-images.adoc[inline image] is displayed in the flow of another element, such as a paragraph or sidebar block.
 
 .Inline image macro
-[listing]
 ----
-This sentence contains an inline image:resource-id.ext[optional attribute] image. <.>
+This sentence contains an inline image:resource-id-of-target-image.ext[] image.
 ----
-<.> An inline image is entered into the flow of the content.
-It's designated by a single colon (`:`) after the macro name.
+
+== Link to a resource from an image macro
+
+Using the `xref` element attribute, you can reference a page, attachment, element, or even another image from an image embedded in a page.
+
+.xref element attribute assigned to an image macro
+----
+image::resource-id-of-target-image.ext[xref=resource-id.ext]
+----
+
+See xref:image-xref-and-link.adoc[] to learn more.
