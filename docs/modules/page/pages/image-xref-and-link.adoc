@@ -38,6 +38,7 @@ image:the-image.jpg[The image alt text,xref=version@component:module:family$file
 
 Positional and named element attributes are separated by commas in the attribute list of the image macros.
 
+[#page]
 == Link to a page from an image
 
 To reference a page from an embedded image, set the `xref` attribute in the attribute list, followed by an equals sign (`=`), and then the resource ID of the target page.
@@ -52,6 +53,7 @@ image::console.svg[xref=modes.adoc] <.>
 
 The block image macro shown in <<ex-page>> will embed the image _console.svg_ into the current page and create a link from the image to the published URL of the target page.
 
+[#attachment]
 == Link to an attachment from an image
 
 To reference an attachment from an embedded image, set the `xref` attribute in the attribute list, followed by an equals sign (`=`), and then the resource ID of the target attachment.
@@ -73,6 +75,7 @@ The `attachment$` coordinate is always required when the resource is an attachme
 
 The inline image macro shown in <<ex-attachment>> will embed the image _red-dot.jpg_ into the current page and create a link from the image to the published URL of the target attachment.
 
+[#deep-link]
 == Deep link to an element in the current page from an image
 
 To reference an element in the current page, assign the element's ID to the `xref` attribute.

@@ -11,7 +11,7 @@ An attachment can be cross referenced from pages, other resources, and navigatio
 <<ex-base>> shows the structure of an xref macro with an attachment's fully qualified resource ID.
 
 .Xref macro structure for referencing an attachment
-[listing#ex-base]
+[#ex-base]
 ----
 xref:version@component:module:attachment$file-coordinate-of-attachment.ext[optional link text]
 ----
@@ -116,7 +116,7 @@ While the previous steps used a target attachment and current page that belong t
 You'll need to specify xref:resource-id-coordinates.adoc[additional resource ID coordinates] when the target attachment and current page don't belong to the same module or component version.
 
 .Resource ID patterns of a target attachment in relation to a current page
-[listing#ex-component-version-base]
+[#ex-component-version-base]
 ----
 xref:attachment$target-attachment-filename.ext[optional link text] <.>
 
@@ -158,7 +158,7 @@ You can specify link text between the square brackets of an AsciiDoc xref macro,
 No link text has been specified between the xref macro's square brackets.
 
 .Xref macro without specified link text
-[listing#ex-no-text]
+[#ex-no-text]
 ----
 Download xref:attachment$practice-project.zip[] to try it out!
 ----
@@ -175,7 +175,7 @@ Antora uses the xref:ROOT:how-antora-builds-urls.adoc[URL of the published attac
 You can specify link text by entering it between the square brackets of the xref macro.
 
 .Xref macro with specified link text
-[listing#ex-text]
+[#ex-text]
 ----
 Download xref:attachment$practice-project.zip[The Sample Project] to try it out!
 ----
@@ -184,4 +184,4 @@ When link text is specified in the xref macro, Antora displays the specified con
 
 == Learn more
 
-You can also create links to attachments in xref:navigation:reference-resources.adoc[navigation files] and from xref:image-xref-and-link.adoc[image macros].
+You can also create links to attachments in xref:navigation:reference-resources.adoc[navigation files] and from xref:image-xref-and-link.adoc#attachment[image macros].
