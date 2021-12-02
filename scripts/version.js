@@ -75,9 +75,7 @@ function updateChangelog (now) {
 
 function updatePackageLock () {
   return fsp.readdir(PACKAGES_DIR, { withFileTypes: true }).then((dirents) => {
-    const packageNames = dirents
-      .filter((dirent) => dirent.isDirectory())
-      .map(({ name }) => name)
+    const packageNames = dirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name)
     const moduleNames = packageNames.map((name) => `@antora/${name}`)
     const packagePaths = packageNames.map((name) => `packages/${name}`)
     const packageLock = require(PACKAGE_LOCK_FILE)
