@@ -11,6 +11,7 @@ const CHANGELOG_FILE = path.join(PROJECT_ROOT_DIR, 'CHANGELOG.adoc')
 const COMPONENT_VERSION_DESC = path.join(PROJECT_ROOT_DIR, 'docs/antora.yml')
 const PACKAGES_DIR = path.join(PROJECT_ROOT_DIR, 'packages')
 const PROJECT_README_FILE = path.join(PROJECT_ROOT_DIR, 'README.adoc')
+const PACKAGE_LOCK_FILE = path.join(PROJECT_ROOT_DIR, 'package-lock.json')
 
 function getCurrentDate () {
   const now = new Date()
@@ -72,6 +73,42 @@ function updateChangelog (now) {
     .then(() => promisify(exec)('git add CHANGELOG.adoc', { cwd: PROJECT_ROOT_DIR }))
 }
 
+function updatePackageLock () {
+  return fsp.readdir(PACKAGES_DIR, { withFileTypes: true }).then((dirents) => {
+    const packageNames = dirents
+      .filter((dirent) => dirent.isDirectory() && dirent.name !== 'test-harness')
+      .map(({ name }) => name)
+    const moduleNames = packageNames.map((name) => `@antora/${name}`)
+    const packagePaths = packageNames.map((name) => `packages/${name}`)
+    const packageLock = require(PACKAGE_LOCK_FILE)
+    const { packages, dependencies } = packageLock
+    for (const packagePath of packagePaths) {
+      if (!(packagePath in packages)) continue
+      const package_ = packages[packagePath]
+      if (package_.version) package_.version = VERSION
+      const { dependencies: prodDependencies, devDependencies } = package_
+      for (const dependencies of [prodDependencies, devDependencies]) {
+        if (!dependencies) continue
+        for (const moduleName of moduleNames) {
+          if (moduleName in dependencies) dependencies[moduleName] = VERSION
+        }
+      }
+    }
+    if (dependencies) {
+      for (const moduleName of moduleNames) {
+        if (!(moduleName in dependencies)) continue
+        const dependency = dependencies[moduleName]
+        if (!('requires' in dependency)) continue
+        const requires = dependency.requires
+        for (const requireModuleName of moduleNames) {
+          if (requireModuleName in requires) requires[requireModuleName] = VERSION
+        }
+      }
+    }
+    return fsp.writeFile(PACKAGE_LOCK_FILE, JSON.stringify(packageLock, undefined, 2) + '\n', 'utf8')
+  })
+}
+
 function q (str) {
   return `'${str}'`
 }
@@ -81,4 +118,5 @@ function q (str) {
   await updateReadmes(now)
   await updateDocsConfig()
   await updateChangelog(now)
+  await updatePackageLock()
 })()
