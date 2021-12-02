@@ -7,10 +7,16 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *page-composer*: Export `create404Page` function to create and compose the 404 page (#899)
+* *page-composer*: Assign site-wide page attributes to `page.attributes` property of UI model of 404 page (#899)
+
 === Changed
 
 * *playbook-builder*: Enforce core YAML schema when reading YAML playbook files and values (#898)
 * *content-aggregator*: Enforce core YAML schema when reading component descriptor file (#898)
+* *site-generator*: Move creation of 404 page to page composer (#899)
 * Reorganize the test utils as a test harness package (#897)
 
 === Fixed

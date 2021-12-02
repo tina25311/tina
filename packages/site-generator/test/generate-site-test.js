@@ -353,6 +353,7 @@ describe('generateSite()', function () {
     expect($('body > script:first-of-type')).to.have.attr('src', '/_/js/site.js')
     expect($('.navbar-brand a.navbar-item')).to.have.attr('href', 'https://example.com')
     expect($('.nav-panel-explore .version.is-latest a')).to.have.attr('href', '/the-component/2.0/index.html')
+    expect($('h1.page')).to.have.text('Page Not Found')
   }).timeout(timeoutOverride)
 
   it('should generate 404 page if site url is set to absolute URL with subpath in playbook', async () => {
@@ -392,6 +393,24 @@ describe('generateSite()', function () {
     expect($('body > script:first-of-type')).to.have.attr('src', '/docs/_/js/site.js')
     expect($('.navbar-brand a.navbar-item')).to.have.attr('href', '/docs')
     expect($('.nav-panel-explore .version.is-latest a')).to.have.attr('href', '/docs/the-component/2.0/index.html')
+  }).timeout(timeoutOverride)
+
+  it('should allow 404 page to access site-wide page attributes', async () => {
+    playbookSpec.site.url = 'https://example.com'
+    playbookSpec.asciidoc = { attributes: { '404-page-title': 'No Such Page', 'page-foo': 'bar' } }
+    playbookSpec.ui.supplemental_files = [
+      {
+        path: 'partials/head-meta.hbs',
+        contents: '{{#if page.[404]}}<meta property="foo" content="{{page.attributes.foo}}">{{/if}}',
+      },
+    ]
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    await generateSite(getPlaybook(playbookFile))
+    expect(ospath.join(absDestDir, '404.html')).to.be.a.file()
+    $ = loadHtmlFile('404.html')
+    expect($('head > title')).to.have.text('No Such Page :: The Site')
+    expect($('head > meta[property=foo]')).to.have.attr('content', 'bar')
+    expect($('h1.page')).to.have.text('No Such Page')
   }).timeout(timeoutOverride)
 
   it('should be able to reference implicit page attributes', async () => {
