@@ -35,7 +35,7 @@ The target image is referenced by assigning its resource ID to an inline or bloc
 The structure of the target image's file coordinate varies depending on whether the target image is stored at the root of the [.path]_images_ family directory or in a subdirectory of the [.path]_images_ directory.
 
 .current-page.adoc
-[listing#ex-file]
+[#ex-file]
 ----
 image:target-image-filename.ext[optional attribute] <.>
 
@@ -57,7 +57,7 @@ When the target image is stored at the root of the [.path]_images_ family direct
 Remember, the file coordinate of the target image is always calculated from the root of the [.path]_images_ family directory.
 
 .File coordinate in an image macro when the target image is stored at the root of an images directory
-[listing#ex-image-base]
+[#ex-image-base]
 ----
 image::target-image-filename.ext[optional attribute]
 ----
@@ -88,7 +88,7 @@ That means the source file [.path]_wilderness-map.jpg_ is the target image and [
 When the target image and current page belong to the same module, only the file coordinate of the target image's resource ID needs to be entered in the image macro.
 
 .ridge.adoc (current page)
-[listing#ex-image]
+[#ex-image]
 ----
 The trailhead is north of town.
 
@@ -107,7 +107,7 @@ See <<relative-path>> for file coordinate examples when the target image is stor
 The __images__-relative directory path of the <<target,target image>> is required in its file coordinate when it's stored in a subdirectory of the [.path]_images_ directory.
 
 .File coordinate in an image macro when the target image is stored in a subdirectory of an images directory
-[listing#ex-subdir-base]
+[#ex-subdir-base]
 ----
 image::path/to/target-image-filename.ext[optional attribute]
 ----
@@ -137,7 +137,7 @@ As you can see in <<ex-co-subdir>> above, the image and page belong to the _la-g
 In <<ex-subdir>>, an image macro in the [.path]_ridge.adoc_ page (current page) references the [.path]_skyline.jpg_ image (target image).
 
 .ridge.adoc (current page)
-[listing#ex-subdir]
+[#ex-subdir]
 ----
 = La Garita Ridgeline
 
@@ -156,7 +156,7 @@ TIP: In special circumstances where the __images__-relative directory path of th
 When the <<target,target image>> and <<current,current page>> don't belong to the same module, you must specify the target image's xref:resource-id-coordinates.adoc#id-module[module coordinate] and xref:resource-id-coordinates.adoc#id-resource[file coordinate] in the image macro.
 
 .Module and file coordinates assigned to an image macro
-[listing#ex-module-base]
+[#ex-module-base]
 ----
 image:module:target-image-filename.ext[optional attribute] <.>
 
@@ -205,7 +205,7 @@ The [.path]_willow-creek.adoc_ page belongs to the _la-garita_ module.
 The [.path]_peak.svg_ image belongs to the _ROOT_ module.
 
 .Insert peak.svg (target image) into willow-creek.adoc (current page)
-[listing#ex-module]
+[#ex-module]
 ----
 The elevation is image:ROOT:peak.svg[] 10,067 ft (3,068 m).
 ----
@@ -216,7 +216,7 @@ In <<ex-module-subdir>>, let's embed the [.path]_skyline.jpg_ image (target imag
 The [.path]_skyline.jpg_ image belongs to the _la-garita_ module and [.path]_ranges.adoc_ belongs to the _ROOT_ module.
 
 .Insert skyline.jpg (target image) into ranges.adoc (current page)
-[listing#ex-module-subdir]
+[#ex-module-subdir]
 ----
 image::la-garita:aerial/skyline.jpg[]
 ----
@@ -231,7 +231,7 @@ When the <<target,target image>> and <<current,current page>> belong to differen
 You'll almost always specify the version coordinate, too.
 
 .Version, component, module, and file coordinates assigned to an image macro
-[listing#ex-component-version-base]
+[#ex-component-version-base]
 ----
 image:version@component:module:target-image-filename.ext[optional attribute] <.>
 
@@ -286,7 +286,7 @@ The image [.path]_panorama.png_ belongs to the the _sierra-madre_ module of _wyo
 In <<ex-across-components>>, the resource ID assigned to the image macro specifies the version, component, module, and file coordinates of the target image because the target image belongs to the _wyoming 1.0_ component version whereas the current page belongs to _colorado 5.2_.
 
 .Insert panorama.png (target image) as a block image into ranges.adoc (current page)
-[listing#ex-across-components]
+[#ex-across-components]
 ----
 image::1.0@wyoming:sierra-madre:panorama.png[]
 ----
@@ -298,7 +298,7 @@ The [.path]_peak.svg_ image belongs to the component version _colorado 5.2_.
 The [.path]_wilderness-areas.adoc_ page belongs to the component version _wyoming 1.0_.
 
 .wilderness-areas.adoc (current page)
-[listing#ex-across-components-root]
+[#ex-across-components-root]
 ----
 image:5.2@colorado::peak.svg[] Bridger Peak is in the Sierra Madre range.
 ----
@@ -346,7 +346,7 @@ One [.path]_panorama.png_ belongs to version _1.0_, the other [.path]_panorama.p
 Notice that the target image's version coordinate isn't specified.
 
 .index.adoc (current page)
-[listing#ex-across-components-latest]
+[#ex-across-components-latest]
 ----
 image::wyoming:sierra-madre:panorama.png[]
 ----
@@ -364,7 +364,7 @@ If the version and component coordinates aren't specified in the resource ID, An
 When the <<current,current page>> and <<target,target image>> belong to the same component, but the target image belongs to a different version of the component, you'll specify the version, module (if it's different than the current page's module), and file coordinates.
 
 .current-page.adoc
-[listing#ex-version-base]
+[#ex-version-base]
 ----
 image:version@module:file-coordinate-of-target-image.ext[optional attribute] <.>
 
@@ -410,7 +410,7 @@ Both resources belong to the _la-garita_ module.
 In <<ex-across-versions>>, the image [.path]_wilderness-map.jpg_ (target image) is embedded in the page [.path]_ridge.adoc_ (current page).
 
 .ridge.adoc (current page) in colorado 6.0
-[listing#ex-across-versions]
+[#ex-across-versions]
 ----
 image::5.2@wilderness-map.jpg[]
 ----
