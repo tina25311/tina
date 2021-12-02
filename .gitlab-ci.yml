@@ -129,7 +129,6 @@ release:
   - *if_releases
   before_script:
   - npm i -g --no-audit --silent lerna@$(node -p 'require("./lerna.json").lerna')
-  - NODE_PATH=$(npm -g prefix)/lib/node_modules/lerna/node_modules node scripts/patch-libnpmpublish.js
   script:
   - scripts/release.sh
   # triggers release of Docker image
