@@ -1,4 +1,4 @@
-image: node:12-buster
+image: node:16-buster
 stages: [init, verify, deploy]
 variables:
   GIT_DEPTH: '5'
@@ -49,6 +49,7 @@ variables:
 # this step also seeds the dependency cache
 lint:
   interruptible: true
+  image: node:12-buster
   stage: init
   rules:
   - *unless_docs_mr
@@ -79,7 +80,6 @@ test:node-14-linux:
   script: npx --no-install gulp test
 test:node-16-linux:
   interruptible: true
-  image: node:16-buster
   stage: verify
   variables:
     COVERAGE: 'true'
