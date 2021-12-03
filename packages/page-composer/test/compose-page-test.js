@@ -27,14 +27,6 @@ describe('createPageComposer()', () => {
     defaultLayout.contents = Buffer.from(defaultLayout.contents.toString().replace('{{> body}}', replacement))
   }
 
-  const create404Page = () => ({
-    title: 'Page Not Found',
-    mediaType: 'text/html',
-    src: { stem: '404' },
-    out: { path: '404.html' },
-    pub: { url: '/404.html', rootPath: '' },
-  })
-
   beforeEach(() => {
     playbook = {
       site: {
@@ -176,6 +168,12 @@ describe('createPageComposer()', () => {
   it('should create a page composer function', () => {
     const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
     expect(composePage).to.be.instanceOf(Function)
+    expect(composePage.composePage).to.equal(composePage)
+  })
+
+  it('should create a 404 page creator function', () => {
+    const { create404Page } = createPageComposer(playbook, contentCatalog, uiCatalog)
+    expect(create404Page).to.be.instanceOf(Function)
   })
 
   it('should use exported content catalog', () => {
@@ -422,72 +420,6 @@ describe('createPageComposer()', () => {
       file.asciidoc.attributes['page-layout'] = 'does-not-exist'
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(/neither .* layout .* found/i)
-    })
-
-    it('should throw an error if 404 layout cannot be found', () => {
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
-      expect(() => composePage(create404Page(), contentCatalog, navigationCatalog)).to.throw(/404 layout not found/i)
-    })
-
-    it('should use 404 layout if component name is not set and stem is 404', () => {
-      file = create404Page()
-      layouts.push({
-        stem: '404',
-        contents: Buffer.from(
-          heredoc`
-          <!DOCTYPE html>
-          <html class="status-404">
-          {{> head}}
-          <link rel="stylesheet" href="{{uiRootPath}}/css/site.css">
-          <h1>{{{page.title}}}</h1>
-          </html>
-          ` + '\n'
-        ),
-      })
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
-      const result = composePage(file, contentCatalog, navigationCatalog)
-      expect(result).to.equal(file)
-      expect(file.contents).to.be.instanceOf(Buffer)
-      expect(file.contents.toString()).to.endWith('\n')
-      expect(file.contents.toString().trimRight()).to.equal(heredoc`
-        <!DOCTYPE html>
-        <html class="status-404">
-        <title>Page Not Found</title>
-        <link rel="stylesheet" href="/_/css/site.css">
-        <h1>Page Not Found</h1>
-        </html>
-      `)
-    })
-
-    it('should prepend site path to UI root path if site URL contains a subpath', () => {
-      file = create404Page()
-      layouts.push({
-        stem: '404',
-        contents: Buffer.from(
-          heredoc`
-          <!DOCTYPE html>
-          <html class="status-404">
-          {{> head}}
-          <link rel="stylesheet" href="{{uiRootPath}}/css/site.css">
-          <h1>{{{page.title}}}</h1>
-          </html>
-          ` + '\n'
-        ),
-      })
-      playbook.site.url = 'https://example.org/docs'
-      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
-      const result = composePage(file, contentCatalog, navigationCatalog)
-      expect(result).to.equal(file)
-      expect(file.contents).to.be.instanceOf(Buffer)
-      expect(file.contents.toString()).to.endWith('\n')
-      expect(file.contents.toString().trimRight()).to.equal(heredoc`
-        <!DOCTYPE html>
-        <html class="status-404">
-        <title>Page Not Found</title>
-        <link rel="stylesheet" href="/docs/_/css/site.css">
-        <h1>Page Not Found</h1>
-        </html>
-      `)
     })
 
     it('should be able to access content catalog from helper', () => {
@@ -772,6 +704,159 @@ describe('createPageComposer()', () => {
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       const expectedMessage = "each doesn't match if - 1:3 in UI template partials/broken-partial.hbs"
       expect(() => composePage(file, contentCatalog, navigationCatalog)).to.throw(expectedMessage)
+    })
+
+    describe('create404Page()', () => {
+      it('should throw an error if 404 layout cannot be found', () => {
+        const { create404Page } = createPageComposer(playbook, contentCatalog, uiCatalog)
+        expect(() => create404Page()).to.throw(/404 layout not found/i)
+      })
+
+      it('should use 404 layout if component name is not set and stem is 404', () => {
+        layouts.push({
+          stem: '404',
+          contents: Buffer.from(
+            heredoc`
+            <!DOCTYPE html>
+            <html class="status-404">
+            {{> head}}
+            <link rel="stylesheet" href="{{uiRootPath}}/css/site.css">
+            <h1>{{{page.title}}}</h1>
+            </html>
+            ` + '\n'
+          ),
+        })
+        const { create404Page } = createPageComposer(playbook, contentCatalog, uiCatalog)
+        const result = create404Page()
+        expect(result.contents).to.be.instanceOf(Buffer)
+        expect(result.contents.toString()).to.endWith('\n')
+        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+          <!DOCTYPE html>
+          <html class="status-404">
+          <title>Page Not Found</title>
+          <link rel="stylesheet" href="/_/css/site.css">
+          <h1>Page Not Found</h1>
+          </html>
+        `)
+      })
+
+      it('should set 404 property on UI page model for 404 page', () => {
+        layouts.push({
+          stem: '404',
+          contents: Buffer.from(
+            heredoc`
+            <!DOCTYPE html>
+            <html{{#if page.[404]}} class="status-404"{{/if}}>
+            {{> head}}
+            <link rel="stylesheet" href="{{uiRootPath}}/css/site.css">
+            <h1>{{{page.title}}}</h1>
+            </html>
+            ` + '\n'
+          ),
+        })
+        playbook.site.url = 'https://example.org/docs'
+        const { create404Page } = createPageComposer(playbook, contentCatalog, uiCatalog)
+        const result = create404Page()
+        expect(result.contents).to.be.instanceOf(Buffer)
+        expect(result.contents.toString()).to.endWith('\n')
+        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+          <!DOCTYPE html>
+          <html class="status-404">
+          <title>Page Not Found</title>
+          <link rel="stylesheet" href="/docs/_/css/site.css">
+          <h1>Page Not Found</h1>
+          </html>
+        `)
+      })
+
+      it('should allow 404 page to access site-wide page attributes', () => {
+        layouts.push({
+          stem: '404',
+          contents: Buffer.from(
+            heredoc`
+            <!DOCTYPE html>
+            <html class="status-404">
+            {{> head}}
+            <link rel="stylesheet" href="{{uiRootPath}}/css/site.css">
+            <h1>{{{page.title}}}</h1>
+            <p>Check out our <a href="{{page.attributes.product-url}}">products</a> instead.</p>
+            </html>
+            ` + '\n'
+          ),
+        })
+        playbook.site.url = 'https://example.org/docs'
+        const { create404Page } = createPageComposer(playbook, contentCatalog, uiCatalog)
+        const result = create404Page({ attributes: { 'page-product-url': 'https://example.org/products' } })
+        expect(result.contents).to.be.instanceOf(Buffer)
+        expect(result.contents.toString()).to.endWith('\n')
+        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+          <!DOCTYPE html>
+          <html class="status-404">
+          <title>Page Not Found</title>
+          <link rel="stylesheet" href="/docs/_/css/site.css">
+          <h1>Page Not Found</h1>
+          <p>Check out our <a href="https://example.org/products">products</a> instead.</p>
+          </html>
+        `)
+      })
+
+      it('should allow title of 404 page to be overridden using the 404-page-title attribute', () => {
+        layouts.push({
+          stem: '404',
+          contents: Buffer.from(
+            heredoc`
+            <!DOCTYPE html>
+            <html class="status-404">
+            {{> head}}
+            <link rel="stylesheet" href="{{uiRootPath}}/css/site.css">
+            <h1>{{{page.title}}}</h1>
+            </html>
+            ` + '\n'
+          ),
+        })
+        playbook.site.url = 'https://example.org/docs'
+        const { create404Page } = createPageComposer(playbook, contentCatalog, uiCatalog)
+        const result = create404Page({ attributes: { '404-page-title': 'Nothing to See Here' } })
+        expect(result.contents).to.be.instanceOf(Buffer)
+        expect(result.contents.toString()).to.endWith('\n')
+        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+          <!DOCTYPE html>
+          <html class="status-404">
+          <title>Nothing to See Here</title>
+          <link rel="stylesheet" href="/docs/_/css/site.css">
+          <h1>Nothing to See Here</h1>
+          </html>
+        `)
+      })
+
+      it('should prepend site path to UI root path if site URL contains a subpath', () => {
+        layouts.push({
+          stem: '404',
+          contents: Buffer.from(
+            heredoc`
+            <!DOCTYPE html>
+            <html class="status-404">
+            {{> head}}
+            <link rel="stylesheet" href="{{uiRootPath}}/css/site.css">
+            <h1>{{{page.title}}}</h1>
+            </html>
+            ` + '\n'
+          ),
+        })
+        playbook.site.url = 'https://example.org/docs'
+        const { create404Page } = createPageComposer(playbook, contentCatalog, uiCatalog)
+        const result = create404Page()
+        expect(result.contents).to.be.instanceOf(Buffer)
+        expect(result.contents.toString()).to.endWith('\n')
+        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+          <!DOCTYPE html>
+          <html class="status-404">
+          <title>Page Not Found</title>
+          <link rel="stylesheet" href="/docs/_/css/site.css">
+          <h1>Page Not Found</h1>
+          </html>
+        `)
+      })
     })
   })
 })

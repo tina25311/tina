@@ -42,7 +42,18 @@ function createPageComposer (playbook, contentCatalog, uiCatalog) {
         accum.set(stem, handlebars.compile(contents.toString(), { preventIndent: true, srcName })),
       new Map()
     )
-  return createPageComposerInternal(buildBaseUiModel(playbook, contentCatalog), layouts)
+  const composePage = createPageComposerInternal(buildBaseUiModel(playbook, contentCatalog), layouts)
+  const create404Page = (siteAsciiDocConfig) => {
+    return composePage({
+      asciidoc: siteAsciiDocConfig,
+      mediaType: 'text/html',
+      out: { path: '404.html' },
+      pub: {},
+      src: { stem: '404' },
+      title: (siteAsciiDocConfig && siteAsciiDocConfig.attributes['404-page-title']) || 'Page Not Found',
+    })
+  }
+  return Object.assign(composePage, { composePage, create404Page })
 }
 
 function createPageComposerInternal (baseUiModel, layouts) {

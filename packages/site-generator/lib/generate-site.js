@@ -29,10 +29,10 @@ async function generateSite (playbook) {
     await context.notify('documentsConverted')
     vars.navigationCatalog = fxns.buildNavigation(contentCatalog, siteAsciiDocConfig)
     await context.notify('navigationBuilt')
-    ;((composePage) => {
+    ;(({ composePage, create404Page }) => {
       const navigationCatalog = context.removeVariable('navigationCatalog')
       contentCatalog.getPages((page) => page.out && composePage(page, contentCatalog, navigationCatalog))
-      if (playbook.site.url) vars.siteCatalog.addFile(composePage(create404Page()))
+      if (playbook.site.url) vars.siteCatalog.addFile(create404Page(siteAsciiDocConfig))
     })(fxns.createPageComposer(playbook, contentCatalog, uiCatalog, playbook.env))
     await context.notify('pagesComposed')
     vars.siteCatalog.addFiles(fxns.produceRedirects(playbook, contentCatalog))
@@ -62,16 +62,6 @@ async function generateSite (playbook) {
     await err.notify()
   } finally {
     await GeneratorContext.close(context)
-  }
-}
-
-function create404Page () {
-  return {
-    title: 'Page Not Found',
-    mediaType: 'text/html',
-    src: { stem: '404' },
-    out: { path: '404.html' },
-    pub: { url: '/404.html', rootPath: '' },
   }
 }
 

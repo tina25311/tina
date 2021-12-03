@@ -63,24 +63,24 @@ function buildSiteUiModel (playbook, contentCatalog) {
 
 function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog) {
   const src = file.src
-  if (src.stem === '404' && !src.component) return { layout: '404', title: file.title }
-  const { component: component_, version, module: module_, relative: relativeSrcPath, origin, editUrl, fileUri } = src
-
   // QUESTION should attributes be scoped to AsciiDoc, or should this work regardless of markup language? file.data?
   const asciidoc = file.asciidoc || {}
   const attributes = asciidoc.attributes || {}
-  const pageAttributes = Object.entries(attributes).reduce((accum, [name, val]) => {
-    if (name.startsWith('page-')) accum[name.substr(5)] = val
-    return accum
-  }, {})
+  const pageAttributes = {}
+  Object.entries(attributes).forEach(([name, val]) => {
+    if (name.startsWith('page-')) pageAttributes[name.substr(5)] = val
+  })
+  if (src.stem === '404' && !('component' in src)) {
+    return { 404: true, attributes: pageAttributes, layout: '404', title: file.title }
+  }
 
-  const url = file.pub.url
+  const { component: component_, version, module: module_, relative: relativeSrcPath, origin, editUrl, fileUri } = src
   const component = contentCatalog.getComponent(component_)
   const componentVersion = contentCatalog.getComponentVersion(component, version)
+  const title = file.title || asciidoc.doctitle
+  const url = file.pub.url
   // QUESTION can we cache versions on file.rel so only computed once per page version lineage?
   const versions = component.versions.length > 1 ? getPageVersions(file, component, contentCatalog) : undefined
-  const title = file.title || asciidoc.doctitle
-
   const model = {
     contents: file.contents,
     layout: pageAttributes.layout || siteUiModel.ui.defaultLayout,
@@ -102,10 +102,8 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
     editUrl,
     fileUri,
   }
-
   if (url === siteUiModel.homeUrl) model.home = true
   if (navigationCatalog) attachNavProperties(model, url, title, navigationCatalog.getNavigation(component_, version))
-
   if (versions) {
     Object.defineProperty(model, 'latest', {
       get () {
@@ -113,7 +111,6 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
       },
     })
   }
-
   // NOTE site URL has already been normalized at this point
   const siteUrl = siteUiModel.url
   if (siteUrl && siteUrl.charAt() !== '/') {
