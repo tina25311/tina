@@ -356,10 +356,10 @@ describe('build UI model', () => {
       expect(model.canonicalUrl).to.equal('http://example.com/the-component/1.0/the-page.html')
     })
 
-    it('should set home property to false if url of page does not match site homeUrl property', () => {
+    it('should set home property to falsy value if url of page does not match site homeUrl property', () => {
       site.homeUrl = '/path/to/home.html'
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
-      expect(model.home).to.be.false()
+      expect(model.home || false).to.be.false()
     })
 
     it('should set home property to true if url of page matches site homeUrl property', () => {

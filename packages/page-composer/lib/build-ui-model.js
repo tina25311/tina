@@ -101,9 +101,9 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
     versions,
     editUrl,
     fileUri,
-    home: url === siteUiModel.homeUrl,
   }
 
+  if (url === siteUiModel.homeUrl) model.home = true
   if (navigationCatalog) attachNavProperties(model, url, title, navigationCatalog.getNavigation(component_, version))
 
   if (versions) {
