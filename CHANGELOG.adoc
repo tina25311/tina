@@ -11,6 +11,7 @@ This project utilizes semantic versioning.
 
 * *page-composer*: Export `create404Page` function to create and compose the 404 page (#899)
 * *page-composer*: Assign site-wide page attributes to `page.attributes` property of UI model of 404 page (#899)
+* Run test suite on macOS in nightly CI build (#902)
 
 === Changed
 
@@ -32,7 +33,6 @@ This project utilizes semantic versioning.
 
 === Changed
 
-* Switch from Yarn to npm to manage project dependencies (#890)
 * *logger*: Default to json log output unless stdout is TTY or CI=true (#894)
 * *content-classifier*: Look for synthetic alias in correct location when registering site start page (#892)
 * *site-generator-default*: Rename site-generator-default package to site-generator and repurpose old package as its alias (#886)
@@ -40,6 +40,7 @@ This project utilizes semantic versioning.
 * *site-generator*: Reword completion status message (#889)
 * *site-publisher*: Rename site-publisher package to file-publisher and repurpose old package as its alias (#887)
 * *file-publisher*: Update `publishFiles` function to accept single catalog (#891)
+* Switch from Yarn to npm to manage project dependencies (#890)
 
 === Fixed
 
