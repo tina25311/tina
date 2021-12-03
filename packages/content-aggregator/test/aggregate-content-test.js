@@ -281,16 +281,6 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should throw if component descriptor does not define version key and content source does not define version key', () => {
-      testAll(async (repoBuilder) => {
-        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' })
-        const ref = repoBuilder.getRefInfo('main')
-        playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (ref: ${ref})`
-        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
-      })
-    })
-
     describe('should use refname as version if version key in component descriptor is true', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: true }, () =>
@@ -506,13 +496,33 @@ describe('aggregateContent()', function () {
       })
     })
 
-    describe('should allow component descriptor to have a null version and coerce value to empty string', () => {
+    describe('should allow component descriptor to have a null version, which is coerced to empty string', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: null })
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.have.property('version', '')
+      })
+    })
+
+    describe('should allow component descriptor to have a 0 version', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: 0 })
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('version', '0')
+      })
+    })
+
+    describe('should throw if component descriptor has a false version', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: false })
+        const ref = repoBuilder.getRefInfo('main')
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} has an invalid version in ${repoBuilder.url} (ref: ${ref})`
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -523,6 +533,16 @@ describe('aggregateContent()', function () {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.have.property('version', '')
+      })
+    })
+
+    describe('should throw if component descriptor does not define version key and content source does not define version key', () => {
+      testAll(async (repoBuilder) => {
+        await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' })
+        const ref = repoBuilder.getRefInfo('main')
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (ref: ${ref})`
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
