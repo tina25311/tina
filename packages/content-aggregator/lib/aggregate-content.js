@@ -664,7 +664,8 @@ function loadComponentDescriptor (files, ref, version) {
   if ('version' in data) version = data.version
   if (!version) {
     if (version === undefined) throw new Error(`${COMPONENT_DESC_FILENAME} is missing a version`)
-    version = ''
+    if (version === false) throw new Error(`${COMPONENT_DESC_FILENAME} has an invalid version`)
+    version = '' + (typeof version === 'number' ? version : '')
   } else if (version === true) {
     version = ref.shortname.replace(PATH_SEPARATOR_RX, '-')
   } else if (version.constructor === Object) {
@@ -686,7 +687,7 @@ function loadComponentDescriptor (files, ref, version) {
       throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${matched}`)
     }
     version = matched.replace(PATH_SEPARATOR_RX, '-')
-  } else if ((version = String(version)) === '.' || version === '..' || ~version.indexOf('/')) {
+  } else if ((version = '' + version) === '.' || version === '..' || ~version.indexOf('/')) {
     throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
   }
   data.version = version
