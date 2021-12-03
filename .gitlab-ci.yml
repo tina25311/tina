@@ -101,6 +101,17 @@ test:node-17-linux:
   <<: *npm_cache_pull
   <<: *npm_install
   script: npx --no-install gulp test
+test:macos:
+  interruptible: true
+  tags: [shared-macos-amd64]
+  image: macos-11-xcode-12
+  stage: verify
+  #rules:
+  #- *if_releases
+  #- *if_schedule
+  <<: *npm_cache_pull
+  <<: *npm_install
+  script: npx --no-install gulp test
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
 test:windows:
   tags: [windows]
