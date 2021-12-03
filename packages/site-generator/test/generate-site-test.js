@@ -8,6 +8,7 @@ const {
   GitServer,
   heredoc,
   loadHtml,
+  posixify,
   RepositoryBuilder,
   toJSON,
   trapAsyncError,
@@ -20,7 +21,6 @@ const generateSite = require('@antora/site-generator')
 const buildPlaybook = require('@antora/playbook-builder')
 const { once } = require('events')
 const ospath = require('path')
-const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')

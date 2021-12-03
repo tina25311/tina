@@ -6,6 +6,7 @@ const {
   GitServer,
   heredoc,
   loadSslConfig,
+  posixify,
   RepositoryBuilder,
   spy,
   trapAsyncError,
@@ -97,10 +98,6 @@ describe('aggregateContent()', function () {
     for (const v of Object.values(o)) Object.isFrozen(v) || deepFreeze(v)
     return Object.freeze(o)
   }
-
-  const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
-
-  const unposixify = ospath.sep === '\\' ? (p) => p.replace(/[/]/g, '\\') : undefined
 
   const prefixPath = (prefix, path_) => [prefix, path_].join(ospath.sep)
 
@@ -2792,7 +2789,7 @@ describe('aggregateContent()', function () {
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
-            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
+            posixify && !(repoBuilder.bare || repoBuilder.remote) ? ospath.normalize(symlinkPath) : symlinkPath
           const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
           expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
         })
@@ -2812,7 +2809,7 @@ describe('aggregateContent()', function () {
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
-            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink2Path) : symlink2Path
+            posixify && !(repoBuilder.bare || repoBuilder.remote) ? ospath.normalize(symlink2Path) : symlink2Path
           const expectedMessage = `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
           expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
         })
@@ -2832,7 +2829,7 @@ describe('aggregateContent()', function () {
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main', startPath })
           const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
-            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
+            posixify && !(repoBuilder.bare || repoBuilder.remote) ? ospath.normalize(symlinkPath) : symlinkPath
           const expectedMessage =
             `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} ` +
             `(ref: ${ref} | path: ${startPath})`
@@ -2854,7 +2851,7 @@ describe('aggregateContent()', function () {
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main', startPath })
           const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
-            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlinkPath) : symlinkPath
+            posixify && !(repoBuilder.bare || repoBuilder.remote) ? ospath.normalize(symlinkPath) : symlinkPath
           const expectedMessage =
             `Broken symbolic link detected at ${expectedPath} in ${repoBuilder.url} ` +
             `(ref: ${ref} | path: ${startPath})`
@@ -2876,7 +2873,7 @@ describe('aggregateContent()', function () {
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
           const ref = repoBuilder.getRefInfo('main')
           const expectedPath =
-            unposixify && !(repoBuilder.bare || repoBuilder.remote) ? unposixify(symlink1Path) : symlink1Path
+            posixify && !(repoBuilder.bare || repoBuilder.remote) ? ospath.normalize(symlink1Path) : symlink1Path
           const expectedMessage = `Symbolic link cycle detected at ${expectedPath} in ${repoBuilder.url} (ref: ${ref})`
           expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
         })

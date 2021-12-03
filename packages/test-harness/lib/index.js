@@ -178,6 +178,7 @@ module.exports = {
     key: fs.readFileSync(ospath.join(__dirname, '..', 'fixtures', 'ssl.key')),
   }),
   mockContentCatalog,
+  posixify: ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined,
   RepositoryBuilder,
   spy: chai.spy,
   toJSON: (obj) => JSON.stringify(obj, undefined, '  '),

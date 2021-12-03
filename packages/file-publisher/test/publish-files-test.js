@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { emptyDirSync, expect, heredoc, trapAsyncError, wipeSync } = require('@antora/test-harness')
+const { emptyDirSync, expect, heredoc, posixify, trapAsyncError, wipeSync } = require('@antora/test-harness')
 
 const File = require('vinyl')
 const { promises: fsp } = require('fs')
@@ -383,7 +383,7 @@ describe('publishFiles()', () => {
     expect(fsReport).to.include({
       path: DEFAULT_DEST_FS,
       resolvedPath: absFsPath,
-      fileUri: 'file://' + (ospath.sep === '\\' ? '/' + absFsPath.replace(/\\/g, '/') : absFsPath),
+      fileUri: posixify ? 'file:///' + posixify(absFsPath) : 'file://' + absFsPath,
     })
     const archiveReport = reports.find((report) => report.provider === 'archive')
     expect(archiveReport).to.exist()
