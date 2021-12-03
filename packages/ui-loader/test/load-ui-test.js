@@ -63,8 +63,7 @@ describe('loadUi()', () => {
       pipeline(
         globStream('**/*', { cwd: dir, dot: true, nomount: true, nosort: true, nounique: true }),
         map(({ path: abspath }, _, next) => {
-          if (ospath.sep === '\\') abspath = ospath.normalize(abspath)
-          fsp.stat(abspath).then((stat) => {
+          fsp.stat(ospath.sep === '\\' ? (abspath = ospath.normalize(abspath)) : abspath).then((stat) => {
             // NOTE set stable file permissions
             if (stat.isFile()) stat.mode = 33188
             else if (stat.isDirectory()) stat.mode = 16877

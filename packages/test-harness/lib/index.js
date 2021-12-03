@@ -18,6 +18,7 @@ const { configureLogger } = require('@antora/logger')
 const GitServer = require('node-git-server')
 const mockContentCatalog = require('./mock-content-catalog')(chai)
 const ospath = require('path')
+const { pathToFileURL: pathToFileURLObject } = require('url')
 const RepositoryBuilder = require('./repository-builder')
 
 beforeEach(() => configureLogger({ level: 'silent' })) // eslint-disable-line no-undef
@@ -178,6 +179,8 @@ module.exports = {
     key: fs.readFileSync(ospath.join(__dirname, '..', 'fixtures', 'ssl.key')),
   }),
   mockContentCatalog,
+  //pathToFileURL: (p) => (posixify ? 'file:///' + posixify(p) : 'file://' + p).replace(/ /g, '%20'),
+  pathToFileURL: (p) => pathToFileURLObject(p).href,
   posixify: ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined,
   RepositoryBuilder,
   spy: chai.spy,

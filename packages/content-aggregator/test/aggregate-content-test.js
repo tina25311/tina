@@ -6,6 +6,7 @@ const {
   GitServer,
   heredoc,
   loadSslConfig,
+  pathToFileURL,
   posixify,
   RepositoryBuilder,
   spy,
@@ -3118,20 +3119,15 @@ describe('aggregateContent()', function () {
           expectedFileSrc.origin.refhash = refhash
         } else if (repoBuilder.bare) {
           expectedFileSrc.origin.gitdir = repoBuilder.url
-          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+          expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
           expectedFileSrc.origin.refhash = refhash
           expectedFileSrc.origin.worktree = null
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
-          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
-          const fileUriScheme = posixify ? 'file:///' : 'file://'
-          expectedFileSrc.origin.fileUriPattern = fileUriScheme + repoBuilder.repoPath + '/%s'
+          expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
+          expectedFileSrc.origin.fileUriPattern = expectedFileSrc.origin.url + '/%s'
           expectedFileSrc.origin.gitdir = ospath.join((expectedFileSrc.origin.worktree = repoBuilder.repoPath), '.git')
-          expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath
-          if (posixify) {
-            expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
-            expectedFileSrc.fileUri = posixify(expectedFileSrc.fileUri)
-          }
+          expectedFileSrc.fileUri = pathToFileURL(expectedFileSrc.abspath)
         }
         expect(pageOne).to.include(expectedFile)
         expect(pageOne.src).to.eql(expectedFileSrc)
@@ -3176,21 +3172,16 @@ describe('aggregateContent()', function () {
           expectedFileSrc.origin.refhash = refhash
         } else if (repoBuilder.bare) {
           expectedFileSrc.origin.gitdir = repoBuilder.url
-          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+          expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
           expectedFileSrc.origin.refhash = refhash
           expectedFileSrc.origin.worktree = null
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, repoBuilder.startPath, expectedFileSrc.path)
-          const fileUriScheme = posixify ? 'file:///' : 'file://'
-          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+          expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
           expectedFileSrc.origin.fileUriPattern =
-            fileUriScheme + ospath.join(repoBuilder.repoPath, repoBuilder.startPath, '%s')
+            pathToFileURL(ospath.join(repoBuilder.repoPath, repoBuilder.startPath)) + '/%s'
           expectedFileSrc.origin.gitdir = ospath.join((expectedFileSrc.origin.worktree = repoBuilder.repoPath), '.git')
-          expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath
-          if (posixify) {
-            expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
-            expectedFileSrc.fileUri = posixify(expectedFileSrc.fileUri)
-          }
+          expectedFileSrc.fileUri = pathToFileURL(expectedFileSrc.abspath)
         }
         expect(pageOne).to.include(expectedFile)
         expect(pageOne.src).to.eql(expectedFileSrc)
@@ -3234,20 +3225,15 @@ describe('aggregateContent()', function () {
           expectedFileSrc.origin.refhash = refhash
         } else if (repoBuilder.bare) {
           expectedFileSrc.origin.gitdir = repoBuilder.url
-          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+          expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
           expectedFileSrc.origin.refhash = refhash
           expectedFileSrc.origin.worktree = null
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
-          const fileUriScheme = posixify ? 'file:///' : 'file://'
-          expectedFileSrc.origin.url = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
-          expectedFileSrc.origin.fileUriPattern = fileUriScheme + repoBuilder.repoPath + '/%s'
+          expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
+          expectedFileSrc.origin.fileUriPattern = expectedFileSrc.origin.url + '/%s'
           expectedFileSrc.origin.gitdir = ospath.join((expectedFileSrc.origin.worktree = repoBuilder.repoPath), '.git')
-          expectedFileSrc.fileUri = fileUriScheme + expectedFileSrc.abspath.replace(/ /g, '%20')
-          if (posixify) {
-            expectedFileSrc.origin.fileUriPattern = posixify(expectedFileSrc.origin.fileUriPattern)
-            expectedFileSrc.fileUri = posixify(expectedFileSrc.fileUri)
-          }
+          expectedFileSrc.fileUri = pathToFileURL(expectedFileSrc.abspath)
         }
         expect(actualFile).to.include(expectedFile)
         expect(actualFile.src).to.eql(expectedFileSrc)
@@ -3340,7 +3326,7 @@ describe('aggregateContent()', function () {
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
-        const expectedOriginUrl = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+        const expectedOriginUrl = pathToFileURL(repoBuilder.url)
         expect(page.src.origin.url).to.equal(expectedOriginUrl)
         expect(page.src.origin.worktree).to.exist()
       })
@@ -3354,7 +3340,7 @@ describe('aggregateContent()', function () {
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
-        const expectedOriginUrl = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+        const expectedOriginUrl = pathToFileURL(repoBuilder.url)
         expect(page.src.origin.url).to.equal(expectedOriginUrl)
         expect(page.src.origin.worktree).to.be.null()
       })
@@ -3368,7 +3354,7 @@ describe('aggregateContent()', function () {
         expect(aggregate).to.have.lengthOf(1)
         const page = aggregate[0].files[0]
         expect(page).to.not.be.undefined()
-        const expectedOriginUrl = posixify ? 'file:///' + posixify(repoBuilder.url) : 'file://' + repoBuilder.url
+        const expectedOriginUrl = pathToFileURL(repoBuilder.url)
         expect(page.src.origin.url).to.equal(expectedOriginUrl)
         expect(page.src.origin.worktree).to.exist()
       })
@@ -3496,7 +3482,7 @@ describe('aggregateContent()', function () {
         const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
         const gitdir = ospath.join(worktreePath, '.git')
         const branch = 'main'
-        const expectedfileUriPattern = posixify ? `file:///${posixify(worktreePath)}/%s` : `file://${worktreePath}/%s`
+        const expectedfileUriPattern = pathToFileURL(worktreePath) + '/%s'
         const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch' }, '', worktreePath)
         expect(origin.gitdir).to.equal(gitdir)
         expect(origin.url).to.equal(url)
@@ -3511,8 +3497,8 @@ describe('aggregateContent()', function () {
         const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
         const gitdir = ospath.join(worktreePath, '.git')
         const branch = 'main'
-        const url = posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath
-        const expectedfileUriPattern = url + '/%s'
+        const url = pathToFileURL(worktreePath)
+        const expectedfileUriPattern = pathToFileURL(worktreePath) + '/%s'
         const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch' }, '', worktreePath)
         expect(origin.gitdir).to.equal(gitdir)
         expect(origin.url).to.equal(url)
@@ -3608,14 +3594,10 @@ describe('aggregateContent()', function () {
           expect(pageOne.src.origin.url).to.equal(repoBuilderA.url)
           expect(pageTwo.src.origin.url).to.equal(repoBuilderB.url)
         } else if (!repoBuilderA.bare) {
-          const pageOneFileUri = posixify
-            ? `file:///${posixify(repoBuilderA.repoPath)}/${pageOne.src.path}`
-            : `file://${repoBuilderA.repoPath}/${pageOne.src.path}`
-          const pageTwoFileUri = posixify
-            ? `file:///${posixify(repoBuilderB.repoPath)}/${pageTwo.src.path}`
-            : `file://${repoBuilderB.repoPath}/${pageTwo.src.path}`
-          expect(pageOne.src.fileUri).to.equal(pageOneFileUri)
-          expect(pageTwo.src.fileUri).to.equal(pageTwoFileUri)
+          const expectedPageOneFileUri = pathToFileURL(repoBuilderA.repoPath) + '/' + pageOne.src.path
+          const expectedPageTwoFileUri = pathToFileURL(repoBuilderB.repoPath) + '/' + pageTwo.src.path
+          expect(pageOne.src.fileUri).to.equal(expectedPageOneFileUri)
+          expect(pageTwo.src.fileUri).to.equal(expectedPageTwoFileUri)
         }
       }, 2)
     })
@@ -4059,7 +4041,7 @@ describe('aggregateContent()', function () {
         expect(aggregate).to.have.lengthOf(1)
         const componentVersion = aggregate[0]
         expect(componentVersion).to.include({ name: 'the-component', version: 'v1.2.3' })
-        const fileUriBase = posixify ? 'file:///' + posixify(repoBuilder.repoPath) : 'file://' + repoBuilder.repoPath
+        const fileUriBase = pathToFileURL(repoBuilder.repoPath)
         const expectedUrls = [
           'README.adoc',
           'modules/ROOT/_attributes.adoc',

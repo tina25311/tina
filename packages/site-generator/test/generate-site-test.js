@@ -8,7 +8,7 @@ const {
   GitServer,
   heredoc,
   loadHtml,
-  posixify,
+  pathToFileURL,
   RepositoryBuilder,
   toJSON,
   trapAsyncError,
@@ -551,12 +551,8 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
-    const editLinkUrl =
-      'file://' +
-      (posixify
-        ? '/' + posixify(ospath.join(repoBuilder.repoPath, thePagePath))
-        : ospath.join(repoBuilder.repoPath, thePagePath))
-    expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
+    const expectedEditLinkUrl = pathToFileURL(ospath.join(repoBuilder.repoPath, thePagePath))
+    expect($('.toolbar .edit-this-page a')).to.have.attr('href', expectedEditLinkUrl)
   }).timeout(timeoutOverride)
 
   it('should point edit page link to edit URL instead of local file if CI env var is set', async () => {
@@ -1739,7 +1735,7 @@ describe('generateSite()', function () {
         await generateSite(getPlaybook(playbookFile))
         expect(messages).to.have.lengthOf(2)
         expect(messages[0]).to.equal('Site generation complete!\n')
-        const expectedFileUri = `file://${posixify ? '/' + posixify(absDestDir) : absDestDir}`
+        const expectedFileUri = pathToFileURL(absDestDir)
         expect(messages[1]).to.equal(`Open ${expectedFileUri} in a browser to view your site.\n`)
       } finally {
         Object.assign(process.stdout, defaultStdout)
@@ -1768,7 +1764,7 @@ describe('generateSite()', function () {
         await generateSite(getPlaybook(playbookFile))
         expect(messages).to.have.lengthOf(2)
         expect(messages[0]).to.equal('Site generation complete!\n')
-        const expectedFileUri = `file://${posixify ? '/' + posixify(absDestDir) : absDestDir}/index.html`
+        const expectedFileUri = pathToFileURL(ospath.join(absDestDir, 'index.html'))
         expect(messages[1]).to.equal(`Open ${expectedFileUri} in a browser to view your site.\n`)
       } finally {
         Object.assign(process.stdout, defaultStdout)
