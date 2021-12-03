@@ -2,6 +2,7 @@
 
 const EventEmitter = require('events')
 const getLogger = require('@antora/logger')
+const noopNotify = async function notify () {}
 const userRequire = require('@antora/user-require-helper')
 
 const FUNCTION_PROVIDERS = {
@@ -58,6 +59,7 @@ class GeneratorContext extends EventEmitter {
       const outcome = listener.length === 1 ? listener.call(this, this.getVariables()) : listener.call(this)
       if (outcome instanceof Promise) await outcome
     }
+    if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: noopNotify })
   }
 
   removeVariable (name) {
@@ -145,9 +147,7 @@ class GeneratorContext extends EventEmitter {
         }
       })
     }
-    if (this.eventNames().length) return
-    const notify = async () => undefined
-    Object.defineProperty(this, 'notify', { value: notify })
+    if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: noopNotify })
   }
 
   _registerFunctions () {
