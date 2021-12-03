@@ -702,7 +702,8 @@ function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = 
   } else {
     if (worktreePath) {
       origin.fileUriPattern =
-        (posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath) + path.join('/', startPath, '%s')
+        (posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath) +
+        (startPath ? '/' + startPath + '/%s' : '/%s')
     } else {
       origin.refhash = refhash
     }
