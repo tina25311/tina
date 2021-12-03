@@ -8,29 +8,28 @@ async function generateSite (playbook) {
   try {
     const { fxns, vars } = await GeneratorContext.start(context, playbook)
     await context.notify('playbookBuilt')
-    playbook = context.lockVariable('playbook')
+    playbook = vars.lock('playbook')
     vars.siteAsciiDocConfig = fxns.resolveAsciiDocConfig(playbook)
     vars.siteCatalog = new SiteCatalog()
     await context.notify('beforeProcess')
-    const siteAsciiDocConfig = context.lockVariable('siteAsciiDocConfig')
+    const siteAsciiDocConfig = vars.lock('siteAsciiDocConfig')
     await Promise.all([
       fxns.aggregateContent(playbook).then((contentAggregate) =>
         context.notify('contentAggregated', Object.assign(vars, { contentAggregate })).then(() => {
-          contentAggregate = context.removeVariable('contentAggregate')
-          vars.contentCatalog = fxns.classifyContent(playbook, contentAggregate, siteAsciiDocConfig)
+          vars.contentCatalog = fxns.classifyContent(playbook, vars.remove('contentAggregate'), siteAsciiDocConfig)
         })
       ),
       fxns.loadUi(playbook).then((uiCatalog) => context.notify('uiLoaded', Object.assign(vars, { uiCatalog }))),
     ])
     await context.notify('contentClassified')
-    const contentCatalog = context.lockVariable('contentCatalog')
-    const uiCatalog = context.lockVariable('uiCatalog')
+    const contentCatalog = vars.lock('contentCatalog')
+    const uiCatalog = vars.lock('uiCatalog')
     fxns.convertDocuments(contentCatalog, siteAsciiDocConfig)
     await context.notify('documentsConverted')
     vars.navigationCatalog = fxns.buildNavigation(contentCatalog, siteAsciiDocConfig)
     await context.notify('navigationBuilt')
     ;(({ composePage, create404Page }) => {
-      const navigationCatalog = context.removeVariable('navigationCatalog')
+      const navigationCatalog = vars.remove('navigationCatalog')
       contentCatalog.getPages((page) => page.out && composePage(page, contentCatalog, navigationCatalog))
       if (playbook.site.url) vars.siteCatalog.addFile(create404Page(siteAsciiDocConfig))
     })(fxns.createPageComposer(playbook, contentCatalog, uiCatalog, playbook.env))
@@ -43,8 +42,7 @@ async function generateSite (playbook) {
       await context.notify('siteMapped')
     }
     await context.notify('beforePublish')
-    const siteCatalog = context.lockVariable('siteCatalog')
-    return fxns.publishFiles(playbook, [contentCatalog, uiCatalog, siteCatalog]).then((publications) => {
+    return fxns.publishFiles(playbook, [contentCatalog, uiCatalog, vars.lock('siteCatalog')]).then((publications) => {
       if (!playbook.runtime.quiet && process.stdout.isTTY) {
         const indexPath = contentCatalog.getSiteStartPage() ? '/index.html' : ''
         const log = (msg) => process.stdout.write(msg + '\n')
@@ -55,7 +53,7 @@ async function generateSite (playbook) {
       }
       return context
         .notify('sitePublished', Object.assign(vars, { publications }))
-        .then(() => context.removeVariable('publications'))
+        .then(() => vars.remove('publications'))
     })
   } catch (err) {
     if (!GeneratorContext.isStopSignal(err)) throw err
