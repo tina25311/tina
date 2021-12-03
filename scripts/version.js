@@ -2,16 +2,16 @@
 
 const { exec } = require('child_process')
 const { promises: fsp } = require('fs')
-const path = require('path')
+const ospath = require('path')
 const { promisify } = require('util')
 const { version: VERSION } = require('../lerna.json')
 
-const PROJECT_ROOT_DIR = path.join(__dirname, '..')
-const CHANGELOG_FILE = path.join(PROJECT_ROOT_DIR, 'CHANGELOG.adoc')
-const COMPONENT_VERSION_DESC = path.join(PROJECT_ROOT_DIR, 'docs/antora.yml')
-const PACKAGES_DIR = path.join(PROJECT_ROOT_DIR, 'packages')
-const PROJECT_README_FILE = path.join(PROJECT_ROOT_DIR, 'README.adoc')
-const PACKAGE_LOCK_FILE = path.join(PROJECT_ROOT_DIR, 'package-lock.json')
+const PROJECT_ROOT_DIR = ospath.join(__dirname, '..')
+const CHANGELOG_FILE = ospath.join(PROJECT_ROOT_DIR, 'CHANGELOG.adoc')
+const COMPONENT_VERSION_DESC = ospath.join(PROJECT_ROOT_DIR, 'docs/antora.yml')
+const PACKAGES_DIR = ospath.join(PROJECT_ROOT_DIR, 'packages')
+const PROJECT_README_FILE = ospath.join(PROJECT_ROOT_DIR, 'README.adoc')
+const PACKAGE_LOCK_FILE = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
 
 function getCurrentDate () {
   const now = new Date()
@@ -26,7 +26,7 @@ function updateReadmes (now) {
         dirents
           .reduce(
             (accum, dirent) =>
-              dirent.isDirectory() ? accum.concat(path.join(PACKAGES_DIR, dirent.name, 'README.adoc')) : accum,
+              dirent.isDirectory() ? accum.concat(ospath.join(PACKAGES_DIR, dirent.name, 'README.adoc')) : accum,
             [PROJECT_README_FILE]
           )
           .map((readmeFile) =>
