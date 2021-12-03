@@ -118,7 +118,7 @@ test:windows:
   before_script:
   - choco upgrade -y nodejs --version=12.22.7
   - node -p '`Node.js ${process.version}`'
-  - npm i --no-package-lock --no-save --no-audit --silent npm@~8.1
+  - npm i --no-package-lock --no-save --no-audit --silent npm@~8.2
   - npx npm i --quiet
   script: npx --no-install gulp test
   <<: *save_coverage
