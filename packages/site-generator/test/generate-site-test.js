@@ -202,6 +202,29 @@ describe('generateSite()', function () {
       .with.subDirs(['2.0'])
   }).timeout(timeoutOverride)
 
+  it('should use relative UI root path for page in ROOT module of ROOT component', async () => {
+    await repoBuilder
+      .init('the-root-component')
+      .then(() =>
+        repoBuilder.addComponentDescriptorToWorktree({
+          name: 'ROOT',
+          version: '',
+        })
+      )
+      .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/index.adoc', '= Home'))
+      .then(() => repoBuilder.commitAll('add root component'))
+      .then(() => repoBuilder.close())
+    playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    await generateSite(getPlaybook(playbookFile))
+    expect(ospath.join(absDestDir, 'index.html')).to.be.a.file()
+    $ = loadHtmlFile('index.html')
+    expect($('head > link[rel=stylesheet]')).to.have.attr('href', './_/css/site.css')
+    expect($('body > script:first-of-type')).to.have.attr('src', './_/js/site.js')
+    expect($('nav.navbar .navbar-brand .navbar-item')).to.have.attr('href', '.')
+    expect($('.nav-panel-explore li.component:last-of-type a')).to.have.attr('href', 'the-component/2.0/index.html')
+  }).timeout(timeoutOverride)
+
   it('should derive version from reference name if version key is set on content source', async () => {
     await repoBuilder
       .open()
