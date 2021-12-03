@@ -25,11 +25,7 @@ function close () {
   if (rootLogger.closed) return
   const dest = Object.assign(rootLogger, closedLogger)[$stream].stream || rootLogger[$stream]
   if (dest instanceof EventEmitter && typeof dest.end === 'function') {
-    if (!(dest.fd in standardStreams)) {
-      finalizers.push(once(dest, 'close').catch(() => undefined)) && dest.end()
-    } else if ((dest._bufs || dest._buf).length) {
-      finalizers.push(once(dest, 'drain')) && dest.flush()
-    }
+    finalizers.push(once(dest, 'close').catch(() => undefined)) && dest.end()
   }
 }
 
@@ -77,11 +73,13 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     }
     close()
     if (prettyPrint) {
+      const end = destination.end
       ;(logger = pino(config, createPrettyDestination(destination, colorize)))[$stream].stream = destination
+      destination.end = end // workaround; see https://github.com/pinojs/pino-pretty/issues/279
     } else {
       logger = pino(config, destination)
     }
-    logger[$stream].flushSync = logger.silent // we do our own flush
+    logger[$stream].flushSync = logger.silent // we do our own flush in the finalizer
   }
   rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))
   return module.exports
