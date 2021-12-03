@@ -120,7 +120,9 @@ class GeneratorContext extends EventEmitter {
     this._registerFunctions()
     this._registerExtensions(playbook, this._initVariables(playbook))
     Object.defineProperties(this, { _init: {}, _initVariables: {}, _registerExtensions: {}, _registerFunctions: {} })
-    return { fxns: this.#fxns, vars: this.#vars }
+    const varsFacadeMethods = { lock: (name) => this.lockVariable(name), remove: (name) => this.removeVariable(name) }
+    const vars = new Proxy(this.#vars, { get: (target, property) => varsFacadeMethods[property] || target[property] })
+    return { fxns: this.#fxns, vars }
   }
 
   _initVariables (playbook) {
