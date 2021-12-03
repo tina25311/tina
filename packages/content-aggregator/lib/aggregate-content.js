@@ -891,7 +891,8 @@ function resolveRemoteUrl (repo, remoteName) {
         return 'https://' + url.substr(url.indexOf('@') + 1 || 6).replace(URL_PORT_CLEANER_RX, '$1')
       }
     }
-    return posixify ? 'file:///' + posixify(repo.dir) : 'file://' + repo.dir
+    url = posixify ? 'file:///' + posixify(repo.dir) : 'file://' + repo.dir
+    return ~url.indexOf(' ') ? url.replace(SPACE_RX, '%20') : url
   })
 }
 
