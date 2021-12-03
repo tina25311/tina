@@ -391,6 +391,19 @@ describe('publishFiles()', () => {
     await verifyArchiveOutput(DEFAULT_DEST_ARCHIVE)
   })
 
+  it('should escape spaces in file URI when publishing site to fs at path that contains spaces', async () => {
+    playbook.output.destinations = undefined
+    const destDir = './path with spaces'
+    playbook.output.dir = destDir
+    const reports = await publishFiles(playbook, catalogs)
+    expect(reports).to.have.lengthOf(1)
+    const fsReport = reports[0]
+    expect(fsReport).to.exist()
+    const absFsPath = ospath.resolve(playbook.dir, destDir)
+    expect(fsReport).to.include({ path: destDir, resolvedPath: absFsPath, fileUri: pathToFileURL(absFsPath) })
+    verifyFsOutput(destDir)
+  })
+
   it('should return empty array if site is not published to any destinations', async () => {
     const reports = await publishFiles(playbook, catalogs)
     expect(reports).to.be.empty()

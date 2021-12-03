@@ -3,7 +3,7 @@
 const expandPath = require('@antora/expand-path-helper')
 const { promises: fsp } = require('fs')
 const ospath = require('path')
-const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
+const { pathToFileURL } = require('url')
 const publishStream = require('./common/publish-stream')
 const { dest: vfsDest } = require('vinyl-fs')
 
@@ -16,7 +16,7 @@ function publishToFs (config, files, playbook) {
     provider: 'fs',
     path: destDir,
     resolvedPath: absDestDir,
-    fileUri: 'file://' + (posixify ? '/' + posixify(absDestDir) : absDestDir),
+    fileUri: pathToFileURL(absDestDir).href,
   }
   return config.clean
     ? fsp['rm' in fsp ? 'rm' : 'rmdir'](absDestDir, { recursive: true, force: true })
