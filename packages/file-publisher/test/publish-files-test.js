@@ -158,6 +158,14 @@ describe('publishFiles()', () => {
     verifyFsOutput(DEFAULT_DEST_FS)
   })
 
+  it('should publish site to fs at dir path when no destinations are specified', async () => {
+    playbook.output.dir = './public'
+    delete playbook.output.destinations
+    await publishFiles(playbook, catalogs)
+    expect(playbook.output.destinations).to.be.undefined()
+    verifyFsOutput(playbook.output.dir)
+  })
+
   it('should publish site to fs at default path when no path is specified', async () => {
     playbook.output.destinations.push({ provider: 'fs' })
     await publishFiles(playbook, catalogs)
