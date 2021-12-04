@@ -8,13 +8,15 @@ const ENCODED_SPACE_RX = /%20/g
 /**
  * Produces redirects (HTTP redirections) for registered page aliases.
  *
- * Iterates over files in the alias family from the content catalog and creates artifacts that
- * handle redirects from the URL of each alias to the target URL. The artifact that is created
- * depends on the redirect facility in use. If the redirect facility is static (the default), this
- * function populates the contents of the alias file with an HTML redirect page (i.e., bounce page).
- * If the redirect facility is nginx, this function creates and returns an nginx configuration file
- * that contains rewrite rules for each alias. If the redirect facility is disabled, this function
- * unpublishes the alias files by removing the out property on each alias file.
+ * Iterates over the virtual files in the alias family from the content catalog and creates
+ * artifacts that define redirects from the URL of each alias to the target URL. The artifact
+ * produced depends on the redirect facility specified. If the redirect facility is static (the
+ * default), this function populates the contents of the alias file with an HTML redirect page
+ * (i.e., bounce page). If the redirect facility is nginx, this function creates and returns an
+ * nginx configuration file that contains rewrite rules for each alias. If the redirect facility is
+ * netlify or gitlab, this function creates and returns a Netlify redirect file that contains
+ * rewrite rules for each alias. If the redirect facility is disabled, this function unpublishes the
+ * alias files by removing the out property on each alias file.
  *
  * @memberof redirect-producer
  *
@@ -25,7 +27,7 @@ const ENCODED_SPACE_RX = /%20/g
  * @param {String} playbook.urls.redirectFacility - The redirect facility for
  *   which redirect configuration is being produced.
  * @param {ContentCatalog} contentCatalog - The content catalog that provides
- *   access to the virtual content files (i.e., pages) in the site.
+ *   access to the virtual content files (i.e., aliases) in the site.
  * @returns {Array<File>} An array of File objects that contain rewrite configuration for the web server.
  */
 function produceRedirects (playbook, contentCatalog) {
@@ -153,8 +155,7 @@ function unpublish (files) {
 }
 
 function regexpEscape (str) {
-  // we don't escape "-" since it's meaningless in a literal
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // we don't escape "-" since it's meaningless in a literal
 }
 
 module.exports = produceRedirects
