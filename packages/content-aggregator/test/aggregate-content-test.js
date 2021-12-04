@@ -248,11 +248,11 @@ describe('aggregateContent()', function () {
         )
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
-        const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref})`
-        const aggregateContentDeferred = await trapAsyncError(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessageStart)
-        expect(aggregateContentDeferred).to.throw(expectedMessageEnd)
+        const expectedMessage = new RegExp(
+          `^${regexpEscape(COMPONENT_DESC_FILENAME)} has invalid syntax; unknown tag .*` +
+            ` in ${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)\n[\\s\\S]*version:`
+        )
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -624,9 +624,11 @@ describe('aggregateContent()', function () {
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'docs' })
         const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
         const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref} | path: docs)`
-        const aggregateContentDeferred = await trapAsyncError(aggregateContent, playbookSpec)
-        expect(aggregateContentDeferred).to.throw(expectedMessageStart)
-        expect(aggregateContentDeferred).to.throw(expectedMessageEnd)
+        const expectedMessage = new RegExp(
+          `^${regexpEscape(COMPONENT_DESC_FILENAME)} has invalid syntax; .*` +
+            ` in ${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)} \\| path: docs\\)\n`
+        )
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
 
@@ -6062,8 +6064,7 @@ describe('aggregateContent()', function () {
       const url = `http://localhost:${serverPort}/200/empty-response.git`
       playbookSpec.content.sources.push({ url })
       const commonErrorMessage = 'Remote did not reply using the "smart" HTTP protocol.'
-      const expectedErrorMessage =
-        `${commonErrorMessage} Expected "001e# service=git-upload-pack" but received: 0000 (url: ${url})`
+      const expectedErrorMessage = `${commonErrorMessage} Expected "001e# service=git-upload-pack" but received: 0000 (url: ${url})`
       const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
       expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
