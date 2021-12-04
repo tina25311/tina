@@ -25,6 +25,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *content-aggregator*: Coerce version with numeric value 0 to '0' instead of empty string (#901)
+* *content-aggregator*: Add context info to first line of error message (#904)
 * *file-publisher*: Escape spaces in value of fileUri property in publication report for fs destination
 
 == 3.0.0-beta.4 (2021-12-01)

@@ -428,9 +428,10 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
       return componentVersionBucket
     })
     .catch((err) => {
+      const msg = err.message
       const refInfo = `ref: ${ref.fullname.replace(HEADS_DIR_RX, '')}${worktreePath ? ' <worktree>' : ''}`
-      const pathInfo = !startPath || err.message.startsWith('the start path ') ? '' : ' | path: ' + startPath
-      throw Object.assign(err, { message: `${err.message} in ${repo.url || repo.dir} (${refInfo}${pathInfo})` })
+      const pathInfo = !startPath || msg.startsWith('the start path ') ? '' : ' | path: ' + startPath
+      throw Object.assign(err, { message: msg.replace(/$/m, ` in ${repo.url || repo.dir} (${refInfo}${pathInfo})`) })
     })
 }
 
