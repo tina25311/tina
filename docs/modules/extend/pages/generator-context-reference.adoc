@@ -22,7 +22,8 @@ In addition to the methods on EventEmitter, the following table describes the me
 |getFunctions
 |_none_
 |Returns the object of generator functions.
-A generator function is defined as any of the discrete steps in the generator, as well as any key utility functions those steps use.
+A generator function is defined as any of the discrete steps in the generator, as well as key utility functions those steps use.
+The built-in generator functions are not available until the `contextStarted` event is emitted.
 This object is read only.
 
 |getLogger
@@ -46,6 +47,7 @@ This object is read only.
 |replaceFunctions
 |Object
 |Binds the specified functions to the generator context and uses them to replace existing functions on the generator context.
+If this method is called before the `contextStarted` event, the corresponding built-in generator functions will not be required and registered.
 
 |removeVariable
 |String

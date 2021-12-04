@@ -14,6 +14,7 @@ WARNING: Replacing functions in an extension does put the code at greater risk o
 Like with context variables, generator functions are available on the generator context.
 The generator functions can be retrieved by calling the `getFunctions` method.
 This method returns an object of key-value pairs, where the keys are the function names and the values are the function objects.
+The built-in generator functions are not available until the `contentStarted` event is emitted.
 
 Here's an example that shows how to retrieve the `aggregateContent` function in an extension, assuming `this` is bound to the generator content.
 
@@ -31,7 +32,7 @@ The generator functions can be replaced by passing functions to the `replaceFunc
 This method accepts the same object signature that the `getFunctions` method returns, where the keys are the function names and the values are the function objects.
 
 You only have to specify the functions you want to replace.
-The generator will fall back to using its own functions for any function that is not replaced by an extension.
+The generator will fall back to using its own functions for any function that's not replaced by an extension.
 
 Here's an example that shows how to replace the `publishFiles` function in an extension:
 
@@ -43,6 +44,26 @@ module.exports.register = function () {
       console.log('Not publishing today')
       return []
     }
+  })
+}
+----
+
+When the functions are replaced matters.
+If you replace functions directly in the `register` method, it will prevent Antora from requiring and registering the corresponding built-in functions.
+If you replace functions in the `contextStarted` listener function, the function will replace the corresponding built-in function which has already been registered.
+This event gives you the opportunity to delegate to (i.e., wrap) the built-in function, as shown here:
+
+[,js]
+----
+module.exports.register = function () {
+  this.on('contextStarted', () => {
+    const delegate = this.getFunctions().publishFiles
+    this.replaceFunctions({
+      async publishFiles (playbook, catalogs) {
+        console.log('It\'s publish time!')
+        return delegate.call(this, playbook, catalogs)
+      }
+    })
   })
 }
 ----

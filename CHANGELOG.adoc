@@ -17,6 +17,8 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Enforce core YAML schema when reading YAML playbook files and values (#898)
 * *content-aggregator*: Enforce core YAML schema when reading component descriptor file (#898)
+* *site-generator*: Register Antora extensions before registering generator functions (#903)
+* *site-generator*: When registering functions, honor any functions that have already been replaced and bypass loading corresponding built-in functions (#903)
 * *site-generator*: Move creation of 404 page to page composer (#899)
 * Reorganize the test utils as a test harness package (#897)
 

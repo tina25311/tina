@@ -77,8 +77,9 @@ class GeneratorContext extends EventEmitter {
 
   replaceFunctions (updates) {
     const fxns = this.#fxns
+    const names = Object.assign({ publishSite: '' }, FUNCTION_PROVIDERS)
     Object.entries(updates).forEach(([name, fxn]) => {
-      if (name in fxns) fxns[name] = fxn.bind(this)
+      if (name in names && typeof fxn === 'function') fxns[name] = fxn.bind(this)
     })
   }
 
@@ -117,16 +118,21 @@ class GeneratorContext extends EventEmitter {
   }
 
   _init (playbook) {
-    this._registerFunctions()
-    this._registerExtensions(playbook, this._initVariables(playbook))
-    Object.defineProperties(this, { _init: {}, _initVariables: {}, _registerExtensions: {}, _registerFunctions: {} })
-    const varsFacadeMethods = { lock: (name) => this.lockVariable(name), remove: (name) => this.removeVariable(name) }
-    const vars = new Proxy(this.#vars, { get: (target, property) => varsFacadeMethods[property] || target[property] })
-    return { fxns: this.#fxns, vars }
-  }
-
-  _initVariables (playbook) {
-    return (this.#vars = { playbook })
+    const fxns = (this.#fxns = Object.defineProperty({}, 'publishSite', {
+      enumerable: true,
+      get () {
+        return this.publishFiles
+      },
+      set (value) {
+        this.publishFiles = value
+      },
+    }))
+    const vars = (this.#vars = { playbook })
+    this._registerExtensions(playbook, vars)
+    this._registerFunctions(fxns)
+    Object.defineProperties(this, { _init: {}, _registerExtensions: {}, _registerFunctions: {} })
+    const varsFacade = { lock: (name) => this.lockVariable(name), remove: (name) => this.removeVariable(name) }
+    return { fxns, vars: new Proxy(vars, { get: (target, property) => varsFacade[property] || target[property] }) }
   }
 
   _registerExtensions (playbook, vars) {
@@ -152,29 +158,19 @@ class GeneratorContext extends EventEmitter {
     if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: noopNotify })
   }
 
-  _registerFunctions () {
-    this.#fxns = Object.entries(
+  _registerFunctions (fxns) {
+    Object.entries(
       Object.entries(FUNCTION_PROVIDERS).reduce((accum, [fxnName, moduleKey]) => {
         accum[moduleKey] = (accum[moduleKey] || []).concat(fxnName)
         return accum
       }, {})
-    ).reduce((accum, [moduleKey, fxnNames]) => {
-      const defaultExport = this.require('@antora/' + moduleKey)
-      const defaultExportName = defaultExport.name
+    ).forEach(([moduleKey, fxnNames]) => {
+      let defaultExport
       fxnNames.forEach((fxnName) => {
-        const fxn = fxnName === defaultExportName ? defaultExport : defaultExport[fxnName]
-        accum[fxnName] = fxn.bind(this)
+        if (fxnName in fxns) return
+        if (!defaultExport) defaultExport = this.require('@antora/' + moduleKey)
+        fxns[fxnName] = (fxnName === defaultExport.name ? defaultExport : defaultExport[fxnName]).bind(this)
       })
-      return accum
-    }, {})
-    Object.defineProperty(this.#fxns, 'publishSite', {
-      enumerable: true,
-      get () {
-        return this.publishFiles
-      },
-      set (value) {
-        this.publishFiles = value
-      },
     })
   }
 }
