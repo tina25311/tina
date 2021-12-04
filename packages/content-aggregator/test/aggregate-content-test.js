@@ -6063,7 +6063,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url })
       const commonErrorMessage = 'Remote did not reply using the "smart" HTTP protocol.'
       const expectedErrorMessage =
-        `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` + `but received: 0000 (url: ${url})`
+        `${commonErrorMessage} Expected "001e# service=git-upload-pack" but received: 0000 (url: ${url})`
       const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
       expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedErrorMessage)
