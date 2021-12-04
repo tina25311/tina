@@ -42,6 +42,14 @@ describe('produceRedirects()', () => {
       .called.with({ family: 'alias' })
   })
 
+  it('should run on aliases specified as an array', () => {
+    playbook.urls.redirectFacility = 'netlify'
+    const result = produceRedirects(playbook, contentCatalog.findBy({ family: 'alias' }))
+    expect(result).to.have.lengthOf(1)
+    expect(result[0]).to.have.property('contents')
+    expect(result[0].contents.toString()).to.include('/ /component-a/module-a/the-target.html 301!')
+  })
+
   describe('static facility', () => {
     beforeEach(() => {
       playbook.urls.redirectFacility = 'static'

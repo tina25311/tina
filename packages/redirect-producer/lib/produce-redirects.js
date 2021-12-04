@@ -8,7 +8,7 @@ const ENCODED_SPACE_RX = /%20/g
 /**
  * Produces redirects (HTTP redirections) for registered page aliases.
  *
- * Iterates over the virtual files in the alias family from the content catalog and creates
+ * Iterates over the aliases (or files in the alias family from the content catalog) and creates
  * artifacts that define redirects from the URL of each alias to the target URL. The artifact
  * produced depends on the redirect facility specified. If the redirect facility is static (the
  * default), this function populates the contents of the alias file with an HTML redirect page
@@ -26,12 +26,13 @@ const ENCODED_SPACE_RX = /%20/g
  * @param {String} playbook.urls - URL-related configuration data.
  * @param {String} playbook.urls.redirectFacility - The redirect facility for
  *   which redirect configuration is being produced.
- * @param {ContentCatalog} contentCatalog - The content catalog that provides
- *   access to the virtual content files (i.e., aliases) in the site.
+ * @param {Array<File>} aliases - An array of virtual files in the alias family
+ *   that define the redirect mappings. If aliases is a content catalog, the virtual
+ *   files in the alias family will be retrieved from it using the findBy method.
  * @returns {Array<File>} An array of File objects that contain rewrite configuration for the web server.
  */
-function produceRedirects (playbook, contentCatalog) {
-  const aliases = contentCatalog.findBy({ family: 'alias' })
+function produceRedirects (playbook, aliases) {
+  if ('findBy' in aliases) aliases = aliases.findBy({ family: 'alias' }) // remove in Antora 4
   if (!aliases.length) return []
   let siteUrl = playbook.site.url
   if (siteUrl) {
@@ -156,13 +157,14 @@ function unpublish (files) {
 
 function computeRelativeUrlPath (from, to) {
   return from === to
-    ? (to.charAt(to.length - 1) === '/' ? './' : path.basename(to))
+    ? to.charAt(to.length - 1) === '/'
+      ? './'
+      : path.basename(to)
     : (path.relative(path.dirname(from + '.'), to) || '.') + (to.charAt(to.length - 1) === '/' ? '/' : '')
 }
 
 function regexpEscape (str) {
-  // don't escape "-" since it's meaningless in a literal
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // don't escape "-" since it's meaningless in a literal
 }
 
 module.exports = produceRedirects
