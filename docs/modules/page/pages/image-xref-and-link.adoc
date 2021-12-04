@@ -7,13 +7,16 @@ You can create a link from an image to a page, attachment, image, or element by 
 
 == Xref element attribute
 
-The optional `xref` element attribute can be set in the attribute list of block and inline image macros.
+The `xref` element attribute can be set in the attribute list of block and inline image macros.
+The `xref` attribute is optional.
+It's structured and behaves the same way regardless of whether you assign it to a block image macro or inline image macro.
+
 The `xref` attribute accepts the resource ID of a publishable resource--a page, attachment, or image--as a value.
 
 .Set the xref attribute and assign it a resource ID
 [#ex-resource-base]
 ----
-image::my-image.jpg[xref=version@component:module:family$file.ext]
+image::an-image.jpg[xref=version@component:module:family$file.ext]
 ----
 
 It also accepts the ID of an element that's specified in the current page.
@@ -22,18 +25,18 @@ The element ID must be prefixed with the hash symbol (`#`) when assigned to the 
 .Set the xref attribute and assign is an element ID
 [#ex-element-base]
 ----
-image::my-image.jpg[xref=#fragment]
+image::an-image.gif[xref=#fragment]
 ----
 
 When your site is published and a visitor selects the embedded image, they'll be linked to the URL of the published resource or jump to the anchor in the current published page that corresponds to the specified element ID.
 
-The `xref` attribute in an optional named attribute.
+The `xref` attribute in a named attribute.
 If you set positional attributes, such as alt text, width, or height, on the image macro, assign them in the attribute list before setting the `xref` or any other named attributes.
 
 .Optional positional and named attributes assigned to an image macro
 [#ex-attributes-base]
 ----
-image:the-image.jpg[The image alt text,xref=version@component:module:family$file.ext,title="A tooltip for the image"]
+image:an-image.svg[The image alt text,xref=version@component:module:family$file.ext,title="A tooltip for the image"]
 ----
 
 Positional and named element attributes are separated by commas in the attribute list of the image macros.
@@ -49,9 +52,20 @@ How many of the target page's xref:resource-id-coordinates.adoc[resource ID coor
 ----
 image::console.svg[xref=modes.adoc] <.>
 ----
-<.> The resource ID assigned to `xref` only specifies the file coordinate of the page because, in this example, the current page and target page belong to the same component version and module.
+<.> The resource ID assigned to `xref` only specifies the file coordinate of the page because, for this example, let's assume the current page and target page belong to the same component version and module.
 
 The block image macro shown in <<ex-page>> will embed the image _console.svg_ into the current page and create a link from the image to the published URL of the target page.
+
+You can also xref:xref.adoc#id-fragment[append a fragment] to the end of the page's resource ID to link to an element within the page.
+In <<ex-fragment>>, a fragment that corresponds to the element ID `protocols` that's set in the content of [.path]_modes.adoc_ is appended to the end of the resource ID for [.path]_modes.adoc_.
+
+.current-page.adoc
+[#ex-fragment]
+----
+image::console.svg[xref=modes.adoc#protocols]
+----
+
+You can also link to an <<deep-link,element ID in the current page>>.
 
 [#attachment]
 == Link to an attachment from an image
@@ -69,8 +83,8 @@ Select the image:red-dot.jpg[Red circle,40,40,xref=telemetry:attachment$flight-p
 ----
 <1> Positional attributes are optional.
 If you do set one or more positional attributes on an image macro, assign them in the attribute list before setting `xref` or any other named attributes.
-In this example, the positional attributes `alt`, `width`, and `height` are set in the order accepted by the image macros
-<2> The resource ID assigned to `xref` specifies the module, `attachment$`, and file coordinate of the target attachment because, in this example, the target attachment belongs to a different module than the current page.
+In this example, the positional attributes `alt`, `width`, and `height` are set in the order accepted by the image macros.
+<2> The resource ID assigned to `xref` specifies the module, `attachment$`, and file coordinate of the target attachment because, for this example, let's assume the target attachment belongs to a different module than the current page.
 The `attachment$` coordinate is always required when the resource is an attachment.
 
 The inline image macro shown in <<ex-attachment>> will embed the image _red-dot.jpg_ into the current page and create a link from the image to the published URL of the target attachment.
@@ -78,7 +92,7 @@ The inline image macro shown in <<ex-attachment>> will embed the image _red-dot.
 [#deep-link]
 == Deep link to an element in the current page from an image
 
-To reference an element in the current page, assign the element's ID to the `xref` attribute.
+To reference an element in the current page, assign the ID of the element to the `xref` attribute.
 Prefix the element ID with the hash symbol (`#`) when you assign it to the `xref` attribute.
 <<ex-element>> shows a block image macro with an `xref` attribute assigned an element ID that corresponds to an ID on the current page.
 
