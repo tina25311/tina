@@ -1,6 +1,7 @@
 = Include a Partial
 :page-aliases: asciidoc:include-partial.adoc
 // URLs
+:url-include: {url-asciidoc}/directives/include/
 :url-tags: {url-asciidoc}/directives/include-tagged-regions/
 :url-leveloffset: {url-asciidoc}/directives/include-with-leveloffset/
 
@@ -23,7 +24,7 @@ The include directive accepts the xref:resource-id.adoc[Antora resource ID] of p
 Because the include directive is used to reference other resources, the `partial$` family coordinate must be specified in the partial's resource ID when it's assigned to an include directive.
 
 .Include directive assigned the fully qualified resource ID of a partial
-[listing#ex-base]
+[#ex-base]
 ----
 \include::version@component:module:partial$file-coordinate-of-target-partial.adoc[optional attribute]
 ----
@@ -45,9 +46,20 @@ See xref:partials.adoc#current-context[Current page context and structure] to le
 Let's break down the AsciiDoc include directive and resource ID coordinates you need to insert a <<target,target partial>> into the <<current,current page>>.
 
 . In your IDE or plain text editor, open the page where you want to insert the partial.
-For this exercise, we've opened the file [.path]_ranges.adoc_.
-[.path]_ranges.adoc_ is the current page and belongs to the component version _colorado 5.2_ and module _ROOT_, shown in <<ex-co>>.
+For this step and the subsequent steps, let's assume you've opened the file [.path]_ranges.adoc_.
 +
+--
+.ranges.adoc (current page)
+----
+= Hike the Ranges
+
+== Terrain
+
+Above the treeline, the trail becomes a hard scramble.
+----
+
+The current page, [.path]_ranges.adoc_, belongs to the component version _colorado 5.2_ and module _ROOT_, shown in <<ex-co>>.
+
 .Directories and files assigned to colorado 5.2
 [listing#ex-co]
 ----
@@ -64,9 +76,9 @@ For this exercise, we've opened the file [.path]_ranges.adoc_.
 <.> Defines the _ROOT_ module
 <.> Defines subsequent files as pages
 <.> Defines subsequent files as partials
+--
 
-. Let's reference the target partial, [.path]_treeline-warning.adoc_, from the current page, [.path]_ranges.adoc_, using an include directive.
-Select the line in the current page where you want the partial's content to be inserted.
+. In the current page, select the line where you want the partial's content to be inserted.
 At the beginning of the line, enter the name of the directive followed by two colons, `include::`.
 +
 .ranges.adoc (current page)
@@ -77,9 +89,10 @@ Above the treeline, the trail becomes a hard scramble.
 **include::**
 ----
 
-. Enter the resource ID of the target partial.
-As shown in <<ex-co>>, both [.path]_treeline-warning.adoc_ and [.path]_ranges.adoc_ belong to the same component version and module.
-Therefore, only the `partial$` family coordinate and file coordinate of the target partial needs to be assigned as the value of the include directive.
+. Let's reference the target partial, [.path]_treeline-warning.adoc_, from the current page.
+Assign the resource ID of the target partial to the include directive.
+Both [.path]_treeline-warning.adoc_ and [.path]_ranges.adoc_ belong to the same component version and module (see <<ex-co>>).
+Therefore, only the `partial$` family coordinate and file coordinate of the target partial need to be specified.
 +
 --
 .ranges.adoc (current page)
@@ -109,17 +122,18 @@ include::partial$treeline-warning.adoc**[]**
 ----
 
 The brackets of the include directive can contain an optional list of attributes, such as `lines`, `tag`, or `tags`.
-The attributes are entered as key-value pairs separated by commas.
+Attributes are entered as key-value pairs separated by commas.
+See the {url-include}[AsciiDoc include directive documentation^] for full details about the `lines`, `tag`, and `tags` syntax.
 --
 
 That's it!
-You've finished creating an include directive that will insert the target partial into the current page.
+You've created an include directive that will insert the target partial into the current page.
 
 The preceding instructions showed you how to insert a partial into a page under the most common scenario--the target partial and current page belong to the same component version and module and the target partial is stored at the root of a [.path]_partials_ folder.
 However, if the target partial is stored in a subdirectory of the [.path]_partials_ directory, its file coordinate must specify the <<relative-path,partials-relative directory path in addition to its filename and file extension>>.
 
 .current-page.adoc
-[listing#ex-file]
+[#ex-file]
 ----
 include::partial$target-partial-filename.adoc[] <.>
 
@@ -129,7 +143,7 @@ include::partial$./target-partial-filename.adoc[] <.>
 ----
 <.> File coordinate of the target partial when it's stored at the root of the [.path]_partials_ directory.
 <.> File coordinate of the target partial when it's stored in a subdirectory of the [.path]_partials_ directory.
-<.> File coordinate of the target partial when the target partial and current page are stored in a subdirectory with parallel family-relative directory paths.
+<.> File coordinate of the target partial when the target partial and current page are stored in subdirectories with parallel family-relative directory paths.
 _This is an advanced use case._
 
 Also, you'll need to specify additional resource ID coordinates when the target partial and current page don't belong to the <<modules,same module>> or <<component-versions,component version>>.
@@ -141,7 +155,7 @@ The following sections provide examples showing the various resource ID scenario
 The __partials__-relative directory path of the <<target,target partial>> is required in its file coordinate when it's stored in a subdirectory of the [.path]_partials_ directory.
 
 .File coordinate when the target partial is stored in a subdirectory of a partials directory
-[listing#ex-subdir-base]
+[#ex-subdir-base]
 ----
 \include::path/to/target-partial-filename.adoc[optional attribute]
 ----
@@ -171,9 +185,9 @@ As you can see in <<ex-co-subdir>> above, the partial and page belong to the _la
 In <<ex-subdir>>, an include directive in the [.path]_ridge.adoc_ page (current page) references the [.path]_gear-list.adoc_ file (target partial).
 
 .ridge.adoc (current page)
-[listing#ex-subdir]
+[#ex-subdir]
 ----
-== Planning for your hike
+== Plan your hike
 
 \include::partial$climate/gear-list.adoc[]
 ----
@@ -189,7 +203,7 @@ TIP: In special circumstances where the __partials__-relative directory path of 
 When the <<target,target partial>> and the <<current,current page>> don't belong to the same module, you must specify the target partial's xref:resource-id-coordinates.adoc#id-module[module], xref:resource-id-coordinates.adoc#id-family[family], and xref:resource-id-coordinates.adoc#id-resource[file coordinates] in the include directive.
 
 .Module, family, and file coordinates assigned to an include directive
-[listing#ex-module-base]
+[ex-module-base]
 ----
 include::module:partial$target-partial-filename.adoc[optional attribute] <.>
 
@@ -227,7 +241,7 @@ As shown in <<ex-co-mod>> above, the [.path]_ridge.adoc_ page belongs to the _la
 The module, `partial$`, and file coordinates of the target partial are assigned to the include directive.
 
 .ridge.adoc (current page)
-[listing#ex-module]
+[#ex-module]
 ----
 \include::ROOT:partial$treeline-warning.adoc[]
 ----
@@ -240,7 +254,7 @@ As shown in <<ex-module>>, the target partial's module coordinate is `ROOT`, its
 When the <<target,target partial>> and <<current,current page>> don't belong to the same documentation component, specify the partial's xref:resource-id-coordinates.adoc#id-version[version, component, module, family, and file coordinates] in the resource ID assigned to the include directive.
 
 .Version, component, module, family, and file coordinates assigned to an include directive
-[listing#ex-component-version-base]
+[#ex-component-version-base]
 ----
 include::version@component:module:partial$target-partial-filename.adoc[] <.>
 
@@ -248,7 +262,7 @@ include::version@component:module:partial$path/to/target-partial-filename.adoc[]
 
 include::component:module:partial$file-coordinate-of-target-partial.adoc[] <.>
 ----
-<.> The include directive is assigned the version, component, module, family, and file coordinates of the target partial when the target partial and current page don't belong to the same component version.
+<.> Assign the version, component, module, family, and file coordinates of the target partial to the include directive when the target partial and current page don't belong to the same component version.
 The target partial's file coordinate is its filename and file extension when the target partial is <<partials-root,stored at the root of a _partials_ family directory>>.
 <.> If <<relative-path,the target partial is stored in a subdirectory of a _partials_ directory>>, the target partial's file coordinate must specify its __partials__-relative directory path, filename, and file extension.
 <.> If the version coordinate isn't specified, Antora uses the <<latest-version,latest version of the target partial's component>> to complete the resource ID at runtime.
@@ -292,14 +306,14 @@ The [.path]_elevation.adoc_ page belongs to the component version _wyoming 1.0_.
 The include directive in <<ex-across-components>> will embed the content of the [.path]_treeline-warning.adoc_ partial into the [.path]_elevation.adoc_ page.
 
 .elevation.adoc (current page)
-[listing#ex-across-components]
+[#ex-across-components]
 ----
 \include::5.2@colorado:ROOT:partial$treeline-warning.adoc[]
 ----
 
 As shown in <<ex-across-components>>, the target partial's version coordinate is `5.2`, its component coordinate is `colorado`, its module coordinate is `ROOT`, its family coordinate is `partial$`, and its file coordinate is `treeline-warning.adoc`.
 You could also specify the resource ID for [.path]_treeline-warning.adoc_ as `5.2@colorado::partial$treeline-warning.adoc` (notice the module coordinate `ROOT` seems to be missing).
-When  the target partial's component coordinate is specified, and the target partial belongs to the _ROOT_ module, the module coordinate `ROOT` doesn't have to be explicitly specified.
+When the target partial's component coordinate is specified, and the target partial belongs to the _ROOT_ module, the module coordinate `ROOT` doesn't have to be explicitly specified.
 However, you must still enter the colon (`:`) that would follow the module coordinate.
 This shorthand only works when a component coordinate is specified and the module coordinate of the target partial is `ROOT`.
 
@@ -310,7 +324,7 @@ TIP: This behavior only applies when the target partial and current page belong 
 
 If a version isn't specified in the resource ID assigned to an include directive, *and the target partial and current page don't belong to the same component*, Antora uses the version coordinate of the xref:ROOT:how-component-versions-are-sorted.adoc#latest-version[latest version] of the target partial's component to complete the resource ID at runtime.
 
-Let's use the files that belong to the component versions _colorado 5.2_ (<<ex-co-latest>>), _wyoming 1.0_ (<<ex-wy1>>), and _wyoming 1.5_ (<<ex-wy-latest>> as the basis for the example in this section.
+Let's use the files that belong to the component versions _colorado 5.2_ (<<ex-co-latest>>), _wyoming 1.0_ (<<ex-wy1>>), and _wyoming 1.5_ (<<ex-wy-latest>>) as the basis for the example in this section.
 
 .Directories and files assigned to colorado 5.2
 [listing#ex-co-latest]
@@ -358,7 +372,7 @@ One [.path]_bears.adoc_ belongs to version _1.0_, the other [.path]_bears.adoc_ 
 Notice that the target partial's version coordinate isn't specified.
 
 .willow-creek.adoc (current page)
-[listing#ex-across-components-latest]
+[#ex-across-components-latest]
 ----
 \include::wyoming:sierra-madre:partial$bears.adoc[]
 ----
@@ -377,7 +391,6 @@ The content from the target partial will be displayed as a standalone block when
 You can attach content from the target partial to a block in the current page by placing the include directive on a new line directly adjacent to the content to which it should be attached.
 
 .current-page.adoc
-[listing]
 ----
 A paragraph in the page.
 
@@ -399,3 +412,4 @@ Another line of content.
 .*AsciiDoc and Asciidoctor resources*
 * {url-leveloffset}[Offset section headings with leveloffset^]
 * {url-tags}[Select regions of content with tags^]
+* {url-include}[AsciiDoc include directive^]

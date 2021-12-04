@@ -21,14 +21,16 @@ image::console.svg[]
 <<ex-block-base>> shows the structure of a block image macro.
 
 .Block image macro
-[listing#ex-block-base]
+[#ex-block-base]
 ----
 This is a paragraph.
 
-image::resource-id-of-target-image.ext[optional attribute,optional attribute]
+image::resource-id-of-target-image.ext[optional attribute,optional attribute] <.>
 
 This is another paragraph.
 ----
+<.> A block image is designated by two colons (`::`) after the macro name.
+It's preceded by an empty line, entered on a line by itself, and then followed by an empty line.
 
 At a minimum, a block image macro consists of the macro's prefix (`+image::+`), the resource ID of the target image, and a set of square brackets (`[]`).
 include::image-resource-id-examples.adoc[tag=target-current-def]

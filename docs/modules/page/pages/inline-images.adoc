@@ -19,10 +19,12 @@ For example, this is an SVG image image:blue-dot.svg[] that's embedded in this p
 <<ex-inline-base>> shows the structure of an inline image macro.
 
 .Inline image macro
-[listing#ex-inline-base]
+[#ex-inline-base]
 ----
-image:resource-id-of-target-image.ext[optional attribute,optional attribute]
+This sentence contains an inline image:resource-id-of-target-image.ext[optional attribute,optional attribute] image. <.>
 ----
+<.> An inline image is entered into the flow of the content.
+It's designated by a single colon (`:`) after the macro name.
 
 At a minimum, an inline image macro consists of the macro's prefix (`+image:+`), the resource ID of the target image, and a set of square brackets (`[]`).
 include::image-resource-id-examples.adoc[tag=target-current-def]
