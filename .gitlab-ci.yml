@@ -39,7 +39,7 @@ variables:
   before_script:
   - node -p '`Node.js ${process.version}`'
   - mv package.json package~.json && mv package-lock.json package-lock~.json
-  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p "require('./package~.json').devDependencies.npm")
+  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p 'require("./package~.json").devDependencies.npm')
   - rm -f node_modules/.package-lock.json
   - mv package~.json package.json && mv package-lock~.json package-lock.json
   - npx npm i --quiet
@@ -128,7 +128,7 @@ test:windows:
   - choco upgrade -y nodejs --version=12.22.7
   - node -p '`Node.js ${process.version}`'
   - Get-ChildItem package*.json | Rename-Item -NewName { $_.Name -replace '.json','~.json' }
-  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p 'require("./package~.json").devDependencies.npm')
+  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p "require('./package~.json').devDependencies.npm")
   - Get-ChildItem package*~.json | Rename-Item -NewName { $_.Name -replace '~.json','.json' }
   - if (Test-Path node_modules/.package-lock.json) { Remove-Item node_modules/.package-lock.json }
   - npx npm i --quiet
