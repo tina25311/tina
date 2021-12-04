@@ -21,6 +21,19 @@ include::example$time-generation-extension.js[]
 In <<ex-listen>>, we use the `on` method of the generator context to add two listeners, one for when the `playbookBuilt` event is fired and one for when the `sitePublished` event is fired.
 The `on` method returns the generator context, so we can use it to chain calls, as show in the previous example.
 
+[TIP]
+====
+Since built-in events are only emitted once, you can register the listener for a built-in event using `once` instead of `on`.
+
+[,js]
+----
+this.once('playbookBuilt', () => { ... })
+----
+
+Using `once` provides a very slight optimization.
+It allows the event emitter to deactivate itself once there are no more listeners remaining.
+====
+
 By default, listeners are invoked in the order they are added.
 To guarantee our timer starts before listeners from other extensions are called, our `playbookBuilt` listener should be called before other listeners of the `playbookBuilt` event and our `sitePublished` listener should be called after other listeners of the `sitePublished` event.
 There are two changes we must make to get this to work.
