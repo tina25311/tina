@@ -49,10 +49,24 @@ include::example$better-time-generation-extension.js[]
 Second, we should list our extension last in the playbook.
 Taking these two steps ensures our timer runs around all other listeners.
 
-TIP: If you want to time a specific stage of the generator, you can update this extension to listen to xref:generator-events-reference.adoc[other generator events].
+[TIP]
+====
+If you want to time a specific stage of the generator, you can update this extension to listen to xref:generator-events-reference.adoc[other generator events].
+To extend the timer all the way to when Node.js exits, you can listen for the `exit` event on the Node.js process object.
+
+[,js]
+----
+process.on('exit', () => {
+  console.timeEnd('generation time')
+})
+----
+
+To learn more about the `exit` event and other events emitted by the Node.js process, see https://nodejs.org/api/process.html#process-events[Node.js process events].
+====
 
 The EventEmitter API, which the generator context inherits, also allows listeners to be retrieved, removed, and added again.
 That opens up the possibility that one extension can rearrange listeners added by other extensions, if the need arises.
+Extensions can also raise and listen for custom events using the same methods.
 
 To do something more interesting than time the execution and print messages to the console, we need to xref:use-context-variables.adoc[use context variables].
 Let's learn how that's done next.
