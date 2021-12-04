@@ -1611,7 +1611,7 @@ describe('generateSite()', function () {
       expect(process.exitCode).to.be.undefined()
     })
 
-    it('should allow register function to replace functions on the generator context', async () => {
+    it('should allow register function to replace functions on generator context', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         const mapSite = (playbook, publishableFiles) => {
@@ -1648,6 +1648,10 @@ describe('generateSite()', function () {
 
         module.exports.register = function () {
           this.replaceFunctions({ publishSite })
+
+          this.once('contextStarted', () => {
+            if (this.getFunctions().publishSite !== this.getFunctions().publishFiles) console.log('different!')
+          })
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
@@ -1661,8 +1665,10 @@ describe('generateSite()', function () {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         module.exports.register = function () {
+          const observedOnRegister = Object.keys(this.getFunctions())
           this.on('beforeProcess', ({ playbook }) => {
-            playbook.env.OBSERVED = Object.keys(this.getFunctions()).sort()
+            playbook.env.OBSERVED_ON_REGISTER = observedOnRegister
+            playbook.env.OBSERVED_BEFORE_PROCESS = Object.keys(this.getFunctions()).sort()
           })
           this.on('beforePublish', ({ contentCatalog, siteCatalog }) => {
             const { loadAsciiDoc } = this.getFunctions()
@@ -1681,7 +1687,8 @@ describe('generateSite()', function () {
       playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
-      expect(env.OBSERVED).to.eql([
+      expect(env.OBSERVED_ON_REGISTER).to.eql(['publishSite'])
+      expect(env.OBSERVED_BEFORE_PROCESS).to.eql([
         'aggregateContent',
         'buildNavigation',
         'classifyContent',
@@ -1700,6 +1707,32 @@ describe('generateSite()', function () {
       expect(ospath.join(absDestDir, 'generated-page.html'))
         .to.be.a.file()
         .with.contents.that.match(/href="the-component\/2.0\/the-page.html"[^>]*>The Page</)
+    })
+
+    it('should allow contextStarted listener to proxy functions on the generator context', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.once('contextStarted', () => {
+            const { produceRedirects } = this.getFunctions()
+            this.replaceFunctions({
+              produceRedirects: (playbook) => {
+                return produceRedirects(playbook, {
+                  findBy: () => [{ pub: { url: '/acme/from.html' }, rel: { pub: { url: '/acme/to.html' } } }],
+                })
+              }
+            })
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      playbookSpec.urls = { redirect_facility: 'netlify' }
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      await generateSite(getPlaybook(playbookFile))
+      expect(ospath.join(absDestDir, '_redirects'))
+        .to.be.a.file()
+        .with.contents.that.match(/^\/acme\/from\.html \/acme\/to\.html 301!/)
     })
   })
 

@@ -13,7 +13,7 @@ If the variable is locked, meaning it cannot be replaced, it's italicized.
 |register(){empty}footnote:register[The register function isn't an event, but rather the function Antora calls on an extension so it can register listeners.]
 |playbook, config
 
-|contextStarted
+|contextStarted{empty}footnote:functions[The built-in generator functions are not available until this event is emitted.]
 |playbook
 
 |playbookBuilt
