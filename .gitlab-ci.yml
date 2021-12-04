@@ -38,9 +38,10 @@ variables:
 - &npm_install
   before_script:
   - node -p '`Node.js ${process.version}`'
-  - mv package-lock.json package-lock.json~
-  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p 'require("./package.json").devDependencies.npm')
-  - mv package-lock.json~ package-lock.json
+  - mv package.json package~.json && mv package-lock.json package-lock~.json
+  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p "require('./package~.json').devDependencies.npm")
+  - rm -f node_modules/.package-lock.json
+  - mv package~.json package.json && mv package-lock~.json package-lock.json
   - npx npm i --quiet
 - &save_coverage
   artifacts:
@@ -49,12 +50,11 @@ variables:
 # this step also seeds the dependency cache
 lint:
   interruptible: true
-  image: node:12-buster
   stage: init
   rules:
   - *unless_docs_mr
-  - *if_releases
   - *if_code_pushed
+  - *if_schedule
   <<: *npm_cache_pull_push
   <<: *npm_install
   script: npx --no-install gulp lint
@@ -63,7 +63,8 @@ test:node-12-linux:
   image: node:12-buster
   stage: verify
   rules:
-  - *if_releases
+  - *unless_docs_mr
+  - *if_code_pushed
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
@@ -73,7 +74,6 @@ test:node-14-linux:
   image: node:14-buster
   stage: verify
   rules:
-  - *if_releases
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
@@ -85,8 +85,8 @@ test:node-16-linux:
     COVERAGE: 'true'
   rules:
   - *unless_docs_mr
-  - *if_releases
   - *if_code_pushed
+  - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
   script: npx --no-install gulp test
@@ -96,7 +96,6 @@ test:node-17-linux:
   image: node:17-buster
   stage: verify
   rules:
-  - *if_releases
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
@@ -107,7 +106,6 @@ test:macos:
   image: macos-11-xcode-12
   stage: verify
   rules:
-  - *if_releases
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
@@ -122,14 +120,17 @@ test:windows:
     MOCHA_TIMEOUT: '10000'
   rules:
   - *unless_docs_mr
-  - *if_releases
   - *if_code_pushed
+  - *if_schedule
   # cache does not currently work on the Windows runner
   #<<: *npm_cache_pull
   before_script:
   - choco upgrade -y nodejs --version=12.22.7
   - node -p '`Node.js ${process.version}`'
-  - npm i --no-package-lock --no-save --no-audit --silent npm@~8.1
+  - Get-ChildItem package*.json | Rename-Item -NewName { $_.Name -replace '.json','~.json' }
+  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p 'require("./package~.json").devDependencies.npm')
+  - Get-ChildItem package*~.json | Rename-Item -NewName { $_.Name -replace '~.json','.json' }
+  - if (Test-Path node_modules/.package-lock.json) { Remove-Item node_modules/.package-lock.json }
   - npx npm i --quiet
   script: npx --no-install gulp test
   <<: *save_coverage
