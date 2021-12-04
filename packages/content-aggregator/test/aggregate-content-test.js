@@ -622,8 +622,6 @@ describe('aggregateContent()', function () {
         )
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'docs' })
-        const expectedMessageStart = `${COMPONENT_DESC_FILENAME} has invalid syntax;`
-        const expectedMessageEnd = ` in ${repoBuilder.url} (ref: ${ref} | path: docs)`
         const expectedMessage = new RegExp(
           `^${regexpEscape(COMPONENT_DESC_FILENAME)} has invalid syntax; .*` +
             ` in ${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)} \\| path: docs\\)\n`
