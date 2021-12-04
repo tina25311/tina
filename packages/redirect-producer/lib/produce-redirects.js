@@ -1,7 +1,7 @@
 'use strict'
 
-const computeRelativeUrlPath = require('@antora/asciidoc-loader/lib/util/compute-relative-url-path')
 const File = require('vinyl')
+const { posix: path } = require('path')
 
 const ENCODED_SPACE_RX = /%20/g
 
@@ -154,8 +154,15 @@ function unpublish (files) {
   return []
 }
 
+function computeRelativeUrlPath (from, to) {
+  return from === to
+    ? (to.charAt(to.length - 1) === '/' ? './' : path.basename(to))
+    : (path.relative(path.dirname(from + '.'), to) || '.') + (to.charAt(to.length - 1) === '/' ? '/' : '')
+}
+
 function regexpEscape (str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // we don't escape "-" since it's meaningless in a literal
+  // don't escape "-" since it's meaningless in a literal
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 module.exports = produceRedirects
