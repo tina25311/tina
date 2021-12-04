@@ -16,12 +16,12 @@ The include directive accepts the xref:resource-id.adoc[Antora resource ID] of p
 By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
 
 .Include directive assigned the fully qualified resource ID of a page
-[listing#ex-base]
+[#ex-base]
 ----
 \include::version@component:module:file-coordinate-of-target-page.adoc[optional attribute]
 ----
 
-At a minimum, an include directive consists of the directive's prefix (`+include::+`), the resource ID of the target page, and a set of square brackets (`[]`).
+An include directive consists of the directive's prefix (`+include::+`), the resource ID of the target page, and a set of square brackets (`[]`).
 You can specify optional attributes within the square brackets as key-value pairs separated by commas.
 [[target]]The [.term]*target page* is the source file of a page that's being referenced by the current page.
 The target page is referenced by assigning its resource ID to an include directive in the content of the current page.
@@ -33,14 +33,21 @@ This means the current page's component version, module, attributes, and other e
 See xref:partials.adoc#current-context[Current page context and structure] to learn more.
 
 [#pages-root]
-== Embed a page into a page
+== Insert a page into a page
 
 Let's break down the AsciiDoc include directive and resource ID coordinates you need to insert a <<target,target page>> into the <<current,current page>>.
 
 . In your IDE or plain text editor, open the page where you want to include content from the target page.
-For this exercise, we've opened the file [.path]_ranges.adoc_.
-[.path]_ranges.adoc_ is the current page and belongs to the _ROOT_ module of the component version _colorado 5.2_ shown in <<ex-co>>.
+For this step and the subsequent steps, let's assume you've opened the file [.path]_ranges.adoc_.
 +
+--
+.ranges.adoc (current page)
+----
+There are three mountain passes in the Sawatch Range.
+----
+
+The current page, [.path]_ranges.adoc_, belongs to the component version _colorado 5.2_ and module _ROOT_, shown in <<ex-co>>.
+
 .Directories and files assigned to colorado 5.2
 [listing#ex-co]
 ----
@@ -55,9 +62,9 @@ For this exercise, we've opened the file [.path]_ranges.adoc_.
 <.> Defines the component version as _colorado 5.2_
 <.> Defines the _ROOT_ module
 <.> Defines subsequent files as pages
+--
 
-. Let's reference the target page, [.path]_cottonwood-pass.adoc_, from the current page, [.path]_ranges.adoc_, using an include directive.
-Select the line in the current page where you want the page's content to be inserted.
+. In the current page, select the line where you want the page's content to be inserted.
 At the beginning of the line, enter the name of the directive followed by two colons, `include::`.
 +
 .ranges.adoc (current page)
@@ -68,9 +75,10 @@ There are three mountain passes in the Sawatch Range.
 **include::**
 ----
 
-. Enter the resource ID of the target page.
-As shown in <<ex-co>>, both [.path]_cottonwood-pass.adoc_ and [.path]_ranges.adoc_ belong to the same component version and module.
-Therefore, only the file coordinate of the target page needs to be assigned as the value of the include directive.
+. Let's reference the target page, [.path]_cottonwood-pass.adoc_, from the current page.
+Assign the resource ID of the target page to the include directive.
+Both [.path]_cottonwood-pass.adoc_ and [.path]_ranges.adoc_ belong to the same component version and module (see <<ex-co>>).
+Therefore, only the file coordinate of the target page needs to be specified.
 +
 --
 .ranges.adoc (current page)
@@ -84,7 +92,7 @@ include::**cottonwood-pass.adoc**
 The file coordinate for the [.path]_cottonwood-pass.adoc_ page is `cottonwood-pass.adoc`.
 The target page's file coordinate consists solely of its filename and file extension because [.path]_cottonwood-pass.adoc_ is stored at the root of the [.path]_pages_ directory.
 
-You can use the `page$` family coordinate in the resource ID if you prefer, but it isn't required when including a page.
+NOTE: You can use the `page$` family coordinate in the resource ID if you prefer, but it isn't required when including a page.
 The include directive assumes the family coordinate is `page$` when it isn't specified.
 --
 
@@ -101,16 +109,16 @@ include::cottonwood-pass.adoc**[]**
 
 The brackets of the include directive can contain an optional list of attributes, such as `lines`, `tag`, or `tags`.
 The attributes are entered as key-value pairs separated by commas.
-See the {url-include}[AsciiDoc include directive documentation] for full details about the `lines`, `tag`, and `tags` syntax.
+See the {url-include}[AsciiDoc include directive documentation^] for full details about the `lines`, `tag`, and `tags` syntax.
 --
 
 That's it!
-You've finished creating an include directive that will insert the target page into the current page.
+You've created an include directive that will insert the target page into the current page.
 
 The structure of the target page's file coordinate varies depending on whether the target page is stored at the root of the [.path]_pages_ family directory, like in the preceding instructions, or in a subdirectory of the [.path]_pages_ directory.
 
 .current-page.adoc
-[listing#ex-file]
+[#ex-file]
 ----
 include::target-page-filename.adoc[] <.>
 
@@ -122,10 +130,8 @@ include::./target-page-filename.adoc[] <.>
 <.> File coordinate of the target page when it's stored in a subdirectory of the [.path]_pages_ directory.
 <.> File coordinate of the target page when the target page and current page are stored in the same subdirectory of the [.path]_pages_ directory.
 
-Also, you'll need to specify additional resource ID coordinates when the target page and current page don't belong to the <<module-or-component,same module>> or <<module-or-component,component version>>.
-The following sections provide examples showing the various resource ID scenarios.
-
 The following sections describe how to specify a file coordinate with a <<relative-path,pages-relative directory path>> or <<token,relative path token>>.
+Also, you'll need to specify additional resource ID coordinates when the target page and current page don't belong to the <<module-or-component,same module>> or <<module-or-component,component version>>.
 
 [#relative-path]
 === File coordinate with pages-relative directory path
@@ -133,7 +139,7 @@ The following sections describe how to specify a file coordinate with a <<relati
 The __pages__-relative directory path of the <<target,target page>> is required in its file coordinate when it's stored in a subdirectory of the [.path]_pages_ directory.
 
 .File coordinate when the target page is stored in a subdirectory of a pages directory
-[listing#ex-subdir-base]
+[#ex-subdir-base]
 ----
 \include::path/to/target-page-filename.adoc[optional attribute]
 ----
@@ -164,7 +170,7 @@ As you can see in <<ex-co-subdir>> above, the target page and current page belon
 In <<ex-subdir>>, an include directive in the [.path]_cottonwood-pass.adoc_ page (current page) references the [.path]_safety.adoc_ file (target page).
 
 .cottonwood-pass.adoc (current page)
-[listing#ex-subdir]
+[#ex-subdir]
 ----
 == Trip planning
 
@@ -180,8 +186,8 @@ If the current page and target page were stored in the same subdirectory, you co
 
 If the <<target,target page>> and <<current,current page>> are stored in the same subdirectory within the [.path]_pages_ directory, the __pages__-relative directory path of the target page's file coordinate can be replaced with the relative path token, `./`.
 
-.File coordinate in include directive when target and current pages are stored in the same subdirectory
-[listing#ex-token-base]
+.File coordinate in include directive when the target page and current page are stored in the same subdirectory
+[#ex-token-base]
 ----
 \include::./target-page-filename.adoc[]
 ----
@@ -214,7 +220,7 @@ When the target page and current page are stored in the same subdirectory within
 In <<ex-token>>, the include directive in the [.path]_safety.adoc_ page (current page) references the [.path]_gear.adoc_ page (target page).
 
 .safety.adoc (current page)
-[listing#ex-token]
+[#ex-token]
 ----
 \include::./gear.adoc[]
 ----
@@ -232,23 +238,23 @@ We strongly recommend that you use the `./` token when referencing a target page
 You can include a page from any module or component version into another page that belongs to your site by assigning the target page's module coordinate or version, component, and module coordinates, respectively, to the include directive.
 
 .current-page.adoc
-[listing#ex-module-component-base]
+[#ex-module-component-base]
 ----
-include::module:file-coordinate-of-target-page.adoc[optional attribute] <.>
+include::module:file-coordinate-of-target-page.adoc[] <.>
 
-include::version@component:module:file-coordinate-of-target-page.adoc[optional attribute] <.>
+include::version@component:module:file-coordinate-of-target-page.adoc[] <.>
 
-include::component:module:file-coordinate-of-target-page.adoc[optional attribute] <.>
+include::component:module:file-coordinate-of-target-page.adoc[] <.>
 ----
-<.> If the target page and current page belong to the same component version, but don't belong to the same module, the include directive is assigned the module and file coordinates of the target page.
-<.> The include directive is assigned the version, component, module, and file coordinates of the target page when the target page and current page don't belong to the same component version.
+<.> Assign the module and file coordinates of the target page to the include directive when the target page and current page belong to the same component version but not the same module.
+<.> Assign the version, component, module, and file coordinates of the target page to the include directive when the target page and current page don't belong to the same component version.
 <.> If the version coordinate isn't specified, Antora uses the xref:ROOT:how-component-versions-are-sorted.adoc#latest-version[latest version of the target page's component] to complete the resource ID at runtime.
 This behavior only applies when the target page and current page belong to different docs components.
 
 For example, to embed the content of [.path]_cottonwood-pass.adoc_ (target page) into a page (current page) that belongs to a different module of the _colorado 5.2_ component version, specify the target page's module coordinate in the include directive.
 
 .current-page.adoc
-[listing#ex-module]
+[#ex-module]
 ----
 \include::ROOT:cottonwood-pass.adoc[]
 ----
@@ -256,7 +262,7 @@ For example, to embed the content of [.path]_cottonwood-pass.adoc_ (target page)
 If the current page belongs to a different component version than [.path]_cottonwood-pass.adoc_ (target page), specify the target page's version, component, module, and file coordinates.
 
 .current-page.adoc
-[listing#ex-components]
+[#ex-components]
 ----
 \include::5.2@colorado:ROOT:cottonwood-pass.adoc[]
 ----
@@ -271,14 +277,13 @@ The content from the target page will be displayed as a standalone block when yo
 You can attach content from the target page to a block in the current page by placing the include directive on a new line directly adjacent to the content to which it should be attached.
 
 .current-page.adoc
-[listing]
 ----
 A paragraph in the page.
 
-include::cli-options.adoc[tag=compass] <.>
+include::resource-id-of-target-page.adoc[tag=value] <.>
 
 A line of content.
-include::addendum.adoc[] <.>
+include::resource-id-of-target-page.adoc[] <.>
 Another line of content.
 ----
 <.> To display the included content as a standalone block, make sure there is an empty line before the include directive and after the include directive.
@@ -294,3 +299,4 @@ Another line of content.
 .*AsciiDoc and Asciidoctor resources*
 * {url-tags}[Select regions of content with tags^]
 * {url-leveloffset}[Offset section headings with leveloffset^]
+* {url-include}[AsciiDoc include directive^]
