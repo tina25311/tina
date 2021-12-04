@@ -56,4 +56,3 @@ That opens up the possibility that one extension can rearrange listeners added b
 
 To do something more interesting than time the execution and print messages to the console, we need to xref:use-context-variables.adoc[use context variables].
 Let's learn how that's done next.
-[
