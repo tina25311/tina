@@ -1,4 +1,4 @@
-= ADR 0009: Project website for Antora
+= ADR 0009: Project Website for Antora
 :revdate: 2017-12-22
 
 == Status

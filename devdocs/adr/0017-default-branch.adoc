@@ -1,4 +1,4 @@
-= ADR 0017: Change default branch name and built-in unversioned value
+= ADR 0017: Change Default Branch Name and Built-in Unversioned Value
 :revdate: 2021-09-28
 :url-gnome: Gnome.org Desktop Development mailing list, https://mail.gnome.org/archives/desktop-devel-list/2020-June/msg00023.html[Re: Replacing "master" reference in git branch names]
 
