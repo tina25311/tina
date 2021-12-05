@@ -17,6 +17,9 @@
   "bin": {
     "antora": "bin/antora"
   },
+  "scripts": {
+    "test": "_mocha"
+  },
   "dependencies": {
     "@antora/logger": "3.0.0-beta.5",
     "@antora/playbook-builder": "3.0.0-beta.5",
