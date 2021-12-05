@@ -1,22 +1,16 @@
 'use strict'
 
-const {
-  loadAsciiDoc: _loadAsciiDoc,
-  extractAsciiDocMetadata: _extractAsciiDocMetadata,
-} = require('@antora/asciidoc-loader')
-
 /**
  * Converts the contents on the specified file from AsciiDoc to embedded HTML.
  *
- * It first delegates to the AsciiDoc Loader to load the AsciiDoc contents on
- * the specified virtual file to a Document object. It then grabs the document
- * attributes from that Document and assigns them to the asciidoc.attributes
- * property on the file. If the document has a document header, it assigns the
- * doctitle, xreftext, and navtitle to the asciidoc property on that file. If
- * the page-partial attributes is set, it backs up the AsciiDoc source on the
- * src.contents property. It then converts the Document to embedded HTML, wraps
- * it in a Buffer, and assigns it to the contents property on the file. Finally,
- * the mediaType property is updated to 'text/html'.
+ * This function first delegates to the AsciiDoc loader to load the AsciiDoc contents on the
+ * specified virtual file to a Document object. If the asciidoc property is not set on the virtual
+ * file, it then extracts the metadata from that document and assigns it to the asciidoc property.
+ * This metadata includes the document attributes, doctitle, xreftext, and navtitle. If the
+ * keepSource option on the AsciiDoc config is true or the page-partial attributes is set, it backs
+ * up the AsciiDoc source to the src.contents property. It then converts the Document to embedded
+ * HTML, wraps it in a Buffer, and assigns it to the contents property on the file. Finally, it
+ * updates the mediaType property on the file to 'text/html'.
  *
  * @memberof document-converter
  *
@@ -27,9 +21,10 @@ const {
  * @returns {File} The virtual file that was converted.
  */
 function convertDocument (file, contentCatalog = undefined, asciidocConfig = {}) {
-  const { extractAsciiDocMetadata = _extractAsciiDocMetadata, loadAsciiDoc = _loadAsciiDoc } = this
-    ? this.getFunctions(false)
-    : {}
+  const {
+    extractAsciiDocMetadata = requireAsciiDocLoader().extractAsciiDocMetadata,
+    loadAsciiDoc = requireAsciiDocLoader(),
+  } = this ? this.getFunctions(false) : {}
   const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig)
   if (!file.asciidoc) {
     file.asciidoc = extractAsciiDocMetadata(doc)
@@ -38,6 +33,10 @@ function convertDocument (file, contentCatalog = undefined, asciidocConfig = {})
   file.contents = Buffer.from(doc.convert())
   file.mediaType = 'text/html'
   return file
+}
+
+function requireAsciiDocLoader () {
+  return requireAsciiDocLoader.cache || (requireAsciiDocLoader.cache = require('@antora/asciidoc-loader'))
 }
 
 module.exports = convertDocument

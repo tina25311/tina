@@ -1,10 +1,6 @@
 'use strict'
 
 const _convertDocument = require('./convert-document')
-const {
-  loadAsciiDoc: _loadAsciiDoc,
-  extractAsciiDocMetadata: _extractAsciiDocMetadata,
-} = require('@antora/asciidoc-loader')
 
 /**
  * Converts the contents of publishable pages with the media type text/asciidoc
@@ -31,8 +27,8 @@ const {
 function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
   const {
     convertDocument = _convertDocument,
-    extractAsciiDocMetadata = _extractAsciiDocMetadata,
-    loadAsciiDoc = _loadAsciiDoc,
+    extractAsciiDocMetadata = requireAsciiDocLoader().extractAsciiDocMetadata,
+    loadAsciiDoc = requireAsciiDocLoader(),
   } = this ? this.getFunctions(false) : {}
   const mainAsciiDocConfigs = new Map()
   contentCatalog.getComponents().forEach(({ name: component, versions }) => {
@@ -83,6 +79,10 @@ function registerPageAliases (aliases, targetFile, contentCatalog) {
   return aliases
     .split(',')
     .forEach((spec) => (spec = spec.trim()) && contentCatalog.registerPageAlias(spec, targetFile))
+}
+
+function requireAsciiDocLoader () {
+  return requireAsciiDocLoader.cache || (requireAsciiDocLoader.cache = require('@antora/asciidoc-loader'))
 }
 
 module.exports = Object.assign(convertDocuments, { convertDocuments, convertDocument: _convertDocument })
