@@ -1,0 +1,34 @@
+= ADR 0021: Switch to npm-based Project Build
+:revdate: 2021-12-05
+
+== Status
+
+Accept
+
+== Context
+
+In an effort to simplify maintenance of the project and to reduce dependencies, we want to change the project build to use npm instead of gulp.
+In ADR 0019, we decided to switch from Yarn to npm for the same reasons.
+Given that npm now understands how to handle workspaces and provides a facility to define tasks / scripts that run commands, we can leverage npm to drive the project build.
+Those tasks include: `test`, `coverage`, `lint`, and `format`.
+
+Currently, these tasks are handled by gulp.
+However, gulp adds additional dependencies and abstractions that have proven difficult to keep up to date.
+The gulp project is also ignoring a listed security vulnerability, which the Antora project inherits.
+npm gives us everything we need to drive the project build without the overhead that gulp introduces.
+
+== Decision
+
+Rewrite the gulp tasks as npm scripts and remove the gulp files and dependencies from the project.
+Try to match the current capabilities of the gulp build.
+For example, it should be possible to run a script (test, coverage, lint, or format) for a single package using `npm test --package=logger` or `npm test -w @antora/logger`.
+Move the configuration of Mocha to the Mocha configuration file, .mocharc.js.
+Update the CI build to call the npm scripts instead of the gulp tasks.
+Update the contributing guide to reflect the new development process.
+
+This decision superceded ADR 0004.
+
+== Consequences
+
+Developers will need to become familiar with using npm scripts instead of gulp tasks to build the project.
+However, given that these scripts will have parity with the gulp tasks, it should just be a matter of replacing `gulp` with `npm run`.
