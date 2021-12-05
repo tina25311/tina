@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "antora",
+  "name": "@antora/build",
   "scripts": {
     "test": "gulp test",
     "version": "node scripts/version.js"

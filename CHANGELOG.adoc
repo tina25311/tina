@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Added
 
+* *antora*: Add the `antora` meta package that provides both the CLI and site generator (#906)
 * *page-composer*: Export `create404Page` function to create and compose the 404 page (#899)
 * *page-composer*: Assign site-wide page attributes to `page.attributes` property of UI model of 404 page (#899)
 * Run test suite on macOS in nightly CI build (#902)
