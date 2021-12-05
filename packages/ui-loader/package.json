@@ -16,6 +16,9 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
+  "scripts": {
+    "test": "_mocha"
+  },
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
     "braces": "~3.0",

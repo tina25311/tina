@@ -16,6 +16,9 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
+  "scripts": {
+    "test": "_mocha"
+  },
   "dependencies": {
     "@antora/logger": "3.0.0-beta.5",
     "@antora/user-require-helper": "~2.0",

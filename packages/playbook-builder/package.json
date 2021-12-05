@@ -15,6 +15,9 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
+  "scripts": {
+    "test": "_mocha"
+  },
   "dependencies": {
     "@iarna/toml": "~2.2",
     "camelcase-keys": "~7.0",
