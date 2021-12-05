@@ -203,7 +203,7 @@ TIP: In special circumstances where the __partials__-relative directory path of 
 When the <<target,target partial>> and the <<current,current page>> don't belong to the same module, you must specify the target partial's xref:resource-id-coordinates.adoc#id-module[module], xref:resource-id-coordinates.adoc#id-family[family], and xref:resource-id-coordinates.adoc#id-resource[file coordinates] in the include directive.
 
 .Module, family, and file coordinates assigned to an include directive
-[ex-module-base]
+[#ex-module-base]
 ----
 include::module:partial$target-partial-filename.adoc[optional attribute] <.>
 
