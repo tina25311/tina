@@ -64,10 +64,10 @@ function allocateSrc (file, component, version, nav) {
     let familyFolder = pathSegments[2]
     switch (familyFolder) {
       case 'pages':
-        // this location for partials is deprecated; warn starting in Antora 3.x
+        // pages/_partials location for partials is @deprecated; special designation scheduled to be removed in Antora 4
         if (pathSegments[3] === '_partials') {
           file.src.family = 'partial'
-          // relative to modules/<module>/pages/_partials (deprecated)
+          // relative to modules/<module>/pages/_partials
           file.src.relative = pathSegments.slice(4).join('/')
         } else if (extname === '.adoc') {
           file.src.family = 'page'

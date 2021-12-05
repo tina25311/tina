@@ -331,7 +331,7 @@ class ContentCatalog {
 
   // QUESTION should this be addPageAlias?
   registerPageAlias (spec, target) {
-    // .adoc file extension will be required on ID spec for page alias starting in Antora 4 (possibly in Antora 3)
+    // adding .adoc file extension to page alias if missing is @deprecated; scheduled to be removed in Antora 4
     const inferredSpec = spec.endsWith('.adoc') ? undefined : spec + '.adoc'
     const src = parseResourceId(inferredSpec || spec, target.src, 'page', ['page'])
     // QUESTION should we throw an error if alias is invalid?
@@ -525,9 +525,9 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
 }
 
 function computeVersionSegment (name, version, mode) {
+  // special designation for master verson is @deprecated; special designation scheduled to be removed in Antora 4
   if (mode === 'original') return !version || version === 'master' ? '' : version
   const strategy = this.latestVersionUrlSegmentStrategy
-  // NOTE: special exception; revisit in Antora 3
   if (!version || version === 'master') {
     if (mode !== 'alias') return ''
     if (strategy === 'redirect:to') return

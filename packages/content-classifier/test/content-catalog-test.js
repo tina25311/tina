@@ -2134,7 +2134,7 @@ describe('ContentCatalog', () => {
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'The Component' })
       const expectedMethods = [
         'findBy',
-        'getAll', // remove in Antora 4
+        'getAll', // @deprecated; scheduled to be removed in Antora 4
         'getById',
         'getComponent',
         'getComponentVersion',

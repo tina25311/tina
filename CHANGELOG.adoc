@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *site-generator*: Remove deprecated aliases on the generator context that were introduced during the beta cycle (`GeneratorContext#halt` and `GeneratorContext#updateVars`)
+* Mark deprecations and schedule removals more clearly in source code
 
 === Fixed
 

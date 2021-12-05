@@ -23,9 +23,8 @@ function resolveIncludeFile (target, page, cursor, catalog) {
   let resolved
   let family
   let relative
-  // @deprecated interpret non-URL target as resource ID starting in Antora 4
   if (RESOURCE_ID_DETECTOR_RX.test(target)) {
-    // NOTE support legacy {partialsdir} and {examplesdir} prefixes (same as resource ID w/ only family and relative)
+    // support for legacy {partialsdir} and {examplesdir} prefixes is @deprecated; scheduled to be removed in Antora 4
     if (target.startsWith(PARTIALS_DIR_TOKEN) || target.startsWith(EXAMPLES_DIR_TOKEN)) {
       ;[family, relative] = splitOnce(target, '$')
       if (relative.charAt() === '/') relative = relative.substr(1)
@@ -41,6 +40,7 @@ function resolveIncludeFile (target, page, cursor, catalog) {
       resolved = catalog.resolveResource(target, extractResourceId(src))
     }
   } else {
+    // bypassing resource ID resolution for relative include path is @deprecated; scheduled to be removed in Antora 4
     resolved = catalog.getByPath({
       component: src.component,
       version: src.version,
