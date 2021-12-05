@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *site-generator*: Remove deprecated aliases on the generator context that were introduced during the beta cycle (`GeneratorContext#halt` and `GeneratorContext#updateVars`)
+
 === Fixed
 
 * *logger*: Don't attempt to close logger destination if stream is already destroyed, such as in the case of a broken pipe (#907)

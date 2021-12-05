@@ -32,8 +32,6 @@ class GeneratorContext extends EventEmitter {
 
   constructor (module_) {
     super()
-    // deprecated method aliases - remove for Antora 3.0.0
-    Object.defineProperties(this, { halt: { value: this.stop }, updateVars: { value: this.updateVariables } })
     if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
   }
 
