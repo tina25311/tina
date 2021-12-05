@@ -12,13 +12,42 @@
 NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
 Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
+= Antora 3.0.0-beta.5
+
+_**Release date:** 2021.12.04 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+=== Added
+
+Issue {url-issues}/906[#906^]:: Add an `antora` meta package that provides both the CLI and site generator.
+Use `npm i -g antora` to install globally, `npm i antora` to install locally, or `npx antora` to run without installing.
+Issue {url-issues}/899[#899^]:: Update the page composer to export the `create404Page` function to create and compose the 404 page.
+Move creation of 404 page to page composer.
+Assign site-wide page attributes to `page.attributes` property of UI model of 404 page.
+
+Run test suite on macOS in nightly CI build.
+Verify manually that Antora works on macOS 12 (Monterrey).
+
+=== Changed
+
+Issue {url-issues}/898[#898^]:: Enforce core YAML schema when reading YAML playbook files and values and component descriptor file.
+Issue {url-issues}/905[#905^]:: Update `produceRedirects` function to accept an array of aliases in place of the content catalog.
+Issue {url-issues}/903[#903^]:: Register Antora extensions before registering generator functions.
+When registering generator functions, honor any functions that have already been replaced and bypass loading corresponding built-in functions.
+
+=== Fixed
+
+Issue {url-issues}/901[#901^]:: Coerce version key in playbook or component descriptor with numeric value 0 to '0' instead of empty string.
+Issue {url-issues}/904[#904^]:: Add context info to first line of message for any error thrown by the content aggregator.
+
+Escape spaces in value of `fileUri` property in publication report when publishing to local directory.
+
 = Antora 3.0.0-beta.4
 
 _**Release date:** 2021.11.30 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 == Resolved issues
-
-//Issue {url-issues}/000[#000^]:: ...
 
 === Added
 
