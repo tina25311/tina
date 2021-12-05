@@ -1,6 +1,5 @@
 'use strict'
 
-const _loadAsciiDoc = require('@antora/asciidoc-loader')
 const NavigationCatalog = require('./navigation-catalog')
 
 const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
@@ -27,7 +26,7 @@ const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
  * @returns {NavigationCatalog} A navigation catalog built from the navigation files in the content catalog.
  */
 function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
-  const { loadAsciiDoc = _loadAsciiDoc } = this ? this.getFunctions(false) : {}
+  const { loadAsciiDoc = require('@antora/asciidoc-loader') } = this ? this.getFunctions(false) : {}
   const navCatalog = new NavigationCatalog()
   const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizeResourceRefs: false }
   contentCatalog
