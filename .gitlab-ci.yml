@@ -132,8 +132,8 @@ test:windows:
 release:
   stage: deploy
   environment: releases
-  variables:
-    npm_config_unsafe_perm: 'true'
+  #variables:
+  #  npm_config_unsafe_perm: 'true'
   rules:
   - *if_releases
   before_script:
