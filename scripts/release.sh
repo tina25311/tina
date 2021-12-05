@@ -26,6 +26,7 @@ if [ "$(git merge-base --fork-point $RELEASE_BRANCH $CI_COMMIT_SHA)" != "$(git r
   exit 1
 fi
 
+ROOT_PACKAGE_NAME=$(node -p 'require("./package.json").name')
 # set up SSH auth using ssh-agent
 mkdir -p -m 700 $HOME/.ssh
 ssh-keygen -F gitlab.com >/dev/null 2>&1 || ssh-keyscan -H -t rsa gitlab.com >> $HOME/.ssh/known_hosts 2>/dev/null
@@ -33,10 +34,10 @@ eval $(ssh-agent -s) >/dev/null
 echo -n "$RELEASE_SSH_PRIV_KEY" | ssh-add -
 
 # clone the branch from which we're releasing
-git clone -b $RELEASE_BRANCH --no-local . build/$CI_PROJECT_NAME
+git clone -b $RELEASE_BRANCH --no-local . build/$ROOT_PACKAGE_NAME
 
 # switch to clone
-cd build/$CI_PROJECT_NAME
+cd build/$ROOT_PACKAGE_NAME
 git status -s -b
 
 # configure git to push changes
