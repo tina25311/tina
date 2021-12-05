@@ -1717,9 +1717,10 @@ describe('generateSite()', function () {
             const { produceRedirects } = this.getFunctions()
             this.replaceFunctions({
               produceRedirects: (playbook) => {
-                return produceRedirects(playbook, {
-                  findBy: () => [{ pub: { url: '/acme/from.html' }, rel: { pub: { url: '/acme/to.html' } } }],
-                })
+                return produceRedirects(playbook, [{
+                  pub: { url: '/acme/from.html' },
+                  rel: { pub: { url: '/acme/to.html' } },
+                }])
               }
             })
           })

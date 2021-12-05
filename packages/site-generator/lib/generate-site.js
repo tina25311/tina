@@ -34,7 +34,7 @@ async function generateSite (playbook) {
       if (playbook.site.url) vars.siteCatalog.addFile(create404Page(siteAsciiDocConfig))
     })(fxns.createPageComposer(playbook, contentCatalog, uiCatalog, playbook.env))
     await context.notify('pagesComposed')
-    vars.siteCatalog.addFiles(fxns.produceRedirects(playbook, contentCatalog))
+    vars.siteCatalog.addFiles(fxns.produceRedirects(playbook, contentCatalog.findBy({ family: 'alias' })))
     await context.notify('redirectsProduced')
     if (playbook.site.url) {
       const publishablePages = contentCatalog.getPages((page) => page.out)
