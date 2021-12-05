@@ -2,7 +2,12 @@
   "private": true,
   "name": "antora-build",
   "scripts": {
-    "test": "gulp test",
+    "build": "npm test && npm run lint",
+    "coverage": "nyc _mocha",
+    "format": "prettier-eslint --write \"`pwd`/.mocharc.js\" \"`pwd`/scripts/*.js\" \"`pwd`/packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
+    "lint": "eslint .mocharc.js \"scripts/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\" --ignore-pattern=\"!.mocharc.js\"",
+    "scripts": "node -p 'Object.keys(require(\"./package.json\").scripts).map((it) => \"npm run \" + it).join(\"\\n\")'",
+    "test": "_mocha",
     "version": "node scripts/version.js"
   },
   "devDependencies": {
@@ -13,14 +18,10 @@
     "eslint-plugin-import": "~2.25",
     "eslint-plugin-node": "~11.1",
     "eslint-plugin-promise": "~5.2",
-    "gulp": "~4.0",
     "mocha": "~9.1",
     "npm": "~8.2",
-    "npm-which": "~3.0",
     "nyc": "~15.1",
-    "plugin-error": "~1.0",
-    "prettier-eslint-cli": "~5.0",
-    "yargs-parser": "~21.0"
+    "prettier-eslint-cli": "~5.0"
   },
   "engines": {
     "node": ">=12.21.0"

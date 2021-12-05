@@ -2,7 +2,6 @@ image: node:16-buster
 stages: [init, verify, deploy]
 variables:
   GIT_DEPTH: '5'
-  MOCHA_TIMEOUT: '5000'
   npm_config_cache: &npm_cache_dir .cache/npm
   npm_config_fund: 'false'
   npm_config_prefer_offline: 'true'
@@ -10,10 +9,11 @@ variables:
 - &if_code_pushed
   if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH !~ /^docs\//
   changes:
+  - .eslintrc
   - .gitlab-ci.yml
+  - .mocharc.js
   - package{-lock,}.json
-  - gulpfile.js
-  - '{gulp.d,packages}/**/*'
+  - 'packages/**/*'
 - &unless_docs_mr
   if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^docs\//
   when: never
@@ -57,7 +57,7 @@ lint:
   - *if_schedule
   <<: *npm_cache_pull_push
   <<: *npm_install
-  script: npx --no-install gulp lint
+  script: npx npm run lint
 test:node-12-linux:
   interruptible: true
   image: node:12-buster
@@ -68,7 +68,7 @@ test:node-12-linux:
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
-  script: npx --no-install gulp test
+  script: npx npm test
 test:node-14-linux:
   interruptible: true
   image: node:14-buster
@@ -77,19 +77,17 @@ test:node-14-linux:
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
-  script: npx --no-install gulp test
+  script: npx npm test
 test:node-16-linux:
   interruptible: true
   stage: verify
-  variables:
-    COVERAGE: 'true'
   rules:
   - *unless_docs_mr
   - *if_code_pushed
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
-  script: npx --no-install gulp test
+  script: npx npm run coverage
   <<: *save_coverage
 test:node-17-linux:
   interruptible: true
@@ -99,7 +97,7 @@ test:node-17-linux:
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
-  script: npx --no-install gulp test
+  script: npx npm test
 test:macos:
   interruptible: true
   tags: [shared-macos-amd64]
@@ -109,15 +107,12 @@ test:macos:
   - *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
-  script: npx --no-install gulp test
+  script: npx npm test
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
 test:windows:
   tags: [windows]
   stage: verify
   interruptible: true
-  variables:
-    COVERAGE: 'true'
-    MOCHA_TIMEOUT: '10000'
   rules:
   - *unless_docs_mr
   - *if_code_pushed
@@ -132,7 +127,7 @@ test:windows:
   - Get-ChildItem package*~.json | Rename-Item -NewName { $_.Name -replace '~.json','.json' }
   - if (Test-Path node_modules/.package-lock.json) { Remove-Item node_modules/.package-lock.json }
   - npx npm i --quiet
-  script: npx --no-install gulp test
+  script: npx npm run coverage
   <<: *save_coverage
 release:
   stage: deploy

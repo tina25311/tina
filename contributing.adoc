@@ -44,7 +44,6 @@
 :url-git: https://git-scm.com
 :url-git-dl: {url-git}/downloads
 :url-chat: https://antora.zulipchat.com
-:url-gulp: https://gulpjs.com
 :url-istanbul: https://istanbul.js.org/
 :url-lerna: https://lerna.js.org
 :url-mocha: https://mochajs.org/
@@ -251,7 +250,7 @@ Only original work is guaranteed to be preserved in the commit history.
 . Commit your changes.
 . <<run-prettier,Run prettier>>.
 +
-WARNING: Prettier's format task will modify your files, so be sure to commit your changes before running it so you can review and rollback if necessary.
+WARNING: The format script will modify your files, so be sure to commit your changes before running it so you can review and rollback if necessary.
 
 . Commit any formatting changes completed by prettier.
 . Push to your fork and open a merge request.
@@ -335,17 +334,17 @@ While not enforced by eslint yet, your code should also comply with the followin
 
 When you <<build-project,build Antora>>, it will automatically lint (i.e., style check) your JavaScript code.
 
-If you ever want to run the linter separately, you can use the following Gulp task:
+If you ever want to run the linter separately, you can use the following npm script:
 
- $ gulp lint
+ $ npm run lint
 
 While ESLint checks for syntax, it doesn't cover all the aesthetics of a code style.
 We employ {url-prettier}[prettier] to automatically format the code.
-Run prettier *after* you commit all your code changes as the format task will modify your files.
+Run prettier *after* you commit all your code changes as the format script will modify your files.
 
-To run prettier, enter the following Gulp task:
+To run prettier, enter the following npm script:
 
- $ gulp format
+ $ npm run format
 
 ==== Paths
 
@@ -481,40 +480,33 @@ This section describes the organization of the project at a high level so you kn
 Here are some of the files and directories you will see when developing this project:
 
 ....
-docs/         <1>
-node_modules/ <2>
-packages/     <3>
+docs/         <.>
+node_modules/ <.>
+packages/     <.>
   asciidoc-loader/
   cli/
-  content-aggregator/ <4>
+  content-aggregator/ <.>
     devdocs/
       architecture-guidebook.adoc
     lib/
     node_modules/ <2>
     test/
-    package.json <5>
+    package.json <.>
   content-classifier/
   document-converter/
   navigation-builder/
   ...
-gulp.d/
-  lib/
-  tasks/
-test/         <6>
-gulpfile.js   <7>
-package.json  <8>
-package-lock.json <9>
+package.json  <.>
+package-lock.json <.>
 ....
-<1> The end user documentation for Antora.
-<2> A local installation of Node.js modules used for the development of this project.
-<3> Discrete software components (i.e., packages) used in the documentation pipeline.
-<4> The main code, test code, and architecture documentation for the content aggregator component.
+<.> The end user documentation for Antora.
+<.> A local installation of Node.js modules used for the development of this project.
+<.> Discrete software components (i.e., packages) that make up Antora core.
+<.> The main code, test code, and architecture documentation for the content aggregator component.
 Developer documentation for each software component lives alongside the code.
-<5> Defines project information and runtime and development library dependencies for the content aggregator component.
-<6> Contains test utilities and bootstrap code used in the test suite for each software component.
-<7> The Gulp build script that defines tasks used for development.
-<8> Defines project information and development library dependencies.
-<9> Tracks the version of resolved dependencies to ensure builds are reproducible.
+<.> Defines project information and runtime and development library dependencies for the content aggregator component.
+<.> Defines project information, build dependencies, and run scripts.
+<.> Tracks the version of resolved dependencies to ensure builds are reproducible.
 
 [#set-up-workspace]
 == Development Workspace Setup
@@ -527,7 +519,6 @@ In order to obtain the source code, run the test suite, and launch Antora, you'l
 
 * git
 * Node.js / npm
-* Gulp (CLI only)
 * Lerna
 * Development libraries (e.g., a C compiler)
 
@@ -592,32 +583,19 @@ Verify the version of Node.js you have selected using:
 
  $ node -v
 
+You should also be able to run `npm`:
+
+ $ npm -v
+
+This project uses npm (command: `npm`) to manage various tasks, such as test, lint, format, etc.
+These tasks are defined in [.path]_package.json_.
+You can list the available scripts by running the npm script named `scripts`:
+
+ $ npm run scripts
+
 The rest of the software you need is installable from Node.js (specifically npm).
 
-==== Gulp (CLI only)
-
-This project uses {url-gulp}[Gulp] (command: `gulp`) to manage various tasks, such as test, lint, etc.
-These tasks are defined in [.path]_gulpfile.js_.
-(Additional source code for the Gulp build is stored in [.path]_gulp.d/_).
-
-To launch these tasks, you need to install the CLI interface for Gulp using:
-
- $ npm install -g gulp-cli
-
-The gulp-cli module provides the `gulp` command.
-You can verify this command is on your path using:
-
- $ gulp -v
-
-If you see a version, you're all set.
-
-As an alternative, you can run Gulp via `npx`.
-
- $ npx gulp -v
-
-This saves you from having to install the Gulp CLI globally.
-
-==== Lerna
+==== Lerna (release only)
 
 This project uses {url-lerna}[Lerna] (command: `lerna`) to manage and release multiple packages in this repository.
 The packages are located under the [.path]_packages/_ folder (which you can list using `lerna list`).
@@ -679,7 +657,10 @@ That's the job of npm.
 You must have at least npm 8 to install the development dependencies for Antora.
 If you don't have npm 8, install it into the project using:
 
- $ npm i --no-package-lock --no-save npm@8.1
+ $ mv package.json package~.json && mv package-lock.json package-lock~.json
+   npm i --no-package-lock --no-save --no-audit npm@$(node -p 'require("./package~.json").devDependencies.npm')
+   rm -f node_modules/.package-lock.json
+   mv package~.json package.json && mv package-lock~.json package-lock.json
 
 You can use the version of npm installed in the project by adding `npx` in front of any `npm` command.
 For example:
@@ -700,29 +681,24 @@ After pulling the latest source, you may need to update the dependencies.
 It's best to start with a fresh slate by removing the previously install dependencies, then installing them again.
 To do so, run the following commands in sequence:
 
- $ lerna clean --yes
-   rm -rf node_modules packages/*/node_modules
+ $ rm -rf node_modules packages/*/node_modules
    npm i
 
 NOTE: If you run into problems while installing dependencies, return to <<Development Libraries>>.
 
 NOTE: It's a good idea to run `npm i` each time after you run `git pull` to make sure your dependencies are up to date.
-Running gulp does not install any updated dependencies.
+Running an npm script such as `npm run build` does not install any updated dependencies.
 
 [#build-project]
 === Build the Project
 
-To build Antora, which means running all the main tasks, use:
+To build Antora, which means running all the primary tasks, use:
 
- $ gulp build
+ $ npm run build
 
-Since `build` is the default command, you can omit the `build` argument:
+To see a list of all available npm scripts, run:
 
- $ gulp
-
-To see a list of all available commands, run:
-
- $ gulp -T
+ $ npm run scripts
 
 These commands are covered in the sections that follow.
 
@@ -730,27 +706,25 @@ These commands are covered in the sections that follow.
 === Run the Test Suite
 
 This project uses {url-mocha}[mocha] to run the tests and the assertion library {url-chai}[chai].
-The build task is automatically configured to lint your JavaScript code, which it does once all the tests pass.
+Mocha is configured in [.path]_.mocharc.js_.
+The build script is automatically configured to lint your JavaScript code, which it does once all the tests pass.
 
 To run the test suite, use:
 
- $ gulp build
+ $ npm run build
 
 [TIP]
 ====
 Tests use the Internet to query gitlab.com to download the default UI.
-If tests are failing with an error in `run-command` plugin, this may be caused by Internet speed/latency and low timeout value.
 By default, Mocha fails any test that takes more than 2 seconds to complete.
 To increase the timeout (up to 30 seconds), set the `CI` variable:
 
- $ CI=true gulp build
-
-This value can be customised in `gulpfile.js/test-task.js` -- search for `process.env.CI`
+ $ CI=true npm run build
 ====
 
-If you want to generate a coverage report when running the tests (enabled by default in CI), set the `COVERAGE` environment variable when running the `build` command as shown here:
+If you want to generate a coverage report when running the tests (enabled by default in CI), run the `coverage` script instead:
 
- $ COVERAGE=true gulp build
+ $ npm run coverage
 
 A coverage report shows the lines, statements, and branches that the tests exercise.
 The report is generated by {url-istanbul}[istanbul] using the nyc command line tool.
@@ -763,33 +737,35 @@ To clear the coverage report and related cache files from a previous run, use:
  $ rm -rf coverage .nyc_output node_modules/.cache/nyc
 ====
 
-If you don't want the `lint` task to run when running tests, call the `test` task directly:
+If you don't want the `lint` script to run when running tests, call the `test` lifecycle script directly:
 
- $ gulp test
+ $ npm test
 
-If you want to run the linter separately, use the following Gulp task:
+If you want to run the linter separately, use the following npm script:
 
- $ gulp lint
+ $ npm run lint
 
 You can run the test suite for a single package by passing the name of the package to the `--package` flag:
 
- $ gulp test --package ui-loader
+ $ npm test --package ui-loader
 
 You can include the linter as well:
 
- $ gulp build --package ui-loader
+ $ npm build --package ui-loader
 
-This filter works for all Gulp tasks.
+This filter works for all npm scripts.
 
+////
 If you're working on tests or refactoring tested code, you can run the test suite continuously, using:
 
- $ gulp test --watch
+ $ npm test --watch
 
 You might want to combine this with the package filter to limit the tests to the package you're working on:
 
- $ gulp test --watch --package ui-loader
+ $ npm test --watch --package ui-loader
 
 This command runs the test suite (using `test`) each time you save the test or the code under test.
+////
 
 === Select or Skip Tests
 
@@ -802,16 +778,16 @@ You can read more about this feature in the https://mochajs.org/#inclusive-tests
 [#run-prettier]
 === Run prettier
 
-Prettier is run by the `format` task.
-The `format` task isn't (yet) run as part of the CI pipeline, so you'll need to run it manually.
-But don't forget to run the `format` task before you submit a merge request!
+Prettier is run by the `format` script.
+The `format` script isn't (yet) run as part of the CI pipeline, so you'll need to run it manually.
+But don't forget to run the `format` script before you submit a merge request!
 
-To run prettier on your code, execute the following Gulp task:
+To run prettier on your code, execute the following npm script:
 
- $ gulp format
+ $ npm run format
 
 You should run prettier *after* you commit all your code changes.
-The format task will modify your files in place.
+The format script will modify your files in place.
 If you still have changes to make to the code, this formatting can make that tedious.
 By committing your code first, then running prettier and committing those changes as a separate commit, it'll be easier to rollback the changes if you need to.
 
@@ -881,8 +857,8 @@ These stages, as well as any global configuration settings, are defined in the [
 The CI pipeline essentially boils down to these three commands:
 
 * `npm i`
-* `gulp lint`
-* `gulp test`
+* `npm run lint`
+* `npm test` (or `npm coverage`)
 
 You can view the results of the pipelines on the {url-ci-pipelines}[pipelines dashboard].
 
@@ -933,8 +909,6 @@ RUN mkdir $NVM_DIR \
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-RUN npm install -g gulp-cli # install dependencies
-
 RUN cd $HOME \
     && git clone https://gitlab.com/antora/antora \
     && cd "$(basename "$_")" \
@@ -954,7 +928,7 @@ Now to run a bash console in the container use
  $ docker run -it antora-my-dev bash
  node@bcb6b82c8224:~/antora$
 
-You now have a development environment! You may use e.g. `gulp build` as described previously.
+You now have a development environment! You may use e.g. `npm run build` as described previously.
 
 ==== Develop from a host machine
 
@@ -979,14 +953,16 @@ For the sake of development, we can work around this:
 
 The `antora` folder on the host machine can now be opened for development.
 
-One can leave e.g. `gulp test` running inside the container or `gulp test:watch`
+////
+One can leave e.g. `npm test` running inside the container or `npm run test:watch`
 
 [TIP]
 ====
-If using `gulp test:watch` make sure there are enough file watches allowed on the system. To adjust this on linux (temporarily), use the following command on the host machine:
+If using `npm run test:watch` make sure there are enough file watches allowed on the system. To adjust this on linux (temporarily), use the following command on the host machine:
 
  $ sudo sysctl fs.inotify.max_user_watches=524288
 ====
+////
 
 To restart the development environment, execute the command described in the 3rd step above from the working folder.
 
