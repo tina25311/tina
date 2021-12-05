@@ -12,6 +12,21 @@
 NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
 Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
+= Antora 3.0.0-beta.6
+
+_**Release date:** 2021.12.05 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+=== Changed
+
+Switch to npm-based build for project.
+See contributing guide for details.
+
+=== Fixed
+
+Change root package name to antora-build and update release script so npm can run version script during release.
+
 = Antora 3.0.0-beta.5
 
 _**Release date:** 2021.12.04 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_

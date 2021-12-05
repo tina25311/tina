@@ -5,6 +5,16 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Changed
+
+* Switch to npm-based build for project
+
+=== Fixed
+
+* Change root package name to antora-build and update release script so npm can run version script during release
+
 == 3.0.0-beta.5 (2021-12-05)
 
 === Added
