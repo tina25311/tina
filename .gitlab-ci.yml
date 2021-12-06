@@ -6,6 +6,9 @@ variables:
   npm_config_fund: 'false'
   npm_config_prefer_offline: 'true'
 .defs:
+- &unless_docs_mr
+  if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^docs\//
+  when: never
 - &if_code_pushed
   if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH !~ /^docs\//
   changes:
@@ -14,15 +17,12 @@ variables:
   - .mocharc.js
   - package{-lock,}.json
   - 'packages/**/*'
-- &unless_docs_mr
-  if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^docs\//
-  when: never
+- &if_schedule
+  if: $CI_PIPELINE_SOURCE == "schedule"
 - &if_releases
   if: $CI_PIPELINE_SOURCE == "push" && $CI_PROJECT_PATH == "antora/antora" && $CI_COMMIT_BRANCH == "releases"
   exists:
   - releaserc
-- &if_schedule
-  if: $CI_PIPELINE_SOURCE == "schedule"
 - &npm_cache_config
   key: npm-cache
   paths:
