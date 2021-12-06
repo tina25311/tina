@@ -751,11 +751,17 @@ describe('cli', function () {
 
   it('should show error message if require path fails to load', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    // FIXME assert that exit code is 1 (limitation in Kapok when using assert)
     // NOTE --log-format=pretty only required if playbook is built before scripts are required
-    return runAntora('-r no-such-module generate --log-format=pretty antora-playbook')
-      .assert(/^\[.+?\] FATAL \(antora\): Cannot find module/)
-      .done()
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora('-r no-such-module generate --log-format=pretty antora-playbook')
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(1)
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.match(/^\[.+?\] FATAL \(antora\): Cannot find module/)
+    })
   })
 
   it('should not show unhandled promise rejection warning if start path not found when using concurrency limit', () => {
