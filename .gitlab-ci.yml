@@ -23,6 +23,8 @@ variables:
   if: $CI_PIPELINE_SOURCE == "push" && $CI_PROJECT_PATH == "antora/antora" && $CI_COMMIT_BRANCH == "releases"
   exists:
   - releaserc
+- &platform_info
+  node -p '`${require("os").type()} ${require("os").release()}\nNode.js ${process.version}`'
 - &npm_cache_config
   key: npm-cache
   paths:
@@ -37,7 +39,7 @@ variables:
     policy: pull
 - &npm_install
   before_script:
-  - node -p '`Node.js ${process.version}`'
+  - *platform_info
   - mv package.json package~.json && mv package-lock.json package-lock~.json
   - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p 'require("./package~.json").devDependencies.npm')
   - rm -f node_modules/.package-lock.json
@@ -121,7 +123,7 @@ test:windows:
   #<<: *npm_cache_pull
   before_script:
   - choco upgrade -y nodejs --version=12.22.7
-  - node -p '`Node.js ${process.version}`'
+  - *platform_info
   - Get-ChildItem package*.json | Rename-Item -NewName { $_.Name -replace '.json','~.json' }
   - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p "require('./package~.json').devDependencies.npm")
   - Get-ChildItem package*~.json | Rename-Item -NewName { $_.Name -replace '~.json','.json' }
