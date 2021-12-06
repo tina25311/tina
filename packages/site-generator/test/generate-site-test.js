@@ -15,7 +15,7 @@ const {
   wipeSync,
 } = require('@antora/test-harness')
 
-const { configureLogger } = require('@antora/logger')
+const { configureLogger, getLogger } = require('@antora/logger')
 const fs = require('fs')
 const generateSite = require('@antora/site-generator')
 const buildPlaybook = require('@antora/playbook-builder')
@@ -168,6 +168,42 @@ describe('generateSite()', function () {
     expect($('nav.nav-menu .is-current-page')).to.have.lengthOf(1)
     expect($('nav.nav-menu .is-current-page > a.nav-link')).to.have.attr('href', 'the-page.html')
     expect($('.page-versions')).to.not.be.found()
+  }).timeout(timeoutOverride)
+
+  it('should bootstrap playbook and manage logger if first argument is an array', async () => {
+    playbookSpec.site.start_page = 'the-component::no-such-page.adoc'
+    playbookSpec.runtime.log = { destination: { file: '1', sync: false, buffer_size: 4096 } }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = await captureStdoutLog(() =>
+      generateSite(['--playbook', playbookFile, '--cache-dir', env.ANTORA_CACHE_DIR, '--log-format', 'json'])
+    )
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.include({
+      level: 'warn',
+      name: '@antora/content-classifier',
+      msg: 'Start page specified for site not found: the-component::no-such-page.adoc',
+    })
+    expect(getLogger(null)).to.have.property('closed', true)
+    expect(ospath.join(absDestDir, '_'))
+      .to.be.a.directory()
+      .with.subDirs.with.members(['css', 'js', 'font', 'img'])
+    expect(ospath.join(absDestDir, 'the-component'))
+      .to.be.a.directory()
+      .with.subDirs(['2.0'])
+  }).timeout(timeoutOverride)
+
+  it('should bootstrap playbook with env if first argument is an array and second argument is an object', async () => {
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    env.URL = 'https://docs.example.org'
+    await generateSite(['--playbook', playbookFile], env)
+    expect(ospath.join(absDestDir, '_'))
+      .to.be.a.directory()
+      .with.subDirs.with.members(['css', 'js', 'font', 'img'])
+    expect(ospath.join(absDestDir, 'the-component'))
+      .to.be.a.directory()
+      .with.subDirs(['2.0'])
+    expect(ospath.join(absDestDir, 'sitemap.xml')).to.be.a.file()
+      .with.contents.that.match(/https:\/\/docs\.example\.org\//)
   }).timeout(timeoutOverride)
 
   it('should resolve dot-relative paths in playbook relative to playbook dir', async () => {

@@ -6,6 +6,7 @@ const SiteCatalog = require('./site-catalog')
 async function generateSite (playbook) {
   const context = new GeneratorContext(module)
   try {
+    if (Array.isArray(playbook)) playbook = buildPlaybookFromArguments.apply(context, arguments)
     const { fxns, vars } = await GeneratorContext.start(context, playbook)
     await context.notify('playbookBuilt')
     playbook = vars.lock('playbook')
@@ -61,6 +62,17 @@ async function generateSite (playbook) {
   } finally {
     await GeneratorContext.close(context)
   }
+}
+
+function buildPlaybookFromArguments (args, env = process.env) {
+  return require('@antora/playbook-builder')(args, env, undefined, (config) => {
+    try {
+      const playbookDir = config.playbook ? require('path').dirname(config.playbook) : process.cwd()
+      const { configureLogger, finalizeLogger } = require('@antora/logger')
+      configureLogger(config.getModel('runtime.log'), playbookDir)
+      this.on('contextClosed', finalizeLogger)
+    } catch {}
+  })
 }
 
 module.exports = generateSite

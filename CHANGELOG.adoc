@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *site-generator*: Overload the `generateSite` function to support the signature from Antora < 3 that builds the playbook and manages the logger (#911)
+
 === Changed
 
 * *playbook-builder*: Allow use of the YAML merge operator in a YAML playbook file (#910)
