@@ -63,7 +63,7 @@ async function publishFiles (playbook, catalogs) {
 
   // Q: add getPublishableFiles / getOutFiles; return a stream? or getOutFilesAsStream?
   const filesToPublish = (Array.isArray(catalogs) ? catalogs : [catalogs]).reduce((accum, catalog) => {
-    // remove fallback check for getFiles on site catalog in Antora 4
+    // the check for getAll on catalogs is @deprecated; scheduled to be removed in Antora 4
     accum.push(...(catalog.getFiles || catalog.getAll).apply(catalog).filter((file) => file.out))
     return accum
   }, [])

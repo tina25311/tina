@@ -59,7 +59,7 @@ module.exports = {
     __private__google_analytics_key: {
       doc: [
         'The Google Analytics account key.',
-        '(Deprecated; will be removed in Antora 4; define using --key google-analytics=<key> instead)',
+        '(@deprecated; scheduled to be removed in Antora 4; define using --key google-analytics=<key> instead)',
       ].join('\n'),
       format: String,
       default: undefined,

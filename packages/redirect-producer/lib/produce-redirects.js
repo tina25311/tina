@@ -32,7 +32,7 @@ const ENCODED_SPACE_RX = /%20/g
  * @returns {Array<File>} An array of File objects that contain rewrite configuration for the web server.
  */
 function produceRedirects (playbook, aliases) {
-  if ('findBy' in aliases) aliases = aliases.findBy({ family: 'alias' }) // remove in Antora 4
+  if ('findBy' in aliases) aliases = aliases.findBy({ family: 'alias' }) // @deprecated remove in Antora 4
   if (!aliases.length) return []
   let siteUrl = playbook.site.url
   if (siteUrl) {
