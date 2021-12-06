@@ -24,7 +24,7 @@ variables:
   exists:
   - releaserc
 - &platform_info
-  node -p '`${require("os").type()} ${require("os").release()}\nNode.js ${process.version}`'
+  node -p '`${os.type()} ${os.release()}\nNode.js ${process.version}`'
 - &npm_cache_config
   key: npm-cache
   paths:
