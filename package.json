@@ -6,7 +6,6 @@
     "coverage": "nyc _mocha",
     "format": "prettier-eslint --write \"`pwd`/scripts/*.js\" \"`pwd`/packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
     "lint": "eslint \"scripts/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
-    "scripts": "node -p 'Object.keys(require(\"./package.json\").scripts).map((it) => \"npm run \" + it).join(\"\\n\")'",
     "test": "_mocha",
     "version": "node scripts/version.js"
   },

@@ -589,9 +589,9 @@ You should also be able to run `npm`:
 
 This project uses npm (command: `npm`) to manage various tasks, such as test, lint, format, etc.
 These tasks are defined in [.path]_package.json_.
-You can list the available scripts by running the npm script named `scripts`:
+You can list the available scripts by running `npm run` without any arguments:
 
- $ npm run scripts
+ $ npm run
 
 The rest of the software you need is installable from Node.js (specifically npm).
 
@@ -698,7 +698,7 @@ To build Antora, which means running all the primary tasks, use:
 
 To see a list of all available npm scripts, run:
 
- $ npm run scripts
+ $ npm run
 
 These commands are covered in the sections that follow.
 
