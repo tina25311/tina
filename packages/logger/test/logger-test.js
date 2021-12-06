@@ -9,6 +9,7 @@ const {
   captureStdoutSync,
   emptyDirSync,
   expect,
+  trapAsyncError,
   wipeSync,
 } = require('@antora/test-harness')
 
@@ -1366,6 +1367,48 @@ describe('logger', () => {
           expect(failOnExit).to.be.true()
         })
       )
+    })
+
+    // NOTE the following tests emulate a broken pipe
+
+    it('should not attempt to close destination if destination is sync and has already been destroyed', async () => {
+      const logger = configure({ destination: { file: 'stdout' } }).get(null)
+      const stream = getStream(logger)
+      const lines = captureStdoutSync(() => logger.info('say it plain'))
+      expect(lines).to.have.lengthOf(1)
+      stream.end()
+      expect(finalizeLogger).to.not.throw()
+    })
+
+    it('should not attempt to close destination if destination is async and has already been destroyed', async () => {
+      const bufferSize = 4096
+      const logger = configure({ destination: { file: 'stdout', bufferSize, sync: false } }).get(null)
+      const stream = getStream(logger)
+      const lines = captureStdoutSync(() => logger.info('say it plain'))
+      expect(lines).to.be.empty()
+      stream.fd = 100000 // emulate not being able to write to file descriptor
+      expect(await trapAsyncError(finalizeLogger)).to.not.throw()
+    })
+
+    it('should not attempt to close pretty destination if destination is sync and has already been destroyed', async () => {
+      const logger = configure({ format: 'pretty', destination: { file: 'stdout' } }).get(null)
+      const stream = getStream(logger)
+      const lines = captureStdoutSync(() => logger.info('say it plain'))
+      expect(lines).to.have.lengthOf(1)
+      const realStream = stream.stream
+      realStream.end()
+      expect(finalizeLogger).to.not.throw()
+    })
+
+    it('should not attempt to close pretty destination if destination is async and has already been destroyed', async () => {
+      const bufferSize = 4096
+      const logger = configure({ format: 'pretty', destination: { file: 'stdout', bufferSize, sync: false } }).get(null)
+      const stream = getStream(logger)
+      const lines = captureStdoutSync(() => logger.info('say it plain'))
+      expect(lines).to.be.empty()
+      const realStream = stream.stream
+      realStream.fd = 100000 // emulate not being able to write to file descriptor
+      expect(await trapAsyncError(finalizeLogger)).to.not.throw()
     })
   })
 
