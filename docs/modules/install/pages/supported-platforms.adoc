@@ -1,6 +1,6 @@
 = Supported Platforms and System Requirements
 :navtitle: Supported Platforms
-:test-count: over 1650
+:test-count: over 1940
 :test-coverage: 99%
 // URLs
 :url-issues: {url-repo}/issues
@@ -19,13 +19,13 @@ When a platform version reaches the end of active support by its maintainers or 
 |Supported Platform |Supported Version(s)
 
 |Alpine Linux
-|&#8805; 3.11
+|&#8805; 3.12
 
 |Debian
 |&#8805; 10.11
 
 |Fedora
-|&#8805; 33
+|&#8805; 34
 
 |Ubuntu
 |[%hardbreaks]
@@ -34,13 +34,14 @@ When a platform version reaches the end of active support by its maintainers or 
 
 |macOS
 |[%hardbreaks]
-Mojave
-Catalina
-Big Sur
+Catalina (10.15)
+Big Sur (11)
+Monterey (12)
 
 |Microsoft
 |[%hardbreaks]
 Windows 10
+Windows 11
 Windows Server 2016
 Windows Server 2019
 
@@ -107,7 +108,6 @@ On subsequent runs, Antora only reconnects to the remote repositories if the xre
 OS Release schedule links
 
 Alpine: https://alpinelinux.org/releases/
-3.11 ends on 2021-11-01
 
 Arch: https://www.archlinux.org/releng/releases/
 
@@ -116,13 +116,10 @@ Arch Linux releases once a month, with only the 3 most recent distros being offi
 Debian: https://www.debian.org/releases/
 
 Fedora: https://fedoraproject.org/wiki/Releases
-EOL of 33 is 2021-11-16
 
 Ubuntu Linux: https://wiki.ubuntu.com/Releases
 
 openSUSE: https://en.opensuse.org/Portal:42.3
-
-Leap 42.3 is the current release
 Checkout the Open Build Project: http://openbuildservice.org
 
 Windows: https://en.wikipedia.org/wiki/Comparison_of_Microsoft_Windows_versions
