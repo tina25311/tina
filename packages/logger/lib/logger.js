@@ -24,7 +24,7 @@ function close () {
   const rootLogger = rootLoggerHolder.get() || closedLogger
   if (rootLogger.closed) return
   const dest = Object.assign(rootLogger, closedLogger)[$stream].stream || rootLogger[$stream]
-  if (dest instanceof EventEmitter && typeof dest.end === 'function') {
+  if (dest instanceof EventEmitter && typeof dest.end === 'function' && !dest.destroyed) {
     finalizers.push(once(dest, 'close').catch(() => undefined)) && dest.end()
   }
 }

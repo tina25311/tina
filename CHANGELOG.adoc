@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *logger*: Don't attempt to close logger destination if stream is already destroyed, such as in the case of a broken pipe (#907)
+
 == 3.0.0-beta.6 (2021-12-05)
 
 === Changed
