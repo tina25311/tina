@@ -2,4 +2,31 @@
 
 A prompt response to software defects and security vulnerabilities is a top priority for Antora. Even though threats are a fact of life, we take quality assurance seriously with nearly 100% test coverage. This page documents the items that slipped through and how to address them.
 
-*There are no security bulletins for xref:project/release-schedule.adoc[active or maintenance releases] of Antora.*
+== Security Bulletin GHSA-ww39-953v-wcq6
+
+ID:: GHSA-ww39-953v-wcq6[GHSA-ww39-953v-wcq6
+Published:: Jun 7, 2021
+
+=== Summary
+
+There's a known security vulnerability in the version of glob-parent that this project pulls in as a transitive dependency of vinyl-fs.
+We're aware of this problem and are working to eliminate it from the dependency chain as soon as possible.
+
+=== Affected versions
+
+All versions of Antora.
+
+=== Remediation plan
+
+The maintainer of vinyl-fs refuses to address the problem, so we will be removing vinyl-fs from Antora entirely.
+However, this is not a trivial change and will require time to address.
+We plan to remove it completely in a later release in the 3.0.x release line.
+
+=== Assessment
+
+Fortunately, Antora uses glob-parent in a controlled way, so this vulnerability is not an attack vector for Antora.
+However, we recognize that the notice is annoying and may trigger security protocols for users who see it.
+
+=== References
+
+* https://github.com/advisories/GHSA-ww39-953v-wcq6[GHSA-ww39-953v-wcq6]
