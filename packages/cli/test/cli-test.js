@@ -901,6 +901,22 @@ describe('cli', function () {
     })
   }).timeout(timeoutOverride)
 
+  it('should allow Node.js process to terminate normally so beforeExit listeners are called', () => {
+    const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-before-exit.js'))
+    playbookSpec.antora = { extensions: [ext] }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const messages = []
+    return new Promise((resolve) =>
+      runAntora('antora-playbook')
+        .on('data', (data) => messages.push(data.message))
+        .on('exit', resolve)
+    ).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(messages).to.have.lengthOf(3)
+      expect(messages).to.eql(['saying goodbye', 'done goodbyes', 'goodbye'])
+    })
+  }).timeout(timeoutOverride)
+
   it('should exit with status code set by extension if Antora extension stops generator', () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-stop-before-publish.js'))
     playbookSpec.antora = { extensions: [{ require: ext, exit_code: 2 }] }
