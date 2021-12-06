@@ -12,6 +12,22 @@
 NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
 Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
+= Antora 3.0.0-rc.1
+
+_**Release date:** 2021.12.05 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+=== Changed
+
+Remove deprecated aliases on the generator context that were introduced during the beta cycle (`GeneratorContext#halt` and `GeneratorContext#updateVars`).
+
+Mark deprecations and schedule removals more clearly in source code.
+
+=== Fixed
+
+Issue {url-issues}/907[#907^]:: Don't attempt to close logger destination if stream is already destroyed, such as in the case of a broken pipe.
+
 = Antora 3.0.0-beta.6
 
 _**Release date:** 2021.12.05 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
