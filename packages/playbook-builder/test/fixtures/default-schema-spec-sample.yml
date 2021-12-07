@@ -35,7 +35,7 @@ content:
     branches: [main, v*]
 ui:
   bundle:
-    url: ./../ui/build/ui-bundles.zip
+    url: ./../ui/build/ui-bundle.zip
     start_path: dark-theme
   default_layout: default
   supplemental_files:

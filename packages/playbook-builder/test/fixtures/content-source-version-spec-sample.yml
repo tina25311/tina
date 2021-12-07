@@ -6,4 +6,4 @@ content:
       release-(?<version>{0..9}+).x: v$<version>
 ui:
   bundle:
-    url: ./../ui/build/ui-bundles.zip
+    url: ./../ui/build/ui-bundle.zip

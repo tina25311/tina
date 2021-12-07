@@ -2,4 +2,4 @@ site:
   url: 123
 ui:
   bundle:
-    url: ./../ui/build/ui-bundles.zip
+    url: ./../ui/build/ui-bundle.zip
