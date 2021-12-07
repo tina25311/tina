@@ -18,7 +18,7 @@ const INF = Infinity
 const minLevel = levelLabels[Math.min.apply(null, Object.keys(levelLabels))]
 const noopLogger = pino({ base: null, enabled: false, timestamp: false }, {})
 const rootLoggerHolder = new Map()
-const standardStreams = { 1: 'stdout', 2: 'stderr', stderr: 2, stdout: 1 }
+const standardStreams = { 1: 1, 2: 2, stderr: 2, stdout: 1 }
 
 function close () {
   const rootLogger = rootLoggerHolder.get() || closedLogger
