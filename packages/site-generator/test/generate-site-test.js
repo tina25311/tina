@@ -202,7 +202,8 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component'))
       .to.be.a.directory()
       .with.subDirs(['2.0'])
-    expect(ospath.join(absDestDir, 'sitemap.xml')).to.be.a.file()
+    expect(ospath.join(absDestDir, 'sitemap.xml'))
+      .to.be.a.file()
       .with.contents.that.match(/https:\/\/docs\.example\.org\//)
   }).timeout(timeoutOverride)
 
