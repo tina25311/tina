@@ -1240,10 +1240,20 @@ describe('classifyContent()', () => {
       expect(messages[0].msg).to.match(expectedMessage)
     })
 
-    it('should warn if site start page spec does not specify a component', () => {
+    it('should warn if site start page spec does not specify a component or module', () => {
       playbook.site.startPage = 'no-such-page.adoc'
       aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
       const expectedMessage = /Missing component name in start page for site: no-such-page\.adoc/
+      const messages = captureLogSync(() => classifyContent(playbook, aggregate))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.match(expectedMessage)
+    })
+
+    it('should warn if site start page spec does not specify a component', () => {
+      playbook.site.startPage = 'ROOT:no-such-page.adoc'
+      aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
+      const expectedMessage = /Missing component name in start page for site: ROOT:no-such-page\.adoc/
       const messages = captureLogSync(() => classifyContent(playbook, aggregate))
       expect(messages).to.have.lengthOf(1)
       expect(messages[0].level).to.equal('warn')

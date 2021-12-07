@@ -322,7 +322,7 @@ class ContentCatalog {
       return this.addFile({ src: Object.assign({}, ROOT_INDEX_ALIAS_ID), rel, synthetic: true })
     } else if (rel === false) {
       logger.warn('Start page specified for site has invalid syntax: %s', startPageSpec)
-    } else if (~startPageSpec.indexOf(':')) {
+    } else if (startPageSpec.lastIndexOf(':') > startPageSpec.indexOf(':')) {
       logger.warn('Start page specified for site not found: %s', startPageSpec)
     } else {
       logger.warn('Missing component name in start page for site: %s', startPageSpec)
