@@ -43,4 +43,4 @@ site:
 ----
 
 We recommend enclosing the value in single quotation marks (`'`) to prevent it from being mangled by the YAML parser.
-The `google_analytics` key can also be configured from the xref:cli:options.adoc#google-key[CLI] and using the xref:environment-variables.adoc[GOOGLE_ANALYTICS_KEY environment variable].
+The `google_analytics` key can also be configured from the xref:cli:options.adoc#key[CLI] and using the xref:environment-variables.adoc[GOOGLE_ANALYTICS_KEY environment variable].

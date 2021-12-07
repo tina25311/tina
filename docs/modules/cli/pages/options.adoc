@@ -88,11 +88,6 @@ _$XDG_CONFIG_HOME/git/credentials_
 |Filesystem path
 |See xref:playbook:private-repository-auth.adoc#custom-credential-path[git credentials file path] and xref:playbook:environment-variables.adoc[GIT_CREDENTIALS_PATH variable].
 
-|[[google-key]]`--google-analytics-key`
-|Not set
-|Google Analytics API key
-|See xref:playbook:site-keys.adoc#google-analytics-key[Google Analytics key] and xref:playbook:environment-variables.adoc[GOOGLE_ANALYTICS_KEY variable].
-
 |`-h`, `--help`
 |_Not applicable_
 |_Not applicable_
