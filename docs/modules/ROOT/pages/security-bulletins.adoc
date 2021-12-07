@@ -2,9 +2,10 @@
 
 A prompt response to software defects and security vulnerabilities is a top priority for Antora. Even though threats are a fact of life, we take quality assurance seriously with nearly 100% test coverage. This page documents the items that slipped through and how to address them.
 
-== Security Bulletin GHSA-ww39-953v-wcq6
+[#CVE-2020-28469]
+== Security Bulletin CVE-2020-28469
 
-ID:: GHSA-ww39-953v-wcq6[GHSA-ww39-953v-wcq6
+ID:: CVE-2020-28469
 Published:: Jun 7, 2021
 
 === Summary
@@ -29,4 +30,5 @@ However, we recognize that the notice is annoying and may trigger security proto
 
 === References
 
+* https://nvd.nist.gov/vuln/detail/CVE-2020-28469[CVE-2020-28469]
 * https://github.com/advisories/GHSA-ww39-953v-wcq6[GHSA-ww39-953v-wcq6]
