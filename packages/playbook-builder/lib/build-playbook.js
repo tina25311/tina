@@ -30,7 +30,7 @@ const ospath = require('path')
  */
 function buildPlaybook (args = [], env = {}, schema = defaultSchema, beforeValidate = undefined) {
   const config = Object.assign(convict(schema, { args, env }), { getModel })
-  const playbook = config.get('playbook')
+  const playbook = config.has('playbook') && config.get('playbook')
   let absPlaybookPath
   if (playbook) {
     if (ospath.extname((absPlaybookPath = ospath.resolve(playbook)))) {

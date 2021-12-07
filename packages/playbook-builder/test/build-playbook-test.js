@@ -943,8 +943,13 @@ describe('buildPlaybook()', () => {
     expect(() => buildPlaybook(['--playbook', legacyUiStartPathSpec], {})).to.throw(/not declared in the schema/)
   })
 
-  it('should throw if no configuration data is given', () => {
+  it('should throw when using default schema and no configuration data is specified', () => {
     expect(() => buildPlaybook()).to.throw()
+  })
+
+  it('should not throw when using default schema with no required keys and no configuration data is specified', () => {
+    const playbook = buildPlaybook(undefined, undefined, { key: { format: String, default: 'default-value' } })
+    expect(playbook).to.have.property('key', 'default-value')
   })
 
   it('should be decoupled from the process environment', () => {
