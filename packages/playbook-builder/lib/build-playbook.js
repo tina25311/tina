@@ -20,7 +20,7 @@ const ospath = require('path')
  * @param {Array} [args=[]] - An array of arguments in the form of command line
  *   option flags and switches. Should begin with the first flag or switch.
  * @param {Object} [env={}] - A map of environment variables.
- * @param {Object} [schema=undefined] - A convict configuration schema.
+ * @param {Object} [schema=require('./config/schema').defaultSchema] - A convict configuration schema.
  * @param {Function} [beforeValidate=undefined] - A function to invoke on the
  *   config before validating it.
  *
