@@ -19,6 +19,7 @@ This project utilizes semantic versioning.
 
 * *logger*: Map log file values '1' and '2' to process.stdout and process.stderr, respectively (instead of files) (#912)
 * *content-classifier*: Detect case when site start page in playbook contains module name, but not component name
+* *site-generator*: Add dependency on `@antora/site-publisher` package to restore backwards compatibility with existing site generators (#913)
 * *cli*: Remove call to `process.exit()` (instead, set and return `process.exitCode`) (#908)
 * *cli*: Drop deprecated `--google-analytics-key` CLI option in favor of `--key`.
 
