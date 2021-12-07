@@ -67,9 +67,9 @@ async function generateSite (playbook) {
 function buildPlaybookFromArguments (args, env = process.env) {
   return require('@antora/playbook-builder')(args, env, undefined, (config) => {
     try {
-      const playbookDir = config.playbook ? require('path').dirname(config.playbook) : process.cwd()
       const { configureLogger, finalizeLogger } = require('@antora/logger')
-      configureLogger(config.getModel('runtime.log'), playbookDir)
+      const playbookFile = config.get('playbook') || process.cwd() + '/.'
+      configureLogger(config.getModel('runtime.log'), require('path').dirname(playbookFile))
       this.on('contextClosed', finalizeLogger)
     } catch {}
   })

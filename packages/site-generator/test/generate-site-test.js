@@ -172,11 +172,17 @@ describe('generateSite()', function () {
 
   it('should bootstrap playbook and manage logger if first argument is an array', async () => {
     playbookSpec.site.start_page = 'the-component::no-such-page.adoc'
-    playbookSpec.runtime.log = { destination: { file: '1', sync: false, buffer_size: 4096 } }
+    const logRelpath = '.' + ospath.sep + destDir + ospath.sep + 'antora.log'
+    const logPath = ospath.join(playbookFile, '..', destDir, 'antora.log')
+    playbookSpec.runtime.log = { destination: { file: logRelpath, sync: false, buffer_size: 4096 } }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
-    const messages = await captureStdoutLog(() =>
-      generateSite(['--playbook', playbookFile, '--cache-dir', env.ANTORA_CACHE_DIR, '--log-format', 'json'])
-    )
+    await generateSite(['--playbook', playbookFile, '--cache-dir', env.ANTORA_CACHE_DIR, '--log-format', 'json'])
+    expect(logPath).to.be.a.path()
+    const messages = fs
+      .readFileSync(logPath, 'utf8')
+      .trim()
+      .split('\n')
+      .map((it) => JSON.parse(it))
     expect(messages).to.have.lengthOf(1)
     expect(messages[0]).to.include({
       level: 'warn',
