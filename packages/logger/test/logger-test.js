@@ -1399,7 +1399,9 @@ describe('logger', () => {
       const lines = captureStdoutSync(() => logger.info('say it plain'))
       expect(lines).to.have.lengthOf(1)
       stream.end()
-      expect(finalizeLogger).to.not.throw()
+      let p
+      expect((p = finalizeLogger)).to.not.throw()
+      await p
     })
 
     it('should not attempt to close destination if destination is async and has already been destroyed', async () => {
@@ -1419,7 +1421,9 @@ describe('logger', () => {
       expect(lines).to.have.lengthOf(1)
       const realStream = stream.stream
       realStream.end()
-      expect(finalizeLogger).to.not.throw()
+      let p
+      expect((p = finalizeLogger)).to.not.throw()
+      await p
     })
 
     it('should not attempt to close pretty destination if destination is async and has already been destroyed', async () => {
