@@ -125,20 +125,24 @@ describe('buildPlaybook()', () => {
     expect(playbook.playbook).to.not.exist()
   })
 
-  it('should assign second positional argument to non-enumerable env property', () => {
-    const playbook = buildPlaybook([], process.env, { playbook: { format: String, default: undefined } })
-    expect(playbook.env).to.equal(process.env)
+  it('should assign second positional argument to non-enumerable process.env property if undefined', () => {
+    const oldEnv = process.env
     try {
+      process.env = Object.assign({}, oldEnv)
+      process.env.FOOBAR = 'baz'
+      const playbook = buildPlaybook([], undefined, { foobar: { format: String, default: undefined, env: 'FOOBAR' } })
+      expect(playbook.foobar).to.equal('baz')
+      expect(playbook.env).to.equal(process.env)
       process.env.TMP_ENV_VAR = 'value'
       expect(playbook.env.TMP_ENV_VAR).to.equal('value')
+      expect(Object.keys(playbook)).to.not.include('env')
     } finally {
-      delete process.env.TMP_ENV_VAR
+      process.env = oldEnv
     }
-    expect(Object.keys(playbook)).to.not.include('env')
   })
 
-  it('should set env property to empty object if second positional argument is undefined', () => {
-    const playbook = buildPlaybook([], undefined, { playbook: { format: String, default: undefined } })
+  it('should set env property to empty object if second positional argument is empty object', () => {
+    const playbook = buildPlaybook([], {}, { playbook: { format: String, default: undefined } })
     expect(playbook.env).to.eql({})
   })
 
@@ -957,7 +961,7 @@ describe('buildPlaybook()', () => {
     const oldEnv = process.env
     try {
       process.env = Object.assign({}, oldEnv, { URL: 'https://docs.example.org' })
-      const playbook = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'])
+      const playbook = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'], {})
       expect(playbook.site.url).to.be.undefined()
     } finally {
       process.env = oldEnv
