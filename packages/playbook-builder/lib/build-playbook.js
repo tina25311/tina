@@ -28,8 +28,8 @@ const ospath = require('path')
  *   mirrors the configuration schema. With the exception of keys and descendants
  *   marked in the schema as preserve, all keys in the playbook are camelCased.
  */
-function buildPlaybook (args = [], env = {}, schema = undefined, beforeValidate = undefined) {
-  const config = loadConvictConfig(args, env, schema)
+function buildPlaybook (args = [], env = {}, schema = defaultSchema, beforeValidate = undefined) {
+  const config = Object.assign(convict(schema, { args, env }), { getModel })
   const playbook = config.get('playbook')
   let absPlaybookPath
   if (playbook) {
@@ -66,10 +66,6 @@ function buildPlaybook (args = [], env = {}, schema = undefined, beforeValidate 
     })
     throw Object.assign(err, { message })
   }
-}
-
-function loadConvictConfig (args, env, customSchema) {
-  return Object.assign(convict(customSchema || defaultSchema, { args, env }), { getModel })
 }
 
 function getModel (name = '') {
