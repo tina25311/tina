@@ -19,6 +19,7 @@ const ospath = require('path')
 const { types } = require('util')
 const pino = require('pino')
 const { prettyFactory: pinoPrettyFactory } = require('pino-pretty')
+const SonicBoom = require('sonic-boom')
 
 const WORK_DIR = ospath.join(__dirname, 'work')
 
@@ -73,7 +74,7 @@ describe('logger', () => {
         expect(logger.failureLevelVal).to.equal(Infinity)
         expect(logger.noop).to.be.false()
         expect(logger.bindings()).to.eql({})
-        expect(getStream(logger).constructor.name).to.equal('SonicBoom')
+        expect(getStream(logger)).to.be.instanceOf(SonicBoom)
         expect(getHooks(logger).logMethod).to.be.instanceOf(Function)
       })
     })
@@ -103,7 +104,7 @@ describe('logger', () => {
 
     it('should write structured (JSON) log message to stdout by default', () => {
       const logger = configure().get(null)
-      expect(getStream(logger).constructor.name).to.equal('SonicBoom')
+      expect(getStream(logger)).to.be.instanceOf(SonicBoom)
       const lines = captureStdoutSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
       const { time, ...message } = JSON.parse(lines[0])
@@ -196,8 +197,8 @@ describe('logger', () => {
     it('should configure root logger using specified format', () => {
       const logger = configure({ format: 'pretty' }).get(null)
       const stream = getStream(logger)
-      expect(stream.constructor.name).to.not.equal('SonicBoom')
-      expect(stream.stream.constructor.name).to.equal('SonicBoom')
+      expect(stream).to.not.be.instanceOf(SonicBoom)
+      expect(stream.stream).to.be.instanceOf(SonicBoom)
       const lines = captureStderrSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.not.include('{')
@@ -206,7 +207,7 @@ describe('logger', () => {
 
     it('should configure root logger using structured (JSON) format if format is unrecognized', () => {
       const logger = configure({ format: 'structured' }).get(null)
-      expect(getStream(logger).constructor.name).to.equal('SonicBoom')
+      expect(getStream(logger)).to.be.instanceOf(SonicBoom)
       const lines = captureStdoutSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.include('{')
