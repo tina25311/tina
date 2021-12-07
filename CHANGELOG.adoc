@@ -11,6 +11,10 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Allow use of the YAML merge operator in a YAML playbook file (#910)
 
+=== Fixed
+
+* *cli*: Remove call to `process.exit()` (instead, set and return `process.exitCode`) (#908)
+
 == 3.0.0-rc.1 (2021-12-06)
 
 === Changed
