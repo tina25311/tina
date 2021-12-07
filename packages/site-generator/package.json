@@ -29,6 +29,7 @@
     "@antora/playbook-builder": "3.0.0-rc.1",
     "@antora/redirect-producer": "3.0.0-rc.1",
     "@antora/site-mapper": "3.0.0-rc.1",
+    "@antora/site-publisher": "3.0.0-rc.1",
     "@antora/ui-loader": "3.0.0-rc.1",
     "@antora/user-require-helper": "~2.0"
   },
