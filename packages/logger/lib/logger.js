@@ -75,7 +75,6 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     prettyPrint
       ? ((logger = pino(config, createPrettyDestination(destination, colorize)))[$stream].stream = destination)
       : (logger = pino(config, destination))
-    logger[$stream].flushSync = logger.silent // we do our own flush in the finalizer
   }
   rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))
   return module.exports

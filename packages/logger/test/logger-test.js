@@ -563,6 +563,7 @@ describe('logger', () => {
       expect(lines[1]).to.include(expectedLine2)
     })
 
+    // NOTE there's no longer a workaround for this since we don't use pino to create the pretty destination
     it('should not log warning that flushSync is not supported when fatal message is logged', () => {
       const logger = configure({ format: 'pretty' }).get()
       const lines = captureStderrSync(() => logger.fatal("You've sunk my battleship!"))
