@@ -109,6 +109,7 @@ describe('buildPlaybook()', () => {
   const legacyUiStartPathSpec = ospath.join(FIXTURES_DIR, 'legacy-ui-start-path-sample.yml')
   const invalidSiteUrlSpec = ospath.join(FIXTURES_DIR, 'invalid-site-url-spec-sample.yml')
   const contentSourceVersionSpec = ospath.join(FIXTURES_DIR, 'content-source-version-spec-sample.yml')
+  const contentSourceMergeSpec = ospath.join(FIXTURES_DIR, 'content-source-merge-spec-sample.yml')
   const defaultSchemaSpec = ospath.join(FIXTURES_DIR, 'default-schema-spec-sample.yml')
 
   it('should set dir to process.cwd() when playbook file is not specified', () => {
@@ -753,6 +754,22 @@ describe('buildPlaybook()', () => {
     expect(playbook.output.dir).to.equal('./_site')
     expect(playbook.output.destinations[0].provider).to.equal('archive')
     expect(playbook.output.destinations[0].path).to.equal('./site.zip')
+  })
+
+  it('should be able to use the merge operator in YAML to merge aliases into an object', () => {
+    const playbook = buildPlaybook(['--playbook', contentSourceMergeSpec], {})
+    expect(playbook).to.have.nested.property('content.sources')
+    const sources = playbook.content.sources
+    expect(sources).to.have.lengthOf(3)
+    expect(sources[0]).to.have.property('url', 'https://git.example.org/project-a-docs.git')
+    expect(sources[1]).to.have.property('url', 'https://git.example.org/project-b-docs.git')
+    expect(sources[2]).to.have.property('url', 'https://git.example.org/project-c-docs.git')
+    expect(sources[2]).to.eql({
+      url: 'https://git.example.org/project-c-docs.git',
+      branches: 'main',
+      startPath: 'docs',
+      version: true,
+    })
   })
 
   it('should export default schema', () => {

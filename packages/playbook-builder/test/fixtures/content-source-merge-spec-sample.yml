@@ -1,0 +1,14 @@
+content:
+  sources:
+  - &base_source
+    url: https://git.example.org/project-a-docs.git
+    branches: main
+    start_path: docs
+    version: true
+  - <<: *base_source
+    url: https://git.example.org/project-b-docs.git
+  - <<: *base_source
+    url: https://git.example.org/project-c-docs.git
+ui:
+  bundle:
+    url: ./ui-bundle.zip
