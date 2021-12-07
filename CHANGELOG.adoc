@@ -14,6 +14,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *cli*: Remove call to `process.exit()` (instead, set and return `process.exitCode`) (#908)
+* *cli*: Drop deprecated `--google-analytics-key` CLI option in favor of `--key`.
 
 == 3.0.0-rc.1 (2021-12-06)
 

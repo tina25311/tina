@@ -595,18 +595,13 @@ describe('cli', function () {
     })
   }).timeout(timeoutOverride)
 
-  it('should remap legacy --google-analytics-key option', () => {
-    playbookSpec.site.keys = { google_analytics: 'UA-12345-1' }
+  it('should not remap legacy --google-analytics-key option', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const args = ['generate', 'antora-playbook', '--google-analytics-key', 'UA-67890-1']
-    // Q: how do we assert w/ kapok when there's no output; use promise as workaround
-    return new Promise((resolve) => runAntora(args).on('exit', resolve)).then((exitCode) => {
-      expect(exitCode).to.equal(0)
-      expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html'))
-        .to.be.a.file()
-        .with.contents.that.match(/src="https:\/\/www[.]googletagmanager[.]com\/gtag\/js\?id=UA-67890-1">/)
-    })
-  }).timeout(timeoutOverride)
+    return runAntora(args)
+      .assert("antora: unknown option '--google-analytics-key'")
+      .done()
+  })
 
   it('should pass attributes defined using options to AsciiDoc processor', () => {
     playbookSpec.asciidoc = { attributes: { idprefix: '' } }

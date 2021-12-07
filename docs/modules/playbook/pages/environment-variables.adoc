@@ -76,7 +76,7 @@ Only applies when the log format is `json`.
 |`GOOGLE_ANALYTICS_KEY`
 |String
 |Not set
-|See xref:playbook:site-keys.adoc#google-analytics-key[Google Analytics key] and xref:cli:options.adoc#google-key[--google-analytics-key option]
+|See xref:playbook:site-keys.adoc#google-analytics-key[Google Analytics key]
 
 |[[site-url]]`URL`
 |String

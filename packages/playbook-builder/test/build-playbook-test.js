@@ -772,6 +772,16 @@ describe('buildPlaybook()', () => {
     })
   })
 
+  it('should allow Google Analytics key to be defined via environment variable', () => {
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], { GOOGLE_ANALYTICS_KEY: 'XX-abcxyz' })
+    expect(playbook).to.have.nested.property('site.keys.googleAnalytics', 'XX-abcxyz')
+  })
+
+  it('should not allow Google Analytics key to be defined via arg', () => {
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--google-analytics-key', 'XX-abcxyz'], {})
+    expect(playbook).to.have.nested.property('site.keys.googleAnalytics', 'XX-123456')
+  })
+
   it('should export default schema', () => {
     const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {}, buildPlaybook.defaultSchema)
     expect(playbook.site.url).to.equal('https://example.com')
