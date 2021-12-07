@@ -75,6 +75,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     prettyPrint
       ? ((logger = pino(config, createPrettyDestination(destination, colorize)))[$stream].stream = destination)
       : (logger = pino(config, destination))
+    temperDestination(destination)
   }
   rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))
   return module.exports
@@ -154,6 +155,15 @@ function createPrettyDestination (destination, colorize) {
   })
   destination.end = end // workaround; see https://github.com/pinojs/pino-pretty/issues/279
   return prettyDestination
+}
+
+function temperDestination (destination) {
+  if (destination instanceof SonicBoom && !destination.listeners('error').find((l) => l.name === 'filterBrokenPipe')) {
+    destination.on('error', function disconnectBrokenPipe (err) {
+      if (err.code === 'EPIPE') return Object.assign(this, { destroyed: true, write: () => undefined })
+      this.removeListener('error', disconnectBrokenPipe).emit('error', err)
+    })
+  }
 }
 
 function reshapeErrorForLog (err, msg, prettyPrint, serialize) {
