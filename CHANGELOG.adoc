@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Changed
+
+* *playbook-builder*: Allow use of the YAML merge operator in a YAML playbook file (#910)
+
 == 3.0.0-rc.1 (2021-12-06)
 
 === Changed

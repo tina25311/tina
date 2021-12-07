@@ -7,6 +7,7 @@ const yaml = require('js-yaml')
 
 const ARGS_SCANNER_RX = /(?:([^=,]+)|(?==))(?:,|$|=(|("|').*?\3|[^,]+)(?:,|$))/g
 const PRIMITIVE_TYPES = [Boolean, Number, String]
+const YAML_SCHEMA = yaml.CORE_SCHEMA.extend({ implicit: [yaml.types.merge] })
 
 /**
  * A convict function wrapper that registers custom formats and parsers and
@@ -22,8 +23,8 @@ function registerParsers (convict) {
   convict.addParser([
     { extension: 'json', parse: json.parse },
     { extension: 'toml', parse: toml.parse },
-    { extension: 'yaml', parse: (source) => yaml.load(source, { schema: yaml.CORE_SCHEMA }) },
-    { extension: 'yml', parse: (source) => yaml.load(source, { schema: yaml.CORE_SCHEMA }) },
+    { extension: 'yaml', parse: (source) => yaml.load(source, { schema: YAML_SCHEMA }) },
+    { extension: 'yml', parse: (source) => yaml.load(source, { schema: YAML_SCHEMA }) },
     {
       extension: '*',
       parse: () => {
@@ -74,7 +75,7 @@ function registerFormats (convict) {
         if (k) {
           let parsed
           if (v && v !== '-') {
-            parsed = yaml.load(v)
+            parsed = yaml.load(v, { schema: yaml.CORE_SCHEMA })
             if (parsed && PRIMITIVE_TYPES.indexOf(parsed.constructor) < 0) parsed = v
           } else {
             parsed = v || ''
