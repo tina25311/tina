@@ -1089,8 +1089,29 @@ describe('logger', () => {
       expect(message).to.eql({ level: 'info', msg: 'love is the message' })
     })
 
+    it('should write structured (JSON) log message to stderr if value of destination.file is 2', () => {
+      const logger = configure({ destination: { file: '2' } }).get(null)
+      expect(ospath.join(process.cwd(), '2')).to.not.be.a.path()
+      expect(ospath.join(process.cwd(), 'stderr')).to.not.be.a.path()
+      const lines = captureStderrSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
+      const { time, ...message } = JSON.parse(lines[0])
+      expect(typeof time).to.equal('number')
+      expect(message).to.eql({ level: 'info', msg: 'love is the message' })
+    })
+
     it('should write pretty log message to stdout if value of destination.file is stdout', () => {
       const logger = configure({ name: 'antora', format: 'pretty', destination: { file: 'stdout' } }).get(null)
+      const lines = captureStdoutSync(() => logger.info('love is the message'))
+      expect(lines).to.have.lengthOf(1)
+      const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
+      expect(lines[0]).to.match(expectedLine)
+    })
+
+    it('should write pretty log message to stdout if value of destination.file is 1', () => {
+      const logger = configure({ name: 'antora', format: 'pretty', destination: { file: '1' } }).get(null)
+      expect(ospath.join(process.cwd(), '1')).to.not.be.a.path()
+      expect(ospath.join(process.cwd(), 'stdout')).to.not.be.a.path()
       const lines = captureStdoutSync(() => logger.info('love is the message'))
       expect(lines).to.have.lengthOf(1)
       const expectedLine = /^\[.+\] INFO \(antora\): love is the message$/
