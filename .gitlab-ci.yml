@@ -16,7 +16,7 @@ variables:
   - .gitlab-ci.yml
   - .mocharc.js
   - package{-lock,}.json
-  - 'packages/**/*'
+  - packages/**/*
 - &if_schedule
   if: $CI_PIPELINE_SOURCE == "schedule"
 - &if_releases
