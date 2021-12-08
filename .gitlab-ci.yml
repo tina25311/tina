@@ -59,7 +59,10 @@ lint:
   - *if_schedule
   <<: *npm_cache_pull_push
   <<: *npm_install
-  script: npx npm run lint
+  script:
+  - npx npm run lint
+  - npx npm run format
+  - if [ -n "$(git diff --name-only)" ]; then git diff; false; fi
 test:node-12-linux:
   interruptible: true
   image: node:12-buster
