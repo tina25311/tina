@@ -866,9 +866,10 @@ describe('buildPlaybook()', () => {
 
   it('should call beforeValidate callbacks before validating playbook and exporting to model', () => {
     const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent'], {}, undefined, (config) => {
-      const log = config._instance.runtime.log
+      const log = config.get('runtime.log')
       if (log.level === 'silent') log.failure_level = 'none'
       log.level_format = 'label'
+      config.set('runtime.log', log)
     })
     expect(playbook.runtime.silent).to.be.true()
     expect(playbook.runtime.quiet).to.be.true()
