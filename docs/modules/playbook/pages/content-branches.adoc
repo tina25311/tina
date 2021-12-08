@@ -26,11 +26,14 @@ content:
 ----
 <.> Enclose multiple values in a set of square brackets (`+[]+`).
 Separate each value with a comma (`,`).
+If a value begins with a symbol (e.g., `+*+`), enclose it in single quotation marks (`'`) per YAML rules.
 <.> A single value doesn't need to be enclosed in square brackets, but, if it begins with a number (e.g., `2.0`), enclose it in single quotation marks (`'`).
+If the value begins with a symbol (e.g., `+*+`), enclose it in single quotation marks (`'`) per YAML rules.
 <.> Exact branch names and glob patterns can be assigned to a `branches` key.
 
 These value patterns are case insensitive (i.e., the characters are matched regardless of case).
 The values can be specified in a comma-separated list or as single items on individual lines.
+As a general rule of thumb, when using YAML, it's always best to enclose values in single quotation marks.
 
 .branches values listed on individual lines
 [#ex-value-list,yaml]
