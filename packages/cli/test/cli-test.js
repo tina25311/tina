@@ -907,7 +907,8 @@ describe('cli', function () {
         .on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
-      expect(messages).to.eql(['saying goodbye', 'goodbye'])
+      // because of timing, multiple lines may be combined into a single chunk
+      expect(messages.join('\n').split('\n')).to.eql(['saying goodbye', 'done goodbyes', 'goodbye'])
     })
   }).timeout(timeoutOverride)
 

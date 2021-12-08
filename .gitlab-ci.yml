@@ -108,8 +108,8 @@ test:macos:
   tags: [shared-macos-amd64]
   image: macos-11-xcode-12
   stage: verify
-  rules:
-  - *if_schedule
+  #rules:
+  #- *if_schedule
   <<: *npm_cache_pull
   <<: *npm_install
   script: npx npm test
