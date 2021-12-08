@@ -1057,6 +1057,7 @@ describe('logger', () => {
       const logger = configure({ destination }).get(null)
       const stream = getStream(logger)
       expect(stream).to.equal(destination)
+      expect(stream.listeners('error')).to.have.lengthOf(1) // asserts the built-in safe SonicBoom
       const messages = captureStdoutLogSync(() => logger.info('love is the message'))
       expect(messages).to.have.lengthOf(1)
       expect(messages[0]).to.include({ level: 'info', msg: 'love is the message' })
@@ -1068,6 +1069,7 @@ describe('logger', () => {
       const logger = configure({ destination }).get(null)
       const stream = getStream(logger)
       expect(stream).to.equal(destination)
+      expect(stream.listeners('error')).to.have.lengthOf(1) // asserts the built-in safe SonicBoom
       const lines = captureStdoutSync(() => logger.info('love is the message'))
       expect(lines).to.be.empty()
       const messages = await captureStdoutLog(finalizeLogger)
@@ -1415,9 +1417,41 @@ describe('logger', () => {
       expect(await trapAsyncError(finalizeLogger)).to.not.throw()
     })
 
+    it('should ignore failure and prevent further writes if destination throws EPIPE error', async () => {
+      const logger = configure().get(null)
+      const stream = getStream(logger)
+      expect(stream.listeners('error')).to.have.lengthOf(1) // asserts our custom safe SonicBoom
+      const writes = []
+      const write_ = stream.write
+      stream.write = function (message) {
+        writes.push(message)
+        if (~message.indexOf('play')) {
+          const err = Object.assign(new Error('broken pipe, write'), { code: 'EPIPE', errno: -32, syscall: 'write' })
+          this.emit('error', err)
+          return
+        }
+        return write_.call(this, message)
+      }
+      const lines = captureStdoutSync(() => {
+        logger.info('love is the message')
+        logger.info('let the music play')
+        logger.info('let the music play')
+        logger.info('let the music play')
+      })
+      expect(stream.destroyed).to.be.true()
+      expect(lines).to.have.lengthOf(1)
+      expect(writes).to.have.lengthOf(2)
+      expect(lines[0]).to.equal(writes[0].trim())
+      expect(writes[0]).to.include('love is the message')
+      expect(writes[1]).to.include('let the music play')
+      expect(await finalizeLogger).to.not.throw()
+      expect(writes).to.have.lengthOf(2)
+    })
+
     it('should not attempt to close pretty destination if destination is sync and has already been destroyed', async () => {
       const logger = configure({ format: 'pretty', destination: { file: 'stdout' } }).get(null)
       const stream = getStream(logger)
+      expect(stream.listeners('error')).to.have.lengthOf(1) // asserts our custom safe SonicBoom
       const lines = captureStdoutSync(() => logger.info('say it plain'))
       expect(lines).to.have.lengthOf(1)
       const realStream = stream.stream
@@ -1436,6 +1470,36 @@ describe('logger', () => {
       const realStream = stream.stream
       realStream.fd = 100000 // emulate not being able to write to file descriptor
       expect(await trapAsyncError(finalizeLogger)).to.not.throw()
+    })
+
+    it('should ignore failure and prevent further writes if pretty destination throws EPIPE error', async () => {
+      const logger = configure({ format: 'pretty', destination: { file: 'stdout' } }).get(null)
+      const stream = getStream(logger).stream
+      const writes = []
+      const write_ = stream.write
+      stream.write = function (message) {
+        writes.push(message)
+        if (~message.indexOf('play')) {
+          const err = Object.assign(new Error('broken pipe, write'), { code: 'EPIPE', errno: -32, syscall: 'write' })
+          this.emit('error', err)
+          return
+        }
+        return write_.call(this, message)
+      }
+      const lines = captureStdoutSync(() => {
+        logger.info('love is the message')
+        logger.info('let the music play')
+        logger.info('let the music play')
+        logger.info('let the music play')
+      })
+      expect(stream.destroyed).to.be.true()
+      expect(lines).to.have.lengthOf(1)
+      expect(writes).to.have.lengthOf(2)
+      expect(lines[0]).to.equal(writes[0].trim())
+      expect(writes[0]).to.include('love is the message')
+      expect(writes[1]).to.include('let the music play')
+      expect(await finalizeLogger).to.not.throw()
+      expect(writes).to.have.lengthOf(2)
     })
   })
 
