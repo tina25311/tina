@@ -64,7 +64,7 @@ async function generateSite (playbook) {
   }
 }
 
-function buildPlaybookFromArguments (args, env = process.env) {
+function buildPlaybookFromArguments (args, env) {
   return require('@antora/playbook-builder')(args, env, undefined, (config) => {
     try {
       const { configureLogger, finalizeLogger } = require('@antora/logger')

@@ -19,7 +19,7 @@ const ospath = require('path')
  *
  * @param {Array} [args=[]] - An array of arguments in the form of command line
  *   option flags and switches. Should begin with the first flag or switch.
- * @param {Object} [env={}] - A map of environment variables.
+ * @param {Object} [env=process.env] - A map of environment variables.
  * @param {Object} [schema=require('./config/schema').defaultSchema] - A convict configuration schema.
  * @param {Function} [beforeValidate=undefined] - A function to invoke on the
  *   config before validating it.
@@ -28,7 +28,7 @@ const ospath = require('path')
  *   mirrors the configuration schema. With the exception of keys and descendants
  *   marked in the schema as preserve, all keys in the playbook are camelCased.
  */
-function buildPlaybook (args = [], env = {}, schema = defaultSchema, beforeValidate = undefined) {
+function buildPlaybook (args = [], env = process.env, schema = defaultSchema, beforeValidate = undefined) {
   const config = Object.assign(convict(schema, { args, env }), { getModel })
   const playbook = config.has('playbook') && config.get('playbook')
   let absPlaybookPath
