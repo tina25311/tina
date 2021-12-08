@@ -12,6 +12,34 @@
 NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
 Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
+= Antora 3.0.0-rc.2
+
+_**Release date:** 2021.12.07 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+=== Added
+
+Issue {url-issues}/911[#911^]:: Overload the `generateSite` function to support the signature from Antora < 3 that builds the playbook and manages the logger.
+Issue {url-issues}/913[#913^]:: Add dependency on `@antora/site-publisher` package to restore backwards compatibility with existing site generators.
+
+=== Changed
+
+Issue {url-issues}/910[#910^]:: Restore support for the YAML merge operator in a YAML playbook file.
+Issue {url-issues}/914[#914^]:: Set `process.env` as the default value for the `env` parameter of `buildPlaybook` function.
+
+=== Fixed
+
+Issue {url-issues}/912[#912^]:: Map log file values '1' and '2' to process.stdout and process.stderr, respectively.
+Previously, the logger was writing the log to files named 'stdout' and 'stderr' relative to the CWD.
+Issue {url-issues}/907[#907^]:: Trap broken pipe on logger destination and silence future writes.
+Issue {url-issues}/908[#908^]:: Remove call to `process.exit()`.
+Instead, set and return `process.exitCode`.
+
+Detect case when site start page in playbook contains module name but not component name and report appropriately.
+
+Drop deprecated `--google-analytics-key` CLI option in favor of `--key`.
+
 = Antora 3.0.0-rc.1
 
 _**Release date:** 2021.12.05 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
