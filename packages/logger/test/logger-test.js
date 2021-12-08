@@ -121,6 +121,7 @@ describe('logger', () => {
 
     it('should allow fatal message to be logged', () => {
       const logger = configure().get(null)
+      expect(getStream(logger).flushSync).to.be.undefined() // pino's fatal handler will invoke flushSync if present
       const lines = captureStdoutSync(() => logger.fatal("You've sunk my battleship!"))
       expect(lines).to.have.lengthOf(1)
       const { time, ...message } = JSON.parse(lines[0])
@@ -566,6 +567,9 @@ describe('logger', () => {
     // NOTE there's no longer a workaround for this since we don't use pino to create the pretty destination
     it('should not log warning that flushSync is not supported when fatal message is logged', () => {
       const logger = configure({ format: 'pretty' }).get()
+      const stream = getStream(logger)
+      expect(stream.flushSync).to.be.undefined() // pino's fatal handler will invoke flushSync if present
+      expect(stream.stream.flushSync).to.be.undefined()
       const lines = captureStderrSync(() => logger.fatal("You've sunk my battleship!"))
       expect(lines).to.have.lengthOf(1)
       const expectedLine = /^\[.+\] FATAL: You've sunk my battleship!$/

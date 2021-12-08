@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Changed
+
+* *logger*: undefine flushSync method on SonicBoom destination so pino#fatal doesn't try to invoke it
+
 == 3.0.0-rc.2 (2021-12-08)
 
 === Added

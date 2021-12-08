@@ -158,12 +158,13 @@ function createPrettyDestination (destination, colorize) {
 }
 
 function temperDestination (destination) {
-  if (destination instanceof SonicBoom && !destination.listeners('error').find((l) => l.name === 'filterBrokenPipe')) {
-    destination.on('error', function disconnectBrokenPipe (err) {
-      if (err.code === 'EPIPE') return Object.assign(this, { destroyed: true, write: () => undefined })
-      this.removeListener('error', disconnectBrokenPipe).emit('error', err)
-    })
-  }
+  if (!(destination instanceof SonicBoom)) return
+  destination.flushSync = undefined // pino's fatal handler wants to call this, but we do our own flushing
+  if (destination.listeners('error').find((l) => l.name === 'filterBrokenPipe')) return
+  destination.on('error', function disconnectBrokenPipe (err) {
+    if (err.code === 'EPIPE') return Object.assign(this, { destroyed: true, write: () => undefined })
+    this.removeListener('error', disconnectBrokenPipe).emit('error', err)
+  })
 }
 
 function reshapeErrorForLog (err, msg, prettyPrint, serialize) {
