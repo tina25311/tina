@@ -831,7 +831,7 @@ describe('buildPlaybook()', () => {
   })
 
   it('should not camelCase the keys in the value of the version key on a content source', () => {
-    const playbook = buildPlaybook(['--playbook', contentSourceVersionSpec])
+    const playbook = buildPlaybook(['--playbook', contentSourceVersionSpec], {})
     expect(playbook.content.sources).to.have.lengthOf(1)
     expect(playbook.content.sources[0]).to.have.property('version')
     expect(playbook.content.sources[0].version).to.be.instanceOf(Object)
@@ -884,7 +884,7 @@ describe('buildPlaybook()', () => {
       process.env = Object.assign({}, oldEnv)
       delete process.env.CI
       process.stdout.isTTY = true
-      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec])
+      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
       expect(playbook.runtime.log.format).to.equal('pretty')
     } finally {
       process.env = oldEnv
@@ -899,7 +899,7 @@ describe('buildPlaybook()', () => {
       process.env = Object.assign({}, oldEnv)
       process.env.CI = 'true'
       process.stdout.isTTY = undefined
-      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec])
+      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
       expect(playbook.runtime.log.format).to.equal('pretty')
     } finally {
       process.env = oldEnv
@@ -914,7 +914,7 @@ describe('buildPlaybook()', () => {
       process.env = Object.assign({}, oldEnv)
       delete process.env.CI
       process.stdout.isTTY = undefined
-      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec])
+      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
       expect(playbook.runtime.log.format).to.equal('json')
     } finally {
       process.env = oldEnv
@@ -923,7 +923,7 @@ describe('buildPlaybook()', () => {
   })
 
   it('should override dynamic default value for log format', () => {
-    const playbook = buildPlaybook(['--playbook', runtimeLogFormatSpec])
+    const playbook = buildPlaybook(['--playbook', runtimeLogFormatSpec], {})
     expect(playbook.runtime.log.format).to.equal('pretty')
   })
 
@@ -948,7 +948,7 @@ describe('buildPlaybook()', () => {
   })
 
   it('should not throw when using default schema with no required keys and no configuration data is specified', () => {
-    const playbook = buildPlaybook(undefined, undefined, { key: { format: String, default: 'default-value' } })
+    const playbook = buildPlaybook(undefined, {}, { key: { format: String, default: 'default-value' } })
     expect(playbook).to.have.property('key', 'default-value')
   })
 
