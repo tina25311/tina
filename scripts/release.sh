@@ -8,7 +8,7 @@ rm -rf build
 # resolve the version number (exact) or increment keyword (next in sequence)
 if [ -z $RELEASE_VERSION ]; then
   if [ -f releaserc ]; then
-    . $(pwd)/releaserc
+    . $PWD/releaserc
   else
     RELEASE_VERSION=prerelease
   fi
