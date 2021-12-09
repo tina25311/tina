@@ -2,7 +2,7 @@
 
 const camelCaseKeys = require('camelcase-keys')
 const { createHash } = require('crypto')
-const createHttpPlugin = require('./git-plugin-http')
+const createGitHttpPlugin = require('./git-plugin-http')
 const decodeUint8Array = require('./decode-uint8-array')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
@@ -936,7 +936,7 @@ function loadGitPlugins (gitConfig, networkConfig, startDir) {
     credentialManager = new GitCredentialManagerStore().configure({ config: gitConfig.credentials, startDir })
   }
   if (gitConfig.ensureGitSuffix) urlRouter = { ensureGitSuffix: (url) => (url.endsWith('.git') ? url : url + '.git') }
-  const http = plugins.get('http') || createHttpPlugin(networkConfig, 'git/isomorphic-git@' + git.version())
+  const http = plugins.get('http') || createGitHttpPlugin(networkConfig, 'git/isomorphic-git@' + git.version())
   return { credentialManager, http, urlRouter }
 }
 
