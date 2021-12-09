@@ -66,7 +66,7 @@ To give you an idea of the kinds of extensions you can write and what's possible
 * Modify the configuration
 * Change the state of a context variable, such as adding a new file to a catalog
 * Push a new variable into the context
-* Replace or proxy an exist context variables
+* Replace or proxy existing context variables
 * Log messages
 * Require user code
 * Postprocess content, such as replacing strings in HTML files
