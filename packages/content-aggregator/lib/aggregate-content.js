@@ -940,7 +940,7 @@ function loadGitPlugins (gitConfig, networkConfig, startDir) {
     credentialManager = new GitCredentialManagerStore().configure({ config: gitConfig.credentials, startDir })
   }
   if (gitConfig.ensureGitSuffix) urlRouter = { ensureGitSuffix: (url) => (url.endsWith('.git') ? url : url + '.git') }
-  const http = plugins.get('http') || createGitHttpPlugin(networkConfig, 'git/isomorphic-git@' + git.version())
+  const http = plugins.get('http') || createGitHttpPlugin(networkConfig)
   return { credentialManager, http, urlRouter }
 }
 

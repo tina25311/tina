@@ -5213,7 +5213,9 @@ describe('aggregateContent()', () => {
       }
       try {
         gitServer.on('fetch', recordFetch)
-        const customHttp = require('@antora/content-aggregator/lib/git-plugin-http')({}, 'git/just-git-it@1.0')
+        const customHttp = require('@antora/content-aggregator/lib/git-plugin-http')({
+          headers: { 'user-agent': 'git/just-git-it@1.0' },
+        })
         RepositoryBuilder.registerPlugin('http', customHttp, GIT_CORE)
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
         await initRepoWithFiles(repoBuilder)
@@ -5238,7 +5240,9 @@ describe('aggregateContent()', () => {
       }
       try {
         const pluginSource = heredoc`
-          module.exports = require('@antora/content-aggregator/lib/git-plugin-http')({}, 'git/just-git-it@1.0')
+          module.exports = require('@antora/content-aggregator/lib/git-plugin-http')({
+            headers: { 'user-agent': 'git/just-git-it@1.0' },
+          })
         `
         await fsp.writeFile(ospath.join(WORK_DIR, 'git-http-plugin.js'), pluginSource)
         gitServer.on('fetch', recordFetch)
@@ -5276,6 +5280,41 @@ describe('aggregateContent()', () => {
         expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
         // NOTE the built-in http plugin in isomorphic-git does not set the user-agent header
         expect(userAgent).to.be.undefined()
+      } finally {
+        gitServer.off('fetch', recordFetch)
+      }
+    })
+
+    it('should allow custom http plugin to specify Authorization header', async () => {
+      let authorization
+      let contentType
+      const recordFetch = (fetch) => {
+        authorization = fetch.req.headers.authorization // NOTE simple-get lowercases the names of all headers
+        contentType = fetch.req.headers['content-type']
+        fetch.accept()
+      }
+      try {
+        const pluginSource = heredoc`
+          module.exports = require('@antora/content-aggregator/lib/git-plugin-http')({
+            headers: {
+              Authorization: 'Basic ' + Buffer.from('token:').toString('base64'),
+              'content-type': 'not-used',
+            },
+          })
+        `
+        await fsp.writeFile(ospath.join(WORK_DIR, 'git-http-plugin-with-authorization.js'), pluginSource)
+        gitServer.on('fetch', recordFetch)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder)
+        playbookSpec.dir = WORK_DIR
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        playbookSpec.git = { plugins: { http: './git-http-plugin-with-authorization.js' } }
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0].files).to.not.be.empty()
+        expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
+        expect(authorization).to.equal('Basic dG9rZW46')
+        expect(contentType).to.equal('application/x-git-upload-pack-request')
       } finally {
         gitServer.off('fetch', recordFetch)
       }
