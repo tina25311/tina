@@ -397,6 +397,12 @@ describe('createPageComposer()', () => {
 
     it('should use default layout if layout specified in page-layout attribute does not exist', () => {
       file.asciidoc.attributes['page-layout'] = 'does-not-exist'
+      file.src.origin = {
+        type: 'git',
+        refname: 'main',
+        startPath: 'docs',
+        url: 'https://git.example.org/repo.git',
+      }
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       const messages = captureLogSync(() => composePage(file, contentCatalog, navigationCatalog))
       expect(file.contents.toString()).to.include('<html class="default">')
@@ -405,6 +411,14 @@ describe('createPageComposer()', () => {
         level: 'warn',
         name: '@antora/page-composer',
         msg: "page layout 'does-not-exist' specified by page not found; using default layout",
+        file: {
+          path: 'docs/modules/ROOT/pages/the-page.adoc',
+        },
+        source: {
+          refname: 'main',
+          startPath: 'docs',
+          url: 'https://git.example.org/repo.git',
+        },
       })
     })
 

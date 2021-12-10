@@ -14,7 +14,6 @@ variables:
   changes:
   - .eslintrc
   - .gitlab-ci.yml
-  - .mocharc.js
   - package{-lock,}.json
   - packages/**/*
 - &if_schedule
