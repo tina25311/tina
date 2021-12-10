@@ -5098,6 +5098,24 @@ describe('aggregateContent()', function () {
       }, repoBuilder.url.length * 2)
     })
 
+    it('should configure progress bar to stretch the full width of the terminal', async () => {
+      let widthA, widthB
+      playbookSpec.runtime.fetch = true
+      await withMockStdout(async (lines) => {
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(lines).to.have.lengthOf.at.least(2)
+        widthA = lines[0].length
+      }, 200)
+      await withMockStdout(async (lines) => {
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(lines).to.have.lengthOf.at.least(2)
+        widthB = lines[0].length
+      }, 240)
+      expect(widthB).to.be.greaterThan(widthA)
+    })
+
     it('should not show progress bar if window is too narrow', async () => {
       return withMockStdout(async (lines) => {
         const aggregate = await aggregateContent(playbookSpec)

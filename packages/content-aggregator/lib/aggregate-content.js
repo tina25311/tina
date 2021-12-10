@@ -775,27 +775,31 @@ function buildFetchOptions (repo, progress, displayUrl, credentialsFromUrl, gitP
 function createProgress (urls, term) {
   if (term.isTTY && term.columns > 59) {
     let maxUrlLength = 0
+    const width = term.columns
     for (const url of urls) {
       if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
         const urlLength = extractCredentials(url).displayUrl.length
         if (urlLength > maxUrlLength) maxUrlLength = urlLength
       }
     }
-    const progress = new MultiProgress(term)
-    // NOTE remove the width of the operation, then partition the difference between the url and bar
-    progress.maxLabelWidth = Math.min(Math.ceil((term.columns - GIT_OPERATION_LABEL_LENGTH) / 2), maxUrlLength)
-    return progress
+    return Object.assign(new MultiProgress(term), {
+      // NOTE remove the operation width, then partition the difference between the url and bar
+      maxLabelWidth: Math.min(Math.ceil((width - GIT_OPERATION_LABEL_LENGTH) / 2), maxUrlLength),
+      width,
+    })
   }
 }
 
 function createProgressListener (progress, progressLabel, operation) {
+  const width = progress.width
   const progressBar = progress.newBar(formatProgressBar(progressLabel, progress.maxLabelWidth, operation), {
     complete: '#',
     incomplete: '-',
     renderThrottle: 25,
     total: 100,
+    width,
   })
-  const ticks = progressBar.stream.columns - progressBar.fmt.replace(':bar', '').length
+  const ticks = width - progressBar.fmt.replace(':bar', '').length
   // NOTE leave room for indeterminate progress at end of bar; this isn't strictly needed for a bare clone
   progressBar.scaleFactor = Math.max(0, (ticks - 1) / ticks)
   progressBar.tick(0)

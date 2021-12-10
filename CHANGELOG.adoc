@@ -9,7 +9,11 @@ This project utilizes semantic versioning.
 
 === Changed
 
-* *logger*: undefine flushSync method on SonicBoom destination so pino#fatal doesn't try to invoke it
+* *logger*: Undefine flushSync method on SonicBoom destination so pino#fatal doesn't try to invoke it
+
+=== Fixed
+
+* *content-aggregator*: Configure progress bar to stretch width of terminal for wide terminals (#918)
 
 == 3.0.0-rc.2 (2021-12-08)
 
