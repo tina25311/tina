@@ -41,7 +41,7 @@ const CWD = process.cwd()
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const WORK_DIR = ospath.join(__dirname, 'work')
 
-describe('aggregateContent()', function () {
+describe('aggregateContent()', () => {
   let gitServer
   let gitServerPort
   let playbookSpec
@@ -3544,7 +3544,7 @@ describe('aggregateContent()', function () {
         expect(aggregate).to.have.lengthOf(1)
         const file = aggregate[0].files[0]
         expect(file.src).to.not.have.property('editUrl')
-      }).timeout(this.timeout() * 2)
+      })
 
       it('should use editUrl pattern to generate editUrl', async () => {
         const webUrl = 'https://gitlab.com/antora/demo/demo-component-b'
@@ -3565,7 +3565,7 @@ describe('aggregateContent()', function () {
         expect(fileTwo.src.editUrl).to.equal(
           `${webUrl}/blob/${fileTwo.src.origin.branch}/${fileTwo.src.origin.startPath}/${fileTwo.src.path}`
         )
-      }).timeout(this.timeout() * 2)
+      })
     })
   })
 
@@ -4894,7 +4894,7 @@ describe('aggregateContent()', function () {
       playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1' })
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
-    }).timeout(this.timeout() * 3)
+    })
   }
 
   it('should prefer remote branches in bare repository', async () => {
@@ -6036,7 +6036,7 @@ describe('aggregateContent()', function () {
         expect(lines[0]).to.include(url)
       })
       if (oldSshAuthSock) process.env.SSH_AUTH_SOCK = oldSshAuthSock
-    }).timeout(this.timeout())
+    })
 
     it('should throw meaningful error if remote repository returns internal server error', async () => {
       const url = `http://localhost:${serverPort}/500/bar.git`

@@ -3,7 +3,7 @@
 
 const { expect } = require('@antora/test-harness')
 
-describe('site-publisher', function () {
+describe('site-publisher', () => {
   it('should serve as alias for @antora/file-publisher', () => {
     const expected = require('@antora/file-publisher')
     const actual = require('@antora/site-publisher')

@@ -11,12 +11,12 @@ module.exports = Object.assign(
       (process.env.npm_package_json === require('path').join(process.env.npm_config_local_prefix, 'package.json')
         ? `packages/${process.env.npm_config_package || '*'}/test/**/*-test.js`
         : 'test/**/*-test.js'),
+    timeout: 10 * 60 * 1000,
   },
   process.env.CI
     ? {
         forbidOnly: true,
         reporter: 'dot',
-        timeout: process.platform === 'win32' ? '10000' : '5000',
       }
     : {}
 )
