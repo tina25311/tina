@@ -741,6 +741,8 @@ If you don't want the `lint` script to run when running tests, call the `test` l
 
  $ npm test
 
+TIP: The command `npm test` is a shorthand for `npm run test` and can be further abbreviated as `npm t`.
+
 If you want to run the linter separately, use the following npm script:
 
  $ npm run lint
@@ -755,17 +757,22 @@ You can include the linter as well:
 
 This filter works for all npm scripts.
 
-////
-If you're working on tests or refactoring tested code, you can run the test suite continuously, using:
+If you're working on tests or refactoring the code under test, you can run the test suite continuously by adding the `--watch` option:
 
  $ npm test --watch
 
-You might want to combine this with the package filter to limit the tests to the package you're working on:
+You may want to combine the `--watch` option with the package filter to limit the tests to only the package you're working on:
 
- $ npm test --watch --package ui-loader
+ $ npm test --package ui-loader --watch
 
-This command runs the test suite (using `test`) each time you save the test or the code under test.
-////
+This command runs the test suite each time you save the test or the code under test.
+
+You can pass additional options directly to the `mocha` command by placing them after the `--` separator.
+We can use this, for instance, to specify which files to watch:
+
+ $ npm test --package ui-loader --watch -- --watch-files='packages/ui-loader/lib/ui-catalog.js'
+
+Run `npx mocha --help` to discover other options.
 
 === Select or Skip Tests
 

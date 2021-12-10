@@ -1,25 +1,16 @@
 'use strict'
 
-module.exports = Object.assign(
-  {
-    mochaGlobalTeardown () {
-      if (!this.failures) logCoverageReportPath()
-    },
-    require: __filename,
-    spec:
-      process.argv[2] ||
-      (process.env.npm_package_json === require('path').join(process.env.npm_config_local_prefix, 'package.json')
-        ? `packages/${process.env.npm_config_package || '*'}/test/**/*-test.js`
-        : 'test/**/*-test.js'),
-    timeout: 10 * 60 * 1000,
+const config = {
+  mochaGlobalTeardown () {
+    if (!this.failures) logCoverageReportPath()
   },
-  process.env.CI
-    ? {
-        forbidOnly: true,
-        reporter: 'dot',
-      }
-    : {}
-)
+  require: __filename,
+  spec: resolveSpec(),
+  timeout: 10 * 60 * 1000,
+}
+
+if (process.env.npm_config_watch) config.watch = true
+if (process.env.CI) Object.assign(config, { forbidOnly: true, reporter: 'dot' })
 
 function logCoverageReportPath () {
   if (!process.env.NYC_PROCESS_ID) return
@@ -30,3 +21,13 @@ function logCoverageReportPath () {
     : require('url').pathToFileURL(coverageReportRelpath)
   console.log(`Coverage report: ${coverageReportPath}`)
 }
+
+function resolveSpec() {
+  let spec = process.argv[2]
+  if (spec && !spec.startsWith('-')) return spec
+  return process.env.npm_package_json === require('path').join(process.env.npm_config_local_prefix, 'package.json')
+    ? `packages/${process.env.npm_config_package || '*'}/test/**/*-test.js`
+    : 'test/**/*-test.js'
+}
+
+module.exports = config
