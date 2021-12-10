@@ -3,7 +3,7 @@
 
 const { expect } = require('@antora/test-harness')
 
-describe('site-generator-default', function () {
+describe('site-generator-default', () => {
   it('should serve as alias for @antora/site-generator', () => {
     const expected = require('@antora/site-generator')
     const actual = require('@antora/site-generator-default')

@@ -29,7 +29,7 @@ const UI_BUNDLE_URL =
   'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable'
 const TMP_DIR = require('os').tmpdir()
 
-describe('generateSite()', function () {
+describe('generateSite()', () => {
   let $
   let absDestDir
   let cacheDir
@@ -40,8 +40,6 @@ describe('generateSite()', function () {
   let repoBuilder
   let uiBundleUrl
   let gitServer
-
-  const timeoutOverride = this.timeout() * 2
 
   const readFile = (file, dir) => fs.readFileSync(dir ? ospath.join(dir, file) : file, 'utf8')
 
@@ -168,7 +166,7 @@ describe('generateSite()', function () {
     expect($('nav.nav-menu .is-current-page')).to.have.lengthOf(1)
     expect($('nav.nav-menu .is-current-page > a.nav-link')).to.have.attr('href', 'the-page.html')
     expect($('.page-versions')).to.not.be.found()
-  }).timeout(timeoutOverride)
+  })
 
   it('should bootstrap playbook and manage logger if first argument is an array', async () => {
     playbookSpec.site.start_page = 'the-component::no-such-page.adoc'
@@ -196,7 +194,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component'))
       .to.be.a.directory()
       .with.subDirs(['2.0'])
-  }).timeout(timeoutOverride)
+  })
 
   it('should bootstrap playbook with env if first argument is an array and second argument is an object', async () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -211,7 +209,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'sitemap.xml'))
       .to.be.a.file()
       .with.contents.that.match(/https:\/\/docs\.example\.org\//)
-  }).timeout(timeoutOverride)
+  })
 
   it('should resolve dot-relative paths in playbook relative to playbook dir', async () => {
     const repoUrl = '.' + ospath.sep + ospath.relative(WORK_DIR, playbookSpec.content.sources[0].url)
@@ -229,7 +227,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component'))
       .to.be.a.directory()
       .with.subDirs(['2.0'])
-  }).timeout(timeoutOverride)
+  })
 
   it('should generate site into output directory specified in arguments', async () => {
     const destDirOverride = ospath.join(destDir, 'beta')
@@ -243,7 +241,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDirOverride, 'the-component'))
       .to.be.a.directory()
       .with.subDirs(['2.0'])
-  }).timeout(timeoutOverride)
+  })
 
   it('should use relative UI root path for page in ROOT module of ROOT component', async () => {
     await repoBuilder
@@ -266,7 +264,7 @@ describe('generateSite()', function () {
     expect($('body > script:first-of-type')).to.have.attr('src', './_/js/site.js')
     expect($('nav.navbar .navbar-brand .navbar-item')).to.have.attr('href', '.')
     expect($('.nav-panel-explore li.component:last-of-type a')).to.have.attr('href', 'the-component/2.0/index.html')
-  }).timeout(timeoutOverride)
+  })
 
   it('should derive version from reference name if version key is set on content source', async () => {
     await repoBuilder
@@ -289,7 +287,7 @@ describe('generateSite()', function () {
       .to.be.a.directory()
       .with.subDirs(['lts-2'])
     expect(ospath.join(absDestDir, 'the-component/lts-2/the-page.html')).to.be.a.file()
-  }).timeout(timeoutOverride)
+  })
 
   it('should use start page from latest version of component if version not specified', async () => {
     playbookSpec.site.start_page = 'the-component::index.adoc'
@@ -298,7 +296,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'index.html'))
       .to.be.a.file()
       .with.contents.that.match(/<meta http-equiv="refresh" content="0; url=the-component\/2.0\/index.html">/)
-  }).timeout(timeoutOverride)
+  })
 
   it('should log warning message if site start page is missing .adoc file extension', async () => {
     playbookSpec.site.start_page = 'the-component::index'
@@ -310,7 +308,7 @@ describe('generateSite()', function () {
       name: '@antora/content-classifier',
       msg: 'Start page specified for site not found: the-component::index',
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should log warning message if site start page cannot be resolved', async () => {
     playbookSpec.site.start_page = 'unknown-component::index.adoc'
@@ -322,7 +320,7 @@ describe('generateSite()', function () {
       name: '@antora/content-classifier',
       msg: 'Start page specified for site not found: unknown-component::index.adoc',
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should log warning message if component version start page cannot be resolved and use index page instead', async () => {
     await repoBuilder
@@ -348,7 +346,7 @@ describe('generateSite()', function () {
     })
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('.nav-panel-explore .component.is-current .versions a').eq(0)).to.have.attr('href', 'index.html')
-  }).timeout(timeoutOverride)
+  })
 
   it('should log error message if xref cannot be resolved', async () => {
     await repoBuilder
@@ -370,7 +368,7 @@ describe('generateSite()', function () {
         source: { refname: 'v2.0', url: repoBuilder.url },
       })
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should qualify applicable links using site url if set in playbook', async () => {
     playbookSpec.site.url = 'https://example.com/docs/'
@@ -383,7 +381,7 @@ describe('generateSite()', function () {
     $ = loadHtmlFile('the-component/2.0/index.html')
     expect($('head link[rel=canonical]')).to.have.attr('href', 'https://example.com/docs/the-component/2.0/index.html')
     expect($('nav.navbar .navbar-brand .navbar-item')).to.have.attr('href', 'https://example.com/docs')
-  }).timeout(timeoutOverride)
+  })
 
   it('should generate 404 page if site url is set to absolute URL in playbook', async () => {
     playbookSpec.site.url = 'https://example.com'
@@ -397,7 +395,7 @@ describe('generateSite()', function () {
     expect($('.navbar-brand a.navbar-item')).to.have.attr('href', 'https://example.com')
     expect($('.nav-panel-explore .version.is-latest a')).to.have.attr('href', '/the-component/2.0/index.html')
     expect($('h1.page')).to.have.text('Page Not Found')
-  }).timeout(timeoutOverride)
+  })
 
   it('should generate 404 page if site url is set to absolute URL with subpath in playbook', async () => {
     playbookSpec.site.url = 'https://example.com/docs'
@@ -410,7 +408,7 @@ describe('generateSite()', function () {
     expect($('body > script:first-of-type')).to.have.attr('src', '/docs/_/js/site.js')
     expect($('.navbar-brand a.navbar-item')).to.have.attr('href', 'https://example.com/docs')
     expect($('.nav-panel-explore .version.is-latest a')).to.have.attr('href', '/docs/the-component/2.0/index.html')
-  }).timeout(timeoutOverride)
+  })
 
   it('should generate 404 page if site url is set to / in playbook', async () => {
     playbookSpec.site.url = '/'
@@ -423,7 +421,7 @@ describe('generateSite()', function () {
     expect($('body > script:first-of-type')).to.have.attr('src', '/_/js/site.js')
     expect($('.navbar-brand a.navbar-item')).to.have.attr('href', '/')
     expect($('.nav-panel-explore .version.is-latest a')).to.have.attr('href', '/the-component/2.0/index.html')
-  }).timeout(timeoutOverride)
+  })
 
   it('should generate 404 page if site url is set to a pathname in the playbook', async () => {
     playbookSpec.site.url = '/docs'
@@ -436,7 +434,7 @@ describe('generateSite()', function () {
     expect($('body > script:first-of-type')).to.have.attr('src', '/docs/_/js/site.js')
     expect($('.navbar-brand a.navbar-item')).to.have.attr('href', '/docs')
     expect($('.nav-panel-explore .version.is-latest a')).to.have.attr('href', '/docs/the-component/2.0/index.html')
-  }).timeout(timeoutOverride)
+  })
 
   it('should allow 404 page to access site-wide page attributes', async () => {
     playbookSpec.site.url = 'https://example.com'
@@ -454,7 +452,7 @@ describe('generateSite()', function () {
     expect($('head > title')).to.have.text('No Such Page :: The Site')
     expect($('head > meta[property=foo]')).to.have.attr('content', 'bar')
     expect($('h1.page')).to.have.text('No Such Page')
-  }).timeout(timeoutOverride)
+  })
 
   it('should be able to reference implicit page attributes', async () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -462,7 +460,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('article').text()).to.include('This is version 2.0 of component the-component.')
-  }).timeout(timeoutOverride)
+  })
 
   it('should pass AsciiDoc attributes defined in playbook to AsciiDoc processor', async () => {
     playbookSpec.asciidoc = {
@@ -478,7 +476,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/index.html')
     expect($('head meta[name=description]')).to.have.attr('content', 'The almighty index page')
-  }).timeout(timeoutOverride)
+  })
 
   it('should pass AsciiDoc attributes defined in component descriptor to AsciiDoc processor', async () => {
     playbookSpec.asciidoc = {
@@ -520,7 +518,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/index.html')
     expect($('head meta[name=description]')).to.have.attr('content', 'The almighty index page')
-  }).timeout(timeoutOverride)
+  })
 
   it('should register extensions defined in playbook on AsciiDoc processor', async () => {
     const absExtensionPath = ospath.resolve(WORK_DIR, 'ext', 'shout-tree-processor.js')
@@ -537,7 +535,7 @@ describe('generateSite()', function () {
       .with.contents.that.match(/Section A content!!!/)
       .and.with.contents.that.match(/&#169;/)
     global.Opal.Asciidoctor.Extensions.unregisterAll()
-  }).timeout(timeoutOverride)
+  })
 
   it('should be able to reference environment variable from UI template added as supplemental file', async () => {
     env.SITE_NAME = 'Learn All The Things!'
@@ -552,7 +550,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html'))
       .to.be.a.file()
       .with.contents.that.match(/<meta property="og:site_name" content="Learn All The Things!">/)
-  }).timeout(timeoutOverride)
+  })
 
   it('should output UI to directory defined in playbook even if defined in UI bundle', async () => {
     playbookSpec.ui.output_dir = 'ui'
@@ -567,7 +565,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'ui'))
       .to.be.a.directory()
       .with.subDirs.with.members(['css', 'js', 'font', 'img'])
-  }).timeout(timeoutOverride)
+  })
 
   it('should add edit page link to toolbar that links to edit URL if page.editUrl is set in UI model', async () => {
     const remoteGitUrl = 'git@gitlab.com:org/docs-repo.git'
@@ -584,7 +582,7 @@ describe('generateSite()', function () {
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
     const editLinkUrl = `${remoteWebUrl}/edit/${refname}/${thePagePath}`
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
-  }).timeout(timeoutOverride)
+  })
 
   it('should add edit page link to toolbar that links to custom edit URL', async () => {
     const editBaseUrl = repoBuilder.url.replace(/\.git$/, '')
@@ -598,7 +596,7 @@ describe('generateSite()', function () {
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
     const editLinkUrl = `${editBaseUrl}/edit/${refname}/${thePagePath}`
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
-  }).timeout(timeoutOverride)
+  })
 
   it('should not add edit page link to toolbar if repository is private', async () => {
     playbookSpec.content.sources[0].url = repoBuilder.url.replace('//', '//@')
@@ -608,7 +606,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     expect($('.toolbar .edit-this-page')).to.not.be.found()
-  }).timeout(timeoutOverride)
+  })
 
   it('should add edit page link to toolbar for private repository if env.FORCE_SHOW_EDIT_PAGE_LINK=true', async () => {
     const editBaseUrl = repoBuilder.url.replace(/\.git$/, '')
@@ -623,7 +621,7 @@ describe('generateSite()', function () {
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
     const editLinkUrl = `${editBaseUrl}/edit/${refname}/${thePagePath}`
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
-  }).timeout(timeoutOverride)
+  })
 
   it('should add edit page link to toolbar that links to local file if page.fileUri is set in UI model', async () => {
     await repoBuilder
@@ -638,7 +636,7 @@ describe('generateSite()', function () {
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
     const expectedEditLinkUrl = pathToFileURL(ospath.join(repoBuilder.repoPath, thePagePath))
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', expectedEditLinkUrl)
-  }).timeout(timeoutOverride)
+  })
 
   it('should point edit page link to edit URL instead of local file if CI env var is set', async () => {
     env.CI = 'true'
@@ -656,7 +654,7 @@ describe('generateSite()', function () {
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
     const editLinkUrl = `${remoteWebUrl}/edit/${refname}/${thePagePath}`
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
-  }).timeout(timeoutOverride)
+  })
 
   it('should provide navigation to multiple versions of a component', async () => {
     await repoBuilder
@@ -726,7 +724,7 @@ describe('generateSite()', function () {
     expect($('.nav-panel-explore .component.is-current .version')).to.have.lengthOf(2)
     expect($('.nav-panel-explore .component.is-current .version.is-latest a')).to.have.text('2.0')
     expect($('.nav-panel-explore .component.is-current .version.is-current a')).to.have.text('1.0')
-  }).timeout(timeoutOverride)
+  })
 
   it('should provide navigation to version named master', async () => {
     await repoBuilder
@@ -761,7 +759,7 @@ describe('generateSite()', function () {
     expect($('.nav-panel-explore .component.is-current .version').eq(0))
       .to.have.class('is-current')
       .and.to.have.class('is-latest')
-  }).timeout(timeoutOverride)
+  })
 
   it('should provide navigation to all versions of all components', async () => {
     await repoBuilder
@@ -846,7 +844,7 @@ describe('generateSite()', function () {
       'href',
       '../../the-other-component/core/index.html'
     )
-  }).timeout(timeoutOverride)
+  })
 
   it('should resolve xrefs that use an alias as the target', async () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -855,7 +853,7 @@ describe('generateSite()', function () {
     expect(contents).to.include('<a href="the-page.html" class="xref page">its alias</a>')
     expect(contents).to.include('<a href="new-page.html" class="xref page">the new page</a>')
     expect(contents).to.include('<a href="new-page.html" class="xref page">2.0</a>')
-  }).timeout(timeoutOverride)
+  })
 
   // NOTE this also tests that aliases do not have to have the .adoc file extension
   it('should generate static redirect files for aliases by default', async () => {
@@ -866,7 +864,7 @@ describe('generateSite()', function () {
     expect(contents).to.include('<script>location="the-page.html"</script>')
     contents = readFile('the-component/2.0/the-freshness.html', absDestDir)
     expect(contents).to.include('<script>location="new-page.html"</script>')
-  }).timeout(timeoutOverride)
+  })
 
   // NOTE this also tests that aliases do not have to have the .adoc file extension
   it('should generate nginx rewrite config file for aliases when using nginx redirect facility', async () => {
@@ -881,7 +879,7 @@ describe('generateSite()', function () {
     expect(contents).to.include(rule2)
     expect(ospath.join(absDestDir, 'the-component/2.0/the-alias.html')).to.not.be.a.path()
     expect(ospath.join(absDestDir, 'the-component/2.0/the-freshness.html')).to.not.be.a.path()
-  }).timeout(timeoutOverride)
+  })
 
   it('should indexify URLs to internal pages', async () => {
     playbookSpec.urls = { html_extension_style: 'indexify' }
@@ -900,7 +898,7 @@ describe('generateSite()', function () {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-alias/index.html')).to.be.a.file()
     const contents = readFile('the-component/2.0/the-alias/index.html', absDestDir)
     expect(contents).to.include('<script>location="../the-page/"</script>')
-  }).timeout(timeoutOverride)
+  })
 
   describe('extensions', () => {
     const LIB_DIR = ospath.join(WORK_DIR, 'lib')
@@ -1789,7 +1787,7 @@ describe('generateSite()', function () {
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
       expect(absArchivePath).to.be.a.file()
-    }).timeout(timeoutOverride)
+    })
 
     // NOTE we can't test this in the cli tests since child_process.spawn does not allocate a tty
     it('should report progress of repository clone and fetch operations if runtime.quiet is false', async () => {
@@ -1831,7 +1829,7 @@ describe('generateSite()', function () {
       } finally {
         Object.assign(process.stdout, defaultStdout)
       }
-    }).timeout(timeoutOverride)
+    })
 
     it('should report completion message if runtime.quiet is false', async () => {
       playbookSpec.runtime.quiet = false
@@ -1859,7 +1857,7 @@ describe('generateSite()', function () {
       } finally {
         Object.assign(process.stdout, defaultStdout)
       }
-    }).timeout(timeoutOverride)
+    })
 
     it('should append index path to file URI in completion message if start page is set', async () => {
       playbookSpec.site.start_page = 'the-component::the-page.adoc'
@@ -1888,7 +1886,7 @@ describe('generateSite()', function () {
       } finally {
         Object.assign(process.stdout, defaultStdout)
       }
-    }).timeout(timeoutOverride)
+    })
   })
 
   // to test:

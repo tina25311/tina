@@ -29,7 +29,7 @@ const TMP_DIR = require('os').tmpdir()
 
 Kapok.config.shouldShowLog = false
 
-describe('cli', function () {
+describe('cli', () => {
   let absBuildDir
   let absDestDir
   let buildDir
@@ -39,8 +39,6 @@ describe('cli', function () {
   let repoBuilder
   let uiBundleUrl
   let gitServer
-
-  const timeoutOverride = this.timeout() * 2.5
 
   const createContentRepository = (gitServerPort) =>
     (repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } }))
@@ -288,13 +286,13 @@ describe('cli', function () {
     return runAntora('generate does-not-exist.json')
       .assert(/playbook file not found at /)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should show error message if default command is run and specified playbook file does not exist', () => {
     return runAntora('does-not-exist.json')
       .assert(/playbook file not found at /)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should use fallback logger to log fatal message if error is thrown before playbook is built', () => {
     playbookSpec.runtime.log.level = 'verbose'
@@ -302,7 +300,7 @@ describe('cli', function () {
     return runAntora('generate --log-format=json antora-playbook')
       .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.level: must be one of/)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should use configured logger to log fatal message if error is thrown after playbook is built', () => {
     playbookSpec.ui.bundle.url = 'does-not-exist.zip'
@@ -310,7 +308,7 @@ describe('cli', function () {
     return runAntora('generate --log-format=json antora-playbook')
       .assert(/"msg":"Specified UI bundle does not exist: .*"/)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   // NOTE process.stdout.isTTY is always undefined when Antora is run with with kapok
   it('should use pretty log format if CI=true', () => {
@@ -320,7 +318,7 @@ describe('cli', function () {
     return runAntora('generate antora-playbook', { CI: 'true' })
       .assert(/^\[.+?\] FATAL \(antora\): Specified UI bundle does not exist: /)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should show stack if --stacktrace option is specified and an exception is thrown during generation', () => {
     playbookSpec.runtime.log.format = 'fancy'
@@ -330,7 +328,7 @@ describe('cli', function () {
       .assert(/^Cause: Error$/)
       .assert(/^at /)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should show nested cause if --stacktrace option is specified and an exception is nested', () => {
     playbookSpec.output = { destinations: [{ provider: 'unknown' }] }
@@ -342,7 +340,7 @@ describe('cli', function () {
       .ignoreUntil(/^Caused by: Error: Cannot find module/)
       .assert(/^(Require stack:$|at )/)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should show stack if --stacktrace option is specified and a Ruby exception with backtrace property is thrown', () => {
     playbookSpec.asciidoc = { attributes: { idseparator: 1 } }
@@ -352,7 +350,7 @@ describe('cli', function () {
       .assert(/^Cause: Error$/)
       .assert(/^at Number\./)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should show message if --stacktrace option is specified and an exception with no stack is thrown', () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-fail-tree-processor'))
@@ -361,7 +359,7 @@ describe('cli', function () {
       .assert(/^\[.+?\] FATAL \(antora\): not today!$/)
       .assert(/^Cause: Error \(no stacktrace\)$/)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should show correct type in structured log message if an exception with no stack is thrown', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -381,7 +379,7 @@ describe('cli', function () {
       expect(parsedMessage.err).to.not.have.property('message')
       expect(parsedMessage.err.stack).to.eql('Error (no stacktrace)')
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should not repeat multiline error message in stack when --stacktrace option is specified', () => {
     const playbookContents = heredoc`
@@ -399,7 +397,7 @@ describe('cli', function () {
       .ignoreUntil(/^Cause: YAMLException$/)
       .assert(/^at generateError/)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should show location of syntax error when --stacktrace option is specified', () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-with-syntax-error.js'))
@@ -411,7 +409,7 @@ describe('cli', function () {
       .assert(/^at .*extension-with-syntax-error\.js:6/)
       .assert(/^console\.log\(doc.getDocumentTitle\(\)/)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should report syntax error without line information normally when --stacktrace option is specified', () => {
     const playbookContents = heredoc`
@@ -427,7 +425,7 @@ describe('cli', function () {
       .assert(/^Cause: SyntaxError$/)
       .assert(/^at syntaxError/)
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   it('should recommend --stacktrace option if not specified and an exception is thrown during generation', () => {
     playbookSpec.runtime.log.format = 'fancy'
@@ -436,7 +434,7 @@ describe('cli', function () {
       .assert(/^\[.+?\] FATAL \(antora\): runtime\.log\.format: must be one of/)
       .assert('Add the --stacktrace option to see the cause of the error.')
       .done()
-  }).timeout(timeoutOverride)
+  })
 
   // NOTE this test also verifies the --playbook option is correctly inserted into the args array
   it('should generate site to output directory when extensionless playbook file is passed to generate command', () => {
@@ -461,7 +459,7 @@ describe('cli', function () {
       .finally(() => {
         fs.unlinkSync(myPlaybookFile)
       })
-  }).timeout(timeoutOverride)
+  })
 
   it('should generate site to output directory when absolute playbook file is passed to generate command', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -478,7 +476,7 @@ describe('cli', function () {
         expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file()
       }
     )
-  }).timeout(timeoutOverride)
+  })
 
   it('should resolve dot-relative paths in playbook relative to playbook dir', () => {
     const runCwd = ospath.join(WORK_DIR, 'some-other-folder')
@@ -503,7 +501,7 @@ describe('cli', function () {
         .with.subDirs(['1.0'])
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file()
     })
-  }).timeout(timeoutOverride)
+  })
 
   describe('cache directory', () => {
     it('should store cache in cache directory passed to --cache-dir option', () => {
@@ -527,7 +525,7 @@ describe('cli', function () {
           .and.not.be.empty()
         wipeSync(absCacheDir)
       })
-    }).timeout(timeoutOverride)
+    })
 
     it('should store cache in cache directory defined by ANTORA_CACHE_DIR environment variable', () => {
       playbookSpec.content.sources[0].url = repoBuilder.url
@@ -550,7 +548,7 @@ describe('cli', function () {
           .and.not.be.empty()
         wipeSync(absCacheDir)
       })
-    }).timeout(timeoutOverride)
+    })
   })
 
   it('should allow CLI option to override properties set in playbook file', () => {
@@ -565,7 +563,7 @@ describe('cli', function () {
         .to.be.a.file()
         .with.contents.that.match(new RegExp('<title>Index Page :: Awesome Docs</title>'))
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should allow environment variable to override properties set in playbook file', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -579,7 +577,7 @@ describe('cli', function () {
           .with.contents.that.match(new RegExp('<link rel="canonical" href="https://docs.example.com/[^"]*">'))
       }
     )
-  }).timeout(timeoutOverride)
+  })
 
   it('should pass keys defined using options to UI model', () => {
     playbookSpec.site.keys = { google_analytics: 'UA-12345-1' }
@@ -593,7 +591,7 @@ describe('cli', function () {
         .to.be.a.file()
         .with.contents.that.match(/src="https:\/\/www[.]googletagmanager[.]com\/gtag\/js\?id=UA-67890-1">/)
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should not remap legacy --google-analytics-key option', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -615,7 +613,7 @@ describe('cli', function () {
         .with.contents.that.match(/<h2 id="section_a">Section A<\/h2>/)
         .and.with.contents.that.match(/<kbd>Ctrl<\/kbd>\+<kbd>T<\/kbd>/)
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should invoke generate command if no command is specified', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -629,7 +627,7 @@ describe('cli', function () {
         .to.be.a.file()
         .with.contents.that.match(new RegExp('<link rel="canonical" href="https://docs.example.com/[^"]*">'))
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should allow CLI option name and value to be separated by an equals sign', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -644,7 +642,7 @@ describe('cli', function () {
         .with.contents.that.match(new RegExp('<title>Index Page :: #allthedocs</title>'))
         .with.contents.that.match(new RegExp('<link rel="canonical" href="https://docs.example.com/[^"]*">'))
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should use the generator specified by the --generator option', () => {
     const generator = ospath.resolve(FIXTURES_DIR, 'simple-generator')
@@ -695,7 +693,7 @@ describe('cli', function () {
         expect(residualFile).to.not.be.a.path()
       }
     )
-  }).timeout(timeoutOverride)
+  })
 
   it('should output to directory specified by --to-dir option', () => {
     // NOTE we must use a subdirectory of destDir so it gets cleaned up properly
@@ -710,7 +708,7 @@ describe('cli', function () {
       expect(absBetaDestDir).to.be.a.directory()
       expect(ospath.join(absBetaDestDir, 'the-component/1.0/index.html')).to.be.a.file()
     })
-  }).timeout(timeoutOverride)
+  })
 
   // NOTE this test verifies backwards compatibility with a legacy site generator
   it('should discover locally installed default site generator', () => {
@@ -742,7 +740,7 @@ describe('cli', function () {
         .to.be.a.file()
         .with.contents.that.match(new RegExp('<title>Index Page :: Custom Site Generator</title>'))
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should show error message if require path fails to load', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -776,7 +774,7 @@ describe('cli', function () {
       expect(messages.join('\n')).to.not.include('UnhandledPromiseRejectionWarning')
       expect(messages[0]).to.match(/"msg":"the start path 'invalid' does not exist in .*"/)
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should show error message if site generator cannot be found', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -894,7 +892,7 @@ describe('cli', function () {
       expect(exitCode).to.equal(0)
       expect(absDestDir).to.not.be.a.path()
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should allow Node.js process to terminate normally so beforeExit listeners are called', () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-before-exit.js'))
@@ -910,7 +908,7 @@ describe('cli', function () {
       // because of timing, multiple lines may be combined into a single chunk
       expect(messages.join('\n').split('\n')).to.eql(['saying goodbye', 'done goodbyes', 'goodbye'])
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should exit with status code set by extension if Antora extension stops generator', () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-stop-before-publish.js'))
@@ -920,7 +918,7 @@ describe('cli', function () {
       expect(exitCode).to.equal(2)
       expect(absDestDir).to.not.be.a.path()
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should exit with status code 0 if log failure level is not reached', async () => {
     playbookSpec.content.sources[0].branches = 'v1.0-broken'
@@ -939,7 +937,7 @@ describe('cli', function () {
       const { time, ...parsedMessage } = JSON.parse(message)
       expect(parsedMessage.msg).to.eql('skipping reference to missing attribute: no-such-attribute')
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should exit with status code 1 if log failure level is reached', async () => {
     playbookSpec.content.sources[0].branches = 'v1.0-broken'
@@ -958,7 +956,7 @@ describe('cli', function () {
       const { time, ...parsedMessage } = JSON.parse(message)
       expect(parsedMessage.msg).to.eql('skipping reference to missing attribute: no-such-attribute')
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should exit with existing non-zero exit code if log failure level is reached', async () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'extension-stop-before-publish.js'))
@@ -979,7 +977,7 @@ describe('cli', function () {
       const { time, ...parsedMessage } = JSON.parse(message)
       expect(parsedMessage.msg).to.eql('skipping reference to missing attribute: no-such-attribute')
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should exit with status code 0 if error is thrown but log failure level is not reached', async () => {
     const ext = ospath.relative(WORK_DIR, ospath.join(FIXTURES_DIR, 'global-fail-tree-processor'))
@@ -1000,7 +998,7 @@ describe('cli', function () {
       expect(parsedMessage.err).to.not.have.property('message')
       expect(parsedMessage.err.stack).to.equal('Error (no stacktrace)')
     })
-  }).timeout(timeoutOverride)
+  })
 
   // this test also verifies that the --stacktrace option hint is not routed to stderr
   it('should not show error message thrown before playbook is built if --silent flag is specified', async () => {
@@ -1015,7 +1013,7 @@ describe('cli', function () {
       expect(exitCode).to.equal(1)
       expect(messages).to.be.empty()
     })
-  }).timeout(timeoutOverride)
+  })
 
   // this test also verifies that the --stacktrace option hint is not routed to stderr
   it('should not show error message thrown after playbook is built if log level is silent', async () => {
@@ -1030,7 +1028,7 @@ describe('cli', function () {
       expect(exitCode).to.equal(1)
       expect(messages).to.be.empty()
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should preload libraries specified using the require option', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
@@ -1050,7 +1048,7 @@ describe('cli', function () {
         .to.be.a.file()
         .with.contents.that.match(/<p>Fin!<\/p>/)
     })
-  }).timeout(timeoutOverride)
+  })
 
   it('should flush log buffer and close log file for logger on normal exit', () => {
     playbookSpec.site.start_page = 'no-such-component::index.adoc'
@@ -1185,5 +1183,5 @@ describe('cli', function () {
         .with.contents.that.match(/<p>See <a href="the-page.html" class="xref page">the page<\/a>.<\/p>/)
         .and.with.contents.that.not.match(/<div class="paragraph">/)
     })
-  }).timeout(timeoutOverride)
+  })
 })
