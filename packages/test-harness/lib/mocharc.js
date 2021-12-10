@@ -22,8 +22,8 @@ function logCoverageReportPath () {
   console.log(`Coverage report: ${coverageReportPath}`)
 }
 
-function resolveSpec() {
-  let spec = process.argv[2]
+function resolveSpec () {
+  const spec = process.argv[2]
   if (spec && !spec.startsWith('-')) return spec
   return process.env.npm_package_json === require('path').join(process.env.npm_config_local_prefix, 'package.json')
     ? `packages/${process.env.npm_config_package || '*'}/test/**/*-test.js`
