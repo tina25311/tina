@@ -1,6 +1,7 @@
 'use strict'
 
 const get = require('simple-get')
+const defaultUserAgent = 'git/isomorphic-git@' + require('./git').version()
 
 function distillResponse (res) {
   const { url, method, statusCode, statusMessage, headers } = res
@@ -25,13 +26,21 @@ async function mergeBuffers (data) {
   return Buffer.from(data.buffer)
 }
 
-module.exports = ({ httpProxy, httpsProxy, noProxy }, userAgent) => {
+function mergeHeaders (headers, extraHeaders) {
+  const mergedHeaders = { 'user-agent': defaultUserAgent }
+  if (extraHeaders == null) return Object.assign(headers, mergedHeaders)
+  for (const name in extraHeaders) mergedHeaders[name.toLowerCase()] = extraHeaders[name]
+  for (const name in headers) mergedHeaders[name.toLowerCase()] = headers[name]
+  return mergedHeaders
+}
+
+module.exports = ({ headers: extraHeaders, httpProxy, httpsProxy, noProxy } = {}) => {
   if ((httpsProxy || httpProxy) && noProxy !== '*') {
     const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
     const shouldProxy = require('should-proxy')
     return {
       async request ({ url, method, headers, body }) {
-        headers['user-agent'] = userAgent
+        headers = mergeHeaders(headers, extraHeaders)
         body = await mergeBuffers(body)
         const proxy = url.startsWith('https:')
           ? { Agent: HttpsProxyAgent, url: httpsProxy }
@@ -46,7 +55,7 @@ module.exports = ({ httpProxy, httpsProxy, noProxy }, userAgent) => {
   }
   return {
     async request ({ url, method, headers, body }) {
-      headers['user-agent'] = userAgent
+      headers = mergeHeaders(headers, extraHeaders)
       body = await mergeBuffers(body)
       return new Promise((resolve, reject) =>
         get({ url, method, headers, body }, (err, res) => (err ? reject(err) : resolve(distillResponse(res))))
