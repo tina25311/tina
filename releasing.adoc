@@ -76,7 +76,7 @@ Lerna uses this token to authenticate as the release manager (currently https://
 This is done by writing the token to an [.path]_.npmrc_ file located at the root of the project (i.e., [.path]_.npmrc_).
 
 After the package is published, the tag and the corresponding commit to the main branch must be pushed from the CI job to the git repository.
-A dedicated SSH key (with no passphrase) has been generated for this purpose using `ssh-keygen -t rsa -b 4096 -C antora-releases -f antora-releases`.
+A dedicated SSH key (with no passphrase) has been generated for this purpose using `ssh-keygen -m PEM -t rsa -b 4096 -C antora-releases -f antora-releases`.
 The private SSH key is stored in the RELEASE_SSH_PRIV_KEY secret variable defined in the CI/CD configuration.
 The corresponding public SSH key is registered as a deploy key in the repository configuration.
 During the release job, an SSH agent session is started, initialized, and killed by [.path]_scripts/release.sh_.
