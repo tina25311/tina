@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 'use strict'
 
 process.env.NODE_ENV = 'test'
@@ -21,7 +22,7 @@ const ospath = require('path')
 const { pathToFileURL: pathToFileURLObject } = require('url')
 const RepositoryBuilder = require('./repository-builder')
 
-beforeEach(() => configureLogger({ level: 'silent' })) // eslint-disable-line no-undef
+beforeEach(() => configureLogger({ level: 'silent' }))
 
 function captureStandardStream (streamName, fn, transform, isAsync) {
   const stream = process[streamName]
