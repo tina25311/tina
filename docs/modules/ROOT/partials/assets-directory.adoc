@@ -12,11 +12,10 @@ This is an alternate location, recognized by Antora, where the [.path]_attachmen
     📂 ROOT
       📂 assets
         📂 attachments
-          📄 a-source-file.zip
+          📄 attachment-source-file.ext
         📂 images
-          📄 a-source-file.png
-      📂 pages
-        📄 a-source-file.adoc
+          📄 image-source-file.ext
+      📁 pages
       📄 nav.adoc
 ----
 

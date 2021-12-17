@@ -5,6 +5,7 @@
 A [.term]*resource* is a source file that belongs to the pages, images, partials, examples, or attachments family.
 Antora assigns each resource a unique identifier called an Antora resource ID.
 
+[#publishable]
 === What's a publishable resource?
 
 A [.term]*publishable resource* is a source file that belongs to the pages, attachments, or images family.

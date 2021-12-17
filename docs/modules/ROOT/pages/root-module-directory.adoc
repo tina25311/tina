@@ -15,7 +15,7 @@ A [.path]_ROOT_ directory stores content source files in one or more of the xref
     📂 modules <.>
       📂 ROOT <.>
         📂 pages <.>
-          📄 a-source-file.adoc <.>
+          📄 page-source-file.adoc <.>
         📄 nav.adoc <.>
 ----
 <.> Content source root
@@ -26,11 +26,11 @@ A [.path]_ROOT_ directory stores content source files in one or more of the xref
 <.> A source file for a page
 <.> A navigation file
 
-At a minimum, a [.path]_ROOT_ module directory must contain at least one xref:family-directories.adoc[family directory] with at least one source file.
+A [.path]_ROOT_ module directory must contain at least one xref:family-directories.adoc[family directory] with at least one source file.
 It can also contain an optional navigation file.
 
 The source files stored in a [.path]_ROOT_ directory become part of a <<root-module,ROOT module>> in a component version.
-It's recommended that you create a [.path]_ROOT_ module directory because Antora applies special preset behavior to the pages in a <<root-module,ROOT module>>.
+It's recommended that you create a [.path]_ROOT_ module directory because Antora applies special preset behavior to the publishable resources in a <<root-module,ROOT module>>.
 
 Small documentation projects may never need more than a [.path]_ROOT_ module directory.
 However, as your project grows, you can easily add more module directories and gradually reorganize your source files.
@@ -52,7 +52,7 @@ Generally, the ROOT module doesn't use topic folders for this reason.
 [#where-root-name-is-used]
 == Where's the ROOT module name used?
 
-When you target content that belongs to a ROOT module from another module or component version, you'll specify the module name `ROOT` in the xref:page:resource-id.adoc[resource IDs] for pages, attachments, images, examples, and partials.
+When you reference content that belongs to a ROOT module from another module or component version, you'll specify the module name `ROOT` in the xref:page:resource-id.adoc[resource IDs] for pages, attachments, images, examples, and partials.
 `ROOT` is always written in uppercase letters when it's specified.
 
 Since Antora considers the pages in a ROOT module to be top-level component version pages, the module name `ROOT` isn't displayed in the xref:module-url-segment.adoc#root-module-urls[module segment of its page URLs].

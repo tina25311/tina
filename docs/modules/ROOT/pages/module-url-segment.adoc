@@ -20,7 +20,7 @@ The xref:standard-directories.adoc[set of standard directories] illustrated in <
         📄 user-management.adoc
       📄 nav.adoc
     📂 ROOT
-      📂 images
+      📁 images
       📂 pages
         📄 deploy.adoc
         📄 index.adoc

@@ -8,11 +8,10 @@ The [.path]_modules_ directory is required wherever a component version descript
 
 [listing]
 ----
-📒 repository
-  📂 docs <.>
-    📄 antora.yml <.>
-    📂 modules <.>
-    📂 non-docs-directory <.>
+📒 repository <.>
+  📄 antora.yml <.>
+  📁 modules <.>
+  📁 non-docs-directory <.>
 ----
 <.> Content source root
 <.> Required component version descriptor file
@@ -28,7 +27,7 @@ The [.path]_modules_ directory keeps documentation source files isolated from co
 == What's a module directory?
 
 Module directories must be stored in a <<modules-dir,_modules_ directory>>.
-A [.term]*module directory* stores the source files for pages, reusable text and example snippets, images, and other content, in one or more xref:family-directories.adoc[family directories].
+A [.term]*module directory* stores the source files for pages, reusable text and example snippets, images, and other content, in xref:family-directories.adoc[family directories].
 The source files stored in a module directory become part of a <<module,module>> in a component version.
 
 [listing]
@@ -37,9 +36,9 @@ The source files stored in a module directory become part of a <<module,module>>
   📂 docs <.>
     📄 antora.yml
     📂 modules
-      📂 a-named-module <.>
+      📂 named-module <.>
         📂 pages <.>
-          📄 a-source-file.adoc <.>
+          📄 page-source-file.adoc <.>
         📄 nav.adoc <.>
 ----
 <.> Content source root
@@ -53,13 +52,13 @@ A module directory may also contain zero or more navigation files.
 
 There are two types of module directories: xref:named-module-directory.adoc[named module directories] and the xref:root-module-directory.adoc[ROOT module directory].
 At runtime, Antora collects the source files stored in the ROOT and named module directories and assigns them to modules.
-By convention, the <<module,module>> name corresponds to the name of the module folder.
+By convention, the <<module,module name>> corresponds to the name of the module folder.
 
 [#module]
 == What's a module?
 
 A [.term]*module* is a collection of content in a component version that's related by concept, stage, feature, or other project-specific grouping.
-While the module does get represented as a path segment in the generated site, it's primarily an organization tool for the writer.
+While the module does get represented as a xref:how-antora-builds-urls.adoc#module[URL segment in the published site], it's primarily an organization tool for the writer.
 A module cannot be individually configured (meaning it has no metadata of its own).
 
 The [.term]*module name* and the name of the module folder are the same.

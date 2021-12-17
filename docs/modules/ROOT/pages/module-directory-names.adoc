@@ -28,19 +28,19 @@ Good module names are short and descriptive.
     📂 modules
       📂 gear <.>
         📂 images
-          📄 a-source-file.jpg
+          📄 image-source-file.ext
       📂 la-garita <.>
         📂 pages
-          📄 a-source-file.adoc
+          📄 page-source-file.adoc
       📂 ROOT <.>
         📂 pages
-          📄 a-source-file.adoc
+          📄 page-source-file.adoc
         📄 nav.adoc
       📂 sdk <.>
         📂 examples
-          📄 a-source-file.js
+          📄 example-source-file.ext
         📂 pages
-          📄 a-source-file.adoc
+          📄 page-source-file.adoc
         📄 nav.adoc
 ----
 <.> Module directory named [.path]_gear_
@@ -48,4 +48,4 @@ Good module names are short and descriptive.
 <.> [.path]_ROOT_ module directory
 <.> Module directory named [.path]_sdk_
 
-Antora would calculate the following module names from the named module directories in <<ex-named>>: `gear`, `la-garita`, and `sdk`.
+Antora will calculate the following module names from the named module directories in <<ex-named>>: `gear`, `la-garita`, and `sdk`.
