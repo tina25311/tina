@@ -23,9 +23,7 @@ default:
   rules:
   - if: &docs_mr $CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^docs\//
 - &if_release_rule
-  if: $CI_PIPELINE_SOURCE == 'push' && $CI_PROJECT_PATH == 'antora/antora' && $CI_COMMIT_BRANCH == 'releases'
-  exists:
-  - releaserc
+  if: $CI_PIPELINE_SOURCE == 'web' && $CI_PROJECT_PATH == 'antora/antora' && $CI_COMMIT_BRANCH && $CI_COMMIT_REF_PROTECTED && $RELEASE_VERSION
 - &if_schedule_rule
   if: $CI_PIPELINE_SOURCE == 'schedule' || ($CI_PIPELINE_SOURCE == 'web' && $CI_JOB_NAME == 'test:windows' && $ENABLE_WINDOWS_JOB)
 - &if_release
@@ -49,7 +47,7 @@ default:
   <<: *if_release_or_schedule
   before_script:
   - *platform_info
-  - npm i -g --silent npm@$(node -p 'require("./package.json").devDependencies.npm')
+  - &install_npm npm i -g --silent npm@$(node -p 'require("./package.json").devDependencies.npm')
   - npm ci --audit --quiet
   cache: &npm_cache
     key: npm-cache
@@ -95,31 +93,32 @@ test:node-16-linux:
 test:node-17-linux:
   extends: .npm
   image: node:17-$LINUX_DISTRO
-test:macos:
-  extends: .npm
-  image: macos-11-xcode-12
-  tags: [shared-macos-amd64]
-# https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
-test:windows:
-  extends: .npm
-  tags: [windows]
-  # cache does not currently work on the Windows runner
-  cache: {}
-  before_script:
-  - choco upgrade -y nodejs --version=12.22.7
-  - *platform_info
-  - npm i -g --silent npm@$(node -p "require('./package.json').devDependencies.npm")
-  - npm ci --audit --quiet
-  script: npx npm run coverage
-  artifacts:
-    <<: *coverage_path
+#test:macos:
+#  extends: .npm
+#  image: macos-11-xcode-12
+#  tags: [shared-macos-amd64]
+## https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
+#test:windows:
+#  extends: .npm
+#  tags: [windows]
+#  # cache does not currently work on the Windows runner
+#  cache: {}
+#  before_script:
+#  - choco upgrade -y nodejs --version=12.22.7
+#  - *platform_info
+#  - *install_npm
+#  - npm ci --audit --quiet
+#  script: npx npm run coverage
+#  artifacts:
+#    <<: *coverage_path
 release:
   stage: deploy
   environment: releases
   <<: *if_release
   before_script:
+  - *install_npm
   - npm i -g --silent lerna@$(node -p 'require("./lerna.json").lerna')
   script:
   - scripts/release.sh
-  # triggers release of Docker image
-  - env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=$RELEASE_BRANCH" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'
+  # trigger release of Docker image
+  #- env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=$RELEASE_BRANCH" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'

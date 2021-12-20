@@ -1,53 +1,61 @@
 #!/bin/bash
 
-# Package (aka module) release script.
-# Refer to ../releasing.adoc for details about how this script works.
+# Must run on a protected branch. See ../releasing.adoc for details about how this script works.
 
-rm -rf build
-
-# resolve the version number (exact) or increment keyword (next in sequence)
-if [ -z $RELEASE_VERSION ]; then
-  if [ -f releaserc ]; then
-    . $PWD/releaserc
+PACKAGE_NAME=$(node -p 'require("./package.json").name')
+if [ -z $RELEASE_NPM_TOKEN ]; then
+  declare -n RELEASE_NPM_TOKEN="RELEASE_NPM_TOKEN_$GITLAB_USER_LOGIN"
+fi
+if [ -z $RELEASE_NPM_TOKEN ]; then
+  echo No release npm token \(RELEASE_NPM_TOKEN or RELEASE_NPM_TOKEN_$GITLAB_USER_LOGIN\) defined. Aborting.
+  exit 1
+fi
+RELEASE_BRANCH=$CI_COMMIT_BRANCH
+# RELEASE_VERSION can be a version number (exact) or increment keyword (next in sequence)
+if [ -z $RELEASE_VERSION ]; then RELEASE_VERSION=prerelease; fi
+if [ -z $RELEASE_NPM_TAG ]; then
+  if case $RELEASE_VERSION in major|minor|patch) ;; *) false;; esac; then
+    RELEASE_NPM_TAG=latest
+  elif case $RELEASE_VERSION in pre*) ;; *) false;; esac; then
+    RELEASE_NPM_TAG=testing
+  elif [ "$RELEASE_VERSION" != "${RELEASE_VERSION/-/}" ]; then
+    RELEASE_NPM_TAG=testing
   else
-    RELEASE_VERSION=prerelease
+    RELEASE_NPM_TAG=latest
   fi
 fi
 
-if [ -z $RELEASE_BRANCH ]; then RELEASE_BRANCH=main; fi
+rm -rf build
 
 # make sure the release branch exists as a local branch
 git fetch origin
 git branch -f $RELEASE_BRANCH origin/$RELEASE_BRANCH
 
-# don't run if this branch is behind the branch from which we're releasing
-if [ "$(git merge-base --fork-point $RELEASE_BRANCH $CI_COMMIT_SHA)" != "$(git rev-parse $RELEASE_BRANCH)" ]; then
-  echo $CI_COMMIT_REF_NAME is behind $RELEASE_BRANCH. This could indicate this release was already published. Aborting.
-  exit 1
-fi
-
-ROOT_PACKAGE_NAME=$(node -p 'require("./package.json").name')
 # set up SSH auth using ssh-agent
 mkdir -p -m 700 $HOME/.ssh
 ssh-keygen -F gitlab.com >/dev/null 2>&1 || ssh-keyscan -H -t rsa gitlab.com >> $HOME/.ssh/known_hosts 2>/dev/null
 eval $(ssh-agent -s) >/dev/null
-echo -n "$RELEASE_SSH_PRIV_KEY" | ssh-add -
+echo -n "$RELEASE_DEPLOY_KEY" | ssh-add -
+exit_code=$?
+if [ $exit_code -gt 0 ]; then
+  exit $exit_code
+fi
 
 # clone the branch from which we're releasing
-git clone -b $RELEASE_BRANCH --no-local . build/$ROOT_PACKAGE_NAME
+git clone -b $RELEASE_BRANCH --no-local . build/$PACKAGE_NAME
 
 # switch to clone
-cd build/$ROOT_PACKAGE_NAME
+cd build/$PACKAGE_NAME
 git status -s -b
 
 # configure git to push changes
 git remote set-url origin "git@gitlab.com:$CI_PROJECT_PATH.git"
-git config user.email "$RELEASE_GIT_EMAIL"
-git config user.name "$RELEASE_GIT_NAME"
+git config user.email "$GITLAB_USER_EMAIL"
+git config user.name "$GITLAB_USER_NAME"
 
 # configure npm client for publishing
 echo "access=public
-//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" > .npmrc
+//registry.npmjs.org/:_authToken=\"$RELEASE_NPM_TOKEN\"" > .npmrc
 
 # add lifecycle scripts to publish command for each package
 for package in packages/*; do
@@ -60,18 +68,11 @@ EOF
 done
 
 # release!
-npm -v
-if case $RELEASE_VERSION in major|minor|patch) ;; *) false;; esac; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --no-verify-access --yes
-elif case $RELEASE_VERSION in pre*) ;; *) false;; esac; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=testing} --no-verify-access --yes
-elif [ -z $RELEASE_NPM_TAG ] && [ "$RELEASE_VERSION" != "${RELEASE_VERSION/-/}" ]; then
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=testing --no-verify-access --yes
-else
-  lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=${RELEASE_NPM_TAG:=latest} --no-verify-access --yes
-fi
+echo "lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=$RELEASE_NPM_TAG --no-verify-access --yes"
 
 exit_code=$?
+
+RELEASE_VERSION=$(node -p 'require("./lerna.json").version')
 
 # nuke npm settings
 unlink .npmrc
