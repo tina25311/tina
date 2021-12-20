@@ -11,7 +11,10 @@ variables:
   GIT_DEPTH: '5'
   DEFAULT_NODE_VERSION: '16'
   LINUX_DISTRO: bullseye
+  NPM_CONFIG_AUDIT: 'false'
   NPM_CONFIG_CACHE: &npm_cache_dir .cache/npm
+  NPM_CONFIG_FUND: 'false'
+  NPM_CONFIG_PREFER_OFFLINE: 'true'
 default:
   image: node:$DEFAULT_NODE_VERSION-$LINUX_DISTRO
   interruptible: true
@@ -42,10 +45,10 @@ default:
   before_script:
   - *platform_info
   - mv package.json package~.json && mv package-lock.json package-lock~.json
-  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p 'require("./package~.json").devDependencies.npm')
+  - npm i --no-package-lock --no-save --silent npm@$(node -p 'require("./package~.json").devDependencies.npm')
   - rm -f node_modules/.package-lock.json
   - mv package~.json package.json && mv package-lock~.json package-lock.json
-  - npx npm i --no-fund --prefer-offline --quiet
+  - npx npm i --audit --quiet
   cache: &npm_cache
     key: npm-cache
     paths:
@@ -108,10 +111,10 @@ test:windows:
   - choco upgrade -y nodejs --version=12.22.7
   - *platform_info
   - Get-ChildItem package*.json | Rename-Item -NewName { $_.Name -replace '.json','~.json' }
-  - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p "require('./package~.json').devDependencies.npm")
+  - npm i --no-package-lock --no-save --silent npm@$(node -p "require('./package~.json').devDependencies.npm")
   - Get-ChildItem package*~.json | Rename-Item -NewName { $_.Name -replace '~.json','.json' }
   - if (Test-Path node_modules/.package-lock.json) { Remove-Item node_modules/.package-lock.json }
-  - npx npm i --no-fund --prefer-offline --quiet
+  - npx npm i --audit --quiet
   script: npx npm run coverage
   artifacts:
     <<: *coverage_path
@@ -120,7 +123,7 @@ release:
   environment: releases
   <<: *if_releases
   before_script:
-  - npm i -g --no-audit --silent lerna@$(node -p 'require("./lerna.json").lerna')
+  - npm i -g --silent lerna@$(node -p 'require("./lerna.json").lerna')
   script:
   - scripts/release.sh
   # triggers release of Docker image
