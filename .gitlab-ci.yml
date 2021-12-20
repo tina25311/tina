@@ -1,128 +1,103 @@
-image: node:16-buster
-stages: [init, verify, deploy]
+workflow:
+  rules:
+  - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_PIPELINE_SOURCE == 'schedule' || $CI_PIPELINE_SOURCE == 'web'
+  - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null && $CI_COMMIT_BRANCH != /^docs\//
+    changes:
+    - .eslintrc
+    - .gitlab-ci.yml
+    - package{-lock,}.json
+    - packages/
 variables:
   GIT_DEPTH: '5'
-  npm_config_cache: &npm_cache_dir .cache/npm
-  npm_config_fund: 'false'
-  npm_config_prefer_offline: 'true'
+  DEFAULT_NODE_VERSION: '16'
+  LINUX_DISTRO: buster
+  NPM_CONFIG_CACHE: &npm_cache_dir .cache/npm
+default:
+  image: node:$DEFAULT_NODE_VERSION-$LINUX_DISTRO
+  interruptible: true
 .defs:
-- &unless_docs_mr
-  if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^docs\//
-  when: never
-- &if_code_pushed
-  if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH !~ /^docs\//
-  changes:
-  - .eslintrc
-  - .gitlab-ci.yml
-  - package{-lock,}.json
-  - packages/**/*
-- &if_schedule
-  if: $CI_PIPELINE_SOURCE == "schedule"
+- &if_docs_mr
+  rules:
+  - if: &docs_mr $CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^docs\//
 - &if_releases
-  if: $CI_PIPELINE_SOURCE == "push" && $CI_PROJECT_PATH == "antora/antora" && $CI_COMMIT_BRANCH == "releases"
-  exists:
-  - releaserc
-- &platform_info
-  node -p '`${os.type()} ${os.release()}\nNode.js ${process.version}`'
-- &npm_cache_config
-  key: npm-cache
+  rules:
+  - if: $CI_PIPELINE_SOURCE == 'push' && $CI_PROJECT_PATH == 'antora/antora' && $CI_COMMIT_BRANCH == 'releases'
+    exists:
+    - releaserc
+- &if_schedule
+  rules:
+  - if: $CI_PIPELINE_SOURCE == 'schedule'
+- &unless_docs_mr
+  rules:
+  - if: *docs_mr
+    when: never
+  - when: always
+- &platform_info node -p '`${os.type()} ${os.release()}\nNode.js ${process.version}`'
+- &coverage_path
   paths:
-  - *npm_cache_dir
-- &npm_cache_pull_push
-  cache:
-    <<: *npm_cache_config
-    policy: pull-push
-- &npm_cache_pull
-  cache:
-    <<: *npm_cache_config
-    policy: pull
-- &npm_install
+  - reports/lcov-report
+.npm:
+  stage: test
+  <<: *unless_docs_mr
   before_script:
   - *platform_info
   - mv package.json package~.json && mv package-lock.json package-lock~.json
   - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p 'require("./package~.json").devDependencies.npm')
   - rm -f node_modules/.package-lock.json
   - mv package~.json package.json && mv package-lock~.json package-lock.json
-  - npx npm i --quiet
-- &save_coverage
-  artifacts:
+  - npx npm i --no-fund --prefer-offline --quiet
+  cache: &npm_cache
+    key: npm-cache
     paths:
-    - coverage
-# this step also seeds the dependency cache
+    - *npm_cache_dir
+    policy: pull
+  script: npx npm test
+# this job signals success to the MR UI
+docs:
+  stage: test
+  <<: *if_docs_mr
+  script: echo 'we love docs!'
+# this job also seeds the dependency cache
 lint:
-  interruptible: true
-  stage: init
-  rules:
-  - *unless_docs_mr
-  - *if_code_pushed
-  - *if_schedule
-  <<: *npm_cache_pull_push
-  <<: *npm_install
+  extends: .npm
+  stage: .pre
+  cache:
+    <<: *npm_cache
+    policy: pull-push
   script:
   - npx npm run lint
-  - npx npm run format
-  - if [ -n "$(git diff --name-only)" ]; then git diff; false; fi
+  - |-
+    if [ -n "$(npx npm --silent run format && git --no-pager diff --name-only)" ]; then
+      git --no-pager diff
+      false
+    fi
 test:node-12-linux:
-  interruptible: true
-  image: node:12-buster
-  stage: verify
-  rules:
-  - *unless_docs_mr
-  - *if_code_pushed
-  - *if_schedule
-  <<: *npm_cache_pull
-  <<: *npm_install
-  script: npx npm test
+  extends: .npm
+  image: node:12-$LINUX_DISTRO
 test:node-14-linux:
-  interruptible: true
-  image: node:14-buster
-  stage: verify
-  rules:
-  - *if_schedule
-  <<: *npm_cache_pull
-  <<: *npm_install
-  script: npx npm test
+  extends: .npm
+  image: node:14-$LINUX_DISTRO
+  <<: *if_schedule
 test:node-16-linux:
-  interruptible: true
-  stage: verify
-  rules:
-  - *unless_docs_mr
-  - *if_code_pushed
-  - *if_schedule
-  <<: *npm_cache_pull
-  <<: *npm_install
+  extends: .npm
   script: npx npm run coverage
-  <<: *save_coverage
+  artifacts:
+    <<: *coverage_path
 test:node-17-linux:
-  interruptible: true
-  image: node:17-buster
-  stage: verify
-  rules:
-  - *if_schedule
-  <<: *npm_cache_pull
-  <<: *npm_install
-  script: npx npm test
+  extends: .npm
+  image: node:17-$LINUX_DISTRO
+  <<: *if_schedule
 test:macos:
-  interruptible: true
-  tags: [shared-macos-amd64]
+  extends: .npm
   image: macos-11-xcode-12
-  stage: verify
-  rules:
-  - *if_schedule
-  <<: *npm_cache_pull
-  <<: *npm_install
-  script: npx npm test
+  tags: [shared-macos-amd64]
+  <<: *if_schedule
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
 test:windows:
+  extends: .npm
   tags: [windows]
-  stage: verify
-  interruptible: true
-  rules:
-  - *unless_docs_mr
-  - *if_code_pushed
-  - *if_schedule
   # cache does not currently work on the Windows runner
-  #<<: *npm_cache_pull
+  cache: {}
   before_script:
   - choco upgrade -y nodejs --version=12.22.7
   - *platform_info
@@ -130,14 +105,14 @@ test:windows:
   - npm i --no-package-lock --no-save --no-audit --silent npm@$(node -p "require('./package~.json').devDependencies.npm")
   - Get-ChildItem package*~.json | Rename-Item -NewName { $_.Name -replace '~.json','.json' }
   - if (Test-Path node_modules/.package-lock.json) { Remove-Item node_modules/.package-lock.json }
-  - npx npm i --quiet
+  - npx npm i --no-fund --prefer-offline --quiet
   script: npx npm run coverage
-  <<: *save_coverage
+  artifacts:
+    <<: *coverage_path
 release:
   stage: deploy
   environment: releases
-  rules:
-  - *if_releases
+  <<: *if_releases
   before_script:
   - npm i -g --no-audit --silent lerna@$(node -p 'require("./lerna.json").lerna')
   script:
