@@ -29,7 +29,7 @@ default:
     - releaserc
 - &if_schedule
   rules:
-  - if: ($CI_PIPELINE_SOURCE == 'schedule') || ($CI_PIPELINE_SOURCE == 'web' && $CI_JOB_NAME == 'test:windows' && $ENABLE_WINDOWS_JOB)
+  - if: $CI_PIPELINE_SOURCE == 'schedule' || ($CI_PIPELINE_SOURCE == 'web' && $CI_JOB_NAME == 'test:windows' && $ENABLE_WINDOWS_JOB)
 - &unless_docs_mr
   rules:
   - if: *docs_mr
