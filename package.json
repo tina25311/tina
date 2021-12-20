@@ -32,8 +32,11 @@
       "packages/*/{bin,lib}/**/*.js"
     ],
     "reporter": [
-      "lcov"
-    ]
+      "cobertura",
+      "lcov",
+      "text"
+    ],
+    "reportDir": "reports"
   },
   "workspaces": [
     "packages/*"

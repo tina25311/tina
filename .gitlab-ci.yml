@@ -81,8 +81,14 @@ test:node-14-linux:
 test:node-16-linux:
   extends: .npm
   script: npx npm run coverage
+  coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   artifacts:
+    when: always
+    expose_as: coverage-report
     <<: *coverage_path
+    reports:
+      cobertura: reports/cobertura-coverage.xml
+      junit: reports/tests-xunit.xml
 test:node-17-linux:
   extends: .npm
   image: node:17-$LINUX_DISTRO
