@@ -10,7 +10,7 @@ workflow:
 variables:
   GIT_DEPTH: '5'
   DEFAULT_NODE_VERSION: '16'
-  LINUX_DISTRO: buster
+  LINUX_DISTRO: bullseye
   NPM_CONFIG_CACHE: &npm_cache_dir .cache/npm
 default:
   image: node:$DEFAULT_NODE_VERSION-$LINUX_DISTRO
