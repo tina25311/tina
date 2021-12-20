@@ -14,7 +14,7 @@ variables:
   NPM_CONFIG_CACHE: &npm_cache_dir .cache/npm
 default:
   image: node:$DEFAULT_NODE_VERSION-$LINUX_DISTRO
-  interruptible: true # cancels existing pipeline if a new pipeline starts
+  interruptible: true
 .defs:
 - &if_docs_mr
   rules:
