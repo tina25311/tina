@@ -39,6 +39,9 @@ Antora applies preset behavior to the source files stored in an [.path]_examples
 
 Antora classifies the source files stored in an [.path]_examples_ directory as examples.
 Example files usually contain content such as source code samples, terminal output, data sets, etc.
+
+include::page:page$examples.adoc[tag=filename]
+
 An example file isn't required to have a file extension.
 Unlike a publishable resource that's treated as a xref:standard-directories.adoc#hidden-files[hidden file] if it's missing a file extension, Antora will load an example that doesn't have a file extension into its content catalog and assign the example a resource ID for referencing.
 
