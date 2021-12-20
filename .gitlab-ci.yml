@@ -48,7 +48,7 @@ default:
   - npm i --no-package-lock --no-save --silent npm@$(node -p 'require("./package~.json").devDependencies.npm')
   - rm -f node_modules/.package-lock.json
   - mv package~.json package.json && mv package-lock~.json package-lock.json
-  - npx npm i --audit --quiet
+  - npx npm ci --audit --quiet
   cache: &npm_cache
     key: npm-cache
     paths:
@@ -114,7 +114,7 @@ test:windows:
   - npm i --no-package-lock --no-save --silent npm@$(node -p "require('./package~.json').devDependencies.npm")
   - Get-ChildItem package*~.json | Rename-Item -NewName { $_.Name -replace '~.json','.json' }
   - if (Test-Path node_modules/.package-lock.json) { Remove-Item node_modules/.package-lock.json }
-  - npx npm i --audit --quiet
+  - npx npm ci --audit --quiet
   script: npx npm run coverage
   artifacts:
     <<: *coverage_path
