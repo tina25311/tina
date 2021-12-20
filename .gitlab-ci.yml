@@ -93,24 +93,24 @@ test:node-16-linux:
 test:node-17-linux:
   extends: .npm
   image: node:17-$LINUX_DISTRO
-#test:macos:
-#  extends: .npm
-#  image: macos-11-xcode-12
-#  tags: [shared-macos-amd64]
-## https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
-#test:windows:
-#  extends: .npm
-#  tags: [windows]
-#  # cache does not currently work on the Windows runner
-#  cache: {}
-#  before_script:
-#  - choco upgrade -y nodejs --version=12.22.7
-#  - *platform_info
-#  - *install_npm
-#  - npm ci --audit --quiet
-#  script: npx npm run coverage
-#  artifacts:
-#    <<: *coverage_path
+test:macos:
+  extends: .npm
+  image: macos-11-xcode-12
+  tags: [shared-macos-amd64]
+# https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
+test:windows:
+  extends: .npm
+  tags: [windows]
+  # cache does not currently work on the Windows runner
+  cache: {}
+  before_script:
+  - choco upgrade -y nodejs --version=12.22.7
+  - *platform_info
+  - *install_npm
+  - npm ci --audit --quiet
+  script: npx npm run coverage
+  artifacts:
+    <<: *coverage_path
 release:
   stage: deploy
   environment: releases
@@ -121,4 +121,4 @@ release:
   script:
   - scripts/release.sh
   # trigger release of Docker image
-  #- env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=$RELEASE_BRANCH" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'
+  - env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=$RELEASE_BRANCH" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'

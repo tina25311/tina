@@ -68,7 +68,7 @@ EOF
 done
 
 # release!
-echo "lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=$RELEASE_NPM_TAG --no-verify-access --yes"
+lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=$RELEASE_NPM_TAG --no-verify-access --yes
 
 exit_code=$?
 
