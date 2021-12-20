@@ -47,7 +47,7 @@ default:
   <<: *if_release_or_schedule
   before_script:
   - *platform_info
-  - &install_npm npm i -g --silent npm@$(node -p 'require("./package.json").devDependencies.npm')
+  - &install_npm npm i -g --silent npm@$(node -p "require('./package.json').devDependencies.npm")
   - npm ci --audit --quiet
   cache: &npm_cache
     key: npm-cache
