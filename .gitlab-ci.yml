@@ -26,7 +26,7 @@ default:
     - releaserc
 - &if_schedule
   rules:
-  - if: $CI_PIPELINE_SOURCE == 'schedule'
+  - if: ($CI_PIPELINE_SOURCE == 'schedule') || ($CI_PIPELINE_SOURCE == 'web' && $CI_JOB_NAME == 'test:windows' && $ENABLE_WINDOWS_JOB)
 - &unless_docs_mr
   rules:
   - if: *docs_mr
@@ -38,7 +38,7 @@ default:
   - reports/lcov-report
 .npm:
   stage: test
-  <<: *unless_docs_mr
+  <<: *if_schedule
   before_script:
   - *platform_info
   - mv package.json package~.json && mv package-lock.json package-lock~.json
@@ -61,6 +61,7 @@ docs:
 lint:
   extends: .npm
   stage: .pre
+  <<: *unless_docs_mr
   cache:
     <<: *npm_cache
     policy: pull-push
@@ -74,12 +75,13 @@ lint:
 test:node-12-linux:
   extends: .npm
   image: node:12-$LINUX_DISTRO
+  <<: *unless_docs_mr
 test:node-14-linux:
   extends: .npm
   image: node:14-$LINUX_DISTRO
-  <<: *if_schedule
 test:node-16-linux:
   extends: .npm
+  <<: *unless_docs_mr
   script: npx npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   artifacts:
@@ -92,12 +94,10 @@ test:node-16-linux:
 test:node-17-linux:
   extends: .npm
   image: node:17-$LINUX_DISTRO
-  <<: *if_schedule
 test:macos:
   extends: .npm
   image: macos-11-xcode-12
   tags: [shared-macos-amd64]
-  <<: *if_schedule
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
 test:windows:
   extends: .npm
