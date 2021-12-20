@@ -67,11 +67,7 @@ lint:
     policy: pull-push
   script:
   - npx npm run lint
-  - |-
-    if [ -n "$(npx npm --silent run format && git --no-pager diff --name-only)" ]; then
-      git --no-pager diff
-      false
-    fi
+  - if [ -n "$(npx npm --silent run format && git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
 test:node-12-linux:
   extends: .npm
   image: node:12-$LINUX_DISTRO
