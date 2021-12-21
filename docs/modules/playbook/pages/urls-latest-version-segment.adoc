@@ -30,7 +30,9 @@ The value can contain letters, numbers, periods (`.`), underscores (`+_+`), and 
 To ensure portability between host platforms, use lowercase letters.
 
 The value of the `latest_version_segment` key *cannot* contain spaces, forward slashes (`/`), or HTML special characters (`&`, `<`, or `>`).
-The value *cannot* be empty.
+The value can only be empty if the value of `latest_version_segment_strategy` is `redirect:to` or `replace`.
+The value *cannot* be empty if the value of `latest_version_segment_strategy` is `redirect:from`.
+This restriction is due to the fact that adding a redirect on the parent folder could prevent access to other versions.
 
 == Specify a latest version segment
 
