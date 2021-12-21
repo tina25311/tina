@@ -39,9 +39,15 @@ default:
     when: never
   - when: always
 - &platform_info node -p '`${os.type()} ${os.release()}\nNode.js ${process.version}`'
-- &coverage_path
-  paths:
-  - reports/lcov-report
+- &save_report_artifacts
+  artifacts:
+    when: always
+    paths:
+    - reports/lcov-report
+    - reports/tests-xunit.xml
+    reports:
+      cobertura: reports/cobertura-coverage.xml
+      junit: reports/tests-xunit.xml
 .npm:
   stage: test
   <<: *if_release_or_schedule
@@ -83,13 +89,7 @@ test:node-16-linux:
   <<: *unless_docs_mr
   script: npx npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
-  artifacts:
-    when: always
-    expose_as: coverage-report
-    <<: *coverage_path
-    reports:
-      cobertura: reports/cobertura-coverage.xml
-      junit: reports/tests-xunit.xml
+  <<: *save_report_artifacts
 test:node-17-linux:
   extends: .npm
   image: node:17-$LINUX_DISTRO
@@ -109,8 +109,7 @@ test:windows:
   - *install_npm
   - npm ci --audit --quiet
   script: npx npm run coverage
-  artifacts:
-    <<: *coverage_path
+  <<: *save_report_artifacts
 release:
   stage: deploy
   environment: releases

@@ -11,11 +11,10 @@ const config = {
 
 if (process.env.npm_config_watch) config.watch = true
 if (process.env.CI) {
-  Object.assign(config, {
-    forbidOnly: true,
-    reporter: 'xunit',
-    'reporter-option': ['output=reports/tests-xunit.xml'],
-  })
+  Object.assign(config, { forbidOnly: true, reporter: 'dot' })
+  if (process.env.NYC_PROCESS_ID) {
+    Object.assign(config, { reporter: 'xunit', 'reporter-option': ['output=reports/tests-xunit.xml'] })
+  }
 }
 
 function logCoverageReportPath () {
