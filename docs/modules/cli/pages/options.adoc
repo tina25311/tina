@@ -103,6 +103,18 @@ a|[%hardbreaks]
 |The user-facing URL extension Antora uses for HTML pages.
 See xref:playbook:urls-html-extension-style.adoc[].
 
+|[[http-proxy]]`--http-proxy`
+|Not set
+|A URL that consists of a protocol, domain, and port.
+|The URL of the proxy to use when making requests to HTTP URLs.
+See xref:playbook:network-proxy.adoc#http-proxy[http_proxy].
+
+|[[https-proxy]]`--https-proxy`
+|Not set
+|A URL that consists of a protocol, domain, and port.
+|The URL of the proxy to use when making requests to HTTPs URLs.
+See xref:playbook:network-proxy.adoc#https-proxy[https_proxy].
+
 |[[key]]`--key`
 |Not set
 |API key in the form `<name=value>`
@@ -144,6 +156,12 @@ a|[%hardbreaks]
 `number`
 |See xref:playbook:runtime-log-format.adoc#level-format-key[level_format key] and xref:playbook:environment-variables.adoc#log-level-format[ANTORA_LOG_LEVEL_FORMAT variable].
 Only applies when the <<log-format,log format>> is `json`.
+
+|[[noproxy]]`--noproxy`
+|Not set
+|A comma-separated list of domains or `*`
+|Domains of HTTP or HTTPS requests that should not be proxied.
+See xref:playbook:network-proxy.adoc#no-proxy[no_proxy].
 
 |`--quiet`
 |`false`

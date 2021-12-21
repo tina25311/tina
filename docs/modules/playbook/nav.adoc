@@ -46,6 +46,8 @@
 ** xref:runtime-log-format.adoc[]
 ** xref:runtime-fetch.adoc[]
 ** xref:runtime-cache-dir.adoc[]
+* xref:configure-network.adoc[]
+ ** xref:network-proxy.adoc[]
 * xref:author-mode.adoc[]
 * xref:use-an-existing-playbook-project.adoc[]
 * xref:environment-variables.adoc[]
