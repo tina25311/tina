@@ -47,6 +47,11 @@ The following table summarizes the environment variables you can use to control 
 |Not set
 |See xref:runtime-log-failure-level.adoc[failure_level key] and xref:cli:options.adoc#failure-level[--log-failure-level option]
 
+|[[log-file]]`ANTORA_LOG_FILE`
+|String
+|Not set
+|See xref:runtime-log-destination.adoc#file-key[file key] and xref:cli:options.adoc#log-file[--log-file option]
+
 |[[log-format]]`ANTORA_LOG_FORMAT`
 |String
 |`json` if CI=true, otherwise `pretty`

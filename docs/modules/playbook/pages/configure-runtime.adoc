@@ -43,18 +43,30 @@ runtime:
     failure_level: warn # <.>
     level: all # <.>
     level_format: number # <.>
+    destination: # <.>
+      file: ./antora.log # <.>
+      append: true # <.>
+      buffer_size: 4096 # <.>
+      sync: false # <.>
 ----
-<.> The optional `log` key is nested under the `runtime` key.
-<.> The optional, built-in `format` key is nested under the `log` key.
-<.> The optional, built-in `failure_level` key is nested under the `log` key.
-<.> The optional, built-in `level` key is nested under the `log` key.
-<.> The optional, built-in `level_format` key is nested under the `log` key.
+<.> The optional `log` category key is nested under the `runtime` category key.
+<.> The optional `format` key is nested under the `log` category key.
+<.> The optional `failure_level` key is nested under the `log` category key.
+<.> The optional `level` key is nested under the `log` category key.
+<.> The optional `level_format` key is nested under the `log` category key.
+<.> The optional `destination` category key is nested under the `log` category key.
+<.> The optional `file` key is nested under the `destination` category key.
+<.> The optional `append` key is nested under the `destination` category key.
+<.> The optional `buffer_size` key is nested under the `destination` category key.
+<.> The optional `sync` key is nested under the `destination` category key.
 
-If `level`, `failure_level`, `format`, or `level_format` are set in the playbook, they must be nested under the `log` key.
+If `level`, `failure_level`, `format`, or `level_format` are set in the playbook, they must be nested under the `log` category key.
 The xref:runtime-log-level.adoc#default[level], xref:runtime-log-failure-level.adoc#default[failure_level], xref:runtime-log-format.adoc#default[format], and xref:runtime-log-format.adoc#level-format-key[level_format] keys have default values that are automatically applied when Antora runs if they're not explicitly defined in the playbook or using the corresponding the xref:cli:options.adoc#generate-options[command line options] or xref:playbook:environment-variables.adoc[environment variables].
 
+If `file`, `append`, `buffer_size`, or `sync` are set in the playbook, they must be nested under the `destination` category key.
+
 IMPORTANT: The log settings are not honored if a fatal error is thrown before Antora fully configures the playbook.
-In such cases, the error message is only printed directly to standard error (STDERR).
+In such cases, the error message is only printed directly to standard error (stderr) using a preconfigured logger.
 
 [#runtime-reference]
 == Available runtime keys
@@ -96,5 +108,26 @@ The value `silent` turns the logger off.
 Only applies when `log.format` is `json`.
 Accepts the values `label` and `number`.
 The default value is `label`.
+|No
+
+|xref:runtime-log-destination.adoc#file-key[log.destination.file]
+|Sets the destination file or stream where log messages are written.
+The default value (either `stdout` or `stderr`) depends on the log format.
+|No
+
+|xref:runtime-log-destination.adoc#append-key[log.destination.append]
+|Configures whether to truncate (i.e., clear) the file before writing to it.
+The default value is `false`, which means to truncate the file.
+|No
+
+|xref:runtime-log-destination.adoc#buffer-size-key[log.destination.buffer_size]
+|Sets the amount of memory to use to buffer log messages.
+Once the buffer reaches this size, the buffered messages are written to the destination in a batch.
+The default value is `0`, which turns off this behavior.
+|No
+
+|xref:runtime-log-destination.adoc#sync-key[log.destination.sync]
+|Configures whether to use a sync or async operation to write log messages to the destination.
+The default value is `true`, which means log messages are written synchronously (blocking).
 |No
 |===

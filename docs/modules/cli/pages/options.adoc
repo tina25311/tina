@@ -130,6 +130,15 @@ a|[%hardbreaks]
 `none`
 |See xref:playbook:runtime-log-failure-level.adoc[] and xref:playbook:environment-variables.adoc#failure-level[ANTORA_LOG_FAILURE_LEVEL variable].
 
+|[[log-file]]`--log-file`
+|`stderr` if format is `pretty`, `stdout` otherwise
+a|
+[%hardbreaks]
+`stdout` (or `1`)
+`stderr` (or `2`)
+Filesystem path
+|See xref:playbook:runtime-log-destination.adoc#file-key[file key] and xref:playbook:environment-variables.adoc#log-file[ANTORA_LOG_FILE variable].
+
 |[[log-format]]`--log-format`
 |`json` if CI=true, otherwise `pretty`
 a|[%hardbreaks]
