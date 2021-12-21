@@ -6,8 +6,6 @@ Antora assigns preset, content-specific behavior to the source files stored in t
 == What's a family directory?
 
 A [.term]*family directory* groups source files that share the same function, processing requirements, and publishing rules.
-Certain families, like the page family, require that all files share the same file extension (e.g., _.adoc_).
-
 Antora recognizes five standard family directories: [.path]_attachments_, [.path]_examples_, [.path]_images_, [.path]_pages_, and [.path]_partials_.
 
 [listing]
@@ -15,24 +13,25 @@ Antora recognizes five standard family directories: [.path]_attachments_, [.path
 📒 repository
   📄 antora.yml
   📂 modules
-    📂 a-named-module
-      📂 attachments
-      📂 examples
-      📂 images
-      📂 pages
-      📂 partials
+    📂 named-module
+      📁 attachments
+      📁 examples
+      📁 images
+      📁 pages
+      📁 partials
 ----
 
-A family directory can only be stored in a xref:module-directories.adoc#module-dir[module directory].
-At runtime, Antora collects the source files stored in the family directories and assigns them to a <<family,family>> within a xref:module-directories.adoc#module[module] and xref:component-version.adoc[component version].
+Each family directory is optional.
+You only need to create a family directory if you have source files that should be stored in a specific family directory.
+That is, if a module doesn't have any image files, don't create an [.path]_images_ directory.
+Set up the family directories you need at the root of a xref:module-directories.adoc#module-dir[module directory].
+At runtime, Antora collects the source files stored in the family directories and assigns them to the corresponding <<family,family>>.
 
 [#family]
 == What's a family?
 
-A [.term]*family* is a classification Antora applies to content collected from a family directory.
-The family corresponds to the name of the <<family-dir,family directory>>.
-Content is configured, converted, and published according to the preset behavior associated with its assigned family.
-
+A [.term]*family* is a classification Antora applies to each source file collected from a family directory.
+The assigned family corresponds to the name of the family directory.
 The families are:
 
 * xref:attachments-directory.adoc[attachments]
@@ -40,3 +39,9 @@ The families are:
 * xref:images-directory.adoc[images]
 * xref:pages-directory.adoc[pages]
 * xref:partials-directory.adoc[partials]
+
+Each source file is configured, converted, and published according to the preset behavior associated with its assigned family.
+
+TIP: A source file that is assigned to a family is often referred to as xref:page:resource-id.adoc[resource].
+Antora assigns each resource that it catalogs a xref:page:resource-id.adoc#whats-a-resource-id[unique Antora resource ID] that consists of five coordinates.
+One coordinate of the resource ID represents the family of the resource.

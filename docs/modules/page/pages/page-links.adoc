@@ -35,7 +35,7 @@ The AsciiDoc xref macro only requires the xref:resource-id-coordinates.adoc#id-r
 
 [TIP]
 ====
-include::xref.adoc[tag=target-current-def]
+include::page$xref.adoc[tag=target-current-def]
 ====
 
 <<ex-file-base>> shows the file coordinate of the target page assigned to an xref macro in the current page.

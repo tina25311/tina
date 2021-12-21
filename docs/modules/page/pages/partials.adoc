@@ -4,15 +4,35 @@
 == Reusable, single source content
 
 Partials are good for storing snippets of content, such as common descriptions, project introductions, terminology, frequent admonitions, and reference tables, that you reuse in one or more pages throughout your site.
-Partial files are stored in a xref:ROOT:partials-directory.adoc[_partials_ directory] and, regardless of which component version they belong to, can be referenced by any page or partial in your site.
-A partial is referenced using its resource ID and the xref:include-a-partial.adoc[AsciiDoc include directive].
-Select regions or lines from a partial, instead of all of the content in the partial, can be inserted into a page using the include directive's `tag`, `tags`, or `lines` attributes.
-Changes you make to the partial will disseminate to all of the pages where you referenced it the next time you build your site.
+Changes you make to a partial will disseminate to all of the pages where you referenced the partial the next time you build your site.
+
+== Partial filenames and file extensions
+
+Partial files are stored in a xref:ROOT:partials-directory.adoc[_partials_ directory].
+A partial file is usually marked up with AsciiDoc and saved with the  _.adoc_ file extension.
+However, a partial isn't required to be an AsciiDoc file and, unlike publishable resources, a partial file without a file extension isn't treated as a xref:ROOT:standard-directories.adoc#hidden-files[hidden file].
+Antora will load a partial that doesn't have a file extension into its content catalog and assign the partial a resource ID for referencing.
+
+// tag::filename[]
+When saving a new partial file, keep the following filename requirements and recommendations in mind:
+
+* A partial's filename *can't contain spaces* because the AsciiDoc include directive doesn't accept values with spaces.
+* *Uppercase letters aren't recommended* in filenames.
+Some file systems aren't case sensitive.
+Therefore, file conflicts could occur depending on the file system a writer is using.
+* Save a partial file with the _.adoc_ extension when it's an AsciiDoc file, otherwise use the valid file extension for the file type.
+You should only save a partial without a file extension when it's common industry practice for that specific file type to not have an extension.
+Not using the correct file extension when saving a partial file may limit your ability to apply some Antora extensions or upgrade to future capabilities.
+// end::filename[]
+
+Antora doesn't publish partial files as individual site pages.
+A xref:include-a-partial.adoc[partial must be referenced by an include directive] from a page, or resource that's eventually included in a page, for the partial's content to be published.
 
 == Create a partial file
 
+A partial is usually regular content marked up with AsciiDoc.
 Unlike a page, a partial doesn't have any required structural elements, such as a title, though it can contain such elements.
-A partial is usually regular content marked up with AsciiDoc, but it isn't required that a partial be an AsciiDoc file or that it have a file extension.
+In the next section, you'll see how to create a new partial file and mark it up with AsciiDoc.
 
 === Set up an AsciiDoc partial file
 
@@ -43,7 +63,9 @@ rapidly changing weather conditions.
 ----
 
 You've created a partial!
-Now, it's ready to be xref:include-a-partial.adoc[included in a page].
+Now, it's ready to be included in a page.
+Regardless of the component version a partial belongs to, it can be referenced by any page or partial in your site using the partial's resource ID and xref:include-a-partial.adoc[AsciiDoc include directive].
+You can even select regions or lines from a partial, instead of all of the partial's content, and insert only those regions or lines using the include directive's `tag`, `tags`, or `lines` attributes.
 
 [#current-context]
 == Current page context and structure
@@ -54,8 +76,8 @@ Therefore, the current page's component version, module, attributes, and other e
 
 === Referencing pages and resources
 
-Xrefs:: If the partial is included in pages that belong to other modules or docs components, you need to specify the resource IDs of the target resources in the partial's content accordingly.
-The number of resource ID coordinates required depends on what component version and module the current page belongs to in relation to the target resource being referenced by the xref macro in the partial.
+Xrefs:: If the partial is included in pages that belong to other modules or docs components, you need to specify the resource ID of a target page or attachment that's assigned to an xref macro in the partial's content accordingly.
+The number of resource ID coordinates required depends on the component version and module of the current page into which the partial is being inserted in relation to the target attachment or page being referenced by an xref macro in the partial's content.
 
 Images, examples, and other partials:: A partial can reference other partials and examples using the include directive and images using the image macros.
 Like when entering resource IDs in xrefs, the resource ID of the target resource may need additional coordinates specified depending on the component version and module of the current page that partial is being included into and the resource being referenced in the partial.

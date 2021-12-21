@@ -179,6 +179,7 @@ The symbolic version replaces the actual version in the URL.
 A symbolic version is defined using the `latest_version_segment` key or `latest_prerelease_version_segment` key in the playbook.
 The symbolic version doesn't apply to component versions that are unversioned; the version segment is always dropped from their resources`' published URLs.
 
+[#module]
 === Module segment
 
 Antora derives the module segment from the xref:ROOT:module-directories.adoc#module[module directory name] where a resource's source file is stored.

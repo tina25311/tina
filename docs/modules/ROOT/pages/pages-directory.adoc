@@ -3,33 +3,43 @@
 [#pages-dir]
 == Pages family directory
 
-A module directory can contain an xref:family-directories.adoc[optional family directory] named [.path]_pages_.
-Only AsciiDoc source files with the file extension (_.adoc_) should be stored in the [.path]_pages_ directory because Antora applies preset behavior to these files when it runs.
+A module directory can contain a xref:family-directories.adoc[family directory] named [.path]_pages_.
+The [.path]_pages_ directory can contain subdirectories.
+Only AsciiDoc source files with the file extension _.adoc_ should be stored in the [.path]_pages_ directory and its subdirectories because Antora applies preset behavior to page files when it runs.
 
 [listing]
 ----
 📂 modules
-  📂 a-named-module <.>
+  📂 named-module <.>
     📂 pages <.>
-      📄 a-source-file.adoc <.>
-  📂 ROOT
-    📂 pages
-      📄 a-source-file.adoc
+      📄 page-source-file.adoc <.>
+      📂 subdirectory-of-pages <.>
+        📄 page-source-file.adoc
+  📂 ROOT <.>
+    📂 pages <.>
+      📄 page-source-file.adoc
     📄 nav.adoc
 ----
-<.> A named module directory
-<.> [.path]_pages_ family directory
-<.> AsciiDoc source file with valid _.adoc_ file extension
+<.> A named module directory.
+<.> A [.path]_pages_ family directory.
+Source files stored in [.path]_pages_ are classified as pages.
+<.> A page file marked up with the AsciiDoc syntax and saved with the valid _.adoc_ file extension.
+<.> A subdirectory in [.path]_pages_.
+Source files stored in subdirectories of a [.path]_pages_ directory are classified as pages.
+<.> A ROOT module directory.
+<.> A [.path]_pages_ family directory.
 
-A [.path]_pages_ family directory must contain at least one AsciiDoc source file.
+The [.path]_pages_ directory is optional.
+That is, if a module doesn't have any page files, don't create a [.path]_pages_ directory in the module.
+If you set up a [.path]_pages_ directory, the [.path]_pages_ directory or a subdirectory of [.path]_pages_ must contain at least one AsciiDoc source file.
 
 [#pages]
 == Page files
 
-Pages are source files stored in a [.path]_pages_ directory.
-xref:page:index.adoc[Pages] are marked up using the AsciiDoc syntax and saved with the _.adoc_ file extension.
-Regardless of the component version the page is assigned to, a xref:page:xref.adoc[page can be cross referenced] by any page, resource, or navigation file.
+Antora classifies the source files stored in a [.path]_pages_ directory as pages.
+Pages are structured as individual documents with a title, marked up using the AsciiDoc syntax, and saved with the _.adoc_ file extension.
+Using a page's resource ID, you can xref:page:xref.adoc[cross reference a page] from other pages, resources, or navigation files in your site or xref:page:include-a-page.adoc[include a page] into other pages or resources in your site.
 
-Antora automatically converts each page to HTML and publishes it as an individual page in a site.
-(Except when the page file is marked as xref:standard-directories.adoc#hidden-files[hidden or it's missing a file extension].)
-Antora uses the xref:how-antora-builds-urls.adoc#relative-path[relative path segment of the page file] when building the URL of a page.
+A page file is a xref:page:resource-id.adoc#publishable[publishable resource] unless it's marked as xref:standard-directories.adoc#hidden-files[hidden or unpublished].
+That means Antora automatically converts each page to HTML and publishes it as an individual page in a site, even if the page isn't referenced by another resource or navigation file.
+Antora uses the __pages__-relative directory path (if present), filename of the page, and specified HTML extension style when xref:how-antora-builds-urls.adoc[building the URL of a page].
