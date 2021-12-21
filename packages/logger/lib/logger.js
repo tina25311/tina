@@ -111,8 +111,7 @@ function finalize () {
 }
 
 function createPrettyDestination (destination, colorize) {
-  const end = destination.end
-  const prettyDestination = pinoPretty({
+  return pinoPretty({
     destination,
     colorize,
     customPrettifiers: {
@@ -153,8 +152,6 @@ function createPrettyDestination (destination, colorize) {
     },
     translateTime: 'SYS:HH:MM:ss.l', // Q: do we really need ms? should we honor DATE_FORMAT env var?
   })
-  destination.end = end // workaround; see https://github.com/pinojs/pino-pretty/issues/279
-  return prettyDestination
 }
 
 function temperDestination (destination) {
