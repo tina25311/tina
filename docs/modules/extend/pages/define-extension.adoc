@@ -98,7 +98,7 @@ Here's how you can access the playbook from the register function:
 .my-extension.js
 [,js]
 ----
-module.exports.register = function ({ playbook }) => {
+module.exports.register = function ({ playbook }) {
   console.log(`Antora is building the ${playbook.site.title}.`)
 }
 ----
