@@ -44,7 +44,6 @@ default:
     when: always
     paths:
     - reports/lcov-report
-    - reports/tests-xunit.xml
     reports:
       cobertura: reports/cobertura-coverage.xml
       junit: reports/tests-xunit.xml
