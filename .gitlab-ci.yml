@@ -101,7 +101,7 @@ test:windows:
   extends: .npm
   tags: [windows]
   # cache does not currently work on the Windows runner
-  cache: {}
+  cache: []
   before_script:
   - choco upgrade -y nodejs --version=12.22.7
   - *platform_info
