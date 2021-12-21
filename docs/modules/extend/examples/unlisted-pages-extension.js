@@ -1,6 +1,6 @@
 // tag::register[]
-module.exports.register = function ({ config }) => {
-// end::register[]
+module.exports.register = function ({ config }) {
+  // end::register[]
   // tag::register[]
   const { addToNavigation, unlistedPagesHeading = 'Unlisted Pages' } = config
   // end::register[]
@@ -10,11 +10,11 @@ module.exports.register = function ({ config }) => {
   // tag::on[]
   this
     .on('navigationBuilt', ({ contentCatalog }) => {
-  // end::on[]
+      // end::on[]
       // tag::each-nav[]
       contentCatalog.getComponents().forEach(({ versions }) => {
         versions.forEach(({ name: component, version, navigation: nav, url: defaultUrl }) => {
-      // end::each-nav[]
+          // end::each-nav[]
           // tag::create-lookup-table[]
           const navEntriesByUrl = getNavEntriesByUrl(nav)
           // end::create-lookup-table[]
@@ -41,14 +41,14 @@ module.exports.register = function ({ config }) => {
             })
           }
           // end::add-to-nav[]
-      // tag::each-nav[]
+          // tag::each-nav[]
         })
       })
       // end::each-nav[]
-  // tag::on[]
+      // tag::on[]
     })
-  // end::on[]
-// tag::register[]
+    // end::on[]
+    // tag::register[]
 }
 // end::register[]
 

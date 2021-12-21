@@ -2,7 +2,7 @@ const https = require('https')
 
 class FetchAndPublishReadmeExtension {
   static register ({ config }) {
-    new FetchAndPublishReadmeExtension(this, config)
+    return new FetchAndPublishReadmeExtension(this, config)
   }
 
   constructor (context, config) {
@@ -16,10 +16,12 @@ class FetchAndPublishReadmeExtension {
   playbookBuilt ({ siteCatalog }) {
     this.contentsPromise = new Promise((resolve, reject) => {
       const buffer = []
-      https.get(this.readmeUrl, (response) => {
-        response.on('data', (chunk) => buffer.push(chunk.toString()))
-        response.on('end', () => resolve(buffer.join('').trimRight()))
-      }).on('error', reject)
+      https
+        .get(this.readmeUrl, (response) => {
+          response.on('data', (chunk) => buffer.push(chunk.toString()))
+          response.on('end', () => resolve(buffer.join('').trimRight()))
+        })
+        .on('error', reject)
     })
   }
 

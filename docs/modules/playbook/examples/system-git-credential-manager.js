@@ -12,7 +12,7 @@ function callGitCredentialFill (url) {
       if (code) return reject(code)
       const { username, password } = output.join('\n').split('\n').reduce((acc, line) => {
         if (line.startsWith('username') || line.startsWith('password')) {
-          const [ key, val ] = line.split('=')
+          const [key, val] = line.split('=')
           acc[key] = val
         }
         return acc
