@@ -417,9 +417,8 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
 }
 
 function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, version) {
-  return (worktreePath
-    ? readFilesFromWorktree(worktreePath, startPath)
-    : readFilesFromGitTree(repo, ref.oid, startPath)
+  return (
+    worktreePath ? readFilesFromWorktree(worktreePath, startPath) : readFilesFromGitTree(repo, ref.oid, startPath)
   )
     .then((files) => {
       const componentVersionBucket = loadComponentDescriptor(files, ref, version)
@@ -1017,28 +1016,29 @@ function findWorktrees (repo, patterns) {
   const linkedOnly = patterns[0] === '.' ? !(patterns = patterns.slice(1)) : true
   let worktreesDir
   const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
-  return (patterns.length
-    ? fsp
-      .readdir((worktreesDir = ospath.join(repo.dir, '.git', 'worktrees')))
-      .then((worktreeNames) => filterRefs(worktreeNames, patterns, patternCache), invariably.emptyArray)
-      .then((worktreeNames) =>
-        worktreeNames.length
-          ? Promise.all(
-            worktreeNames.map((worktreeName) => {
-              const gitdir = ospath.resolve(worktreesDir, worktreeName)
-              // NOTE uses name of worktree as branch name if HEAD is detached
-              return git
-                .currentBranch(Object.assign({}, repo, { gitdir }))
-                .then((branch = worktreeName) =>
-                  fsp
-                    .readFile(ospath.join(gitdir, 'gitdir'), 'utf8')
-                    .then((contents) => ({ branch, dir: ospath.dirname(contents.trimRight()) }))
-                )
-            })
-          ).then((entries) => entries.reduce((accum, it) => accum.set(it.branch, it.dir), new Map()))
-          : new Map()
-      )
-    : Promise.resolve(new Map())
+  return (
+    patterns.length
+      ? fsp
+        .readdir((worktreesDir = ospath.join(repo.dir, '.git', 'worktrees')))
+        .then((worktreeNames) => filterRefs(worktreeNames, patterns, patternCache), invariably.emptyArray)
+        .then((worktreeNames) =>
+          worktreeNames.length
+            ? Promise.all(
+              worktreeNames.map((worktreeName) => {
+                const gitdir = ospath.resolve(worktreesDir, worktreeName)
+                // NOTE uses name of worktree as branch name if HEAD is detached
+                return git
+                  .currentBranch(Object.assign({}, repo, { gitdir }))
+                  .then((branch = worktreeName) =>
+                    fsp
+                      .readFile(ospath.join(gitdir, 'gitdir'), 'utf8')
+                      .then((contents) => ({ branch, dir: ospath.dirname(contents.trimRight()) }))
+                  )
+              })
+            ).then((entries) => entries.reduce((accum, it) => accum.set(it.branch, it.dir), new Map()))
+            : new Map()
+        )
+      : Promise.resolve(new Map())
   ).then((worktrees) =>
     linkedOnly
       ? worktrees

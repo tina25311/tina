@@ -9,9 +9,7 @@ Command.prototype.optionsFromConvict = function (convictConfig, opts = {}) {
     if (exclude && exclude.includes(name)) return
     this.addOption(
       choices
-        ? this.createOption(form, description)
-          .default(default_, default_)
-          .choices(choices)
+        ? this.createOption(form, description).default(default_, default_).choices(choices)
         : this.createOption(form, description).default(default_, default_)
     )
   })

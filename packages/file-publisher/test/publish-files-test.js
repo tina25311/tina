@@ -67,9 +67,7 @@ describe('publishFiles()', () => {
       expect(ospath.resolve(destFile)).to.not.be.a.path()
       absDestFile = ospath.resolve(playbook.dir, destFile)
     }
-    expect(absDestFile)
-      .to.be.a.file()
-      .and.not.empty()
+    expect(absDestFile).to.be.a.file().and.not.empty()
     return collectFilesFromZip(absDestFile).then((files) => {
       expect(files).to.have.lengthOf(6)
       const filepaths = files.map((file) => file.path)
@@ -95,21 +93,11 @@ describe('publishFiles()', () => {
       expect(ospath.resolve(destDir)).to.not.be.a.path()
       absDestDir = ospath.resolve(playbook.dir, destDir)
     }
-    expect(absDestDir)
-      .to.be.a.directory()
-      .with.subDirs(['_', 'the-component'])
-    expect(ospath.join(absDestDir, '_/css/site.css'))
-      .to.be.a.file()
-      .with.contents('body { color: red; }')
-    expect(ospath.join(absDestDir, '_/js/site.js'))
-      .to.be.a.file()
-      .with.contents(';(function () {})()')
-    expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
-      .to.be.a.file()
-      .with.contents.that.match(HTML_RX)
-    expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html'))
-      .to.be.a.file()
-      .with.contents.that.match(HTML_RX)
+    expect(absDestDir).to.be.a.directory().with.subDirs(['_', 'the-component'])
+    expect(ospath.join(absDestDir, '_/css/site.css')).to.be.a.file().with.contents('body { color: red; }')
+    expect(ospath.join(absDestDir, '_/js/site.js')).to.be.a.file().with.contents(';(function () {})()')
+    expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file().with.contents.that.match(HTML_RX)
+    expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html')).to.be.a.file().with.contents.that.match(HTML_RX)
     expect(ospath.join(absDestDir, 'the-component/1.0/the-module/index.html'))
       .to.be.a.file()
       .with.contents.that.match(HTML_RX)
@@ -375,9 +363,7 @@ describe('publishFiles()', () => {
 
   it('should not publish site if destinations is empty', async () => {
     await publishFiles(playbook, catalogs)
-    expect(playbook.dir)
-      .to.be.a.directory()
-      .and.be.empty()
+    expect(playbook.dir).to.be.a.directory().and.be.empty()
   })
 
   it('should return publish report for each destination', async () => {
@@ -472,9 +458,7 @@ describe('publishFiles()', () => {
     await fsp.mkdir(ospath.dirname(cleanMeFile2), { recursive: true })
     await fsp.writeFile(cleanMeFile2, 'leave me!')
     await publishFiles(playbook, catalogs)
-    expect(leaveMeFile1)
-      .to.be.a.file()
-      .with.contents('leave me!')
+    expect(leaveMeFile1).to.be.a.file().with.contents('leave me!')
     expect(cleanMeFile2).to.not.be.a.path()
     verifyFsOutput(destDir1)
     verifyFsOutput(destDir2)
@@ -489,9 +473,7 @@ describe('publishFiles()', () => {
     playbook.output.destinations.push({ provider: absProviderPath, path: destFile })
     await publishFiles(playbook, catalogs)
     expect(ospath.resolve(playbook.dir, DEFAULT_DEST_FS)).to.not.be.a.path()
-    expect(ospath.resolve(playbook.dir, destFile))
-      .to.be.a.file()
-      .with.contents('published 6 files for The Site')
+    expect(ospath.resolve(playbook.dir, destFile)).to.be.a.file().with.contents('published 6 files for The Site')
   })
 
   it('should load custom provider from an absolute path outside working directory', async () => {
@@ -504,9 +486,7 @@ describe('publishFiles()', () => {
       playbook.output.destinations.push({ provider: absProviderPath, path: destFile })
       await publishFiles(playbook, catalogs)
       expect(ospath.resolve(playbook.dir, DEFAULT_DEST_FS)).to.not.be.a.path()
-      expect(ospath.resolve(playbook.dir, destFile))
-        .to.be.a.file()
-        .with.contents('published 6 files for The Site')
+      expect(ospath.resolve(playbook.dir, destFile)).to.be.a.file().with.contents('published 6 files for The Site')
     } finally {
       await fsp.unlink(absProviderPath)
     }
@@ -521,9 +501,7 @@ describe('publishFiles()', () => {
     playbook.output.destinations.push({ provider: './reporter-rel.js', path: destFile })
     await publishFiles(playbook, catalogs)
     expect(ospath.resolve(playbook.dir, DEFAULT_DEST_FS)).to.not.be.a.path()
-    expect(ospath.resolve(playbook.dir, destFile))
-      .to.be.a.file()
-      .with.contents('published 6 files for The Site')
+    expect(ospath.resolve(playbook.dir, destFile)).to.be.a.file().with.contents('published 6 files for The Site')
   })
 
   it('should load custom provider from relative path resolved from cwd', async () => {
@@ -535,9 +513,7 @@ describe('publishFiles()', () => {
     playbook.output.destinations.push({ provider: '~+/reporter-rel.js', path: destFile })
     await publishFiles(playbook, catalogs)
     expect(DEFAULT_DEST_FS).to.not.be.a.path()
-    expect(destFile)
-      .to.be.a.file()
-      .with.contents('published 6 files for The Site')
+    expect(destFile).to.be.a.file().with.contents('published 6 files for The Site')
   })
 
   it('should load custom provider from relative path resolved from cwd when playbook dir not set', async () => {
@@ -549,9 +525,7 @@ describe('publishFiles()', () => {
     playbook.output.destinations.push({ provider: './reporter-rel.js', path: destFile })
     await publishFiles(playbook, catalogs)
     expect(DEFAULT_DEST_FS).to.not.be.a.path()
-    expect(destFile)
-      .to.be.a.file()
-      .with.contents('published 6 files for The Site')
+    expect(destFile).to.be.a.file().with.contents('published 6 files for The Site')
   })
 
   it('should load custom provider from node modules path', async () => {
@@ -563,9 +537,7 @@ describe('publishFiles()', () => {
     playbook.output.destinations.push({ provider: 'reporter-mod', path: destFile })
     await publishFiles(playbook, catalogs)
     expect(ospath.resolve(playbook.dir, DEFAULT_DEST_FS)).to.not.be.a.path()
-    expect(ospath.resolve(playbook.dir, destFile))
-      .to.be.a.file()
-      .with.contents('published 6 files for The Site')
+    expect(ospath.resolve(playbook.dir, destFile)).to.be.a.file().with.contents('published 6 files for The Site')
   })
 
   it('should load custom provider multiple times', async () => {
@@ -579,12 +551,8 @@ describe('publishFiles()', () => {
     playbook.output.destinations.push({ provider: './reporter-multi', path: destFile })
     await publishFiles(playbook, catalogs)
     expect(ospath.resolve(playbook.dir, DEFAULT_DEST_FS)).to.not.be.a.path()
-    expect(ospath.resolve(playbook.dir, destFile))
-      .to.be.a.file()
-      .with.contents('published 6 files for The Site')
-    expect(ospath.resolve(playbook.dir, destFile2))
-      .to.be.a.file()
-      .with.contents('published 6 files for The Site')
+    expect(ospath.resolve(playbook.dir, destFile)).to.be.a.file().with.contents('published 6 files for The Site')
+    expect(ospath.resolve(playbook.dir, destFile2)).to.be.a.file().with.contents('published 6 files for The Site')
   })
 
   it('should throw error if destination provider is unsupported', async () => {

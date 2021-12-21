@@ -119,9 +119,7 @@ describe('generateSite()', () => {
     playbookSpec.site.keys = { google_analytics: 'UA-XXXXXXXX-1' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
-    expect(ospath.join(absDestDir, '_'))
-      .to.be.a.directory()
-      .with.subDirs.with.members(['css', 'js', 'font', 'img'])
+    expect(ospath.join(absDestDir, '_')).to.be.a.directory().with.subDirs.with.members(['css', 'js', 'font', 'img'])
     const absCssDir = ospath.join(absDestDir, '_', 'css')
     expect(ospath.join(absDestDir, '_/css/site.css')).to.be.a.file()
     expect(absCssDir)
@@ -131,9 +129,7 @@ describe('generateSite()', () => {
       )
     expect(ospath.join(absDestDir, '_/js/site.js')).to.be.a.file()
     expect(ospath.join(absDestDir, '404.html')).to.not.be.a.path()
-    expect(ospath.join(absDestDir, 'the-component'))
-      .to.be.a.directory()
-      .with.subDirs(['2.0'])
+    expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['2.0'])
     expect(ospath.join(absDestDir, 'index.html'))
       .to.be.a.file()
       .with.contents.that.match(/<meta http-equiv="refresh" content="0; url=the-component\/2.0\/index.html">/)
@@ -188,24 +184,16 @@ describe('generateSite()', () => {
       msg: 'Start page specified for site not found: the-component::no-such-page.adoc',
     })
     expect(getLogger(null)).to.have.property('closed', true)
-    expect(ospath.join(absDestDir, '_'))
-      .to.be.a.directory()
-      .with.subDirs.with.members(['css', 'js', 'font', 'img'])
-    expect(ospath.join(absDestDir, 'the-component'))
-      .to.be.a.directory()
-      .with.subDirs(['2.0'])
+    expect(ospath.join(absDestDir, '_')).to.be.a.directory().with.subDirs.with.members(['css', 'js', 'font', 'img'])
+    expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['2.0'])
   })
 
   it('should bootstrap playbook with env if first argument is an array and second argument is an object', async () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     env.URL = 'https://docs.example.org'
     await generateSite(['--playbook', playbookFile], env)
-    expect(ospath.join(absDestDir, '_'))
-      .to.be.a.directory()
-      .with.subDirs.with.members(['css', 'js', 'font', 'img'])
-    expect(ospath.join(absDestDir, 'the-component'))
-      .to.be.a.directory()
-      .with.subDirs(['2.0'])
+    expect(ospath.join(absDestDir, '_')).to.be.a.directory().with.subDirs.with.members(['css', 'js', 'font', 'img'])
+    expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['2.0'])
     expect(ospath.join(absDestDir, 'sitemap.xml'))
       .to.be.a.file()
       .with.contents.that.match(/https:\/\/docs\.example\.org\//)
@@ -221,12 +209,8 @@ describe('generateSite()', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
     process.chdir(cwd)
-    expect(ospath.join(absDestDir, '_'))
-      .to.be.a.directory()
-      .with.subDirs.with.members(['css', 'js', 'font', 'img'])
-    expect(ospath.join(absDestDir, 'the-component'))
-      .to.be.a.directory()
-      .with.subDirs(['2.0'])
+    expect(ospath.join(absDestDir, '_')).to.be.a.directory().with.subDirs.with.members(['css', 'js', 'font', 'img'])
+    expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['2.0'])
   })
 
   it('should generate site into output directory specified in arguments', async () => {
@@ -238,9 +222,7 @@ describe('generateSite()', () => {
     expect(ospath.join(absDestDirOverride, '_'))
       .to.be.a.directory()
       .with.subDirs.with.members(['css', 'js', 'font', 'img'])
-    expect(ospath.join(absDestDirOverride, 'the-component'))
-      .to.be.a.directory()
-      .with.subDirs(['2.0'])
+    expect(ospath.join(absDestDirOverride, 'the-component')).to.be.a.directory().with.subDirs(['2.0'])
   })
 
   it('should use relative UI root path for page in ROOT module of ROOT component', async () => {
@@ -283,9 +265,7 @@ describe('generateSite()', () => {
     playbookSpec.content.sources[0].version = { 'v(?<version>+({0..9}))*': 'lts-$<version>' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
-    expect(ospath.join(absDestDir, 'the-component'))
-      .to.be.a.directory()
-      .with.subDirs(['lts-2'])
+    expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['lts-2'])
     expect(ospath.join(absDestDir, 'the-component/lts-2/the-page.html')).to.be.a.file()
   })
 
@@ -562,9 +542,7 @@ describe('generateSite()', () => {
     ]
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
-    expect(ospath.join(absDestDir, 'ui'))
-      .to.be.a.directory()
-      .with.subDirs.with.members(['css', 'js', 'font', 'img'])
+    expect(ospath.join(absDestDir, 'ui')).to.be.a.directory().with.subDirs.with.members(['css', 'js', 'font', 'img'])
   })
 
   it('should add edit page link to toolbar that links to edit URL if page.editUrl is set in UI model', async () => {
@@ -677,9 +655,7 @@ describe('generateSite()', () => {
     playbookSpec.runtime.log = { level: 'silent' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
-    expect(ospath.join(absDestDir, 'the-component'))
-      .to.be.a.directory()
-      .with.subDirs(['1.0', '2.0'])
+    expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['1.0', '2.0'])
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     // assert that all versions of page are shown
@@ -705,18 +681,10 @@ describe('generateSite()', () => {
       .and.to.have.attr('href', '../1.0/index.html')
     // assert that all versions of component are present in navigation explore panel
     expect($('.nav-panel-explore .component.is-current li.version')).to.have.lengthOf(2)
-    expect(
-      $('.nav-panel-explore .component.is-current li.version')
-        .eq(0)
-        .find('a')
-    )
+    expect($('.nav-panel-explore .component.is-current li.version').eq(0).find('a'))
       .to.have.text('2.0')
       .and.to.have.attr('href', 'index.html')
-    expect(
-      $('.nav-panel-explore .component.is-current li.version')
-        .eq(1)
-        .find('a')
-    )
+    expect($('.nav-panel-explore .component.is-current li.version').eq(1).find('a'))
       .to.have.text('1.0')
       .and.to.have.attr('href', '../1.0/index.html')
     expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html')).to.be.a.file()
@@ -814,16 +782,8 @@ describe('generateSite()', () => {
     $ = loadHtmlFile('the-other-component/core/index.html')
     expect($('.nav-panel-explore .component')).to.have.lengthOf(2)
     // assert sorted by title
-    expect(
-      $('.nav-panel-explore .component')
-        .eq(0)
-        .find('.title')
-    ).to.have.text('The Component')
-    expect(
-      $('.nav-panel-explore .component')
-        .eq(1)
-        .find('.title')
-    ).to.have.text('The Other Component')
+    expect($('.nav-panel-explore .component').eq(0).find('.title')).to.have.text('The Component')
+    expect($('.nav-panel-explore .component').eq(1).find('.title')).to.have.text('The Other Component')
     // assert correct component is marked as current
     expect($('.nav-panel-explore .component').eq(1)).to.have.class('is-current')
     expect($('.nav-panel-explore .component.is-current a')).to.have.lengthOf(3)
@@ -1294,9 +1254,7 @@ describe('generateSite()', () => {
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('building 4 pages for site https://docs.example.org')
-      expect(ospath.join(absDestDir, '.nojekyll'))
-        .to.be.a.file()
-        .and.be.empty()
+      expect(ospath.join(absDestDir, '.nojekyll')).to.be.a.file().and.be.empty()
     })
 
     it('should allow extension listener to access context variables via getVariables', async () => {
@@ -1322,9 +1280,7 @@ describe('generateSite()', () => {
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
       expect(lines).to.have.lengthOf(1)
       expect(lines[0]).to.equal('building 4 pages for site https://docs.example.org')
-      expect(ospath.join(absDestDir, '.nojekyll'))
-        .to.be.a.file()
-        .and.be.empty()
+      expect(ospath.join(absDestDir, '.nojekyll')).to.be.a.file().and.be.empty()
     })
 
     it('should not allow extension listener to access vars property on generator context', async () => {

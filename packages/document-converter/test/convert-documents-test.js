@@ -284,9 +284,7 @@ describe('convertDocuments()', () => {
     expect(contentCatalog.registerPageAlias).first.be.called.with('the-alias.adoc', inputFile)
     expect(contentCatalog.registerPageAlias).second.be.called.with('topic/the-alias.adoc', inputFile)
     expect(contentCatalog.registerPageAlias).third.be.called.with('1.0.0@page-a.adoc', inputFile)
-    expect(contentCatalog.registerPageAlias)
-      .nth(4)
-      .be.called.with('another-alias.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).nth(4).be.called.with('another-alias.adoc', inputFile)
   })
 
   it('should register aliases split across lines using a line continuation', () => {
@@ -313,9 +311,7 @@ describe('convertDocuments()', () => {
     expect(contentCatalog.registerPageAlias).first.called.with('the-alias.adoc', inputFile)
     expect(contentCatalog.registerPageAlias).second.called.with('topic/the-alias', inputFile)
     expect(contentCatalog.registerPageAlias).third.called.with('1.0.0@page-a.adoc', inputFile)
-    expect(contentCatalog.registerPageAlias)
-      .nth(4)
-      .called.with('another-alias.adoc', inputFile)
+    expect(contentCatalog.registerPageAlias).nth(4).called.with('another-alias.adoc', inputFile)
   })
 
   it('should register alias specified with no file extension', () => {

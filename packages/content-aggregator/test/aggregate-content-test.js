@@ -3656,9 +3656,7 @@ describe('aggregateContent()', () => {
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v2.0' })
         const aggregate = await aggregateContent(playbookSpec)
         if (repoBuilder.remote) {
-          expect(CONTENT_CACHE_DIR)
-            .to.be.a.directory()
-            .and.subDirs.have.lengthOf(1)
+          expect(CONTENT_CACHE_DIR).to.be.a.directory().and.subDirs.have.lengthOf(1)
         }
         expect(aggregate).to.have.lengthOf(2)
         sortAggregate(aggregate)
@@ -4169,9 +4167,7 @@ describe('aggregateContent()', () => {
               .and.not.include.subDirs(['.git'])
               .and.include.files(['HEAD', 'valid'])
           } else {
-            expect(CONTENT_CACHE_DIR)
-              .to.be.a.directory()
-              .and.be.empty()
+            expect(CONTENT_CACHE_DIR).to.be.a.directory().and.be.empty()
           }
         },
         1,
@@ -4188,9 +4184,7 @@ describe('aggregateContent()', () => {
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0]).to.have.nested.property('files[0].src.origin.branch', defaultBranch)
       expect(aggregate[0]).to.have.nested.property('files[0].src.origin.refname', defaultBranch)
-      expect(CONTENT_CACHE_DIR)
-        .to.be.a.directory()
-        .with.subDirs.have.lengthOf(1)
+      expect(CONTENT_CACHE_DIR).to.be.a.directory().with.subDirs.have.lengthOf(1)
       const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
       expect(cachedRepoName).to.match(/\.git$/)
       const clonedRepoBuilder = new RepositoryBuilder(CONTENT_CACHE_DIR, FIXTURES_DIR, { bare: true })
@@ -4225,9 +4219,7 @@ describe('aggregateContent()', () => {
       playbookSpec.runtime.cacheDir = customCacheDir
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw()
-      expect(customContentCacheDir)
-        .to.be.a.directory()
-        .with.subDirs.empty()
+      expect(customContentCacheDir).to.be.a.directory().with.subDirs.empty()
     })
 
     it('should clone repository again if valid file is not found in cached repository', async () => {
@@ -4236,17 +4228,13 @@ describe('aggregateContent()', () => {
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       let aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
-      expect(CONTENT_CACHE_DIR)
-        .to.be.a.directory()
-        .with.subDirs.have.lengthOf(1)
+      expect(CONTENT_CACHE_DIR).to.be.a.directory().with.subDirs.have.lengthOf(1)
       const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
       const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
       expect(cachedRepoDir).to.match(/\.git$/)
       const validFile = ospath.join(cachedRepoDir, 'valid')
       const headFile = ospath.join(cachedRepoDir, 'HEAD')
-      expect(validFile)
-        .to.be.a.file()
-        .and.be.empty()
+      expect(validFile).to.be.a.file().and.be.empty()
       expect(headFile)
         .to.be.a.file()
         .and.have.contents.that.match(/^ref: refs\/heads\/main(?=$|\n)/)
@@ -4256,9 +4244,7 @@ describe('aggregateContent()', () => {
       aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
       expect(cachedRepoDir).to.be.a.directory()
-      expect(validFile)
-        .to.be.a.file()
-        .and.be.empty()
+      expect(validFile).to.be.a.file().and.be.empty()
       expect(headFile)
         .to.be.a.file()
         .and.have.contents.that.match(/^ref: refs\/heads\/main(?=$|\n)/)
@@ -4270,12 +4256,7 @@ describe('aggregateContent()', () => {
       await initRepoWithFiles(repoBuilderA, { name: 'component-a', version: '1.0' }, undefined, async () => {
         for (let i = 0; i < 25; i++) {
           const path = `modules/ROOT/pages/page-${i}.adoc`
-          await repoBuilderA.addToWorktree(
-            path,
-            Array(1000)
-              .fill('filler')
-              .join('\n\n')
-          )
+          await repoBuilderA.addToWorktree(path, Array(1000).fill('filler').join('\n\n'))
         }
         await repoBuilderA.commitAll('add filler')
       })
@@ -4287,15 +4268,10 @@ describe('aggregateContent()', () => {
       try {
         await aggregateContent(playbookSpec)
       } catch {
-        expect(CONTENT_CACHE_DIR)
-          .to.be.a.directory()
-          .with.subDirs.have.lengthOf(1)
+        expect(CONTENT_CACHE_DIR).to.be.a.directory().with.subDirs.have.lengthOf(1)
         const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
         const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
-        expect(cachedRepoDir)
-          .to.be.a.directory()
-          .and.include.files(['HEAD', 'valid'])
-          .and.include.subDirs(['refs'])
+        expect(cachedRepoDir).to.be.a.directory().and.include.files(['HEAD', 'valid']).and.include.subDirs(['refs'])
       }
     })
 
@@ -4305,24 +4281,14 @@ describe('aggregateContent()', () => {
       playbookSpec.content.sources.push({ url: repoBuilderA.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
-      expect(CONTENT_CACHE_DIR)
-        .to.be.a.directory()
-        .with.subDirs.have.lengthOf(1)
+      expect(CONTENT_CACHE_DIR).to.be.a.directory().with.subDirs.have.lengthOf(1)
       const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
       const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
-      expect(cachedRepoDir)
-        .to.be.a.directory()
-        .and.include.files(['HEAD', 'valid'])
-        .and.include.subDirs(['refs'])
+      expect(cachedRepoDir).to.be.a.directory().and.include.files(['HEAD', 'valid']).and.include.subDirs(['refs'])
       await repoBuilderA.open().then(async () => {
         for (let i = 0; i < 25; i++) {
           const path = `modules/ROOT/pages/page-${i}.adoc`
-          await repoBuilderA.addToWorktree(
-            path,
-            Array(1000)
-              .fill('filler')
-              .join('\n\n')
-          )
+          await repoBuilderA.addToWorktree(path, Array(1000).fill('filler').join('\n\n'))
         }
         await repoBuilderA.commitAll('add filler')
         await repoBuilderA.close()
@@ -4334,10 +4300,7 @@ describe('aggregateContent()', () => {
       try {
         await aggregateContent(playbookSpec)
       } catch {
-        expect(cachedRepoDir)
-          .to.be.a.directory()
-          .and.include.files(['HEAD', 'valid'])
-          .and.include.subDirs(['refs'])
+        expect(cachedRepoDir).to.be.a.directory().and.include.files(['HEAD', 'valid']).and.include.subDirs(['refs'])
       }
     })
 
@@ -4358,16 +4321,11 @@ describe('aggregateContent()', () => {
       try {
         await aggregateContent(playbookSpec)
       } catch {
-        expect(CONTENT_CACHE_DIR)
-          .to.be.a.directory()
-          .with.subDirs.have.lengthOf(1)
+        expect(CONTENT_CACHE_DIR).to.be.a.directory().with.subDirs.have.lengthOf(1)
         const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
         expect(cachedRepoName).to.startWith('the-component-a-')
         const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
-        expect(cachedRepoDir)
-          .to.be.a.directory()
-          .and.include.files(['HEAD', 'valid'])
-          .and.include.subDirs(['refs'])
+        expect(cachedRepoDir).to.be.a.directory().and.include.files(['HEAD', 'valid']).and.include.subDirs(['refs'])
       }
     })
 
@@ -4381,13 +4339,9 @@ describe('aggregateContent()', () => {
         await aggregateContent(playbookSpec)
         expect(CONTENT_CACHE_DIR).to.not.be.a.path()
         if (repoBuilder.remote) {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.not.be.empty()
+          expect(customContentCacheDir).to.be.a.directory().and.not.be.empty()
         } else {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.be.empty()
+          expect(customContentCacheDir).to.be.a.directory().and.be.empty()
         }
       })
     })
@@ -4402,13 +4356,9 @@ describe('aggregateContent()', () => {
         await aggregateContent(playbookSpec)
         expect(CONTENT_CACHE_DIR).to.not.be.a.path()
         if (repoBuilder.remote) {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.not.be.empty()
+          expect(customContentCacheDir).to.be.a.directory().and.not.be.empty()
         } else {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.be.empty()
+          expect(customContentCacheDir).to.be.a.directory().and.be.empty()
         }
       })
     })
@@ -4425,13 +4375,9 @@ describe('aggregateContent()', () => {
         await aggregateContent(playbookSpec)
         expect(CONTENT_CACHE_DIR).to.not.be.a.path()
         if (repoBuilder.remote) {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.not.be.empty()
+          expect(customContentCacheDir).to.be.a.directory().and.not.be.empty()
         } else {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.be.empty()
+          expect(customContentCacheDir).to.be.a.directory().and.be.empty()
         }
       })
     })
@@ -4450,13 +4396,9 @@ describe('aggregateContent()', () => {
         await aggregateContent(playbookSpec)
         expect(CONTENT_CACHE_DIR).to.not.be.a.path()
         if (repoBuilder.remote) {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.not.be.empty()
+          expect(customContentCacheDir).to.be.a.directory().and.not.be.empty()
         } else {
-          expect(customContentCacheDir)
-            .to.be.a.directory()
-            .and.be.empty()
+          expect(customContentCacheDir).to.be.a.directory().and.be.empty()
         }
       })
     })
@@ -4608,9 +4550,7 @@ describe('aggregateContent()', () => {
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       let aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
-      expect(CONTENT_CACHE_DIR)
-        .to.be.a.directory()
-        .with.subDirs.have.lengthOf(1)
+      expect(CONTENT_CACHE_DIR).to.be.a.directory().with.subDirs.have.lengthOf(1)
       const cachedRepoName = await fsp.readdir(CONTENT_CACHE_DIR).then((entries) => entries[0])
       const cachedRepoDir = ospath.join(CONTENT_CACHE_DIR, cachedRepoName)
       const headFile = ospath.join(cachedRepoDir, 'HEAD')
@@ -5625,9 +5565,7 @@ describe('aggregateContent()', () => {
       const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${urlWithoutAuth})`
       expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
-      expect(CONTENT_CACHE_DIR)
-        .to.be.a.directory()
-        .and.be.empty()
+      expect(CONTENT_CACHE_DIR).to.be.a.directory().and.be.empty()
       authorizationHeaderValue = undefined
       credentialsVerdict = undefined
       const aggregate = await aggregateContent(playbookSpec)
@@ -5831,9 +5769,7 @@ describe('aggregateContent()', () => {
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(aggregate).to.have.lengthOf(1)
-      expect(CONTENT_CACHE_DIR)
-        .to.be.a.directory()
-        .and.not.be.empty()
+      expect(CONTENT_CACHE_DIR).to.be.a.directory().and.not.be.empty()
       credentialsRequestCount = 0
       credentialsSent = undefined
       credentialsVerdict = 'denied!'
@@ -5846,9 +5782,7 @@ describe('aggregateContent()', () => {
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(credentialsRequestCount).to.equal(1)
         expect(lines.filter((l) => l.startsWith('[clone]'))).to.be.empty()
-        expect(CONTENT_CACHE_DIR)
-          .to.be.a.directory()
-          .and.be.empty()
+        expect(CONTENT_CACHE_DIR).to.be.a.directory().and.be.empty()
       })
     })
 

@@ -9,12 +9,7 @@ describe('produceRedirects()', () => {
   let contentCatalog
   let playbook
 
-  const extractRules = ({ contents }) =>
-    contents
-      .toString()
-      .trimRight()
-      .split('\n')
-      .sort()
+  const extractRules = ({ contents }) => contents.toString().trimRight().split('\n').sort()
 
   beforeEach(() => {
     playbook = {
@@ -37,9 +32,7 @@ describe('produceRedirects()', () => {
     const emptyContentCatalog = mockContentCatalog().spyOn('findBy')
     const result = produceRedirects(playbook, emptyContentCatalog)
     expect(result).to.be.empty()
-    expect(emptyContentCatalog.findBy)
-      .nth(1)
-      .called.with({ family: 'alias' })
+    expect(emptyContentCatalog.findBy).nth(1).called.with({ family: 'alias' })
   })
 
   it('should run on aliases specified as an array', () => {

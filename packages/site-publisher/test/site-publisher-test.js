@@ -10,12 +10,8 @@ describe('site-publisher', () => {
     expect(actual).to.equal(expected)
     expect(actual.name).to.equal('publishFiles')
     expect(actual).to.have.lengthOf(2)
-    expect(
-      actual
-        .toString()
-        .split('\n')[0]
-        .replace(' (', '(')
-        .replace(', ', ',')
-    ).to.include('publishFiles(playbook,catalogs)')
+    expect(actual.toString().split('\n')[0].replace(' (', '(').replace(', ', ',')).to.include(
+      'publishFiles(playbook,catalogs)'
+    )
   })
 })
