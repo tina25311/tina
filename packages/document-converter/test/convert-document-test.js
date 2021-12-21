@@ -92,9 +92,7 @@ describe('convertDocument()', () => {
       image::module-b:screenshot.png[]
     `)
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.resolveResource)
-      .nth(1)
-      .called.with('module-b:screenshot.png', inputFile.src)
+    expect(contentCatalog.resolveResource).nth(1).called.with('module-b:screenshot.png', inputFile.src)
     expect(inputFile.mediaType).to.equal('text/html')
     expect(inputFile.contents.toString()).to.equal(heredoc`
       <div class="sect1">
@@ -335,9 +333,7 @@ describe('convertDocument()', () => {
     }
     const contentCatalog = { resolveResource: spy(() => targetFile), getComponent: () => {} }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.resolveResource)
-      .nth(1)
-      .called.with('module-b:page-b.adoc', inputFile.src)
+    expect(contentCatalog.resolveResource).nth(1).called.with('module-b:page-b.adoc', inputFile.src)
     expectPageLink(inputFile.contents.toString(), '../module-b/page-b.html', 'Page B')
   })
 
@@ -359,15 +355,13 @@ describe('convertDocument()', () => {
     }
     const contentCatalog = { getById: spy(() => partialFile), getComponent: () => {} }
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.getById)
-      .nth(1)
-      .called.with({
-        component: 'component-a',
-        version: '1.2.3',
-        module: 'module-a',
-        family: 'partial',
-        relative: 'definitions.adoc',
-      })
+    expect(contentCatalog.getById).nth(1).called.with({
+      component: 'component-a',
+      version: '1.2.3',
+      module: 'module-a',
+      family: 'partial',
+      relative: 'definitions.adoc',
+    })
     expect(inputFile.contents.toString()).to.include('cloud: someone else&#8217;s computer')
   })
 
@@ -410,13 +404,11 @@ describe('convertDocument()', () => {
     convertDocument(includedFile, undefined, asciidocConfig)
     expect(includedFile.src).to.have.property('contents')
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.getByPath)
-      .nth(1)
-      .called.with({
-        component: 'component-a',
-        version: '1.2.3',
-        path: 'modules/module-a/pages/changelog.adoc',
-      })
+    expect(contentCatalog.getByPath).nth(1).called.with({
+      component: 'component-a',
+      version: '1.2.3',
+      path: 'modules/module-a/pages/changelog.adoc',
+    })
     expect(inputFile.contents.toString()).to.include(heredoc`
       <div class="sect1">
       <h2 id="_recent_changes"><a class="anchor" href="#_recent_changes"></a>Recent Changes</h2>
@@ -478,13 +470,11 @@ describe('convertDocument()', () => {
     convertDocument(includedFile, undefined, asciidocConfig)
     expect(includedFile.src).to.have.property('contents')
     convertDocument(inputFile, contentCatalog, asciidocConfig)
-    expect(contentCatalog.getByPath)
-      .nth(1)
-      .called.with({
-        component: 'component-a',
-        version: '1.2.3',
-        path: 'modules/module-a/pages/changelog.adoc',
-      })
+    expect(contentCatalog.getByPath).nth(1).called.with({
+      component: 'component-a',
+      version: '1.2.3',
+      path: 'modules/module-a/pages/changelog.adoc',
+    })
     expect(inputFile.contents.toString()).to.include(heredoc`
       <div class="sect1">
       <h2 id="_recent_changes"><a class="anchor" href="#_recent_changes"></a>Recent Changes</h2>
@@ -517,9 +507,7 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="_images/image-filename.png" alt="image filename">')
-      expect(contentCatalog.resolveResource)
-        .nth(1)
-        .called.with('image-filename.png', inputFile.src)
+      expect(contentCatalog.resolveResource).nth(1).called.with('image-filename.png', inputFile.src)
     })
 
     it(`should ignore parent references in target of ${macroType} image`, () => {
@@ -559,9 +547,7 @@ describe('convertDocument()', () => {
       convertDocument(inputFileInTopicFolder, contentCatalog, asciidocConfig)
       const contents = inputFileInTopicFolder.contents.toString()
       expect(contents).to.include('<img src="../_images/image-filename.png" alt="image filename">')
-      expect(contentCatalog.resolveResource)
-        .nth(1)
-        .called.with('image-filename.png', inputFileInTopicFolder.src)
+      expect(contentCatalog.resolveResource).nth(1).called.with('image-filename.png', inputFileInTopicFolder.src)
     })
 
     it(`should resolve non-URL target of ${macroType} image as resource spec if target is in different module`, () => {
@@ -586,9 +572,7 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../module-b/_images/image-filename.png" alt="image filename">')
-      expect(contentCatalog.resolveResource)
-        .nth(1)
-        .called.with('module-b:image-filename.png', inputFile.src)
+      expect(contentCatalog.resolveResource).nth(1).called.with('module-b:image-filename.png', inputFile.src)
     })
 
     it(`should resolve non-URL target of ${macroType} image as resource spec if target is in different version`, () => {
@@ -613,9 +597,7 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="../../2.0.0/module-b/_images/image-filename.png" alt="image filename">')
-      expect(contentCatalog.resolveResource)
-        .nth(1)
-        .called.with('2.0.0@image-filename.png', inputFile.src)
+      expect(contentCatalog.resolveResource).nth(1).called.with('2.0.0@image-filename.png', inputFile.src)
     })
 
     it(`should use ${macroType} image target if target cannot be resolved`, () => {
@@ -624,9 +606,7 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="no-such-module:image-filename.png" alt="image filename">')
-      expect(contentCatalog.resolveResource)
-        .nth(1)
-        .called.with('no-such-module:image-filename.png', inputFile.src)
+      expect(contentCatalog.resolveResource).nth(1).called.with('no-such-module:image-filename.png', inputFile.src)
     })
 
     it(`should use ${macroType} image target if resource ID spec syntax is invalid`, () => {
@@ -638,9 +618,7 @@ describe('convertDocument()', () => {
       convertDocument(inputFile, contentCatalog, asciidocConfig)
       const contents = inputFile.contents.toString()
       expect(contents).to.include('<img src="component-b::" alt="">')
-      expect(contentCatalog.resolveResource)
-        .nth(1)
-        .called.with('component-b::', inputFile.src)
+      expect(contentCatalog.resolveResource).nth(1).called.with('component-b::', inputFile.src)
     })
   })
 })

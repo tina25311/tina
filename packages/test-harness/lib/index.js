@@ -31,10 +31,7 @@ function captureStandardStream (streamName, fn, transform, isAsync) {
   const fsWriteSync = fs.writeSync
   if (!transform) {
     transform = function lines (buffer) {
-      return buffer
-        .toString()
-        .trim()
-        .split('\n')
+      return buffer.toString().trim().split('\n')
     }
   }
   const data = []

@@ -295,9 +295,7 @@ describe('build UI model', () => {
 
     it('should set component property to component from content catalog', () => {
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
-      expect(contentCatalog.getComponent)
-        .nth(1)
-        .called.with('the-component')
+      expect(contentCatalog.getComponent).nth(1).called.with('the-component')
       expect(model.component).to.exist()
       expect(model.component.name).to.equal('the-component')
     })
@@ -432,9 +430,7 @@ describe('build UI model', () => {
         ],
       })
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
-      expect(navigationCatalog.getNavigation)
-        .nth(1)
-        .called.with('the-component', '1.0')
+      expect(navigationCatalog.getNavigation).nth(1).called.with('the-component', '1.0')
       expect(model.navigation).to.exist()
       expect(model.navigation).to.equal(menu)
     })
@@ -1147,26 +1143,22 @@ describe('build UI model', () => {
       contentCatalog.getById = spy((filter) => files[filter.version])
       contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
-      expect(contentCatalog.getById)
-        .nth(1)
-        .called.with({
-          path: 'modules/ROOT/pages/the-page.adoc',
-          component: 'the-component',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'the-page.adoc',
-          version: '2.0',
-        })
-      expect(contentCatalog.getById)
-        .nth(2)
-        .called.with({
-          path: 'modules/ROOT/pages/the-page.adoc',
-          component: 'the-component',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'the-page.adoc',
-          version: '1.0-beta',
-        })
+      expect(contentCatalog.getById).nth(1).called.with({
+        path: 'modules/ROOT/pages/the-page.adoc',
+        component: 'the-component',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        version: '2.0',
+      })
+      expect(contentCatalog.getById).nth(2).called.with({
+        path: 'modules/ROOT/pages/the-page.adoc',
+        component: 'the-component',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        version: '1.0-beta',
+      })
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(3)
       expect(model.versions).to.eql([
@@ -1621,16 +1613,14 @@ describe('build UI model', () => {
       contentCatalog.getById = spy((filter) => files[filter.version])
       contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
-      expect(contentCatalog.getById)
-        .nth(1)
-        .called.with({
-          path: 'modules/ROOT/pages/the-page.adoc',
-          component: 'the-component',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'the-page.adoc',
-          version: '2.0',
-        })
+      expect(contentCatalog.getById).nth(1).called.with({
+        path: 'modules/ROOT/pages/the-page.adoc',
+        component: 'the-component',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        version: '2.0',
+      })
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(2)
       expect(model.versions).to.eql([
@@ -1683,26 +1673,22 @@ describe('build UI model', () => {
       contentCatalog.getById = spy((filter) => files[filter.version])
       contentCatalogModel.getById = contentCatalog.getById.bind(contentCatalog)
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
-      expect(contentCatalog.getById)
-        .nth(1)
-        .called.with({
-          path: 'modules/ROOT/pages/the-page.adoc',
-          component: 'the-component',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'the-page.adoc',
-          version: '2.0',
-        })
-      expect(contentCatalog.getById)
-        .nth(2)
-        .called.with({
-          path: 'modules/ROOT/pages/the-page.adoc',
-          component: 'the-component',
-          module: 'ROOT',
-          family: 'page',
-          relative: 'the-page.adoc',
-          version: '1.0-beta',
-        })
+      expect(contentCatalog.getById).nth(1).called.with({
+        path: 'modules/ROOT/pages/the-page.adoc',
+        component: 'the-component',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        version: '2.0',
+      })
+      expect(contentCatalog.getById).nth(2).called.with({
+        path: 'modules/ROOT/pages/the-page.adoc',
+        component: 'the-component',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        version: '1.0-beta',
+      })
       expect(model.versions).to.exist()
       expect(model.versions).to.have.lengthOf(3)
       expect(model.versions).to.eql([

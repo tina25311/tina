@@ -15,12 +15,7 @@
  * @returns {Promise} A promise that resolves when the stream has ended.
  */
 function publishStream (destAdapter, files) {
-  return new Promise((resolve, reject) =>
-    files
-      .pipe(destAdapter)
-      .on('error', reject)
-      .on('end', resolve)
-  )
+  return new Promise((resolve, reject) => files.pipe(destAdapter).on('error', reject).on('end', resolve))
 }
 
 module.exports = publishStream

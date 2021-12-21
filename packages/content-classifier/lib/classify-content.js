@@ -156,11 +156,7 @@ function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc }) {
 }
 
 function calculateRootPath (depth) {
-  return depth
-    ? Array(depth)
-      .fill('..')
-      .join('/')
-    : '.'
+  return depth ? Array(depth).fill('..').join('/') : '.'
 }
 
 module.exports = classifyContent

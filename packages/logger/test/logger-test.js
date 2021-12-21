@@ -1171,9 +1171,7 @@ describe('logger', () => {
       expect(stream).to.have.property('minLength', bufferSize)
       expect(stream).to.have.property('file', logFile)
       logger.info('love is the message')
-      expect(logFile)
-        .to.be.a.file()
-        .and.be.empty()
+      expect(logFile).to.be.a.file().and.be.empty()
       await finalizeLogger()
       expect(logFile)
         .to.be.a.file()
@@ -1206,9 +1204,7 @@ describe('logger', () => {
       // NOTE sonic-boom will create the file on demand
       expect(logFile).to.not.be.a.path()
       await finalizeLogger()
-      expect(logFile)
-        .to.be.a.file()
-        .and.be.empty()
+      expect(logFile).to.be.a.file().and.be.empty()
     })
 
     it('should write to file specified by destination.file when logger is finalized if sync is false and bufferSize is non-zero', async () => {
@@ -1294,9 +1290,7 @@ describe('logger', () => {
       expect(logFile).to.not.be.a.path()
       await finalizeLogger()
       const expectedLine = /^\[.+\] INFO: love is the message\n/
-      expect(logFile)
-        .to.be.a.file()
-        .and.have.contents.that.match(expectedLine)
+      expect(logFile).to.be.a.file().and.have.contents.that.match(expectedLine)
     })
 
     it('should create empty file at destination.file if sync is false, format is pretty, and no messages are logged', async () => {
@@ -1307,9 +1301,7 @@ describe('logger', () => {
       // NOTE sonic-boom will create the file on demand
       expect(logFile).to.not.be.a.path()
       await finalizeLogger()
-      expect(logFile)
-        .to.be.a.file()
-        .and.be.empty()
+      expect(logFile).to.be.a.file().and.be.empty()
     })
 
     it('should append to file specified by destination.file by default', async () => {

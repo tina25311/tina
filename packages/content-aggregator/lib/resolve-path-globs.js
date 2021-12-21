@@ -129,10 +129,7 @@ function makeSingleMatcherRx (pattern) {
 function patternToRx (pattern) {
   return (
     (pattern.charAt() === '.' ? '' : '(?!\\.)') +
-    pattern
-      .replace(NON_GLOB_SPECIAL_CHARS_RX, '\\$&')
-      .replace('\\\\*', '\\x2a')
-      .replace('*', '.*?')
+    pattern.replace(NON_GLOB_SPECIAL_CHARS_RX, '\\$&').replace('\\\\*', '\\x2a').replace('*', '.*?')
   )
 }
 

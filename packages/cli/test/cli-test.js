@@ -113,17 +113,11 @@ describe('cli', () => {
   })
 
   it('should output version when called with "-v"', () => {
-    return runAntora('-v')
-      .assert(`@antora/cli: ${VERSION}`)
-      .assert(`@antora/site-generator: ${VERSION}`)
-      .done()
+    return runAntora('-v').assert(`@antora/cli: ${VERSION}`).assert(`@antora/site-generator: ${VERSION}`).done()
   })
 
   it('should output version when invoked with "version"', () => {
-    return runAntora('version')
-      .assert(`@antora/cli: ${VERSION}`)
-      .assert(`@antora/site-generator: ${VERSION}`)
-      .done()
+    return runAntora('version').assert(`@antora/cli: ${VERSION}`).assert(`@antora/site-generator: ${VERSION}`).done()
   })
 
   it('should report site generator version when invoked outside installation directory', () => {
@@ -256,30 +250,22 @@ describe('cli', () => {
   })
 
   it('should show error message if command is run with unknown global option', () => {
-    return runAntora('--unknown generate antora-playbook')
-      .assert("antora: unknown option '--unknown'")
-      .done()
+    return runAntora('--unknown generate antora-playbook').assert("antora: unknown option '--unknown'").done()
   })
 
   it('should show error message if generate command is run with unknown option', () => {
-    return runAntora('generate antora-playbook --unknown')
-      .assert("antora: unknown option '--unknown'")
-      .done()
+    return runAntora('generate antora-playbook --unknown').assert("antora: unknown option '--unknown'").done()
   })
 
   it('should show error message if default command is run with unknown option', () => {
-    return runAntora('antora-playbook --unknown')
-      .assert("antora: unknown option '--unknown'")
-      .done()
+    return runAntora('antora-playbook --unknown').assert("antora: unknown option '--unknown'").done()
   })
 
   it('should show error message if generate command is run with unknown option value', () => {
     const expected =
       "antora: option '--html-url-extension-style <choice>' argument 'none' is invalid. " +
       'Allowed choices are default, drop, indexify.'
-    return runAntora('generate antora-playbook --html-url-extension-style=none')
-      .assert(expected)
-      .done()
+    return runAntora('generate antora-playbook --html-url-extension-style=none').assert(expected).done()
   })
 
   it('should show error message if specified playbook file does not exist', () => {
@@ -446,12 +432,8 @@ describe('cli', () => {
     )
       .then((exitCode) => {
         expect(exitCode).to.equal(0)
-        expect(absDestDir)
-          .to.be.a.directory()
-          .with.subDirs(['_', 'the-component'])
-        expect(ospath.join(absDestDir, 'the-component'))
-          .to.be.a.directory()
-          .with.subDirs(['1.0'])
+        expect(absDestDir).to.be.a.directory().with.subDirs(['_', 'the-component'])
+        expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['1.0'])
         expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
           .to.be.a.file()
           .with.contents.that.match(/:: site-title<\/title>/)
@@ -467,12 +449,8 @@ describe('cli', () => {
     return new Promise((resolve) => runAntora(['generate', playbookFile, '--quiet']).on('exit', resolve)).then(
       (exitCode) => {
         expect(exitCode).to.equal(0)
-        expect(absDestDir)
-          .to.be.a.directory()
-          .with.subDirs(['_', 'the-component'])
-        expect(ospath.join(absDestDir, 'the-component'))
-          .to.be.a.directory()
-          .with.subDirs(['1.0'])
+        expect(absDestDir).to.be.a.directory().with.subDirs(['_', 'the-component'])
+        expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['1.0'])
         expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file()
       }
     )
@@ -493,12 +471,8 @@ describe('cli', () => {
       runAntora(['generate', relPlaybookFile, '--quiet'], undefined, runCwd).on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
-      expect(absDestDir)
-        .to.be.a.directory()
-        .with.subDirs(['_', 'the-component'])
-      expect(ospath.join(absDestDir, 'the-component'))
-        .to.be.a.directory()
-        .with.subDirs(['1.0'])
+      expect(absDestDir).to.be.a.directory().with.subDirs(['_', 'the-component'])
+      expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['1.0'])
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file()
     })
   })
@@ -514,15 +488,9 @@ describe('cli', () => {
         runAntora(['generate', 'antora-playbook', '--cache-dir', '.antora-cache-override']).on('exit', resolve)
       ).then((exitCode) => {
         expect(exitCode).to.equal(0)
-        expect(absCacheDir)
-          .to.be.a.directory()
-          .with.subDirs(['content', 'ui'])
-        expect(ospath.join(absCacheDir, 'content'))
-          .to.be.a.directory()
-          .and.not.be.empty()
-        expect(ospath.join(absCacheDir, 'ui'))
-          .to.be.a.directory()
-          .and.not.be.empty()
+        expect(absCacheDir).to.be.a.directory().with.subDirs(['content', 'ui'])
+        expect(ospath.join(absCacheDir, 'content')).to.be.a.directory().and.not.be.empty()
+        expect(ospath.join(absCacheDir, 'ui')).to.be.a.directory().and.not.be.empty()
         wipeSync(absCacheDir)
       })
     })
@@ -537,15 +505,9 @@ describe('cli', () => {
         runAntora('generate antora-playbook', { ANTORA_CACHE_DIR: '.antora-cache-override' }).on('exit', resolve)
       ).then((exitCode) => {
         expect(exitCode).to.equal(0)
-        expect(absCacheDir)
-          .to.be.a.directory()
-          .with.subDirs(['content', 'ui'])
-        expect(ospath.join(absCacheDir, 'content'))
-          .to.be.a.directory()
-          .and.not.be.empty()
-        expect(ospath.join(absCacheDir, 'ui'))
-          .to.be.a.directory()
-          .and.not.be.empty()
+        expect(absCacheDir).to.be.a.directory().with.subDirs(['content', 'ui'])
+        expect(ospath.join(absCacheDir, 'content')).to.be.a.directory().and.not.be.empty()
+        expect(ospath.join(absCacheDir, 'ui')).to.be.a.directory().and.not.be.empty()
         wipeSync(absCacheDir)
       })
     })
@@ -596,9 +558,7 @@ describe('cli', () => {
   it('should not remap legacy --google-analytics-key option', () => {
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const args = ['generate', 'antora-playbook', '--google-analytics-key', 'UA-67890-1']
-    return runAntora(args)
-      .assert("antora: unknown option '--google-analytics-key'")
-      .done()
+    return runAntora(args).assert("antora: unknown option '--google-analytics-key'").done()
   })
 
   it('should pass attributes defined using options to AsciiDoc processor', () => {
@@ -674,9 +634,7 @@ describe('cli', () => {
       runAntora('generate antora-playbook --generator @antora/site-generator-default').on('exit', resolve)
     ).then((exitCode) => {
       expect(exitCode).to.equal(0)
-      expect(absDestDir)
-        .to.be.a.directory()
-        .with.subDirs(['_', 'the-component'])
+      expect(absDestDir).to.be.a.directory().with.subDirs(['_', 'the-component'])
     })
   })
 
