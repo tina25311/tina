@@ -107,7 +107,7 @@ test:windows:
   - *platform_info
   - *install_npm
   - npm ci --audit --quiet
-  script: npx npm run coverage
+  script: npm run coverage # using npx breaks call to `git submodule` on Windows
   <<: *save_report_artifacts
 release:
   stage: deploy

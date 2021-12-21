@@ -4799,33 +4799,31 @@ describe('aggregateContent()', () => {
     })
   })
 
-  if (process.platform !== 'win32') {
-    describe('should fail to read start path located at submodule', () => {
-      testLocal(async (repoBuilder) => {
-        const contentRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-        await initRepoWithFiles(contentRepoBuilder)
-        const addSubmodule = (cwd) =>
-          new Promise((resolve, reject) => {
-            execFile(
-              'git',
-              ['submodule', 'add', contentRepoBuilder.url],
-              { cwd, windowsHide: true },
-              (err, stdout, stderr) => (err ? reject(err) : resolve())
-            )
-          })
-        await repoBuilder
-          .init('delegate-component')
-          .then(() => addSubmodule(repoBuilder.repoPath))
-          .then(() => repoBuilder.commitAll('add submodule'))
-          .then(() => repoBuilder.checkoutBranch('other'))
-          .then(() => repoBuilder.close())
-        playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'main' })
-        // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
-        const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: main)`
-        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
-      })
+  describe('should fail to read start path located at submodule', () => {
+    testLocal(async (repoBuilder) => {
+      const contentRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(contentRepoBuilder)
+      const addSubmodule = (cwd) =>
+        new Promise((resolve, reject) => {
+          execFile(
+            'git',
+            ['submodule', 'add', contentRepoBuilder.url],
+            { cwd, windowsHide: true },
+            (err, stdout, stderr) => (err ? reject(err) : resolve())
+          )
+        })
+      await repoBuilder
+        .init('delegate-component')
+        .then(() => addSubmodule(repoBuilder.repoPath))
+        .then(() => repoBuilder.commitAll('add submodule'))
+        .then(() => repoBuilder.checkoutBranch('other'))
+        .then(() => repoBuilder.close())
+      playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'main' })
+      // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
+      const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: main)`
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
     })
-  }
+  })
 
   it('should append missing .git suffix to URL by default', async () => {
     const fetches = []
