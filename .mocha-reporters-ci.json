@@ -1,6 +1,0 @@
-{
-  "reporterEnabled": "dot, xunit",
-  "xunitReporterOptions": {
-    "output": "reports/tests-xunit.xml"
-  }
-}
