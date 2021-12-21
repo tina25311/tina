@@ -2480,7 +2480,7 @@ describe('aggregateContent()', () => {
 
     describe('should set file mode of executable file read from git repository to correct value', () => {
       testAll(async (repoBuilder) => {
-        const fixturePath = 'modules/ROOT/assets/attachments/installer.sh'
+        const fixturePath = 'modules/ROOT/attachments/installer.sh'
         await initRepoWithFiles(repoBuilder, {}, fixturePath, () => {
           return repoBuilder
             .checkoutBranch('v2.0')
@@ -2507,7 +2507,7 @@ describe('aggregateContent()', () => {
 
     it('should set file mode of executable file read from worktree to correct value', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-      const fixturePath = 'modules/ROOT/assets/attachments/installer.sh'
+      const fixturePath = 'modules/ROOT/attachments/installer.sh'
       await initRepoWithFiles(repoBuilder, {}, fixturePath)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedMode = (await fsp.stat(ospath.join(repoBuilder.repoPath, fixturePath))).mode
@@ -2523,7 +2523,7 @@ describe('aggregateContent()', () => {
     if (process.platform !== 'win32' && process.getuid()) {
       it('should report file path if file from worktree cannot be read', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
-        const fixturePath = 'modules/ROOT/assets/attachments/installer.sh'
+        const fixturePath = 'modules/ROOT/attachments/installer.sh'
         await initRepoWithFiles(repoBuilder, {}, fixturePath)
         await fsp.chmod(ospath.join(repoBuilder.repoPath, fixturePath), 0o000)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
