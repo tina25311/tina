@@ -378,6 +378,18 @@ The xref:playbook:git-plugins.adoc[git.plugins key] provides a way to specify pr
 The `git.fetch_concurrency` key controls the maximum number of fetch or clone operations that are permitted to run at once.
 (_Documentation pending._)
 
+== Network proxy
+
+Antora 2 does not honor the `http_proxy` and `https_proxy` environment variables, whereas Antora 3 does.
+If you're migrating from Antora 2 to Antora 3, and you encounter a network error (Bad response: 503), the automatic proxy support in Antora 3 may be the culprit.
+If the proxy is standing in the way of Antora connecting to an endpoint, you may need to bypass the proxy using the `no_proxy` key.
+If you want to avoid modifying your playbook, you can specify this key using a CLI option:
+
+ $ antora --noproxy '*' antora-playbook.yml
+
+However, if this is necessary, you may want to understand why the proxy is failing to route the request.
+See xref:playbook:network-proxy.adoc[] to learn about Antora's automatic support for industry standard proxy environment variables.
+
 == Asciidoctor 2
 
 Antora 3.0 depends on the latest patch version of Asciidoctor.js 2.2, which provides Asciidoctor 2.0.x.

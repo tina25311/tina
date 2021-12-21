@@ -78,6 +78,22 @@ Only applies when the log format is `json`.
 |Not set
 |See xref:playbook:site-keys.adoc#google-analytics-key[Google Analytics key]
 
+|`http_proxy`
+|String
+|Not set
+|See xref:playbook:network-proxy.adoc#http-proxy[http_proxy key] and xref:cli:options.adoc#http-proxy[--http-proxy option]
+
+|`https_proxy`
+|String
+|Not set
+|See xref:playbook:network-proxy.adoc#https-proxy[https_proxy key] and xref:cli:options.adoc#https-proxy[--https-proxy option]
+
+|`no_proxy`
+|String
+|Not set
+|See xref:playbook:network-proxy.adoc#no-proxy[no_proxy key] and xref:cli:options.adoc#noproxy[--noproxy option].
+Note the name of the CLI option differs from the name of the environment variable and playbook key.
+
 |[[site-url]]`URL`
 |String
 |Not set
