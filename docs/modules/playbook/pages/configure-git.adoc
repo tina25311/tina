@@ -11,6 +11,7 @@ The `git` key holds all the git-related playbook keys, such as the git credentia
 [,yaml]
 ----
 git: # <.>
+  fetch_concurrency: 5 # <.>
   ensure_git_suffix: false # <.>
   credentials: # <.>
     path: ./.git-credentials # <.>
@@ -18,6 +19,7 @@ git: # <.>
     credential_manager: ./system-git-credential-manager.js # <.>
 ----
 <.> Optional `git` category key
+<.> Optional `fetch_concurrency` key to limit number of concurrency fetch operations
 <.> Optional `ensure_git_suffix` key
 <.> Optional `credentials` category key
 <.> `path` key to specify the location of optional credentials; mutually exclusive with the `contents` key
@@ -40,6 +42,12 @@ When the `git` key isn't present in the playbook, Antora falls back to using the
 
 |xref:git-credentials-path-and-contents.adoc[credentials.path]
 |Accepts a filesystem path to a git credentials file matching the format used by the git credentials store.
+|No
+
+|xref:git-fetch-concurrency.adoc[fetch_concurrency]
+|`0` by default (effectively no limit).
+Accepts any positive integer or zero.
+When non-zero, limits the number of concurrent fetch operations to the specified value.
 |No
 
 |xref:git-suffix.adoc[ensure_git_suffix]
