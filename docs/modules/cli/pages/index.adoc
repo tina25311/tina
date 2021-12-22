@@ -33,7 +33,7 @@ Every command starts with the base call (i.e., program name or path).
 
 In the case of the Antora CLI, the base call is `antora`.
 This assumes that the Antora CLI is available on the `PATH` (e.g., installed globally).
-Otherwise, the base call must be the path to the `antora` bin script (e.g., `$(npm bin)/antora`).
+Otherwise, the base call must be the path to the `antora` bin script (e.g., `npx antora`).
 The base call must be offset from any command (for the program), options, or arguments by at least one space.
 
 If you run the base call without specifying any command, options, or arguments, as shown in <<ex-base>>, you will be presented with a usage statement (i.e., help text).
@@ -128,7 +128,7 @@ Therefore, <<ex-simple>> is equivalent to the command shown in <<ex-with-command
 Let's break down this command:
 
 . The command assumes that the Antora CLI is available on the `PATH` (e.g., installed globally).
-Otherwise, it would be necessary to replace `antora` with the path to the `antora` bin script (e.g., `$(npm bin)/antora`).
+Otherwise, it would be necessary to replace `antora` with the path to the `antora` bin script (e.g., `npx antora`).
 . The base call, `antora`, tells the Antora CLI to run, which reads the remaining command and argument.
 . The command specified (implicitly or explicitly) is `generate`.
 You don't see the command in <<ex-simple>> because it's optional, but Antora implies it's there if not present.

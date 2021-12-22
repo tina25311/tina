@@ -2,14 +2,14 @@
 :listing-caption!:
 :url-demo: https://gitlab.com/antora/demo
 
-This quickstart walks you through the general steps required to install Antora and generate a basic documentation site.
+This quickstart walks you through the initial steps required to install Antora and generate your first documentation site.
 
 On this page, you’ll learn:
 
 * [x] How to install Node.js.
-* [x] How to install the Antora.
+* [x] How to install Antora.
 * [x] How to create your first Antora playbook.
-* [x] How to run Antora and generate a site using a playbook.
+* [x] How to run Antora to generate a site based on the playbook.
 
 [#install-nodejs]
 == Install Node.js
@@ -53,27 +53,43 @@ Once you've installed Node.js, it's time to install Antora.
 [#install-antora]
 == Install Antora
 
-Before installing Antora, make a new directory for your site named [.path]_docs-site_ and switch to it.
-
- $ mkdir docs-site
- $ cd docs-site
-
 To generate documentation sites with Antora, you need the Antora command line interface (CLI) and the Antora site generator.
-Let's install these packages globally to make them available on your PATH:
+To install Antora, begin by making a new directory for your site named [.path]_docs-site_ and switch to it.
+
+ $ mkdir docs-site && cd docs-site
+
+Next, let's install the required packages within the playbook project so you can run the `antora` command using `npx`.
+
+[subs=+attributes]
+ $ node -e "fs.writeFileSync('package.json', '{}')"
+   npm i -D -E @antora/cli@{page-component-display-version} @antora/site-generator@{page-component-display-version}
+
+Verify the `antora` command is now available by running:
+
+ $ npx antora -v
+
+If the installation is successful, the command will report the version of the Antora CLI and site generator packages you specified.
+
+[subs=+attributes]
+ $ npx antora -v
+ @antora/cli: {page-component-display-version}
+ @antora/site-generator: {page-component-display-version}
+
+These versions can also be found in [.path]_package.json_, which you can use to upgrade Antora.
+
+You have the option of installing Antora globally so that the `antora` command is available on your PATH.
+To do so, pass the `-g` option to `npm i`.
 
 [subs=+attributes]
  $ npm i -g @antora/cli@{page-component-display-version} @antora/site-generator@{page-component-display-version}
 
-Verify the `antora` command is now available on your PATH by running:
+You can verify that the `antora` command is available on your path by running:
 
  $ antora -v
 
-If the installation was successful, the command should report the latest, stable version of Antora for both the CLI and site generator packages (where `.x` is a placeholder for the latest patch version).
-
-[subs=+attributes]
- $ antora -v
- @antora/cli: {page-component-version}.x
- @antora/site-generator: {page-component-version}.x
+We strongly recommend that you install Antora within the playbook project.
+This strategy makes it easier to manage the version of Antora.
+It also ensures that the version of Antora matches the version for which the playbook was made.
 
 Now you're ready to create your first playbook.
 
@@ -115,7 +131,7 @@ TIP: See the xref:playbook:index.adoc[Antora playbook] for more detailed informa
 To generate the site, point the `antora` command at your playbook file.
 In the terminal, make sure you're in [.path]_docs-site_ directory, then type:
 
- $ antora --fetch antora-playbook.yml
+ $ npx antora --fetch antora-playbook.yml
 
 Antora will clone the content and UI repositories and generate your documentation site to the default output directory.
 

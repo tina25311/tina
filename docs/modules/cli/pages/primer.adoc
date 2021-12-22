@@ -11,7 +11,7 @@ Once entered in a terminal, the command is executed using the specified inputs.
 
 base call:: The Antora CLI command starts with the xref:index.adoc#usage[base call], which is the name of the program (i.e., `antora`).
 This tells the command interpreter to execute the Antora CLI.
-If the system cannot find the program name by itself, you must specify the path to the `antora` bin script instead (e.g., `$(npm bin)/antora`).
+If the system cannot find the program name by itself, you must specify the path to the `antora` bin script instead (e.g., `npx antora`).
 
 command:: A xref:index.adoc#commands[command] tells Antora what operation to perform.
 Only one command can be specified at a time.
