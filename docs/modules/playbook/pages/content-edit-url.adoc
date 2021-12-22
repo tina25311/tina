@@ -1,4 +1,4 @@
-= Edit URL Key
+= Edit URL
 :page-aliases: configure-edit-url.adoc
 // placeholders that are fulfilled by the file's origin information
 //https://gitlab.com/antora/antora/blob/main/docs/modules/cli/pages/index.adoc
