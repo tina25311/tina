@@ -2,7 +2,7 @@
   "lerna": "4.0.0",
   "npmClient": "npm",
   "useWorkspaces": true,
-  "version": "3.0.0-rc.2",
+  "version": "3.0.0-rc.3",
   "command": {
     "publish": {
       "allowBranch": "main",
