@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *logger*: Undefine flushSync method on SonicBoom destination so pino#fatal doesn't try to invoke it
+* *logger*: Only trap EPIPE error and prevent future writes for standard streams
 * *content-aggregator*: Change signature of internal git http plugin to accept extra HTTP headers as `headers` keyword argument
 
 === Fixed
