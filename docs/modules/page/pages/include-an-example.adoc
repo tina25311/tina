@@ -112,6 +112,9 @@ include::**example$timer.js**
 
 The file coordinate for the [.path]_timer.js_ example is `timer.js`.
 The target example's file coordinate consists solely of its filename and file extension because [.path]_timer.js_ is stored at the root of the [.path]_examples_ directory.
+
+NOTE: By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
+If you forget to use the `example$` coordinate, Antora will report an error because it won't be able to find the example.
 --
 
 . Directly after the resource ID of the target example, complete the directive with a set of square brackets (`+[]+`).
@@ -163,7 +166,7 @@ The __examples__-relative directory path of the <<target,target example>> is req
 .File coordinate when the target example is stored in a subdirectory of an examples directory
 [#ex-subdir-base]
 ----
-\include::path/to/target-example-filename.ext[optional attribute]
+\include::example$path/to/target-example-filename.ext[optional attribute]
 ----
 
 Let's use the files that belong to the component version in <<ex-grid-subdir>> as the basis for the example in this section.

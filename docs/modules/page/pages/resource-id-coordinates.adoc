@@ -36,7 +36,7 @@ The following sections describe how to determine the value of each coordinate fo
 
 The version coordinate is the same value as the version of the component to which the <<target,target resource>> belongs.
 The value of the version is assigned to the xref:ROOT:component-version-key.adoc[version key].
-The `version` key is specified either in the [.path]_antora.yml_ file that defines the resource's component version or on the content source in your playbook from where Antora collected the component version's files.
+The `version` key is specified either in the [.path]_antora.yml_ file that defines the resource's component version or on the content source in your playbook that specified from where Antora collected the component version's files.
 
 The version coordinate should be used when the target resource and current page belong to difference component versions.
 When entering a version coordinate in a resource ID, it should always be the first coordinate and end with an at sign (`@`).
@@ -127,9 +127,8 @@ See xref:include-a-partial.adoc[].
 The file coordinate specifies the path, relative to the xref:ROOT:family-directories.adoc[family directory], of the target resource's source file.
 The file coordinate must specify the resource's file extension except when:
 
-* the target resource is a xref:partials.adoc[partial] or xref:examples.adoc[example], _and_
-* the target resource is referenced using an include directive, _and_
-* the target resource doesn't have a file extension, such as _Dockerfile_.
+* the target resource doesn't have a file extension, such as _Dockerfile_, *and*
+* the target resource is a xref:partials.adoc[partial] or xref:examples.adoc[example].
 
 The file coordinate for a resource stored at the root of a family directory is the name of the resource's source file and its file extension.
 

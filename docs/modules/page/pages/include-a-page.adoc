@@ -13,7 +13,7 @@ An AsciiDoc include directive inserts content from the source file of a page int
 The include directive accepts the xref:resource-id.adoc[Antora resource ID] of partials, examples, and pages as a value.
 
 <<ex-base>> shows the structure of an include directive with the fully qualified resource ID of a page.
-By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
+By default, the include directive assumes the family coordinate is `page$` when a family coordinate isn't specified.
 
 .Include directive assigned the fully qualified resource ID of a page
 [#ex-base]
@@ -92,7 +92,7 @@ include::**cottonwood-pass.adoc**
 The file coordinate for the [.path]_cottonwood-pass.adoc_ page is `cottonwood-pass.adoc`.
 The target page's file coordinate consists solely of its filename and file extension because [.path]_cottonwood-pass.adoc_ is stored at the root of the [.path]_pages_ directory.
 
-NOTE: You can use the `page$` family coordinate in the resource ID if you prefer, but it isn't required when including a page.
+NOTE: You can specify the `page$` family coordinate in the resource ID if you prefer, but it isn't required when including a page into a page.
 The include directive assumes the family coordinate is `page$` when it isn't specified.
 --
 
@@ -228,9 +228,8 @@ In <<ex-token>>, the include directive in the [.path]_safety.adoc_ page (current
 As shown in <<ex-token>>, the file coordinate for [.path]_gear.adoc_, when referenced from [.path]_safety.adoc_, is `./gear.adoc`.
 Both pages are stored in the [.path]_supplies_ subdirectory, therefore, the __pages__-relative directory path of the target page's file coordinate is replaced with the `./` token.
 
-CAUTION: You may find that the include directive resolves the target page without specifying the `./` token in its file coordinate.
-Any scenarios where relative includes work without the `./` token are deprecated in Antora 3 and won't work in Antora 4.
-We strongly recommend that you use the `./` token when referencing a target page that is stored in the same subdirectory as the current page.
+CAUTION: You may find that the include directive resolves the target page when the `./` token isn't used in the file coordinate.
+However, we strongly recommend using the `./` token when referencing a target page that is stored in the same subdirectory as the current page.
 
 [#module-or-component]
 == Embed a page from another module or component version
