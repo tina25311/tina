@@ -45,6 +45,9 @@ The format of the rules and redirect configuration file is determined by the xre
 Note that when the `redirect_facility` key isn't defined in the playbook or CLI, Antora assigns the xref:urls-redirect-facility.adoc#static-value[static value] to the key at runtime.
 Since creating temporary redirect rules is only something a web server can do, when using the static redirect facility, the `redirect:from` strategy is ignored and the `redirect:to` strategy effectively becomes the `replace` strategy.
 
+If the value of `latest_version_segment_strategy` key is `redirect:from`, the value of the `latest_version_segment` and `latest_prerelease_version_segment` *cannot* be empty.
+This restriction is due to the fact that redirecting from the parent folder could prevent access to other versions.
+
 [#default]
 == Enable the replace strategy automatically
 
