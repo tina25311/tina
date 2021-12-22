@@ -324,7 +324,7 @@ describe('logger', () => {
       expect(messages[0]).to.eql(expectedData)
     })
 
-    it('should reshape the file object when no origin is set', () => {
+    it('should reshape the file object when origin is not set', () => {
       const name = 'foobar'
       const logger = get(name)
       const file = {
