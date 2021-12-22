@@ -34,6 +34,18 @@ The previous default branches pattern, `[master, v*]`, has been deprecated and r
 It's unlikely this will cause a change when using remote repositories.
 For local repositories, it may result in the worktree being used in cases it wasn't previously.
 
+Do you use or maintain a custom site generator?::
+In Antora 3, the site generator must declare the `@antora/logger` package as a dependency.
+The CLI resolves the logger relative to the site generator.
+If it cannot find it there, it will fall back to the logger provided by the CLI.
+This may result in Antora configuring the wrong logger, which will result in the user to see a warning about the logger not being configured.
++
+Also note that the recommended signature of the `generateSite` function has changed.
+The function now accepts a single parameter, the playbook.
+The old signature is still supported, but using it will result in the playbook being built a second time.
++
+The site generator should also depend on the `@antora/file-publisher` package instead of `@antora/site-publisher`, though technically this isn't required.
+
 Do you use a custom git credential manager?::
 Isomorphic-git no longer includes the `cores` (plugin) API, so the call `git.cores.create('antora').set('credentialManager', customCredentialManager)` is going to fail.
 Antora still honors the `cores` API, but the call to register the credential manager is now responsible for creating it (since it runs before Antora loads).
