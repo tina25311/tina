@@ -105,6 +105,9 @@ include::**partial$treeline-warning.adoc**
 
 The file coordinate for the [.path]_treeline-warning.adoc_ partial is `treeline-warning.adoc`.
 The target partial's file coordinate consists solely of its filename and file extension because [.path]_treeline-warning.adoc_ is stored at the root of the [.path]_partials_ directory.
+
+NOTE: By default, the include directive assumes the family coordinate is `page$` when the coordinate isn't specified.
+If you forget to use the `partial$` coordinate, Antora will report an error because it won't be able to find the partial.
 --
 
 . Directly after the resource ID of the target partial, complete the directive with a set of square brackets (`+[]+`).
@@ -154,7 +157,7 @@ The __partials__-relative directory path of the <<target,target partial>> is req
 .File coordinate when the target partial is stored in a subdirectory of a partials directory
 [#ex-subdir-base]
 ----
-\include::path/to/target-partial-filename.adoc[optional attribute]
+\include::partial$path/to/target-partial-filename.adoc[optional attribute]
 ----
 
 Let's use the files that belong to the component version in <<ex-co-subdir>> as the basis for the example in this section.
