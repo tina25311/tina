@@ -55,6 +55,9 @@ content: # <.>
     tags: [release/*, '!release/*-patch'] # <.>
     start_path: path-to/content-source-root # <.>
     edit_url: '{web_url}/blob/{refname}/{path}' # <.>
+  - url: https://git-service.com/org/repo-x.git # <.>
+    branches: v* # <.>
+    version: true # <.>
 ----
 <.> Required `content` key
 <.> Required `sources` key
@@ -66,11 +69,17 @@ content: # <.>
 <.> Optional `tags` key
 <.> Optional `start_path` key
 <.> Optional `edit_url` key
+<.> Another `url` key
+<.> Optional `branches` key
+<.> Optional `version` key
 
 The `content` and `sources` keys are required.
 The `sources` key must contain at least one entry with the `url` key defined.
 All other keys are optional.
 The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_url] keys have built-in values Antora automatically applies at runtime if they're not explicitly defined in the playbook.
+
+The `version` key provides a fallback value for the `version` key in the component version descriptor.
+You should only use it if you're matching a single reference or you want the value to be derived from the refname.
 
 [#content-reference]
 == Available content keys
@@ -133,6 +142,10 @@ Single values are coerced into an array.
 |xref:content-source-url.adoc[url]
 |Accepts the URL of a git repository, which can either be an HTTPS URL or a local filesystem path.
 |Yes
+
+|xref:content-source-version.adoc[version]
+|Provides a fallback value for the `version` key in the component version descriptor for all references matched.
+|No
 
 |xref:content-worktrees.adoc[worktrees]
 |Accepts a keyword or list of exact branch names or glob patterns to control which corresponding worktrees Antora should use.
