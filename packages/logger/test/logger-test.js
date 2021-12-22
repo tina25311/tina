@@ -1468,9 +1468,10 @@ describe('logger', () => {
       expect(await trapAsyncError(finalizeLogger)).to.not.throw()
     })
 
-    it('should ignore failure and prevent further writes if pretty destination throws EPIPE error', async () => {
-      const logger = configure({ format: 'pretty', destination: { file: 'stdout' } }).get(null)
-      const stream = getStream(logger).stream
+    it('should ignore failure and prevent further writes if destination throws EPIPE error', async () => {
+      const logger = configure({ format: 'json', destination: { file: 'stdout' } }).get(null)
+      const stream = getStream(logger)
+      expect(stream.flushSync).to.be.undefined()
       const writes = []
       const write_ = stream.write
       stream.write = function (message) {
@@ -1496,6 +1497,99 @@ describe('logger', () => {
       expect(writes[1]).to.include('let the music play')
       expect(await finalizeLogger).to.not.throw()
       expect(writes).to.have.lengthOf(2)
+    })
+
+    it('should ignore failure and prevent further writes if pino.destination throws EPIPE error', async () => {
+      const destination = pino.destination({ dest: 1, sync: true })
+      const logger = configure({ format: 'json', destination }).get(null)
+      const stream = getStream(logger)
+      expect(stream.flushSync).to.be.undefined()
+      const writes = []
+      const write_ = stream.write
+      stream.write = function (message) {
+        writes.push(message)
+        if (~message.indexOf('play')) {
+          const err = Object.assign(new Error('broken pipe, write'), { code: 'EPIPE', errno: -32, syscall: 'write' })
+          this.emit('error', err)
+          return
+        }
+        return write_.call(this, message)
+      }
+      const lines = captureStdoutSync(() => {
+        logger.info('love is the message')
+        logger.info('let the music play')
+        logger.info('let the music play')
+        logger.info('let the music play')
+      })
+      expect(stream.destroyed).to.not.be.true() // optimization not applied for pino.destination
+      expect(lines).to.have.lengthOf(1)
+      expect(writes).to.have.lengthOf(2)
+      expect(lines[0]).to.equal(writes[0].trim())
+      expect(writes[0]).to.include('love is the message')
+      expect(writes[1]).to.include('let the music play')
+      expect(await finalizeLogger).to.not.throw()
+      expect(writes).to.have.lengthOf(2)
+    })
+
+    it('should ignore failure and prevent further writes if pretty destination throws EPIPE error', async () => {
+      const logger = configure({ format: 'pretty', destination: { file: 'stderr' } }).get(null)
+      const stream = getStream(logger).stream
+      expect(stream.flushSync).to.be.undefined()
+      const writes = []
+      const write_ = stream.write
+      stream.write = function (message) {
+        writes.push(message)
+        if (~message.indexOf('play')) {
+          const err = Object.assign(new Error('broken pipe, write'), { code: 'EPIPE', errno: -32, syscall: 'write' })
+          this.emit('error', err)
+          return
+        }
+        return write_.call(this, message)
+      }
+      const lines = captureStderrSync(() => {
+        logger.info('love is the message')
+        logger.info('let the music play')
+        logger.info('let the music play')
+        logger.info('let the music play')
+      })
+      expect(stream.destroyed).to.be.true()
+      expect(lines).to.have.lengthOf(1)
+      expect(writes).to.have.lengthOf(2)
+      expect(lines[0]).to.equal(writes[0].trim())
+      expect(writes[0]).to.include('love is the message')
+      expect(writes[1]).to.include('let the music play')
+      expect(await finalizeLogger).to.not.throw()
+      expect(writes).to.have.lengthOf(2)
+    })
+
+    it('should not moderate destination that is a function', async () => {
+      const destination = new (class extends require('events') {
+        constructor () {
+          super()
+          this.messages = []
+        }
+
+        write (message) {
+          this.messages.push(message)
+          if (~message.indexOf('play')) {
+            const err = Object.assign(new Error('broken pipe, write'), { code: 'EPIPE', errno: -32, syscall: 'write' })
+            this.emit('error', err)
+            return
+          }
+          return message.length
+        }
+      })()
+      const logger = configure({ destination }).get(null)
+      const stream = getStream(logger)
+      expect(stream).to.not.have.property('flushSync')
+      logger.info('love is the message')
+      expect(() => logger.info('let the music play')).to.throw('broken pipe, write')
+      expect(stream.destroyed).to.not.be.true()
+      const messages = stream.messages
+      expect(messages).to.have.lengthOf(2)
+      expect(messages[0]).to.include('love is the message')
+      expect(messages[1]).to.include('let the music play')
+      expect(await finalizeLogger).to.not.throw()
     })
   })
 
