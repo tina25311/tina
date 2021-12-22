@@ -324,6 +324,23 @@ describe('logger', () => {
       expect(messages[0]).to.eql(expectedData)
     })
 
+    it('should reshape the file object when no origin is set', () => {
+      const name = 'foobar'
+      const logger = get(name)
+      const file = {
+        path: 'modules/ROOT/pages/index.adoc',
+      }
+      const messages = captureStdoutLogSync(() => logger.warn({ file }, 'something is out of place'))
+      expect(messages).to.have.lengthOf(1)
+      const expectedData = {
+        level: 'warn',
+        name,
+        file: { path: 'modules/ROOT/pages/index.adoc' },
+        msg: 'something is out of place',
+      }
+      expect(messages[0]).to.eql(expectedData)
+    })
+
     it('should reshape the file object from worktree', () => {
       const name = 'foobar'
       const logger = get(name)
