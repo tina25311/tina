@@ -2,6 +2,10 @@
 |===
 |Optional Key |Description
 
+|xref:component-version-key.adoc[version]
+|The `version` key is optional if the value is inherited from the content source in the playbook.
+You can specify this key on the content source if you want the value to be automatically derived from the refname or based on a refname mapping.
+
 |xref:component-attributes.adoc[asciidoc.attributes]
 |The `asciidoc` key accepts the `attributes` key and its nested list of key-value pairs.
 The key-value pairs listed under `attributes` represent built-in and user-defined xref:page:define-and-modify-attributes.adoc[AsciiDoc attributes] (e.g., `idseparator: '-'`) and xref:page:page-attributes.adoc[page attributes].

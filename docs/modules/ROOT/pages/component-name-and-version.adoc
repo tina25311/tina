@@ -2,17 +2,14 @@
 //Define a Component Name and Version
 :note-caption: ASSUMPTIONS
 
-[NOTE]
-====
-You understand what a xref:component-version.adoc[component version] is and the purpose of xref:component-version-descriptor.adoc[_antora.yml_].
-====
-
 On this page, you'll learn:
 
 * [x] The requirements an [.path]_antora.yml_ file must meet.
 * [x] How to assign a valid value to the `name` key.
 * [x] How to assign a valid value to the `version` key.
-* [x] How to enter keys and values in an [.path]_antora.yml_ file.
+* [x] How to define additional keys and values in an [.path]_antora.yml_ file.
+
+NOTE: You understand what a xref:component-version.adoc[component version] is and the purpose of xref:component-version-descriptor.adoc[_antora.yml_].
 
 [#antora-yml-requirements]
 == antora.yml requirements
@@ -21,7 +18,8 @@ A component version descriptor file must:
 
 * be named [.path]_antora.yml_
 * be written in valid YAML
-* contain the `name` key and its value
+* contain the `name` key with a valid value
+* contain the `version` key (unless inherited from the content source in the playbook) with a valid value
 * be stored xref:module-directories.adoc[at the same directory level as the _modules_ directory]
 
 The following section provides instructions for creating an [.path]_antora.yml_ file and assigning values to the `name` and `version` keys to define a component version.
@@ -47,7 +45,7 @@ name: silver-leaf
 . At the end of the value, press kbd:[Enter] to go to the next line.
 . Type `version`, directly followed by a colon (`:`), and then press the kbd:[Spacebar] to insert a space.
 . Type the value you want to assign to `version`.
-In this example, the value is enclosed in a set of single quote marks (`'`) because it starts with a number.
+In this example, the value is enclosed in a set of single quote marks (`'`) so it's not interpreted as a number.
 +
 [,yaml]
 ----
@@ -57,10 +55,10 @@ version: '7.1'
 +
 The `version` key doesn't accept certain characters or spaces in its value, see xref:component-version-key.adoc#requirements[version requirements] for details.
 . Save the file as [.path]_antora.yml_ in the xref:content-source-repositories.adoc#content-source-root[content source root].
-The [.path]_antora.yml_ file should be located at the same hierarchy level as the [.path]_modules_ directory to which you want it applied.
+The [.path]_antora.yml_ file should be located adjacent to the [.path]_modules_ directory, which contains the content files for the component version.
 
-If you are defining multiple versions of a component, be sure to always use the same case when declaring the component name.
-If the case differs (e.g., Silver-Leaf vs silver-leaf), Antora will treat these as different components, not different versions of the same component.
+If you're defining multiple versions of a component, be sure to always use the same case when declaring the component name.
+If the case differs (e.g., Silver-Leaf vs silver-leaf), Antora will treat these as different components.
 
 You've now associated a set of source files with a component version!
 When Antora runs, all of the xref:standard-directories.adoc[source files stored in the standard set of directories] will be assigned the component name `silver-leaf` and the version `7.1`.
