@@ -43,8 +43,8 @@ The `version` key accepts a named identifier, such as `jesse`, a semantic identi
 The latter defines a component version as unversioned.
 To learn how to specify an unversioned component version, see xref:component-with-no-version.adoc[].
 
-In all cases, if the `version` key is defined in the component descriptor, it takes precedence over the value defined on the content source in the playbook.
-If you want the playbook to be able to control the value of the `version` key, don't set the `version` key in the component descriptor.
+In all cases, if the `version` key is defined in the component version descriptor, it takes precedence over the value defined on the content source in the playbook.
+If you want the playbook to be able to control the value of the `version` key, don't set the `version` key in the component version descriptor.
 
 === Named identifier as version
 
@@ -83,9 +83,9 @@ For example, `v9.0` will be sorted as though the value is `9.0`.
 
 === refname as version
 
-Since content in Antora is retrieved from a git repository, you may want to use the git refname (branch or tag name) in which the component descriptor is stored as the version.
+Since content in Antora is retrieved from a git repository, you may want to use the git refname (branch or tag name) in which the component version descriptor is stored as the version.
 To do so, assign the reserved value `true` to the version.
-Antora will replace this value with the refname.
+Antora will substitute the value `true` with the refname dynamically.
 The value Antora uses is always the short refname (e.g., v1.0), not the full refname (e.g., refs/heads/v1.0).
 
 The following example shows how to use the refname as the value of the `version` key.
@@ -101,7 +101,7 @@ version: true # <.>
 === refname projection as version
 
 The refname may not be granular enough to use as the version.
-And the same git tree could be passed through git references that have different naming schemes, such as feature branches.
+Furthermore, the same git tree could be passed through git references that have different naming schemes, such as feature branches.
 In these cases, you want the version to be extracted or derived from the refname rather than using the value as is.
 That's when you'd define the version using a refname projection.
 
@@ -121,12 +121,12 @@ version:
   feature/(*)/*: $1 # <.>
 ----
 <.> Matches the semantic identifier in a refname like `v2.0.x` and extracts it
-<.> Extracts the value between the first and second slash for a refname that begins with `release/`
+<.> Extracts the value between the first and second slash for a refname that begins with `feature/`
 
-The key in the project is a glob pattern (a combination of extglobs and some regex constructs).
-The pattern has the same matching capabilities as the pattern used to match a branch or tag for a content source in the playbook.
+The key in the projection is a glob pattern (a combination of extglobs, ranges, and some regex constructs).
+The pattern has the same matching capabilities as the pattern used to match branches or tags for a content source in the playbook.
 
-The characters between braces (i.e., round brackets) in the pattern defines a match group.
+The characters between parentheses (i.e., round brackets) in the pattern defines a match group.
 If the opening brace begins with `?<name>`, that group is assigned to the name specified between the angle brackets.
 Otherwise, the group is assigned to a 1-based index according to the group's position in the pattern.
 
