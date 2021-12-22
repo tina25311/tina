@@ -17,9 +17,6 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *content-aggregator*: Configure progress bar to stretch width of terminal for wide terminals (#918)
-
-=== Fixed
-
 * *page-composer*: Include source in warning for missing page layout (#917)
 
 == 3.0.0-rc.2 (2021-12-08)
