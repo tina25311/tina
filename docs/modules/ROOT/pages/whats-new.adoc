@@ -14,7 +14,7 @@ Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well
 
 = Antora 3.0.0-rc.3
 
-_**Release date:** 2021.12.21 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+_**Release date:** 2021.12.22 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 == Resolved issues
 
@@ -22,6 +22,7 @@ _**Release date:** 2021.12.21 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 Logger:: Undefine flushSync method on SonicBoom destination so pino#fatal doesn't try to invoke it.
 Content aggregator:: Change signature of internal git http plugin to accept extra HTTP headers as `headers` keyword argument.
+Asciidoc loader:: Use page as the default family for an include target that references a component, version, and/or module.
 
 === Fixed
 
@@ -126,8 +127,7 @@ The logging in Antora 3 can be configured with the following keys:
 * The xref:playbook:runtime-log-failure-level.adoc[log.failure_level playbook key] specifies the severity threshold that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
 * The xref:playbook:runtime-log-format.adoc#level-format-key[log.level_format key] allows the log level format of JSON messages to be configured as numbers of labels.
 * The xref:playbook:asciidoc-sourcemap.adoc[asciidoc.sourcemap key] provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor extensions.
-* The `runtime.log.destination` category in the playbook supports writing log messages to a file or standard stream, with additional settings for buffer size, sync, and append.
-(_Documentation pending. See {url-issues}/819[#819^]_.)
+* The xref:playbook:runtime-log-destination.adoc[runtime.log.destination category key] in the playbook supports writing log messages to a file or standard stream, with additional settings for buffer size, sync, and append.
 
 == Latest version URL customizations
 
@@ -202,12 +202,14 @@ For local repositories, it may result in the worktree being used in cases it was
 
 The xref:playbook:git-plugins.adoc[git.plugins key] provides a way to specify predefined plugins to load into the git client used by Antora.
 
-The `git.fetch_concurrency` key controls the maximum number of fetch or clone operations that are permitted to run at once.
-(_Documentation pending._)
+The xref:playbook:git-fetch-concurrency.adoc[git.fetch_concurrency key] controls the maximum number of fetch or clone operations that are permitted to run at once.
 
 == Network proxy
 
-Antora 2 does not honor the `http_proxy` and `https_proxy` environment variables, whereas Antora 3 does.
+Antora 3 now honors the environment variables `http_proxy`, `https_proxy`, and `no_proxy`.
+These settings can also be defined under the `network` category key in the playbook.
+
+Note that Antora 2 didn't honor the `http_proxy` and `https_proxy` environment variables.
 If you're migrating from Antora 2 to Antora 3, and you encounter a network error (Bad response: 503), the automatic proxy support in Antora 3 may be the culprit.
 If the proxy is standing in the way of Antora connecting to an endpoint, you may need to bypass the proxy using the `no_proxy` key.
 If you want to avoid modifying your playbook, you can specify this key using a CLI option:
@@ -229,10 +231,8 @@ See xref:asciidoctor-upgrade-notes.adoc[] to learn about the affected features a
 The following deprecations will be final with the release of Antora 3.0.
 
 * The default branches pattern of `[master, v*]` is deprecated; the default branches pattern is now `HEAD, v{0..9}*`.
-* Referencing attachments with the link macro (`+link:[]+`) is deprecated; use the AsciiDoc xref macro and the resource ID of the attachment instead.
-* The `attachmentsdir` attribute is deprecated.
-Don't use the `+{attachmentsdir}+` attribute reference to reference an attachment; use the xref:page:attachments.adoc[attachment's resource ID] instead.
-* Using parent references in the target of the AsciiDoc include directive; use the resource ID of the page, partial, or example instead.
+* Referencing attachments with the link macro (`+link:[]+`) and the `attachmentsdir` attribute are deprecated; use the xref:page:attachments.adoc[AsciiDoc xref macro and the resource ID of the attachment] to link to an attachment instead.
+* Using parent references in the target of the AsciiDoc include directive; use the resource ID of the page, partial, or example, or in the case of relative files within the same family use the relative path token (`./`) instead.
 * The `partialsdir` and `examplesdir` attributes are deprecated.
 Use the resource ID of the xref:page:include-a-partial.adoc[partial] or xref:page:include-an-example.adoc[example] to reference the resource instead.
 * Using the value `master` to represent an unversioned (empty) version when assigned to the `version` key in a component descriptor file is deprecated; use the tilde symbol (`~`) to represent an unversioned component version instead.
@@ -516,12 +516,12 @@ Issue {url-issues}/689[#689^]::
 * Deprecate use of page ID spec without _.adoc_ file for page alias.
 * Deprecate use of non-resource ID spec (e.g., parent path) as target of include directive.
 * Deprecate `getAll` method on site catalog; superseded by `getFiles`.
-* Deprecate the `--google-analytics-key` CLI option; superseded by the `--key` option.
 Issue {url-issues}/737[#737^]:: Deprecate default branches pattern `[master, v*]` for content sources; superseded by `HEAD, v{0..9}*`.
 
 [#removed]
 == Removed
 
+CLI:: Remove deprecated `--google-analytics-key` CLI option; superseded by `--key`.
 Node.js:: Drop support for Node.js 10.
 Issue {url-issues}/522[#522^]:: Drop support for Asciidoctor.js 1.5.9.
 Automatically upgrade to using Asciidoctor.js 2.2.x.
