@@ -107,7 +107,7 @@ test:windows:
   - *platform_info
   - *install_npm
   - npm ci --audit --quiet
-  script: npm run coverage # using npx breaks call to `git submodule` on Windows
+  script: npm run coverage # using npx from npm 8 on Node.js 12 for Windows breaks call to `git submodule`
   <<: *save_report_artifacts
 release:
   stage: deploy
