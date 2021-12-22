@@ -1272,7 +1272,7 @@ describe('loadAsciiDoc()', () => {
       expect(firstBlock.getSourceLines()).to.eql([includeContents])
     })
 
-    it('should assume family of target is partial when target is resource ID in separate component', () => {
+    it('should assume family of target is page when target is resource ID in separate component', () => {
       const includeContents = 'Hello, World!'
       const contentCatalog = mockContentCatalog({
         component: 'another-component',
@@ -1283,28 +1283,26 @@ describe('loadAsciiDoc()', () => {
         contents: includeContents,
       }).spyOn('resolveResource')
       setInputFileContents('include::1.1@another-component::greeting.adoc[]')
-      const { messages, returnValue: doc } = captureLogSync(() =>
-        loadAsciiDoc(inputFile, contentCatalog)
-      ).withReturnValue()
-      expect(contentCatalog.resolveResource).to.not.have.been.called()
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(contentCatalog.resolveResource).nth(1).called.with(
+        '1.1@another-component::greeting.adoc',
+        {
+          component: 'component-a',
+          version: '',
+          module: 'module-a',
+          family: 'page',
+          relative: 'page-a.adoc',
+        },
+        'page'
+      )
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
-      const expectedSource = [
-        'Unresolved include directive in modules/module-a/pages/page-a.adoc',
-        'include::1.1@another-component::greeting.adoc[]',
-      ].join(' - ')
-      expect(firstBlock.getSourceLines()).to.eql([expectedSource])
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.eql({
-        level: 'error',
-        name: 'asciidoctor',
-        msg: 'target of include not found: 1.1@another-component::greeting.adoc',
-        file: { path: inputFile.src.path, line: 1 },
-      })
+      const expectedSource = ['Hello, World!']
+      expect(firstBlock.getSourceLines()).to.eql(expectedSource)
     })
 
-    it('should assume family of target is partial when target is resource ID in separate version', () => {
+    it('should assume family of target is page when target is resource ID in separate version', () => {
       const includeContents = 'Hello, World!'
       const contentCatalog = mockContentCatalog({
         version: '1.1',
@@ -1313,25 +1311,21 @@ describe('loadAsciiDoc()', () => {
         contents: includeContents,
       }).spyOn('resolveResource')
       setInputFileContents('include::1.1@greeting.adoc[]')
-      const { messages, returnValue: doc } = captureLogSync(() =>
-        loadAsciiDoc(inputFile, contentCatalog)
-      ).withReturnValue()
-      expect(contentCatalog.resolveResource).to.not.have.been.called()
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(contentCatalog.resolveResource).nth(1).called.with(
+        '1.1@greeting.adoc',
+        {
+          component: 'component-a',
+          version: '',
+          module: 'module-a',
+          family: 'page',
+          relative: 'page-a.adoc',
+        },
+        'page'
+      )
       const firstBlock = doc.getBlocks()[0]
       expect(firstBlock).to.not.be.undefined()
       expect(firstBlock.getContext()).to.equal('paragraph')
-      const expectedSource = [
-        'Unresolved include directive in modules/module-a/pages/page-a.adoc',
-        'include::1.1@greeting.adoc[]',
-      ].join(' - ')
-      expect(firstBlock.getSourceLines()).to.eql([expectedSource])
-      expect(messages).to.have.lengthOf(1)
-      expect(messages[0]).to.eql({
-        level: 'error',
-        name: 'asciidoctor',
-        msg: 'target of include not found: 1.1@greeting.adoc',
-        file: { path: inputFile.src.path, line: 1 },
-      })
     })
 
     it('should resolve target of nested include relative to current file', () => {

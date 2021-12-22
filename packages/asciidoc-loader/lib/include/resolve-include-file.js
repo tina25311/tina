@@ -35,9 +35,8 @@ function resolveIncludeFile (target, page, cursor, catalog) {
         family,
         relative,
       })
-      // NOTE require family segment for now
-    } else if (~target.indexOf('$')) {
-      resolved = catalog.resolveResource(target, extractResourceId(src))
+    } else {
+      resolved = catalog.resolveResource(target, extractResourceId(src), 'page')
     }
   } else {
     // bypassing resource ID resolution for relative include path is @deprecated; scheduled to be removed in Antora 4
