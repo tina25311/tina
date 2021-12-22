@@ -34,6 +34,12 @@ The previous default branches pattern, `[master, v*]`, has been deprecated and r
 It's unlikely this will cause a change when using remote repositories.
 For local repositories, it may result in the worktree being used in cases it wasn't previously.
 
+Do you use the antora-lunr add-on to integrate Lunr into your site?::
+The antora-lunr add-on was designed for Antora 2 and is a community-maintained project.
+In Antora 3, antora-lunr has been replaced by the https://gitlab.com/antora/antora-lunr-extension[Antora Lunr extension] (package: `@antora/lunr-extension`), which is an official Antora project.
+This extension uses the new extension facility in Antora 3 to integrate Lunr into your site without having to resort to using a custom site generator.
+We encourage you to migrate from antora-lunr to the Antora Lunr Extension when upgrading to Antora 3.
+
 Do you use or maintain a custom site generator?::
 In Antora 3, the site generator must declare the `@antora/logger` package as a dependency.
 The CLI resolves the logger relative to the site generator.
