@@ -6,7 +6,7 @@ workflow:
     - .eslintrc
     - .gitlab-ci.yml
     - package{-lock,}.json
-    - packages/
+    - packages/**/*
 variables:
   GIT_DEPTH: '5'
   DEFAULT_NODE_VERSION: '16'
