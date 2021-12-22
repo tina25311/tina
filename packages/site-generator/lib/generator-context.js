@@ -54,7 +54,8 @@ class GeneratorContext extends EventEmitter {
   async notify (eventName) {
     if (!this.listenerCount(eventName)) return
     for (const listener of this.rawListeners(eventName)) {
-      const outcome = listener.length === 1 ? listener.call(this, this.getVariables()) : listener.call(this)
+      const wantsVariables = (listener.listener || listener).length === 1
+      const outcome = wantsVariables ? listener.call(this, this.getVariables()) : listener.call(this)
       if (outcome instanceof Promise) await outcome
     }
     if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: noopNotify })

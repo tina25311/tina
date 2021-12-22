@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *site-generator*: Allow extension listeners registered using `once` to accept context variables (#923)
+
 == 3.0.0-rc.3 (2021-12-22)
 
 === Changed

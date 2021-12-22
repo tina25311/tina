@@ -1103,6 +1103,25 @@ describe('generateSite()', () => {
       Object.entries(events).forEach(([event, vars]) => expect(observed[event]).to.include.members(vars))
     })
 
+    it('should allow extension to listen for events using once', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.once('uiLoaded', ({ uiCatalog }) => {
+            console.log('uiCatalog is ' + (uiCatalog ? 'found' : 'not found'))
+            console.log('listeners: ' + this.rawListeners('uiLoaded').length)
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.equal('uiCatalog is found')
+      expect(lines[1]).to.equal('listeners: 0')
+    })
+
     it('should always emit contentClassified event after both content is classified and UI is loaded', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
