@@ -6,8 +6,8 @@ asciidoc:
   attributes:
     source-language: asciidoc@
     xrefstyle: short@
-    listing-caption: Example@
     example-caption: false
+    listing-caption: Example@
     version-node-major: '16'
     version-node: '16.13.0'
     version-npm: '8.1.0'
