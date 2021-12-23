@@ -2,7 +2,7 @@
 
 The `version` key provides a way to control the component version that corresponds to a content source directly from the playbook.
 The `version` key on the content source is a fallback value.
-If the component version descriptor defines a `version` key, the value of that key takes precedence.
+If a component version descriptor (an [.path]_antora.yml_ file) defines the `version` key for a component version, the value of that key takes precedence.
 
 == version key
 
@@ -13,7 +13,7 @@ A content source can match multiple git references.
 Thus, a fixed value should only be used if the content source is configured to match a single reference, or if all the references it matches contribute files to the same component version.
 Otherwise, the value of this key should be `true` or a map of refname projections.
 
-If you want the playbook to be able to control the value of the `version` key, don't set the `version` key in the component descriptor.
+If you want the playbook to be able to control the value of the `version` key, don't set the `version` key in xref:ROOT:component-version-descriptor.adoc[the component version descriptor (_antora.yml_ file)].
 
 === Fixed value as version
 
@@ -37,7 +37,7 @@ Instead, it will use the fixed value of the `version` key specified on the conte
 
 === refname as version
 
-Since content in Antora is retrieved from a git repository, you may want to use the git refname (branch or tag name) for the content source (where the component version descriptor is stored) as the version.
+Since content in Antora is retrieved from a git repository, you may want to use the git refname (branch or tag name) for the content source (where the xref:ROOT:component-version-descriptor.adoc[component version descriptor is stored]) as the version.
 To do so, assign the reserved value `true` to the `version` key.
 Antora will substitute the value `true` with the refname dynamically.
 

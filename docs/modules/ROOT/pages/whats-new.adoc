@@ -12,6 +12,16 @@
 NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
 Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
+= Antora 3.0.0-rc.4
+
+_**Release date:** 2021.12.23 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
+
+== Resolved issues
+
+=== Fixed
+
+Issue {url-issues}/923[#923^]:: Allow extension listeners registered using `once` to accept context variables.
+
 = Antora 3.0.0-rc.3
 
 _**Release date:** 2021.12.22 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
@@ -75,8 +85,13 @@ Issue {url-issues}/907[#907^]:: Don't attempt to close logger destination if str
 == Attachment resource IDs
 
 Attachments are now referenced with the AsciiDoc xref macro and their Antora resource IDs.
-Make sure to enter the `attachment$` family coordinate in its resource ID when referencing it.
-See xref:page:attachments.adoc[] for examples.
+
+----
+Download the xref:attachment$packet.zip[course materials] before the first class.
+----
+
+When creating a link to an attachment, make sure to use the `attachment$` family coordinate in its resource ID.
+See xref:page:attachments.adoc[] for more examples.
 
 == Antora extensions
 
@@ -100,21 +115,6 @@ To learn more, see:
 * xref:extend:generator-events-reference.adoc[]
 * xref:extend:generator-context-reference.adoc[]
 
-== Generator in playbook
-
-As an alternative to the `--generator` CLI option, it's now possible to specify the custom generator in the playbook using the `antora.generator` key.
-The key accepts the same value as the CLI option (i.e., a path or require request).
-
-As part of this change, the meaning of the path prefixes changed to align with other paths defined in the playbook.
-If the first path segment is a tilde (`~`), the path is resolved relative to the user's home directory.
-If the first path segment is a dot (`.`), the path is resolved relative to the playbook file.
-If the first path segment is a tilde plus (`~+`), the path is resolved relative to the current directory.
-If the path is a relative path with a file extension and without any of these prefixes, the path is resolved relative to the current directory.
-For portability, you're encourage to always use either the `./` or `~+` prefix when specifying a relative path.
-
-The value also accepts any require request (i.e., module name) supported by Antora's user require helper.
-See the https://gitlab.com/antora/user-require-helper/-/blob/main/README.adoc#user-content-usage[@antora/user-require-helper documentation^] details.
-
 == Structured JSON and prettified logging
 
 Antora now provides the infrastructure for logging, shaping, and reporting application messages with the introduction of the Antora Logger component.
@@ -126,8 +126,8 @@ The logging in Antora 3 can be configured with the following keys:
 * The xref:playbook:runtime-log-level.adoc[log.level playbook key] specifies a severity threshold, such as `debug` or `error`, that must be met for a message to be logged.
 * The xref:playbook:runtime-log-failure-level.adoc[log.failure_level playbook key] specifies the severity threshold that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
 * The xref:playbook:runtime-log-format.adoc#level-format-key[log.level_format key] allows the log level format of JSON messages to be configured as numbers of labels.
+* The xref:playbook:runtime-log-destination.adoc[log.destination category key] supports writing log messages to a file or standard stream (`file` key) and settings for buffer size (`buffer_size`), `sync`, and `append`.
 * The xref:playbook:asciidoc-sourcemap.adoc[asciidoc.sourcemap key] provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor extensions.
-* The xref:playbook:runtime-log-destination.adoc[runtime.log.destination category key] in the playbook supports writing log messages to a file or standard stream, with additional settings for buffer size, sync, and append.
 
 == Latest version URL customizations
 
@@ -166,10 +166,7 @@ To do so, set the component name to the special value `ROOT` and the version to 
 == Map version to git refname
 
 The version for a component version can be derived from the git refname.
-The mapping is defined using patterns and replacements on the `version` key on the content source in the playbook or on the `version` key in the component descriptor.
-The replacement that corresponds to first pattern that matches will be used.
-If no pattern is matched, or the value of version is `true`, the refname will be used as the version.
-(_Documentation pending. See {url-issues}/761[#761^] and {url-issues}/762[#762^]_.)
+The mapping is defined using patterns and replacements on xref:playbook:content-source-version.adoc[the version key on a content source] in the playbook or on xref:component-version-key.adoc[the version key in a component version descriptor].
 
 == Symlinks
 
@@ -218,6 +215,21 @@ If you want to avoid modifying your playbook, you can specify this key using a C
 
 However, if this is necessary, you may want to understand why the proxy is failing to route the request.
 See xref:playbook:network-proxy.adoc[] to learn about Antora's automatic support for industry standard proxy environment variables.
+
+== Generator in playbook
+
+As an alternative to the `--generator` CLI option, it's now possible to specify the custom generator in the playbook using the `antora.generator` key.
+The key accepts the same value as the CLI option (i.e., a path or require request).
+
+As part of this change, the meaning of the path prefixes changed to align with other paths defined in the playbook.
+If the first path segment is a tilde (`~`), the path is resolved relative to the user's home directory.
+If the first path segment is a dot (`.`), the path is resolved relative to the playbook file.
+If the first path segment is a tilde plus (`~+`), the path is resolved relative to the current directory.
+If the path is a relative path with a file extension and without any of these prefixes, the path is resolved relative to the current directory.
+For portability, you're encourage to always use either the `./` or `~+` prefix when specifying a relative path.
+
+The value also accepts any require request (i.e., module name) supported by Antora's user require helper.
+See the https://gitlab.com/antora/user-require-helper/-/blob/main/README.adoc#user-content-usage[@antora/user-require-helper documentation^] details.
 
 == Asciidoctor 2
 
