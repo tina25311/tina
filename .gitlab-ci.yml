@@ -122,5 +122,4 @@ release:
   - npm i -g --silent lerna@$(node -p 'require("./lerna.json").lerna')
   script:
   - scripts/release.sh
-  # trigger release of Docker image
   - env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=$RELEASE_BRANCH" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'
