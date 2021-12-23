@@ -81,6 +81,10 @@ In the terminal, type:
 --
  demo-site $ antora antora-playbook.yml
 
+If Antora is installed locally, you'll need to prefix the Antora command with `npx`:
+
+ demo-site $ npx antora antora-playbook.yml
+
 Antora will clone the content repositories.
 The cloning progress of each repository is displayed in the terminal.
 

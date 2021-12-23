@@ -1,6 +1,7 @@
 = Install Antora
 
-To generate and publish documentation sites with Antora, you need the Antora command line interface (CLI) and an Antora site generator pipeline.
+To generate and publish documentation sites with Antora, you need the Antora command line interface (CLI) and the official Antora site generator or a custom one.
+This page explains how to install Antora using its default configuration.
 
 Assumptions:
 
@@ -8,110 +9,130 @@ Assumptions:
 
 On this page, you'll learn:
 
-* [x] How to install Antora globally. (recommended)
-* [x] How to install the Antora CLI and site generator packages in a project directory.
+* [x] How to install Antora locally (recommended).
+* [x] How to install the Antora CLI and site generator packages globally.
 
-We recommend installing Antora globally, especially if you're managing several documentation sites.
-When we say "`globally`" here, it does not imply system-wide.
+== Locally vs globally
+
+When we say "`locally`" on this page, we mean either within the playbook project or in any parent folder.
+We recommend installing Antora locally, generally within the playbook project, especially if you're managing several documentation sites.
+Installing Antora locally keeps the version of Antora in sync with the version for which the documentation site was made.
+
+When we say "`globally`" on this page, that does not imply system-wide.
 It means the location where Node.js is installed.
 If you used nvm to install Node.js, this location will be inside your home directory (thus not requiring elevated permissions).
-However, you can also install Antora in a project directory if you prefer.
 
-== Install Antora globally using npm
+Your best chance for success is to install Antora locally.
+At the very least, you should start there.
 
-To install the Antora CLI and site generator packages globally, open a terminal and run:
+[#install-dir]
+== Install Antora locally
+
+We recommend that you install Antora locally, meaning within the playbook project (the directory where the main playbook file for your site is stored).
+This strategy makes it easier to manage the version of Antora and ensures the version of Antora matches the version for which the playbook was made.
+It also avoids any permission problems you may run into when trying to install Antora globally.
+
+When you install Antora locally, the `antora` command is not put on your PATH.
+Instead, you run the `antora` command using `npx` (i.e., `npx antora`).
+
+To install Antora, begin by switching to the directory of your playbook project (creating it, if necessary).
+We'll assume here that the name of this folder is [.path]_docs-site_.
+
+ $ cd docs-site
+
+Next, let's install the CLI package within the playbook project so you can run the `antora` command using `npx`.
+
+[subs=+attributes]
+ $ node -e "fs.writeFileSync('package.json', '{}')"
+   npm i -D -E @antora/cli@{page-component-display-version}
+
+The `@antora/cli` and its dependent packages will be installed into the [.path]_node_modules_ folder inside your playbook project.
+The optional `-D` option tells `npm` to save the package as development dependencies in [.path]_package.json_.
+The `-E` option tells `npm` to store the exact version in [.path]_package.json_ rather than prefixing it with a semver range operator.
+
+IMPORTANT: The `@` at the beginning of the package name is important.
+It tells `npm` that the `cli` package is located in the `antora` scope.
+If you omit this character, `npm` will assume the package name is the name of a git repository on GitHub.
+The second `@` designates the start of the requested version number.
+Except for prerelease versions, only the major and minor segments are necessary to ensure you receive the latest patch update.
+
+Verify the `antora` command is available using `npx` by running `npx antora -v`.
+
+ $ npx antora -v
+
+The command should report the version of the Antora CLI in the terminal.
+
+[subs=attributes+]
+ @antora/cli: {page-component-display-version}
+ @antora/site-generator: not installed
+
+The `npx` command will look for the `antora` command installed within the playbook project or any parent directory of the playbook project.
+
+Next, install the site generator package within the playbook project:
+
+[subs=+attributes]
+ $ npm i -D -E @antora/cli@{page-component-display-version}
+
+The `@antora/site-generator` and its dependent packages will be installed into the [.path]_node_modules_ folder inside your playbook project.
+The `npx antora` command will look for these packages there first before looking in the global installation folder.
+
+Now when you run `npx antora -v`, you should see the version of both the Antora CLI and the site generator printed in the terminal.
+
+[subs=attributes+]
+ @antora/cli: {page-component-display-version}
+ @antora/site-generator: {page-component-display-version}
+
+If you open [.path]_package.json_, you will see the version of these packages listed there too, as development dependencies.
+
+[,json,subs=+attributes]
+----
+{
+  "devDependencies": {
+    "@antora/cli": "^{page-component-display-version}",
+    "@antora/site-generator": "^{page-component-display-version}"
+  }
+}
+----
+
+You'll also notice an additional file named [.path]_package-lock.json_.
+This file stores the resolved version of all packages and their dependencies.
+You may choose to commit this file when you commit [.path]_package.json_.
+
+That confirms you have both required packages of Antora installed.
+
+TIP: If you're reinstalling Antora, it's best to first remove the [.path]_node_modules_ folder.
+If you also want to get the latest version of each dependency, remove the [.path]_package-lock.json_ file as well.
+If you do remove the [.path]_node_modules_ folder, be sure to install the CLI package again.
+Another option is to use `npm ci`, which will automatically remove [.path]_node_modules_ when reinstalling.
+
+== Install Antora globally
+
+You have the option of installing Antora globally so that the `antora` command is available on your PATH.
+To do so, pass the `-g` option to `npm i`.
 
 [subs=attributes+]
  $ npm i -g @antora/cli@{page-component-display-version} @antora/site-generator@{page-component-display-version}
-
-IMPORTANT: The `@` at the beginning of the package name is important.
-It tells `npm` that the `cli` package is located in the `antora` group.
-If you omit this character, `npm` will assume the package name is the name of a git repository on GitHub.
-The second `@` offsets the requested version number.
-Except for prerelease versions, only the major and minor segments are specified to ensure you receive the latest patch update.
 
 Verify the `antora` command is available on your PATH by running:
 
  $ antora -v
 
-If installation was successful, the command should report the version of Antora (where `.x` is a placeholder for the latest patch version).
+If installation was successful, the command should report the version of the Antora CLI and site generator.
 
 [subs=attributes+]
  $ antora -v
- @antora/cli: {page-component-version}.x
- @antora/site-generator: {page-component-version}.x
+ @antora/cli: {page-component-display-version}
+ @antora/site-generator: {page-component-display-version}
+
+The benefit of installing Antora globally is that it is always available in your terminal, no matter what directory you are in.
+While this may seem convenient at first, there are problems with this strategy.
+The version of Antora you have installed may not match the version of Antora for which the documentation site was made.
+And there's no way for Antora or the documentation site to verify these are the same.
+So you may end up running into esoteric problems and find yourself struggling to get them in sync.
+Installing Antora locally and running it using `npx` will give you the best chance for success and compatibility.
 
 CAUTION: If you're using a system-wide Node.js installation managed by your operating system's package manager, you may run into permission problems when installing packages globally.
 In that case, you'll need to <<install-dir,install Antora directly in your project repository>>.
-
-== Install Antora globally using Yarn
-
-If you prefer Yarn over npm, use this command to install the Antora CLI package:
-
-[subs=attributes+]
- $ yarn global add @antora/cli@{page-component-display-version}
-
-Next, install the site generator.
-
-[subs=attributes+]
- $ yarn global add @antora/site-generator@{page-component-display-version}
-
-[#install-dir]
-== Install Antora in a project directory
-
-You can opt to install Antora in a project directory, such as the directory where the playbook file(s) for your site are stored.
-
-When possible, we recommend installing the Antora CLI globally so that the `antora` command is available on your PATH.
-You can then install the site generator packages in a project directory.
-
-To install *only* the CLI globally, run:
-
-[subs=attributes+]
- $ npm i -g @antora/cli@{page-component-display-version}
-
-Or, to install the CLI in a project directory, change into your project directory, and run:
-
-[subs=attributes+]
- $ npm i @antora/cli@{page-component-display-version}
-
-Dropping the `-g` flag installs the package under the [.path]_node_modules_ folder in the current directory.
-
-Verify the `antora` command is available on your PATH by running `antora -v`.
-If you installed the package without the `-g` flag, you'll need to prefix the command with `$(npm bin)/`.
-
-.If installed globally
- $ antora -v
-
-.If installed in a project directory
- $ $(npm bin)/antora -v
-
-The command should report the Antora CLI version in the terminal (where `.x` is a placeholder for the latest patch version).
-
-[subs=attributes+]
- @antora/cli: {page-component-version}.x
- @antora/site-generator: not installed
-
-If you installed the CLI globally, change into the project directory before installing the site generator.
-
-Next, run the following command to install the site generator package:
-
-[subs=attributes+]
- $ npm i @antora/site-generator@{page-component-display-version}
-
-Now when you run `antora -v`, you should see the version of both the Antora CLI and the site generator printed in the terminal (where `.x` is a placeholder for the latest patch version).
-
-[subs=attributes+]
- @antora/cli: {page-component-version}.x
- @antora/site-generator: {page-component-version}.x
-
-That confirms you have both top-level components of Antora installed.
-
-TIP: If you're reinstalling Antora, it's best to first remove the [.path]_node_modules_ folder.
-If you also want to get the latest version of each dependency, remove the [.path]_package-lock.json_ file as well.
-If you do remove the [.path]_node_modules_ folder, be sure to install the CLI package again (unless you've installed it globally).
-
-The `@antora/site-generator` and its dependent packages will be installed into the [.path]_node_modules_ folder inside your project.
-The `antora` command will look for these packages there first before looking in the global installation folder.
 
 == Learn more
 

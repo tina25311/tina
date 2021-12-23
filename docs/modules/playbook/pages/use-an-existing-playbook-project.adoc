@@ -16,6 +16,14 @@ To start, open a terminal and clone the playbook project using git:
 
 The command clones an existing playbook project and then switches to the project folder.
 
+If the project contains a [.path]_package-lock.json_ file, it means it is requesting that you install Antora locally.
+To do so, run the following command:
+
+ $ npm ci
+
+When Antora is installed locally, you will use `npx antora` to run Antora install of `antora`.
+The `npx` command will look for the `antora` command installed within the playbook project or any parent directory of the playbook project.
+
 == Learn more
 
 * xref:ROOT:run-antora.adoc[Run Antora] to generate the site.
