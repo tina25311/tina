@@ -1,7 +1,6 @@
 = Antora
 // Settings
 ifdef::env-gitlab[:outfilesuffix: .adoc]
-:badges:
 // Project URLs
 :url-project: https://antora.org
 :url-docs: https://docs.antora.org
@@ -11,7 +10,6 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 :url-ui-repo: {url-org}/antora-ui-default
 :url-issues: {url-repo}/issues
 :url-ci-pipelines: {url-repo}/pipelines
-:img-ci-status: {url-repo}/badges/main/pipeline.svg
 :url-chat: https://antora.zulipchat.com
 :url-twitter: https://twitter.com/antoraproject
 :url-twitter-hash: https://twitter.com/hashtag/antora?src=hash
@@ -27,10 +25,6 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 // Versions:
 :version-node-major: 16
 :version-node: {version-node-major}.13.0
-
-ifdef::badges[]
-image:{img-ci-status}[CI Status (GitLab CI), link={url-ci-pipelines}]
-endif::[]
 
 {url-project}[Antora] is a modular, multi-repository site generator designed for creating documentation sites from content composed in AsciiDoc(R) and processed with {url-asciidoctor}[Asciidoctor].
 
