@@ -13,6 +13,8 @@ This project utilizes semantic versioning.
 
 == 3.0.0-rc.5 (2021-12-23)
 
+=== Fixed
+
 * Prevent the releases job from being interrupted
 
 == 3.0.0-rc.4 (2021-12-23)
