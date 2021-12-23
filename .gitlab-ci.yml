@@ -16,8 +16,8 @@ variables:
   NPM_CONFIG_FUND: 'false'
   NPM_CONFIG_PREFER_OFFLINE: 'true'
   RELEASE_VERSION:
-    value: "~"
-    description: The version to release from the selected protected branch if the build succeeds. Can be an exact version number or an increment keyword.
+    value: '~'
+    description: The version to release from the selected protected branch if the build succeeds. To enable, replace ~ with an exact version or an increment keyword.
 default:
   image: node:$DEFAULT_NODE_VERSION-$LINUX_DISTRO
   interruptible: true
