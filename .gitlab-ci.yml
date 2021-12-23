@@ -15,6 +15,9 @@ variables:
   NPM_CONFIG_CACHE: &npm_cache_dir .cache/npm
   NPM_CONFIG_FUND: 'false'
   NPM_CONFIG_PREFER_OFFLINE: 'true'
+  ENABLE_WINDOWS_JOB:
+    value: ''
+    description: Enter 1 to enable the Windows job. Note that the Windows job is automatically enabled if RELEASE_VERSION is specified.
   RELEASE_VERSION:
     value: ''
     description: The version to release from the selected protected branch if the build succeeds. To enable, specify an exact version or increment keyword.
