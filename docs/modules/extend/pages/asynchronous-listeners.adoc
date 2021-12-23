@@ -34,5 +34,5 @@ To help manage the state of the pending promise, it has also been rewritten as a
 include::example$background-fetch-and-publish-readme-extension.js[]
 ----
 
-Notice that only the `onBeforePublish` listener method is async so it can wait for the promise started by the `onPlaybookBuilt` listener method.
+Notice that only the `onBeforePublish` listener function is async so it can wait for the promise started by the `onPlaybookBuilt` listener function.
 The extension also now accepts the URL of the README as a configuration key named `readme_url`.

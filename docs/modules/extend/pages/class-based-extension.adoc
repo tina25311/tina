@@ -55,7 +55,7 @@ The register method passes the generator context to constructor of the extension
 Listeners are defined as methods on the extension class.
 They will get invoked just like any other listener function, only they will have a reference to both the current instance of the class (`this`) and the generator context (`this.context`).
 That way, they can access both properties on the extension (extension state) and context variables in the generator.
-Here's the extension class again with the listener methods:
+Here's the extension class again with the listeners defined as methods:
 
 [,js]
 ----

@@ -49,7 +49,7 @@ Put the script in your playbook repository.
 Later, you can publish it to a package repository such as npmjs.com to share it between different sites or branches.
 
 So far, our extension doesn't actually do anything.
-Since the register method is a kind of listener, you can use it as an opportunity to perform an action immediately after the playbook is built.
+Since the register function is a kind of listener, you can use it as an opportunity to perform an action immediately after the playbook is built.
 Let's use it to say hi.
 
 .my-extension.js

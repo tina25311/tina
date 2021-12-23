@@ -69,7 +69,7 @@ module.exports.register = function () {
 ----
 
 When replacing a function, you must adhere to the function's signature.
-Like with the register function and event listener methods, the generator functions are automatically bound to the generator context.
+Like with the register function and event listener functions, the generator functions are automatically bound to the generator context.
 
 == Function reference
 
