@@ -5,9 +5,13 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
-== 3.0.0-rc.5 (2021-12-23)
+== Unreleased
 
 === Fixed
+
+* Really prevent the releases job from being interrupted
+
+== 3.0.0-rc.5 (2021-12-23)
 
 * Prevent the releases job from being interrupted
 
