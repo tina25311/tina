@@ -111,6 +111,7 @@ test:windows:
   <<: *save_report_artifacts
 release:
   stage: deploy
+  interruptible: false
   environment: releases
   <<: *if_release
   before_script:
