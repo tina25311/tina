@@ -12,7 +12,7 @@
 NOTE: Are you interested in testing the Antora {page-component-display-version} release now?
 Refer to xref:install:upgrade-antora.adoc[] to find upgrade instructions as well as a checklist to help you prepare.
 
-= Antora 3.0.0-rc.5
+= Antora 3.0.0-rc.6
 
 _**Release date:** 2021.12.23 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
@@ -21,6 +21,10 @@ _**Release date:** 2021.12.23 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 === Fixed
 
 Issue {url-issues}/923[#923^]:: Allow extension listeners registered using `once` to accept context variables.
+
+= Antora 3.0.0-rc.5
+
+_Incomplete release._
 
 = Antora 3.0.0-rc.4
 
