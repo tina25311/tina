@@ -28,6 +28,7 @@
 ** xref:asciidoc-sourcemap.adoc[]
 * xref:configure-ui.adoc[]
 ** xref:ui-bundle-url.adoc[]
+** xref:ui-supplemental-files.adoc[]
 ** xref:ui-output-dir.adoc[]
 ** xref:ui-default-layout.adoc[]
 * xref:configure-urls.adoc[]

@@ -38,7 +38,7 @@ Fortunately, there's way to do this without having to run a separate command.
 
 === Use the supplemental UI
 
-To avoid the need for the extra command, the other way to do it is to inject the file using Antora's supplemental UI feature.
+To avoid the need for the extra command, the other way to do it is to inject the file using Antora's xref:playbook:ui-supplemental-files.adoc[supplemental UI] feature.
 To do so, add the following `supplemental_files` block under the `ui` category in your playbook file:
 
 .antora-playbook.yml that adds .nojekyll file using supplemental UI
@@ -50,7 +50,8 @@ ui:
   supplemental_files:
   - path: ui.yml
     contents: |
-      static_files: [ .nojekyll ]
+      static_files:
+      - .nojekyll
   - path: .nojekyll
 ----
 

@@ -57,9 +57,7 @@ The other keys are optional; Antora uses their default values if they're not spe
 |Accepts a filesystem path to the output directory where Antora writes the published site's UI files.
 |No
 
-|supplemental_files
-|Supplemental file list or a directory of files to append to the UI bundle.
+|xref:ui-supplemental-files.adoc[supplemental_files]
+|Supplemental files (aka supplemental UI) to overlay onto the UI bundle.
 |No
 |===
-
-//supplemental_files: ./supplemental-ui
