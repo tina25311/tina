@@ -77,7 +77,7 @@ network:
   no_proxy: '*'
 ----
 
-Antora 2 does not honor the `http_proxy` and `https_proxy` environment variables.
+Antora 2 didn't honor the `http_proxy` and `https_proxy` environment variables.
 If you're migrating from Antora 2 to Antora 3, and you encounter a network error (Bad response: 503), the automatic proxy support in Antora 3 may be the culprit.
 If the proxy is standing in the way of Antora connecting to an endpoint, you may need to bypass the proxy using the `no_proxy` key.
 If you want to avoid modifying your playbook, you can specify this key using a CLI option:

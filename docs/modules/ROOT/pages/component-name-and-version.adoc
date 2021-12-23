@@ -32,7 +32,7 @@ Let's create an [.path]_antora.yml_ file that defines the name and version of a 
 In this exercise, we'll create a component version for the project _Silver Leaf_.
 Its component name will be _silver-leaf_, and its version will be _7.1_.
 
-. Open a new file in the text editor or IDE of your choice.
+. Open a new file in your text editor or IDE.
 . On the first line, type `name`, directly followed by a colon (`:`).
 . Press the kbd:[Spacebar] to insert a space after the colon, and then type the value you want to assign to `name`.
 The `name` key doesn't accept certain characters or spaces in its value, see xref:component-name-key.adoc#requirements[name requirements] for details.

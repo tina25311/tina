@@ -48,7 +48,7 @@ The value assigned to the `name` key can contain letters, numbers, underscores (
 To ensure portability between host platforms, letters used in the `name` value should be lowercase.
 
 IMPORTANT: We *strongly* encouraged you to select a name that only consists of _lowercase_ characters.
-Since the component name appears is used in the URL, using consistent casing makes the component name, and thus your site, more portable.
+Component names, except for the special _ROOT_ value, are used in your site's URLs, therefore, using consistent casing makes the component name, and thus your site, more portable.
 That's because some file systems, and thus the web server running on it, can't distinguish between uppercase and lowercase characters.
 
 The value *cannot* contain spaces, forward slashes (`/`), or HTML special characters (`&`, `<`, or `>`).
