@@ -1,27 +1,27 @@
 [#checklist]
 == Upgrade checklist
-
-If you're upgrading from Antora 2.3, you may need to make some of the following changes to your documentation system before using Antora {page-component-display-version}.
+// tag::new[]
+Before you upgrade from Antora 2.3 to Antora {page-component-version}, you may need to make some of the following changes to your documentation system.
 
 Are you using an active LTS version of Node.js?::
 We recommend upgrading to the {url-node-releases}[latest active long term support (LTS) release of Node].
-Antora 3 supports Node.js 14 LTS and 16 LTS.
-Antora 3 doesn't support Node.js LTS versions that have reached end of life (EOL).
-See <<node>> for instructions.
+{page-component-version} supports Node.js 14 LTS and 16 LTS.
+{page-component-version} doesn't support Node.js LTS versions that have reached end of life (EOL).
+See xref:install:upgrade-antora.adoc#node[Upgrade Node.js] for instructions.
 
 Have you updated your AsciiDoc syntax and Asciidoctor extensions to comply with the newest patch release of Asciidoctor.js 2.2?::
-Antora 3 dropped support for Asciidoctor.js 1.5.9 (which provides Asciidoctor 1.5.8) and now depends on the latest patch version of Asciidoctor.js 2.2 (which provides Asciidoctor 2.0.x).
+{page-component-version} dropped support for Asciidoctor.js 1.5.9 (which provides Asciidoctor 1.5.8) and now depends on the latest patch version of Asciidoctor.js 2.2 (which provides Asciidoctor 2.0.x).
 Asciidoctor 2 introduces a few substantive changes to existing features that may impact your documentation source content or UI.
-See xref:ROOT:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora 3.
+See xref:ROOT:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to {page-component-version}.
 
 Are you linking to attachment files?::
-Using the AsciiDoc link macro (`+link:[]+`) and `+{attachmentsdir}+` attribute reference in the target value to reference an attachment has been deprecated in Antora 3.
+Using the AsciiDoc link macro (`+link:[]+`) and `+{attachmentsdir}+` attribute reference in the target value to reference an attachment has been deprecated in {page-component-version}.
 Replace the link macro with the xref macro and use the attachment's resource ID to reference it.
 See xref:page:attachments.adoc[] and xref:navigation:reference-resources.adoc[] to learn about the `attachment$` family coordinate and for usage examples.
 
 Are any of your component versions unversioned?::
 We've deprecated the use of the value `master`, when assigned to the `version` key, to identify an unversioned component.
-In Antora 3, assign the tilde (`~`) to the `version` key in a component version's [.path]_antora.yml_ file to specify it as unversioned.
+In {page-component-version}, assign the tilde (`~`) to the `version` key in a component version's [.path]_antora.yml_ file to specify it as unversioned.
 See xref:ROOT:component-with-no-version.adoc[] to learn more.
 
 Make sure you're using file extensions when cross referencing pages or assigning `page-aliases` values.::
@@ -36,12 +36,12 @@ For local repositories, it may result in the worktree being used in cases it was
 
 Do you use the antora-lunr add-on to integrate Lunr into your site?::
 The antora-lunr add-on was designed for Antora 2 and is a community-maintained project.
-In Antora 3, antora-lunr has been replaced by the https://gitlab.com/antora/antora-lunr-extension[Antora Lunr extension] (package: `@antora/lunr-extension`), which is an official Antora project.
-This extension uses the new extension facility in Antora 3 to integrate Lunr into your site without having to resort to using a custom site generator.
-We encourage you to migrate from antora-lunr to the Antora Lunr Extension when upgrading to Antora 3.
+In {page-component-version}, antora-lunr has been replaced by the https://gitlab.com/antora/antora-lunr-extension[Antora Lunr extension] (package: `@antora/lunr-extension`), which is an official Antora project.
+This extension uses the new extension facility in {page-component-version} to integrate Lunr into your site without having to resort to using a custom site generator.
+We encourage you to migrate from antora-lunr to the Antora Lunr Extension when upgrading to {page-component-version}.
 
 Do you use or maintain a custom site generator?::
-In Antora 3, the site generator must declare the `@antora/logger` package as a dependency.
+In {page-component-version}, the site generator must declare the `@antora/logger` package as a dependency.
 The CLI resolves the logger relative to the site generator.
 If it cannot find it there, it will fall back to the logger provided by the CLI.
 This may result in Antora configuring the wrong logger, which will result in the user to see a warning about the logger not being configured.
@@ -58,10 +58,11 @@ Antora still honors the `cores` API, but the call to register the credential man
 Refer to xref:playbook:private-repository-auth.adoc#custom[Configure a custom credential manager] for the latest instructions.
 
 ifeval::["{route}" == "New"]
-See xref:install:upgrade-antora.adoc[Upgrade Antora] for instructions.
+See xref:install:upgrade-antora.adoc[Upgrade Antora] for instructions when you're ready to upgrade to Antora {page-component-version}.
 
-== Software Lifecycle Notices
+== Antora 2.3 EOL
 
-Antora 2.3 will enter maintenance on January 3, 2022.
-See the xref:ROOT:project/release-schedule.adoc[release schedule] for details.
+Antora 2.3 will enter maintenance on January 25, 2022 and reach end of life (EOL) on February 25, 2022.
+//See the xref:ROOT:project/release-schedule.adoc[release schedule] for details.
 endif::[]
+// end::new[]

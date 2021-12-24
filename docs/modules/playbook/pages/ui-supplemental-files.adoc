@@ -35,13 +35,13 @@ ui:
   supplemental_files: ./supplemental-ui
 ----
 
-Antora scans this directory for files and adds them to loaded UI bundle.
+Antora scans this directory for files and adds them to the loaded UI bundle.
 The directory is assumed to be the root of the UI hierarchy.
 Therefore, the UI path is the path of the file relative to this directory.
 
 Let's assume you want to replace the [.path]_head-meta_ partial with your own.
 Create the file at [.path]_supplemental-ui/partials/head-meta.hbs_ relative to the playbook file.
-Next, populate it with HTML and optional template logic that you want to include.
+Next, populate it with HTML and any optional template logic that you want to include.
 
 .supplemental-ui/partials/head-meta.hbs
 [,hbs]
@@ -59,7 +59,7 @@ As an alternative to a directory, you can specify the supplemental UI files dire
 If the value of the `supplemental_files` key is an array, Antora assumes that each entry is a virtual file.
 A virtual file entry consists of two keys, `path` and `contents`.
 The `path` key is the relative path of the file in the UI (e.g., [.path]_partials/head-meta.hbs_).
-The contents can be specified directory or sourced from a file on the filesystem.
+The contents can be the specified directory or sourced from a file on the filesystem.
 
 If the value of the `contents` key is a single line and ends with a file extension (e.g., `.hbs`), Antora assumes the value is the path of a file specified as a relative or absolute filesystem path.
 Otherwise, Antora uses the value as entered as the contents.
@@ -132,7 +132,7 @@ ui:
       - favicon.ico
 ----
 
-WARNING: If the UI bundle contains a [.path]_ui.yml_ file, you will need to replicate its contents when defining on in the supplemental UI.
+WARNING: If the UI bundle contains a [.path]_ui.yml_ file, you will need to replicate its contents when redefining it for the supplemental UI.
 That's because the file in the supplemental UI overwrites the file provided by the UI bundle.
 
 Although the supplemental UI provides a convenient way to add static files to the site, you may want to consider using an xref:extend:extensions.adoc[extension] instead.
