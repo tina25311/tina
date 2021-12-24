@@ -58,7 +58,7 @@ That's where multiple worktrees comes into play.
 A local git repository can support multiple worktrees.
 The location of the local repository still acts as the main worktree.
 Using the {url-git-worktree}[`git worktree`^] command, you can associate additional worktrees with the repository, each mapped to a discrete branch.
-The new worktree is called a [.term]_linked worktree_.
+The new worktree is called a [.term]*linked worktree*.
 It lives in a directory that's separate from the main worktree.
 That means you can effectively have more than one branch checked out at a time for a single repository.
 
