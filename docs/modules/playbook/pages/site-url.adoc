@@ -160,3 +160,61 @@ Now, when you visit _\https://example.com/docs/component-a/old-page.html_, you'r
 It's important to include the path in the <<absolute-site-url,absolute site URL>> if your site is published to a subfolder of your domain.
 If you don't want to couple your site to a specific domain, assign a <<root-relative-site-url,root-relative site URL>> instead.
 Either way, if you're publishing your site to a subfolder of your domain, you should include the subpath in the value you assign to the `url` key of the site.
+
+== Canonical URL
+
+Antora provides built-in support for canonical URLs.
+A [.term]*canonical URL* is the absolute URL of the preferred version of a page; the page you want a search engine to index.
+
+If you assign an absolute URL to the site URL, Antora computes and assigns the canonical URL to the `page.canonicalUrl` property in the UI model for any applicable page.
+An applicable page is any publishable page in a component that has at least one non-prerelease version.
+If the site URL is not set to an absolute URL, or the page is not in a component with at least one non-prerelease version, Antora does not populate the canonical URL.
+
+The canonical URL is the absolute URL of the newest, non-prerelease version of a page.
+The canonical URL is computed by prepending the site URL (including the subpath) to the (root-relative) URL of that page.
+
+The canonical URL points to the current page only if the current page is the newest non-prerelease version.
+Otherwise, the canonical URL points to the newest, non-prerelease version of the current page.
+
+CAUTION: If the page has been deleted, the newest version of a page may not be in the latest version of the component.
+
+=== Canonical URL link tag
+
+In order for the canonical URL to be picked up by the search crawler, the UI template must include it in the page.
+The canonical URL should be declared as the value of the `href` attribute on a `<link rel="canonical">` tag inside the `<head>` tag of the page.
+Antora's default UI does this for you.
+Here's the template logic from Antora's default UI that generates this `<link>` tag:
+
+[,hbs]
+----
+{{#with page.canonicalUrl}}
+<link rel="canonical" href="{{{this}}}">
+{{/with}}
+----
+
+Here's how the canonical URL appears in the generated page:
+
+[,html]
+----
+<link ref="canonical" href="https://docs.example.org/component-name/2.0/page-name.html">
+----
+
+Assuming the page to which the canonical URL refers is present in all versions of the component, all versions of the page will contain the same `<link>` tag.
+If the page is in a prerelease version, it will refer back to the page in the latest (non-prerelease) version.
+
+TIP: It's up the creator of a custom UI to decide whether to include the canonical URL in the page template.
+Antora merely makes the information available via the UI page model.
+Antora's default UI includes the required tag in the page template.
+
+=== How the canonical URL works
+
+The purpose of the canonical URL is to help search engines correlate versions of the same page and to suggest which version of the page is preferred (i.e., the version to index).
+When the search engine comes across a page which has a canonical URL that's different from the current URL, the search engine should not index that page, but rather index the page to which the canonical URL points.
+By defining the canonical URL, it should ensure that old versions of a page do not show up in search results.
+
+One caveat is that if a page is present in old versions of a component, but not the latest version, the canonical URL will point to a page in an older version, and thus be indexed.
+If you do not want this to happen, make sure that another page in the latest version of the component claims that page using a page alias.
+That way, Antora will configure the canonical URL to point to the page that claims that page, thus avoiding the old page from being indexed.
+
+Use the https://support.google.com/webmasters/answer/9012289?hl=en[URL inspection tool] to see what canonical URL Google has detected for a page, and whether a page is indexed.
+See https://developers.google.com/search/docs/advanced/crawling/consolidate-duplicate-urls[Consolidating duplicate URLs] and https://support.google.com/webmasters/answer/10347851?hl=en[Canonical URL] to learn more about canonical URLs and how search engines like Google interpret them.
