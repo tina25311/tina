@@ -2,6 +2,7 @@
 'use strict'
 
 const {
+  configureLogger,
   emptyDirSync,
   expect,
   GitServer,
@@ -16,6 +17,7 @@ const { default: Kapok } = require('kapok-js')
 const pkg = require('@antora/cli/package.json')
 const { once } = require('events')
 const ospath = require('path')
+const run = require('@antora/cli')
 
 const ANTORA_CLI = ospath.resolve('node_modules', '.bin', process.platform === 'win32' ? 'antora.cmd' : 'antora')
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
@@ -187,6 +189,32 @@ describe('cli', () => {
     return runAntora('help no-such-command')
       .assert("antora: unknown command 'no-such-command'. See 'antora --help' for a list of commands.")
       .done()
+  })
+
+  it('should return promise that resolves when command completes', async () => {
+    playbookSpec.runtime.log.level = 'silent'
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const args = ['--cache-dir', ANTORA_CACHE_DIR, '--quiet', playbookFile]
+    let returnValue = run(process.argv.slice(0, 2).concat(args))
+    expect(returnValue).to.be.instanceOf(Promise)
+    returnValue = await returnValue
+    expect(returnValue).to.be.instanceOf(returnValue.Command)
+    expect(returnValue.name()).to.equal('antora')
+    expect(returnValue.args).to.eql(args)
+    expect(process.exitCode).to.equal(0)
+  })
+
+  it('should set exit code on process when command fails', async () => {
+    const oldExitCode = process.exitCode
+    try {
+      configureLogger({ level: 'silent', failureLevel: 'fatal' })
+      const args = ['--cache-dir', ANTORA_CACHE_DIR, playbookFile]
+      const returnValue = await run(process.argv.slice(0, 2).concat(args))
+      expect(returnValue).to.be.instanceOf(returnValue.Command)
+      expect(process.exitCode).to.equal(1)
+    } finally {
+      process.exitCode = oldExitCode
+    }
   })
 
   it('should output options from playbook schema for generate command', () => {
