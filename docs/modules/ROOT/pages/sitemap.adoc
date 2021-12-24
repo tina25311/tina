@@ -5,8 +5,8 @@ If the value of the site URL defined in the playbook is an absolute URL, Antora 
 == Sitemap structure
 
 The sitemap that Antora produces consists of several files.
-Rather than just a single [.path]_sitemap.xml_ file, the Antora partitions the sitemap into multiple files by component along with an index.
-The [.path]_sitemap.xml_ file is a sitemap index that lists each of the individual sitemap files.
+Rather than just a single [.path]_sitemap.xml_ file, Antora partitions the sitemap into multiple files.
+The [.path]_sitemap.xml_ file is a sitemap index that lists each of the individual component sitemap files.
 The sitemap files are placed at the root of the published site, where a search engine will expect to find them.
 
 ....

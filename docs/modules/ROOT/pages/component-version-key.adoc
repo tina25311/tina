@@ -85,7 +85,7 @@ For example, `v9.0` will be sorted as though the value is `9.0`.
 
 Since content in Antora is retrieved from a git repository, you may want to use the git refname (branch or tag name) in which the component version descriptor is stored as the version.
 To do so, assign the reserved value `true` to the version.
-Antora will substitute the value `true` with the refname dynamically.
+Antora will substitute the value `true` with the refname automatically.
 The value Antora uses is always the short refname (e.g., v1.0), not the full refname (e.g., refs/heads/v1.0).
 
 The following example shows how to use the refname as the value of the `version` key.
