@@ -9,8 +9,22 @@ Assumptions:
 
 On this page, you'll learn:
 
+* [x] How to run Antora without installing it.
 * [x] How to install Antora locally (recommended).
 * [x] How to install the Antora CLI and site generator packages globally.
+
+== Try before you install
+
+If you're just evaluating Antora, you can run it using `npx` without having to install it first.
+
+ $ npx antora -v
+
+The `npx` command, provided by Node.js, can run a command directly from a local or remote npm package. 
+If any required packages are not present in the local project dependencies, npx will install them into a cache folder (typically [.path]_$HOME/.npm/_npx_) before running the command.
+If the name of the command matches the name of the package that provides it, you don't have to specify a package name.
+In this case, the *antora* command is provided by the *antora* package, which bundles both the CLI and site generator.
+
+You'll see later that we recommend using the `npx` command to run Antora when you have installed it locally as well.
 
 == Locally vs globally
 

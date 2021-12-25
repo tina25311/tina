@@ -19,6 +19,21 @@ These are just a few of the new capabilities and updates packed into Antora {pag
 
 //TIP: Jump to the <<checklist,upgrade checklist>> for breaking changes that may impact your site when you upgrade from Antora 2.3 to Antora {page-component-version}.
 
+== New meta package
+
+The Antora CLI and site generator are now bundled together as a package named *antora*.
+That means two things.
+First, you can manage the version of Antora using a single dependency.
+Second, you can run Antora without having to install it first.
+Try this command:
+
+ $ npx antora -v
+
+The `npx` command, provided by Node.js, can run a command directly from a local or remote npm package. 
+If any required packages are not present in the local project dependencies, npx will install them into a cache folder (typically [.path]_$HOME/.npm/_npx_) before running the command.
+If the name of the command matches the name of the package that provides it, you don't have to specify a package name.
+That's why it's important that the package is named *antora*.
+
 == Antora extensions
 
 Antora now provides a lightweight, event-based extension facility that you can tap into to augment or influence the functionality of the site generator.
