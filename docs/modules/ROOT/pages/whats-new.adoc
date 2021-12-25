@@ -38,7 +38,7 @@ That's why it's important that the package is named *antora*.
 
 Antora now provides a lightweight, event-based extension facility that you can tap into to augment or influence the functionality of the site generator.
 The extension facility is designed for users of all experience levels.
-Extensions can be configured using the `antora.extensions` key in the playbook.
+Extensions can be registered and configured using the `antora.extensions` key in the playbook.
 
 To learn more, see:
 
