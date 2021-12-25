@@ -1,11 +1,11 @@
 = Asciidoctor Upgrade Notes
 
-Antora 3 uses Asciidoctor.js 2.2.x (Asciidoctor 2.0.x) instead of Asciidoctor.js 1.5.9 (Asciidoctor 1.5.8) to process content files.
+Antora {page-component-version} uses Asciidoctor.js 2.2.x (Asciidoctor 2.0.x) instead of Asciidoctor.js 1.5.9 (Asciidoctor 1.5.8) to process content files.
 Asciidoctor 2 introduces many new features and a few substantive changes to existing features.
 
 == Asciidoctor 2 feature changes
 
-The following table describes the new behavior of existing Asciidoctor features and suggests the actions you should take prior to upgrading to Antora 3.
+The following table describes the new behavior of existing Asciidoctor features and suggests the actions you should take prior to upgrading to Antora {page-component-version}.
 
 |===
 |Feature |New behavior |Action
@@ -100,5 +100,8 @@ You could also ignore these messages or not enable the info log level.
 
 == Semantic versioning and Asciidoctor 2
 
-Starting with version 2.0.0, Asciidoctor and Asciidoctor.js switched to semantic versioning.
+Starting with Asciidoctor 2.0.0, Asciidoctor and Asciidoctor.js switched to semantic versioning.
 This allows Antora to automatically pick up the latest patch versions of Asciidoctor.js during installation without having to make a new Antora release available.
+
+NOTE: Ready to upgrade to Antora {page-component-version}?
+See xref:install:upgrade-antora.adoc[] for instructions.

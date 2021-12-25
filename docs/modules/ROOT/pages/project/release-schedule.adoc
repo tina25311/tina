@@ -9,19 +9,19 @@ Each major release line of the Antora Core components is typically supported for
 |===
 |Release Line |Latest Release |Status |GA |Maintenance |EOL
 
-|Antora 3.x
-|n/a
-|Pending
-|~ 2021/12
+|Antora 3
+|{page-component-version}.0
+|Active
+|2021/12/25
 |TBD
 |TBD
 
-|Antora 2.x
+|Antora 2
 |2.3.4
 |Active
 |2018/12/25
-|~ 2022/01
-|TBD
+|2022/01/25
+|2022/02/25
 
 |===
 
