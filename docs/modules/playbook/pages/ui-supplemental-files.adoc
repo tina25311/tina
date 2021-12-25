@@ -17,6 +17,7 @@ If the path of a file in the supplemental UI does not match the path of a file i
 If the path of a file in the supplemental UI matches the path of a file in the UI bundle, the file from the supplemental UI replaces the file from the UI bundle.
 The files in the supplemental UI are not otherwise processed.
 
+[#supplemental-files-key]
 == supplemental_files key
 
 The supplemental UI is configured using the `supplemental_files` key under the `ui` category key.

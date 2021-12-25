@@ -140,6 +140,14 @@ The xref:playbook:git-plugins.adoc[git.plugins key] provides a way to specify pr
 
 The xref:playbook:git-fetch-concurrency.adoc[git.fetch_concurrency key] controls the maximum number of fetch or clone operations that are permitted to run at once.
 
+== Supplemental UI
+
+Antora supports overlaying additional files onto the loaded UI bundle, called the supplemental UI.
+These files are configured using the xref:playbook:ui-supplemental-files.adoc#supplemental-files-key[ui.supplemental_files key] in the playbook.
+For awhile, this feature was considered experimental.
+There's been enough real world usage of it that we know now that it's a feature worth keeping.
+We're declaring this feature as stable in Antora 3 and have included xref:playbook:ui-supplemental-files.adoc[documentation] for it.
+
 == Network proxy
 
 Antora {page-component-version} now honors the environment variables `http_proxy`, `https_proxy`, and `no_proxy`.
