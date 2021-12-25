@@ -28,8 +28,9 @@ You'll see later that we recommend using the `npx` command to run Antora when yo
 
 == Locally vs globally
 
-When we say "`locally`" on this page, we mean either within the playbook project or in any parent folder.
-We recommend installing Antora locally, generally within the playbook project, especially if you're managing several documentation sites.
+When we say "`locally`" on this page, we mean within the playbook project or any parent folder.
+We recommend installing Antora locally, ideally within the playbook project.
+This recommendation is particularly relevant if you're managing several documentation sites.
 Installing Antora locally keeps the version of Antora in sync with the version for which the documentation site was made.
 
 When we say "`globally`" on this page, that does not imply system-wide.
@@ -46,10 +47,10 @@ We recommend that you install Antora locally, meaning within the playbook projec
 This strategy makes it easier to manage the version of Antora and ensures the version of Antora matches the version for which the playbook was made.
 It also avoids any permission problems you may run into when trying to install Antora globally.
 
-When you install Antora locally, the `antora` command is not put on your PATH.
+When you install Antora locally, the `antora` command is not placed on your PATH.
 Instead, you run the `antora` command using `npx` (i.e., `npx antora`).
 
-To install Antora, begin by switching to the directory of your playbook project (creating it, if necessary).
+To install Antora locally, begin by switching to the directory of your playbook project (creating it, if necessary).
 We'll assume here that the name of this folder is [.path]_docs-site_.
 
  $ cd docs-site
@@ -61,7 +62,7 @@ Next, let's install the CLI package within the playbook project so you can run t
    npm i -D -E @antora/cli@{page-component-version}.0
 
 The `@antora/cli` and its dependent packages will be installed into the [.path]_node_modules_ folder inside your playbook project.
-The optional `-D` option tells `npm` to save the package as development dependencies in [.path]_package.json_.
+The optional `-D` option tells `npm` to save the package as a development dependency in [.path]_package.json_.
 The `-E` option tells `npm` to store the exact version in [.path]_package.json_ rather than prefixing it with a semver range operator.
 
 IMPORTANT: The `@` at the beginning of the package name is important.
@@ -81,6 +82,7 @@ The command should report the version of the Antora CLI in the terminal.
  @antora/site-generator: not installed
 
 The `npx` command will look for the `antora` command installed within the playbook project or any parent directory of the playbook project.
+As you can see, though, we're missing the site generator.
 
 Next, install the site generator package within the playbook project:
 
@@ -122,7 +124,7 @@ Another option is to use `npm ci`, which will automatically remove [.path]_node_
 == Install Antora globally
 
 You have the option of installing Antora globally so that the `antora` command is available on your PATH.
-To do so, pass the `-g` option to `npm i`.
+To install Antora globally, pass the `-g` option to `npm i`.
 
 [subs=attributes+]
  $ npm i -g @antora/cli@{page-component-version}.0 @antora/site-generator@{page-component-version}.0
