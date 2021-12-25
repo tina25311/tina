@@ -59,22 +59,22 @@ To learn more, see:
 == Structured JSON and prettified logging
 
 Antora now provides the infrastructure for logging, shaping, and reporting application messages with the introduction of the Antora Logger component.
-All application and Asciidoctor messages, except for CLI warnings, are routed through the logger by default.
+All Antora and Asciidoctor messages and errors, except for CLI warnings, are routed through the logger by default.
 
 The logging in Antora {page-component-version} can be configured with the following keys:
 
 * The xref:playbook:runtime-log-format.adoc[log.format playbook key] specifies the format of the log messages.
 * The xref:playbook:runtime-log-level.adoc[log.level playbook key] specifies a severity threshold, such as `debug` or `error`, that must be met for a message to be logged.
 * The xref:playbook:runtime-log-failure-level.adoc[log.failure_level playbook key] specifies the severity threshold that, when met or exceeded, causes Antora to fail on exit with a non-zero exit code.
-* The xref:playbook:runtime-log-format.adoc#level-format-key[log.level_format key] allows the log level format of JSON messages to be configured as numbers of labels.
-* The xref:playbook:runtime-log-destination.adoc[log.destination category key] supports writing log messages to a file or standard stream (`file` key) and settings for buffer size (`buffer_size`), `sync`, and `append`.
+* The xref:playbook:runtime-log-format.adoc#level-format-key[log.level_format key] allows the log level format of JSON messages to be reported as numbers instead of labels.
+* The xref:playbook:runtime-log-destination.adoc[log.destination category key] supports writing log messages to a file or standard stream (`file` key) and controls how the messages are written (`buffer_size`, `sync`, and `append`).
 * The xref:playbook:asciidoc-sourcemap.adoc[asciidoc.sourcemap key] provides additional file and line number information about AsciiDoc blocks to Antora's logger and Asciidoctor extensions.
 
 == Asciidoctor 2
 
-Antora {page-component-version} now depends on the latest patch version of Asciidoctor.js 2.2, which provides Asciidoctor 2.0.x.
+Antora 3 now depends on the latest patch version of Asciidoctor.js 2.2, which provides Asciidoctor 2.0.x.
 Asciidoctor 2 introduces new AsciiDoc features and a few substantive changes to existing features that may impact your documentation source content or UI.
-See xref:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora {page-component-version}.
+See xref:asciidoctor-upgrade-notes.adoc[] to learn about the affected features and the suggested actions you should take before upgrading to Antora 3.
 
 == Latest version URL customizations
 
