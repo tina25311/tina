@@ -96,6 +96,18 @@ Now when you run `npx antora -v`, you should see the version of both the Antora 
  @antora/cli: {page-component-version}.0
  @antora/site-generator: {page-component-version}.0
 
+If you're using Bash, you can save some typing by creating an alias for `npx antora` named `antora`:
+
+ $ alias antora='npx antora'
+
+Now you can run `antora` without having to remember to prefix it with `npx`:
+
+ $ antora -v
+
+You can then bypass this alias by prefixing the command with a backslash, which will search for `antora` on your PATH instead.
+
+ $ \antora -v
+
 If you open [.path]_package.json_, you'll see the version of these packages listed there too, as development dependencies.
 
 [,json,subs=+attributes]
