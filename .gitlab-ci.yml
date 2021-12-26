@@ -82,6 +82,7 @@ lint:
     <<: *npm_cache
     policy: pull-push
   script:
+  - npx npm run deps
   - npx npm run lint
   - if [ -n "$(npx npm --silent run format && git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
 test:node-12-linux:
