@@ -2,7 +2,7 @@
 :url-zip-file-format: https://en.wikipedia.org/wiki/Zip_(file_format)
 
 A UI bundle is a {url-zip-file-format}[ZIP archive] or directory that contains one or more UIs for a site.
-The only required file in the UI bundle is the default layout for pages (e.g., [.path]_layouts/default.hbs_).
+The only required file in the UI bundle is the default layout for pages (e.g., [.path]_layouts/default.hbs_) (and, if the 404 page is enabled, [.path]_layouts/404.hbs_ as well).
 Antora automatically fetches and loads a UI bundle when generating a site.
 
 [#url-key]
