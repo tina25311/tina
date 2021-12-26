@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npm test && npm run lint",
     "coverage": "nyc _mocha",
+    "deps": "node scripts/validate-deps.js",
     "format": "node scripts/format.js packages/${npm_config_package},scripts",
     "lint": "eslint \"{docs,scripts}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
     "test": "_mocha",
