@@ -2,7 +2,7 @@
   "private": true,
   "name": "@antora/test-harness",
   "main": "lib/index.js",
-  "devDependencies": {
+  "dependencies": {
     "chai": "~4.3",
     "chai-fs": "~2.0",
     "chai-spies": "~1.0",
