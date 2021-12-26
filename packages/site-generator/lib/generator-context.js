@@ -6,18 +6,18 @@ const noopNotify = async function notify () {}
 const userRequire = require('@antora/user-require-helper')
 
 const FUNCTION_PROVIDERS = {
-  aggregateContent: 'content-aggregator',
-  buildNavigation: 'navigation-builder',
-  classifyContent: 'content-classifier',
-  convertDocument: 'document-converter',
+  aggregateContent: 'content-aggregator', // dynamic require('@antora/content-aggregator')
+  buildNavigation: 'navigation-builder', // dynamic require('@antora/navigation-builder')
+  classifyContent: 'content-classifier', // dynamic require('@antora/content-classifier')
+  convertDocument: 'document-converter', // dynamic require('@antora/document-converter')
   convertDocuments: 'document-converter',
-  createPageComposer: 'page-composer',
-  extractAsciiDocMetadata: 'asciidoc-loader',
+  createPageComposer: 'page-composer', // dynamic require('@antora/page-composer')
+  extractAsciiDocMetadata: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
   loadAsciiDoc: 'asciidoc-loader',
-  loadUi: 'ui-loader',
-  mapSite: 'site-mapper',
-  produceRedirects: 'redirect-producer',
-  publishFiles: 'file-publisher',
+  loadUi: 'ui-loader', // dynamic require('@antora/ui-loader')
+  mapSite: 'site-mapper', // dynamic require('@antora/site-mapper')
+  produceRedirects: 'redirect-producer', // dynamic require('@antora/redirect-producer')
+  publishFiles: 'file-publisher', // dynamic require('@antora/file-publisher')
   resolveAsciiDocConfig: 'asciidoc-loader',
 }
 
@@ -117,6 +117,7 @@ class GeneratorContext extends EventEmitter {
   }
 
   _init (playbook) {
+    // dynamic require('@antora/site-publisher')
     const fxns = (this.#fxns = Object.defineProperty({}, 'publishSite', {
       enumerable: true,
       get () {

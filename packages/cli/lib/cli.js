@@ -51,7 +51,7 @@ function requireLogger (fromPath = undefined, moduleName = '@antora/logger') {
     return (
       requireLogger.cache ||
       (requireLogger.cache = fromPath ? userRequire(moduleName, { paths: [fromPath] }) : require(moduleName))
-    ) // require('@antora/logger')
+    ) // dynamic require('@antora/logger')
   } catch {
     return fromPath && (requireLogger.cache = require(moduleName))
   }
