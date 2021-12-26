@@ -79,12 +79,13 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
     attributes.relfilesuffix = '.adoc' // NOTE relfilesuffix must be set for page-to-page xrefs to work correctly
     opts.converter = createConverter(file, contentCatalog, config)
   }
-  const doc = Asciidoctor.load(contents.toString(), opts)
-  if (extensions.length) freeExtensions()
-  return doc
+  try {
+    return Asciidoctor.load(contents.toString(), opts)
+  } finally {
+    if (extensions.length) freeExtensions()
+  }
 }
 
-// QUESTION should we soft set the page-id attribute?
 function computePageAttrs ({ component: componentName, version, module: module_, relative, origin }, contentCatalog) {
   const attrs = {}
   attrs['page-component-name'] = componentName
