@@ -59,11 +59,11 @@ The `@antora/cli` package and its dependencies will be installed into the [.path
 The optional `-D` option tells `npm` to save the package as a development dependency in [.path]_package.json_.
 The `-E` option tells `npm` to store the exact version in [.path]_package.json_ rather than prefixing it with a semver range operator.
 
-IMPORTANT: The `@` at the beginning of the package name tells `npm` that the `cli` package is located under the `@antora` scope.
+IMPORTANT: The `@` at the beginning of the package name informs `npm` that the `cli` package is located under the `@antora` scope.
 If you omit this character, `npm` will assume the package name is the name of a git repository on GitHub.
 
 NOTE: The second `@` in the package name designates the start of the requested version number.
-Except for prerelease versions, you can specify the major and minor segments only (e.g., `@{page-component-version}`) to ensure you retrieve the latest patch release.
+Except for prerelease versions, you can specify the major and minor segments only (e.g., `@{page-component-version}`), which ensures you retrieve the latest patch release.
 
 When you install Antora locally, the `antora` command is not placed on your PATH.
 Instead, you run the `antora` command using `npx` (i.e., `npx antora`).
@@ -81,6 +81,18 @@ This command should report the version of the Antora CLI in the terminal.
 The `npx` command will look for the `antora` command installed within the playbook project or any parent directory of the playbook project.
 If you're prompted to install the *antora* package, then the CLI was not found.
 
+If you're using Bash, you can save some typing by creating an alias for `npx antora` named `antora`:
+
+ $ alias antora='npx antora'
+
+Now you can run `antora` without having to remember to prefix it with `npx`:
+
+ $ antora -v
+
+You can bypass this alias by prefixing the command with a backslash, which will search for `antora` on your PATH instead.
+
+ $ \antora -v
+
 Although `npx` finds the `antora` command and reports the CLI version, we're still missing the site generator.
 Next, install the site generator package within the playbook project:
 
@@ -95,18 +107,6 @@ Now when you run `npx antora -v`, you should see the version of both the Antora 
 [subs=attributes+]
  @antora/cli: {page-component-version}.0
  @antora/site-generator: {page-component-version}.0
-
-If you're using Bash, you can save some typing by creating an alias for `npx antora` named `antora`:
-
- $ alias antora='npx antora'
-
-Now you can run `antora` without having to remember to prefix it with `npx`:
-
- $ antora -v
-
-You can then bypass this alias by prefixing the command with a backslash, which will search for `antora` on your PATH instead.
-
- $ \antora -v
 
 If you open [.path]_package.json_, you'll see the version of these packages listed there too, as development dependencies.
 
@@ -124,12 +124,12 @@ You'll also notice an additional file named [.path]_package-lock.json_.
 This file stores the resolved version of all packages and their dependencies.
 You may choose to commit this file when you commit [.path]_package.json_.
 
-That confirms you have both required packages of Antora installed.
-
 TIP: If you're reinstalling Antora, it's best to first remove the [.path]_node_modules_ folder.
 If you also want to get the latest version of each dependency, remove the [.path]_package-lock.json_ file as well.
-If you do remove the [.path]_node_modules_ folder, be sure to install the CLI package again.
+If you remove the [.path]_node_modules_ folder, be sure to install the CLI package again.
 Another option is to use `npm ci`, which will automatically remove [.path]_node_modules_ when reinstalling.
+
+If the `antora` command reports the version of both the CLI and the site generator, and those versions match, that confirms you have installed Antora correctly.
 
 == Install Antora globally
 
