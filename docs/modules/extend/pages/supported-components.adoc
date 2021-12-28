@@ -4,6 +4,7 @@
 :table-caption!:
 // URLs
 :url-antora-lcs: https://gitlab.com/antora/antora/blob/HEAD/LICENSE
+:y: &#x2705;
 
 On this page, you'll find the list of Antora components that can be assembled into a custom site generator pipeline.
 Antora has a modular architecture so that components can be easily removed and replaced.
@@ -30,105 +31,124 @@ Once ready for xref:ROOT:project/release-schedule.adoc[general availability], Ex
 [#component-matrix]
 == Supported Core and Extended components matrix
 
-[cols="2,4,1,1,1"]
+[cols="4,4,^1,^1,1"]
 |===
-|Component |Description |Core |Extended |License
+|Name / Package |Description |Core |Extended |License
 
-|AsciiDoc Loader
+|*AsciiDoc Loader* +
+@antora/asciidoc-loader
 |Reusable library for handling AsciiDoc content in Antora.
 It loads AsciiDoc content into an AsciiDoc Document object (AST).
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|CLI
+|*CLI* +
+@antora/cli
 |Command line interface (CLI) for Antora.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Content Aggregator
+|*Content Aggregator* +
+@antora/content-aggregator
 |Fetches and aggregates content distributed across multiple local and remote git repositories.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Content Classifier
+|*Content Classifier* +
+@antora/content-classifier
 |Organizes aggregated content into a virtual file catalog.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Document Converter
+|*Document Converter* +
+@antora/document-converter
 |Converts AsciiDoc documents to embeddable HTML.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Logger
+|*Logger* +
+@antora/logger
 |Provides the infrastructure for logging, shaping, and reporting application messages.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Navigation Builder
+|*Navigation Builder* +
+@antora/navigation-builder
 |Builds a navigation catalog sourced from navigation files.
 This navigation catalog can be used to add site navigation to pages.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Page Composer
+|*Page Composer* +
+@antora/page-composer
 |Wraps the embeddable HTML contents of each page file from the content catalog in an HTML page layout.
 This step yields the standalone HTML pages in the generated site.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Playbook Builder
+|*Playbook Builder* +
+@antora/playbook-builder
 |The configuration component that builds a playbook object from user input.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Redirect Producer
+|*Redirect Producer* +
+@antora/redirect-producer
 |Produces redirects (HTTP redirections) to a given page from its registered aliases.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Site Generator
+|*Site Generator* +
+@antora/site-generator
 |The site generator for Antora.
 Invoked by the `generate` command of Antora's CLI to produce and publish static documentation sites.
-This package groups (i.e., has a dependency on) all the other packages in core except for the CLI.
-|&#10003;
+This package groups (i.e., has a dependency on) all the other non-extension packages except for the CLI.
+
+_Renamed from @antora/site-generator-default._
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Site Mapper
+|*Site Mapper* +
+@antora/site-mapper
 |Generates the sitemap files for the site.
 These files, which are intended to be read by crawlers, provide a list of all published pages by URL.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|File Publisher
+|*File Publisher* +
+@antora/file-publisher
 |Publishes (i.e., writes) the publishable files in the virtual file catalogs to the destination(s) specified in the playbook.
-|&#10003;
+
+_Renamed from @antora/site-publisher._
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|UI Loader
+|*UI Loader* +
+@antora/ui-loader
 |Downloads and caches the UI bundle, then extracts and loads the files from that bundle into a UI catalog.
 The UI files are combined with the content files at the end of the Antora documentation pipeline to produce a complete site.
-|&#10003;
+|{y}
 |
 |{url-antora-lcs}[MPL-2.0^]
 
-|Lunr Extension
+|*Lunr Extension* +
+@antora/lunr-extension
 |An Antora extension that integrates with Lunr to add offline, full-text search powered by Lunr to your Antora documentation site.
 |
-|&#10003;
+|{y}
 |{url-antora-lcs}[MPL-2.0^]
 |===
 
