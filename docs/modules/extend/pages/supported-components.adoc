@@ -124,6 +124,12 @@ The UI files are combined with the content files at the end of the Antora docume
 |&#10003;
 |
 |{url-antora-lcs}[MPL-2.0^]
+
+|Lunr Extension
+|An Antora extension that integrates with Lunr to add offline, full-text search powered by Lunr to your Antora documentation site.
+|
+|&#10003;
+|{url-antora-lcs}[MPL-2.0^]
 |===
 
 // Custom components
