@@ -1,0 +1,80 @@
+= Publish to GitLab Pages
+:listing-caption!:
+
+* Gitlab provides the ability to have unlimited Private & Public (private by default) repos, for free.
+* GitLab CI/CD is a tool for software development using the continuous methodologies.
+* You can https://docs.gitlab.com/ee/user/project/pages/redirects.html[create redirects for GitLab Pages]
+
+== Setup GitLab CI/CD to build a site with Antora
+
+Read the https://docs.gitlab.com/ee/ci/introduction/index.html[CI/CD concepts] or https://docs.gitlab.com/ee/ci/yaml/gitlab_ci_yaml.html[The .gitlab-ci.yml file]
+
+____
+To use GitLab CI/CD, you need:
+
+* Application code hosted in a Git repository.
+* A file called .gitlab-ci.yml in the root of your repository, which contains the CI/CD configuration.
+____
+
+https://gitlab.com/antora/demo/docs-site[] is a Playbook project for generating and publishing the demo site with Antora. https://antora.gitlab.io/demo/docs-site[]
+
+..gitlab-ci.yml for Antora demo site
+====
+[source,yaml]
+----
+image:
+  name: antora/antora:3.0.0
+pages:
+  stage: deploy
+  only:
+  - main@antora/demo/docs-site
+  cache:
+    paths:
+    - .cache/
+  script:
+  - antora --fetch --cache-dir .cache/antora --attribute page-pagination= --redirect-facility gitlab --to-dir public antora-playbook.yml
+  artifacts:
+    paths:
+    - public/
+----
+====
+
+In your own playbook project you could modify this file:
+
+..gitlab-ci.yml
+====
+[source,yaml]
+----
+image:
+  name: antora/antora:3.0.0 #<1>
+variables:
+  # workaround for @antora/lunr-extension:
+  NODE_OPTIONS: "--max-old-space-size=4096"
+  # deploy-token for private repositories:
+  GIT_CREDENTIALS: "https://gitlab+deploy-token-TOKEN_ID:TOKEN@gitlab.com/org/project-docs1.git,https://gitlab+deploy-token-TOKEN_ID:TOKEN@gitlab.com/org/project-docs2.git"
+before_script:
+  - npm i #<3>
+pages:
+  stage: deploy
+  only:
+  - master #<2>
+  cache:
+    paths:
+    - .cache/
+  script:
+  # You should only set "--redirect-facility" using the CLI option so it matches the environment for which your building.
+  # If you add it to the playbook, then that set up isn't as friendly to local testing
+  - npx antora --cache-dir .cache/antora --redirect-facility gitlab antora-playbook-public.yml
+  artifacts:
+    paths:
+    - public/ #<4>
+----
+<1> Anything that doesn't have "antora" in the name (typically prefixed with @antora/) is not part of this project and has to be installed separately. https://docs.antora.org/antora/latest/extend/supported-components/#component-matrix[] documents the core components.
+<2> 'master', 'main' or another branch
+<3>   We now strongly recommend installing all packages inside the playbook project. See https://docs.antora.org/antora/latest/install/install-antora/#locally-vs-globally +
+`npm i` ensures that your dependencies defined in package.json are installed. +
+You should never commit node_modules to a repository. It is created when you call `npm i`. +
+If you commit the "package-lock.json" file, then you can run `npm ci` instead of `npm i`. The `npm ci` command installes packages listed in "package-lock.json" instead of "package.json". It allows you to control what is installed more precisely.
+
+<4> 'public' is required by https://docs.gitlab.com/ee/user/project/pages/[GitLab Pages]
+====
