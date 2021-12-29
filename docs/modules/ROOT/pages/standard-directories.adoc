@@ -168,7 +168,7 @@ Hidden files *do not* get added to Antora's content catalog, and therefore aren'
         📄 .hidden-example-file.ext <.>
         📄 example-file <.>
       📂 pages
-        📄 hidden-page-file.adoc <.>
+        📄 .hidden-page-file.adoc <.>
         📄 hidden-page-file <.>
 ----
 <.> Antora won't load this example file into the content catalog because its filename begins with a dot (`.`).
