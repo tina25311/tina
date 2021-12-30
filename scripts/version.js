@@ -32,10 +32,10 @@ function updateReadmes (now) {
           .map((readmeFile) =>
             fsp
               .readFile(readmeFile, 'utf8')
-              .then((contents) =>
+              .then((readme) =>
                 fsp.writeFile(
                   readmeFile,
-                  contents.replace(/^Copyright \(C\) (\d{4})-\d{4}/m, `Copyright (C) $1-${now.getFullYear()}`)
+                  readme.replace(/^Copyright \(C\) (\d{4})-\d{4}/m, `Copyright (C) $1-${now.getFullYear()}`)
                 )
               )
           )
@@ -68,7 +68,13 @@ function updateChangelog (now) {
   return fsp
     .readFile(CHANGELOG_FILE, 'utf8')
     .then((changelog) =>
-      fsp.writeFile(CHANGELOG_FILE, changelog.replace(/^== Unreleased$/m, `== ${VERSION} (${releaseDate})`))
+      fsp.writeFile(
+        CHANGELOG_FILE,
+        changelog.replace(/^== (?:(Unreleased)|\d.*)$/m, (currentLine, replace) => {
+          const newLine = `== ${VERSION} (${releaseDate})`
+          return replace ? newLine : [newLine, '_No changes since previous release._', currentLine].join('\n\n')
+        })
+      )
     )
     .then(() => promisify(exec)('git add CHANGELOG.adoc', { cwd: PROJECT_ROOT_DIR }))
 }
