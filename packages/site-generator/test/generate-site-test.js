@@ -1098,6 +1098,7 @@ describe('generateSite()', () => {
       playbookSpec.site.url = 'https://docs.example.org'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
+      // NOTE using env here only works because env is a custom object
       const observed = env.OBSERVED
       expect(Object.keys(observed).sort()).to.eql(Object.keys(events).sort())
       Object.entries(events).forEach(([event, vars]) => expect(observed[event]).to.include.members(vars))
@@ -1703,6 +1704,7 @@ describe('generateSite()', () => {
       playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       await generateSite(getPlaybook(playbookFile))
+      // NOTE using env here only works because env is a custom object
       expect(env.OBSERVED_ON_REGISTER).to.eql(['publishSite'])
       expect(env.OBSERVED_BEFORE_PROCESS).to.eql([
         'aggregateContent',
