@@ -957,7 +957,7 @@ describe('buildPlaybook()', () => {
     expect(playbook).to.have.property('key', 'default-value')
   })
 
-  it('should be decoupled from the process environment', () => {
+  it('should be decoupled from the process environment when env is specified', () => {
     const oldEnv = process.env
     try {
       process.env = Object.assign({}, oldEnv, { URL: 'https://docs.example.org' })
@@ -979,5 +979,25 @@ describe('buildPlaybook()', () => {
     expect(playbook.three).to.be.false()
     expect(process.argv).to.equal(processArgv)
     expect(process.env).to.equal(processEnv)
+  })
+
+  it('should coerce values of process.env keys to string when assigned via playbook.env', () => {
+    const processEnv = process.env
+    try {
+      const playbookEnv = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip']).env
+      playbookEnv.TMP_ENV_VAR_ARRAY = ['a', 'b']
+      playbookEnv.TMP_ENV_VAR_BOOLEAN = true
+      playbookEnv.TMP_ENV_VAR_NUMBER = 5
+      playbookEnv.TMP_ENV_VAR_OBJECT = { foo: 'bar' }
+      expect(playbookEnv).to.equal(processEnv)
+      expect(processEnv.TMP_ENV_VAR_ARRAY).to.equal('a,b')
+      expect(processEnv.TMP_ENV_VAR_BOOLEAN).to.equal('true')
+      expect(processEnv.TMP_ENV_VAR_NUMBER).to.equal('5')
+      expect(processEnv.TMP_ENV_VAR_OBJECT).to.equal('[object Object]')
+    } finally {
+      delete processEnv.TMP_ENV_VAR_ARRAY
+      delete processEnv.TMP_ENV_VAR_BOOLEAN
+      delete processEnv.TMP_ENV_VAR_NUMBER
+    }
   })
 })
