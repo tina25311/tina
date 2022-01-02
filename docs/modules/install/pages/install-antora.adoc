@@ -98,6 +98,7 @@ Next, install the site generator package within the playbook project:
 
 [subs=+attributes]
  $ npm i -D -E @antora/site-generator@{page-component-version}.0
+
 The `@antora/site-generator` package and its dependencies will be installed into the [.path]_node_modules_ folder inside your playbook project.
 Antora's CLI will look for the site generator package in this folder first before looking in the global installation folder.
 
