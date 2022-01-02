@@ -19,7 +19,7 @@ If you're just evaluating Antora, you can use `npx` to run it without having to 
 
  $ npx antora -v
 
-The `npx` command, provided by Node.js, can run a command directly from a local or remote npm package. 
+The `npx` command, provided by Node.js, can run a command directly from a local or remote npm package.
 If any required packages are not present in the local project dependencies, npx will install them into a cache folder (typically [.path]_$HOME/.npm/_npx_) before running the command.
 If the name of the command matches the name of the package that provides it, you don't have to specify the package name.
 In this case, the *antora* package, which bundles the CLI and site generator, provides the *antora* command and the dependencies it needs to run.
@@ -97,8 +97,7 @@ Although `npx` finds the `antora` command and reports the CLI version, we're sti
 Next, install the site generator package within the playbook project:
 
 [subs=+attributes]
- $ npm i -D -E @antora/cli@{page-component-version}.0
-
+ $ npm i -D -E @antora/site-generator@{page-component-version}.0
 The `@antora/site-generator` package and its dependencies will be installed into the [.path]_node_modules_ folder inside your playbook project.
 Antora's CLI will look for the site generator package in this folder first before looking in the global installation folder.
 
