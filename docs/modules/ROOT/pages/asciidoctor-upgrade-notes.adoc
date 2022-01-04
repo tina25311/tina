@@ -108,6 +108,11 @@ This can affect section and block titles that use attribute references.
 |The message has changed to "`Unresolved directive`".
 |No action unless you're using a postprocessor that looks for this message in the output.
 
+|`page` class
+|The class `page` for xrefs has been replaced with `xref <family>`, where `<family>` is the name of the family of the resource to which the xref points (e.g., `xref page`). 
+|You will need to update the selector in your CSS or postprocessor if it attempts to match this class.
+You can now find all xref links in the page using the CSS selector `a.xref`.
+
 |`page unresolved` class
 |The class `page unresolved` has been replaced with `xref unresolved` when the target of an xref is invalid or could not be resolved.
 |You will need to update the selector in your CSS or postprocessor if it attempts to match this class.
