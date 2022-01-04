@@ -109,9 +109,8 @@ This can affect section and block titles that use attribute references.
 |No action unless you're using a postprocessor that looks for this message in the output.
 
 |`page unresolved` class
-|The class `page unresolved` in now added to the output when the target of an xref is an invalid resource ID.
-Previously, this was only added when the target of an xref was a valid resource ID that couldn't be resolved.
-|No action unless you're using a postprocessor that looks for this class in the output.
+|The class `page unresolved` has been replaced with `xref unresolved` when the target of an xref is invalid or could not be resolved.
+|You will need to update the selector in your CSS or postprocessor if it attempts to match this class.
 
 |Reference validation for inline anchor
 |If Asciidoctor cannot locate a reference to an inline anchor, even if it exists, it will log a message at the info level about a possible invalid reference.
