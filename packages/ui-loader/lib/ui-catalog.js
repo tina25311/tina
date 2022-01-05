@@ -20,7 +20,7 @@ class UiCatalog {
     if (!filesForType) this[$files].set(file.type, (filesForType = new Map()))
     const key = file.path
     if (filesForType.has(key)) {
-      throw new Error('Duplicate file')
+      throw new Error('Duplicate UI file: ' + key)
     }
     filesForType.set(key, file)
     return file

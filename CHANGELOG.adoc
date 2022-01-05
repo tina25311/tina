@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *ui-loader*: Include family (UI) and path in message of duplicate UI file error (#931)
+
 === Fixed
 
 *redirect-producer*: Don't escape special regex characters in target URL of nginx rewrite rule (#935)
