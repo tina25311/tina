@@ -7,7 +7,7 @@
 
 Antora is designed to help you write and publish your documentation.
 However, we can't fully realize this goal without your feedback!
-We encourage you to report issues, ask questions, share ideas, or discuss other aspects of this project using the communication tools provided below.
+We encourage you to report issues, ask questions, share ideas, or discuss other aspects of this project using the communication channels provided below.
 
 == Chat
 
@@ -25,7 +25,7 @@ Keep in mind that users participate in the project chat voluntarily, so please r
 
 == Issues
 
-The preferred means of reporting bugs, regressions, and security vulnerabilities or submitting change requests is the project issue tracker.
+The preferred means of reporting verifiable bugs, regressions, and security vulnerabilities or for making formal change requests is the project issue tracker.
 
 * {url-issues}[Issue tracker^] (GitLab)
 
