@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *playbook-builder*: Make `env` property on playbook enumerable, but don't freeze value (#930)
 * *ui-loader*: Include family (UI) and path in message of duplicate UI file error (#931)
 
 === Fixed
