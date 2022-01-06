@@ -62,7 +62,7 @@ Next, let's install the required packages within the playbook project so you can
 
 [subs=+attributes]
  $ node -e "fs.writeFileSync('package.json', '{}')"
-   npm i -D -E @antora/cli@{page-component-version}.0 @antora/site-generator@{page-component-version}.0
+ $ npm i -D -E @antora/cli@{page-component-version}.0 @antora/site-generator@{page-component-version}.0
 
 Verify the `antora` command is now available by running:
 

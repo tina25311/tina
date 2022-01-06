@@ -53,7 +53,7 @@ Next, let's install the CLI package within the playbook project so you can run t
 
 [subs=+attributes]
  $ node -e "fs.writeFileSync('package.json', '{}')"
-   npm i -D -E @antora/cli@{page-component-version}.0
+ $ npm i -D -E @antora/cli@{page-component-version}.0
 
 The `@antora/cli` package and its dependencies will be installed into the [.path]_node_modules_ folder inside your playbook project.
 The optional `-D` option tells `npm` to save the package as a development dependency in [.path]_package.json_.
