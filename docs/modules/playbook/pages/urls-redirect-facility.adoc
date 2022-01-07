@@ -5,10 +5,14 @@
 :url-nginx-rewrites: https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#return
 :url-meta-tag: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
 
-Antora can generate static HTML refresh pages as well as Ngnix and Netlify redirect configuration files.
-These redirects are derived from a source page's page ID that's assigned to a xref:page:page-aliases.adoc[page-aliases attribute] in a target page's header.
-The xref:page:page-aliases.adoc#source-page[source page] refers to the page you're redirecting from.
-The xref:page:page-aliases.adoc#target-page[target page] refers to the page you're redirecting to.
+Antora will set up routing for start pages and page aliases according to the redirect facility you have specified.
+
+By default, Antora generates a static HTML file for each page alias that redirects the visitor to the target page.
+Antora also has the ability to generate web server-specific configuration files that leverage the web server's rewrite facility to handle the routing.
+
+Antora derives these routes from the site and component version start pages as well as xref:page:page-aliases.adoc[page aliases] defined using the `page-aliases` attribute in the header of the target page.
+The xref:page:page-aliases.adoc#target-page[target page] is the the page to which you're redirecting, which is also where page aliases are defined.
+The xref:page:page-aliases.adoc#source-page[source page] is the alias page that's being redirected (i.e., the claimed page).
 
 [#redirect-facility-key]
 == redirect_facility key and its values
@@ -55,6 +59,15 @@ The `redirect_facility` key can also be configured from the xref:cli:options.ado
 == Choosing a redirect facility configuration
 
 How your site's URL redirects should be configured depends on the web server or service you use to serve your site.
+
+If you use the default redirect facility, Antora will generate HTML pages that use the meta refresh feature of HTML to route the visitor to the target page (i.e., bounce page).
+When you inspect the output of your site, you will find pages that end with [.ext]_.html_ that include a `<meta http-equiv="refresh">` tag inside a minimal HTML structure.
+If you have specified a start page for your site, this will include a [.path]_index.html_ page at the root of your published site.
+
+If you use any other redirect facility, Antora will not generate these bounce pages.
+(In other words, don't expect to find the [.path]_index.html_ page at the root of your published site).
+Instead, Antora relies on the web server to apply the rewrite rules that it generates.
+For details about these rules and where they are written, see the sections below.
 
 === Generated redirect configuration for Netlify
 
