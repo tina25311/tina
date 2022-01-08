@@ -27,7 +27,20 @@ You can configure these variables using the corresponding command line options o
 
 == Precedence
 
-Environment variables take precedence over keys defined in the xref:index.adoc[playbook file], but get overridden by the xref:cli:options.adoc[CLI option] for that same key.
+Environment variables take precedence over keys defined in the xref:index.adoc[playbook file].
+However, the xref:cli:options.adoc[CLI option] for a key takes precedence over the environment variable for that key.
+
+If an environment variable (such as `URL` or `https_proxy`) is already set in your environment, and you wish to unset it temporarily when you run the `antora` command (i.e., a single invocation), you can do so using the `env` command:
+
+ $ env -u URL antora antora-playbook.yml
+
+Another option is to run the `antora` command in a subshell.
+Inside a subshell, you can unset an environment variable without it affecting the environment of your main shell or operating system.
+
+ $ (unset URL; antora antora-playbook.yml)
+
+Remember that environment variables take precedence over keys defined in your playbook file.
+So if you're getting results you don't expect, always check your environment variables to find out if they are the culprit.
 
 == Variables and formats
 
