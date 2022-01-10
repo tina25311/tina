@@ -24,7 +24,10 @@ If any required packages are not present in the local project dependencies, npx 
 If the name of the command matches the name of the package that provides it, you don't have to specify the package name.
 In this case, the *antora* package, which bundles the CLI and site generator, provides the *antora* command and the dependencies it needs to run.
 
-You'll see later that we recommend using the `npx` command to run Antora when you have installed it locally as well.
+Using `npx` without installing any packages is only intended for evaluation, and only works when using Antora by itself.
+Once you need additional packages, you'll need to install them along with Antora before running `npx`.
+
+You'll see later that we recommend using the `npx` command to run Antora whenever you have installed it locally.
 
 == Locally vs globally
 
