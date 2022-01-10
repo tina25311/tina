@@ -111,6 +111,33 @@ location = /component/version/module/old-name.html { return 301 /component/versi
 
 The example output above shows a redirect rule with a 301 HTTP status code that permanently routes the URL for a renamed page to it's target page URL.
 
+When using the nginx redirect facility, Antora assumes that nginx is configured in a way similar to the configuration shown below.
+The path [.path]_/srv/www_ refers to the location of the generated site.
+
+[,nginx]
+----
+server {
+  listen       80;
+  server_name  localhost;
+
+  location = /.etc/nginx/rewrite.conf {
+    deny   all;
+    return 404;
+  }
+
+  include /srv/www/.etc/nginx/rewrite.conf;
+
+  location / {
+      root   /srv/www;
+      index  index.html;
+  }
+
+  error_page  404  /404.html;
+}
+----
+
+Adjust the configuration if your site is accessiable from a different hostname or port or is served from a different root.
+
 === Generated static HTML refresh pages
 
 The `static` redirect value is useful for sites deployed on services, such as GitLab Pages and GitHub Pages, that don't accept or provide access to URL redirection configuration files.
