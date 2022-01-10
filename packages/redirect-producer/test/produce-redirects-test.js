@@ -449,15 +449,15 @@ describe('produceRedirects()', () => {
 
     it('should generate temporary redirect for splat aliases', () => {
       contentCatalog = mockContentCatalog([
-        { family: 'alias', component: 'component-c++', version: 'current', module: 'ROOT', relative: '' },
+        { family: 'alias', component: 'component-a', version: 'current', module: 'ROOT', relative: '' },
       ])
       const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
       delete splatAliasFile.out
-      splatAliasFile.pub.url = '/component-c++/current'
+      splatAliasFile.pub.url = '/component-a/current'
       splatAliasFile.pub.splat = true
       splatAliasFile.rel = {
-        src: { component: 'component-c++', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
-        pub: { url: '/component-c++/1.0', moduleRootPath: '.', splat: true },
+        src: { component: 'component-a', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-a/1.0', moduleRootPath: '.', splat: true },
       }
       const result = produceRedirects(playbook, contentCatalog)
       expect(result).to.have.lengthOf(1)
@@ -467,7 +467,31 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql([
-        'location ^~ /component-c++/current/ { rewrite ^/component-c\\+\\+/current/(.*)$ /component-c\\+\\+/1\\.0/$1 redirect; }',
+        'location ^~ /component-a/current/ { rewrite ^/component-a/current/(.*)$ /component-a/1.0/$1 redirect; }',
+      ])
+    })
+
+    it('should escape special regex characters in splat pattern', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'component-c++', version: 'current', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/component-c++/1.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        src: { component: 'component-c++', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-c++/latest', moduleRootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0]).to.have.property('contents')
+      expect(result[0]).to.have.property('out')
+      expect(result[0].out.path).to.equal('.etc/nginx/rewrite.conf')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        'location ^~ /component-c++/1.0/ { rewrite ^/component-c\\+\\+/1\\.0/(.*)$ /component-c++/latest/$1 redirect; }',
       ])
     })
 
