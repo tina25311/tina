@@ -64,8 +64,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
             reshapeErrorForLog(arg0, args[1], prettyPrint && this[$serializers].err).forEach((v, i) => (args[i] = v))
           } else if (arg0.constructor === Object && typeof arg0.file === 'object') {
             const { file, line, stack, ...obj } = arg0
-            // NOTE assume file key is a file.src object
-            args[0] = Object.assign(obj, reshapeFileForLog(arg0))
+            args[0] = Object.assign(obj, reshapeFileForLog(arg0)) // NOTE assume file key is a file.src object
           }
           method.apply(this, args)
         },
@@ -112,7 +111,8 @@ function finalize () {
 
 function createPrettyDestination (destination, colorize) {
   if (colorize == null) {
-    colorize = process.env.NO_COLOR == null &&
+    colorize =
+      process.env.NO_COLOR == null &&
       (process.env.FORCE_COLOR != null || prettyFactory()({ msg: 'colorize' }).includes('\u001b['))
   }
   return pinoPretty({
