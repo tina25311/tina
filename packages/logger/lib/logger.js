@@ -37,7 +37,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
     logger = Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
   } else {
     const prettyPrint = format === 'pretty'
-    let colorize = process.env.NO_COLOR == null && prettyFactory()({ msg: 'colorize' }).includes('\u001b[')
+    let colorize
     if (typeof (destination || (destination = {})).write !== 'function') {
       let dest
       const { file, bufferSize, ...destOpts } = destination
@@ -111,6 +111,10 @@ function finalize () {
 }
 
 function createPrettyDestination (destination, colorize) {
+  if (colorize == null) {
+    colorize = process.env.NO_COLOR == null &&
+      (process.env.FORCE_COLOR != null || prettyFactory()({ msg: 'colorize' }).includes('\u001b['))
+  }
   return pinoPretty({
     destination,
     colorize,

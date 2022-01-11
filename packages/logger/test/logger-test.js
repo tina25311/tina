@@ -29,13 +29,16 @@ describe('logger', () => {
   const supportsColor = pinoPrettyFactory()({ msg: 'colorize' }).includes('\u001b[')
 
   const NO_COLOR = process.env.NO_COLOR
+  const FORCE_COLOR = process.env.FORCE_COLOR
 
   beforeEach(() => {
     process.env.NO_COLOR = '1'
+    delete process.env.FORCE_COLOR
   })
 
   afterEach(() => {
     if ((process.env.NO_COLOR = NO_COLOR) == null) delete process.env.NO_COLOR
+    if ((process.env.FORCE_COLOR = FORCE_COLOR) == null) delete process.env.FORCE_COLOR
   })
 
   describe('configure()', () => {
@@ -541,6 +544,17 @@ describe('logger', () => {
 
       it('should colorize pretty log message if supported by environment', () => {
         delete process.env.NO_COLOR
+        const logger = configure({ name: 'antora', format: 'pretty' }).get()
+        const lines = captureStderrSync(() => logger.info('love is the message'))
+        expect(lines).to.have.lengthOf(1)
+        const expectedLine = '\u001b[32mINFO\u001b[39m (antora): \u001b[36mlove is the message\u001b[39m'
+        expect(lines[0]).to.include(expectedLine)
+      })
+
+      // NOTE since colorette caches the state, this test only tests the code path, not the full integration
+      it('should colorize pretty log message if FORCE_COLOR environment variable is set', () => {
+        delete process.env.NO_COLOR
+        process.env.FORCE_COLOR = '1'
         const logger = configure({ name: 'antora', format: 'pretty' }).get()
         const lines = captureStderrSync(() => logger.info('love is the message'))
         expect(lines).to.have.lengthOf(1)

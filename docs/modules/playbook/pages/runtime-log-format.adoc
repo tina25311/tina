@@ -81,6 +81,7 @@ You can prevent Antora from colorizing the prettified log messages by setting th
  $ NO_COLOR=1 antora antora-playbook.yml
 
 Antora will never apply color to the log message if the `NO_COLOR` environment variable is set, regardless of the capabilities of the terminal.
+If you want to force Antora to apply color, even if it doesn't detect color support in the terminal, set the `FORCE_COLOR` environment variable instead (e.g., `FORCE_COLOR=1`).
 
 [#json]
 === JSON
