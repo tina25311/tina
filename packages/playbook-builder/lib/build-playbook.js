@@ -68,7 +68,7 @@ function buildPlaybook (args = [], env = process.env, schema = defaultSchema, be
   }
 }
 
-function getModel (name = '') {
+function getModel (name) {
   let config = this
   const data = config.get(name)
   let schema = config._schema
@@ -79,11 +79,11 @@ function getModel (name = '') {
   config.validate({ allowed: 'strict' })
   const model = camelCaseKeys(data, { deep: true, stopPaths: getStopPaths(schema._cvtProperties) })
   if (!name) {
-    Object.defineProperty(model, 'env', { value: config.getEnv() })
     model.dir = model.playbook ? ospath.dirname((model.file = model.playbook)) : process.cwd()
+    model.env = config.getEnv()
     delete model.playbook
   }
-  return deepFreeze(model)
+  return deepFreeze(model, name ? '.' + name : '')
 }
 
 function getStopPaths (schemaProperties, schemaPath = [], stopPaths = []) {
@@ -99,8 +99,8 @@ function getStopPaths (schemaProperties, schemaPath = [], stopPaths = []) {
   return stopPaths
 }
 
-function deepFreeze (o) {
-  for (const v of Object.values(o)) Object.isFrozen(v) || deepFreeze(v)
+function deepFreeze (o, p) {
+  for (const [k, v] of Object.entries(o)) Object.isFrozen(v) || (k === 'env' && !p) || deepFreeze(v, p + '.' + k)
   return Object.freeze(o)
 }
 

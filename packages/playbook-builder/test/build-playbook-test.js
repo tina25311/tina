@@ -125,7 +125,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.playbook).to.not.exist()
   })
 
-  it('should assign second positional argument to non-enumerable process.env property if undefined', () => {
+  it('should set env property to process.env if second positional parameter is undefined', () => {
     const oldEnv = process.env
     try {
       process.env = Object.assign({}, oldEnv)
@@ -135,7 +135,7 @@ describe('buildPlaybook()', () => {
       expect(playbook.env).to.equal(process.env)
       process.env.TMP_ENV_VAR = 'value'
       expect(playbook.env.TMP_ENV_VAR).to.equal('value')
-      expect(Object.keys(playbook)).to.not.include('env')
+      expect(Object.keys(playbook)).to.include('env')
     } finally {
       process.env = oldEnv
     }
@@ -144,10 +144,13 @@ describe('buildPlaybook()', () => {
   it('should set env property to empty object if second positional argument is empty object', () => {
     const playbook = buildPlaybook([], {}, { playbook: { format: String, default: undefined } })
     expect(playbook.env).to.eql({})
+    expect(Object.isFrozen(playbook.env)).to.be.false()
   })
 
   it('should load YAML playbook file with .yml extension', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
+    const env = { PLAYBOOK: ymlSpec }
+    const playbook = buildPlaybook([], env, schema)
+    expectedPlaybook.env = env
     expectedPlaybook.dir = ospath.dirname(ymlSpec)
     expectedPlaybook.file = ymlSpec
     expectedPlaybook.ext = '.yml'
@@ -156,7 +159,9 @@ describe('buildPlaybook()', () => {
   })
 
   it('should load YAML playbook file with .yaml extension', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: yamlSpec }, schema)
+    const env = { PLAYBOOK: yamlSpec }
+    const playbook = buildPlaybook([], env, schema)
+    expectedPlaybook.env = env
     expectedPlaybook.dir = ospath.dirname(yamlSpec)
     expectedPlaybook.file = yamlSpec
     expectedPlaybook.ext = '.yaml'
@@ -169,7 +174,9 @@ describe('buildPlaybook()', () => {
   })
 
   it('should load JSON (JSON 5) playbook file', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: jsonSpec }, schema)
+    const env = { PLAYBOOK: jsonSpec }
+    const playbook = buildPlaybook([], env, schema)
+    expectedPlaybook.env = env
     expectedPlaybook.dir = ospath.dirname(jsonSpec)
     expectedPlaybook.file = jsonSpec
     expectedPlaybook.ext = '.json'
@@ -178,7 +185,9 @@ describe('buildPlaybook()', () => {
   })
 
   it('should load TOML playbook file', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: tomlSpec }, schema)
+    const env = { PLAYBOOK: tomlSpec }
+    const playbook = buildPlaybook([], env, schema)
+    expectedPlaybook.env = env
     expectedPlaybook.dir = ospath.dirname(tomlSpec)
     expectedPlaybook.file = tomlSpec
     expectedPlaybook.ext = '.toml'
@@ -187,7 +196,9 @@ describe('buildPlaybook()', () => {
   })
 
   it('should load YAML playbook file first when no file extension is given', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: extensionlessSpec }, schema)
+    const env = { PLAYBOOK: extensionlessSpec }
+    const playbook = buildPlaybook([], env, schema)
+    expectedPlaybook.env = env
     expectedPlaybook.dir = ospath.dirname(extensionlessSpec)
     expectedPlaybook.file = extensionlessSpec + '.yml'
     expectedPlaybook.ext = '.yml'
@@ -196,7 +207,9 @@ describe('buildPlaybook()', () => {
   })
 
   it('should discover JSON playbook when no file extension is given', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: extensionlessJsonSpec }, schema)
+    const env = { PLAYBOOK: extensionlessJsonSpec }
+    const playbook = buildPlaybook([], env, schema)
+    expectedPlaybook.env = env
     expectedPlaybook.dir = ospath.dirname(extensionlessJsonSpec)
     expectedPlaybook.file = extensionlessJsonSpec + '.json'
     expectedPlaybook.ext = '.json'
@@ -205,7 +218,9 @@ describe('buildPlaybook()', () => {
   })
 
   it('should discover TOML playbook when no file extension is given', () => {
-    const playbook = buildPlaybook([], { PLAYBOOK: extensionlessTomlSpec }, schema)
+    const env = { PLAYBOOK: extensionlessTomlSpec }
+    const playbook = buildPlaybook([], env, schema)
+    expectedPlaybook.env = env
     expectedPlaybook.dir = ospath.dirname(extensionlessTomlSpec)
     expectedPlaybook.file = extensionlessTomlSpec + '.toml'
     expectedPlaybook.ext = '.toml'
@@ -247,6 +262,18 @@ describe('buildPlaybook()', () => {
       `${resolvedRootPath}.yml, ${resolvedRootPath}.json, or ${resolvedRootPath}.toml` +
       ` (cwd: ${process.cwd()}, playbook: non-existent/file)`
     expect(() => buildPlaybook([], { PLAYBOOK: 'non-existent/file' }, schema)).to.throw(expectedMessage)
+  })
+
+  it('should freeze properties of playbook except for root env property', () => {
+    const env = { PLAYBOOK: ymlSpec }
+    schema.category = { env: { format: String, default: 'not the env' } }
+    const playbook = buildPlaybook([], env, schema)
+    expect(Object.isFrozen(playbook)).to.be.true()
+    expect(Object.isFrozen(playbook.one)).to.be.true()
+    expect(Object.isFrozen(playbook.one.one)).to.be.true()
+    expect(Object.isFrozen(playbook.two)).to.be.true()
+    expect(Object.isFrozen(playbook.env)).to.be.false()
+    expect(Object.isFrozen(playbook.category.env)).to.be.true()
   })
 
   it('should use default value if playbook file is not specified', () => {
@@ -869,17 +896,21 @@ describe('buildPlaybook()', () => {
   })
 
   it('should call beforeValidate callbacks before validating playbook and exporting to model', () => {
+    let logModel
     const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--silent'], {}, undefined, (config) => {
       const log = config.get('runtime.log')
       if (log.level === 'silent') log.failure_level = 'none'
       log.level_format = 'label'
       config.set('runtime.log', log)
+      logModel = config.getModel('runtime.log')
     })
     expect(playbook.runtime.silent).to.be.true()
     expect(playbook.runtime.quiet).to.be.true()
     expect(playbook.runtime.log.level).to.equal('silent')
     expect(playbook.runtime.log.failureLevel).to.equal('none')
     expect(playbook.runtime.log.levelFormat).to.equal('label')
+    expect(playbook.runtime.log).to.eql(logModel)
+    expect(Object.isFrozen(logModel)).to.be.true()
   })
 
   it('should set runtime.log.format to pretty when stdout is a TTY', () => {
@@ -961,8 +992,10 @@ describe('buildPlaybook()', () => {
     const oldEnv = process.env
     try {
       process.env = Object.assign({}, oldEnv, { URL: 'https://docs.example.org' })
-      const playbook = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'], {})
+      const env = { FOO: 'bar' }
+      const playbook = buildPlaybook(['--ui-bundle-url', 'ui-bundle.zip'], env)
       expect(playbook.site.url).to.be.undefined()
+      expect(playbook.env).to.equal(env)
     } finally {
       process.env = oldEnv
     }
@@ -979,6 +1012,8 @@ describe('buildPlaybook()', () => {
     expect(playbook.three).to.be.false()
     expect(process.argv).to.equal(processArgv)
     expect(process.env).to.equal(processEnv)
+    expect(Object.isFrozen(process.env)).to.be.false()
+    expect(playbook.env).to.equal(env)
   })
 
   it('should coerce values of process.env keys to string when assigned via playbook.env', () => {

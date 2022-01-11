@@ -1326,6 +1326,7 @@ describe('generateSite()', () => {
         module.exports.register = function ({ playbook }) {
           const site = Object.assign({}, playbook.site, { url: 'https://docs.example.com' })
           this.updateVariables({ playbook: Object.assign({}, playbook, { site }) })
+          if (!this.getVariables().playbook.env) this.stop()
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
