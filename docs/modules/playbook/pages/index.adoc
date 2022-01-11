@@ -36,6 +36,20 @@ But you're free to use any of these formats.
 
 Regardless of its format, a playbook contains structured key-value pairs for specifying general site properties, content and UI input sources, and published output destinations and providers.
 
+== Relative paths in a playbook
+
+By default, Antora resolves relative paths in the playbook from the current working directory.
+For example, the path [.path]_public_ is effectively [.path]_$PWD/public_.
+If, instead, you want Antora to relative relative paths from the directory where the playbook file is located, prepend `./` to the path (e.g., [.path]_./public_).
+
+By starting relative paths with `./`, you make your playbook more portable.
+It means you can run the `antora` command from any directory on the filesystem and the behavior will be the same.
+
+If you don't start relative paths with `./`, the path Antora resolves is dependent on the current working directory.
+To get portable behavior, you have to switch to the directory where the playbook file is located before running the `antora` command.
+
+Only use bare relative paths if you intend the path to be tied to the current working directory.
+
 //== How is a playbook created?
 
 //== How does Antora get a playbook?
