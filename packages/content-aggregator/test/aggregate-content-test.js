@@ -3274,6 +3274,20 @@ describe('aggregateContent()', () => {
         expect(page.src.origin.url).to.equal(remoteUrl)
       })
 
+      it('should remove auth from origin URL resolved from remote URL', async () => {
+        const remoteUrl = 'https://user@gitlab.com:p@ssw0rd@gitlab.com/antora/demo/demo-component-a'
+        const remoteUrlWithoutAuth = 'https://gitlab.com/antora/demo/demo-component-a'
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+        const fixturePath = 'modules/ROOT/pages/page-one.adoc'
+        await initRepoWithFiles(repoBuilder, {}, fixturePath, () => repoBuilder.config('remote.origin.url', remoteUrl))
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const page = aggregate[0].files[0]
+        expect(page).to.not.be.undefined()
+        expect(page.src.origin.url).to.equal(remoteUrlWithoutAuth)
+      })
+
       it('should not remove .git extension from url resolved from git config for local repository', async () => {
         const remoteUrl = 'https://gitlab.com/antora/demo/demo-component-a.git'
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
@@ -5492,6 +5506,21 @@ describe('aggregateContent()', () => {
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.url', urlWithoutAuth)
     })
 
+    it('should read credentials from URL when username is an email', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const urlWithoutAuth = repoBuilder.url
+      repoBuilder.url = urlWithoutAuth.replace('//', '//user@example.org:p@ssw0rd@')
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('user@example.org:p@ssw0rd').toString('base64'))
+      expect(credentialsSent).to.eql({ username: 'user@example.org', password: 'p@ssw0rd' })
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+      expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-embedded')
+      expect(aggregate[0].files[0]).to.have.nested.property('src.origin.url', urlWithoutAuth)
+    })
+
     it('should remove empty credentials from URL', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
@@ -5601,7 +5630,7 @@ describe('aggregateContent()', () => {
       expect(aggregate).to.have.lengthOf(1)
     })
 
-    it('should read credentials for URL path from git credential store if auth is required', async () => {
+    it('should read credentials for URL from git credential store if auth is required', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       // NOTE include '=' in value to validate characters are not URL encoded
@@ -5615,16 +5644,16 @@ describe('aggregateContent()', () => {
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
     })
 
-    it('should read credentials for URL path from git credential store if auth is required', async () => {
+    it('should read credentials with percent encoding for URL from git credential store if auth is required', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
       // NOTE include '=' and '@' in value to validate characters are not URL encoded
-      const credentials = ['invalid URL', repoBuilder.url.replace('//', '//u@=:p%23=@')]
+      const credentials = ['invalid URL', repoBuilder.url.replace('//', '//user=@example.org:p%23@=%2F@')]
       await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials.join('\n') + '\n')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
-      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u@=:p#=').toString('base64'))
-      expect(credentialsSent).to.eql({ username: 'u@=', password: 'p#=' })
+      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('user=@example.org:p#@=/').toString('base64'))
+      expect(credentialsSent).to.eql({ username: 'user=@example.org', password: 'p#@=/' })
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
     })

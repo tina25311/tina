@@ -54,8 +54,8 @@ const PATH_SEPARATOR_RX = /[/]/g
 const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const SPACE_RX = / /g
 const SUPERFLUOUS_SEPARATORS_RX = /^\/+|\/+$|\/+(?=\/)/g
-const URL_AUTH_CLEANER_RX = /^(https?:\/\/)[^/@]*@/
-const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:@]+)?(?::([^/@]+)?)?@)?(.*)/
+const URL_AUTH_CLEANER_RX = /^(https?:\/\/)[^/]*@(?=.)/
+const URL_AUTH_EXTRACTOR_RX = /^(https?:\/\/)(?:([^/:]+)?(?::([^/]+)?)?@)?(.*)/
 const URL_PORT_CLEANER_RX = /^([^/]+):[0-9]+(?=\/)/
 
 /**
