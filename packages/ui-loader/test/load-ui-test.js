@@ -993,7 +993,7 @@ describe('loadUi()', () => {
       ui: { bundle: { url: ospath.join(FIXTURES_DIR, 'the-ui-bundle.zip') } },
     }
     const uiCatalog = await loadUi(playbook)
-    expect(() => uiCatalog.addFile({ type: 'asset', path: 'css/one.css' })).to.throw('Duplicate file')
+    expect(() => uiCatalog.addFile({ type: 'asset', path: 'css/one.css' })).to.throw('Duplicate UI file: css/one.css')
   })
 
   it('should use remote bundle from cache on subsequent run', async () => {
