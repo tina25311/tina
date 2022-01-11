@@ -60,9 +60,12 @@ runtime:
     format: pretty
 ----
 
-When Antora runs, any log messages are emitted to STDERR.
+Now when you run Antora, it will emit log messages to STDERR.
+Antora tries to be smart about the use of color.
+When Antora writes log messages to a standard stream, such as STDERR, it will colorize the prettified log messages if the terminal supports color.
+
 If you run Antora from your terminal, the formatted log messages are displayed there.
-<<result-pretty>> shows a prettified log message about an xref error.
+<<result-pretty>> shows a prettified log message (without color) for an xref error.
 
 .Log message output using pretty format
 [listing#result-pretty]
@@ -73,7 +76,11 @@ If you run Antora from your terminal, the formatted log messages are displayed t
 ----
 <.> To display the line number where an error occurs, set the xref:asciidoc-sourcemap.adoc[sourcemap key].
 
-For terminals that support color, the prettified log message will be colorized.
+You can prevent Antora from colorizing the prettified log messages by setting the `NO_COLOR` environment variable when you run Antora.
+
+ $ NO_COLOR=1 antora antora-playbook.yml
+
+Antora will never apply color to the log message if the `NO_COLOR` environment variable is set, regardless of the capabilities of the terminal.
 
 [#json]
 === JSON
