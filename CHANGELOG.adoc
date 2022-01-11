@@ -14,7 +14,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
-*redirect-producer*: Don't escape special regex characters in target URL of nginx rewrite rule (#935)
+* *redirect-producer*: Don't escape special regex characters in target URL of nginx rewrite rule (#935)
 
 == 3.0.0 (2021-12-25)
 
