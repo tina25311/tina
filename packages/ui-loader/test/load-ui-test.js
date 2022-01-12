@@ -330,10 +330,11 @@ describe('loadUi()', () => {
     })
 
     it('should expand leading ~ segment in bundle path to user home', async () => {
-      const playbook = {}
-      playbook.ui = {
-        bundle: {
-          url: prefixPath('~', ospath.relative(os.homedir(), ospath.join(FIXTURES_DIR, 'the-ui-bundle.zip'))),
+      const playbook = {
+        ui: {
+          bundle: {
+            url: prefixPath('~', ospath.relative(os.homedir(), ospath.join(FIXTURES_DIR, 'the-ui-bundle.zip'))),
+          },
         },
       }
       let uiCatalog
@@ -439,7 +440,7 @@ describe('loadUi()', () => {
 
   describe('should load supplemental files', () => {
     let playbook
-    const expectedFilePathsWithSupplemental = [...expectedFilePaths, 'css/extra.css', 'img/icon.png']
+    const expectedFilePathsWithSupplemental = [...expectedFilePaths, 'css/extra.css', 'img/icon.png'].sort()
     const supplementalFileContents = ['partials/head.hbs', 'css/extra.css', 'img/icon.png'].reduce((accum, path_) => {
       accum[path_] = fs.readFileSync(ospath.join(FIXTURES_DIR, 'supplemental-files', path_))
       return accum
@@ -448,13 +449,13 @@ describe('loadUi()', () => {
     const verifySupplementalFiles = (uiCatalog, compareBuffers = true, expectedBase = undefined) => {
       const files = uiCatalog.getFiles()
       const paths = files.map((file) => file.path)
-      expect(paths).to.have.members(expectedFilePathsWithSupplemental)
+      expect(paths.slice().sort()).to.have.members(expectedFilePathsWithSupplemental)
       files.forEach((file) => {
         const path_ = file.path
         if (path_ in supplementalFileContents) {
           if (expectedBase) expect(file.base).to.equal(expectedBase)
           if (compareBuffers) {
-            expect(file.contents).to.deep.equal(supplementalFileContents[path_])
+            expect(file.contents).to.eql(supplementalFileContents[path_])
           } else {
             expect(file.contents.toString()).to.equal(supplementalFileContents[path_].toString())
           }
