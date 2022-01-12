@@ -240,7 +240,7 @@ describe('loadUi()', () => {
     testAll('the-ui-bundle', testBlock)
   })
 
-  describe('should load all files in the UI bundle directory when specified with a trailing slash', () => {
+  describe('should load all files in the UI directory when specified with a trailing slash', () => {
     const testBlock = async (playbook) => {
       const uiCatalog = await loadUi(playbook)
       const files = uiCatalog.getFiles()
@@ -252,7 +252,29 @@ describe('loadUi()', () => {
     testAll('the-ui-bundle/', testBlock)
   })
 
-  describe('should ignore backup files when reading bundle from directory', () => {
+  it('should resolve symlinks when reading UI from directory', async () => {
+    const uiDir = ospath.join(WORK_DIR, 'the-ui-bundle-with-symlinks')
+    const cssDir = ospath.join(uiDir, 'css')
+    const layoutsDir = ospath.join(uiDir, 'layouts')
+    const defaultLayoutFile = ospath.join(layoutsDir, 'default.hbs')
+    const defaultLayoutContents = fs.readFileSync(ospath.join(FIXTURES_DIR, 'the-ui-bundle/layouts/default.hbs'))
+    fs.mkdirSync(layoutsDir, { recursive: true })
+    fs.writeFileSync(defaultLayoutFile, defaultLayoutContents)
+    fs.symlinkSync('default.hbs', ospath.join(layoutsDir, '404.hbs'))
+    fs.symlinkSync(ospath.relative(uiDir, ospath.join(FIXTURES_DIR, 'the-ui-bundle/css')), cssDir, 'dir')
+    const playbook = { ui: { bundle: { url: uiDir } } }
+    const uiCatalog = await loadUi(playbook)
+    expect(uiCatalog.getFiles()).to.have.lengthOf(4)
+    const files = uiCatalog.getFiles().reduce((accum, file) => {
+      accum[file.path] = file
+      return accum
+    }, {})
+    expect(Object.keys(files)).to.have.members(['css/one.css', 'css/two.css', 'layouts/default.hbs', 'layouts/404.hbs'])
+    expect(files['layouts/404.hbs'].contents).to.eql(defaultLayoutContents)
+    expect(files['css/one.css'].contents.toString()).to.include('color: blue')
+  })
+
+  describe('should ignore backup files when reading UI from directory', () => {
     const testBlock = async (playbook) => {
       const uiCatalog = await loadUi(playbook)
       const files = uiCatalog.getFiles()
@@ -494,6 +516,22 @@ describe('loadUi()', () => {
       let uiCatalog
       expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       verifySupplementalFiles(uiCatalog, true, supplementalFilesAbsDir)
+    })
+
+    it('should read symlinks', async () => {
+      const supplementalFilesAbsDir = ospath.join(FIXTURES_DIR, 'supplemental-files')
+      const newSupplementalFilesAbsDir = ospath.join(WORK_DIR, 'supplemental-files-with-symlinks')
+      const supplementalFilesRelDir = ospath.relative(newSupplementalFilesAbsDir, supplementalFilesAbsDir)
+      const cssDir = ospath.join(newSupplementalFilesAbsDir, 'css')
+      const imgDir = ospath.join(newSupplementalFilesAbsDir, 'img')
+      const partialsDir = ospath.join(newSupplementalFilesAbsDir, 'partials')
+      fs.mkdirSync(cssDir, { recursive: true })
+      fs.mkdirSync(imgDir, { recursive: true })
+      fs.symlinkSync(ospath.join('..', supplementalFilesRelDir, 'css/extra.css'), ospath.join(cssDir, 'extra.css'))
+      fs.symlinkSync(ospath.join('..', supplementalFilesRelDir, 'img/icon.png'), ospath.join(imgDir, 'icon.png'))
+      fs.symlinkSync(ospath.join(supplementalFilesRelDir, 'partials'), partialsDir, 'dir')
+      playbook.ui.supplementalFiles = newSupplementalFilesAbsDir
+      verifySupplementalFiles(await loadUi(playbook), true, newSupplementalFilesAbsDir)
     })
 
     it('should only use dot file in supplemental UI directory if defined as a static file', async () => {
