@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *logger*: Add direct support for `FORCE_COLORS=1` environment variable to enable colors in prettified log message
 * *playbook-builder*: Make `env` property on playbook enumerable, but don't freeze value (#930)
 * *ui-loader*: Include family (UI) and path in message of duplicate UI file error (#931)
 
@@ -168,7 +169,7 @@ _No changes since previous release._
 
 === Fixed
 
-* *logger*: Honor `NO_COLOR` environment variable; don't colorize pretty log output if environment variable is set
+* *logger*: Honor `NO_COLOR=1` environment variable; don't colorize pretty log output if environment variable is set
 * *content-aggregator*: Continue processing entries after exclusion in refname patterns (branches, tags, worktrees)
 * *content-aggregator*: Properly expand brace expressions in version pattern that contain multi-digit numbers and/or a step
 * *cli*: Use existing non-zero exit code if log failure level is met (#883)
