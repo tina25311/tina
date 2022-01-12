@@ -7,8 +7,26 @@
 :url-releases-asciidoctorjs: https://github.com/asciidoctor/asciidoctor.js/releases
 :url-gitlab: https://gitlab.com
 :url-issues: {url-repo}/issues
+:url-milestone-3-0-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.1
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.1
+
+_**Release date:** 2022.01.13 | *Issue label:* {url-milestone-3-0-1}[3.0.1^]_
+
+== Resolved issues
+
+=== Changed
+
+Issue {url-issues}/930[#930^]:: Make `env` property on playbook enumerable, but don't freeze the value.
+Issue {url-issues}/931[#931^]:: Include family (UI) and path in message of duplicate UI file error.
+Logger:: Add direct support for `FORCE_COLORS=1` environment variable to enable colors in prettified log message.
+
+=== Fixed
+
+Issue {url-issues}/929[#929^]:: Allow email address as username in content source URL defined in playbook.
+Issue {url-issues}/935[#935^]:: Don't escape special regex characters in target URL of nginx rewrite rule.
 
 = Antora {page-component-version}.0
 
@@ -16,8 +34,6 @@ _**Release date:** 2021.12.25 | *Issue label:* {url-milestone-3-0-0}[3.0.0^]_
 
 The Antora {page-component-version}.0 release introduces an event-based extension facility and structured logging, delivers the latest Asciidoctor capabilities, and adds new ways to manage versions.
 These are just a few of the new capabilities and updates packed into Antora {page-component-version}.
-
-//TIP: Jump to the <<checklist,upgrade checklist>> for breaking changes that may impact your site when you upgrade from Antora 2.3 to Antora {page-component-version}.
 
 == New meta package
 
@@ -29,7 +45,7 @@ Try this command:
 
  $ npx antora -v
 
-The `npx` command, provided by Node.js, can run a command directly from a local or remote npm package. 
+The `npx` command, provided by Node.js, can run a command directly from a local or remote npm package.
 If any required packages are not present in the local project dependencies, npx will install them into a cache folder (typically [.path]_$HOME/.npm/_npx_) before running the command.
 If the name of the command matches the name of the package that provides it, you don't have to specify a package name.
 That's why it's important that the package is named *antora*.
