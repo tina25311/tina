@@ -77,6 +77,19 @@ The advantage of podman is that it's more secure.
 It runs in user space and does not rely on a daemon.
 To continue using podman, replace `docker` with `podman` (and drop the `-u` option) in any of the commands below.
 
+=== Match paths
+
+If you use the volume mapping `$PWD:/antora:Z`, you may notice that local paths reported by Antora don't map back to your system.
+That's because, as far as Antora is concerned, [.path]_/antora_ is the current working directory.
+To fix this problem, you need to map your current working directory into the container, then switch to it before running Antora.
+To do so, use this volume mount instead:
+
+ -v $PWD:$PWD:Z -w $PWD
+
+Notice the addition of the `-w` option.
+This option tells Antora to switch from [.path]_/antora_ to the directory you have mapped.
+Now, when Antora reports local paths, they will map to paths on your system.
+
 === Option flags
 
 Here are explanations for some of the option flags used in the run command:
@@ -97,6 +110,10 @@ This allows files written by the container to be visible on your local system, w
 `:Z` (on the volume mount)::
 This flag is only required if you're running a Linux distribution that has SELinux enabled, such as Fedora.
 This option allows you to use volume mounts when running SELinux.
+
+`-w`::
+This option tells Docker to switch to the specified directory (i.e., `$PWD`) before invoking the entrypoint command.
+You will use this option if you want to run the `antora` command from a directory other than [.path]_/antora_ inside the container.
 
 CAUTION: Although tempting, the `--privileged` flag is not needed.
 To learn more about using volume mounts with SELinux, see the blog post http://www.projectatomic.io/blog/2015/06/using-volumes-with-docker-can-cause-problems-with-selinux/[Using Volumes with Docker can Cause Problems with SELinux].
