@@ -77,7 +77,7 @@ The advantage of podman is that it's more secure.
 It runs in user space and does not rely on a daemon.
 To continue using podman, replace `docker` with `podman` (and drop the `-u` option) in any of the commands below.
 
-=== Match paths
+=== Align with local paths
 
 If you use the volume mapping `$PWD:/antora:Z`, you may notice that local paths reported by Antora don't map back to your system.
 That's because, as far as Antora is concerned, [.path]_/antora_ is the current working directory.
