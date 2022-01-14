@@ -48,7 +48,7 @@ Let's break down the AsciiDoc include directive and resource ID coordinates you 
 For this step and the subsequent steps, let's assume you've opened the file [.path]_phases.adoc_.
 +
 --
-Example files are often inserted into source blocks.
+Example files are often inserted into xref:asciidoc:source.adoc[source blocks].
 <<ex-code>> shows a source block with a title and an assigned language set up in the current page.
 
 .phases.adoc (current page)
@@ -433,6 +433,7 @@ If the version and component coordinates aren't specified in the resource ID, An
 * xref:include-a-partial.adoc[]
 * xref:include-a-page.adoc[]
 * xref:resource-id.adoc[]
+* xref:asciidoc:source.adoc[]
 
 .*AsciiDoc and Asciidoctor resources*
 * {url-tags}[Select regions of content with tags^]

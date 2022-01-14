@@ -43,6 +43,8 @@ You can also change them to delimited literal blocks (`+....+`).
 * (optional) Remove the style `source` from delimited listing blocks that should be promoted to source blocks.
 The `source` style is applied automatically.
 
+See xref:asciidoc:source.adoc[] to learn more.
+
 |Source blocks that aren't assigned a language
 |The language `none` is automatically assigned to source blocks (`source`) when no language is set on the block or by `source-language`.
 
@@ -53,6 +55,8 @@ Otherwise, do one of the following:
 * assign the appropriate language to the source block, or
 * remove the `source` style and replace it with the `listing` style, or
 * remove the `source` style and change the block to a delimited literal block (`+....+`).
+
+See xref:asciidoc:source.adoc[] to learn more.
 |===
 
 === Tables
@@ -109,7 +113,7 @@ This can affect section and block titles that use attribute references.
 |No action unless you're using a postprocessor that looks for this message in the output.
 
 |`page` class
-|The class `page` for xrefs has been replaced with `xref <family>`, where `<family>` is the name of the family of the resource to which the xref points (e.g., `xref page`). 
+|The class `page` for xrefs has been replaced with `xref <family>`, where `<family>` is the name of the family of the resource to which the xref points (e.g., `xref page`).
 |You will need to update the selector in your CSS or postprocessor if it attempts to match this class.
 You can now find all xref links in the page using the CSS selector `a.xref`.
 
