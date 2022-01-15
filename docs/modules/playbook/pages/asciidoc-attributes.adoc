@@ -64,7 +64,7 @@ The attributes in <<ex-hard-set>> are all hard set.
 By default, an attribute is hard set when it's assigned a value that isn't reserved for unsetting the attribute (i.e., `false` or `~`) and doesn't end with a modifier (i.e., `@`).
 To allow a component version or page to modify or unset a site attribute, you need to <<soft-set,soft set the site attribute>>.
 
-Set site attributes are applied and available to every page in your site.
+Attributes set in the playbook are site-wide and, thus, available to every page in your site.
 The values of custom attributes, such as `page-team` and `db` can be displayed in a page using the attribute reference syntax (e.g., `+{page-team}+`, `+{db}+`).
 
 [#soft-set]
