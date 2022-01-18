@@ -92,4 +92,4 @@ Instead, you can install and invoke Antora directly from the workflow.
 include::example$custom-github-actions-workflow.yml[]
 ----
 
-To install a different verson of Antora, replace the `@testing` qualifier on the package names with a specific version, such as `@2.3.4`.
+To install a different verson of Antora, append a version to the package name, such as `antora@3.0.1`.
