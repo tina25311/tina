@@ -1,6 +1,7 @@
 'use strict'
 
 const config = {
+  checkLeaks: true,
   mochaGlobalTeardown () {
     if (!this.failures) logCoverageReportPath()
   },
