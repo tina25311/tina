@@ -4,9 +4,11 @@ You can apply attributes to all of the pages in a site by declaring them in a si
 
 == Site attributes
 
-Attributes that are declared in a playbook are referred to as [.term]*site attributes*.
+Attributes declared in a playbook are referred to as [.term]*site attributes*.
+These attributes are set and available (or unavailable if unset) to all the pages in the site.
+The pages in a site are defined as all pages that Antora finds in the content sources specified in the playbook for a single run of Antora.
 Site attributes can be xref:page:attributes.adoc[built-in, custom, and page attributes].
-These attributes are applied and available (or made unavailable if unset) to all of a site's pages according to the <<precedence-rules,attribute precedence rules>>.
+The <<precedence-rules,attribute precedence rules>> determine whether site attributes can be overridden at a more granular level.
 
 In addition to being declared site-wide in a playbook, attributes can be xref:ROOT:component-attributes.adoc[defined per component version] in an [.path]_antora.yml_ file or xref:page:attributes.adoc[directly on a page in the page's header].
 However, when an attribute is hard set or hard unset in the site's playbook, it overrides any subsequent declarations of the same attribute in a component version descriptor or page.
