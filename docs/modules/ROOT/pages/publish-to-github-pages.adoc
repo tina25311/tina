@@ -67,29 +67,36 @@ Follow https://gitlab.com/antora/antora/-/issues/627[issue #627] to track the st
 == Using GitHub Actions
 
 If your playbook repository is hosted on GitHub, you can configure a GitHub Actions workflow to build and publish your site to GitHub Pages.
+The benefit of using GitHub Actions is two-fold.
+First, you don't have to worry about copying the published files to the gh-pages branch for publishing.
+Second, you don't have to worry about the [.path]_.nojekyll_ file since the action handles it for you.
+Let's get started!
 
 <<github-actions-workflow>> shows an example of a GitHub Actions workflow that uses the latest stable release of Antora to build and publish your site to GitHub Pages.
 This workflow assumes that the name of the default branch of your playbook repository is _main_, that the name of your playbook file is [.path]_antora-playbook.yml_, and that Antora is configured to publish the files to the [.path]_build/site_ directory.
-If your site uses different settings, update the values in the workflow file accordingly.
+If your site uses different settings, you'll need to update the values in the workflow file accordingly.
 
-..github/workflows/publish.yml that uses the Antora Site Action
+..github/workflow/publish.yml builds the Antora site and deploys it to GitHub Pages using GitHub Actions
 [#github-actions-workflow,yaml]
 ----
 include::example$github-actions-workflow.yml[]
 ----
 
-The benefit of using GitHub Actions is two-fold.
-First, you don't have to worry about how to get the published files into the gh-pages branch for publishing.
-Second, you don't have to worry about the [.path]_.nojekyll_ file since the action adds it for you.
+As <<github-actions-workflow>> shows, you can install and invoke Antora directly from the workflow.
+This workflow installs a specific release of Antora (both the CLI and site generator packages) and then uses the Antora CLI in the workflow.
+The workflow then uses the peaceiris/actions-gh-pages action to publish the site, along with the required [.path]_.nojekyll_ file, to GitHub Pages.
 
-If you want to specify the version of Antora to use, or you want more control over how Antora is called, you don't have to use the Antora Site Action.
-Instead, you can install and invoke Antora directly from the workflow.
-<<custom-github-actions-workflow>> shows an example of a GitHub Actions workflow that uses a specific release of Antora to build and publish your site to GitHub Pages.
+To install and use a different verson of Antora, append a version to the package name, such as `antora@3.0.1`.
 
-..github/workflow/publish.yml that installs Antora itself
-[#custom-github-actions-workflow,yaml]
+Let's now take this a step further by adding the https://gitlab.com/antora/antora-lunr-extension[Antora Lunr Extension] to incoporate a search widget in the built site.
+First, you need to update your playbook repository and UI to meet the minimum requirements of the Antora Lunr Extension as described in the https://gitlab.com/antora/antora-lunr-extension#usage[README] for that project.
+Once that's done, return to the GitHub Actions workflow and configure it to install the extension at the same time it installs Antora.
+The result is shown in <<github-actions-workflow-with-lunr>>.
+
+..github/workflow/publish.yml includes the Antora Lunr Extension
+[#github-actions-workflow-with-lunr,yaml]
 ----
-include::example$custom-github-actions-workflow.yml[]
+include::example$github-actions-workflow-with-lunr.yml[]
 ----
 
-To install a different verson of Antora, append a version to the package name, such as `antora@3.0.1`.
+To install and use a different verson of the Antora Lunr Extension, append a version to the package name, such as `@antora/lunr-extension@1.0.0-alpha.5`.
