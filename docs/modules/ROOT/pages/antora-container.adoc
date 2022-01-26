@@ -81,14 +81,14 @@ To continue using podman, replace `docker` with `podman` (and drop the `-u` opti
 
 If you use the volume mapping `$PWD:/antora:Z`, you may notice that local paths reported by Antora don't map back to your system.
 That's because, as far as Antora is concerned, [.path]_/antora_ is the current working directory.
-To fix this problem, you need to map your current working directory into the container, then switch to it before running Antora.
+To remedy this problem, you need to map your current working directory into the container, then switch to it before running Antora.
 To do so, use this volume mount instead:
 
  -v $PWD:$PWD:Z -w $PWD
 
 Notice the addition of the `-w` option.
 This option tells Antora to switch from [.path]_/antora_ to the directory you have mapped.
-Now, when Antora reports local paths, they will map to paths on your system.
+Now, when Antora reports local paths, they will match paths on your host system.
 
 === Option flags
 
