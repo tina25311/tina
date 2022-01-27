@@ -25,6 +25,11 @@ In case you're wondering, yes, symlinks work on Windows too.
 Since Windows 10, symlinks (and not some imitation) are fully supported on Windows.
 See https://blogs.windows.com/windowsdeveloper/2016/12/02/symlinks-windows-10[Symlinks in Windows 10] to learn about the debut of this capability.
 
+NOTE: A symlink in git is actually different than a symlink on the filesystem for the OS.
+In git, the symlink is a data file (with a special file mode) that stores a reference to relative path in the repository.
+When you check out the branch containing the symlink to a worktree (e.g., `git clone` or `git checkout`), that reference gets converted to a symlink on the local filesystem.
+But even if that doesn't happen (`core.symlinks` is not enabled), the symlink is created as a regular file that contains the path reference (just like it is in the git repository).
+
 == How do I make a symlink?
 
 A symlink can point to a file, a directory, or even another symlink.
