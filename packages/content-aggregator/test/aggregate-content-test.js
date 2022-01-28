@@ -2320,7 +2320,7 @@ describe('aggregateContent()', function () {
         expect(file.src).to.not.have.property('editUrl')
       }).timeout(this.timeout() * 2)
 
-      it.only('should use editUrl pattern to generate editUrl', async () => {
+      it('should use editUrl pattern to generate editUrl', async () => {
         const webUrl = 'https://gitlab.com/antora/demo/demo-component-b'
         const url = webUrl + '.git'
         const sourcePre = { url, branches: 'main', startPath: 'docs', editUrl: '{web_url}/blob/{refhash}/{path}' }
