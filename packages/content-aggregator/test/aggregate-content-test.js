@@ -2320,21 +2320,21 @@ describe('aggregateContent()', function () {
         expect(file.src).to.not.have.property('editUrl')
       }).timeout(this.timeout() * 2)
 
-      it('should use editUrl pattern to generate editUrl', async () => {
+      it.only('should use editUrl pattern to generate editUrl', async () => {
         const webUrl = 'https://gitlab.com/antora/demo/demo-component-b'
         const url = webUrl + '.git'
-        const sourceDev = { url, branches: 'main', startPath: 'docs', editUrl: '{web_url}/blob/{refhash}/{path}' }
+        const sourcePre = { url, branches: 'main', startPath: 'docs', editUrl: '{web_url}/blob/{refhash}/{path}' }
         const sourceTwo = { url, branches: 'v2.0', startPath: 'docs', editUrl: '{web_url}/blob/{refname}/{path}' }
-        playbookSpec.content.sources.push(sourceDev)
+        playbookSpec.content.sources.push(sourcePre)
         playbookSpec.content.sources.push(sourceTwo)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(2)
-        const aggregateDev = aggregate.find(({ version }) => version === 'dev')
+        const aggregatePre = aggregate.find(({ version }) => version === '2.5')
         const aggregateTwo = aggregate.find(({ version }) => version === '2.0')
-        const fileDev = aggregateDev.files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
+        const filePre = aggregatePre.files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
         const fileTwo = aggregateTwo.files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
-        expect(fileDev.src.editUrl).to.equal(
-          `${webUrl}/blob/${fileDev.src.origin.refhash}/${fileDev.src.origin.startPath}/${fileDev.src.path}`
+        expect(filePre.src.editUrl).to.equal(
+          `${webUrl}/blob/${filePre.src.origin.refhash}/${filePre.src.origin.startPath}/${filePre.src.path}`
         )
         expect(fileTwo.src.editUrl).to.equal(
           `${webUrl}/blob/${fileTwo.src.origin.branch}/${fileTwo.src.origin.startPath}/${fileTwo.src.path}`
