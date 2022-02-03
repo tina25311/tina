@@ -26,6 +26,11 @@ class UiCatalog {
     return file
   }
 
+  removeFile (file) {
+    const filesForType = this[$files].get(file.type)
+    return filesForType ? filesForType.delete(file.path) : false
+  }
+
   findByType (type) {
     const filesForType = this[$files].get(type)
     return filesForType ? [...filesForType.values()] : []

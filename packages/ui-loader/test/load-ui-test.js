@@ -1038,6 +1038,26 @@ describe('loadUi()', () => {
     expect(() => uiCatalog.addFile({ type: 'asset', path: 'css/one.css' })).to.throw('Duplicate UI file: css/one.css')
   })
 
+  it('should remove file if found in UI catalog', async () => {
+    const playbook = {
+      ui: { bundle: { url: ospath.join(FIXTURES_DIR, 'the-ui-bundle.zip') } },
+    }
+    const uiCatalog = await loadUi(playbook)
+    const numFiles = uiCatalog.getFiles().length
+    expect(uiCatalog.removeFile({ type: 'asset', path: 'css/one.css' })).to.be.true()
+    expect(uiCatalog.getFiles()).to.have.lengthOf(numFiles - 1)
+  })
+
+  it('should not remove file not found in UI catalog', async () => {
+    const playbook = {
+      ui: { bundle: { url: ospath.join(FIXTURES_DIR, 'the-ui-bundle.zip') } },
+    }
+    const uiCatalog = await loadUi(playbook)
+    const numFiles = uiCatalog.getFiles().length
+    expect(uiCatalog.removeFile({ type: 'asset', path: 'no-such-file.js' })).to.be.false()
+    expect(uiCatalog.getFiles()).to.have.lengthOf(numFiles)
+  })
+
   it('should use remote bundle from cache on subsequent run', async () => {
     const playbook = {
       ui: { bundle: { url: httpServerUrl + 'the-ui-bundle.zip' } },
