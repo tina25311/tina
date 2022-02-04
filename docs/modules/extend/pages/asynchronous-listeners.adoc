@@ -1,12 +1,16 @@
 = Asynchronous Listeners
 
 Antora calls listeners synchronously in the order they are registered.
-This is true even if a listener is marked as asynchronous using the `async` keyword or it returns a Promise.
+This is true even if a listener is marked asynchronous using the `async` keyword or the listener returns a Promise.
 Antora will await the completion of the listener invocation before calling the next listener (and thus before continuing its own operation).
 This behavior differs from the behavior of the built-in NodeEmitter in Node.js.
 
 The benefit of marking a listener as async, or returning a Promise, is that the listener can perform asynchronous operations.
 Of course, these operations will all be resolved before Antora proceeds, so they are made to behave in a synchronous fashion outside the boundaries of the function.
+
+NOTE: A Promise ends when the program calls `await` on it.
+Obviously, that requirement bubbles all the way up to the top-level function of the program.
+Antora hides away this detail by allowing you to either define an extension listener as async or return a Promise.
 
 Let's look at an example of fetching a file from a URL and publishing it to the site.
 
