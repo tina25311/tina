@@ -8,12 +8,12 @@
 
 The Antora project provides a Docker image that you can use to run the `antora` command inside a container (a process known as [.term]*containerization*).
 The benefit of this approach is that you can bypass installing Antora and get right down to running it.
-All you need is Docker or podman.
+All you need is Docker or Podman.
 
 Assumptions:
 
-* [x] You have {url-docker}[Docker] (command: `docker`) or {url-podman}[podman] (command: `podman`) installed on your machine.
-* [x] The Docker daemon is running on your machine (not required when using podman).
+* [x] You have {url-docker}[Docker] (command: `docker`) or {url-podman}[Podman] (command: `podman`) installed on your machine.
+* [x] The Docker daemon is running on your machine (not required when using Podman).
 * [x] You have configured your own xref:playbook:index.adoc[playbook] or you're using the Demo playbook.
 
 On this page, you'll learn:
@@ -69,13 +69,13 @@ That's why you see the path [.path]_/.cache_ in the message, which is not a writ
 The solution to this problem is to <<cache-dir,modify the location of the cache directory>>.
 ****
 
-Alternately, you can execute the `podman run` command to invoke the entrypoint command for this image using {url-podman}[podman]:
+Alternately, you can execute the `podman run` command to invoke the entrypoint command for this image using {url-podman}[Podman]:
 
  docs-site $ podman run -v $PWD:/antora:Z --rm -t antora/antora antora-playbook.yml
 
-The advantage of podman is that it's more secure.
+The advantage of Podman is that it's more secure.
 It runs in user space and does not rely on a daemon.
-To continue using podman, replace `docker` with `podman` (and drop the `-u` option) in any of the commands below.
+To continue using Podman, replace `docker` with `podman` (and drop the `-u` option) in any of the commands below.
 
 === Align with local paths
 
@@ -101,7 +101,7 @@ If you don't need to see these progress bars, you can omit this flag.
 `-u $(id -u)`::
 This option tells Docker to run the entrypoint command (i.e., `antora`) as the current user.
 If you use the `:Z` modifier on the volume mount without specifying this option, the generated files are (most likely) written as the root user (and thus become rather tricky to delete).
-This option is _not required_ when using podman.
+This option is _not required_ when using Podman.
 
 `-v`::
 A volume mount that maps the current directory on your local system (represented by `$PWD`) to the [.path]_/antora_ directory inside the container.
