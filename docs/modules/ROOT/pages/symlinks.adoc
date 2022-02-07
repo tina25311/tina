@@ -7,7 +7,7 @@ This page introduces symlinks and explains how they can be used in Antora to hel
 
 A [.term]*symlink*, short for symbolic link, is a shortcut to a file that itself acts like a file.
 In other words, it's a file that points to another file.
-The purpose of a symlink is to give a file a second location with having to duplicate it.
+The purpose of a symlink is to give a file a second location without having to duplicate it.
 A symlink can also point to a directory, which effectively links all the files under that directory to the new location.
 And a symlink can even point to another symlink, making it possible to give a file or directory even more locations.
 
