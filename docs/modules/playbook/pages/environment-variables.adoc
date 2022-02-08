@@ -67,7 +67,7 @@ The following table summarizes the environment variables you can use to control 
 
 |[[log-format]]`ANTORA_LOG_FORMAT`
 |String
-|`json` if CI=true, otherwise `pretty`
+|`pretty` if CI=true or terminal is interactive, otherwise `json`
 |See xref:runtime-log-format.adoc[format key] and xref:cli:options.adoc#log-format[--log-format option]
 
 |[[log-level]]`ANTORA_LOG_LEVEL`

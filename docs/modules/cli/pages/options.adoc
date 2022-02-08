@@ -140,7 +140,7 @@ Filesystem path
 |See xref:playbook:runtime-log-destination.adoc#file-key[file key] and xref:playbook:environment-variables.adoc#log-file[ANTORA_LOG_FILE variable].
 
 |[[log-format]]`--log-format`
-|`json` if CI=true, otherwise `pretty`
+|`pretty` if CI=true or terminal is interactive, otherwise `json`
 a|[%hardbreaks]
 `json`
 `pretty`
