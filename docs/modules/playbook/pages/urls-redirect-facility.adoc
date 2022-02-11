@@ -10,7 +10,7 @@ By default, Antora generates a static HTML file for each URL alias to redirect t
 Antora also has the ability to generate web server-specific configuration files that leverage the web server's rewrite facility to handle the routing instead.
 
 Antora derives these URL routes from the site and component version start pages, latest version aliases, and xref:page:page-aliases.adoc[page aliases] defined using the `page-aliases` attribute.
-For page aliases, the xref:page:page-aliases.adoc#target-page[target page] is the the page to which the source page is redirected.
+For page aliases, the xref:page:page-aliases.adoc#target-page[target page] is the page to which the source page is redirected.
 The target page is also where page aliases are defined.
 The xref:page:page-aliases.adoc#source-page[source page] is the alias page that's being redirected (i.e., the claimed page).
 
@@ -158,7 +158,7 @@ server {
 }
 ----
 
-Adjust the configuration if your site is accessiable from a different hostname or port or is served from a different root.
+Adjust the configuration if your site is accessible from a different hostname or port or is served from a different root.
 
 [#static]
 === Static (meta refresh)
