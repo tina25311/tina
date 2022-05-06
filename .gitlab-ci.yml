@@ -53,7 +53,9 @@ default:
     paths:
     - reports/lcov-report
     reports:
-      cobertura: reports/cobertura-coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: reports/cobertura-coverage.xml
       junit: reports/tests-xunit.xml
 .npm:
   stage: test
