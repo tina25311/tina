@@ -11,7 +11,7 @@ The global properties of your site's published URLs and redirect facility are de
 ----
 urls: # <.>
   html_extension_style: drop # <.>
-  redirect_facility: ngnix # <.>
+  redirect_facility: nginx # <.>
   latest_version_segment_strategy: redirect:to # <.>
   latest_version_segment: stable # <.>
   latest_prerelease_version_segment: unstable # <.>
@@ -56,6 +56,6 @@ Accepts the values `replace`, `redirect:to`, and `redirect:from`.
 
 |xref:urls-redirect-facility.adoc[redirect_facility]
 |Specifies whether Antora generates redirects as static HTML refresh pages or redirect configuration files.
-Accepts the values `disabled`, `httpd`, `netlify`, `ngnix`, and `static`.
+Accepts the values `disabled`, `httpd`, `netlify`, `nginx`, and `static`.
 |No
 |===
