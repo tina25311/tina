@@ -57,8 +57,8 @@ The `npm i` command will consult this file to determine which packages and which
 ----
 {
   "devDependencies": {
-    "@antora/cli": "{page-component-version}.0",
-    "@antora/site-generator": "{page-component-version}.0"
+    "@antora/cli": "{page-component-version}.1",
+    "@antora/site-generator": "{page-component-version}.1"
   }
 }
 ----
@@ -86,7 +86,7 @@ If you installed the Antora CLI and site generator globally, you can upgrade the
 In a terminal, run:
 
 [subs=attributes+]
- $ npm i -g @antora/cli@{page-component-version}.0 @antora/site-generator@{page-component-version}.0
+ $ npm i -g @antora/cli@{page-component-version} @antora/site-generator@{page-component-version}
 
 The `npm i` command will remove any existing packages with the same name and install them anew.
 
@@ -102,8 +102,8 @@ If you've installed the Antora CLI and site generator globally, you'll see them 
 [subs=attributes+]
 ....
 /home/user/.nvm/versions/node/v{version-node}/lib
-├── @antora/cli@{page-component-version}.0
-├── @antora/site-generator@{page-component-version}.0
+├── @antora/cli@{page-component-version}.1
+├── @antora/site-generator@{page-component-version}.1
 ├── npm@{version-npm}
 └── ...
 ....
