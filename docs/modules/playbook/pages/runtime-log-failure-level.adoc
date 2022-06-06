@@ -63,6 +63,6 @@ That is, your site built successfully without any errors or potential problems!
 
 Alternatively, you can use the xref:cli:options.adoc#failure-level[--log-failure-level option from the CLI] to assign a failure threshold.
 
- $ antora --failure-level=warn antora-playbook.yml
+ $ antora --log-failure-level=warn antora-playbook.yml
 
 The `--log-failure-level` option overrides the value assigned to the `failure_level` key or the xref:playbook:environment-variables.adoc#failure-level[ANTORA_LOG_FAILURE_LEVEL environment variable].
