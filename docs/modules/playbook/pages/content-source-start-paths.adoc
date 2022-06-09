@@ -19,14 +19,15 @@ When you organize content this way, this feature has the potential of drasticall
 
 The xref:content-source-start-path.adoc[start_path key] only lets you specify _a single path_ in your playbook for a given content source.
 In contrast, the `start_paths` key lets you specify _multiple paths_.
-The multiple paths can be even further consolidated using https://en.wikipedia.org/wiki/Glob_(programming)[glob patterns^], which Antora resolves to one or more fixed paths.
+The multiple paths can be even further consolidated using xref:content-refname-matching.adoc[wildcards, exclusions, braces, alternation, ranges, and repetition patterns].
+Antora will resolve the patterns to one or more fixed paths.
 
 The `start_paths` key is mutually exclusive with the `start_path` key.
 If both the `start_path` and `start_paths` keys are present on a content source, only the `start_paths` key is used.
 
 === Relationship to git references
 
-Like with the singular start path, the start paths are searched per reference (i.e., branch or tag).
+Like with the singular start path, the start paths are searched per git reference (i.e., branches, tags, and worktrees).
 That means a xref:ROOT:component-version-descriptor.adoc[component version descriptor] must be found at each start path for each reference.
 
 Typically, when using multiple start paths, you'll only be using a single reference anyway (e.g., `main`).
@@ -42,10 +43,10 @@ Multiple start paths are designed primarily to accommodate two use cases:
 === Component versions as folders
 
 You can use `start_paths` to store all versions of a component in a single repository branch using folders instead of using multiple branches.
-Although you may miss out on some of the advantages of the version control system, this arrangement can make it easier on writers who are frequently updating multiple versions of the documentation at once.
+Although you may miss out on some advantages of the version control system, this arrangement can make it easier on writers who are frequently updating multiple versions of the documentation at once.
 
 In this scenario, you'd provide a single value for the `branches` key and use the `start_paths` key to tell Antora which directories in the branch to use as content roots.
-If the version folders are named consistently, it becomes easy to match them using a glob pattern.
+If the version folders are named consistently, it becomes easy to match them using a pattern.
 
 Here's an example of a repository layout that uses folders to store documentation versions:
 

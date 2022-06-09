@@ -1,8 +1,5 @@
-// document which options we use for picomatch
-// mention matching across path segments
-// brace expression with single entry is ignored {foo}
-// globstar??
 = Refname Matching in Content Sources
+:source-language: yaml
 
 At the heart of Antora is the gathering of content stored in references across various git repositories.
 The playbook provides several keys to instruct Antora which reference names (i.e., refnames) to consider, including branches, tags, and worktrees, and which start paths within those references to scan.
@@ -26,7 +23,7 @@ For example, the string `v1.0.x, v2.0.x` will become an array of two strings, `v
 It's usually best to enclose the string values in single quotes to avoid conflicts between characters in the value and special syntax in YAML (or your chosen configuration language).
 
 CAUTION: If you're matching refnames using patterns, we strongly encourage you to use the array syntax.
-The single or comma-separated string syntax is intented to be used for exact matching only.
+The single or comma-separated string syntax is intended to be used for exact matching only.
 Otherwise, you might get unexpected behavior.
 
 == Exact match
@@ -58,11 +55,12 @@ You aren't matching remotes/origin/v1.0.x or heads/v1.0.x, for instance, but rat
 The reason for this is that Antora looks for both remote and local references, preferring the local references, and only selects one per unique shortname.
 
 While it appears that the exact match is a literal value, it is, in fact, a pattern.
-And a pattern always matches from the beginning to the end of the rename.
+And a pattern always matches from the beginning to the end of the refname.
 However, most refnames don't contain any characters which have meaning in the pattern matching syntax (not even `.`).
 So it acts like a literal value that looks for a refname that matches exactly.
 But keep the fact that it's a pattern in the back of your mind if you find that it is not matching the refname you expect it to match.
 
+[#wildcards]
 == Wildcards (basic globbing)
 
 Having to maintain a list of exact refnames in your playbook can be tedious and noisy.
@@ -71,7 +69,7 @@ That's why Antora allows you to match refnames in bulk using pattern matching.
 The most basic pattern matching tool is the wildcard (`*`).
 The use of this pattern is often referred to as globbing, since you use it to capture a glob of items.
 
-You can glob all refnames that existing using a lone wildcard:
+You can glob all refnames that exist using a lone wildcard:
 
 ----
 branches: '*'
@@ -100,6 +98,7 @@ However, it will only match numbers if the refnames themselves only have number.
 That means it could also match `very.last.x`.
 While we'll be able to address that problem later when we get into more advanced patterns, it does bring us to the problem of overmatching and the need for exclusions.
 
+[#exclusions]
 == Exclusions
 
 So far we've talked about refnames we want to match, or inclusions.
@@ -118,7 +117,7 @@ It's also necessary to enclose an exclusion entry in single quotes so it does no
 When in doubt, enclose string values in single quotes.
 It never hurts to do it.
 
-Let's throw away that non-version refname that we inadvertantly matched:
+Let's throw away that non-version refname that we inadvertently matched:
 
 ----
 branches: [v*.*.x, '!v1.0.x', '!very.last.x']
@@ -134,15 +133,17 @@ The wildcard is a useful tool, but it's very loose with what characters it match
 You may find that you need to get more precise.
 That's where braces come in.
 
+[#braces]
 == Braces
 
-Braces (or brace expressions) are patterns that are enclosed in curly braces (`{}`).
+Braces, also known as brace expressions, are patterns enclosed in curly braces (`{}`).
 There are three kinds of brace expressions supported in Antora:
 
 * a comma-separated list of alternate character sequences
 * an alpha or numeric range
 * a numeric range with a step
 
+[#alternation]
 === Alternation
 
 A comma-separated list of alternate characters, such as `{this,that}` should be read as "`this or that`".
@@ -156,7 +157,7 @@ branches: v{5,6}.*.x
 
 This expression will match `v5.0.x`, `v5.1.x`, and `v6.0.x`.
 
-You can use an alternation expression to match the absense of a character or segmment using an empty entry.
+You can use an alternation expression to match the absense of a character or segment using an empty entry.
 Let's consider of making the `v` prefix optional.
 
 ----
@@ -182,12 +183,13 @@ If the refname does not start with a `v`, then we need to escape the first perio
 branches: 5(.){7,8}.x
 ----
 
-IMPORTANT: If the pattern begins with a number followed by a period, and the pattern contains at least one brace expression, the period must be enclose in round brackets (`()`) (e.g., `5(.){7,8}.x`).
+IMPORTANT: If the pattern begins with a number followed by a period, and the pattern contains at least one brace expression, the period must be enclosed in round brackets (`()`) (e.g., `5(.){7,8}.x`).
 This requirement is imposed as a result of a parsing bug in the pattern matching library.
 
 As you can imagine, if you're specifying a bunch of numbers, they may start to form a range.
 You can consolidate the alternation using the range syntax.
 
+[#range]
 === Range
 
 If the characters you are matching are members of a range, you can specify them using the start and end values only and separating them with two periods (`..`).
@@ -225,6 +227,7 @@ branches: ['5.*.x', '!5.{0..6}.x']
 By default, a range considers each item.
 You can skip over items using steps.
 
+[#steps]
 === Steps
 
 You can adjust the step size of a range by appending a third parameter, offset by two periods.
@@ -235,22 +238,25 @@ You can match all even major versions from 2 to 8 using the following pattern:
 branches: v{2..8..2}.*.x
 ----
 
-By changing the begin value, you can match odd major versions instead:
+By changing the beginning value, you can match odd major versions instead:
 
 ----
 branches: v{1..9..2}.*.x
 ----
 
+////
 === Nested
 
-#TODO#
+TODO: Add content for this section?
+////
 
-Braces on their own have limited ability to express complex patterns.
+On their own, braces have limited ability to express complex patterns.
 To make brace expressions truly powerful, you need to combine them with extended globbing.
 
+[#extended]
 == Extended globbing and repetition
 
-So far we've been matching single occurances of segments, whether they be character sequences, alternations, or ranges.
+So far we've been matching single occurrences of segments, whether they're character sequences, alternations, or ranges.
 We can take our patterns further by specifying how many times these segments must occur, if at all.
 An extended glob allows you to enclose a pattern or pattern list inside a pair of round brackets, then assign a repetition operator to it.
 
@@ -274,7 +280,7 @@ Here's an extended glob that matches any sequence of numbers.
 *({0..9})
 ----
 
-This use of repeition is *far* more efficient than the following range, which you should avoid using:
+This use of repetition is *far* more efficient than the following range, which you should avoid using:
 
 ----
 {0..100}
@@ -290,8 +296,8 @@ branches: v@({1..9})*({0..9}).+({0..9}).x
 ----
 
 We're saying that the major version must not start with 0.
-Then, it can be followed by any number of digits (e.g., 1, 10, etc).
-The minor version can have one or more digits (e.g., 0, 99, 101, etc).
+Then, it can be followed by any number of digits (e.g., 1, 10, etc.).
+The minor version can have one or more digits (e.g., 0, 99, 101, etc.).
 
 We can use the negation operator to exclude while we're including instead of using a separate exclusion entry:
 
@@ -315,3 +321,8 @@ Let's wrap up with a full example of matching a very specific range of version n
 ----
 tags: ['{5,6}.+({0..9}).+({0..9}){,-*}', '!(5).{0..5}.*', '!*-M+({0..9})']
 ----
+
+// TODO document which options we use for picomatch
+// TODO mention matching across path segments
+// TODO brace expression with single entry is ignored {foo}
+// TODO globstar??

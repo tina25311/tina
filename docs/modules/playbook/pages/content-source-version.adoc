@@ -105,3 +105,6 @@ If the match group contains any forward slashes, Antora will replace each one wi
 
 Antora will use the value of the first pattern it matches.
 If none of the patterns match the refname, Antora will fallback to using the refname as the version.
+
+TIP: Antora supports matching refnames using wildcards, exclusions, braces, alternation, ranges, and repetition patterns.
+See xref:content-refname-matching.adoc[].
