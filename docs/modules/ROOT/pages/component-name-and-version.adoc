@@ -57,12 +57,13 @@ The `version` key doesn't accept certain characters or spaces in its value, see 
 . Save the file as [.path]_antora.yml_ in the xref:content-source-repositories.adoc#content-source-root[content source root].
 The [.path]_antora.yml_ file should be located adjacent to the [.path]_modules_ directory, which contains the content files for the component version.
 
-If you're defining multiple versions of a component, be sure to always use the same case when declaring the component name.
-If the case differs (e.g., Silver-Leaf vs silver-leaf), Antora will treat these as different components.
-
 You've now associated a set of source files with a component version!
 When Antora runs, all of the xref:standard-directories.adoc[source files stored in the standard set of directories] will be assigned the component name `silver-leaf` and the version `7.1`.
 These values will be used as xref:page:resource-id-coordinates.adoc#id-version[resource ID coordinates] and in the URLs of the publishable resources generated from the component version's source files.
+
+TIP: Be sure to always use the same case when declaring the component name if you're defining multiple versions of a component.
+If the case differs (e.g., Silver-Leaf versus silver-leaf), Antora will treat these as different components.
+See xref:component-name-key.adoc[] and xref:component-version-key.adoc[] for more examples and value requirements.
 
 [#optional-keys]
 == Optional antora.yml keys
@@ -70,3 +71,5 @@ These values will be used as xref:page:resource-id-coordinates.adoc#id-version[r
 You can assign additional metadata, designate a component version as a prerelease, apply AsciiDoc attributes, and register a component version's navigation list and start page using the component version descriptor.
 
 include::partial$optional-component-version-keys.adoc[]
+
+To learn more about the capabilities of the `version` key and compare it to the other version facets Antora provides--prerelease version, display version, and symbolic version--see xref:version-facets.adoc[].
