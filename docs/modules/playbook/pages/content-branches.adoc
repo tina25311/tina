@@ -1,6 +1,6 @@
 = Branches
 
-The `branches` key accepts a list of exact branch names and glob patterns.
+The `branches` key accepts a list of exact branch names and patterns for matching branch names.
 When the `branches` key isn't specified globally or on a content source, Antora will apply the <<default,default branches filter>>.
 
 [#branches-key]
@@ -9,8 +9,8 @@ When the `branches` key isn't specified globally or on a content source, Antora 
 The `branches` key is optional.
 It can be specified directly on the `content` key (which changes the default value for all content sources) or on a content source (which overrides the default value).
 The `branches` key accepts a list of branch name patterns to use from the specified `url`.
-Each value can be an exact branch name (e.g., `v2.3`) or a glob pattern (e.g., `v2.*`).
-The list of branches can also have a combination of these value types.
+Each value can be an exact branch name (e.g., `v2.3`, `main`, etc.) or a pattern (e.g., `+v2.*+`, `+v@({1..9})*({0..9}).+({0..9}).x+`, etc.).
+The list of branches can also be a combination of these value types.
 
 .antora-playbook.yml
 [,yaml]
@@ -29,11 +29,12 @@ Separate each value with a comma (`,`).
 If a value begins with a symbol (e.g., `+*+`), enclose it in single quotation marks (`'`) per YAML rules.
 <.> A single value doesn't need to be enclosed in square brackets, but, if it begins with a number (e.g., `2.0`), enclose it in single quotation marks (`'`).
 If the value begins with a symbol (e.g., `+*+`), enclose it in single quotation marks (`'`) per YAML rules.
-<.> Exact branch names and glob patterns can be assigned to a `branches` key.
+<.> Exact branch names and branch name patterns can be assigned to a `branches` key.
 
-These value patterns are case insensitive (i.e., the characters are matched regardless of case).
+These value patterns are case insensitive.
+That means the characters are matched regardless of their case.
 The values can be specified in a comma-separated list or as single items on individual lines.
-As a general rule of thumb, when using YAML, it's always best to enclose values in single quotation marks.
+As a general rule of thumb when using YAML, it's always best to enclose values in single quotation marks.
 
 .branches values listed on individual lines
 [#ex-value-list,yaml]
@@ -71,7 +72,7 @@ content:
 ----
 <.> This content source will use the exact branch names specified.
 <.> This content source will use the default branches filter.
-<.> This content source will use the `edge` branch name as well as the branch names that begin with `v` that are matched by the glob patterns.
+<.> This content source will use the `edge` branch name as well as the branch names that begin with `v` that are matched by the refname pattern.
 
 === Modify the default branches filter
 
@@ -109,11 +110,12 @@ content:
 ----
 
 [#glob-pattern]
-== Specify branches by glob pattern
+== Specify branches by pattern
 
-Branches can be specified by glob patterns such as as `v3.4.*`.
+Antora provides a facility to include and exclude branch names in bulk using pattern matching.
+For example, branches can be specified using the wildcard operator (`+*+`).
 
-.Glob branch patterns
+.Select branches using a wildcard
 [,yaml]
 ----
 content:
@@ -122,14 +124,16 @@ content:
     branches: [v2.*, v3.*, v4.*]
 ----
 
-=== Negate glob patterns
+For an in depth look at using wildcards (`+*+`), see xref:content-refname-matching.adoc#wildcards[Wildcards].
+Antora also supports matching branch names using exclusions, braces, alternation, ranges, and repetition patterns.
+See xref:content-refname-matching.adoc[].
 
-If a pattern starts with a `!` character, then it is negated (i.e., existing matches are excluded).
-This is how you can deselect branches that were matched by a previous glob.
+== Exclude branches by pattern
 
-Here's how you'd exclude all branches that begin with `v` and end with `-beta`.
+You can unselect branches that were matched by a previous pattern by prefixing the value with `!`.
+Here's how you'd exclude all branches that begin with `v` and end with `-beta`:
 
-.Exclude branches ending in -beta
+.Excluding branches using a wildcard
 [,yaml]
 ----
 content:
@@ -138,21 +142,20 @@ content:
     branches: [v*, '!v*-beta']
 ----
 
-If the negated pattern appears first in the list, its meaning slightly changes.
-Since it doesn't make sense to exclude when nothing has been selected, the negated pattern in this position implies that there's a `+*+` pattern before it.
+If the negated pattern appears first in the list, the meaning slightly changes.
+A negated pattern in this position implies that there's a `*` entry before it (e.g., `+'*', '!main'+`).
 
-.Include all branches except main
+.Include all branches that aren't excluded by name
 [,yaml]
 ----
 content:
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-b.git
-    branches: ['!main'] # <.>
+    branches: ['!main']
 ----
-<.> This branches pattern is shorthand for `[*, '!main']`.
 
-Generally, we recommend against using this notation since it can select a lot of branches you probably don't want.
-It's better to be specific about the branches you want to match, then use exclusions to refine that list.
+We recommend against using this inverted selection since it can pull in branches you probably don't want.
+It's best to be specific about the branches you want to match, then use exclusions to reduce that list.
 
 [#current-local-branch]
 == Use the current, local branch

@@ -40,7 +40,7 @@ Keys-value pairs that are specified directly under `content` are applied to all 
 == sources key
 
 The `sources` key is required and nested under the `content` key.
-The `sources` key contains a list of source entries, which consist of a git repository location, branch and/or tag name patterns, and other repository properties that Antora uses when aggregating the site content.
+The `sources` key contains a list of source entries, which consist of a git repository location, branch and tag name patterns, and other repository properties that Antora uses when aggregating the site content.
 The `sources` key must contain at least one entry with a `url` key defined.
 
 [,yaml]
@@ -92,7 +92,7 @@ With the exception of the `sources` key, which contains the source entries thems
 |Content Keys |Description |Required
 
 |xref:content-branches.adoc[branches]
-|Accepts a list of branch names or glob patterns to use from the repository specified in the content source.
+|Accepts a list of exact branch names and name patterns to use from the repository specified in the content source.
 |No
 
 |xref:content-edit-url.adoc[edit_url]
@@ -105,7 +105,7 @@ Accommodates the following placeholder segments: `+{web_url}+`, `+{refname}+`, `
 |Yes
 
 |xref:content-tags.adoc[tags]
-|Accepts a list of tag names or glob patterns to use from the repository specified in the content source.
+|Accepts a list of exact tag names and name patterns to use from the repository specified in the content source.
 |No
 |===
 
@@ -117,7 +117,7 @@ Accommodates the following placeholder segments: `+{web_url}+`, `+{refname}+`, `
 |Content Keys |Description |Required
 
 |xref:content-branches.adoc[branches]
-|Accepts a list of branch names or glob patterns to use from the repository specified in the content source.
+|Accepts a list of exact branch names and name patterns to use from the repository specified in the content source.
 If not specified, defaults to the value of the `branches` key defined on the `content` key.
 |No
 
@@ -136,7 +136,7 @@ Single values are coerced into an array.
 |No
 
 |xref:content-tags.adoc[tags]
-|Accepts a list of tag names or glob patterns to use from the repository specified in the content source.
+|Accepts a list of exact tag names and name patterns to use from the repository specified in the content source.
 |No
 
 |xref:content-source-url.adoc[url]
@@ -148,6 +148,6 @@ Single values are coerced into an array.
 |No
 
 |xref:content-worktrees.adoc[worktrees]
-|Accepts a keyword or list of exact branch names or glob patterns to control which corresponding worktrees Antora should use.
+|Accepts a keyword or list of exact branch names or name patterns to control which corresponding worktrees Antora should use.
 |No
 |===

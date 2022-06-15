@@ -1,6 +1,6 @@
 = Tags
 
-The `tags` key accepts a list of exact tag names and shell glob patterns.
+The `tags` key accepts a list of exact tag names and patterns for matching tag names.
 
 WARNING: We generally recommend against pulling documentation from tags.
 If you do use tags, we recommend using dedicated documentation tags rather than reusing tags for software releases.
@@ -11,7 +11,8 @@ You can read more about our philosophy regarding documentation versioning on the
 
 The `tags` key is optional and can be specified directly on the `content` key or on a `url` key.
 It accepts a list of tag name patterns.
-The values can be the exact names of tags, shell glob patterns such as `v2.*`, or a combination of exact names and glob patterns.
+Each value can be an exact tag name (e.g., `v2.3.1`, `v3.9.4`, etc.) or a pattern (e.g., `+v2.*+`, `+v@({1..9})*({0..9}).+({0..9}).x+`, etc.).
+The list of tags can also be a combination of these value types.
 
 .antora-playbook.yml
 [,yaml]
@@ -31,7 +32,8 @@ Separate each value with a comma (`,`).
 
 WARNING: Setting the `tags` key does not automatically disable the xref:content-branches.adoc#default[default branches filter]!
 
-These value patterns are case insensitive (i.e., the characters are matched regardless of case).
+These value patterns are case insensitive.
+That means the characters are matched regardless of their case.
 The values can be specified in a comma-separated list or as xref:content-branches.adoc#ex-value-list[single items on individual lines].
 
 [#add-default-tags-filter]
@@ -63,7 +65,7 @@ With the creation of the default tags filter, Antora will now discover and use t
 [#mix-branches-and-tags]
 == Use tags and branches from the same repository
 
-In this example, we'll load the `main` branch of a content repository as well as all of the tags starting with the letter `v`.
+In this example, we'll load the `main` branch of a content repository as well as tags starting with the letter `v`.
 
 [,yaml]
 ----
@@ -73,6 +75,10 @@ content:
     branches: [main, sneaky-chinchilla]
     tags: v*
 ----
+
+For an in depth look at using wildcards (`+*+`), see xref:content-refname-matching.adoc#wildcards[Wildcards].
+Antora also supports matching tag names using exclusions, braces, alternation, ranges, and repetition patterns.
+See xref:content-refname-matching.adoc[].
 
 ////
 .Assign a default tags filter
