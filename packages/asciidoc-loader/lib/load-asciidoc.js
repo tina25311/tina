@@ -73,7 +73,6 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
       const partialContents = contents.slice(0, firstBlankLineIdx)
       const doctitleIdx = partialContents.indexOf(DOCTITLE_MARKER_BUF)
       if (!doctitleIdx || partialContents[doctitleIdx - 1] === 10) contents = partialContents
-      attributes.manname = attributes.manpurpose = 'unknown@' // remove when upgrading to Asciidoctor 2.1
     }
   } else if (contentCatalog) {
     attributes.relfilesuffix = '.adoc' // NOTE relfilesuffix must be set for page-to-page xrefs to work correctly

@@ -726,7 +726,8 @@ describe('loadAsciiDoc()', () => {
       const attributes = doc.getAttributes()
       expect(attributes.manvolnum).to.equal('1')
       expect(attributes.mantitle).to.equal('cmd')
-      expect(attributes.manname).to.equal('unknown')
+      expect(attributes.manname).to.be.undefined()
+      expect(attributes.manpurpose).to.be.undefined()
     })
 
     it('should assign site-url attribute if site url is set in playbook', () => {
