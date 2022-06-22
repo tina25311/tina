@@ -141,17 +141,17 @@ The path [.path]_/srv/www_ refers to the location of the generated site.
 ----
 server {
   listen       80;
-  server_name  localhost;
+  server_name  _;
+  root         /srv/www;
 
   location = /.etc/nginx/rewrite.conf {
-    deny   all;
-    return 404;
+    deny    all;
+    return  404;
   }
 
   include /srv/www/.etc/nginx/rewrite.conf;
 
   location / {
-      root   /srv/www;
       index  index.html;
   }
 
