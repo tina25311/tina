@@ -34,7 +34,7 @@ This strategy is currently ignored when the redirect facility is `static`.
 
 `redirect:to`:: Sets up redirects from the URLs using the actual version to the URLs using the symbolic version.
 The actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
-This strategy is transparently changed to `replace` when the redirect facilit is `static`.
+This strategy is transparently changed to `replace` when the redirect facility is `static`.
 
 `replace`:: _Default_.
 The actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
