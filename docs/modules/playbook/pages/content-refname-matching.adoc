@@ -319,7 +319,10 @@ That's why we encourage you to use as many inclusion and exclusion patterns as y
 Let's wrap up with a full example of matching a very specific range of version numbers with all milestone versions removed.
 
 ----
-tags: ['{5,6}.+({0..9}).+({0..9}){,-*}', '!(5).{0..5}.*', '!*-M+({0..9})']
+tags:
+- '{5,6}.+({0..9}).+({0..9}){,-*}'
+- '!(5).{0..5}.*'
+- '!*-M+({0..9})'
 ----
 
 // TODO document which options we use for picomatch
