@@ -90,13 +90,18 @@ These attributes are reassigned for each page as well as each xref:navigation:fi
 |The name of the repository branch where the page's source file is stored. (mutually exclusive with `page-origin-tag`)
 |v7.1.0
 
+|`page-origin-refhash`
+|The SHA-1 hash of the reference where the page's source file is stored.
+If the file was taken from a git worktree (i.e., local directory), the value is `(worktree)`.
+|e8e6f6ba33b1ab3f796907b5a256893a64844cd1
+
 |`page-origin-refname`
 |The name of the reference where the page's source file is stored.
 |v7.1.0
 
 |`page-origin-reftype`
 |The reference type (e.g., tag or branch) where the page's source file is stored.
-If the file was taken from a local directory (i.e., git worktree), the value is `(worktree)`.
+If the file was taken from a git worktree (i.e., local directory), the value is `branch`.
 |branch
 
 |`page-origin-tag`
@@ -116,8 +121,9 @@ If the file was taken from a local directory (i.e., git worktree), the value is 
 |\https://gitlab.com/forest-co/silver-leaf.git
 
 |`page-origin-worktree`
-|Set (with no value) only if the file was taken from a local directory (i.e., a git worktree).
-|_Boolean attribute, no output is returned_
+|The absolute path of the git worktree (i.e., local directory).
+Only set if the file was taken from a git worktree.
+|/user/projects/project-name
 
 |`page-relative-src-path`
 |The family-relative path of the page's source file (starting from [.path]_modules/<module>/pages_).
