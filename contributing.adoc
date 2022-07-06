@@ -45,7 +45,6 @@
 :url-git-dl: {url-git}/downloads
 :url-chat: https://antora.zulipchat.com
 :url-istanbul: https://istanbul.js.org/
-:url-lerna: https://lerna.js.org
 :url-mocha: https://mochajs.org/
 :url-node: https://nodejs.org
 :url-node-releases: {url-node}/en/about/releases/
@@ -520,7 +519,6 @@ In order to obtain the source code, run the test suite, and launch Antora, you'l
 
 * git
 * Node.js / npm
-* Lerna
 * Development libraries (e.g., a C compiler)
 
 The following sections describe the prerequisites in detail and provide resources with additional instructions about how to install them.
@@ -595,23 +593,6 @@ You can list the available scripts by running `npm run` without any arguments:
  $ npm run
 
 The rest of the software you need is installable from Node.js (specifically npm).
-
-==== Lerna (release only)
-
-This project uses {url-lerna}[Lerna] (command: `lerna`) to manage and release multiple packages in this repository.
-The packages are located under the [.path]_packages/_ folder (which you can list using `lerna list`).
-The main task we need Lerna for is to clean the installed dependencies.
-
-To use the version of Lerna required by this project, you need to install it globally using:
-
- $ npm install -g lerna@$(node -p 'require("./lerna.json").lerna')
-
-The lerna module provides the `lerna` command.
-You can verify this command is on your path using:
-
- $ lerna --version
-
-If you see a version, you're all set.
 
 ==== Development Libraries
 

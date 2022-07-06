@@ -20,7 +20,7 @@ The remainder of this document describes how the release process works, includin
 
 Here's what happens automatically when a release is made:
 
-* The version property in [.path]_lerna.json_ and each [.path]_package.json_ file under [.path]_packages/_ is set to the new version.
+* The version property in [.path]_package.json_ and each [.path]_package.json_ file under [.path]_packages/_ is set to the new version.
 * The Unreleased section title is in CHANGELOG.adoc is replaced with the release version and current date.
 * The version in docs/antora.yml is replaced with the release version.
 * The copyright year is updated to the current year in the project README.adoc and each package README.adoc.
@@ -45,7 +45,7 @@ Version numbers are chosen for releases according to https://semver.org[semantic
 All packages in this repository are released together and thus share a common version.
 Changes to the repository as a whole should be considered when selecting the version number for a release.
 
-The current published version is tracked in the file [.path]_lerna.json_ at the root of this repository.
+The current published version is tracked in the file [.path]_package.json_ at the root of this repository.
 This value is used to generate the next version in the sequence (unless an explicit version is provided).
 
 The version number (e.g., 1.1.0) or increment keyword (e.g., patch) for a release is set using the `RELEASE_VERSION` variable on the "`Run Pipeline`" page.
@@ -58,29 +58,26 @@ The release job is defined in the file [.path]_.gitlab-ci.yml_.
 The release job only runs on a protected branch when the pipeline is run from the Pipeline page and the `RELEASE_VERSION` variable is set.
 The job runs in a phase named "`deploy`" at the end of the CI pipeline.
 
-The release job delegates to https://lerna.js.org[Lerna] to perform the release.
-The version of Lerna used by the release job is set in the file [.path]_lerna.json_ at the root of this repository.
-The call to Lerna is managed by [.path]_scripts/release.sh_, which sets up and tears down the environment in which Lerna runs.
+The release job delegates to the [.path]_npm/release.sh_ script to perform the release.
 
 === Credentials
 
-In order to perform a release, Lerna must be able to:
+In order to perform a release, npm must be able to:
 
 * publish packages to https://www.npmjs.com[npmjs.com]
 * push commits to this git repository
 
-Lerna needs to be able to publish packages using npm.
 The auth token for publishing to npmjs.com is stored in the RELEASE_NPM_TOKEN secret variable defined in the CI/CD configuration.
 *Make sure this token is still valid before releasing!*
 (You can check if the token is registered by running `npm token list`).
-Lerna uses this token to authenticate as the release manager (currently https://www.npmjs.com/~mojavelinux[mojavelinux]).
+npm uses this token to authenticate as the release manager (currently https://www.npmjs.com/~mojavelinux[mojavelinux]).
 This is done by writing the token to an [.path]_.npmrc_ file located at the root of the project (i.e., [.path]_.npmrc_).
 
 After the package is published, the tag and the corresponding commit to the main branch must be pushed from the CI job to the git repository.
 A dedicated SSH key (with no passphrase) has been generated for this purpose using `ssh-keygen -m PEM -t rsa -b 4096 -C antora-releases -f antora-releases`.
 The private SSH key is stored in the RELEASE_SSH_PRIV_KEY secret variable defined in the CI/CD configuration.
 The corresponding public SSH key is registered as a deploy key in the repository configuration.
-During the release job, an SSH agent session is started, initialized, and killed by [.path]_scripts/release.sh_.
+During the release job, an SSH agent session is started, initialized, and killed by [.path]_npm/release.sh_.
 The private key is read from the RELEASE_SSH_PRIV_KEY environment variable and added to the SSH agent session.
 The git client is then configured to push the commits over SSH.
 
@@ -98,15 +95,15 @@ Otherwise, scoped packages are not public by default.
 The npmjs.com registry does not currently support READMEs written in AsciiDoc.
 To complicate matters, the npm client doesn't allow the README to be specified explicitly when packaging, and it has an affinity for README.adoc.
 Therefore, we have to do some fancy footwork to stuff a Markdown version of the README into the package that's being shipped off to the registry.
-Thanks to lerna lifecycle hooks, this is possible.
+Thanks to npm lifecycle hooks, this is possible.
 
-The release script places two lifecycle scripts into the scripts folder of each package folder during the release process.
-These scripts are wrappers that turn around and invoke the following two scripts:
+Each package defines two package-scoped npm lifecycle scripts, prepublishOnly and postpublish.
+These scripts link to the following two shared scripts:
 
-* https://gitlab.com/antora/antora/blob/main/scripts/prepublish.js[prepublish.js]
-* https://gitlab.com/antora/antora/blob/main/scripts/postpublish.js[postpublish.js]
+* https://gitlab.com/antora/antora/blob/main/npm/prepublishOnly.js[prepublishOnly.js]
+* https://gitlab.com/antora/antora/blob/main/npm/postpublish.js[postpublish.js]
 
-In the *prepublish* script, the [.path]_README.adoc_ file is moved out of the way, its contents are transformed to Markdown and saved as [.path]_README.md_.
+In the *prepublishOnly* script, the [.path]_README.adoc_ file is moved out of the way, its contents are transformed to Markdown and saved as [.path]_README.md_.
 The [.path]_package.json_ is also updated to include a `readmeFilename` key that points to this file.
 The packaging script then picks up the generated [.path]_README.md_ file and bundles it with the package (ignoring the hidden README.adoc).
 
@@ -114,17 +111,16 @@ The *postpublish* script restores the original state by removing the [.path]_REA
 The [.path]_package.json_ is also updated to remove the `readmeFilename` key.
 As a result, the npm registry displays the Markdown version of the README, but we get to maintain the content in AsciiDoc format.
 
-In addition to these two package-scope scripts, the https://gitlab.com/antora/antora/blob/main/scripts/postpublish.js[version.js] script runs once at the start of the Lerna lifecycle to apply the following changes before the files are committed and tagged for the release:
+In addition to these two package-scope scripts, the https://gitlab.com/antora/antora/blob/main/npm/version.js[version.js] script runs once at the start of the npm publish lifecycle to apply the following changes before the files are committed and tagged for the release:
 
 * Replace the Unreleased section title in [.path]_CHANGELOG.adoc_ with the release version and date.
 * Update the docs version in [.path]_docs/antora.yml_.
-* Update the end copyright year in all package README files (unless the end year is "`present`").
 
 To verify the correct package metadata is sent over the wire, write the stringified metadata passed to the `afterChange` callback in verdaccio ([.path]_build/api/endpoint/api/publish.js_) to a file and inspect it.
 
 === Version Selection
 
-By default, Lerna is configured to select the next prerelease version in the sequence when selecting the version number.
+By default, npm is configured to select the next prerelease version in the sequence when selecting the version number.
 This default can be overridden by setting the `RELEASE_VERSION` variable.
 The `RELEASE_VERSION` variable accepts a version number or increment keyword.
 For example:
@@ -133,11 +129,11 @@ For example:
 RELEASE_VERSION=patch
 ....
 
-If the value assigned to the `RELEASE_VERSION` variable matches one of the increment keywords (major, minor, patch, premajor, preminor, prepatch, prerelease), that value is passed to Lerna's version bump argument.
-Consult the Lerna documentation for details about how these values determine the next version number.
-Otherwise, the value is assumed to be an explicit version number, which is also passed to Lerna's version bump argument (as Lerna figures out which is which).
+If the value assigned to the `RELEASE_VERSION` variable matches one of the increment keywords (major, minor, patch, premajor, preminor, prepatch, prerelease), that value is passed to npm's version bump argument.
+Consult the npm documentation for details about how these values determine the next version number.
+Otherwise, the value is assumed to be an explicit version number, which is also passed to npm's version bump argument (as npm figures out which is which).
 
-If the `RELEASE_NPM_TAG` variable is set, its value is passed to Lerna's `--dist-tag` option.
+If the `RELEASE_NPM_TAG` variable is set, its value is passed to npm's `--dist-tag` option.
 This setting can be used to publish releases that do not get installed by default (e.g., prereleases).
 If the RELEASE_NPM_TAG variable is not set, and the RELEASE_VERSION beings with `pre` or contains a hyphen, the RELEASE_NPM_TAG variable defaults to `testing`.
 Otherwise, it defaults to `latest`.
@@ -258,7 +254,7 @@ Confirm this is set up correctly by doing an empty push:
 Now you are ready to perform a local release.
 Switch to the [.path]_test-release-from_ repository and run the following command, adjusting the npm_config_registry and version bump value as needed:
 
- $ npm_config_registry=http://localhost:4873 ./scripts/local-release.sh prerelease
+ $ npm_config_registry=http://localhost:4873 ./npm/local-release.sh prerelease
 
 If you've set up everything correctly, this will not affect the official repository and won't publish anything to npmjs.com.
 
@@ -269,7 +265,7 @@ Verify that the packages have been published to the private npm registry by visi
 The beauty of testing locally is that you can revert a release.
 The quickest way to do it is to run the provided script from the [.path]_test-release-from_ repository:
 
- $ npm_config_registry=http://localhost:4873 ./scripts/revert-local-release.sh ../test-release-to
+ $ npm_config_registry=http://localhost:4873 ./npm/revert-local-release.sh ../test-release-to
 
 Or you can do it manually.
 Start by purging the packages from the private npm repository:

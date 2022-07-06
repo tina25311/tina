@@ -15,9 +15,6 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
-  "scripts": {
-    "test": "_mocha"
-  },
   "dependencies": {
     "@iarna/toml": "~2.2",
     "camelcase-keys": "~7.0",
@@ -38,5 +35,10 @@
     "documentation",
     "static site",
     "web publishing"
-  ]
+  ],
+  "scripts": {
+    "test": "_mocha",
+    "prepublishOnly": "node $npm_config_local_prefix/npm/prepublishOnly.js",
+    "postpublish": "node $npm_config_local_prefix/npm/postpublish.js"
+  }
 }

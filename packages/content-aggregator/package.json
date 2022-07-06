@@ -16,9 +16,6 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
-  "scripts": {
-    "test": "_mocha"
-  },
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
     "@antora/user-require-helper": "~2.0",
@@ -51,5 +48,10 @@
     "documentation",
     "static site",
     "web publishing"
-  ]
+  ],
+  "scripts": {
+    "test": "_mocha",
+    "prepublishOnly": "node $npm_config_local_prefix/npm/prepublishOnly.js",
+    "postpublish": "node $npm_config_local_prefix/npm/postpublish.js"
+  }
 }

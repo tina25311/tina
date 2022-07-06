@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Must run on a protected branch. See ../releasing.adoc for details about how this script works.
-
-PACKAGE_NAME=$(node -p 'require("./package.json").name')
 if [ -z $RELEASE_DEPLOY_KEY ]; then
   declare -n RELEASE_DEPLOY_KEY="RELEASE_DEPLOY_KEY_$GITLAB_USER_LOGIN"
   if [ -z $RELEASE_DEPLOY_KEY ]; then
@@ -32,72 +29,60 @@ if [ -z $RELEASE_NPM_TAG ]; then
   fi
 fi
 
-rm -rf build
+# set up SSH auth using ssh-agent
+mkdir -p -m 700 $HOME/.ssh
+ssh-keygen -F gitlab.com >/dev/null 2>&1 || ssh-keyscan -H -t rsa gitlab.com >> $HOME/.ssh/known_hosts 2>/dev/null
+eval $(ssh-agent -s) >/dev/null
+if [ -f "$RELEASE_DEPLOY_KEY" ]; then
+  chmod 600 $RELEASE_DEPLOY_KEY
+  ssh-add -q $RELEASE_DEPLOY_KEY
+else
+  echo -n "$RELEASE_DEPLOY_KEY" | ssh-add -q -
+fi
+exit_code=$?
+if [ $exit_code -gt 0 ]; then
+  exit $exit_code
+fi
+echo Deploy key identity added to SSH agent.
 
 # make sure the release branch exists as a local branch
 git fetch origin
 git branch -f $RELEASE_BRANCH origin/$RELEASE_BRANCH
 
-# set up SSH auth using ssh-agent
-mkdir -p -m 700 $HOME/.ssh
-ssh-keygen -F gitlab.com >/dev/null 2>&1 || ssh-keyscan -H -t rsa gitlab.com >> $HOME/.ssh/known_hosts 2>/dev/null
-eval $(ssh-agent -s) >/dev/null
-echo -n "$RELEASE_DEPLOY_KEY" | ssh-add -
-exit_code=$?
-if [ $exit_code -gt 0 ]; then
-  exit $exit_code
-fi
-
-# clone the branch from which we're releasing
-git clone -b $RELEASE_BRANCH --no-local . build/$PACKAGE_NAME
-
-# switch to clone
-cd build/$PACKAGE_NAME
-git status -s -b
-
 # configure git to push changes
 git remote set-url origin "git@gitlab.com:$CI_PROJECT_PATH.git"
-git config user.email "$GITLAB_USER_EMAIL"
-git config user.name "$GITLAB_USER_NAME"
+git config --local user.name "$GITLAB_USER_NAME"
+git config --local user.email "$GITLAB_USER_EMAIL"
 
 # configure npm client for publishing
-echo "access=public
-//registry.npmjs.org/:_authToken=\"$RELEASE_NPM_TOKEN\"" > .npmrc
-
-# add lifecycle scripts to publish command for each package
-for package in packages/*; do
-  mkdir -p $package/scripts
-  for script in prepublish.js postpublish.js; do
-    cat << EOF > $package/scripts/$script
-require('child_process').execSync('node ../../scripts/$script', { cwd: require('path').resolve(__dirname, '..') })
-EOF
-  done
-done
+echo -e "access=public\ntag=$RELEASE_NPM_TAG\n//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" > .npmrc
 
 # release!
-lerna publish $RELEASE_VERSION --exact --force-publish=* --dist-tag=$RELEASE_NPM_TAG --no-verify-access --yes
-
+(
+  set -e
+  npm version --workspaces --include-workspace-root --no-git-tag-version $RELEASE_VERSION
+  RELEASE_VERSION=$(npm exec -c 'echo -n $npm_package_version')
+  if case $RELEASE_VERSION in 1.0.0-*) ;; *) false;; esac; then
+    sed -i "s/^tag=$RELEASE_NPM_TAG$/tag=latest/" .npmrc
+    RELEASE_NPM_TAG=latest
+  fi
+  git commit -a -m "release $RELEASE_VERSION [skip ci]"
+  git tag -m "version $RELEASE_VERSION" v$RELEASE_VERSION
+  git push origin $(git describe --tags --exact-match)
+  npm publish $(node npm/publish-workspace-args.js)
+  git push origin $RELEASE_BRANCH
+)
 exit_code=$?
-
-RELEASE_VERSION=$(node -p 'require("./lerna.json").version')
 
 # nuke npm settings
 unlink .npmrc
 
-for package in packages/*; do
-  rm -rf $package/scripts
-done
-
 git status -s -b
-
-# nuke clone
-cd -
-rm -rf build
 
 # kill the ssh-agent
 eval $(ssh-agent -k) >/dev/null
 
-# update releaserc with resolved values
+# populate releaserc with resolved values
 echo "RELEASE_VERSION=$RELEASE_VERSION
 RELEASE_BRANCH=$RELEASE_BRANCH
 RELEASE_NPM_TAG=$RELEASE_NPM_TAG" > releaserc

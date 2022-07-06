@@ -14,9 +14,6 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
-  "scripts": {
-    "test": "_mocha"
-  },
   "dependencies": {
     "@antora/site-generator": "3.0.1"
   },
@@ -34,5 +31,10 @@
     "documentation",
     "static site",
     "web publishing"
-  ]
+  ],
+  "scripts": {
+    "test": "_mocha",
+    "prepublishOnly": "node $npm_config_local_prefix/npm/prepublishOnly.js",
+    "postpublish": "node $npm_config_local_prefix/npm/postpublish.js"
+  }
 }

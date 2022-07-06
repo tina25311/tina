@@ -4,44 +4,17 @@ const { exec } = require('child_process')
 const { promises: fsp } = require('fs')
 const ospath = require('path')
 const { promisify } = require('util')
-const { version: VERSION } = require('../lerna.json')
 
 const PROJECT_ROOT_DIR = ospath.join(__dirname, '..')
 const CHANGELOG_FILE = ospath.join(PROJECT_ROOT_DIR, 'CHANGELOG.adoc')
-const COMPONENT_VERSION_DESC = ospath.join(PROJECT_ROOT_DIR, 'docs/antora.yml')
-const PACKAGES_DIR = ospath.join(PROJECT_ROOT_DIR, 'packages')
-const PROJECT_README_FILE = ospath.join(PROJECT_ROOT_DIR, 'README.adoc')
+const DOCS_CONFIG_FILE = ospath.join(PROJECT_ROOT_DIR, 'docs/antora.yml')
 const PACKAGE_LOCK_FILE = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+const PACKAGES_DIR = ospath.join(PROJECT_ROOT_DIR, 'packages')
+const VERSION = process.env.npm_package_version
 
 function getCurrentDate () {
   const now = new Date()
   return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-}
-
-function updateReadmes (now) {
-  return fsp
-    .readdir(PACKAGES_DIR, { withFileTypes: true })
-    .then((dirents) =>
-      Promise.all(
-        dirents
-          .reduce(
-            (accum, dirent) =>
-              dirent.isDirectory() ? accum.concat(ospath.join(PACKAGES_DIR, dirent.name, 'README.adoc')) : accum,
-            [PROJECT_README_FILE]
-          )
-          .map((readmeFile) =>
-            fsp
-              .readFile(readmeFile, 'utf8')
-              .then((readme) =>
-                fsp.writeFile(
-                  readmeFile,
-                  readme.replace(/^Copyright \(C\) (\d{4})-\d{4}/m, `Copyright (C) $1-${now.getFullYear()}`)
-                )
-              )
-          )
-      )
-    )
-    .then(() => promisify(exec)('git add README.adoc packages/*/README.adoc', { cwd: PROJECT_ROOT_DIR }))
 }
 
 function updateDocsConfig () {
@@ -50,10 +23,10 @@ function updateDocsConfig () {
   const [major, minor, patch] = base.split('.')
   const prerelease = ~hyphenIdx ? VERSION.substr(hyphenIdx + 1) : undefined
   return fsp
-    .readFile(COMPONENT_VERSION_DESC, 'utf8')
+    .readFile(DOCS_CONFIG_FILE, 'utf8')
     .then((desc) =>
       fsp.writeFile(
-        COMPONENT_VERSION_DESC,
+        DOCS_CONFIG_FILE,
         desc
           .replace(/^version: \S+$/m, `version: ${q(major + '.' + minor)}`)
           .replace(/^prerelease: \S+$/m, `prerelease: ${prerelease ? q('.' + patch + '-' + prerelease) : 'false'}`),
@@ -63,15 +36,15 @@ function updateDocsConfig () {
     .then(() => promisify(exec)('git add docs/antora.yml', { cwd: PROJECT_ROOT_DIR }))
 }
 
-function updateChangelog (now) {
-  const releaseDate = now.toISOString().split('T')[0]
+function updateChangelog (releaseDate) {
+  const releaseDateString = releaseDate.toISOString().split('T')[0]
   return fsp
     .readFile(CHANGELOG_FILE, 'utf8')
     .then((changelog) =>
       fsp.writeFile(
         CHANGELOG_FILE,
         changelog.replace(/^== (?:(Unreleased)|\d.*)$/m, (currentLine, replace) => {
-          const newLine = `== ${VERSION} (${releaseDate})`
+          const newLine = `== ${VERSION} (${releaseDateString})`
           return replace ? newLine : [newLine, '_No changes since previous release._', currentLine].join('\n\n')
         })
       )
@@ -84,34 +57,38 @@ function updatePackageLock () {
     const packageNames = dirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name)
     const moduleNames = packageNames.map((name) => (name === 'antora' ? name : `@antora/${name}`))
     const packagePaths = packageNames.map((name) => `packages/${name}`)
+    const gitAddPaths = ['package-lock.json']
+    const writes = []
     const packageLock = require(PACKAGE_LOCK_FILE)
-    const { packages, dependencies } = packageLock
+    const { packages } = packageLock
     for (const packagePath of packagePaths) {
       if (!(packagePath in packages)) continue
-      const package_ = packages[packagePath]
-      if (package_.version) package_.version = VERSION
-      const { dependencies: prodDependencies, devDependencies } = package_
-      for (const dependencies of [prodDependencies, devDependencies]) {
+      const packageJsonPath = ospath.join(packagePath, 'package.json')
+      const packageJsonFile = ospath.join(PROJECT_ROOT_DIR, packageJsonPath)
+      const packageJson = require(packageJsonFile)
+      const packageInfo = packages[packagePath]
+      if (packageInfo.version) packageInfo.version = VERSION
+      const { dependencies: runtimeDependencies, devDependencies } = packageInfo
+      let writePackageJson
+      for (const dependencies of [runtimeDependencies, devDependencies]) {
         if (!dependencies) continue
         for (const moduleName of moduleNames) {
-          if (moduleName in dependencies) dependencies[moduleName] = VERSION
+          if (moduleName in dependencies) {
+            dependencies[moduleName] = VERSION
+            packageJson[dependencies === devDependencies ? 'devDependencies' : 'dependencies'][moduleName] = VERSION
+            writePackageJson = true
+          }
         }
       }
-    }
-    if (dependencies) {
-      for (const moduleName of moduleNames) {
-        if (!(moduleName in dependencies)) continue
-        const dependency = dependencies[moduleName]
-        if (!('requires' in dependency)) continue
-        const requires = dependency.requires
-        for (const requireModuleName of moduleNames) {
-          if (requireModuleName in requires) requires[requireModuleName] = VERSION
-        }
+      if (writePackageJson) {
+        gitAddPaths.push(packageJsonPath)
+        writes.push(fsp.writeFile(packageJsonFile, JSON.stringify(packageJson, undefined, 2) + '\n', 'utf8'))
       }
     }
-    return fsp
-      .writeFile(PACKAGE_LOCK_FILE, JSON.stringify(packageLock, undefined, 2) + '\n', 'utf8')
-      .then(() => promisify(exec)('git add package-lock.json', { cwd: PROJECT_ROOT_DIR }))
+    writes.push(fsp.writeFile(PACKAGE_LOCK_FILE, JSON.stringify(packageLock, undefined, 2) + '\n', 'utf8'))
+    return Promise.all(writes).then(() =>
+      promisify(exec)(`git add ${gitAddPaths.join(' ')}`, { cwd: PROJECT_ROOT_DIR })
+    )
   })
 }
 
@@ -121,7 +98,6 @@ function q (str) {
 
 ;(async () => {
   const now = getCurrentDate()
-  await updateReadmes(now)
   await updateDocsConfig()
   await updateChangelog(now)
   await updatePackageLock()

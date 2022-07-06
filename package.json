@@ -1,15 +1,15 @@
 {
   "private": true,
   "name": "antora-build",
-  "version": "dev",
+  "version": "3.0.1",
   "scripts": {
     "build": "npm test && npm run lint",
     "coverage": "nyc _mocha",
-    "deps": "node scripts/validate-deps.js",
-    "format": "node scripts/format.js packages/${npm_config_package},scripts",
-    "lint": "eslint \"{docs,scripts}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
+    "deps": "node npm/validate-deps.js",
+    "format": "node npm/format.js packages/${npm_config_package},npm",
+    "lint": "eslint \"{docs,npm}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
     "test": "_mocha",
-    "version": "node scripts/version.js"
+    "version": "node npm/version.js"
   },
   "devDependencies": {
     "@babel/core": "~7.16",
