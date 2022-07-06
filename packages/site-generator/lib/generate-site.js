@@ -43,19 +43,21 @@ async function generateSite (playbook) {
       await context.notify('siteMapped')
     }
     await context.notify('beforePublish')
-    return fxns.publishFiles(playbook, [contentCatalog, uiCatalog, vars.lock('siteCatalog')]).then((publications) => {
-      if (!playbook.runtime.quiet && process.stdout.isTTY) {
-        const indexPath = contentCatalog.getSiteStartPage() ? '/index.html' : ''
-        const log = (msg) => process.stdout.write(msg + '\n')
-        log('Site generation complete!')
-        publications.forEach(
-          ({ fileUri }) => fileUri && log(`Open ${fileUri}${indexPath} in a browser to view your site.`)
-        )
-      }
-      return context
-        .notify('sitePublished', Object.assign(vars, { publications }))
-        .then(() => vars.remove('publications'))
-    })
+    return await fxns
+      .publishFiles(playbook, [contentCatalog, uiCatalog, vars.lock('siteCatalog')])
+      .then((publications) => {
+        if (!playbook.runtime.quiet && process.stdout.isTTY) {
+          const indexPath = contentCatalog.getSiteStartPage() ? '/index.html' : ''
+          const log = (msg) => process.stdout.write(msg + '\n')
+          log('Site generation complete!')
+          publications.forEach(
+            ({ fileUri }) => fileUri && log(`Open ${fileUri}${indexPath} in a browser to view your site.`)
+          )
+        }
+        return context
+          .notify('sitePublished', Object.assign(vars, { publications }))
+          .then(() => vars.remove('publications'))
+      })
   } catch (err) {
     if (!GeneratorContext.isStopSignal(err)) throw err
     await err.notify()

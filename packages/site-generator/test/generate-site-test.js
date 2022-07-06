@@ -3,6 +3,7 @@
 
 const {
   captureStdout,
+  captureStderr,
   captureStdoutLog,
   expect,
   GitServer,
@@ -1085,10 +1086,10 @@ describe('generateSite()', () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         module.exports.register = function ({ config: { events }, playbook }) {
-          const observed = playbook.env.OBSERVED = {}
+          const observed = playbook.env.OBSERVED = []
           events.forEach((name) => {
             this.on(name, function (vars) {
-              observed[name] = Object.keys(vars).sort()
+              observed.push([name, Object.keys(vars).sort()])
             })
           })
         }
@@ -1100,8 +1101,12 @@ describe('generateSite()', () => {
       await generateSite(getPlaybook(playbookFile))
       // NOTE using env here only works because env is a custom object
       const observed = env.OBSERVED
-      expect(Object.keys(observed).sort()).to.eql(Object.keys(events).sort())
-      Object.entries(events).forEach(([event, vars]) => expect(observed[event]).to.include.members(vars))
+      const eventNamesEmitted = observed.map(([name]) => name)
+      // NOTE contextClosed should always be the last event emitted
+      expect(eventNamesEmitted[eventNamesEmitted.length - 1]).to.equal('contextClosed')
+      expect(eventNamesEmitted.sort()).to.eql(Object.keys(events).sort())
+      const varsByEvent = observed.reduce((accum, [name, vars]) => (accum[name] = vars) && accum, {})
+      Object.entries(events).forEach(([name, vars]) => expect(varsByEvent[name]).to.include.members(vars))
     })
 
     it('should allow extension to listen for events using once', async () => {
@@ -1542,6 +1547,36 @@ describe('generateSite()', () => {
       playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
+      expect(messages).to.have.lengthOf(2)
+      expect(messages[0]).to.include({ level: 'info', name: 'my-extension', msg: 'Extension loaded.' })
+      expect(messages[1]).to.include({ level: 'info', name: 'my-extension', msg: 'Site published!' })
+    })
+
+    it('should not closer logger before sitePublished event when playbook is bootstrapped', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.getLogger('my-extension').info('Extension loaded.')
+          this.on('sitePublished', function () {
+            this.getLogger('my-extension').info('Site published!')
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      const logRelpath = '.' + ospath.sep + destDir + ospath.sep + 'antora.log'
+      const logPath = ospath.join(playbookFile, '..', destDir, 'antora.log')
+      playbookSpec.runtime.log = { destination: { file: logRelpath, sync: false, buffer_size: 4096 }, level: 'info' }
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const args = ['--playbook', playbookFile, '--cache-dir', env.ANTORA_CACHE_DIR, '--log-format', 'json']
+      const lines = await captureStderr(() => generateSite(args))
+      expect(lines[0]).to.be.undefined()
+      expect(logPath).to.be.a.path()
+      const messages = fs
+        .readFileSync(logPath, 'utf8')
+        .trim()
+        .split('\n')
+        .map((it) => JSON.parse(it))
       expect(messages).to.have.lengthOf(2)
       expect(messages[0]).to.include({ level: 'info', name: 'my-extension', msg: 'Extension loaded.' })
       expect(messages[1]).to.include({ level: 'info', name: 'my-extension', msg: 'Site published!' })
