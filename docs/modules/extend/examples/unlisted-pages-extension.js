@@ -5,7 +5,7 @@ module.exports.register = function ({ config }) {
   const { addToNavigation, unlistedPagesHeading = 'Unlisted Pages' } = config
   // end::register[]
   // tag::logger[]
-  const logger = this.require('@antora/logger').get('unlisted-pages-extension')
+  const logger = this.getLogger('unlisted-pages-extension')
   // end::logger[]
   // tag::on[]
   this

@@ -44,7 +44,8 @@ include::example$unlisted-pages-extension.js[tag=register,indent=0]
 ----
 
 Next, the extension creates a named logger that it can use for reporting unlisted pages.
-It does so by requiring the `@antora/logger` module provided by Antora, then calling it's default function to create a named, child logger instance.
+It does so by calling `getLogger` on the context to create a named logger.
+This method, in turn, requires the `@antora/logger` module provided by Antora, then passes the name to its default function to create the child logger.
 
 [,js]
 ----
