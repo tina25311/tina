@@ -131,6 +131,8 @@ module.exports = {
       },
     })
   },
+  captureStderr: (fn) =>
+    new Promise((resolve, reject) => captureStandardStream('stderr', fn, undefined, true).then(resolve, reject)),
   captureStderrSync: (fn) => captureStandardStream('stderr', fn),
   captureStdout: (fn) =>
     new Promise((resolve, reject) => captureStandardStream('stdout', fn, undefined, true).then(resolve, reject)),
