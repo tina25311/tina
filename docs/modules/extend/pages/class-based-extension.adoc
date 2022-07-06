@@ -69,7 +69,7 @@ class MyExtension {
   }
 
   onSitePublished () {
-    const elapsed = +new Date - this.startTime) / 1000
+    const elapsed = (+new Date - this.startTime) / 1000
     const logger = this.context.getLogger('my-extension')
     logger.info(`elapsed time: ${elapsed}s`)
   }
@@ -103,7 +103,7 @@ class MyExtension {
   }
 
   onSitePublished () {
-    const elapsed = +new Date - this.startTime) / 1000
+    const elapsed = (+new Date - this.startTime) / 1000
     const logger = this.context.getLogger('my-extension')
     logger.info(`elapsed time: ${elapsed}s`)
   }
