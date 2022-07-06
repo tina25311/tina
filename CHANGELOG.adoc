@@ -9,6 +9,8 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *content-classifier*: Set pub URL for splat alias of ROOT component with empty version segment to `/` instead of `/.` (#970)
+* *redirect-producer*: Drop redundant trailing slash for splat alias of ROOT component with empty version segment (#970)
 * *site-generator*: Fix race condition that was causing the `contextClosed` event to be emitted before the `sitePublished` event (#971)
 
 == 3.0.1 (2022-01-12)
