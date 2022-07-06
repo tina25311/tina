@@ -43,7 +43,7 @@ function captureStandardStream (streamName, fn, transform, isAsync) {
   try {
     if (isAsync) {
       fs.write = (...[fd, buffer, ...remaining]) => {
-        const callback = remaining.pop()
+        const callback = remaining[remaining.length - 1]
         if (fd === stream.fd) {
           data.push(...transform(buffer))
           return callback(null, buffer.length, buffer)
