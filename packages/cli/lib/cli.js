@@ -39,7 +39,7 @@ function exit () {
 }
 
 function getTTYColumns () {
-  return process.env.COLUMNS || process.stdout.columns || 80
+  return +process.env.COLUMNS || process.stdout.columns || 80
 }
 
 function outputError (str, write) {

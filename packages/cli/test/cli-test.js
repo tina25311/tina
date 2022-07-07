@@ -158,6 +158,13 @@ describe('cli', () => {
       .done()
   })
 
+  it('should ignore COLUMNS environment variable with invalid value', () => {
+    return runAntora('-h', { COLUMNS: 'bogus' })
+      .ignoreUntil(/^Options:/)
+      .assert(/^-v, --version +Output the version of the CLI and default site$/)
+      .done()
+  })
+
   it('should output list of commands when invoked with "-h"', () => {
     return runAntora('-h')
       .ignoreUntil(/^Commands:/)
