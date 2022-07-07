@@ -116,9 +116,9 @@ test:windows:
   before_script:
   - choco upgrade -y nodejs --version=12.22.7
   - *platform_info
-  - *install_npm # npm 8.4 is broken on Windows; see https://github.com/npm/cli/issues/4341
+  - *install_npm
   - npm ci --audit --quiet
-  script: npm run coverage # using npx from npm 8 on Node.js 12 for Windows breaks call to `git submodule`
+  script: node_modules/.bin/npm run coverage
   <<: *save_report_artifacts
 release:
   stage: deploy
