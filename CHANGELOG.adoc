@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *site-generator*: Fix race condition that was causing the `contextClosed` event to be emitted before the `sitePublished` event (#971)
+
 == 3.0.1 (2022-01-12)
 
 === Changed
