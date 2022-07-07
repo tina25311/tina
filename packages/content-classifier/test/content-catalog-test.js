@@ -862,6 +862,36 @@ describe('ContentCatalog', () => {
       })
       expect(splatVersionAlias).to.not.exist()
     })
+
+    it('should register splat alias for ROOT component when version segment is empty and strategy is redirect:to', () => {
+      const contentCatalog = new ContentCatalog({
+        urls: {
+          latestVersionSegmentStrategy: 'redirect:to',
+          latestVersionSegment: '',
+        },
+      })
+      const componentVersion = contentCatalog.registerComponentVersion('ROOT', '3.0', {
+        title: 'The Component',
+        startPage: undefined,
+      })
+      contentCatalog.registerComponentVersionStartPage('ROOT', componentVersion)
+      expect(componentVersion.version).to.equal('3.0')
+      expect(componentVersion.url).to.equal('/index.html')
+      const splatVersionAlias = contentCatalog.getById({
+        component: 'ROOT',
+        version: '3.0',
+        module: 'ROOT',
+        family: 'alias',
+        relative: '',
+      })
+      expect(splatVersionAlias).to.exist()
+      expect(splatVersionAlias.pub.url).to.equal('/3.0')
+      expect(splatVersionAlias.pub.splat).to.be.true()
+      expect(splatVersionAlias.pub.rootPath).to.equal('..')
+      expect(splatVersionAlias.rel.pub.url).to.equal('/')
+      expect(splatVersionAlias.rel.pub.splat).to.be.true()
+      expect(splatVersionAlias.rel.pub.rootPath).to.equal('.')
+    })
   })
 
   describe('#getComponentVersion()', () => {
@@ -1457,6 +1487,24 @@ describe('ContentCatalog', () => {
       expect(result).to.not.have.property('out')
       expect(result).to.have.property('pub')
       expect(result.pub.url).to.equal('/the-component/')
+    })
+
+    it('should set pub property on file in nav family on ROOT component to / when the HTML URL extension style is indexify', () => {
+      const src = {
+        component: 'ROOT',
+        version: '',
+        module: 'ROOT',
+        family: 'nav',
+        relative: 'nav.adoc',
+        basename: 'nav.adoc',
+        extname: '.adoc',
+        stem: 'nav',
+      }
+      const contentCatalog = new ContentCatalog({ urls: { htmlExtensionStyle: 'indexify' } })
+      const result = contentCatalog.addFile(new File({ src }))
+      expect(result).to.not.have.property('out')
+      expect(result).to.have.property('pub')
+      expect(result.pub.url).to.equal('/')
     })
 
     it('should convert bare object to vinyl file', () => {

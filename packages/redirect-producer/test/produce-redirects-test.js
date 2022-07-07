@@ -225,6 +225,41 @@ describe('produceRedirects()', () => {
       expect(rules).to.eql(['/component-b/current/* /component-b/1.0/:splat 302!'])
     })
 
+    it('should not add trailing slash to splat alias if target is /', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'ROOT', version: '3.0', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/3.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['/3.0/* /:splat 302!'])
+    })
+
+    it('should not add extra trailing slash to splat alias when site path is non-empty', () => {
+      playbook.site.url = 'https://example.org/docs'
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'ROOT', version: '3.0', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/3.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['/docs/3.0/* /docs/:splat 302!'])
+    })
+
     it('should encode spaces in paths of redirect rule', () => {
       contentCatalog = mockContentCatalog([
         { family: 'page', relative: 'target with spaces.adoc' },
@@ -404,6 +439,41 @@ describe('produceRedirects()', () => {
       expect(rules).to.eql(['/component-b/current/* /component-b/1.0/:splat 302'])
     })
 
+    it('should not add trailing slash to splat alias if target is /', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'ROOT', version: '3.0', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/3.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['/3.0/* /:splat 302'])
+    })
+
+    it('should not add extra trailing slash to splat alias when site path is non-empty', () => {
+      playbook.site.url = 'https://example.org/docs'
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'ROOT', version: '3.0', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/3.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['/docs/3.0/* /docs/:splat 302'])
+    })
+
     it('should not include extra redirect for directory if HTML URL extension style is indexify', () => {
       contentCatalog.getFiles().forEach((file) => {
         const url = file.pub.url
@@ -469,6 +539,41 @@ describe('produceRedirects()', () => {
       expect(rules).to.eql([
         'location ^~ /component-a/current/ { rewrite ^/component-a/current/(.*)$ /component-a/1.0/$1 redirect; }',
       ])
+    })
+
+    it('should not add trailing slash to splat alias if target is /', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'ROOT', version: '3.0', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/3.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['location ^~ /3.0/ { rewrite ^/3\\.0/(.*)$ /$1 redirect; }'])
+    })
+
+    it('should not add extra trailing slash to splat alias when site path is non-empty', () => {
+      playbook.site.url = 'https://example.org/docs'
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'ROOT', version: '3.0', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/3.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['location ^~ /docs/3.0/ { rewrite ^/docs/3\\.0/(.*)$ /docs/$1 redirect; }'])
     })
 
     it('should escape special regex characters in splat pattern', () => {
@@ -623,6 +728,41 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.eql(['Redirect 302 /component-b/current /component-b/1.0'])
+    })
+
+    it('should not add trailing slash to splat alias if target is /', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'ROOT', version: '3.0', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/3.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['Redirect 302 /3.0 /'])
+    })
+
+    it('should not add extra trailing slash to splat alias when site path is non-empty', () => {
+      playbook.site.url = 'https://example.org/docs'
+      contentCatalog = mockContentCatalog([
+        { family: 'alias', component: 'ROOT', version: '3.0', module: 'ROOT', relative: '' },
+      ])
+      const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub.url = '/3.0'
+      splatAliasFile.pub.splat = true
+      splatAliasFile.rel = {
+        pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
+      }
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['Redirect 302 /docs/3.0 /docs'])
     })
 
     it('should accept paths that contain spaces', () => {

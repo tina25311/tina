@@ -35,10 +35,7 @@ function produceRedirects (playbook, aliases) {
   if ('findBy' in aliases) aliases = aliases.findBy({ family: 'alias' }) // @deprecated remove in Antora 4
   if (!aliases.length) return []
   let siteUrl = playbook.site.url
-  if (siteUrl) {
-    if (siteUrl === '/') siteUrl = ''
-    else if (siteUrl.charAt(siteUrl.length - 1) === '/') siteUrl = siteUrl.substr(0, siteUrl.length - 1)
-  }
+  if (siteUrl) siteUrl = stripTrailingSlash(siteUrl, '')
   switch (playbook.urls.redirectFacility) {
     case 'gitlab':
       return createNetlifyRedirects(
@@ -86,7 +83,7 @@ function createHttpdHtaccess (files, urlPath) {
     toUrl = ~toUrl.indexOf('%20') ? `'${urlPath}${toUrl.replace(ENCODED_SPACE_RX, ' ')}'` : urlPath + toUrl
     // see https://httpd.apache.org/docs/current/en/mod/mod_alias.html#redirect
     // NOTE: redirect rule for directory prefix does not require trailing slash
-    accum.push(`Redirect ${file.pub.splat ? '302' : '301'} ${fromUrl} ${toUrl}`)
+    accum.push(`Redirect ${file.pub.splat ? '302' : '301'} ${fromUrl} ${stripTrailingSlash(toUrl)}`)
     return accum
   }, [])
   return [new File({ contents: Buffer.from(rules.join('\n') + '\n'), out: { path: '.htaccess' } })]
@@ -102,7 +99,7 @@ function createNetlifyRedirects (files, urlPath, includeDirectoryRedirects = fal
     const toUrl = urlPath + file.rel.pub.url
     const forceFlag = useForceFlag ? '!' : ''
     if (file.pub.splat) {
-      accum.push(`${fromUrl}/* ${toUrl}/:splat 302${forceFlag}`)
+      accum.push(`${fromUrl}/* ${ensureTrailingSlash(toUrl)}:splat 302${forceFlag}`)
     } else {
       accum.push(`${fromUrl} ${toUrl} 301${forceFlag}`)
       if (includeDirectoryRedirects && fromUrl.endsWith('/index.html')) {
@@ -122,7 +119,8 @@ function createNginxRewriteConf (files, urlPath) {
     let toUrl = file.rel.pub.url
     toUrl = ~toUrl.indexOf('%20') ? `'${urlPath}${toUrl.replace(ENCODED_SPACE_RX, ' ')}'` : urlPath + toUrl
     if (file.pub.splat) {
-      return `location ^~ ${fromUrl}/ { rewrite ^${regexpEscape(fromUrl)}/(.*)$ ${toUrl}/$1 redirect; }`
+      const toUrlWithTrailingSlash = ensureTrailingSlash(toUrl)
+      return `location ^~ ${fromUrl}/ { rewrite ^${regexpEscape(fromUrl)}/(.*)$ ${toUrlWithTrailingSlash}$1 redirect; }`
     } else {
       return `location = ${fromUrl} { return 301 ${toUrl}; }`
     }
@@ -161,6 +159,16 @@ function computeRelativeUrlPath (from, to) {
       ? './'
       : path.basename(to)
     : (path.relative(path.dirname(from + '.'), to) || '.') + (to.charAt(to.length - 1) === '/' ? '/' : '')
+}
+
+function ensureTrailingSlash (str) {
+  return str.charAt(str.length - 1) === '/' ? str : str + '/'
+}
+
+function stripTrailingSlash (str, root = '/') {
+  if (str === '/') return root
+  const lastIdx = str.length - 1
+  return str.charAt(lastIdx) === '/' ? str.substr(0, lastIdx) : str
 }
 
 function regexpEscape (str) {

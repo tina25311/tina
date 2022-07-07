@@ -494,8 +494,9 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
     if (version) urlSegments.push(version)
     const module_ = src.module || 'ROOT'
     if (module_ !== 'ROOT') urlSegments.push(module_)
+    if (urlSegments.length) urlSegments.push('')
     // an artificial URL used for resolving page references in navigation model
-    url = '/' + urlSegments.join('/') + '/'
+    url = '/' + urlSegments.join('/')
     pub.moduleRootPath = '.'
   } else if (family === 'page') {
     const urlSegments = out.path.split('/')
@@ -510,8 +511,8 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
     }
     url = '/' + urlSegments.join('/')
   } else {
-    url = '/' + out.path
-    if (family === 'alias' && !src.relative.length) pub.splat = true
+    if ((url = '/' + out.path) === '/.') url = '/'
+    if (family === 'alias' && !src.relative) pub.splat = true
   }
 
   pub.url = ~url.indexOf(' ') ? url.replace(SPACE_RX, '%20') : url
