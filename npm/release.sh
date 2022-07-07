@@ -45,14 +45,15 @@ if [ $exit_code -gt 0 ]; then
 fi
 echo Deploy key identity added to SSH agent.
 
-# make sure the release branch exists as a local branch
-git fetch origin
-git branch -f $RELEASE_BRANCH origin/$RELEASE_BRANCH
-
 # configure git to push changes
 git remote set-url origin "git@gitlab.com:$CI_PROJECT_PATH.git"
 git config --local user.name "$GITLAB_USER_NAME"
 git config --local user.email "$GITLAB_USER_EMAIL"
+
+# make sure the release branch exists as a normal, local branch
+git fetch origin
+git branch -m gitlab-ci-$RELEASE_BRANCH
+git checkout -b $RELEASE_BRANCH -t origin/$RELEASE_BRANCH
 
 # configure npm client for publishing
 echo -e "access=public\ntag=$RELEASE_NPM_TAG\n//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" > .npmrc
@@ -70,7 +71,7 @@ echo -e "access=public\ntag=$RELEASE_NPM_TAG\n//registry.npmjs.org/:_authToken=$
   git tag -m "version $RELEASE_VERSION" v$RELEASE_VERSION
   git push origin $(git describe --tags --exact-match)
   npm publish $(node npm/publish-workspace-args.js)
-  git push origin $RELEASE_BRANCH
+  git push origin
 )
 exit_code=$?
 
