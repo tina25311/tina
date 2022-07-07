@@ -5,6 +5,7 @@ const {
   captureStdout,
   captureStderr,
   captureStdoutLog,
+  closeServer,
   expect,
   GitServer,
   heredoc,
@@ -20,7 +21,6 @@ const { configureLogger, getLogger } = require('@antora/logger')
 const fs = require('fs')
 const generateSite = require('@antora/site-generator')
 const buildPlaybook = require('@antora/playbook-builder')
-const { once } = require('events')
 const ospath = require('path')
 
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
@@ -105,7 +105,7 @@ describe('generateSite()', () => {
   })
 
   after(async () => {
-    await once(gitServer.server.close(), 'close')
+    await closeServer(gitServer.server)
     wipeSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
       wipeSync(ospath.join(WORK_DIR, destDir.split('/')[0]))

@@ -2,6 +2,7 @@
 'use strict'
 
 const {
+  closeServer,
   emptyDirSync,
   expect,
   GitServer,
@@ -14,7 +15,6 @@ const {
 const fs = require('fs')
 const { default: Kapok } = require('kapok-js')
 const pkg = require('@antora/cli/package.json')
-const { once } = require('events')
 const ospath = require('path')
 
 const ANTORA_CLI = ospath.resolve('node_modules', '.bin', process.platform === 'win32' ? 'antora.cmd' : 'antora')
@@ -102,7 +102,7 @@ describe('cli', () => {
   })
 
   after(async () => {
-    await once(gitServer.server.close(), 'close')
+    await closeServer(gitServer.server)
     wipeSync(CONTENT_REPOS_DIR)
     if (process.env.KEEP_CACHE) {
       wipeSync(absBuildDir)

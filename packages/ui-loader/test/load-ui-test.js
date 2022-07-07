@@ -1,7 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect, loadSslConfig, RepositoryBuilder, trapAsyncError, wipeSync } = require('@antora/test-harness')
+const {
+  closeServers,
+  expect,
+  loadSslConfig,
+  RepositoryBuilder,
+  trapAsyncError,
+  wipeSync,
+} = require('@antora/test-harness')
 
 const File = require('vinyl')
 const fs = require('fs')
@@ -175,13 +182,9 @@ describe('loadUi()', () => {
     })
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    await closeServers(httpServer, httpsServer, proxyServer)
     clean(true)
-    return Promise.all([
-      once(httpServer.close(), 'close'),
-      once(httpsServer.close(), 'close'),
-      once(proxyServer.close(), 'close'),
-    ])
   })
 
   after(() =>

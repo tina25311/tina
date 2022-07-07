@@ -2,6 +2,8 @@
 'use strict'
 
 const {
+  closeServer,
+  closeServers,
   expect,
   GitServer,
   heredoc,
@@ -173,7 +175,7 @@ describe('aggregateContent()', () => {
   })
 
   after(async () => {
-    await once(gitServer.server.close(), 'close')
+    await closeServer(gitServer.server)
     clean(true)
   })
 
@@ -5327,7 +5329,7 @@ describe('aggregateContent()', () => {
       process.env = oldEnv
     })
 
-    after(() => Promise.all([once(proxyServer.close(), 'close'), once(secureGitServer.server.close(), 'close')]))
+    after(() => closeServers(proxyServer, secureGitServer.server))
 
     it('should aggregate content from content source with https URL', async () => {
       const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
@@ -6014,9 +6016,7 @@ describe('aggregateContent()', () => {
       serverPort = server.address().port
     })
 
-    after(async () => {
-      await once(server.close(), 'close')
-    })
+    after(() => closeServer(server))
 
     it('should throw meaningful error if repository returns 401 error', async () => {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`

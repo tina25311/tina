@@ -13,6 +13,11 @@ This project utilizes semantic versioning.
 * *redirect-producer*: Drop redundant trailing slash for splat alias of ROOT component with empty version segment (#970)
 * *site-generator*: Fix race condition that was causing the `contextClosed` event to be emitted before the `sitePublished` event (#971)
 
+=== Maintenance
+
+* Add Node.js 18 to CI matrix to validate that Antora works on Node.js 18
+* Adjust routine to close test servers so it's compatible with Node.js 18
+
 == 3.0.1 (2022-01-12)
 
 === Changed

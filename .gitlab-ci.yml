@@ -100,9 +100,10 @@ test:node-16-linux:
   script: npx npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   <<: *save_report_artifacts
-test:node-17-linux:
+test:node-18-linux:
   extends: .npm
-  image: node:17-$LINUX_DISTRO
+  image: node:18-$LINUX_DISTRO
+  #<<: *unless_docs_mr
 test:macos:
   extends: .npm
   image: macos-11-xcode-12
@@ -114,7 +115,7 @@ test:windows:
   # cache does not currently work on the Windows runner
   cache: []
   before_script:
-  - choco upgrade -y nodejs --version=12.22.7
+  - choco upgrade -y nodejs --version=12.22.12
   - *platform_info
   - *install_npm
   - npm ci --audit --quiet

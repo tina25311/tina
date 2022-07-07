@@ -18,6 +18,7 @@ const fs = require('fs')
 const { configureLogger } = require('@antora/logger')
 const GitServer = require('node-git-server')
 const mockContentCatalog = require('./mock-content-catalog')(chai)
+const { once } = require('events')
 const ospath = require('path')
 const { pathToFileURL: pathToFileURLObject } = require('url')
 const RepositoryBuilder = require('./repository-builder')
@@ -80,6 +81,9 @@ function captureStandardStream (streamName, fn, transform, isAsync) {
     if (!isAsync) restore()
   }
 }
+
+const closeServer = (server) => once(server.close() || server, 'close')
+const closeServers = (...servers) => Promise.all(servers.map(closeServer))
 
 function unlinkSync (path_) {
   try {
@@ -154,6 +158,8 @@ module.exports = {
       const { time, ...message } = JSON.parse(buffer)
       return [message]
     }),
+  closeServer,
+  closeServers,
   configureLogger,
   emptyDirSync,
   expect: chai.expect,
