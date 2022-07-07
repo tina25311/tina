@@ -2,7 +2,7 @@
 
 if [ -z $RELEASE_DEPLOY_KEY ]; then
   declare -n RELEASE_DEPLOY_KEY="RELEASE_DEPLOY_KEY_$GITLAB_USER_LOGIN"
-  if [ -z $RELEASE_DEPLOY_KEY ]; then
+  if [ -z "$RELEASE_DEPLOY_KEY" ]; then
     echo No release deploy key \(RELEASE_DEPLOY_KEY or RELEASE_DEPLOY_KEY_$GITLAB_USER_LOGIN\) defined. Aborting.
     exit 1
   fi
