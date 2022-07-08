@@ -3,14 +3,14 @@
 if [ -z "$RELEASE_DEPLOY_KEY" ]; then
   declare -n RELEASE_DEPLOY_KEY="RELEASE_DEPLOY_KEY_$GITLAB_USER_LOGIN"
   if [ -z "$RELEASE_DEPLOY_KEY" ]; then
-    echo No release deploy key \(RELEASE_DEPLOY_KEY or RELEASE_DEPLOY_KEY_$GITLAB_USER_LOGIN\) defined. Aborting.
+    echo No release deploy key \(RELEASE_DEPLOY_KEY or RELEASE_DEPLOY_KEY_$GITLAB_USER_LOGIN\) defined. Halting release.
     exit 1
   fi
 fi
 if [ -z $RELEASE_NPM_TOKEN ]; then
   declare -n RELEASE_NPM_TOKEN="RELEASE_NPM_TOKEN_$GITLAB_USER_LOGIN"
   if [ -z $RELEASE_NPM_TOKEN ]; then
-    echo No release npm token \(RELEASE_NPM_TOKEN or RELEASE_NPM_TOKEN_$GITLAB_USER_LOGIN\) defined. Aborting.
+    echo No release npm token \(RELEASE_NPM_TOKEN or RELEASE_NPM_TOKEN_$GITLAB_USER_LOGIN\) defined. Halting release.
     exit 1
   fi
 fi
@@ -45,17 +45,19 @@ if [ $exit_code -gt 0 ]; then
 fi
 echo Deploy key identity added to SSH agent.
 
-# configure git committer
+# configure git to push changes
 git config --local user.name "$GITLAB_USER_NAME"
 git config --local user.email "$GITLAB_USER_EMAIL"
+git remote set-url origin git@gitlab.com:$CI_PROJECT_PATH.git
+git fetch --depth ${GIT_DEPTH:-5} --update-shallow origin $RELEASE_BRANCH
 
-# configure git to push changes
-git remote remove origin
-git remote add origin git@gitlab.com:$CI_PROJECT_PATH.git
-git fetch origin
-
-# make sure the release branch exists as a normal, local branch
+# make sure the release branch exists as a local branch
 git checkout -b $RELEASE_BRANCH -t origin/$RELEASE_BRANCH
+
+if [ "$(git rev-parse $RELEASE_BRANCH)" != $CI_COMMIT_SHA ]; then
+  echo $RELEASE_BRANCH moved forward from $CI_COMMIT_SHA. Halting release.
+  exit 1
+fi
 
 # configure npm client for publishing
 echo -e "access=public\ntag=$RELEASE_NPM_TAG\n//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" > .npmrc
