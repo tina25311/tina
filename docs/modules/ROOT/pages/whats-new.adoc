@@ -7,9 +7,28 @@
 :url-releases-asciidoctorjs: https://github.com/asciidoctor/asciidoctor.js/releases
 :url-gitlab: https://gitlab.com
 :url-issues: {url-repo}/issues
+:url-milestone-3-0-2: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.2
 :url-milestone-3-0-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.1
 :url-milestone-3-0-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.0.0
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.2
+
+_**Release date:** 2022.07.07 | *Issue label:* {url-milestone-3-0-2}[3.0.2^]_
+
+== Resolved issues
+
+=== Fixed
+
+Issue {url-issues}/930[#970^]:: Drop redundant trailing slash for splat alias of ROOT component with empty version segment.
+Set pub URL for splat alias of ROOT component with empty version segment to `/` instead of `/.`.
+Issue {url-issues}/931[#971^]:: Fix race condition that was causing the `contextClosed` event to always be emitted before the `sitePublished` event.
+This affected users who used extensions that relied on these events or a script that uses the `generateSite(args, env)` API from the site generator.
+CLI:: Ignore `COLUMNS` environment variable if it contains a non-integer value
+
+=== Maintenance
+
+* Update CI matrix to verify that Antora works on Node.js 18.
 
 = Antora {page-component-version}.1
 
