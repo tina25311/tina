@@ -1,0 +1,127 @@
+= ADR 0022: Create Collector extension
+
+== Status
+
+Accepted
+
+== Context
+
+Antora aggregates files from all content roots discovered in the content sources defined in the playbook.
+These content roots contain files that have either been committed to a reference in a git repository or local files--regardless of commit status--in a git worktree.
+A key assumption Antora makes about these content roots is that the files they contain are static.
+In order for them to get there, the files either have to be created (and committed if being read from a git tree) by a person or an automated process prior to running Antora.
+
+However, not all files in the documentation should have to be stored in a content root.
+There are files that belong in the documentation which are transient, perhaps either produced from information in the project or fetched from an external location.
+Antora should be able to generate (by way of a helper) and incorporate these transient files into the documentation it is built.
+
+Specifically, Antora should have the ability to run an external command that produces these transient files on demand, as it visits each content root.
+It should then import these additional files into the content aggregate (and, subsequently, the content catalog) for use by the site generator.
+
+== Decision
+
+We will develop a new extension for Antora that can generate files per content root.
+The project will be named the Antora Collector extension.
+The extension will be distributed as an npm package named `@antora/collector-extension`.
+
+The extension will provide the ability to configure an external command to run on a dynamically-allocated worktree for in each git reference in the list of content sources (i.e., per content root).
+The command will be defined in the component descriptor for a content root since it's specific to that git reference.
+(It may be possible to configure a fallback command for all content roots on the extension itself).
+The extension will run the command, then import the specified files created by that command into the content aggregate.
+That, in turn, loads the files into the content catalog, alongside files aggregated from the content root.
+
+=== Technical details
+
+Antora will begin by scanning for files in the content roots of the content sources defined in the playbook to produce a content aggregate, as it normally would.
+Antora will then hand control over to the collector extension in response to the `contentAggregated` event.
+
+The extension will iterate over each content root and run the specified command (or commands) in a dynamically-allocated worktree.
+The command that the extension runs is defined by the software project and is thus agnostic to the build tool or command used to run Antora.
+
+The extension will begin by determining the unique set of origins (url {plus} git reference) in the content aggregate, filtering out any that don't require running a command (i.e., no configuration is found or the value is `false`).
+It will then work per repository to allocate a worktree for each of those git references.
+The https://isomorphic-git.org/docs/en/checkout[checkout] function from isomorphic-git can be used for this purpose.
+This function supports creating a worktree anywhere using an existing gitdir (which can also be located anywhere).
+The gitdir Antora will use is the bare repository under the cache directory where Antora cloned the repository.
+When performing the checkout of a reference to create the worktree, the command should first do a clean to remove any uncommitted files from a previous command.
+This could be done using https://isomorphic-git.org/docs/en/statusMatrix[statusMatrix] or by recreating the worktree directory, whichever is more efficient.
+
+Once the worktree is created, Antora will run the specified command or commands in that worktree folder.
+The command or commands to run are defined in the component version descriptor (_antora.yml_) in that git reference.
+The name of the key to configure these commands is `collector`.
+If the value of the `collector` key is an array, each entry in that array provides the configuration for a single command.
+
+[,yaml]
+----
+collector:
+- command: ./gradlew generateContent
+----
+
+Each command is run from the content root.
+// Q: should we support specifying the cwd?
+The commands are invoked sequentially in the order specified in this array.
+If the value of the `collector` key is `false`, no commands will be invoked.
+
+If the `collector` key is not present, we're considering being able to specify a fallback command or commands on the extension itself, perhaps even in a separate configuration file.
+
+Once the command has completed, the extension will import the files generated into the bucket in the content aggregate that corresponds to that git reference.
+The `collector` key in the component version descriptor will once again be used to instruct the extension which files to collect via the `import` subkey.
+The value of the `import` key is an array.
+Each entry in that array provides import instructions for a single directory.
+By default, the extension will import all files found in the import dir, relative to the content root.
+
+[,yaml]
+----
+collector:
+- command: ./gradlew generateContent
+  import:
+  - dir: build/generated
+----
+
+To tune which files are scanned, patterns can be specified using the `glob` key (a pattern list of inclusions and exclusions).
+(We may add support for the `ignore` key in the future to make negations simpler).
+
+[,yaml]
+----
+collector:
+- command: ./gradlew generateContent
+  import:
+  - dir: build/generated
+    glob: '**/*.adoc'
+----
+
+If a component version descriptor is found in the imported files, the keys in that file will be merged with the keys in the entry from the component version bucket.
+If a duplicate file is found, the contents of the imported file will replace the contents of the file in the content aggregate (and the stat information may be updated as well).
+This behavior allows a placeholder or template file to be used in the main project repository as a hint for the IDE that it exists.
+If it's a template file, the command may use its contents to derive the contents of its replacement.
+
+When Antora imports a file (other than the component version descriptor), it will initialize it as though it had found the file in the local worktree of a content root.
+This includes assigning the following keys to the virtual file:
+
+* path
+* contents
+* src.path
+* src.basename
+* src.stem
+* src.extname
+* origin (should provide a hint that the file was generated)
+
+The rest of the properties on the virtual file are computed and assigned when Antora classifies the content, which occurs after this extension runs.
+
+Once the extension completes, it will hand operation back over to Antora, which will proceed with classifying content and generating the site.
+
+== Consequences
+
+By introducing the collector extension, it will be possible to incorporate generated content from each content root into Antora's content catalog, and thus into the generated site.
+This functionality has the potential to satisfy a number of use cases that Antora currently doesn't cover, such as incorporating API docs and software-derived content into the documentation site.
+It could also reduce the amount of content that must be maintained by hand.
+
+Invoking an external command is always a tricky ordeal.
+First, it requires that the command be reliable and efficient.
+If the command takes too long, or easily fails, it could impact the whole Antora build.
+So it's important to write the command in such a way that it's resilient across a variety of environments, including CI, and returns an accurate exit code.
+
+There's also a question about whether standard streams should be attached to the command, or how they are handled otherwise.
+Should the user see the output and error messages from the command, or should these messages be suppressed or routed to the log?
+Or should it be up to the command itself to specify how to handle them (e.g., `-q`)?
+These issues can be addressed once the project is under way.
