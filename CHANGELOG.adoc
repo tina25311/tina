@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *content-aggregator*: apply patch to match patterns for refname, version, and start paths to workaround parsing bug in picomatch (#973)
+
 == 3.0.2 (2022-07-07)
 
 === Fixed

@@ -177,14 +177,11 @@ Let's consider another case of matching specific minor versions for a given majo
 branches: v5.{7,8}.x
 ----
 
-If the refname does not start with a `v`, then we need to escape the first period by enclosing it in round brackets.
+It's also possible to match refnames that do not start with a `v` (or other leading character).
 
 ----
-branches: 5(.){7,8}.x
+branches: 5.{7,8}.x
 ----
-
-IMPORTANT: If the pattern begins with a number followed by a period, and the pattern contains at least one brace expression, the period must be enclosed in round brackets (`()`) (e.g., `5(.){7,8}.x`).
-This requirement is imposed as a result of a parsing bug in the pattern matching library.
 
 As you can imagine, if you're specifying a bunch of numbers, they may start to form a range.
 You can consolidate the alternation using the range syntax.
@@ -215,7 +212,7 @@ Returning to our other example, let's say that `5.9.x` was just released and we 
 We can switch from a basic alternation to a range.
 
 ----
-branches: 5(.){7..9}.x
+branches: 5.{7..9}.x
 ----
 
 Alternately, we could use an exclusion to express this match the opposite way.
@@ -302,14 +299,14 @@ The minor version can have one or more digits (e.g., 0, 99, 101, etc.).
 We can use the negation operator to exclude while we're including instead of using a separate exclusion entry:
 
 ----
-branches: 5(.)!({0..5}).x
+branches: 5.!({0..5}).x
 ----
 
 Brace expressions can be nested in order to specify two branches of matching.
 Here's how we can exclude those early minor versions while still matching any still to come.
 
 ----
-branches: '5(.)({{6..9},{1..9}+({0..9})}).x'
+branches: '5.({{6..9},{1..9}+({0..9})}).x'
 ----
 
 We want to caution against making your pattern too complex.
@@ -321,7 +318,7 @@ Let's wrap up with a full example of matching a very specific range of version n
 ----
 tags:
 - '{5,6}.+({0..9}).+({0..9}){,-*}'
-- '!(5).{0..5}.*'
+- '!5.{0..5}.*'
 - '!*-M+({0..9})'
 ----
 
