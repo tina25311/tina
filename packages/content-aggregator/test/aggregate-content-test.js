@@ -321,6 +321,18 @@ describe('aggregateContent()', () => {
       })
     })
 
+    describe('should extract version from refname if version key is a pattern that starts with number followed by dot', () => {
+      testAll(async (repoBuilder) => {
+        const componentDesc = { name: 'the-component', version: { '2.(?<minor>+({0..9})).x': '2.$<minor>' } }
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc, () =>
+          repoBuilder.checkoutBranch('2.1.x').then(() => repoBuilder.deleteBranch('main'))
+        )
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '2.1.x' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate[0]).to.have.property('version', '2.1')
+      })
+    })
+
     describe('should extract version from refname if component descriptor does not define version key and content source sets version to pattern map', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' }, () =>
@@ -950,6 +962,42 @@ describe('aggregateContent()', () => {
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
         expect(aggregate[1]).to.deep.include(componentDesc2)
+      })
+    })
+
+    describe('should resolve start paths from pattern that contains a range following a wildcard, number, and dot', () => {
+      testAll(async (repoBuilder) => {
+        const startPath1 = 'docs/2.1'
+        const startPath2 = 'docs/3.0'
+        const componentDesc1 = {
+          name: 'the-component',
+          title: 'Component Title',
+          version: '2.1',
+          startPath: startPath1,
+        }
+        const componentDesc2 = {
+          name: 'the-component',
+          title: 'Component Title',
+          version: '3.0',
+          startPath: startPath2,
+        }
+        let componentDescEntry1
+        let componentDescEntry2
+        await repoBuilder
+          .init(componentDesc1.name)
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc1))
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc2))
+          .then(async () => {
+            componentDescEntry1 = await repoBuilder.findEntry(startPath1 + '/antora.yml')
+            componentDescEntry2 = await repoBuilder.findEntry(startPath2 + '/antora.yml')
+          })
+          .then(() => repoBuilder.close())
+        expect(componentDescEntry1).to.exist()
+        expect(componentDescEntry2).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc*/3.{0..9}' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.deep.include(componentDesc2)
       })
     })
 
@@ -1691,6 +1739,90 @@ describe('aggregateContent()', () => {
         sortAggregate(aggregate)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'latest-and-greatest' })
         expect(aggregate[1]).to.include({ name: 'the-component', version: 'v2.0' })
+      })
+    })
+
+    describe('should filter branches when pattern starts with number followed by dot and contains brace expression', () => {
+      testAll(async (repoBuilder) => {
+        const componentName = 'the-component'
+        await repoBuilder
+          .init(componentName)
+          .then(() => repoBuilder.checkoutBranch('2.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '2.0' }))
+          .then(() => repoBuilder.checkoutBranch('3.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '3.0' }))
+          .then(() => repoBuilder.checkoutBranch('3.1.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '3.1' }))
+          .then(() => repoBuilder.close('main'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '3.{0..9}.x' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '3.0' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: '3.1' })
+      })
+    })
+
+    describe('should filter branches when pattern starts with word characters followed by dot and contains brace expression', () => {
+      testAll(async (repoBuilder) => {
+        const componentName = 'the-component'
+        await repoBuilder
+          .init(componentName)
+          .then(() => repoBuilder.checkoutBranch('rev_2.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '2.0' }))
+          .then(() => repoBuilder.checkoutBranch('rev_3.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '3.0' }))
+          .then(() => repoBuilder.checkoutBranch('rev_3.1.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '3.1' }))
+          .then(() => repoBuilder.close('main'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'rev_3.{0..9}.x' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '3.0' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: '3.1' })
+      })
+    })
+
+    describe('should filter branches when negated pattern starts with number followed by dot and contains brace expression', () => {
+      testAll(async (repoBuilder) => {
+        const componentName = 'the-component'
+        await repoBuilder
+          .init(componentName)
+          .then(() => repoBuilder.checkoutBranch('2.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '2.0' }))
+          .then(() => repoBuilder.checkoutBranch('3.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '3.0' }))
+          .then(() => repoBuilder.checkoutBranch('3.1.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '3.1' }))
+          .then(() => repoBuilder.close('main'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '*.x, !2.{0..9}.x' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '3.0' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: '3.1' })
+      })
+    })
+
+    describe('should filter branches when negated pattern starts with word characters followed by dot and contains brace expression', () => {
+      testAll(async (repoBuilder) => {
+        const componentName = 'the-component'
+        await repoBuilder
+          .init(componentName)
+          .then(() => repoBuilder.checkoutBranch('r2.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '2.0' }))
+          .then(() => repoBuilder.checkoutBranch('r3.0.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '3.0' }))
+          .then(() => repoBuilder.checkoutBranch('r3.1.x'))
+          .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: '3.1' }))
+          .then(() => repoBuilder.close('main'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: '*.x, !r2.{0..9}.x' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '3.0' })
+        expect(aggregate[1]).to.include({ name: 'the-component', version: '3.1' })
       })
     })
 
