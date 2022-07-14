@@ -714,8 +714,7 @@ describe('produceRedirects()', () => {
       ])
       const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
       delete splatAliasFile.out
-      splatAliasFile.pub.url = '/component-b/current'
-      splatAliasFile.pub.splat = true
+      splatAliasFile.pub = { url: '/component-b/current', moduleRootPath: '.', splat: true }
       splatAliasFile.rel = {
         src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
         pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
@@ -736,8 +735,7 @@ describe('produceRedirects()', () => {
       ])
       const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
       delete splatAliasFile.out
-      splatAliasFile.pub.url = '/3.0'
-      splatAliasFile.pub.splat = true
+      splatAliasFile.pub = { url: '/3.0', moduleRootPath: '.', splat: true }
       splatAliasFile.rel = {
         pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
       }
@@ -754,8 +752,7 @@ describe('produceRedirects()', () => {
       ])
       const splatAliasFile = contentCatalog.findBy({ family: 'alias' })[0]
       delete splatAliasFile.out
-      splatAliasFile.pub.url = '/3.0'
-      splatAliasFile.pub.splat = true
+      splatAliasFile.pub = { url: '/3.0', moduleRootPath: '.', splat: true }
       splatAliasFile.rel = {
         pub: { url: '/', moduleRootPath: '.', rootPath: '.', splat: true },
       }
@@ -841,6 +838,91 @@ describe('produceRedirects()', () => {
         'Redirect 301 /component-b/1.0/alias-c.html /component-a/module-a/the-target.html',
         'Redirect 301 /index.html /component-a/module-a/the-target.html',
       ])
+    })
+
+    it('should use exact match for directory redirects if HTML URL extension style is indexify', () => {
+      contentCatalog.getFiles().forEach((file) => {
+        const url = file.pub.url
+        file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 11 : 5)) + '/'
+      })
+      const splatAliasFile = mockContentCatalog([
+        { family: 'alias', component: 'component-b', version: 'latest', module: 'ROOT', relative: '' },
+      ]).getFiles()[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub = { url: '/component-b/latest', moduleRootPath: '.', splat: true }
+      splatAliasFile.rel = {
+        src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
+      }
+      contentCatalog.getFiles().push(splatAliasFile)
+      contentCatalog.findBy({ family: 'alias' }).push(splatAliasFile)
+      playbook.urls.htmlExtensionStyle = 'indexify'
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0].out.path).to.equal('.htaccess')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        'Redirect 302 /component-b/latest /component-b/1.0',
+        'RedirectMatch 301 ^/$ /component-a/module-a/the-target',
+        'RedirectMatch 301 ^/component-a/module-a/alias-a/$ /component-a/module-a/the-target',
+        'RedirectMatch 301 ^/component-a/module-a/old-target/$ /component-a/module-a/the-target',
+        'RedirectMatch 301 ^/component-a/module-b/alias-b/$ /component-a/module-a/the-target',
+        'RedirectMatch 301 ^/component-b/1\\.0/alias-c/$ /component-a/module-a/the-target',
+      ])
+    })
+
+    it('should use exact match for directory redirects if HTML URL extension style is drop', () => {
+      contentCatalog.getFiles().forEach((file) => {
+        const url = file.pub.url
+        file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 11 : 5)) + '' || '/'
+      })
+      const splatAliasFile = mockContentCatalog([
+        { family: 'alias', component: 'component-b', version: 'latest', module: 'ROOT', relative: '' },
+      ]).getFiles()[0]
+      delete splatAliasFile.out
+      splatAliasFile.pub = { url: '/component-b/latest', moduleRootPath: '.', splat: true }
+      splatAliasFile.rel = {
+        src: { component: 'component-b', version: '1.0', module: 'ROOT', family: 'alias', relative: '' },
+        pub: { url: '/component-b/1.0', moduleRootPath: '.', splat: true },
+      }
+      contentCatalog.getFiles().push(splatAliasFile)
+      contentCatalog.findBy({ family: 'alias' }).push(splatAliasFile)
+      playbook.urls.htmlExtensionStyle = 'indexify'
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0].out.path).to.equal('.htaccess')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        'Redirect 302 /component-b/latest /component-b/1.0',
+        'RedirectMatch 301 ^/$ /component-a/module-a/the-target',
+        'RedirectMatch 301 ^/component-a/module-a/alias-a$ /component-a/module-a/the-target',
+        'RedirectMatch 301 ^/component-a/module-a/old-target$ /component-a/module-a/the-target',
+        'RedirectMatch 301 ^/component-a/module-b/alias-b$ /component-a/module-a/the-target',
+        'RedirectMatch 301 ^/component-b/1\\.0/alias-c$ /component-a/module-a/the-target',
+      ])
+    })
+
+    it('should use exact match to redirect site start page to non-ROOT component when extension style is indexify', () => {
+      playbook.site.url = 'https://example.org/docs'
+      contentCatalog = mockContentCatalog([
+        { family: 'page', module: 'ROOT', relative: 'index.adoc' },
+        { family: 'alias', component: '', version: '', module: '', relative: 'index.adoc' },
+      ])
+      const targetPage = contentCatalog.getPages()[0]
+      contentCatalog.findBy({ family: 'alias' }).forEach((file) => (file.rel = targetPage))
+      contentCatalog.getFiles().forEach((file) => {
+        const url = file.pub.url
+        file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 11 : 5)) + '/'
+      })
+      playbook.urls.htmlExtensionStyle = 'indexify'
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      expect(result[0].out.path).to.equal('.htaccess')
+      expect(result[0].contents.toString()).to.endWith('\n')
+      const rules = extractRules(result[0])
+      expect(rules).to.eql(['RedirectMatch 301 ^/docs/$ /docs/component-a'])
     })
 
     it('should remove the out property on alias files', () => {
