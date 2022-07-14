@@ -36,22 +36,14 @@ function produceRedirects (playbook, aliases) {
   if (!aliases.length) return []
   let siteUrl = playbook.site.url
   if (siteUrl) siteUrl = stripTrailingSlash(siteUrl, '')
+  const directoryRedirects = (playbook.urls.htmlExtensionStyle || 'default') !== 'default'
   switch (playbook.urls.redirectFacility) {
     case 'gitlab':
-      return createNetlifyRedirects(
-        aliases,
-        extractUrlPath(siteUrl),
-        (playbook.urls.htmlExtensionStyle || 'default') === 'default',
-        false
-      )
+      return createNetlifyRedirects(aliases, extractUrlPath(siteUrl), !directoryRedirects, false)
     case 'httpd':
-      return createHttpdHtaccess(aliases, extractUrlPath(siteUrl))
+      return createHttpdHtaccess(aliases, extractUrlPath(siteUrl), directoryRedirects)
     case 'netlify':
-      return createNetlifyRedirects(
-        aliases,
-        extractUrlPath(siteUrl),
-        (playbook.urls.htmlExtensionStyle || 'default') === 'default'
-      )
+      return createNetlifyRedirects(aliases, extractUrlPath(siteUrl), !directoryRedirects)
     case 'nginx':
       return createNginxRewriteConf(aliases, extractUrlPath(siteUrl))
     case 'static':
@@ -74,7 +66,7 @@ function extractUrlPath (url) {
   }
 }
 
-function createHttpdHtaccess (files, urlPath) {
+function createHttpdHtaccess (files, urlPath, directoryRedirects = false) {
   const rules = files.reduce((accum, file) => {
     delete file.out
     let fromUrl = file.pub.url
@@ -83,7 +75,13 @@ function createHttpdHtaccess (files, urlPath) {
     toUrl = ~toUrl.indexOf('%20') ? `'${urlPath}${toUrl.replace(ENCODED_SPACE_RX, ' ')}'` : urlPath + toUrl
     // see https://httpd.apache.org/docs/current/en/mod/mod_alias.html#redirect
     // NOTE: redirect rule for directory prefix does not require trailing slash
-    accum.push(`Redirect ${file.pub.splat ? '302' : '301'} ${fromUrl} ${stripTrailingSlash(toUrl)}`)
+    if (file.pub.splat) {
+      accum.push(`Redirect 302 ${fromUrl} ${stripTrailingSlash(toUrl)}`)
+    } else if (directoryRedirects) {
+      accum.push(`RedirectMatch 301 ^${regexpEscape(fromUrl)}$ ${stripTrailingSlash(toUrl)}`)
+    } else {
+      accum.push(`Redirect 301 ${fromUrl} ${toUrl}`)
+    }
     return accum
   }, [])
   return [new File({ contents: Buffer.from(rules.join('\n') + '\n'), out: { path: '.htaccess' } })]
@@ -92,7 +90,7 @@ function createHttpdHtaccess (files, urlPath) {
 // NOTE: a trailing slash on the pathname will be ignored
 // see https://docs.netlify.com/routing/redirects/redirect-options/#trailing-slash
 // however, we keep it when generating the rules for clarity
-function createNetlifyRedirects (files, urlPath, includeDirectoryRedirects = false, useForceFlag = true) {
+function createNetlifyRedirects (files, urlPath, addDirectoryRedirects = false, useForceFlag = true) {
   const rules = files.reduce((accum, file) => {
     delete file.out
     const fromUrl = urlPath + file.pub.url
@@ -102,7 +100,7 @@ function createNetlifyRedirects (files, urlPath, includeDirectoryRedirects = fal
       accum.push(`${fromUrl}/* ${ensureTrailingSlash(toUrl)}:splat 302${forceFlag}`)
     } else {
       accum.push(`${fromUrl} ${toUrl} 301${forceFlag}`)
-      if (includeDirectoryRedirects && fromUrl.endsWith('/index.html')) {
+      if (addDirectoryRedirects && fromUrl.endsWith('/index.html')) {
         accum.push(`${fromUrl.substr(0, fromUrl.length - 10)} ${toUrl} 301${forceFlag}`)
       }
     }
