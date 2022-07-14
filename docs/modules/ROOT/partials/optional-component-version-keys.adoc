@@ -16,7 +16,7 @@ Attributes in [.path]_antora.yml_ are applied to all of the xref:page:index.adoc
 Navigation files (e.g., [.path]_nav.adoc_) that are registered under the `nav` key are used in the component version's page menu.
 
 |xref:component-prerelease.adoc[prerelease]
-|Designates a component version as a prerelease version and disables the default routing rules.
+|Designates a component version as a prerelease version and deactivates the default routing rules.
 Key can append a prerelease identifier (e.g., `-alpha.2`) to `version` without affecting the version coordinate or version URL segment.
 
 |xref:component-start-page.adoc[start_page]

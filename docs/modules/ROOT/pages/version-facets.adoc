@@ -26,7 +26,7 @@ Each version facet--prerelease, display, and symbolic--described in the followin
 == Prerelease version
 
 A version of a project or product that is made available before its final release is often called a [.term]*prerelease version*.
-Organizations use semantic versioning identifiers, such as `alpha` or `beta`, or special names, such as `edge`, to communicate that a version is a prerelease to end users.
+Organizations use semantic versioning identifiers, such as `-alpha.1`, or special names, such as `M1` or `Snapshot`, to communicate that a version is a prerelease to end users.
 To compliment a prerelease version of a project, a component version can be designated as a prerelease using the `prerelease` key.
 
 A component version is designated as a prerelease when the `prerelease` key is assigned an xref:component-prerelease.adoc#identifier[identifier] or the reserved value xref:component-prerelease.adoc#true[true] in its [.path]_antora.yml_ file.
