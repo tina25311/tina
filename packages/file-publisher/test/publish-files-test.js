@@ -4,11 +4,12 @@
 const { emptyDirSync, expect, heredoc, pathToFileURL, trapAsyncError, wipeSync } = require('@antora/test-harness')
 
 const File = require('vinyl')
-const { promises: fsp } = require('fs')
+const fs = require('fs')
+const { promises: fsp } = fs
 const os = require('os')
 const ospath = require('path')
 const publishFiles = require('@antora/file-publisher')
-const { pipeline, Writable } = require('stream')
+const { PassThrough, pipeline, Writable } = require('stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
 const vzip = require('gulp-vinyl-zip')
 
@@ -16,6 +17,8 @@ const CWD = process.cwd()
 const { DEFAULT_DEST_FS, DEFAULT_DEST_ARCHIVE } = require('@antora/file-publisher/lib/constants')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const HTML_RX = /<html>[\S\s]+<\/html>/
+//const PROJECT_ROOT_DIR = ospath.join(__dirname, '../../..')
+const PROJECT_ROOT_DIR = process.env.npm_config_local_prefix
 const TMP_DIR = os.tmpdir()
 const WORK_DIR = ospath.join(__dirname, 'work')
 
@@ -23,8 +26,9 @@ describe('publishFiles()', () => {
   let catalogs
   let playbook
 
-  const createFile = (outPath, contents) => {
-    const file = new File({ contents: Buffer.from(contents) })
+  const createFile = (outPath, contents, asVinyl = true) => {
+    if (typeof contents === 'string') contents = Buffer.from(contents)
+    const file = asVinyl ? new File({ contents }) : { contents }
     if (outPath) file.out = { path: outPath }
     return file
   }
@@ -104,6 +108,36 @@ describe('publishFiles()', () => {
     expect(ospath.join(absDestDir, 'the-component/1.0/the-module/the-page.html'))
       .to.be.a.file()
       .with.contents.that.match(HTML_RX)
+  }
+
+  class LazyReadable extends PassThrough {
+    constructor (createStream) {
+      super()
+      this._read = function () {
+        delete this._read // restores original method
+        createStream.call(this).on('error', this.emit.bind(this, 'error')).pipe(this)
+        return this._read.apply(this, arguments)
+      }
+      this.emit('readable')
+    }
+  }
+
+  class MultiFileReadStream extends PassThrough {
+    constructor (paths) {
+      super()
+      ;(this.queue = this.createQueue(paths)).next()
+    }
+
+    * createQueue (paths) {
+      for (const path of paths) {
+        fs.createReadStream(path)
+          .once('error', (err) => this.destroy(err))
+          .once('end', () => this.queue.next())
+          .pipe(this, { end: false })
+        yield
+      }
+      this.push(null)
+    }
   }
 
   beforeEach(() => {
@@ -326,6 +360,87 @@ describe('publishFiles()', () => {
     await publishFiles(playbook, catalogs)
     verifyFsOutput(destDir1)
     verifyFsOutput(destDir2)
+  })
+
+  it('should write entire contents of file with stream in content catalog to all destinations', async () => {
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+    const destDirs = [1, 2, 3, 4, 5].map((it) => `./site-${it}`)
+    destDirs.forEach((destDir) => playbook.output.destinations.push({ provider: 'fs', path: destDir }))
+    const contentCatalog = catalogs[0]
+    const files = contentCatalog.getFiles()
+    files.push(createFile('the-component/1.0/_attachments/data.json', fs.createReadStream(dataFile)))
+    contentCatalog.getFiles = () => files
+    await publishFiles(playbook, catalogs)
+    destDirs.forEach((destDir) => {
+      verifyFsOutput(destDir)
+      expect(ospath.resolve(playbook.dir, destDir, 'the-component/1.0/_attachments/data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
+    })
+  })
+
+  it('should write entire contents of file with stream in site catalog to all destinations', async () => {
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+    const destDirs = [1, 2, 3, 4, 5].map((it) => `./site-${it}`)
+    destDirs.forEach((destDir) => playbook.output.destinations.push({ provider: 'fs', path: destDir }))
+    // NOTE: contents will be converted to cloneable stream first access
+    catalogs.push({ getFiles: () => [createFile('data.json', fs.createReadStream(dataFile), false)] })
+    await publishFiles(playbook, catalogs)
+    destDirs.forEach((destDir) => {
+      verifyFsOutput(destDir)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().and.equal(dataFile)
+    })
+  })
+
+  it('should write entire contents of file with lazy stream in site catalog to all destinations', async () => {
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+    const destDirs = [1, 2, 3, 4, 5].map((it) => `./site-${it}`)
+    destDirs.forEach((destDir) => playbook.output.destinations.push({ provider: 'fs', path: destDir }))
+    catalogs.push({
+      // NOTE: contents will be converted to cloneable stream first access
+      getFiles: () => [createFile('data.json', new LazyReadable(() => fs.createReadStream(dataFile)), false)],
+    })
+    await publishFiles(playbook, catalogs)
+    destDirs.forEach((destDir) => {
+      verifyFsOutput(destDir)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().and.equal(dataFile)
+    })
+  })
+
+  it('should write entire contents of file with multi-file lazy stream in site catalog to all destinations', async () => {
+    const dataFileA = ospath.join(PROJECT_ROOT_DIR, 'package.json')
+    const dataFileB = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+    const expectedContents = (await fsp.readFile(dataFileA, 'utf8')) + (await fsp.readFile(dataFileB, 'utf8'))
+    const destDirs = [1, 2, 3, 4, 5].map((it) => `./site-${it}`)
+    destDirs.forEach((destDir) => playbook.output.destinations.push({ provider: 'fs', path: destDir }))
+    catalogs.push({
+      getFiles: () => [
+        // NOTE: contents will be converted to cloneable stream first access
+        createFile('data.json', new LazyReadable(() => new MultiFileReadStream([dataFileA, dataFileB])), false),
+      ],
+    })
+    await publishFiles(playbook, catalogs)
+    destDirs.forEach((destDir) => {
+      verifyFsOutput(destDir)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().with.contents(expectedContents)
+    })
+  })
+
+  it('should write entire contents of file with stream returned from function in site catalog to all destinations', async () => {
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+    const destDirs = [1, 2, 3, 4, 5].map((it) => `./site-${it}`)
+    destDirs.forEach((destDir) => playbook.output.destinations.push({ provider: 'fs', path: destDir }))
+    const createContents = () => new LazyReadable(() => fs.createReadStream(dataFile))
+    // NOTE: contents will be converted to cloneable stream first access
+    const dataVinylFile = createFile('data.json', null)
+    Object.defineProperty(dataVinylFile, 'contents', { get: () => createContents() })
+    const siteCatalog = { getFiles: () => [dataVinylFile] }
+    catalogs.push(siteCatalog)
+    await publishFiles(playbook, catalogs)
+    destDirs.forEach((destDir) => {
+      verifyFsOutput(destDir)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().and.equal(dataFile)
+    })
   })
 
   it('should replace path of first fs destination when destination override is specified', async () => {

@@ -11,6 +11,7 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Apply patch to match patterns for refname, version, and start paths to workaround parsing bug in picomatch (#973)
 * *redirect-producer*: Use `RedirectMatch` directive for exact directory redirects in httpd redirect file to avoid infinite redirect loop (#942)
+* *file-publisher*: Clone stream on virtual file so complete contents of file is written to each destination (#975)
 
 == 3.0.2 (2022-07-07)
 
