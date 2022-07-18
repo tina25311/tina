@@ -156,24 +156,211 @@ describe('classifyContent()', () => {
       expect(versions).to.eql(['rev3', 'rev2', 'rev1'])
     })
 
-    it('should sort non-semantic versions before semantic versions', () => {
+    it('should sort non-semantic version before semantic versions', () => {
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
-        version: 'dev',
+        version: 'v1.3.0',
         files: [],
       })
       aggregate.push({
         name: 'the-component',
         title: 'The Component',
-        version: 'main',
+        version: 'edge',
         files: [],
       })
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       expect(component).to.exist()
       expect(component.name).to.equal('the-component')
       const versions = component.versions.map((version) => version.version)
-      expect(versions).to.eql(['main', 'dev', 'v1.2.3'])
+      expect(versions).to.eql(['edge', 'v1.3.0', 'v1.2.3'])
+    })
+
+    it('should sort non-semantic prerelease version before semantic versions', () => {
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v1.3.0',
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'nightly',
+        prerelease: true,
+        files: [],
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      expect(component).to.exist()
+      expect(component.name).to.equal('the-component')
+      const versions = component.versions.map((version) => version.version)
+      expect(versions).to.eql(['nightly', 'v1.3.0', 'v1.2.3'])
+    })
+
+    it('should sort multiple non-semantic versions in reverse alphabetical order before semantic versions', () => {
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'beta',
+        files: [],
+      })
+      aggregate.push({
+        name: 'the-component',
+        title: 'The Component',
+        version: 'canary',
+        files: [],
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      expect(component).to.exist()
+      expect(component.name).to.equal('the-component')
+      const versions = component.versions.map((version) => version.version)
+      expect(versions).to.eql(['canary', 'beta', 'v1.2.3'])
+    })
+
+    it('should sort non-semantic prerelease versions before non-semantic stable versions', () => {
+      aggregate.length = 0
+      ;['f36', 'f35', 'f34', 'rawhide'].forEach((version) => {
+        aggregate.push({
+          name: 'the-component',
+          title: 'The Component',
+          version,
+          prerelease: version.charAt() !== 'f',
+          files: [],
+        })
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const versions = component.versions.map(({ version }) => version)
+      expect(versions).to.eql(['rawhide', 'f36', 'f35', 'f34'])
+    })
+
+    it('should promote non-semantic prerelease versions before non-semantic stable versions', () => {
+      aggregate.length = 0
+      ;['f36', 'f35', 'f34', 'edge'].forEach((version) => {
+        aggregate.push({
+          name: 'the-component',
+          title: 'The Component',
+          version,
+          prerelease: version.charAt() !== 'f',
+          files: [],
+        })
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const versions = component.versions.map(({ version }) => version)
+      expect(versions).to.eql(['edge', 'f36', 'f35', 'f34'])
+    })
+
+    it('should sort non-semantic versions before semantic stable versions', () => {
+      ;['f36', 'f35', 'f34'].forEach((version) => {
+        aggregate.push({
+          name: 'the-component',
+          title: 'The Component',
+          version,
+          files: [],
+        })
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const versions = component.versions.map(({ version }) => version)
+      expect(versions).to.eql(['f36', 'f35', 'f34', 'v1.2.3'])
+    })
+
+    it('should group non-semantic versions by prerelease status', () => {
+      aggregate.length = 0
+      ;['fiesty', 'zany', 'zesty', 'breezy', 'contrary'].forEach((version) => {
+        aggregate.push({
+          name: 'the-component',
+          title: 'The Component',
+          version,
+          prerelease: version === 'zany' || version === 'contrary',
+          files: [],
+        })
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const versions = component.versions.map(({ version }) => version)
+      expect(versions).to.eql(['zany', 'contrary', 'zesty', 'fiesty', 'breezy'])
+      expect(component.latest.version).to.eql('zesty')
+      expect(component.latestPrerelease.version).to.eql('zany')
+    })
+
+    it('should sort semantic prerelease below non-semantic stable release', () => {
+      ;[
+        ['3.1.0-SNAPSHOT', 'stable', '3.0.0', '3.0.0-M1'],
+        ['stable', '3.1.0-SNAPSHOT', '3.0.0-M1', '3.0.0'],
+      ].forEach((permutation) => {
+        aggregate.length = 0
+        permutation.forEach((version) => {
+          aggregate.push({
+            name: 'the-component',
+            title: 'The Component',
+            version,
+            prerelease: ~version.indexOf('-'),
+            files: [],
+          })
+        })
+        const component = classifyContent(playbook, aggregate).getComponent('the-component')
+        const versions = component.versions.map(({ version }) => version)
+        expect(versions).to.eql(['stable', '3.1.0-SNAPSHOT', '3.0.0', '3.0.0-M1'])
+        expect(component.latest.version).to.eql('stable')
+        expect(component.latestPrerelease).to.be.undefined()
+      })
+    })
+
+    it('should sort semantic prerelease below non-semantic stable release that follows non-semantic prerelease', () => {
+      ;[
+        ['3.1.0-SNAPSHOT', 'edge', 'stable', '2.1.0', '3.0.0', '2.2.0-SNAPSHOT'],
+        ['stable', '3.1.0-SNAPSHOT', 'edge', '2.1.0', '3.0.0', '2.2.0-SNAPSHOT'],
+      ].forEach((permutation) => {
+        aggregate.length = 0
+        permutation.forEach((version) => {
+          aggregate.push({
+            name: 'the-component',
+            title: 'The Component',
+            version,
+            prerelease: version === 'edge' || ~version.indexOf('-'),
+            files: [],
+          })
+        })
+        const component = classifyContent(playbook, aggregate).getComponent('the-component')
+        const versions = component.versions.map(({ version }) => version)
+        expect(versions).to.eql(['edge', 'stable', '3.1.0-SNAPSHOT', '3.0.0', '2.2.0-SNAPSHOT', '2.1.0'])
+        expect(component.latest.version).to.eql('stable')
+        expect(component.latestPrerelease.version).to.eql('edge')
+      })
+    })
+
+    it('should insert prerelease component version for older release line in sequence', () => {
+      ;['5.7.1', '5.8.1-SNAPSHOT', '5.8.0', '5.7.2-SNAPSHOT', '5.6.6', '6.0.0-SNAPSHOT'].forEach((entry) => {
+        const [version, prerelease] = entry.split('-')
+        aggregate.push({
+          name: 'the-component',
+          title: 'The Component',
+          version,
+          prerelease,
+          files: [],
+        })
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const versions = component.versions.map(({ version }) => version)
+      expect(versions).to.eql(['6.0.0', '5.8.1', '5.8.0', '5.7.2', '5.7.1', '5.6.6', 'v1.2.3'])
+      expect(component.latest.version).to.eql('5.8.0')
+      expect(component.latestPrerelease.version).to.eql('6.0.0')
+    })
+
+    it('should not flag older prerelease as the latest prerelease', () => {
+      ;['5.8.0', '5.6.6', '5.7.2-SNAPSHOT', '5.7.1'].forEach((entry) => {
+        const [version, prerelease] = entry.split('-')
+        aggregate.push({
+          name: 'the-component',
+          title: 'The Component',
+          version,
+          prerelease,
+          files: [],
+        })
+      })
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const versions = component.versions.map(({ version }) => version)
+      expect(versions).to.eql(['5.8.0', '5.7.2', '5.7.1', '5.6.6', 'v1.2.3'])
+      expect(component.latest.version).to.eql('5.8.0')
+      expect(component.latestPrerelease).to.be.undefined()
     })
 
     it('should insert versionless version first if there are no prereleases', () => {
@@ -210,28 +397,9 @@ describe('classifyContent()', () => {
         version: '',
         files: [],
       })
-      const contentCatalog = classifyContent(playbook, aggregate)
-      const versions = contentCatalog.getComponent('the-component').versions.map(({ version }) => version)
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const versions = component.versions.map(({ version }) => version)
       expect(versions).to.eql(['v2.0', '', 'v1.2.3'])
-    })
-
-    it('should insert non-prerelease component version after last prerelease', () => {
-      aggregate.push({
-        name: 'the-component',
-        title: 'The Component',
-        version: 'v2.0',
-        prerelease: true,
-        files: [],
-      })
-      aggregate.push({
-        name: 'the-component',
-        title: 'The Component',
-        version: 'v3.0',
-        files: [],
-      })
-      const contentCatalog = classifyContent(playbook, aggregate)
-      const versions = contentCatalog.getComponent('the-component').versions.map(({ version }) => version)
-      expect(versions).to.eql(['v2.0', 'v3.0', 'v1.2.3'])
     })
 
     it('should insert prerelease versionless component version before other prereleases', () => {
@@ -249,8 +417,8 @@ describe('classifyContent()', () => {
         prerelease: true,
         files: [],
       })
-      const contentCatalog = classifyContent(playbook, aggregate)
-      const versions = contentCatalog.getComponent('the-component').versions.map(({ version }) => version)
+      const component = classifyContent(playbook, aggregate).getComponent('the-component')
+      const versions = component.versions.map(({ version }) => version)
       expect(versions).to.eql(['', 'v2.0', 'v1.2.3'])
     })
 
