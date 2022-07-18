@@ -83,7 +83,7 @@ function getModel (name) {
     model.env = config.getEnv()
     delete model.playbook
   }
-  return deepFreeze(model, name ? '.' + name : '')
+  return model
 }
 
 function getStopPaths (schemaProperties, schemaPath = [], stopPaths = []) {
@@ -97,11 +97,6 @@ function getStopPaths (schemaProperties, schemaPath = [], stopPaths = []) {
     }
   }
   return stopPaths
-}
-
-function deepFreeze (o, p) {
-  for (const [k, v] of Object.entries(o)) Object.isFrozen(v) || (k === 'env' && !p) || deepFreeze(v, p + '.' + k)
-  return Object.freeze(o)
 }
 
 function getDetails (playbook, absPlaybookPath) {

@@ -9,7 +9,7 @@ async function generateSite (playbook) {
     if (Array.isArray(playbook)) playbook = buildPlaybookFromArguments.apply(context, arguments)
     const { fxns, vars } = await GeneratorContext.start(context, playbook)
     await context.notify('playbookBuilt')
-    playbook = vars.lock('playbook')
+    deepFreeze((playbook = vars.lock('playbook')))
     vars.siteAsciiDocConfig = fxns.resolveAsciiDocConfig(playbook)
     vars.siteCatalog = new SiteCatalog()
     await context.notify('beforeProcess')
@@ -75,6 +75,11 @@ function buildPlaybookFromArguments (args, env) {
       this.on('contextClosed', finalizeLogger)
     } catch {}
   })
+}
+
+function deepFreeze (o, p) {
+  for (const [k, v] of Object.entries(o)) Object.isFrozen(v) || (k === 'env' && !p) || deepFreeze(v, p + '.' + k)
+  return Object.freeze(o)
 }
 
 module.exports = generateSite

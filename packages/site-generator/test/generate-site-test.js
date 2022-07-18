@@ -200,6 +200,14 @@ describe('generateSite()', () => {
       .with.contents.that.match(/https:\/\/docs\.example\.org\//)
   })
 
+  it('should freeze playbook during generation', async () => {
+    playbookSpec.output.destinations = []
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    const playbook = getPlaybook(playbookFile)
+    await generateSite(playbook)
+    expect(Object.isFrozen(playbook)).to.be.true()
+  })
+
   it('should resolve dot-relative paths in playbook relative to playbook dir', async () => {
     const repoUrl = '.' + ospath.sep + ospath.relative(WORK_DIR, playbookSpec.content.sources[0].url)
     playbookSpec.content.sources[0].url = repoUrl
@@ -1126,6 +1134,26 @@ describe('generateSite()', () => {
       expect(lines).to.have.lengthOf(2)
       expect(lines[0]).to.equal('uiCatalog is found')
       expect(lines[1]).to.equal('listeners: 0')
+    })
+
+    it('should freeze playbook after playbookBuilt event is fired', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function ({ playbook }) {
+          this.on('playbookBuilt', () => {
+            console.log('frozen at playbookBuilt: ' + (Object.isFrozen(playbook) ? 'true' : 'false'))
+          })
+          this.on('beforeProcess', () => {
+            console.log('frozen at beforeProcess: ' + (Object.isFrozen(playbook) ? 'true' : 'false'))
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      playbookSpec.output.destinations = []
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.eql(['frozen at playbookBuilt: false', 'frozen at beforeProcess: true'])
     })
 
     it('should always emit contentClassified event after both content is classified and UI is loaded', async () => {

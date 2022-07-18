@@ -264,16 +264,11 @@ describe('buildPlaybook()', () => {
     expect(() => buildPlaybook([], { PLAYBOOK: 'non-existent/file' }, schema)).to.throw(expectedMessage)
   })
 
-  it('should freeze properties of playbook except for root env property', () => {
+  it('should not freeze properties playbook object', () => {
     const env = { PLAYBOOK: ymlSpec }
     schema.category = { env: { format: String, default: 'not the env' } }
     const playbook = buildPlaybook([], env, schema)
-    expect(Object.isFrozen(playbook)).to.be.true()
-    expect(Object.isFrozen(playbook.one)).to.be.true()
-    expect(Object.isFrozen(playbook.one.one)).to.be.true()
-    expect(Object.isFrozen(playbook.two)).to.be.true()
-    expect(Object.isFrozen(playbook.env)).to.be.false()
-    expect(Object.isFrozen(playbook.category.env)).to.be.true()
+    expect(Object.isFrozen(playbook)).to.be.false()
   })
 
   it('should use default value if playbook file is not specified', () => {
@@ -618,11 +613,11 @@ describe('buildPlaybook()', () => {
     expect(() => buildPlaybook([], { PLAYBOOK: playbook }, schema)).to.throw(expected)
   })
 
-  it('should return an immutable playbook', () => {
+  it('should return an mutable playbook', () => {
     const playbook = buildPlaybook([], { PLAYBOOK: ymlSpec }, schema)
     expect(() => {
       playbook.one.two = 'override'
-    }).to.throw()
+    }).not.to.throw()
   })
 
   it('should preserve case of keys in map if preserve is true', () => {
@@ -910,7 +905,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.runtime.log.failureLevel).to.equal('none')
     expect(playbook.runtime.log.levelFormat).to.equal('label')
     expect(playbook.runtime.log).to.eql(logModel)
-    expect(Object.isFrozen(logModel)).to.be.true()
+    expect(Object.isFrozen(logModel)).to.be.false()
   })
 
   it('should set runtime.log.format to pretty when stdout is a TTY', () => {
