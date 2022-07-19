@@ -5,8 +5,8 @@ Before you upgrade from Antora 2.3 to Antora 3.0, you may need to make some of t
 
 Are you using an active LTS version of Node.js?::
 We recommend upgrading to the {url-node-releases}[latest active long term support (LTS) release of Node].
-Antora 3 officially supports Node.js 14 LTS and 16 LTS, and is tested on Node.js 12.
-Antora 3 doesn't officially support Node.js versions that have reached end of life (EOL).
+Antora 3 officially supports Node.js 16 LTS and is tested on Node.js 18 LTS.
+Antora 3 doesn't support Node.js versions that have reached end of life (EOL).
 See xref:install:upgrade-antora.adoc#node[Upgrade Node.js] for instructions.
 
 Have you updated your AsciiDoc syntax and Asciidoctor extensions to comply with the newest patch release of Asciidoctor.js 2.2?::
@@ -62,7 +62,7 @@ See xref:install:upgrade-antora.adoc[Upgrade Antora] for instructions when you'r
 
 == Antora 2.3 EOL
 
-Antora 2.3 will enter maintenance on January 25, 2022 and reach end of life (EOL) on February 25, 2022.
-//See the xref:ROOT:project/release-schedule.adoc[release schedule] for details.
+Antora 2.3 reached end of life (EOL) as of February 25, 2022.
+
 endif::[]
 // end::new[]
