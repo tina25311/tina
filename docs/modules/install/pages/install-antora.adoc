@@ -78,7 +78,7 @@ Verify the `antora` command is available through `npx` by running `npx antora -v
 This command should report the version of the Antora CLI in the terminal.
 
 [subs=attributes+]
- @antora/cli: {page-component-version}.1
+ @antora/cli: {page-component-version}.3
  @antora/site-generator: not installed
 
 The `npx` command will look for the `antora` command installed within the playbook project or any parent directory of the playbook project.
@@ -108,8 +108,8 @@ Antora's CLI will look for the site generator package in this folder first befor
 Now when you run `npx antora -v`, you should see the version of both the Antora CLI and the site generator printed in the terminal.
 
 [subs=attributes+]
- @antora/cli: {page-component-version}.1
- @antora/site-generator: {page-component-version}.1
+ @antora/cli: {page-component-version}.3
+ @antora/site-generator: {page-component-version}.3
 
 If you open [.path]_package.json_, you'll see the version of these packages listed there too, as development dependencies.
 
@@ -117,8 +117,8 @@ If you open [.path]_package.json_, you'll see the version of these packages list
 ----
 {
   "devDependencies": {
-    "@antora/cli": "{page-component-version}.1",
-    "@antora/site-generator": "{page-component-version}.1"
+    "@antora/cli": "{page-component-version}.3",
+    "@antora/site-generator": "{page-component-version}.3"
   }
 }
 ----
@@ -150,8 +150,8 @@ If installation was successful, the command should report the version of the Ant
 
 [subs=attributes+]
  $ antora -v
- @antora/cli: {page-component-version}.1
- @antora/site-generator: {page-component-version}.1
+ @antora/cli: {page-component-version}.3
+ @antora/site-generator: {page-component-version}.3
 
 The benefit of installing Antora globally is that it is always available in your terminal, no matter what directory you are in.
 While this may seem convenient at first, there are problems with this strategy.

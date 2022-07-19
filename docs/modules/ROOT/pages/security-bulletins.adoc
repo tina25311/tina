@@ -21,7 +21,7 @@ All versions of Antora.
 
 The maintainer of vinyl-fs refuses to address the problem, so we will be removing vinyl-fs from Antora entirely.
 However, this is not a trivial change and will require time to address.
-We plan to remove it completely in a later release in the 3.0.x release line.
+We plan to remove it completely in a later release in the 3.x release line.
 
 === Assessment
 

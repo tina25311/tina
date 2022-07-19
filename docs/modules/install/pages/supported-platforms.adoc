@@ -1,6 +1,6 @@
 = Supported Platforms and System Requirements
 :navtitle: Supported Platforms
-:test-count: over 1940
+:test-count: over 2008
 :test-coverage: 99%
 // URLs
 :url-issues: {url-repo}/issues
@@ -20,13 +20,13 @@ When a platform version reaches the end of active support by its maintainers or 
 |Supported Platform |Supported Version(s)
 
 |Alpine Linux
-|&#8805; 3.12
+|&#8805; 3.13
 
 |Debian
-|&#8805; 10.11
+|&#8805; 10.12
 
 |Fedora
-|&#8805; 34
+|&#8805; 35
 
 |Ubuntu
 |[%hardbreaks]
@@ -36,8 +36,8 @@ When a platform version reaches the end of active support by its maintainers or 
 |macOS
 |[%hardbreaks]
 Catalina (10.15)
-Big Sur (11)
-Monterey (12)
+Big Sur (11.6)
+Monterey (12.4)
 
 |Microsoft
 |[%hardbreaks]
@@ -57,9 +57,7 @@ Windows Server 2019
 
 |Node.js
 |[%hardbreaks]
-12
-14
-16
+16 LTS
 |===
 
 .About the Antora Test Suite
@@ -72,7 +70,7 @@ You could say we're just a teeny-tiny bit obsessed with writing high quality tes
 
 Antora should operate as designed on common cloud platforms.
 How you provision your cloud instance depends on your workload requirements and remote git repository sizes.
-If you're running Antora on a cloud platform, we would love to hear about your experience (open a {url-issues}[new issue^] or join us in Antora's {url-chat}[community chat^]).
+If you're running Antora on a cloud platform, we would love to hear about your experience in Antora's {url-chat}[community chat^].
 
 == Hardware recommendations
 
@@ -129,6 +127,7 @@ Windows Server 2016: Mainstream support: Until January 11, 2022
 Windows 10: TBD
 
 MacOS https://en.wikipedia.org/wiki/MacOS_version_history
+MacOS 13 probably around Oct/Nov 2022, with EOL of Catalina at same time
 
 MS Edge: replaces IE 11 which is not being developed further; it is the default browser for Windows 10/Server 2016
 ////

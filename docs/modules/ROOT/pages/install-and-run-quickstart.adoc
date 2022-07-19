@@ -72,8 +72,8 @@ If the installation is successful, the command will report the version of the An
 
 [subs=+attributes]
  $ npx antora -v
- @antora/cli: {page-component-version}.1
- @antora/site-generator: {page-component-version}.1
+ @antora/cli: {page-component-version}.3
+ @antora/site-generator: {page-component-version}.3
 
 These versions can also be found in [.path]_package.json_, which you can use to upgrade Antora.
 
