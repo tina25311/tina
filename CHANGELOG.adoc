@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *playbook-builder* / *site-generator*: Defer playbook freezing until after `playbookBuilt` event is fired (#977)
+
 === Fixed
 
 * *content-aggregator*: Apply patch to match patterns for refname, version, and start paths to workaround parsing bug in picomatch (#973)
