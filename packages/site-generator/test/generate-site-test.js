@@ -1695,6 +1695,29 @@ describe('generateSite()', () => {
       expect(process.exitCode).to.be.undefined()
     })
 
+    it('should allow extension listener to remove file from site catalog', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.on('beforeProcess', ({ siteCatalog }) => {
+            siteCatalog.addFile({
+              contents: Buffer.alloc(0),
+              out: { path: '.nojekyll' }
+            })
+            console.log('' + siteCatalog.removeFile({ out: { path: '.nojekyll' } }))
+            console.log('' + siteCatalog.removeFile({ out: { path: '.nojekyll' } }))
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines).to.eql(['true', 'false'])
+      expect(ospath.join(absDestDir, '.nojekyll')).to.not.be.a.path()
+    })
+
     it('should allow register function to replace functions on generator context', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`

@@ -189,6 +189,12 @@ class ContentCatalog {
     return file
   }
 
+  removeFile (file) {
+    const src = file.src
+    const filesForFamily = this[$files].get(src.family)
+    return filesForFamily ? filesForFamily.delete(generateKey(src)) : false
+  }
+
   findBy (criteria) {
     const criteriaEntries = Object.entries(criteria)
     const family = criteria.family

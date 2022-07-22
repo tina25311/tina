@@ -1569,6 +1569,72 @@ describe('ContentCatalog', () => {
     })
   })
 
+  describe('#removeFile()', () => {
+    it('should remove file if found in catalog', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      const file = contentCatalog.addFile({ src })
+      expect(file).to.be.instanceOf(File)
+      expect(file).to.equal(contentCatalog.getById(src))
+      expect(contentCatalog.removeFile(file)).to.be.true()
+      expect(contentCatalog.getById(src)).to.be.undefined()
+    })
+
+    it('should not remove file if not found in catalog', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      const file = contentCatalog.addFile({ src })
+      expect(file).to.be.instanceOf(File)
+      expect(file).to.equal(contentCatalog.getById(src))
+      expect(
+        contentCatalog.removeFile({
+          src: {
+            component: 'the-component',
+            version: '1.2.3',
+            module: 'ROOT',
+            family: 'page',
+            relative: 'the-page-2.adoc',
+          },
+        })
+      ).to.be.false()
+    })
+
+    it('should not remove file if family is not yet known by catalog', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      contentCatalog.addFile({ src })
+      expect(
+        contentCatalog.removeFile({
+          src: {
+            component: 'the-component',
+            version: '1.2.3',
+            module: 'ROOT',
+            family: 'example',
+            relative: 'config.yml',
+          },
+        })
+      ).to.be.false()
+    })
+  })
+
   describe('#registerPageAlias()', () => {
     let contentCatalog
     let targetPageSrc
