@@ -77,8 +77,8 @@ function buildPlaybookFromArguments (args, env) {
   })
 }
 
-function deepFreeze (o, p) {
-  for (const [k, v] of Object.entries(o)) Object.isFrozen(v) || (k === 'env' && !p) || deepFreeze(v, p + '.' + k)
+function deepFreeze (o, p = '') {
+  for (const [k, v] of Object.entries(o)) Object.isFrozen(v) || (k === 'env' && !p) || deepFreeze(v, p + k + '.')
   return Object.freeze(o)
 }
 
