@@ -204,8 +204,11 @@ describe('generateSite()', () => {
     playbookSpec.output.destinations = []
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     const playbook = getPlaybook(playbookFile)
+    expect(Object.isFrozen(playbook)).to.be.false()
     await generateSite(playbook)
     expect(Object.isFrozen(playbook)).to.be.true()
+    expect(Object.isFrozen(playbook.runtime)).to.be.true()
+    expect(Object.isFrozen(playbook.env)).to.be.false()
   })
 
   it('should resolve dot-relative paths in playbook relative to playbook dir', async () => {
