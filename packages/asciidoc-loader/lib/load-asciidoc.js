@@ -166,7 +166,7 @@ function resolveAsciiDocConfig (playbook = {}) {
   }
   if (!playbook.asciidoc) return { attributes }
   // TODO process !name attributes
-  const { extensions, ...config } = Object.assign({ attributes }, playbook.asciidoc, {
+  const { extensions, ...config } = Object.assign({}, playbook.asciidoc, {
     attributes: Object.assign(attributes, playbook.asciidoc.attributes),
   })
   if (extensions && extensions.length) {
