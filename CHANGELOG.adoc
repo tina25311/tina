@@ -7,7 +7,9 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
-_No changes since previous release._
+=== Added
+
+* *content-aggregator*: Add `origins` property containing unique origin objects to each entry in content aggregate (#978)
 
 == 3.0.3 (2022-07-20)
 

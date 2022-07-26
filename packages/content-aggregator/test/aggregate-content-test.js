@@ -213,6 +213,26 @@ describe('aggregateContent()', () => {
       })
     })
 
+    describe('should add origin of component descriptor to origins property on component version bucket', () => {
+      testAll(async (repoBuilder) => {
+        const componentDesc = {
+          name: 'the-component',
+          title: 'The Component',
+          version: 'v1.2.3',
+          nav: ['nav-one.adoc', 'nav-two.adoc'],
+        }
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('origins')
+        expect(aggregate[0]).not.to.have.property('origin')
+        const origins = aggregate[0].origins
+        expect(origins).to.have.lengthOf(1)
+        expect(origins[0].refname).to.equal('main')
+      })
+    })
+
     describe('should camelCase keys in component descriptor', () => {
       testAll(async (repoBuilder) => {
         const componentDesc = {
@@ -3768,6 +3788,33 @@ describe('aggregateContent()', () => {
           expect(pageTwo.src.fileUri).to.equal(expectedPageTwoFileUri)
         }
       }, 2)
+    })
+
+    describe('should add all origins to origins property on component version bucket', () => {
+      testAll(async (repoBuilder) => {
+        const componentDesc = { name: 'the-component', version: 'v1.2.3' }
+        await repoBuilder
+          .init(componentDesc.name)
+          .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
+          .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-one.adoc'))
+          .then(() => repoBuilder.createTag('v1.2.3'))
+          .then(() => repoBuilder.checkoutBranch('v1.2.3-extra'))
+          .then(() => repoBuilder.removeFromWorktree('modules/ROOT/pages/page-one.adoc'))
+          .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
+          .then(() => repoBuilder.close('main'))
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'v1.2.3-extra', tags: 'v1.2.3' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include(componentDesc)
+        expect(aggregate[0].files).to.have.lengthOf(2)
+        expect(aggregate[0]).to.have.property('origins')
+        expect(aggregate[0]).not.to.have.property('origin')
+        const origins = aggregate[0].origins
+        expect(origins).to.have.lengthOf(2)
+        origins.sort((a, b) => a.refname.localeCompare(b.refname))
+        expect(origins[0].refname).to.equal('v1.2.3')
+        expect(origins[1].refname).to.equal('v1.2.3-extra')
+      })
     })
 
     describe('should load all repositories when number of repositories exceeds fetch concurrency', () => {
