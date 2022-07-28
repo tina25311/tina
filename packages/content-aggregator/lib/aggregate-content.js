@@ -159,8 +159,9 @@ function buildAggregate (componentVersionBuckets) {
         const key = batch.version + '@' + batch.name
         const entry = accum.get(key)
         if (!entry) return accum.set(key, batch)
-        const files = batch.files
+        const { files, origins } = batch
         ;(batch.files = entry.files).push(...files)
+        ;(batch.origins = entry.origins).push(origins[0])
         Object.assign(entry, batch)
         return accum
       }, new Map())
@@ -421,10 +422,11 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
     worktreePath ? readFilesFromWorktree(worktreePath, startPath) : readFilesFromGitTree(repo, ref.oid, startPath)
   )
     .then((files) => {
-      const componentVersionBucket = loadComponentDescriptor(files, ref, version)
       const origin = computeOrigin(originUrl, authStatus, repo.gitdir, ref, startPath, worktreePath, editUrl)
-      componentVersionBucket.files = files.map((file) => assignFileProperties(file, origin))
-      return componentVersionBucket
+      return Object.assign(loadComponentDescriptor(files, ref, version), {
+        files: files.map((file) => assignFileProperties(file, origin)),
+        origins: [origin],
+      })
     })
     .catch((err) => {
       const msg = err.message
