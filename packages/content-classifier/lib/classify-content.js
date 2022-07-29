@@ -131,11 +131,12 @@ function getNavInfo (filepath, nav) {
   if (~index) return { index }
 }
 
-function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc }) {
+function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc, origins = [] }) {
   const scopedAttributes = (asciidoc || {}).attributes
   if (scopedAttributes) {
     const initial = siteAsciiDocConfig.attributes
-    const attributes = collateAsciiDocAttributes(scopedAttributes, { initial, merge: true })
+    const mdc = { file: { path: 'antora.yml', origin: origins[origins.length - 1] } }
+    const attributes = collateAsciiDocAttributes(scopedAttributes, { initial, mdc, merge: true })
     if (attributes !== initial) siteAsciiDocConfig = Object.assign({}, siteAsciiDocConfig, { attributes })
   }
   return siteAsciiDocConfig

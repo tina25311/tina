@@ -656,14 +656,159 @@ describe('classifyContent()', () => {
       const asciidocConfig = componentVersions[0].asciidoc
       expect(asciidocConfig).to.exist()
       expect(asciidocConfig).to.have.property('attributes')
-      expect(asciidocConfig.attributes).to.eql({
-        'hard-set': '',
-        'hard-unset': null,
-        'soft-set': 'override',
-        'soft-unset': 'override',
-        'soft-unset-to-soft-set': 'override@',
-        'soft-reset': 'bar@',
+      expect(Object.entries(asciidocConfig.attributes)).to.have.deep.ordered.members([
+        ['hard-set', ''],
+        ['hard-unset', null],
+        ['soft-set', 'override'],
+        ['soft-unset', 'override'],
+        ['soft-unset-to-soft-set', 'override@'],
+        ['soft-reset', 'bar@'],
+      ])
+    })
+
+    it('should resolve attribute references in attribute value defined in component descriptor', () => {
+      const siteAsciiDocConfig = {
+        attributes: {
+          'site-title': 'Docs',
+          org: 'ACME',
+          division: 'Explosives',
+          'hard-unset': null,
+          sectanchors: false,
+          sectlinks: '@',
+          idseparator: '-@',
+        },
+      }
+
+      aggregate[0].asciidoc = {
+        attributes: {
+          'project-title': '{site-title} :: Project Name',
+          'product-dept': '{org} :: {division}',
+          toc: '{hard-unset}',
+          sectlinks: '{sectanchors}',
+          'title-separator': '{idseparator}',
+          toclevels: 3,
+        },
+      }
+
+      const contentCatalog = classifyContent(playbook, aggregate, siteAsciiDocConfig)
+      const component = contentCatalog.getComponent('the-component')
+      expect(component).to.exist()
+      const componentVersions = component.versions
+      expect(componentVersions).to.have.lengthOf(1)
+      const asciidocConfig = componentVersions[0].asciidoc
+      expect(asciidocConfig).to.exist()
+      expect(asciidocConfig).to.have.property('attributes')
+      expect(Object.entries(asciidocConfig.attributes)).to.have.deep.ordered.members([
+        ['site-title', 'Docs'],
+        ['org', 'ACME'],
+        ['division', 'Explosives'],
+        ['hard-unset', null],
+        ['sectanchors', false],
+        ['sectlinks', false],
+        ['idseparator', '-@'],
+        ['project-title', 'Docs :: Project Name'],
+        ['product-dept', 'ACME :: Explosives'],
+        ['toc', null],
+        ['title-separator', '-'],
+        ['toclevels', 3],
+      ])
+    })
+
+    it('should skip attribute references to unknown or unset attribute', () => {
+      const siteAsciiDocConfig = {
+        attributes: {
+          'attribute-missing': 'warn',
+          'site-title': 'Docs',
+          'hard-unset': null,
+          'soft-unset': false,
+        },
+      }
+
+      Object.assign(aggregate[0], {
+        asciidoc: {
+          attributes: {
+            'project-title': '{unknown} :: Project Name',
+            'product-dept': '{hard-unset} :: {soft-unset}',
+          },
+        },
+        origins: [{ url: 'https://githost/repo.git', startPath: 'docs', branch: 'v1.2.3' }],
       })
+
+      const { messages, returnValue: contentCatalog } = captureLogSync(() =>
+        classifyContent(playbook, aggregate, siteAsciiDocConfig)
+      ).withReturnValue()
+      const component = contentCatalog.getComponent('the-component')
+      expect(component).to.exist()
+      const componentVersions = component.versions
+      expect(componentVersions).to.have.lengthOf(1)
+      const asciidocConfig = componentVersions[0].asciidoc
+      expect(asciidocConfig).to.exist()
+      expect(asciidocConfig).to.have.property('attributes')
+      expect(Object.entries(asciidocConfig.attributes)).to.have.deep.ordered.members([
+        ['attribute-missing', 'warn'],
+        ['site-title', 'Docs'],
+        ['hard-unset', null],
+        ['soft-unset', false],
+        ['project-title', '{unknown} :: Project Name'],
+        ['product-dept', '{hard-unset} :: {soft-unset}'],
+      ])
+      expect(messages).to.have.lengthOf(3)
+      const baseMessage = {
+        level: 'warn',
+        name: '@antora/asciidoc-loader',
+        file: { path: 'docs/antora.yml' },
+        source: {
+          startPath: 'docs',
+          url: 'https://githost/repo.git',
+        },
+      }
+      expect(messages[0]).to.eql(
+        Object.assign({}, baseMessage, {
+          msg: "Skipping reference to missing attribute 'unknown' in value of 'project-title' attribute",
+        })
+      )
+      expect(messages[1]).to.eql(
+        Object.assign({}, baseMessage, {
+          msg: "Skipping reference to missing attribute 'hard-unset' in value of 'product-dept' attribute",
+        })
+      )
+      expect(messages[2]).to.eql(
+        Object.assign({}, baseMessage, {
+          msg: "Skipping reference to missing attribute 'soft-unset' in value of 'product-dept' attribute",
+        })
+      )
+    })
+
+    it('should not warn if attribute is missing if attribute-missing attribute is not warn', () => {
+      const siteAsciiDocConfig = {
+        attributes: {
+          'site-title': 'Docs',
+        },
+      }
+
+      Object.assign(aggregate[0], {
+        asciidoc: {
+          attributes: {
+            'project-title': '{site-title} :: {project-name}',
+          },
+        },
+      })
+
+      const { messages, returnValue: contentCatalog } = captureLogSync(() =>
+        classifyContent(playbook, aggregate, siteAsciiDocConfig)
+      ).withReturnValue()
+      const component = contentCatalog.getComponent('the-component')
+      expect(component).to.exist()
+      const componentVersions = component.versions
+      expect(componentVersions).to.have.lengthOf(1)
+      const asciidocConfig = componentVersions[0].asciidoc
+      expect(asciidocConfig).to.exist()
+      expect(asciidocConfig).to.have.property('attributes')
+      expect(Object.entries(asciidocConfig.attributes)).to.have.deep.ordered.members([
+        ['site-title', 'Docs'],
+        ['project-title', 'Docs :: {project-name}'],
+      ])
+      expect(messages).to.be.empty()
     })
   })
 
