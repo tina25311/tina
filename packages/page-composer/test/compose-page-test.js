@@ -410,7 +410,7 @@ describe('createPageComposer()', () => {
       expect(messages[0]).to.eql({
         level: 'warn',
         name: '@antora/page-composer',
-        msg: "page layout 'does-not-exist' specified by page not found; using default layout",
+        msg: 'Page layout specified by page not found: does-not-exist (reverting to default layout)',
         file: {
           path: 'docs/modules/ROOT/pages/the-page.adoc',
         },

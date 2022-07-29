@@ -11,6 +11,10 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Add `origins` property containing unique origin objects to each entry in content aggregate (#978)
 
+=== Fixed
+
+* *page-composer*: Make warning message about missing page layout consistent with other log messages
+
 == 3.0.3 (2022-07-20)
 
 === Changed

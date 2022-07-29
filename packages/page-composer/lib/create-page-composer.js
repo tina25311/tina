@@ -87,7 +87,11 @@ function createPageComposerInternal (baseUiModel, layouts) {
       } else if (!layouts.has(defaultLayout)) {
         throw new Error(`Neither ${layout} layout or fallback ${defaultLayout} layout found`)
       }
-      logger.warn({ file: file.src }, "page layout '%s' specified by page not found; using default layout", layout)
+      logger.warn(
+        { file: file.src },
+        'Page layout specified by page not found: %s (reverting to default layout)',
+        layout
+      )
       layout = defaultLayout
     }
     // QUESTION should we call trim() on result?
