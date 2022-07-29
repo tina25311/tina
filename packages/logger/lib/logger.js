@@ -168,7 +168,7 @@ function moderateDestination (dest) {
   }
 }
 
-function reshapeErrorForLog (err, msg, prettyPrint, serialize) {
+function reshapeErrorForLog (err, msg, prettyPrint) {
   const { name, message } = err
   let stack
   if ({}.propertyIsEnumerable.call(err, 'name')) Object.defineProperty(err, 'name', { enumerable: false })
