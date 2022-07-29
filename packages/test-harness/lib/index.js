@@ -190,7 +190,7 @@ module.exports = {
   posixify: ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined,
   RepositoryBuilder,
   spy: chai.spy,
-  toJSON: (obj) => JSON.stringify(obj, undefined, '  '),
+  toJSON: (obj) => JSON.stringify(obj, null, 2),
   trapAsyncError: (fn, ...args) =>
     fn(...args).then(
       (returnValue) => () => returnValue,
