@@ -117,7 +117,7 @@ describe('generateSite()', () => {
 
   it('should generate site into output directory specified in playbook file', async () => {
     playbookSpec.site.start_page = '2.0@the-component::index.adoc'
-    playbookSpec.site.keys = { google_analytics: 'UA-XXXXXXXX-1' }
+    playbookSpec.site.keys = { 'google-analytics': 'UA-XXXXXXXX-1' }
     fs.writeFileSync(playbookFile, toJSON(playbookSpec))
     await generateSite(getPlaybook(playbookFile))
     expect(ospath.join(absDestDir, '_')).to.be.a.directory().with.subDirs.with.members(['css', 'js', 'font', 'img'])
@@ -167,6 +167,7 @@ describe('generateSite()', () => {
 
   it('should bootstrap playbook and manage logger if first argument is an array', async () => {
     playbookSpec.site.start_page = 'the-component::no-such-page.adoc'
+    playbookSpec.site.keys = { google_analytics: 'UA-XXXXXXXX-1' }
     const logRelpath = '.' + ospath.sep + destDir + ospath.sep + 'antora.log'
     const logPath = ospath.join(playbookFile, '..', destDir, 'antora.log')
     playbookSpec.runtime.log = { destination: { file: logRelpath, sync: false, buffer_size: 4096 } }
@@ -187,6 +188,11 @@ describe('generateSite()', () => {
     expect(getLogger(null)).to.have.property('closed', true)
     expect(ospath.join(absDestDir, '_')).to.be.a.directory().with.subDirs.with.members(['css', 'js', 'font', 'img'])
     expect(ospath.join(absDestDir, 'the-component')).to.be.a.directory().with.subDirs(['2.0'])
+    $ = loadHtmlFile('the-component/2.0/index.html')
+    expect($('head > script:first-of-type')).to.have.attr(
+      'src',
+      'https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXX-1'
+    )
   })
 
   it('should bootstrap playbook with env if first argument is an array and second argument is an object', async () => {
