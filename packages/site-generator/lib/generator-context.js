@@ -10,15 +10,15 @@ const FUNCTION_PROVIDERS = {
   buildNavigation: 'navigation-builder', // dynamic require('@antora/navigation-builder')
   classifyContent: 'content-classifier', // dynamic require('@antora/content-classifier')
   convertDocument: 'document-converter', // dynamic require('@antora/document-converter')
-  convertDocuments: 'document-converter',
+  convertDocuments: 'document-converter', // dynamic require('@antora/document-converter')
   createPageComposer: 'page-composer', // dynamic require('@antora/page-composer')
   extractAsciiDocMetadata: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
-  loadAsciiDoc: 'asciidoc-loader',
+  loadAsciiDoc: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
   loadUi: 'ui-loader', // dynamic require('@antora/ui-loader')
   mapSite: 'site-mapper', // dynamic require('@antora/site-mapper')
   produceRedirects: 'redirect-producer', // dynamic require('@antora/redirect-producer')
   publishFiles: 'file-publisher', // dynamic require('@antora/file-publisher')
-  resolveAsciiDocConfig: 'asciidoc-loader',
+  resolveAsciiDocConfig: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
 }
 
 const FUNCTION_WITH_POSITIONAL_PARAMETER_RX = /^(?:function *)?(?:\w+ *)?\( *\w|^\w+(?: *, *\w+)* *=>/
