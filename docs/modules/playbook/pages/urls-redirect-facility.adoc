@@ -8,7 +8,9 @@
 Antora sets up automatic routing for start pages, symbolic latest versions, and page aliases according to the redirect facility you have specified.
 
 By default, Antora generates a static HTML file for each URL alias to redirect the visitor to the target page.
-Antora also has the ability to generate web server-specific configuration files that leverage the web server's rewrite facility to handle the routing instead.
+Antora also has the ability to generate web server-specific configuration files that leverage the web server's redirect/rewrite facility to handle the routing instead.
+
+IMPORTANT: Antora won't generate any redirect files (e.g., [.path]_++_redirects++_) if the site does not define any redirects.
 
 Antora derives these URL routes from the site and component version start pages, latest version aliases, and xref:page:page-aliases.adoc[page aliases] defined using the `page-aliases` attribute.
 For page aliases, the xref:page:page-aliases.adoc#target-page[target page] is the page to which the source page is redirected.
@@ -22,7 +24,8 @@ The playbook key `redirect_facility` is optional.
 It can be configured in the playbook or via the xref:cli:options.adoc#redirect-facility[CLI] and accepts one of the following built-in values:
 
 disabled::
-No redirect file are generated.
+No redirect files are generated.
+If the site does not define any redirects, this becomes the effective value.
 gitlab::
 A redirect file for GitLab Pages named [.path]_++_redirects++_ is generated and placed at the root of the published site.
 httpd::
@@ -69,7 +72,7 @@ If you have specified a start page for your site, this will include a [.path]_in
 
 If you use any other redirect facility, Antora will not generate these bounce pages.
 (In other words, don't expect to find the [.path]_index.html_ page at the root of your published site).
-Instead, Antora relies on the web server to apply the rewrite rules that it generates.
+Instead, Antora relies on the web server to apply the redirect rules that it generates.
 For details about these rules and where they are written, see the sections below.
 
 Redirect rules for start pages and page aliases are defined using the 301 HTTP status code, which means the redirect is considered permanent.

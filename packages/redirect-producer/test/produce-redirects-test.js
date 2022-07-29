@@ -28,7 +28,7 @@ describe('produceRedirects()', () => {
     contentCatalog.findBy({ family: 'alias' }).forEach((file) => (file.rel = targetPage))
   })
 
-  it('should run on all files in the alias family', () => {
+  it('should return an empty array of redirect files if no files are found in the alias family', () => {
     const emptyContentCatalog = mockContentCatalog().spyOn('findBy')
     const result = produceRedirects(playbook, emptyContentCatalog)
     expect(result).to.be.empty()
