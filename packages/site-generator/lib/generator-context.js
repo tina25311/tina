@@ -6,19 +6,19 @@ const noopNotify = async function notify () {}
 const userRequire = require('@antora/user-require-helper')
 
 const FUNCTION_PROVIDERS = {
+  loadAsciiDoc: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
+  extractAsciiDocMetadata: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
+  resolveAsciiDocConfig: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
   aggregateContent: 'content-aggregator', // dynamic require('@antora/content-aggregator')
-  buildNavigation: 'navigation-builder', // dynamic require('@antora/navigation-builder')
+  loadUi: 'ui-loader', // dynamic require('@antora/ui-loader')
   classifyContent: 'content-classifier', // dynamic require('@antora/content-classifier')
   convertDocument: 'document-converter', // dynamic require('@antora/document-converter')
   convertDocuments: 'document-converter', // dynamic require('@antora/document-converter')
+  buildNavigation: 'navigation-builder', // dynamic require('@antora/navigation-builder')
   createPageComposer: 'page-composer', // dynamic require('@antora/page-composer')
-  extractAsciiDocMetadata: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
-  loadAsciiDoc: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
-  loadUi: 'ui-loader', // dynamic require('@antora/ui-loader')
-  mapSite: 'site-mapper', // dynamic require('@antora/site-mapper')
   produceRedirects: 'redirect-producer', // dynamic require('@antora/redirect-producer')
+  mapSite: 'site-mapper', // dynamic require('@antora/site-mapper')
   publishFiles: 'file-publisher', // dynamic require('@antora/file-publisher')
-  resolveAsciiDocConfig: 'asciidoc-loader', // dynamic require('@antora/asciidoc-loader')
 }
 
 const FUNCTION_WITH_POSITIONAL_PARAMETER_RX = /^(?:function *)?(?:\w+ *)?\( *\w|^\w+(?: *, *\w+)* *=>/
