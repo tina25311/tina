@@ -3,6 +3,7 @@
 const Asciidoctor = require('@asciidoctor/core')()
 const { Extensions, LoggerManager, NullLogger } = Asciidoctor
 const Opal = global.Opal
+const collateAsciiDocAttributes = require('./util/collate-asciidoc-attributes')
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
 const LoggerAdapter = require('./logger/adapter')
@@ -165,9 +166,8 @@ function resolveAsciiDocConfig (playbook = {}) {
     if (site.url) attributes['site-url'] = site.url
   }
   if (!playbook.asciidoc) return { attributes }
-  // TODO process !name attributes
   const { extensions, ...config } = Object.assign({}, playbook.asciidoc, {
-    attributes: Object.assign(attributes, playbook.asciidoc.attributes),
+    attributes: collateAsciiDocAttributes(playbook.asciidoc.attributes, { initial: attributes }),
   })
   if (extensions && extensions.length) {
     const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || '', __dirname] }

@@ -1,6 +1,7 @@
 'use strict'
 
 const ContentCatalog = require('./content-catalog')
+const collateAsciiDocAttributes = require('@antora/asciidoc-loader/lib/util/collate-asciidoc-attributes')
 
 /**
  * Organizes the raw aggregate of virtual files into a {ContentCatalog}.
@@ -133,26 +134,11 @@ function getNavInfo (filepath, nav) {
 function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc }) {
   const scopedAttributes = (asciidoc || {}).attributes
   if (scopedAttributes) {
-    const siteAttributes = siteAsciiDocConfig.attributes
-    if (siteAttributes) {
-      const attributes = Object.keys(scopedAttributes).reduce((accum, name) => {
-        if (name in siteAttributes) {
-          const currentVal = siteAttributes[name]
-          if (currentVal === false || String(currentVal).endsWith('@')) accum[name] = scopedAttributes[name]
-        } else {
-          accum[name] = scopedAttributes[name]
-        }
-        return accum
-      }, {})
-      return Object.keys(attributes).length
-        ? Object.assign({}, siteAsciiDocConfig, { attributes: Object.assign({}, siteAttributes, attributes) })
-        : siteAsciiDocConfig
-    } else {
-      return Object.assign({}, siteAsciiDocConfig, { attributes: scopedAttributes })
-    }
-  } else {
-    return siteAsciiDocConfig
+    const initial = siteAsciiDocConfig.attributes
+    const attributes = collateAsciiDocAttributes(scopedAttributes, { initial, merge: true })
+    if (attributes !== initial) siteAsciiDocConfig = Object.assign({}, siteAsciiDocConfig, { attributes })
   }
+  return siteAsciiDocConfig
 }
 
 function calculateRootPath (depth) {
