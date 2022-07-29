@@ -166,8 +166,9 @@ function resolveAsciiDocConfig (playbook = {}) {
     if (site.url) attributes['site-url'] = site.url
   }
   if (!playbook.asciidoc) return { attributes }
+  const mdc = { file: { path: playbook.file } }
   const { extensions, ...config } = Object.assign({}, playbook.asciidoc, {
-    attributes: collateAsciiDocAttributes(playbook.asciidoc.attributes, { initial: attributes }),
+    attributes: collateAsciiDocAttributes(playbook.asciidoc.attributes, { initial: attributes, mdc }),
   })
   if (extensions && extensions.length) {
     const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || '', __dirname] }
