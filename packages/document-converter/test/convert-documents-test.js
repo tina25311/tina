@@ -392,7 +392,7 @@ describe('convertDocuments()', () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'here.adoc',
-        contents: contents,
+        contents,
         mediaType: 'text/asciidoc',
       },
     ])
@@ -408,7 +408,7 @@ describe('convertDocuments()', () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'here.adoc',
-        contents: contents,
+        contents,
         mediaType: 'text/asciidoc',
       },
     ])
@@ -427,7 +427,7 @@ describe('convertDocuments()', () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'here.adoc',
-        contents: contents,
+        contents,
         mediaType: 'text/asciidoc',
       },
     ])
@@ -444,7 +444,7 @@ describe('convertDocuments()', () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'here.adoc',
-        contents: contents,
+        contents,
         mediaType: 'text/asciidoc',
       },
     ])
@@ -462,7 +462,7 @@ describe('convertDocuments()', () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'here.adoc',
-        contents: contents,
+        contents,
         mediaType: 'text/asciidoc',
       },
     ])
