@@ -6,8 +6,9 @@ const ospath = require('path')
 const { posix: path } = ospath
 const {
   levels: { labels: levelLabels, values: levelValues },
-  symbols: { serializersSym: $serializers, streamSym: $stream },
+  symbols: { streamSym: $stream },
   pino,
+  stdSerializers: { err: defaultErrSerializer },
 } = require('pino')
 const { default: pinoPretty, prettyFactory } = require('pino-pretty')
 const SonicBoom = require('sonic-boom')
@@ -18,6 +19,10 @@ const INF = Infinity
 const minLevel = levelLabels[Math.min.apply(null, Object.keys(levelLabels))]
 const noopLogger = pino({ base: null, enabled: false, timestamp: false }, {})
 const rootLoggerHolder = new Map()
+const errSerializer = (err) => {
+  if (!(err = defaultErrSerializer(err)).message) delete err.message
+  return err
+}
 const standardStreams = { 1: 1, 2: 2, stderr: 2, stdout: 1 }
 
 function close () {
@@ -61,7 +66,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
         logMethod (args, method) {
           const arg0 = args[0]
           if (arg0 instanceof Error) {
-            reshapeErrorForLog(arg0, args[1], prettyPrint && this[$serializers].err).forEach((v, i) => (args[i] = v))
+            reshapeErrorForLog(arg0, args[1], prettyPrint && errSerializer).forEach((v, i) => (args[i] = v))
           } else if (arg0.constructor === Object && typeof arg0.file === 'object') {
             const { file, line, stack, ...obj } = arg0
             args[0] = Object.assign(obj, reshapeFileForLog(arg0)) // NOTE assume file key is a file.src object
@@ -69,6 +74,7 @@ function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent'
           method.apply(this, args)
         },
       },
+      serializers: { err: errSerializer },
     }
     close()
     prettyPrint

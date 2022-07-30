@@ -17,8 +17,8 @@ async function formatAll (dirs, ignores, cwd = process.cwd()) {
         const filePath = ospath.join(absdir, name)
         if (!~ignores.indexOf(filePath)) {
           result.push(
-            await fsp.readFile(filePath, 'utf8').then((text) => {
-              const formatted = format({ text, filePath })
+            await fsp.readFile(filePath, 'utf8').then(async (text) => {
+              const formatted = await format({ text, filePath })
               return formatted === text ? false : fsp.writeFile(filePath, formatted).then(() => true)
             })
           )

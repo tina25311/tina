@@ -152,7 +152,7 @@ cli.command('help [command]', { hidden: true }).action((name, options, command) 
       helpCommand.help()
     } else {
       const message = `error: unknown command '${name}'. See '${cli.name()} --help' for a list of commands.`
-      cli._displayError(1, 'commander.unknownCommand', message)
+      cli.error(message, { code: 'commander.unknownCommand', exitCode: 1 })
     }
   } else {
     cli.help()

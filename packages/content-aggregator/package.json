@@ -22,8 +22,8 @@
     "braces": "~3.0",
     "cache-directory": "~2.0",
     "glob-stream": "~7.0",
-    "hpagent": "~0.1.0",
-    "isomorphic-git": "~1.10",
+    "hpagent": "~1.0",
+    "isomorphic-git": "~1.18",
     "js-yaml": "~4.1",
     "multi-progress": "~4.0",
     "picomatch": "~2.3",
@@ -33,7 +33,7 @@
     "vinyl": "~2.2"
   },
   "engines": {
-    "node": ">=12.21.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "lib/"
