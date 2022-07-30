@@ -362,7 +362,7 @@ describe('buildPlaybook()', () => {
 
   it('should coerce primitive map value in env', () => {
     schema.keyvals.format = 'primitive-map'
-    const val = 'key=val,key-only,=valonly,empty=,tilde="~",site_tags="a,b,c",nada=~,y=true,n=false,when=2020-01-01'
+    const val = 'key=val,key-only,=val,empty=,tilde="~",the_tags="a,b,c",_s-lvl=0,nada=~,y=true,n=false,when=2020-01-01'
     const env = { PLAYBOOK: ymlSpec, KEYVALS: val }
     const playbook = buildPlaybook([], env, schema)
     expect(playbook.keyvals).to.eql({
@@ -370,7 +370,8 @@ describe('buildPlaybook()', () => {
       keyOnly: '',
       empty: '',
       tilde: '~',
-      siteTags: 'a,b,c',
+      theTags: 'a,b,c',
+      sLvl: 0,
       nada: null,
       y: true,
       n: false,
@@ -387,13 +388,15 @@ describe('buildPlaybook()', () => {
         '--keyval',
         'key-only',
         '--keyval',
-        '=valonly',
+        '=val',
         '--keyval',
         'empty=',
         '--keyval',
         'tilde="~"',
         '--keyval',
-        'site_tags="a,b,c"',
+        'the_tags="a,b,c"',
+        '--keyval',
+        '_s-lvl=0',
         '--keyval',
         'nada=~',
         '--keyval',
@@ -411,7 +414,8 @@ describe('buildPlaybook()', () => {
       keyOnly: '',
       empty: '',
       tilde: '~',
-      siteTags: 'a,b,c',
+      theTags: 'a,b,c',
+      sLvl: 0,
       nada: null,
       y: true,
       n: false,
@@ -461,7 +465,7 @@ describe('buildPlaybook()', () => {
   })
 
   it('should coerce map value in env', () => {
-    const val = 'key=val,key-only,=valonly,empty=,tilde="~",site_tags="a,b,c",nada=~,y=true,n=false'
+    const val = 'key=val,key_only,=valonly,empty=,tilde="~",site_tags="a,b,c",foo-bar=baz,nada=~,y=true,n=false'
     const env = { PLAYBOOK: ymlSpec, KEYVALS: val }
     const playbook = buildPlaybook([], env, schema)
     expect(playbook.keyvals).to.eql({
@@ -470,6 +474,7 @@ describe('buildPlaybook()', () => {
       empty: '',
       tilde: '~',
       siteTags: 'a,b,c',
+      fooBar: 'baz',
       nada: null,
       y: true,
       n: false,
@@ -482,7 +487,7 @@ describe('buildPlaybook()', () => {
         '--keyval',
         'key=val',
         '--keyval',
-        'key-only',
+        'key_only',
         '--keyval',
         '=valonly',
         '--keyval',
@@ -491,6 +496,8 @@ describe('buildPlaybook()', () => {
         'tilde="~"',
         '--keyval',
         'site_tags="a,b,c"',
+        '--keyval',
+        'foo-bar=baz',
         '--keyval',
         'nada=~',
         '--keyval',
@@ -507,6 +514,7 @@ describe('buildPlaybook()', () => {
       empty: '',
       tilde: '~',
       siteTags: 'a,b,c',
+      fooBar: 'baz',
       nada: null,
       y: true,
       n: false,
@@ -634,7 +642,7 @@ describe('buildPlaybook()', () => {
       },
     }
     const playbook = buildPlaybook([], { PLAYBOOK: preserveAllKeysSpec }, schema)
-    expect(playbook.keyvals).to.eql({ 'foo-bar': 'testing', 'yin-yang': 'zen' })
+    expect(playbook.keyvals).to.eql({ foo_bar: 'testing', 'yin-yang': 'zen' })
   })
 
   it('should preserve case of keys in map in entry if preserve is true', () => {
@@ -655,10 +663,12 @@ describe('buildPlaybook()', () => {
       },
     }
     const playbook = buildPlaybook([], { PLAYBOOK: preserveSpecifiedKeysSpec }, schema)
-    expect(playbook.keyvals).to.eql({ fooBar: 'testing', yinYang: 'zen' })
+    expect(playbook.keyvals).to.eql({ fooBar: 'testing', yinYang: 'zen', camelCaseThis: 'val' })
     const entry = playbook.entries[0]
-    expect(entry.data).to.eql({ 'foo-bar': 'baz', 'yin-yang': 'zen' })
-    expect(entry['not-data']).to.eql({ 'foo-bar': 'baz', 'yin-yang': 'zen' })
+    expect(entry.data).to.eql({ foo_bar: 'baz', 'yin-yang': 'zen' })
+    expect(entry).to.have.property('not_data')
+    expect(entry).not.to.have.property('notData')
+    expect(entry.not_data).to.eql({ foo_bar: 'baz', 'yin-yang': 'zen' })
   })
 
   it('should preserve case of keys in entries specified by preserve', () => {
@@ -680,8 +690,8 @@ describe('buildPlaybook()', () => {
     }
     const playbook = buildPlaybook([], { PLAYBOOK: preserveSpecifiedKeysSpec }, schema)
     const entry = playbook.entries[0]
-    expect(playbook.keyvals).to.eql({ fooBar: 'testing', yinYang: 'zen' })
-    expect(entry.data).to.eql({ 'foo-bar': 'baz', 'yin-yang': 'zen' })
+    expect(playbook.keyvals).to.eql({ fooBar: 'testing', yinYang: 'zen', camelCaseThis: 'val' })
+    expect(entry.data).to.eql({ foo_bar: 'baz', 'yin-yang': 'zen' })
     expect(entry.notData).to.eql({ fooBar: 'baz', yinYang: 'zen' })
   })
 
@@ -705,8 +715,8 @@ describe('buildPlaybook()', () => {
     }
     const playbook = buildPlaybook([], { PLAYBOOK: preserveSpecifiedKeysSpec }, schema)
     const entry = playbook.entries[0]
-    expect(playbook.keyvals).to.eql({ 'foo-bar': 'testing', 'yin-yang': 'zen' })
-    expect(entry.data).to.eql({ 'foo-bar': 'baz', 'yin-yang': 'zen' })
+    expect(playbook.keyvals).to.eql({ foo_bar: 'testing', 'yin-yang': 'zen', '_camel-case-THIS': 'val' })
+    expect(entry.data).to.eql({ foo_bar: 'baz', 'yin-yang': 'zen' })
     expect(entry.notData).to.eql({ fooBar: 'baz', yinYang: 'zen' })
   })
 

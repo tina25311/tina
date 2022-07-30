@@ -1,6 +1,5 @@
 'use strict'
 
-const camelCaseKeys = require('camelcase-keys')
 const { createHash } = require('crypto')
 const createGitHttpPlugin = require('./git-plugin-http')
 const decodeUint8Array = require('./decode-uint8-array')
@@ -693,7 +692,7 @@ function loadComponentDescriptor (files, ref, version) {
     throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
   }
   data.version = version
-  return camelCaseKeys(data, { deep: true, stopPaths: ['asciidoc'] })
+  return camelCaseKeys(data, ['asciidoc'])
 }
 
 function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = undefined, editUrl = true) {
@@ -1003,6 +1002,18 @@ function transformGitCloneError (err, displayUrl) {
 
 function splitRefPatterns (str) {
   return ~str.indexOf('{') ? str.split(VENTILATED_CSV_RX) : str.split(CSV_RX)
+}
+
+function camelCaseKeys (o, stopPaths = [], p = '') {
+  if (Array.isArray(o)) return o.map((it) => camelCaseKeys(it, stopPaths, p))
+  if (o == null || o.constructor !== Object) return o
+  const pathPrefix = p && p + '.'
+  const accum = {}
+  for (const [k, v] of Object.entries(o)) {
+    const camelKey = k.toLowerCase().replace(/[_-]([a-z0-9])/g, (_, l, idx) => (idx ? l.toUpperCase() : l))
+    accum[camelKey] = ~stopPaths.indexOf(pathPrefix + camelKey) ? v : camelCaseKeys(v, stopPaths, pathPrefix + camelKey)
+  }
+  return accum
 }
 
 function coerceToString (value) {
