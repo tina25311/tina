@@ -14,6 +14,13 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "imports": {
+    "#commander": "./lib/commander.js"
+  },
   "bin": {
     "antora": "bin/antora"
   },

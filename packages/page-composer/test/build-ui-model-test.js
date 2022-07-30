@@ -8,7 +8,7 @@ const {
   buildPageUiModel,
   buildSiteUiModel,
   buildUiModel,
-} = require('@antora/page-composer/lib/build-ui-model')
+} = require('@antora/page-composer/build-ui-model')
 const { version: VERSION } = require('@antora/page-composer/package.json')
 
 describe('build UI model', () => {

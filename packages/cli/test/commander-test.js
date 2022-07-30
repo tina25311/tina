@@ -3,8 +3,7 @@
 
 const { expect } = require('@antora/test-harness')
 
-const { Command } = require('commander')
-require('@antora/cli/lib/commander/options-from-convict')
+const { Command } = require('#commander')
 const convict = require('convict')
 
 describe('commander', () => {

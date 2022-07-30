@@ -2,7 +2,7 @@
 
 const { promises: fsp } = require('fs')
 const { sep: FILE_SEPARATOR } = require('path')
-const builtinModules = require('module').builtinModules.filter((it) => !it.startsWith('_'))
+const builtinModules = require('module').builtinModules.filter((it) => it.charAt() !== '_')
 
 ;(async () => {
   for await (const { name: packageName } of await fsp.opendir('packages')) {
@@ -38,7 +38,9 @@ const builtinModules = require('module').builtinModules.filter((it) => !it.start
       const runtimeDeps = scope === 'lib' ? prodDeps : deps
       const uniqueRequests = [...new Set(requests)]
       for (const request of uniqueRequests) {
-        if (!~runtimeDeps.indexOf(request)) reportError(`missing ${request} in ${pkg.name} (${scope})`)
+        if (request.charAt() !== '#' && !~runtimeDeps.indexOf(request)) {
+          reportError(`missing ${request} in ${pkg.name} (${scope})`)
+        }
       }
       const scopedDeps = scope === 'lib' ? prodDeps : devDeps
       const unused = scopedDeps.reduce((accum, dep) => {

@@ -3,6 +3,11 @@
   "name": "@antora/test-harness",
   "version": "3.0.3",
   "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./mocha/*": "./lib/mocha/*.js",
+    "./package.json": "./package.json"
+  },
   "dependencies": {
     "chai": "~4.3",
     "chai-fs": "~2.0",

@@ -3,7 +3,7 @@
 
 const { expect } = require('@antora/test-harness')
 
-const computeRelativeUrlPath = require('@antora/asciidoc-loader/lib/util/compute-relative-url-path')
+const computeRelativeUrlPath = require('@antora/asciidoc-loader/util/compute-relative-url-path')
 
 describe('computeRelativeUrlPath()', () => {
   describe('file paths with .html extension', () => {

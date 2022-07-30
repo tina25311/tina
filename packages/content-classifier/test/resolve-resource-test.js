@@ -3,7 +3,7 @@
 
 const { expect, spy } = require('@antora/test-harness')
 
-const resolveResource = require('@antora/content-classifier/lib/util/resolve-resource')
+const resolveResource = require('@antora/content-classifier/util/resolve-resource')
 
 describe('resolveResource', () => {
   const mockContentCatalog = (file, component) => ({

@@ -16,6 +16,12 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./config/collate-asciidoc-attributes": "./lib/config/collate-asciidoc-attributes.js",
+    "./util/compute-relative-url-path": "./lib/util/compute-relative-url-path.js",
+    "./package.json": "./package.json"
+  },
   "dependencies": {
     "@antora/logger": "3.0.3",
     "@antora/user-require-helper": "~2.0",

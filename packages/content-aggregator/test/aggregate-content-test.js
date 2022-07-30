@@ -18,7 +18,7 @@ const {
 } = require('@antora/test-harness')
 
 const aggregateContent = require('@antora/content-aggregator')
-const computeOrigin = aggregateContent._computeOrigin
+const computeOrigin = require('#compute-origin')
 const { createHash } = require('crypto')
 const { execFile } = require('child_process')
 const fs = require('fs')
@@ -31,12 +31,7 @@ const os = require('os')
 const ospath = require('path')
 const { Readable } = require('stream')
 
-const {
-  COMPONENT_DESC_FILENAME,
-  CONTENT_CACHE_FOLDER,
-  GIT_CORE,
-  GIT_OPERATION_LABEL_LENGTH,
-} = require('@antora/content-aggregator/lib/constants')
+const { COMPONENT_DESC_FILENAME, CONTENT_CACHE_FOLDER, GIT_CORE, GIT_OPERATION_LABEL_LENGTH } = require('#constants')
 const CACHE_DIR = getCacheDir('antora-test')
 const CONTENT_CACHE_DIR = ospath.join(CACHE_DIR, CONTENT_CACHE_FOLDER)
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
@@ -5318,7 +5313,7 @@ describe('aggregateContent()', () => {
 
   it('should share cache between git commands', async () => {
     const cacheArgs = new Set()
-    const git = require('isomorphic-git')
+    const git = require('@antora/content-aggregator/git')
     const gitCommands = ['clone', 'readBlob', 'readTree', 'resolveRef'].reduce((accum, name) => {
       git[name] = new Proxy((accum[name] = git[name]), {
         apply (target, self, args) {
@@ -5681,7 +5676,7 @@ describe('aggregateContent()', () => {
       }
       try {
         gitServer.on('fetch', recordFetch)
-        const customHttp = require('@antora/content-aggregator/lib/git-plugin-http')({
+        const customHttp = require('@antora/content-aggregator/git/http-plugin')({
           headers: { 'user-agent': 'git/just-git-it@1.0' },
         })
         RepositoryBuilder.registerPlugin('http', customHttp, GIT_CORE)
@@ -5708,7 +5703,7 @@ describe('aggregateContent()', () => {
       }
       try {
         const pluginSource = heredoc`
-          module.exports = require('@antora/content-aggregator/lib/git-plugin-http')({
+          module.exports = require('@antora/content-aggregator/git/http-plugin')({
             headers: { 'user-agent': 'git/just-git-it@1.0' },
           })
         `
@@ -5763,7 +5758,7 @@ describe('aggregateContent()', () => {
       }
       try {
         const pluginSource = heredoc`
-          module.exports = require('@antora/content-aggregator/lib/git-plugin-http')({
+          module.exports = require('@antora/content-aggregator/git/http-plugin')({
             headers: {
               Authorization: 'Basic ' + Buffer.from('token:').toString('base64'),
               'content-type': 'not-used',
