@@ -1,10 +1,11 @@
 keyvals:
-  foo-bar: testing
+  foo_bar: testing
   yin-yang: zen
+  _camel-case-THIS: val
 entries:
-- not-data:
-    foo-bar: baz
+- not_data:
+    foo_bar: baz
     yin-yang: zen
   data:
-    foo-bar: baz
+    foo_bar: baz
     yin-yang: zen

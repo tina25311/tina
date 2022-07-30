@@ -1,7 +1,6 @@
 'use strict'
 
 const { compile: bracesToGroup } = require('braces')
-const camelCaseKeys = require('camelcase-keys')
 const { createHash } = require('crypto')
 const expandPath = require('@antora/expand-path-helper')
 const { File, MemoryFile, ReadableFile } = require('./file')
@@ -302,7 +301,7 @@ function loadConfig (files, outputDir) {
   const configFile = files.get(UI_DESC_FILENAME)
   if (configFile) {
     files.delete(UI_DESC_FILENAME)
-    const config = camelCaseKeys(yaml.load(configFile.contents.toString()), { deep: true })
+    const config = camelCaseKeys(yaml.load(configFile.contents.toString()))
     const staticFiles = config.staticFiles
     if (staticFiles && staticFiles.length) config.isStaticFile = picomatch(staticFiles, STATIC_FILE_MATCHER_OPTS)
     if (outputDir !== undefined) config.outputDir = outputDir
@@ -310,6 +309,16 @@ function loadConfig (files, outputDir) {
   } else {
     return { outputDir }
   }
+}
+
+function camelCaseKeys (o) {
+  if (Array.isArray(o)) return o.map(camelCaseKeys)
+  if (o == null || o.constructor !== Object) return o
+  const accum = {}
+  for (const [k, v] of Object.entries(o)) {
+    accum[k.toLowerCase().replace(/[_-]([a-z0-9])/g, (_, l, idx) => (idx ? l.toUpperCase() : l))] = camelCaseKeys(v)
+  }
+  return accum
 }
 
 function classifyFile (file, config) {
