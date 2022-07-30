@@ -22,7 +22,7 @@
     "cache-directory": "~2.0",
     "glob-stream": "~7.0",
     "gulp-vinyl-zip": "~2.5",
-    "hpagent": "~0.1.0",
+    "hpagent": "~1.0",
     "js-yaml": "~4.1",
     "picomatch": "~2.3",
     "should-proxy": "~1.0",
@@ -30,7 +30,7 @@
     "vinyl": "~2.2"
   },
   "engines": {
-    "node": ">=12.21.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "lib/"

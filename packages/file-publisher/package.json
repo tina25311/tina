@@ -22,7 +22,7 @@
     "vinyl-fs": "~3.0"
   },
   "engines": {
-    "node": ">=12.21.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "lib/"
