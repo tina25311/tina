@@ -27,7 +27,7 @@ function collectOptions (props, context = undefined) {
       accum.push(...collectOptions(value._cvtProperties, context ? `${context}.${key}` : key))
     } else if ('arg' in value) {
       const { arg, format, default: default_ } = value
-      const option = { name: arg, form: `--${arg}`, description: value.doc, format: format }
+      const option = { name: arg, form: `--${arg}`, description: value.doc, format }
       if (Array.isArray(format)) {
         option.form += ' <choice>'
         option.choices = Object.defineProperty(format.slice(), 'map', { value: () => format })
