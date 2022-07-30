@@ -68,7 +68,7 @@ describe('cli', () => {
     emptyDirSync(CONTENT_REPOS_DIR)
     gitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })
     const gitServerPort = await new Promise((resolve, reject) =>
-      gitServer.listen(0, function (err) {
+      gitServer.listen(0, { type: 'http' }, function (err) {
         err ? reject(err) : resolve(this.address().port)
       })
     )

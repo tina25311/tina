@@ -157,7 +157,7 @@ describe('aggregateContent()', () => {
 
   before(async () => {
     await new Promise((resolve, reject) =>
-      (gitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })).listen(0, function (err) {
+      (gitServer = new GitServer(CONTENT_REPOS_DIR, { autoCreate: false })).listen(0, { type: 'http' }, function (err) {
         err ? reject(err) : resolve((gitServerPort = this.address().port))
       })
     )
