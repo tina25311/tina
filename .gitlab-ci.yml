@@ -95,12 +95,11 @@ test:node-16-linux:
 test:node-18-linux:
   extends: .npm
   image: node:18-$LINUX_DISTRO
-  #<<: *unless_docs_mr
+  <<: *unless_docs_mr
 test:macos:
   extends: .npm
   image: macos-12-xcode-13
   tags: [shared-macos-amd64]
-  <<: *unless_docs_mr
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
 test:windows:
   extends: .npm
