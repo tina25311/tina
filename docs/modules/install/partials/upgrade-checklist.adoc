@@ -1,7 +1,8 @@
 [#checklist]
-== Upgrade checklist
+== Upgrade from Antora 2.3 to Antora {page-component-version} checklist
 // tag::new[]
-Before you upgrade from Antora 2.3 to Antora 3.0, you may need to make some of the following changes to your documentation system.
+*Antora 2.3 is EOL*.
+If you're currently using Antora 2, you may need to make some of the following changes to your documentation system before upgrading to Antora {page-component-version}.
 
 Are you using an active LTS version of Node.js?::
 We recommend upgrading to the {url-node-releases}[latest active long term support (LTS) release of Node].
