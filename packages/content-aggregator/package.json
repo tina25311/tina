@@ -23,7 +23,7 @@
     "cache-directory": "~2.0",
     "glob-stream": "~7.0",
     "hpagent": "~1.0",
-    "isomorphic-git": "~1.18",
+    "isomorphic-git": "~1.13",
     "js-yaml": "~4.1",
     "multi-progress": "~4.0",
     "picomatch": "~2.3",
