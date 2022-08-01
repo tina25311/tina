@@ -86,9 +86,9 @@ As <<github-actions-workflow>> shows, you can install and invoke Antora directly
 This workflow installs a specific release of Antora (both the CLI and site generator packages) and then uses the Antora CLI in the workflow.
 The workflow then uses the peaceiris/actions-gh-pages action to publish the site, along with the required [.path]_.nojekyll_ file, to GitHub Pages.
 
-To install and use a different verson of Antora, append a version to the package name, such as `antora@3.0.1`.
+To install and use a different version of Antora, append a version to the package name, such as `antora@3.0.3`.
 
-Let's now take this a step further by adding the https://gitlab.com/antora/antora-lunr-extension[Antora Lunr Extension] to incoporate a search widget in the built site.
+Let's now take this a step further by adding the https://gitlab.com/antora/antora-lunr-extension[Antora Lunr Extension] to incorporate a search widget in the built site.
 First, you need to update your playbook repository and UI to meet the minimum requirements of the Antora Lunr Extension as described in the https://gitlab.com/antora/antora-lunr-extension#usage[README] for that project.
 Once that's done, return to the GitHub Actions workflow and configure it to install the extension at the same time it installs Antora.
 The result is shown in <<github-actions-workflow-with-lunr>>.
@@ -99,4 +99,4 @@ The result is shown in <<github-actions-workflow-with-lunr>>.
 include::example$github-actions-workflow-with-lunr.yml[]
 ----
 
-To install and use a different verson of the Antora Lunr Extension, append a version to the package name, such as `@antora/lunr-extension@1.0.0-alpha.5`.
+To install and use a different version of the Antora Lunr Extension, append a version to the package name, such as `@antora/lunr-extension@1.0.0-alpha.5`.

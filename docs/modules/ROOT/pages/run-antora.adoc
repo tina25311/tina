@@ -73,6 +73,7 @@ The sitemap files are only generated if the value of the site `url` key is an ab
 
 . Save the playbook as [.path]_antora-playbook.yml_ in the [.path]_demo-site_ directory you made in Step 1.
 
+[#run-antora]
 == Run Antora
 
 . To generate the site with the default Antora site generator, point the `antora` command at your playbook file.
