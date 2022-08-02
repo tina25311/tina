@@ -35,7 +35,7 @@ function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}) {
     .forEach((componentVersionData, componentVersion) => {
       const { name, version } = componentVersion
       const { files, nav, startPage } = componentVersionData
-      delete componentVersionData.files // clean up memory
+      componentVersionData.files = undefined // clean up memory
       files.forEach((file) => allocateSrc(file, name, version, nav) && contentCatalog.addFile(file))
       contentCatalog.registerComponentVersionStartPage(name, componentVersion, startPage)
     })
