@@ -284,7 +284,7 @@ describe('loadUi()', () => {
     fs.symlinkSync('not-found.hbs', ospath.join(layoutsDir, 'default.hbs'))
     const playbook = { ui: { bundle: { url: uiDir } } }
     const expectedMessage = `Failed to read UI directory: ${uiDir}`
-    const expectedCause = `Broken symbolic link detected at ${ospath.join('layouts', 'default.hbs')}`
+    const expectedCause = `Broken symbolic link detected: ${ospath.join('layouts', 'default.hbs')} -> not-found.hbs`
     expect(await trapAsyncError(loadUi, playbook))
       .to.throw(expectedMessage)
       .with.property('stack')
@@ -300,7 +300,7 @@ describe('loadUi()', () => {
     fs.symlinkSync('default.hbs', ospath.join(layoutsDir, 'primary.hbs'))
     const playbook = { ui: { bundle: { url: uiDir } } }
     const expectedMessage = `Failed to read UI directory: ${uiDir}`
-    const expectedCause = `Symbolic link cycle detected at ${ospath.join('layouts', 'default.hbs')}`
+    const expectedCause = `Symbolic link cycle detected: ${ospath.join('layouts', 'default.hbs')} -> main.hbs`
     expect(await trapAsyncError(loadUi, playbook))
       .to.throw(expectedMessage)
       .with.property('stack')
@@ -562,7 +562,7 @@ describe('loadUi()', () => {
       fs.symlinkSync(missingIncludesDir, partialsDir, 'dir')
       playbook.ui.supplementalFiles = newSupplementalFilesAbsDir
       const expectedMessage = `Failed to read ui.supplemental_files directory: ${newSupplementalFilesAbsDir}`
-      const expectedCause = 'Broken symbolic link detected at partials'
+      const expectedCause = `Broken symbolic link detected: partials -> ${missingIncludesDir}`
       expect(await trapAsyncError(loadUi, playbook))
         .to.throw(expectedMessage)
         .with.property('stack')
@@ -578,7 +578,7 @@ describe('loadUi()', () => {
       fs.symlinkSync('partials', includesDir, 'dir')
       playbook.ui.supplementalFiles = newSupplementalFilesAbsDir
       const expectedMessage = `Failed to read ui.supplemental_files directory: ${newSupplementalFilesAbsDir}`
-      const expectedCause = 'Symbolic link cycle detected at includes'
+      const expectedCause = 'Symbolic link cycle detected: includes -> partials'
       expect(await trapAsyncError(loadUi, playbook))
         .to.throw(expectedMessage)
         .with.property('stack')

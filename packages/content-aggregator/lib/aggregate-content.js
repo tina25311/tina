@@ -474,9 +474,8 @@ function srcFs (cwd) {
             done(
               Object.assign(statErr, {
                 message: statErr.symlink
-                  ? statErr.code === 'ELOOP'
-                    ? `Symbolic link cycle detected at ${relpath}`
-                    : `Broken symbolic link detected at ${relpath}`
+                  ? (statErr.code === 'ELOOP' ? 'Symbolic link cycle' : 'Broken symbolic link') +
+                    ` detected: ${relpath} -> ${statErr.symlink}`
                   : statErr.message.replace(`'${abspath}'`, relpath),
               })
             )
@@ -550,22 +549,20 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
       } else if (entry.type === 'blob') {
         let mode
         if (entry.mode === SYMLINK_FILE_MODE) {
-          const followingRoot = new Set(following)
           reads.push(
-            readGitSymlink(repo, root, parent, entry, followingRoot).then(
+            readGitSymlink(repo, root, parent, entry, new Set(following)).then(
               (target) => {
                 if (target.type === 'tree') {
-                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, followingRoot)
+                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, target.following)
                 } else if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
                   emitter.emit('entry', Object.assign({ mode, oid: target.oid, path: vfilePath }, repo))
                 }
               },
               (err) => {
-                // NOTE this error could be caught after promise chain has already been rejected
-                if (err instanceof NotFoundError) {
-                  err.message = `Broken symbolic link detected at ${vfilePath}`
-                } else if (err.code === 'SymbolicLinkCycleError') {
-                  err.message = `Symbolic link cycle detected at ${vfilePath}`
+                if (err.symlink) {
+                  err.message =
+                    (err.code === 'SymbolicLinkCycleError' ? 'Symbolic link cycle' : 'Broken symbolic link') +
+                    ` detected: ${vfilePath} -> ${err.symlink}`
                 }
                 throw err
               }
@@ -577,34 +574,43 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
       }
     }
   }
-  return Promise.all(reads)
+  // NOTE match scan order to make error message about symbolic link cycle deterministic; no rejections after resolve
+  return Promise.allSettled(reads).then((results) => {
+    const rejected = results.find(({ reason }) => reason)
+    if (rejected) throw rejected.reason
+  })
 }
 
 function readGitSymlink (repo, root, parent, { oid }, following) {
   if (following.has(oid)) {
     const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid }
-    return Promise.reject(Object.assign(new Error(`Symbolic link cycle found at oid: ${err.oid}`), err))
+    return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at oid: ${err.oid}`), err))
   }
   following.add(oid)
-  return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: target }) => {
-    target = decodeUint8Array(target)
-    let targetParent
+  return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: symlink }) => {
+    symlink = decodeUint8Array(symlink)
+    let target
+    let targetParent = root
     if (parent.dirname) {
-      const dirname = parent.dirname + '/'
-      target = path.join(dirname, target) // join doesn't remove trailing separator
-      if (target.startsWith(dirname)) {
-        target = target.substr(dirname.length)
+      const dirname = parent.dirname
+      if (!(target = path.join('/', dirname, symlink).substr(1)) || target === dirname) {
+        target = '.'
+      } else if (target.startsWith(dirname + '/')) {
+        target = target.substr(dirname.length + 1) // join doesn't remove trailing separator
         targetParent = parent
-      } else {
-        targetParent = root
       }
     } else {
-      target = path.normalize(target) // normalize doesn't remove trailing separator
-      targetParent = root
+      target = path.normalize(symlink) // normalize doesn't remove trailing separator
+    }
+    if (target === '.') {
+      const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid, symlink }
+      return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at oid: ${err.oid}`), err))
     }
     const targetSegments = target.split('/')
-    if (!targetSegments[targetSegments.length - 1]) targetSegments.pop()
-    return readGitObjectAtPath(repo, root, targetParent, targetSegments, following)
+    targetSegments[targetSegments.length - 1] || targetSegments.pop()
+    return readGitObjectAtPath(repo, root, targetParent, targetSegments, following).catch((err) => {
+      throw Object.assign(err, { symlink })
+    })
   })
 }
 
@@ -618,7 +624,7 @@ function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
           Object.assign(subtree, { dirname: path.join(parent.dirname, entry.path) })
           return (pathSegments = pathSegments.slice(1)).length
             ? readGitObjectAtPath(repo, root, subtree, pathSegments, following)
-            : Object.assign(subtree, { type: 'tree' })
+            : Object.assign(subtree, { type: 'tree', following }) // Q: should this create copy?
         })
         : entry.mode === SYMLINK_FILE_MODE
           ? readGitSymlink(repo, root, parent, entry, new Set(following))
@@ -826,17 +832,17 @@ function onGitProgress ({ phase, loaded, total }) {
     const scaleFactor = this.scaleFactor
     let ratio = ((loaded / total) * scaleFactor) / GIT_PROGRESS_PHASES.length
     if (phaseIdx) ratio += (phaseIdx * scaleFactor) / GIT_PROGRESS_PHASES.length
-    // NOTE: updates are automatically throttled based on renderThrottle option
+    // NOTE updates are automatically throttled based on renderThrottle option
     this.update(ratio > scaleFactor ? scaleFactor : ratio)
   }
 }
 
 function onGitComplete (err) {
   if (err) {
-    // TODO: could use progressBar.interrupt() to replace bar with message instead
+    // TODO could use progressBar.interrupt() to replace bar with message instead
     this.chars.incomplete = '?'
     this.update(0)
-    // NOTE: force progress bar to update regardless of throttle setting
+    // NOTE force progress bar to update regardless of throttle setting
     this.render(undefined, true)
   } else {
     this.update(1)
@@ -917,9 +923,14 @@ function isDirectory (url) {
 function symlinkAwareStat (path_) {
   return fsp.lstat(path_).then((lstat) => {
     if (!lstat.isSymbolicLink()) return lstat
-    return fsp.stat(path_).catch((statErr) => {
-      throw Object.assign(statErr, { symlink: true })
-    })
+    return fsp.stat(path_).catch((statErr) =>
+      fsp
+        .readlink(path_)
+        .catch(invariably.void)
+        .then((symlink) => {
+          throw Object.assign(statErr, { symlink })
+        })
+    )
   })
 }
 

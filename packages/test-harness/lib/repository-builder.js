@@ -96,8 +96,8 @@ class RepositoryBuilder {
     return this
   }
 
-  async config (path, value) {
-    return git.setConfig({ ...this.repository, path, value })
+  async config (path_, value) {
+    return git.setConfig({ ...this.repository, path: path_, value })
   }
 
   async deleteBranch (ref) {
@@ -127,16 +127,14 @@ class RepositoryBuilder {
     const toDir = ospath.dirname(to)
     if (toDir !== this.repoPath) await fsp.mkdir(toDir, { recursive: true })
     if (symlink) {
-      let suffix = ''
-      if (symlink === 'dir/') {
-        suffix = '/'
-        symlink = 'dir'
+      if (symlink === 'dir' && (contents === '.' || contents === '..')) {
+        await fsp.symlink(contents, to, symlink)
+        return this
       }
-      await fsp.symlink(
-        ospath.relative(toDir, ospath.isAbsolute(contents) ? contents : ospath.join(this.repoPath, contents)) + suffix,
-        to,
-        symlink
-      )
+      const suffix = symlink === 'dir/' ? (symlink = 'dir') && '/' : ''
+      const target =
+        ospath.relative(toDir, ospath.isAbsolute(contents) ? contents : ospath.join(this.repoPath, contents)) + suffix
+      await fsp.symlink(target, to, symlink)
     } else {
       await fsp.writeFile(to, contents)
     }
@@ -278,6 +276,14 @@ class RepositoryBuilder {
         ? fsp.readlink(from, 'utf8').then((target) => fsp.symlink(target, to))
         : fsp.copyFile(from, to).then(() => fsp.chmod(to, stat.mode))
     )
+  }
+
+  normalizePath (path_) {
+    return this.bare || this.remote || ospath.sep === '/' ? path_ : ospath.normalize(path_)
+  }
+
+  joinPath (...pathSegments) {
+    return pathSegments.join(this.bare || this.remote ? '/' : ospath.sep)
   }
 
   static clone (url, toDir) {

@@ -11,6 +11,8 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Resolve attribute references in AsciiDoc attributes defined in playbook (#981)
 * *content-aggregator*: Add `origins` property containing unique origin objects to each entry in content aggregate (#978)
+* *content-aggregator*: Include target in error message for broken or cyclic symbolic link (#900)
+* *ui-loader*: Include target in error message for broken or cyclic symbolic link (#900)
 * *content-classifier*: Resolve attribute references in AsciiDoc attributes defined in component descriptor (#981)
 
 === Changed
