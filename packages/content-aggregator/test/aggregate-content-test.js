@@ -2910,6 +2910,27 @@ describe('aggregateContent()', () => {
         })
       })
 
+      describe('should allow multiple files to point to the same symlink', () => {
+        testAll(async (repoBuilder) => {
+          await initRepoWithFiles(repoBuilder, {}, [], () =>
+            repoBuilder
+              .addToWorktree('topic-b/the-page.adoc', '= The Page')
+              .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/topic-b', 'topic-b', 'dir'))
+              .then(() => repoBuilder.addToWorktree('topic-b/page-c.adoc', 'topic-b/the-page.adoc', true))
+              .then(() => repoBuilder.addToWorktree('topic-b/page-a.adoc', 'topic-b/page-c.adoc', true))
+              .then(() => repoBuilder.addToWorktree('topic-b/page-b.adoc', 'topic-b/page-c.adoc', true))
+              .then(() => repoBuilder.commitAll('add symlinks'))
+          )
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'main' })
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+          const files = aggregate[0].files
+          expect(files).to.have.lengthOf(8)
+          files.forEach((file) => expect(file.contents.toString()).to.equal('= The Page'))
+        })
+      })
+
       describe('should resolve directory symlink that ends with trailing slash', () => {
         testAll(async (repoBuilder) => {
           const targetDir = 'more-pages'
