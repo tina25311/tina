@@ -534,7 +534,7 @@ function createGitTreeWalker (repo, root, filter) {
   })
 }
 
-function visitGitTree (emitter, repo, root, filter, parent, dirname = '', following = new Set()) {
+function visitGitTree (emitter, repo, root, filter, parent, dirname = '', following = undefined) {
   const reads = []
   for (const entry of parent.tree) {
     const filterVerdict = filter(entry)
@@ -550,11 +550,12 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
       } else if (entry.type === 'blob') {
         let mode
         if (entry.mode === SYMLINK_FILE_MODE) {
+          const followingRoot = new Set(following)
           reads.push(
-            readGitSymlink(repo, root, parent, entry, following).then(
+            readGitSymlink(repo, root, parent, entry, followingRoot).then(
               (target) => {
                 if (target.type === 'tree') {
-                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, new Set(following).add(entry.oid))
+                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, followingRoot)
                 } else if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
                   emitter.emit('entry', Object.assign({ mode, oid: target.oid, path: vfilePath }, repo))
                 }
@@ -580,10 +581,11 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
 }
 
 function readGitSymlink (repo, root, parent, { oid }, following) {
-  if (following.size === (following = new Set(following).add(oid)).size) {
+  if (following.has(oid)) {
     const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid }
     return Promise.reject(Object.assign(new Error(`Symbolic link cycle found at oid: ${err.oid}`), err))
   }
+  following.add(oid)
   return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: target }) => {
     target = decodeUint8Array(target)
     let targetParent
@@ -619,7 +621,7 @@ function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
             : Object.assign(subtree, { type: 'tree' })
         })
         : entry.mode === SYMLINK_FILE_MODE
-          ? readGitSymlink(repo, root, parent, entry, following)
+          ? readGitSymlink(repo, root, parent, entry, new Set(following))
           : Promise.resolve(entry)
     }
   }
