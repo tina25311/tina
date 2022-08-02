@@ -997,9 +997,9 @@ function transformGitCloneError (err, displayUrl) {
   if (trimMessage) {
     wrappedMsg = ~(wrappedMsg = wrappedMsg.trimRight()).indexOf('. ') ? wrappedMsg : wrappedMsg.replace(/\.$/, '')
   }
-  const wrappedErr = new Error(`${wrappedMsg} (url: ${displayUrl})`)
-  wrappedErr.stack += `\nCaused by: ${err.stack || 'unknown'}`
-  return wrappedErr
+  const errWrapper = new Error(`${wrappedMsg} (url: ${displayUrl})`)
+  errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
+  return errWrapper
 }
 
 function splitRefPatterns (str) {

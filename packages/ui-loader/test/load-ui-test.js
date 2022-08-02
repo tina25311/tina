@@ -255,7 +255,7 @@ describe('loadUi()', () => {
     testAll('the-ui-bundle/', testBlock)
   })
 
-  it('should resolve symlinks when reading UI from directory', async () => {
+  it('should resolve symbolic links when reading UI from directory', async () => {
     const uiDir = ospath.join(WORK_DIR, 'the-ui-bundle-with-symlinks')
     const cssDir = ospath.join(uiDir, 'css')
     const layoutsDir = ospath.join(uiDir, 'layouts')
@@ -275,6 +275,36 @@ describe('loadUi()', () => {
     expect(Object.keys(files)).to.have.members(['css/one.css', 'css/two.css', 'layouts/default.hbs', 'layouts/404.hbs'])
     expect(files['layouts/404.hbs'].contents).to.eql(defaultLayoutContents)
     expect(files['css/one.css'].contents.toString()).to.include('color: blue')
+  })
+
+  it('should throw error if broken symbolic link is detected when reading UI from directory', async () => {
+    const uiDir = ospath.join(WORK_DIR, 'the-ui-bundle-with-broken-symlink')
+    const layoutsDir = ospath.join(uiDir, 'layouts')
+    fs.mkdirSync(layoutsDir, { recursive: true })
+    fs.symlinkSync('not-found.hbs', ospath.join(layoutsDir, 'default.hbs'))
+    const playbook = { ui: { bundle: { url: uiDir } } }
+    const expectedMessage = `Failed to read UI directory: ${uiDir}`
+    const expectedCause = `Broken symbolic link detected at ${ospath.join('layouts', 'default.hbs')}`
+    expect(await trapAsyncError(loadUi, playbook))
+      .to.throw(expectedMessage)
+      .with.property('stack')
+      .that.includes(expectedCause)
+  })
+
+  it('should throw error if symbolic link cycle is detected when reading UI from directory', async () => {
+    const uiDir = ospath.join(WORK_DIR, 'the-ui-bundle-with-symlink-cycle')
+    const layoutsDir = ospath.join(uiDir, 'layouts')
+    fs.mkdirSync(layoutsDir, { recursive: true })
+    fs.symlinkSync('main.hbs', ospath.join(layoutsDir, 'default.hbs'))
+    fs.symlinkSync('primary.hbs', ospath.join(layoutsDir, 'main.hbs'))
+    fs.symlinkSync('default.hbs', ospath.join(layoutsDir, 'primary.hbs'))
+    const playbook = { ui: { bundle: { url: uiDir } } }
+    const expectedMessage = `Failed to read UI directory: ${uiDir}`
+    const expectedCause = `Symbolic link cycle detected at ${ospath.join('layouts', 'default.hbs')}`
+    expect(await trapAsyncError(loadUi, playbook))
+      .to.throw(expectedMessage)
+      .with.property('stack')
+      .that.includes(expectedCause)
   })
 
   describe('should ignore backup files when reading UI from directory', () => {
@@ -494,7 +524,8 @@ describe('loadUi()', () => {
 
     it('throws error when directory does not exist', async () => {
       playbook.ui.supplementalFiles = ospath.join(FIXTURES_DIR, 'does-not-exist')
-      expect(await trapAsyncError(loadUi, playbook)).to.throw('problem encountered')
+      const expectedMessage = `Specified ui.supplemental_files directory does not exist: ${playbook.ui.supplementalFiles}`
+      expect(await trapAsyncError(loadUi, playbook)).to.throw(expectedMessage)
     })
 
     it('from absolute directory', async () => {
@@ -519,6 +550,39 @@ describe('loadUi()', () => {
       let uiCatalog
       expect(await trapAsyncError(async () => (uiCatalog = await loadUi(playbook)))).to.not.throw()
       verifySupplementalFiles(uiCatalog, true, supplementalFilesAbsDir)
+    })
+
+    it('should throw error if broken symbolic link is detected in supplemental UI directory', async () => {
+      const supplementalFilesAbsDir = ospath.join(FIXTURES_DIR, 'supplemental-files')
+      const newSupplementalFilesAbsDir = ospath.join(WORK_DIR, 'supplemental-files-with-broken-symlink')
+      fs.mkdirSync(newSupplementalFilesAbsDir, { recursive: true })
+      const supplementalFilesRelDir = ospath.relative(newSupplementalFilesAbsDir, supplementalFilesAbsDir)
+      const partialsDir = ospath.join(newSupplementalFilesAbsDir, 'partials')
+      const missingIncludesDir = ospath.join(supplementalFilesRelDir, 'includes')
+      fs.symlinkSync(missingIncludesDir, partialsDir, 'dir')
+      playbook.ui.supplementalFiles = newSupplementalFilesAbsDir
+      const expectedMessage = `Failed to read ui.supplemental_files directory: ${newSupplementalFilesAbsDir}`
+      const expectedCause = 'Broken symbolic link detected at partials'
+      expect(await trapAsyncError(loadUi, playbook))
+        .to.throw(expectedMessage)
+        .with.property('stack')
+        .that.includes(expectedCause)
+    })
+
+    it('should throw error if symbolic link cycle is detected in supplemental UI directory', async () => {
+      const newSupplementalFilesAbsDir = ospath.join(WORK_DIR, 'supplemental-files-with-symlink-cycle')
+      fs.mkdirSync(newSupplementalFilesAbsDir, { recursive: true })
+      const partialsDir = ospath.join(newSupplementalFilesAbsDir, 'partials')
+      const includesDir = ospath.join(newSupplementalFilesAbsDir, 'includes')
+      fs.symlinkSync('includes', partialsDir, 'dir')
+      fs.symlinkSync('partials', includesDir, 'dir')
+      playbook.ui.supplementalFiles = newSupplementalFilesAbsDir
+      const expectedMessage = `Failed to read ui.supplemental_files directory: ${newSupplementalFilesAbsDir}`
+      const expectedCause = 'Symbolic link cycle detected at includes'
+      expect(await trapAsyncError(loadUi, playbook))
+        .to.throw(expectedMessage)
+        .with.property('stack')
+        .that.includes(expectedCause)
     })
 
     it('should read symlinks', async () => {
@@ -650,7 +714,12 @@ describe('loadUi()', () => {
           contents: ospath.join(FIXTURES_DIR, 'does-not-exist/head.hbs'),
         },
       ]
-      expect(await trapAsyncError(loadUi, playbook)).to.throw('no such file')
+      const expectedMessage = 'Failed to read ui.supplemental_files entry'
+      const expectedCause = 'no such file'
+      expect(await trapAsyncError(loadUi, playbook))
+        .to.throw(expectedMessage)
+        .with.property('stack')
+        .that.includes(expectedCause)
     })
 
     it('from files with absolute paths', async () => {
