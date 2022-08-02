@@ -111,12 +111,12 @@ async function loadUi (playbook) {
             .on('error', reject)
             .pipe(collectFiles(resolve))
       ).catch((err) => {
-        const wrapped = new Error(
+        const errWrapper = new Error(
           `Failed to read UI ${bundleFile.isDirectory() ? 'directory' : 'bundle'}: ` +
             (bundleUrl === bundleFile.path ? bundleUrl : `${bundleFile.path} (resolved from url: ${bundleUrl})`)
         )
-        wrapped.stack += '\nCaused by: ' + (err.stack || 'unknown')
-        throw wrapped
+        errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
+        throw errWrapper
       })
     ),
     srcSupplementalFiles(supplementalFilesSpec, startDir),
@@ -193,9 +193,9 @@ function downloadBundle (url, to, agent) {
         )
     })
   }).catch((err) => {
-    const wrapped = new Error(`${err.summary || 'Failed to download UI bundle'}: ${url}`)
-    wrapped.stack += '\nCaused by: ' + (err.stack || 'unknown')
-    throw wrapped
+    const errWrapper = new Error(`${err.summary || 'Failed to download UI bundle'}: ${url}`)
+    errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
+    throw errWrapper
   })
 }
 
@@ -256,40 +256,44 @@ function collectFiles (resolve, files = new Map()) {
 }
 
 function srcSupplementalFiles (filesSpec, startDir) {
-  if (!filesSpec) {
-    return new Map()
-  } else if (Array.isArray(filesSpec)) {
-    return Promise.all(
-      filesSpec.reduce((accum, { path: path_, contents: contents_ }) => {
-        if (!path_) {
-          return accum
-        } else if (contents_) {
-          if (~contents_.indexOf('\n') || !EXT_RX.test(contents_)) {
-            accum.push(new MemoryFile({ path: path_, contents: Buffer.from(contents_) }))
+  if (!filesSpec) return new Map()
+  let cwd
+  return (
+    Array.isArray(filesSpec)
+      ? Promise.all(
+        filesSpec.reduce((accum, { path: path_, contents: contents_ }) => {
+          if (!path_) {
+            return accum
+          } else if (contents_) {
+            if (~contents_.indexOf('\n') || !EXT_RX.test(contents_)) {
+              accum.push(new MemoryFile({ path: path_, contents: Buffer.from(contents_) }))
+            } else {
+              contents_ = expandPath(contents_, { dot: startDir })
+              accum.push(
+                fsp
+                  .stat(contents_)
+                  .then((stat) =>
+                    fsp.readFile(contents_).then((contents) => new File({ path: path_, contents, stat }))
+                  )
+              )
+            }
           } else {
-            contents_ = expandPath(contents_, { dot: startDir })
-            accum.push(
-              fsp
-                .stat(contents_)
-                .then((stat) => fsp.readFile(contents_).then((contents) => new File({ path: path_, contents, stat })))
-            )
+            accum.push(new MemoryFile({ path: path_ }))
           }
-        } else {
-          accum.push(new MemoryFile({ path: path_ }))
-        }
-        return accum
-      }, [])
-    ).then((files) => files.reduce((accum, file) => accum.set(file.path, file) && accum, new Map()))
-  } else {
-    const cwd = expandPath(filesSpec, { dot: startDir })
-    return fsp.access(cwd).then(
-      () => srcFs(cwd),
-      (err) => {
-        // Q: should we skip unreadable files?
-        throw Object.assign(err, { message: `problem encountered while reading ui.supplemental_files: ${err.message}` })
-      }
-    )
-  }
+          return accum
+        }, [])
+      ).then((files) => files.reduce((accum, file) => accum.set(file.path, file) && accum, new Map()))
+      : fsp.access((cwd = expandPath(filesSpec, { dot: startDir }))).then(() => srcFs(cwd))
+  ).catch((err) => {
+    const dir = cwd ? filesSpec + (filesSpec === cwd ? '' : ` (resolved to ${cwd})`) : undefined
+    if (err.code === 'ENOENT' && err.path === cwd) {
+      throw new Error(`Specified ui.supplemental_files directory does not exist: ${dir}`)
+    } else {
+      const errWrapper = new Error(`Failed to read ui.supplemental_files ${cwd ? `directory: ${dir}` : 'entry'}`)
+      errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
+      throw errWrapper
+    }
+  })
 }
 
 function mergeFiles (files, supplementalFiles) {

@@ -22,6 +22,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *ui-loader*: Add context to error and preserve cause if failure occurs when reading supplemental UI (#985)
 * *page-composer*: Make warning message about missing page layout consistent with other log messages
 
 == 3.0.3 (2022-07-20)
