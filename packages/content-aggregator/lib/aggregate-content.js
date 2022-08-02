@@ -471,15 +471,15 @@ function srcFs (cwd) {
             )
           },
           (statErr) => {
-            if (statErr.symlink) {
-              statErr.message =
-                statErr.code === 'ELOOP'
-                  ? `Symbolic link cycle detected at ${relpath}`
-                  : `Broken symbolic link detected at ${relpath}`
-            } else {
-              statErr.message = statErr.message.replace(`'${abspath}'`, relpath)
-            }
-            done(statErr)
+            done(
+              Object.assign(statErr, {
+                message: statErr.symlink
+                  ? statErr.code === 'ELOOP'
+                    ? `Symbolic link cycle detected at ${relpath}`
+                    : `Broken symbolic link detected at ${relpath}`
+                  : statErr.message.replace(`'${abspath}'`, relpath),
+              })
+            )
           }
         )
       }),
