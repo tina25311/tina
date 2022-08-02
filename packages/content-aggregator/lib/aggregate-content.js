@@ -580,30 +580,30 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
 }
 
 function readGitSymlink (repo, root, parent, { oid }, following) {
-  if (following.size !== (following = new Set(following).add(oid)).size) {
-    return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: target }) => {
-      target = decodeUint8Array(target)
-      let targetParent
-      if (parent.dirname) {
-        const dirname = parent.dirname + '/'
-        target = path.join(dirname, target) // join doesn't remove trailing separator
-        if (target.startsWith(dirname)) {
-          target = target.substr(dirname.length)
-          targetParent = parent
-        } else {
-          targetParent = root
-        }
+  if (following.size === (following = new Set(following).add(oid)).size) {
+    const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid }
+    return Promise.reject(Object.assign(new Error(`Symbolic link cycle found at oid: ${err.oid}`), err))
+  }
+  return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: target }) => {
+    target = decodeUint8Array(target)
+    let targetParent
+    if (parent.dirname) {
+      const dirname = parent.dirname + '/'
+      target = path.join(dirname, target) // join doesn't remove trailing separator
+      if (target.startsWith(dirname)) {
+        target = target.substr(dirname.length)
+        targetParent = parent
       } else {
-        target = path.normalize(target) // normalize doesn't remove trailing separator
         targetParent = root
       }
-      const targetSegments = target.split('/')
-      if (!targetSegments[targetSegments.length - 1]) targetSegments.pop()
-      return readGitObjectAtPath(repo, root, targetParent, targetSegments, following)
-    })
-  }
-  const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid }
-  return Promise.reject(Object.assign(new Error(`Symbolic link cycle found at oid: ${err.oid}`), err))
+    } else {
+      target = path.normalize(target) // normalize doesn't remove trailing separator
+      targetParent = root
+    }
+    const targetSegments = target.split('/')
+    if (!targetSegments[targetSegments.length - 1]) targetSegments.pop()
+    return readGitObjectAtPath(repo, root, targetParent, targetSegments, following)
+  })
 }
 
 // QUESTION: could we use this to resolve the start path too?
