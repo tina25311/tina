@@ -355,6 +355,7 @@ describe('logger', () => {
           refname: 'main',
           startPath: '',
           url: 'https://git.example.org/repo.git',
+          gitdir: '/path/to/repo/.git',
           worktree: '/path/to/worktree',
         },
       }
@@ -364,13 +365,19 @@ describe('logger', () => {
         level: 'warn',
         name,
         file: { path: '/path/to/worktree/modules/ROOT/pages/index.adoc' },
-        source: { url: 'https://git.example.org/repo.git', refname: 'main', worktree: '/path/to/worktree' },
+        source: {
+          url: 'https://git.example.org/repo.git',
+          local: '/path/to/repo/.git',
+          refname: 'main',
+          reftype: 'branch',
+          worktree: '/path/to/worktree',
+        },
         msg: 'something is out of place',
       }
       expect(messages[0]).to.eql(expectedData)
     })
 
-    it('should reshape the file object from ref', () => {
+    it('should reshape the file object from ref of remote repo', () => {
       const name = 'foobar'
       const logger = get(name)
       const file = {
@@ -388,7 +395,73 @@ describe('logger', () => {
         level: 'warn',
         name,
         file: { path: 'modules/ROOT/pages/index.adoc' },
-        source: { url: 'https://git.example.org/repo.git', refname: 'main' },
+        source: { url: 'https://git.example.org/repo.git', refname: 'main', reftype: 'branch' },
+        msg: 'something is out of place',
+      }
+      expect(messages[0]).to.eql(expectedData)
+    })
+
+    it('should reshape the file object from local ref of local repo', () => {
+      const name = 'foobar'
+      const logger = get(name)
+      const file = {
+        path: 'modules/ROOT/pages/index.adoc',
+        origin: {
+          type: 'git',
+          refname: 'main',
+          startPath: '',
+          url: 'https://git.example.org/repo.git',
+          gitdir: '/path/to/repo/.git',
+          worktree: null,
+        },
+      }
+      const messages = captureStdoutLogSync(() => logger.warn({ file }, 'something is out of place'))
+      expect(messages).to.have.lengthOf(1)
+      const expectedData = {
+        level: 'warn',
+        name,
+        file: { path: 'modules/ROOT/pages/index.adoc' },
+        source: {
+          url: 'https://git.example.org/repo.git',
+          local: '/path/to/repo/.git',
+          refname: 'main',
+          reftype: 'branch',
+          worktree: false,
+        },
+        msg: 'something is out of place',
+      }
+      expect(messages[0]).to.eql(expectedData)
+    })
+
+    it('should reshape the file object from remote ref of local repo', () => {
+      const name = 'foobar'
+      const logger = get(name)
+      const file = {
+        path: 'modules/ROOT/pages/index.adoc',
+        origin: {
+          type: 'git',
+          refname: 'main',
+          startPath: '',
+          url: 'https://git.example.org/repo.git',
+          gitdir: '/path/to/repo/.git',
+          worktree: null,
+          remote: 'origin',
+        },
+      }
+      const messages = captureStdoutLogSync(() => logger.warn({ file }, 'something is out of place'))
+      expect(messages).to.have.lengthOf(1)
+      const expectedData = {
+        level: 'warn',
+        name,
+        file: { path: 'modules/ROOT/pages/index.adoc' },
+        source: {
+          url: 'https://git.example.org/repo.git',
+          local: '/path/to/repo/.git',
+          refname: 'main',
+          reftype: 'branch',
+          remote: 'origin',
+          worktree: false,
+        },
         msg: 'something is out of place',
       }
       expect(messages[0]).to.eql(expectedData)
@@ -405,6 +478,7 @@ describe('logger', () => {
           refname: 'main',
           startPath: 'docs',
           url: 'https://git.example.org/repo.git',
+          gitdir: '/path/to/repo/.git',
           worktree: '/path/to/worktree',
         },
       }
@@ -416,8 +490,10 @@ describe('logger', () => {
         file: { path: '/path/to/worktree/docs/modules/ROOT/pages/index.adoc' },
         source: {
           url: 'https://git.example.org/repo.git',
+          local: '/path/to/repo/.git',
           worktree: '/path/to/worktree',
           refname: 'main',
+          reftype: 'branch',
           startPath: 'docs',
         },
         msg: 'something is out of place',
@@ -446,6 +522,7 @@ describe('logger', () => {
         source: {
           url: 'https://git.example.org/repo.git',
           refname: 'main',
+          reftype: 'branch',
           startPath: 'docs',
         },
         msg: 'something is out of place',
@@ -497,6 +574,7 @@ describe('logger', () => {
         source: {
           url: 'https://git.example.org/repo.git',
           refname: 'main',
+          reftype: 'branch',
           startPath: 'docs',
         },
         stack: [
@@ -505,6 +583,7 @@ describe('logger', () => {
             source: {
               url: 'https://git.example.org/repo.git',
               refname: 'main',
+              reftype: 'branch',
               startPath: 'docs',
             },
           },
@@ -513,6 +592,7 @@ describe('logger', () => {
             source: {
               url: 'https://git.example.org/repo.git',
               refname: 'main',
+              reftype: 'branch',
               startPath: 'docs',
             },
           },
@@ -705,7 +785,50 @@ describe('logger', () => {
       }
       const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
       expect(lines).to.have.lengthOf(3)
-      expect(lines[2]).to.equal('    source: https://git.example.org/repo.git (refname: main)')
+      expect(lines[2]).to.equal('    source: https://git.example.org/repo.git (branch: main)')
+    })
+
+    it('should print source object from remote branch on a single line', () => {
+      configure({ format: 'pretty' })
+      const name = 'foobar'
+      const logger = get(name)
+      const file = {
+        path: 'modules/ROOT/pages/index.adoc',
+        origin: {
+          type: 'git',
+          refname: 'main',
+          startPath: '',
+          url: 'https://git.example.org/repo.git',
+          gitdir: '/path/to/repo/.git',
+          remote: 'origin',
+          worktree: null,
+        },
+      }
+      const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
+      expect(lines).to.have.lengthOf(3)
+      expect(lines[2]).to.equal('    source: /path/to/repo/.git (branch: main <remotes/origin>)')
+    })
+
+    it('should print source object from remote tag on a single line', () => {
+      configure({ format: 'pretty' })
+      const name = 'foobar'
+      const logger = get(name)
+      const file = {
+        path: 'modules/ROOT/pages/index.adoc',
+        origin: {
+          type: 'git',
+          refname: 'v1.0.0',
+          tag: 'v1.0.0',
+          startPath: '',
+          url: 'https://git.example.org/repo.git',
+          gitdir: '/path/to/repo/.git',
+          remote: 'origin',
+          worktree: null,
+        },
+      }
+      const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
+      expect(lines).to.have.lengthOf(3)
+      expect(lines[2]).to.equal('    source: /path/to/repo/.git (tag: v1.0.0 <remotes/origin>)')
     })
 
     it('should print source object with start path from ref on a single line', () => {
@@ -716,14 +839,15 @@ describe('logger', () => {
         path: 'modules/ROOT/pages/index.adoc',
         origin: {
           type: 'git',
-          refname: 'main',
+          refname: 'v2.0.0',
+          tag: 'v2.0.0',
           startPath: 'docs',
           url: 'https://git.example.org/repo.git',
         },
       }
       const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
       expect(lines).to.have.lengthOf(3)
-      expect(lines[2]).to.equal('    source: https://git.example.org/repo.git (refname: main, start path: docs)')
+      expect(lines[2]).to.equal('    source: https://git.example.org/repo.git (tag: v2.0.0 | start path: docs)')
     })
 
     it('should print source object from worktree on a single line', () => {
@@ -743,7 +867,7 @@ describe('logger', () => {
       }
       const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
       expect(lines).to.have.lengthOf(3)
-      expect(lines[2]).to.equal('    source: /path/to/worktree (refname: main <worktree>)')
+      expect(lines[2]).to.equal('    source: /path/to/worktree (branch: main <worktree>)')
     })
 
     it('should print source object with start path from worktree on a single line', () => {
@@ -763,7 +887,7 @@ describe('logger', () => {
       }
       const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
       expect(lines).to.have.lengthOf(3)
-      expect(lines[2]).to.equal('    source: /path/to/worktree (refname: main <worktree>, start path: docs)')
+      expect(lines[2]).to.equal('    source: /path/to/worktree (branch: main <worktree> | start path: docs)')
     })
 
     it('should print <unknown> if source does not define a url', () => {
@@ -780,7 +904,7 @@ describe('logger', () => {
       }
       const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
       expect(lines).to.have.lengthOf(3)
-      expect(lines[2]).to.equal('    source: <unknown> (refname: main)')
+      expect(lines[2]).to.equal('    source: <unknown> (branch: main)')
     })
 
     it('should show file and source for each entry in stack that comes from a unique source', () => {
@@ -826,9 +950,9 @@ describe('logger', () => {
       const lines = captureStderrSync(() => logger.warn({ file, line: 9, stack }, 'something is out of place'))
       expect(lines).to.have.lengthOf(8)
       expect(lines[4]).to.equal('        file: docs/modules/ROOT/partials/include.adoc:5')
-      expect(lines[5]).to.equal('        source: https://git.example.org/repo-b.git (refname: main, start path: docs)')
+      expect(lines[5]).to.equal('        source: https://git.example.org/repo-b.git (branch: main | start path: docs)')
       expect(lines[6]).to.equal('        file: docs/modules/ROOT/pages/index.adoc:20')
-      expect(lines[7]).to.equal('        source: /path/to/repo-a (refname: main <worktree>, start path: docs)')
+      expect(lines[7]).to.equal('        source: /path/to/repo-a (branch: main <worktree> | start path: docs)')
     })
 
     it('should not show line after path if line is missing for top-level object or entry in stack', () => {
@@ -862,7 +986,7 @@ describe('logger', () => {
       expect(lines).to.have.lengthOf(6)
       expect(lines[1]).to.equal('    file: docs/modules/ROOT/partials/nested-include.adoc')
       expect(lines[4]).to.equal('        file: docs/modules/ROOT/pages/index.adoc')
-      expect(lines[5]).to.equal('        source: /path/to/repo-a (refname: main <worktree>, start path: docs)')
+      expect(lines[5]).to.equal('        source: /path/to/repo-a (branch: main <worktree> | start path: docs)')
     })
 
     it('should consider source with same refname and different worktree as unique', () => {
@@ -896,7 +1020,7 @@ describe('logger', () => {
       const lines = captureStderrSync(() => logger.warn({ file, line: 2, stack }, 'something is out of place'))
       expect(lines).to.have.lengthOf(6)
       expect(lines[4]).to.equal('        file: docs/modules/ROOT/pages/index.adoc:10')
-      expect(lines[5]).to.equal('        source: /path/to/repo-a (refname: v3.0.x <worktree>, start path: docs)')
+      expect(lines[5]).to.equal('        source: /path/to/repo-a (branch: v3.0.x <worktree> | start path: docs)')
     })
 
     it('should show file and source for each entry in stack that comes from a unique source with no start path', () => {
@@ -942,9 +1066,9 @@ describe('logger', () => {
       const lines = captureStderrSync(() => logger.warn({ file, line: 9, stack }, 'something is out of place'))
       expect(lines).to.have.lengthOf(8)
       expect(lines[4]).to.equal('        file: modules/ROOT/partials/include.adoc:5')
-      expect(lines[5]).to.equal('        source: https://git.example.org/repo-b.git (refname: main)')
+      expect(lines[5]).to.equal('        source: https://git.example.org/repo-b.git (branch: main)')
       expect(lines[6]).to.equal('        file: modules/ROOT/pages/index.adoc:20')
-      expect(lines[7]).to.equal('        source: /path/to/repo-a (refname: main <worktree>)')
+      expect(lines[7]).to.equal('        source: /path/to/repo-a (branch: main <worktree>)')
     })
 
     it('should not show source if same as previous source reported', () => {
@@ -1013,7 +1137,7 @@ describe('logger', () => {
       expect(lines).to.have.lengthOf(7)
       expect(lines[4]).to.equal('        file: docs/modules/ROOT/partials/include.adoc:5')
       expect(lines[5]).to.equal('        file: docs/modules/ROOT/pages/index.adoc:20')
-      expect(lines[6]).to.equal('        source: https://git.example.org/repo-2.git (refname: main, start path: docs)')
+      expect(lines[6]).to.equal('        source: https://git.example.org/repo-2.git (branch: main | start path: docs)')
     })
 
     it('should not show source if origin is not available', () => {
@@ -1062,9 +1186,9 @@ describe('logger', () => {
       const lines = captureStderrSync(() => logger.warn({ file, line: 9, stack }, 'something is out of place'))
       expect(lines).to.have.lengthOf(6)
       expect(lines[1]).to.equal('    file: modules/ROOT/partials/include.adoc:9')
-      expect(lines[2]).to.equal('    source: https://git.example.org/repo-c.git (refname: main)')
+      expect(lines[2]).to.equal('    source: https://git.example.org/repo-c.git (branch: main)')
       expect(lines[4]).to.equal('        file: modules/ROOT/pages/index.adoc:20')
-      expect(lines[5]).to.equal('        source: <unknown> (refname: main)')
+      expect(lines[5]).to.equal('        source: <unknown> (branch: main)')
     })
   })
 

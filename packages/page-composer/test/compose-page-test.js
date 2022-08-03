@@ -416,6 +416,7 @@ describe('createPageComposer()', () => {
         },
         source: {
           refname: 'main',
+          reftype: 'branch',
           startPath: 'docs',
           url: 'https://git.example.org/repo.git',
         },

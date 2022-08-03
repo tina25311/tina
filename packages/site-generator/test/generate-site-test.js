@@ -363,7 +363,7 @@ describe('generateSite()', () => {
         name: 'asciidoctor',
         msg: `target of xref not found: ${refSpec}`,
         file: { path: 'modules/ROOT/pages/index.adoc' },
-        source: { refname: 'v2.0', url: repoBuilder.url },
+        source: { refname: 'v2.0', reftype: 'branch', url: repoBuilder.url },
       })
     })
   })

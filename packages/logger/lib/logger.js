@@ -135,6 +135,7 @@ function createPrettyDestination (destination, colorize) {
             const file = line == null ? path_ : `${path_}:${line}`
             const sameSource =
               source.url === prevSource.url &&
+              source.worktree === prevSource.worktree &&
               source.refname === prevSource.refname &&
               source.worktree === prevSource.worktree &&
               source.startPath === prevSource.startPath
@@ -143,10 +144,11 @@ function createPrettyDestination (destination, colorize) {
           })
           .join('')
       },
-      source: ({ url, worktree, refname, startPath }) =>
-        worktree
-          ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
-          : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`,
+      source: ({ url, local, worktree, refname, reftype, remote, startPath }) => {
+        const pathInfo = startPath ? ` | start path: ${startPath}` : ''
+        const flag = worktree ? ' <worktree>' : remote ? ` <remotes/${remote}>` : ''
+        return `${worktree || local || url || '<unknown>'} (${reftype}: ${refname}${flag}${pathInfo})`
+      },
     },
     ignore: 'hint',
     messageFormat: (log, msgKey) => {
@@ -194,12 +196,13 @@ function reshapeErrorForLog (err, msg, prettyPrint) {
 
 function reshapeFileForLog ({ file: { abspath, origin, path: vpath }, line, stack }) {
   if (origin) {
-    const { url, refname, startPath, worktree } = origin
+    const { url, gitdir, worktree, refname, tag, reftype = tag ? 'tag' : 'branch', remote, startPath } = origin
+    const local = 'worktree' in origin && (gitdir || url)
     const logObject = {
       file: { path: abspath || path.join(startPath, vpath), line },
-      source: worktree
-        ? { url, worktree, refname, startPath: startPath || undefined }
-        : { url, refname, startPath: startPath || undefined },
+      source: local
+        ? { url, local, worktree: worktree || false, refname, reftype, remote, startPath: startPath || undefined }
+        : { url, refname, reftype, startPath: startPath || undefined },
     }
     if (stack) logObject.stack = stack.map(reshapeFileForLog)
     return logObject

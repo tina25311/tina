@@ -43,7 +43,7 @@ class RepositoryBuilder {
     } else if (this.bare) {
       this.url += ospath.sep + '.git'
     } else {
-      this.local = true
+      this.local = ospath.join(this.repoPath, '.git')
     }
     const dir = this.repoPath
     const gitdir = ospath.join(dir, '.git')
@@ -264,7 +264,7 @@ class RepositoryBuilder {
 
   getRefInfo (ref, remote = 'origin') {
     if (!ref) return
-    return this.remote ? `remotes/${remote}/${ref}` : this.bare ? ref : `${ref} <worktree>`
+    return this.remote || this.bare ? ref : `${ref} <worktree>`
   }
 
   async close (branchName = undefined) {

@@ -423,7 +423,7 @@ describe('loadAsciiDoc()', () => {
         level: 'warn',
         name: 'asciidoctor',
         file: { path: 'docs/modules/module-a/pages/page-a.adoc' },
-        source: { url: 'https://git.example.org/repo.git', refname: 'main', startPath: 'docs' },
+        source: { refname: 'main', reftype: 'branch', startPath: 'docs', url: 'https://git.example.org/repo.git' },
         msg: 'skipping reference to missing attribute: no-such-attribute',
       })
     })
@@ -1912,11 +1912,11 @@ describe('loadAsciiDoc()', () => {
         name: 'asciidoctor',
         msg: 'target of xref not found: does-not-exist.adoc',
         file: { path: 'docs/modules/ROOT/pages/_partials/greeting.adoc', line: 3 },
-        source: { refname: 'v4.5.x', startPath: 'docs', url: 'https://git.example.org/repo-b.git' },
+        source: { refname: 'v4.5.x', reftype: 'branch', startPath: 'docs', url: 'https://git.example.org/repo-b.git' },
         stack: [
           {
             file: { path: inputFile.src.path, line: 1 },
-            source: { refname: 'main', url: 'https://git.example.org/repo-a.git' },
+            source: { refname: 'main', reftype: 'branch', url: 'https://git.example.org/repo-a.git' },
           },
         ],
       })

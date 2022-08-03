@@ -252,14 +252,41 @@ describe('aggregateContent()', () => {
       })
     })
 
-    describe('should throw if component descriptor cannot be found', () => {
+    describe('should throw if component descriptor cannot be found in branch', () => {
       testAll(async (repoBuilder) => {
         await repoBuilder.init('the-component').then(() => repoBuilder.close())
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
+    })
+
+    describe('should throw if component descriptor cannot be found in tag', () => {
+      testAll(async (repoBuilder) => {
+        await repoBuilder
+          .init('the-component')
+          .then(() => repoBuilder.createTag('v1.0.0'))
+          .then(() => repoBuilder.close())
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: [], tags: 'v1.0.0' })
+        const where = repoBuilder.local || repoBuilder.url
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${where} (tag: v1.0.0)`
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+      })
+    })
+
+    it('should throw if component descriptor cannot be found in remote branch of local repository', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await repoBuilder
+        .init('the-component')
+        .then(() => repoBuilder.checkoutBranch('remote-branch'))
+        .then(() => repoBuilder.close('main'))
+      const clonePath = ospath.join(CONTENT_REPOS_DIR, 'clone')
+      const cloneGitdir = ospath.join(clonePath, '.git')
+      await RepositoryBuilder.clone(repoBuilder.url, clonePath)
+      playbookSpec.content.sources.push({ url: clonePath, branches: 'remote-branch' })
+      const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${cloneGitdir} (branch: remote-branch <remotes/origin>)`
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
     })
 
     describe('should throw if component descriptor cannot be parsed', () => {
@@ -273,7 +300,7 @@ describe('aggregateContent()', () => {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage = new RegExp(
           `^${regexpEscape(COMPONENT_DESC_FILENAME)} has invalid syntax; unknown tag .*` +
-            ` in ${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)\n[\\s\\S]*version:`
+            ` in ${regexpEscape(repoBuilder.url)} \\(branch: ${regexpEscape(ref)}\\)\n[\\s\\S]*version:`
         )
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
@@ -299,7 +326,7 @@ describe('aggregateContent()', () => {
         await initRepoWithComponentDescriptor(repoBuilder, { version: 'v1.0' })
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a name in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a name in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -556,7 +583,7 @@ describe('aggregateContent()', () => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: false })
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const expectedMessage = `${COMPONENT_DESC_FILENAME} has an invalid version in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} has an invalid version in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -576,7 +603,7 @@ describe('aggregateContent()', () => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component' })
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a version in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -588,7 +615,7 @@ describe('aggregateContent()', () => {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage =
           `name in ${COMPONENT_DESC_FILENAME} cannot have path segments: foo/bar` +
-          ` in ${repoBuilder.url} (ref: ${ref})`
+          ` in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -600,7 +627,7 @@ describe('aggregateContent()', () => {
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const expectedMessage =
           `version in ${COMPONENT_DESC_FILENAME} cannot have path segments: 1.1/0` +
-          ` in ${repoBuilder.url} (ref: ${ref})`
+          ` in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -659,7 +686,7 @@ describe('aggregateContent()', () => {
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'docs' })
         const expectedMessage = new RegExp(
           `^${regexpEscape(COMPONENT_DESC_FILENAME)} has invalid syntax; .*` +
-            ` in ${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)} \\| path: docs\\)\n`
+            ` in ${regexpEscape(repoBuilder.url)} \\(branch: ${regexpEscape(ref)} \\| start path: docs\\)\n`
         )
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
@@ -1278,7 +1305,7 @@ describe('aggregateContent()', () => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'does-not-exist' })
-        const expectedMessage = `the start path 'does-not-exist' does not exist in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `the start path 'does-not-exist' does not exist in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -1288,7 +1315,7 @@ describe('aggregateContent()', () => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'antora.yml' })
-        const expectedMessage = `the start path 'antora.yml' is not a directory in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `the start path 'antora.yml' is not a directory in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -1298,7 +1325,7 @@ describe('aggregateContent()', () => {
         await initRepoWithFiles(repoBuilder)
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'modules' })
-        const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (ref: ${ref} | path: modules)`
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} not found in ${repoBuilder.url} (branch: ${ref} | start path: modules)`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -1314,7 +1341,7 @@ describe('aggregateContent()', () => {
         const ref = repoBuilder.getRefInfo('main')
         expect(componentDescEntry).to.exist()
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: '{more,}docs' })
-        const expectedMessage = `the start path 'moredocs' does not exist in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `the start path 'moredocs' does not exist in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -1330,7 +1357,7 @@ describe('aggregateContent()', () => {
         expect(componentDescEntry).to.exist()
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc{s}' })
-        const expectedMessage = `the start path 'doc{s}' does not exist in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `the start path 'doc{s}' does not exist in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
     })
@@ -1356,9 +1383,22 @@ describe('aggregateContent()', () => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' })
         const ref = repoBuilder.getRefInfo('main')
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'does-not-exist-*' })
-        const expectedMessage = `no start paths found in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `no start paths found in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
+    })
+
+    it('should throw if no start paths are resolved in remote branch of local repository', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: '1.0' }, () =>
+        repoBuilder.checkoutBranch('remote-branch').then(() => repoBuilder.close('main'))
+      )
+      const clonePath = ospath.join(CONTENT_REPOS_DIR, 'clone')
+      const cloneGitdir = ospath.join(clonePath, '.git')
+      await RepositoryBuilder.clone(repoBuilder.url, clonePath)
+      playbookSpec.content.sources.push({ url: clonePath, branches: 'remote-branch', startPaths: 'does-not-exist-*' })
+      const expectedMessage = `no start paths found in ${cloneGitdir} (branch: remote-branch <remotes/origin>)`
+      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
     })
 
     describe('should retain unresolved segments in start path if parent directory does not exist', () => {
@@ -1368,7 +1408,7 @@ describe('aggregateContent()', () => {
         playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'does-not-exist/{foo,bar*}' })
         const expectedMessage = new RegExp(
           "^the start path 'does-not-exist/(foo|bar\\*)' does not exist in " +
-            `${regexpEscape(repoBuilder.url)} \\(ref: ${regexpEscape(ref)}\\)$`
+            `${regexpEscape(repoBuilder.url)} \\(branch: ${regexpEscape(ref)}\\)$`
         )
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
@@ -2580,6 +2620,27 @@ describe('aggregateContent()', () => {
       })
     })
 
+    it('should populate origin info for remote branch of local repository', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder, undefined, ['modules/ROOT/pages/page-one.adoc'], () =>
+        repoBuilder.checkoutBranch('remote-branch').then(() => repoBuilder.close('main'))
+      )
+      const clonePath = ospath.join(CONTENT_REPOS_DIR, 'clone')
+      await RepositoryBuilder.clone(repoBuilder.url, clonePath)
+      playbookSpec.content.sources.push({ url: clonePath, branches: 'remote-branch' })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+      const origins = aggregate[0].origins
+      expect(origins).to.have.lengthOf(1)
+      const origin = origins[0]
+      expect(origin.branch).to.equal('remote-branch')
+      expect(origin.remote).to.equal('origin')
+      expect(origin.worktree).to.be.null()
+      expect(aggregate[0].files).to.have.lengthOf(1)
+      expect(aggregate[0].files[0].path).to.equal('modules/ROOT/pages/page-one.adoc')
+    })
+
     describe('should fail to read file with path that refers to location outside of repository', () => {
       testRemote(async (repoBuilder) => {
         const maliciousPath = 'modules/ROOT/pages/../../../../the-page.adoc'
@@ -2694,7 +2755,9 @@ describe('aggregateContent()', () => {
           },
           source: {
             refname: 'main',
+            reftype: 'branch',
             worktree: repoBuilder.repoPath,
+            local: repoBuilder.local,
             url: pathToFileURL(repoBuilder.url),
           },
           msg: `EACCES: permission denied, open ${fixturePath}`,
@@ -3036,7 +3099,7 @@ describe('aggregateContent()', () => {
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
             expect(aggregate[0].files.find((it) => it.src.abspath === abspath)).to.be.undefined()
           } else {
-            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expectedMessage += ` in ${repoBuilder.url} (branch: ${ref})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3062,7 +3125,7 @@ describe('aggregateContent()', () => {
             expect(messages[0]).to.have.nested.property('file.path', ospath.join(repoBuilder.repoPath, symlinkPath))
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
           } else {
-            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expectedMessage += ` in ${repoBuilder.url} (branch: ${ref})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3091,7 +3154,7 @@ describe('aggregateContent()', () => {
             expect(messages[0]).to.have.nested.property('file.path', ospath.join(repoBuilder.repoPath, symlink2Path))
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
           } else {
-            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expectedMessage += ` in ${repoBuilder.url} (branch: ${ref})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3125,7 +3188,7 @@ describe('aggregateContent()', () => {
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
             expect(messages[0]).to.have.nested.property('source.startPath', startPath)
           } else {
-            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref} | path: ${startPath})`
+            expectedMessage += ` in ${repoBuilder.url} (branch: ${ref} | start path: ${startPath})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3158,7 +3221,7 @@ describe('aggregateContent()', () => {
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
             expect(messages[0]).to.have.nested.property('source.startPath', startPath)
           } else {
-            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref} | path: ${startPath})`
+            expectedMessage += ` in ${repoBuilder.url} (branch: ${ref} | start path: ${startPath})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3187,7 +3250,7 @@ describe('aggregateContent()', () => {
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
             expect(aggregate[0].files.find((it) => it.src.abspath === abspath)).to.be.undefined()
           } else {
-            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expectedMessage += ` in ${repoBuilder.url} (branch: ${ref})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3203,7 +3266,7 @@ describe('aggregateContent()', () => {
         const ref = repoBuilder.getRefInfo('main')
         const expectedFrom = repoBuilder.normalizePath(symlinkPath)
         const expectedLink = `${expectedFrom} -> .`
-        const expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink} in ${repoBuilder.url} (branch: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
 
@@ -3218,7 +3281,7 @@ describe('aggregateContent()', () => {
       //  const ref = repoBuilder.getRefInfo('main')
       //  const expectedFrom = repoBuilder.normalizePath(symlinkPath)
       //  const expectedLink = `${expectedFrom} -> ..`
-      //  const expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
+      //  const expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink} in ${repoBuilder.url} (branch: ${ref})`
       //  expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       //})
 
@@ -3245,7 +3308,7 @@ describe('aggregateContent()', () => {
             expect(messages[0]).to.have.nested.property('file.path', ospath.join(repoBuilder.repoPath, symlink1Path))
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
           } else {
-            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expectedMessage += ` in ${repoBuilder.url} (branch: ${ref})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3274,7 +3337,7 @@ describe('aggregateContent()', () => {
             expect(messages[0]).to.have.nested.property('file.path', ospath.join(repoBuilder.repoPath, symlink2Path))
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
           } else {
-            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expectedMessage += ` in ${repoBuilder.url} (branch: ${ref})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3304,7 +3367,7 @@ describe('aggregateContent()', () => {
             expect(messages[0].file.path).to.startWith(ospath.join(repoBuilder.repoPath, expectedFrom))
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
           } else {
-            expectedMessage += `${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
+            expectedMessage += `${expectedLink} in ${repoBuilder.url} (branch: ${ref})`
             expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
           }
         })
@@ -3779,7 +3842,7 @@ describe('aggregateContent()', () => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
               const gitdir = ospath.join(CACHE_DIR, 'content', 'org-name-repo-name.git')
-              const origin = computeOrigin(url, false, gitdir, { shortname, type }, '')
+              const origin = computeOrigin(url, false, gitdir, { shortname, type, remote: 'origin' }, '')
               expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(shortname)
@@ -3809,7 +3872,7 @@ describe('aggregateContent()', () => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
               const gitdir = ospath.join(CACHE_DIR, 'content', 'org-name-repo-name.git')
-              const origin = computeOrigin(url, false, gitdir, { shortname, type }, '')
+              const origin = computeOrigin(url, false, gitdir, { shortname, type, remote: 'origin' }, '')
               expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(shortname)
@@ -3838,7 +3901,7 @@ describe('aggregateContent()', () => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
               const gitdir = ospath.join(CACHE_DIR, 'content', 'org-name-repo-name.git')
-              const origin = computeOrigin(url, false, gitdir, { shortname, type }, '')
+              const origin = computeOrigin(url, false, gitdir, { shortname, type, remote: 'origin' }, '')
               expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(shortname)
@@ -3867,7 +3930,7 @@ describe('aggregateContent()', () => {
             urls.forEach((url) => {
               url = url.replace('{hostname}', hostname)
               const gitdir = ospath.join(CACHE_DIR, 'content', 'org-name-repo-name.git')
-              const origin = computeOrigin(url, false, gitdir, { shortname, type }, '')
+              const origin = computeOrigin(url, false, gitdir, { shortname, type, remote: 'origin' }, '')
               expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
               expect(origin[type]).to.equal(shortname)
@@ -3893,6 +3956,7 @@ describe('aggregateContent()', () => {
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
+        expect(origin).to.not.have.property('remote')
         expect(origin.fileUriPattern).to.equal(expectedfileUriPattern)
         expect(origin.editUrlPattern).to.be.undefined()
         expect(origin.worktree).to.equal(worktreePath)
@@ -3909,6 +3973,7 @@ describe('aggregateContent()', () => {
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
+        expect(origin).to.not.have.property('remote')
         expect(origin.fileUriPattern).to.equal(expectedfileUriPattern)
         expect(origin.editUrlPattern).to.be.undefined()
         expect(origin.worktree).to.equal(worktreePath)
@@ -3925,6 +3990,7 @@ describe('aggregateContent()', () => {
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
+        expect(origin.remote).to.equal(remote)
         expect(origin.worktree).to.be.null()
       })
 
@@ -5186,7 +5252,7 @@ describe('aggregateContent()', () => {
         .then(() => repoBuilder.close())
       playbookSpec.content.sources.push({ url: repoBuilder.url, startPath: 'the-component', branches: 'main' })
       // NOTE this error is a result of ReadObjectFail: Failed to read git object with oid <oid>
-      const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.url} (ref: main)`
+      const expectedMessage = `the start path 'the-component' does not exist in ${repoBuilder.local} (branch: main)`
       expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
     })
   })
