@@ -376,15 +376,14 @@ function srcFs (cwd) {
             )
           },
           (statErr) => {
-            if (statErr.symlink) {
-              statErr.message =
-                statErr.code === 'ELOOP'
-                  ? `Symbolic link cycle detected at ${relpath}`
-                  : `Broken symbolic link detected at ${relpath}`
-            } else {
-              statErr.message = statErr.message.replace(`'${abspath}'`, relpath)
-            }
-            done(statErr)
+            done(
+              Object.assign(statErr, {
+                message: statErr.symlink
+                  ? (statErr.code === 'ELOOP' ? 'Symbolic link cycle' : 'Broken symbolic link') +
+                    ` detected: ${relpath} -> ${statErr.symlink}`
+                  : statErr.message.replace(`'${abspath}'`, relpath),
+              })
+            )
           }
         )
       }),
@@ -396,9 +395,14 @@ function srcFs (cwd) {
 function symlinkAwareStat (path_) {
   return fsp.lstat(path_).then((lstat) => {
     if (!lstat.isSymbolicLink()) return lstat
-    return fsp.stat(path_).catch((statErr) => {
-      throw Object.assign(statErr, { symlink: true })
-    })
+    return fsp.stat(path_).catch((statErr) =>
+      fsp
+        .readlink(path_)
+        .catch(() => undefined)
+        .then((symlink) => {
+          throw Object.assign(statErr, { symlink })
+        })
+    )
   })
 }
 
