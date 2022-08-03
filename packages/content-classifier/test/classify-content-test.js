@@ -16,7 +16,7 @@ describe('classifyContent()', () => {
     const basename = path.basename(path_)
     const extname = path.extname(path_)
     const stem = path.basename(path_, extname)
-    const origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
+    const origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
     return {
       path: path_,
       src: { basename, stem, extname, origin },
@@ -816,7 +816,7 @@ describe('classifyContent()', () => {
     it('should throw when attempting to add a duplicate page', () => {
       const file1 = createFile('modules/ROOT/pages/page-one.adoc')
       const file2 = createFile('modules/ROOT/pages/page-one.adoc')
-      file2.src.origin.branch = 'v1.2.x'
+      file2.src.origin.branch = file2.src.origin.refname = 'v1.2.x'
       aggregate[0].files.push(file1)
       aggregate[0].files.push(file2)
       const expectedMessage =
@@ -1086,7 +1086,7 @@ describe('classifyContent()', () => {
     it('should throw when attempting to add a duplicate image', () => {
       const file1 = createFile('modules/admin/images/foo.png')
       const file2 = createFile('modules/admin/images/foo.png')
-      file2.src.origin.branch = 'v1.2.x'
+      file2.src.origin.branch = file2.src.origin.refname = 'v1.2.x'
       aggregate[0].files.push(file1)
       aggregate[0].files.push(file2)
       const expectedMessage =
@@ -1285,7 +1285,7 @@ describe('classifyContent()', () => {
       const file1 = createFile('modules/nav.adoc')
       file1.src.origin.startPath = 'docs'
       const file2 = createFile('modules/nav.adoc')
-      file2.src.origin.branch = 'v1.2.x'
+      file2.src.origin.branch = file2.src.origin.refname = 'v1.2.x'
       file2.src.origin.startPath = 'docs'
       aggregate[0].files.push(file1)
       aggregate[0].files.push(file2)
@@ -1300,8 +1300,8 @@ describe('classifyContent()', () => {
     it('should throw when attempting to add a duplicate nav inside of module', () => {
       const file1 = createFile('modules/install/nav.adoc')
       const file2 = createFile('modules/install/nav.adoc')
-      file1.src.origin.branch = 'v1.2.x'
-      file2.src.origin.tag = 'v1.2.3'
+      file1.src.origin.branch = file1.src.origin.refname = 'v1.2.x'
+      file2.src.origin.tag = file2.src.origin.refname = 'v1.2.3'
       delete file2.src.origin.branch
       aggregate[0].files.push(file1)
       aggregate[0].files.push(file2)

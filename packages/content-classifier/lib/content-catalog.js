@@ -595,7 +595,7 @@ function createSymbolicVersionAlias (component, version, symbolicVersionSegment,
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {
   return (
     abspath ||
-    (origin ? `${path.join(origin.startPath, path_)} in ${origin.url} (ref: ${origin.branch || origin.tag})` : path_)
+    (origin ? `${path.join(origin.startPath, path_)} in ${origin.url} (ref: ${origin.refname})` : path_)
   )
 }
 

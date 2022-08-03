@@ -1835,7 +1835,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should not permit alias to be registered that matches target page', () => {
-      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
       const aliasSpec = targetPageSrc.relative
@@ -1847,7 +1847,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should not allow self reference to be used in page alias', () => {
-      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
       const aliasSpec = './' + targetPageSrc.relative
@@ -1859,7 +1859,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should not allow parent reference to be used in page alias', () => {
-      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
       const aliasSpec = '../' + targetPageSrc.relative
@@ -1871,7 +1871,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should not allow alias to be registered that matches existing page', () => {
-      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
       const existingPageSrc = { ...targetPageSrc }
@@ -1888,7 +1888,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should not allow alias to be registered multiple times', () => {
-      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
       const expectedError =
@@ -1899,7 +1899,7 @@ describe('ContentCatalog', () => {
     })
 
     it('should not allow alias for page in unknown component to be registered multiple times', () => {
-      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3' }
+      targetPageSrc.origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
       const targetPage = contentCatalog.addFile(new File({ src: targetPageSrc }))
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
       const expectedError =
