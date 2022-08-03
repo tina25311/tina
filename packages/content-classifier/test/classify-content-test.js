@@ -1292,8 +1292,8 @@ describe('classifyContent()', () => {
       aggregate[0].nav = ['modules/nav.adoc']
       const expectedMessage =
         'Duplicate nav in v1.2.3@the-component: modules/nav.adoc\n' +
-        '  1: docs/modules/nav.adoc in https://githost/repo.git (ref: v1.2.3)\n' +
-        '  2: docs/modules/nav.adoc in https://githost/repo.git (ref: v1.2.x)'
+        '  1: docs/modules/nav.adoc in https://githost/repo.git (ref: v1.2.3 | path: docs)\n' +
+        '  2: docs/modules/nav.adoc in https://githost/repo.git (ref: v1.2.x | path: docs)'
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 

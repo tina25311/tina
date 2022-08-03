@@ -593,10 +593,10 @@ function createSymbolicVersionAlias (component, version, symbolicVersionSegment,
 }
 
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {
-  return (
-    abspath ||
-    (origin ? `${path.join(origin.startPath, path_)} in ${origin.url} (ref: ${origin.refname})` : path_)
-  )
+  if (abspath) return abspath
+  if (!origin) return path_
+  const { url, refname, startPath } = origin
+  return `${path.join(startPath, path_)} in ${url} (ref: ${refname}${startPath ? ' | path: ' + startPath : ''})`
 }
 
 module.exports = ContentCatalog
