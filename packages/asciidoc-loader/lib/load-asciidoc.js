@@ -102,12 +102,12 @@ function computePageAttrs ({ component: componentName, version, module: module_,
     attrs['page-origin-type'] = origin.type
     attrs['page-origin-url'] = origin.url
     attrs['page-origin-start-path'] = origin.startPath
-    if (origin.branch) {
-      attrs['page-origin-refname'] = attrs['page-origin-branch'] = origin.branch
-      attrs['page-origin-reftype'] = 'branch'
-    } else {
+    if (origin.tag) {
       attrs['page-origin-refname'] = attrs['page-origin-tag'] = origin.tag
       attrs['page-origin-reftype'] = 'tag'
+    } else {
+      attrs['page-origin-refname'] = attrs['page-origin-branch'] = origin.branch
+      attrs['page-origin-reftype'] = 'branch'
     }
     if (origin.worktree) {
       attrs['page-origin-worktree'] = origin.worktree
