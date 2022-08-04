@@ -24,6 +24,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *logger*: Don't append `undefined` after path of file in stack in pretty log format if line is missing
 * *ui-loader*: Add context to error and preserve cause if failure occurs when reading supplemental UI (#985)
 * *page-composer*: Make warning message about missing page layout consistent with other log messages
 

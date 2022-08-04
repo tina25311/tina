@@ -831,6 +831,40 @@ describe('logger', () => {
       expect(lines[7]).to.equal('        source: /path/to/repo-a (refname: main <worktree>, start path: docs)')
     })
 
+    it('should not show line after path if line is missing for top-level object or entry in stack', () => {
+      configure({ format: 'pretty' })
+      const name = 'foobar'
+      const logger = get(name)
+      const file = {
+        path: 'modules/ROOT/partials/nested-include.adoc',
+        origin: {
+          type: 'git',
+          refname: 'main',
+          startPath: 'docs',
+          url: 'https://git.example.org/repo-c.git',
+        },
+      }
+      const stack = [
+        {
+          file: {
+            path: 'modules/ROOT/pages/index.adoc',
+            origin: {
+              type: 'git',
+              refname: 'main',
+              startPath: 'docs',
+              url: 'https://git.example.org/repo-a.git',
+              worktree: '/path/to/repo-a',
+            },
+          },
+        },
+      ]
+      const lines = captureStderrSync(() => logger.warn({ file, stack }, 'something is out of place'))
+      expect(lines).to.have.lengthOf(6)
+      expect(lines[1]).to.equal('    file: docs/modules/ROOT/partials/nested-include.adoc')
+      expect(lines[4]).to.equal('        file: docs/modules/ROOT/pages/index.adoc')
+      expect(lines[5]).to.equal('        source: /path/to/repo-a (refname: main <worktree>, start path: docs)')
+    })
+
     it('should show file and source for each entry in stack that comes from a unique source with no start path', () => {
       configure({ format: 'pretty' })
       const name = 'foobar'

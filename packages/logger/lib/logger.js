@@ -131,7 +131,7 @@ function createPrettyDestination (destination, colorize) {
         let prevSource = log.source
         return stack
           .map(({ file: { path: path_, line }, source }) => {
-            const file = `${path_}:${line}`
+            const file = line == null ? path_ : `${path_}:${line}`
             const sameSource =
               prevSource &&
               source.url === prevSource.url &&
