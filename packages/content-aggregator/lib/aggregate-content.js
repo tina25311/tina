@@ -559,7 +559,7 @@ function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '
               (err) => {
                 if (err.symlink) {
                   err.message =
-                    (err.code === 'SymbolicLinkCycleError' ? 'Symbolic link cycle' : 'Broken symbolic link') +
+                    (err.code === 'ELOOP' ? 'Symbolic link cycle' : 'Broken symbolic link') +
                     ` detected: ${vfilePath} -> ${err.symlink}`
                 }
                 throw err
@@ -585,7 +585,7 @@ function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '
 
 function readGitSymlink (repo, root, parent, { oid }, following) {
   if (following.has(oid)) {
-    const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid }
+    const err = { name: 'SymbolicLinkCycleError', code: 'ELOOP', oid }
     return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at oid: ${err.oid}`), err))
   }
   following.add(oid)
@@ -605,7 +605,7 @@ function readGitSymlink (repo, root, parent, { oid }, following) {
       target = path.normalize(symlink) // normalize doesn't remove trailing separator
     }
     if (target === '.') {
-      const err = { name: 'SymbolicLinkCycleError', code: 'SymbolicLinkCycleError', oid, symlink }
+      const err = { name: 'SymbolicLinkCycleError', code: 'ELOOP', oid, symlink }
       return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at oid: ${err.oid}`), err))
     }
     const targetSegments = target.split('/')
