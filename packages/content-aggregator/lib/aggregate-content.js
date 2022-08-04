@@ -583,18 +583,18 @@ function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '
   })
 }
 
-function readGitSymlink (repo, root, parent, { oid }, following) {
+function readGitSymlink (repo, root, parent, { oid, path: name }, following) {
+  const dirname = parent.dirname
   if (following.has(oid)) {
-    const err = { name: 'SymbolicLinkCycleError', code: 'ELOOP', oid }
-    return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at oid: ${err.oid}`), err))
+    const err = { name: 'SymbolicLinkCycleError', code: 'ELOOP', oid, path: `${path.join(dirname, name)}` }
+    return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at ${oid}:${err.path}`), err))
   }
   following.add(oid)
   return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: symlink }) => {
     symlink = decodeUint8Array(symlink)
     let target
     let targetParent = root
-    if (parent.dirname) {
-      const dirname = parent.dirname
+    if (dirname) {
       if (!(target = path.join('/', dirname, symlink).substr(1)) || target === dirname) {
         target = '.'
       } else if (target.startsWith(dirname + '/')) {
@@ -605,8 +605,8 @@ function readGitSymlink (repo, root, parent, { oid }, following) {
       target = path.normalize(symlink) // normalize doesn't remove trailing separator
     }
     if (target === '.') {
-      const err = { name: 'SymbolicLinkCycleError', code: 'ELOOP', oid, symlink }
-      return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at oid: ${err.oid}`), err))
+      const err = { name: 'SymbolicLinkCycleError', code: 'ELOOP', oid, path: `${path.join(dirname, name)}`, symlink }
+      return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at ${oid}:${err.path}`), err))
     }
     const targetSegments = target.split('/')
     targetSegments[targetSegments.length - 1] || targetSegments.pop()
@@ -633,7 +633,7 @@ function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
           : Promise.resolve(entry)
     }
   }
-  return Promise.reject(new NotFoundError(`No file or directory found at "${parent.oid}:${pathSegments.join('/')}"`))
+  return Promise.reject(new NotFoundError(`${parent.oid}:${pathSegments.join('/')}`))
 }
 
 /**
