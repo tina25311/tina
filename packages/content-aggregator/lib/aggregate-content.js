@@ -529,7 +529,7 @@ function createGitTreeWalker (repo, root, filter, convert) {
   })
 }
 
-function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '', following = undefined) {
+function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '', following = new Set()) {
   const reads = []
   for (const entry of parent.tree) {
     const filterVerdict = filter(entry)
@@ -546,7 +546,7 @@ function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '
         let mode
         if (entry.mode === SYMLINK_FILE_MODE) {
           reads.push(
-            readGitSymlink(repo, root, parent, entry, new Set(following)).then(
+            readGitSymlink(repo, root, parent, entry, following).then(
               (target) => {
                 if (target.type === 'tree') {
                   return visitGitTree(emitter, repo, root, filter, convert, target, vfilePath, target.following)
@@ -585,11 +585,10 @@ function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '
 
 function readGitSymlink (repo, root, parent, { oid, path: name }, following) {
   const dirname = parent.dirname
-  if (following.has(oid)) {
+  if (following.size === (following = new Set(following)).add(oid).size) {
     const err = { name: 'SymbolicLinkCycleError', code: 'ELOOP', oid, path: `${path.join(dirname, name)}` }
     return Promise.reject(Object.assign(new Error(`Symbolic link cycle detected at ${oid}:${err.path}`), err))
   }
-  following.add(oid)
   return git.readBlob(Object.assign({ oid }, repo)).then(({ blob: symlink }) => {
     symlink = decodeUint8Array(symlink)
     let target
@@ -629,7 +628,7 @@ function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
             : Object.assign(subtree, { type: 'tree', following }) // Q: should this create copy?
         })
         : entry.mode === SYMLINK_FILE_MODE
-          ? readGitSymlink(repo, root, parent, entry, new Set(following))
+          ? readGitSymlink(repo, root, parent, entry, following)
           : Promise.resolve(entry)
     }
   }
