@@ -510,30 +510,26 @@ function getGitTreeAtStartPath (repo, oid, startPath) {
 function srcGitTree (repo, root, start) {
   return new Promise((resolve, reject) => {
     const files = []
-    createGitTreeWalker(repo, root, filterGitEntry)
-      .on('entry', (entry) => files.push(entryToFile(entry)))
+    createGitTreeWalker(repo, root, filterGitEntry, gitEntryToFile)
+      .on('entry', (file) => files.push(file))
       .on('error', reject)
-      .on('end', () => resolve(Promise.all(files)))
+      .on('end', () => resolve(files))
       .walk(start)
   })
 }
 
-function createGitTreeWalker (repo, root, filter) {
+function createGitTreeWalker (repo, root, filter, convert) {
   return Object.assign(new EventEmitter(), {
     walk (start) {
-      return (
-        visitGitTree(this, repo, root, filter, start)
-          // NOTE if error is thrown, promises already being resolved won't halt
-          .then(
-            () => this.emit('end'),
-            (err) => this.emit('error', err)
-          )
+      return visitGitTree(this, repo, root, filter, convert, start).then(
+        () => this.emit('end'),
+        (err) => this.emit('error', err)
       )
     },
   })
 }
 
-function visitGitTree (emitter, repo, root, filter, parent, dirname = '', following = undefined) {
+function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '', following = undefined) {
   const reads = []
   for (const entry of parent.tree) {
     const filterVerdict = filter(entry)
@@ -543,7 +539,7 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
         reads.push(
           git.readTree(Object.assign({ oid: entry.oid }, repo)).then((subtree) => {
             Object.assign(subtree, { dirname: path.join(parent.dirname, entry.path) })
-            return visitGitTree(emitter, repo, root, filter, subtree, vfilePath, following)
+            return visitGitTree(emitter, repo, root, filter, convert, subtree, vfilePath, following)
           })
         )
       } else if (entry.type === 'blob') {
@@ -553,9 +549,11 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
             readGitSymlink(repo, root, parent, entry, new Set(following)).then(
               (target) => {
                 if (target.type === 'tree') {
-                  return visitGitTree(emitter, repo, root, filter, target, vfilePath, target.following)
+                  return visitGitTree(emitter, repo, root, filter, convert, target, vfilePath, target.following)
                 } else if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
-                  emitter.emit('entry', Object.assign({ mode, oid: target.oid, path: vfilePath }, repo))
+                  return convert(Object.assign({ mode, oid: target.oid, path: vfilePath }, repo)).then((result) =>
+                    emitter.emit('entry', result)
+                  )
                 }
               },
               (err) => {
@@ -569,12 +567,16 @@ function visitGitTree (emitter, repo, root, filter, parent, dirname = '', follow
             )
           )
         } else if ((mode = FILE_MODES[entry.mode])) {
-          emitter.emit('entry', Object.assign({ mode, oid: entry.oid, path: vfilePath }, repo))
+          reads.push(
+            convert(Object.assign({ mode, oid: entry.oid, path: vfilePath }, repo)).then((result) =>
+              emitter.emit('entry', result)
+            )
+          )
         }
       }
     }
   }
-  // NOTE match scan order to make error message about symbolic link cycle deterministic; no rejections after resolve
+  // NOTE preserve scan order so error for symbolic link cycle is deterministic; ensures no rejections after resolve
   return Promise.allSettled(reads).then((results) => {
     const rejected = results.find(({ reason }) => reason)
     if (rejected) throw rejected.reason
@@ -646,7 +648,7 @@ function filterGitEntry (entry) {
   return entryPath.charAt(entryPath.length - 1) !== '~'
 }
 
-function entryToFile (entry) {
+function gitEntryToFile (entry) {
   return git.readBlob(entry).then(({ blob: contents }) => {
     contents = Buffer.from(contents.buffer)
     const stat = Object.assign(new fs.Stats(), { mode: entry.mode, mtime: undefined, size: contents.byteLength })
