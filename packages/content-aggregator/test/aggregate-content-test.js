@@ -2,6 +2,7 @@
 'use strict'
 
 const {
+  captureLog,
   closeServer,
   closeServers,
   expect,
@@ -2681,9 +2682,23 @@ describe('aggregateContent()', () => {
         await initRepoWithFiles(repoBuilder, {}, fixturePath)
         await fsp.chmod(ospath.join(repoBuilder.repoPath, fixturePath), 0o000)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
-        const ref = repoBuilder.getRefInfo('main')
-        const expectedMessage = `permission denied, open ${fixturePath} in ${repoBuilder.url} (ref: ${ref})`
-        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+        const { messages, returnValue: aggregate } = (
+          await captureLog(() => aggregateContent(playbookSpec))
+        ).withReturnValue()
+        expect(aggregate).to.have.lengthOf(1)
+        expect(messages).to.have.lengthOf(1)
+        expect(messages[0]).to.deep.include({
+          level: 'error',
+          file: {
+            path: ospath.join(repoBuilder.repoPath, fixturePath),
+          },
+          source: {
+            refname: 'main',
+            worktree: repoBuilder.repoPath,
+            url: pathToFileURL(repoBuilder.url),
+          },
+          msg: `EACCES: permission denied, open ${fixturePath}`,
+        })
       })
     }
 
@@ -2996,7 +3011,7 @@ describe('aggregateContent()', () => {
         })
       })
 
-      describe('should throw if symlink to sibling file is broken', () => {
+      describe('should report error if symlink to sibling file is broken', () => {
         testAll(async (repoBuilder) => {
           const targetPath = 'modules/ROOT/pages/target.adoc'
           const symlinkPath = 'modules/ROOT/pages/symlink.adoc'
@@ -3007,12 +3022,27 @@ describe('aggregateContent()', () => {
           const ref = repoBuilder.getRefInfo('main')
           const expectedFrom = repoBuilder.normalizePath(symlinkPath)
           const expectedLink = expectedFrom + ' -> target.adoc'
-          const expectedMessage = `Broken symbolic link detected: ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = `ENOENT: broken symbolic link, ${expectedLink}`
+          if (repoBuilder.local) {
+            const abspath = ospath.join(repoBuilder.repoPath, symlinkPath)
+            const { messages, returnValue: aggregate } = (
+              await captureLog(() => aggregateContent(playbookSpec))
+            ).withReturnValue()
+            expect(aggregate).to.have.lengthOf(1)
+            expect(messages).to.have.lengthOf(1)
+            expect(messages[0]).to.have.property('level', 'error')
+            expect(messages[0]).to.have.property('msg', expectedMessage)
+            expect(messages[0]).to.have.nested.property('file.path', abspath)
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+            expect(aggregate[0].files.find((it) => it.src.abspath === abspath)).to.be.undefined()
+          } else {
+            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 
-      describe('should throw if symlink to file in parent folder is broken', () => {
+      describe('should report error if symlink to file in parent folder is broken', () => {
         testAll(async (repoBuilder) => {
           const targetPath = 'modules/ROOT/pages/target.adoc'
           const symlinkPath = 'modules/ROOT/pages/the-topic/symlink.adoc'
@@ -3024,12 +3054,21 @@ describe('aggregateContent()', () => {
           const expectedFrom = repoBuilder.normalizePath(symlinkPath)
           const expectedTo = repoBuilder.joinPath('..', 'target.adoc')
           const expectedLink = expectedFrom + ' -> ' + expectedTo
-          const expectedMessage = `Broken symbolic link detected: ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = `ENOENT: broken symbolic link, ${expectedLink}`
+          if (repoBuilder.local) {
+            const messages = await captureLog(() => aggregateContent(playbookSpec))
+            expect(messages).to.have.lengthOf(1)
+            expect(messages[0]).to.have.property('msg', expectedMessage)
+            expect(messages[0]).to.have.nested.property('file.path', ospath.join(repoBuilder.repoPath, symlinkPath))
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+          } else {
+            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 
-      describe('should throw if symlink resolved from symlink is broken', () => {
+      describe('should report error if symlink resolved from symlink is broken', () => {
         testAll(async (repoBuilder) => {
           const targetPath = 'modules/ROOT/pages/page-one.adoc'
           const symlink1Path = 'modules/ROOT/pages/topic-c/page-one-link.adoc'
@@ -3044,12 +3083,21 @@ describe('aggregateContent()', () => {
           const ref = repoBuilder.getRefInfo('main')
           const expectedFrom = repoBuilder.normalizePath(symlink2Path)
           const expectedLink = expectedFrom + ' -> page-one.adoc'
-          const expectedMessage = `Broken symbolic link detected: ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = `ENOENT: broken symbolic link, ${expectedLink}`
+          if (repoBuilder.local) {
+            const messages = await captureLog(() => aggregateContent(playbookSpec))
+            expect(messages).to.have.lengthOf(2)
+            expect(messages[0]).to.have.property('msg', expectedMessage)
+            expect(messages[0]).to.have.nested.property('file.path', ospath.join(repoBuilder.repoPath, symlink2Path))
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+          } else {
+            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 
-      describe('should throw if symlink found in content root at start path is broken', () => {
+      describe('should report error if symlink found in content root at start path is broken', () => {
         testAll(async (repoBuilder) => {
           const startPath = 'docs'
           const componentDesc = { name: 'the-component', version: '1.0', startPath }
@@ -3065,14 +3113,25 @@ describe('aggregateContent()', () => {
           const expectedFrom = repoBuilder.normalizePath(symlinkPath)
           const expectedTo = repoBuilder.joinPath('topic', 'target.adoc')
           const expectedLink = `${expectedFrom} -> ${expectedTo}`
-          const expectedMessage =
-            `Broken symbolic link detected: ${expectedLink} in ${repoBuilder.url} ` +
-            `(ref: ${ref} | path: ${startPath})`
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = `ENOENT: broken symbolic link, ${expectedLink}`
+          if (repoBuilder.local) {
+            const messages = await captureLog(() => aggregateContent(playbookSpec))
+            expect(messages).to.have.lengthOf(1)
+            expect(messages[0]).to.have.property('msg', expectedMessage)
+            expect(messages[0]).to.have.nested.property(
+              'file.path',
+              ospath.join(repoBuilder.repoPath, startPath, symlinkPath)
+            )
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+            expect(messages[0]).to.have.nested.property('source.startPath', startPath)
+          } else {
+            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref} | path: ${startPath})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 
-      describe('should throw if symlink that points outside content root at start path is broken', () => {
+      describe('should report error if symlink that points outside content root at start path is broken', () => {
         testAll(async (repoBuilder) => {
           const startPath = 'docs'
           const componentDesc = { name: 'the-component', version: '1.0', startPath }
@@ -3087,14 +3146,25 @@ describe('aggregateContent()', () => {
           const ref = repoBuilder.getRefInfo('main')
           const expectedFrom = repoBuilder.normalizePath(symlinkPath)
           const expectedLink = `${expectedFrom} -> process.adoc`
-          const expectedMessage =
-            `Broken symbolic link detected: ${expectedLink} in ${repoBuilder.url} ` +
-            `(ref: ${ref} | path: ${startPath})`
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = `ENOENT: broken symbolic link, ${expectedLink}`
+          if (repoBuilder.local) {
+            const messages = await captureLog(() => aggregateContent(playbookSpec))
+            expect(messages).to.have.lengthOf(1)
+            expect(messages[0]).to.have.property('msg', expectedMessage)
+            expect(messages[0]).to.have.nested.property(
+              'file.path',
+              ospath.join(repoBuilder.repoPath, startPath, symlinkPath)
+            )
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+            expect(messages[0]).to.have.nested.property('source.startPath', startPath)
+          } else {
+            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref} | path: ${startPath})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 
-      describe('should throw if self-referencing file symlink is detected', () => {
+      describe('should report error if self-referencing file symlink is detected', () => {
         testAll(async (repoBuilder) => {
           const symlinkPath = 'modules/ROOT/pages/symlink.adoc'
           await initRepoWithFiles(repoBuilder, {}, [], () =>
@@ -3104,12 +3174,26 @@ describe('aggregateContent()', () => {
           const ref = repoBuilder.getRefInfo('main')
           const expectedFrom = repoBuilder.normalizePath(symlinkPath)
           const expectedLink = `${expectedFrom} -> symlink.adoc`
-          const expectedMessage = `Symbolic link cycle detected: ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink}`
+          if (repoBuilder.local) {
+            const abspath = ospath.join(repoBuilder.repoPath, symlinkPath)
+            const { messages, returnValue: aggregate } = (
+              await captureLog(() => aggregateContent(playbookSpec))
+            ).withReturnValue()
+            expect(messages).to.have.lengthOf(1)
+            expect(messages[0]).to.have.property('level', 'error')
+            expect(messages[0]).to.have.property('msg', expectedMessage)
+            expect(messages[0]).to.have.nested.property('file.path', abspath)
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+            expect(aggregate[0].files.find((it) => it.src.abspath === abspath)).to.be.undefined()
+          } else {
+            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 
-      it('should throw if self-referencing directory symlink is detected', async () => {
+      it('should report error if self-referencing directory symlink is detected', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
         const symlinkPath = 'subdir/to-dot'
         await initRepoWithFiles(repoBuilder, {}, [], () =>
@@ -3119,12 +3203,12 @@ describe('aggregateContent()', () => {
         const ref = repoBuilder.getRefInfo('main')
         const expectedFrom = repoBuilder.normalizePath(symlinkPath)
         const expectedLink = `${expectedFrom} -> .`
-        const expectedMessage = `Symbolic link cycle detected: ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
+        const expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       })
 
       // this test is really slow to set up, presumably because of limitations in isomorphic-git
-      //it('should throw if parent-referencing directory symlink is detected', async () => {
+      //it('should report error if parent-referencing directory symlink is detected', async () => {
       //  const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
       //  const symlinkPath = 'subdir/to-dot'
       //  await initRepoWithFiles(repoBuilder, {}, [], () =>
@@ -3134,11 +3218,11 @@ describe('aggregateContent()', () => {
       //  const ref = repoBuilder.getRefInfo('main')
       //  const expectedFrom = repoBuilder.normalizePath(symlinkPath)
       //  const expectedLink = `${expectedFrom} -> ..`
-      //  const expectedMessage = `Symbolic link cycle detected: ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
+      //  const expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
       //  expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
       //})
 
-      describe('should throw if file symlink cycle is detected', () => {
+      describe('should report error if file symlink cycle is detected', () => {
         testAll(async (repoBuilder) => {
           const symlink1Path = 'modules/ROOT/pages/page-one-link.adoc'
           const symlink2Path = 'modules/ROOT/pages/the-topic/page-one-link.adoc'
@@ -3153,12 +3237,21 @@ describe('aggregateContent()', () => {
           const expectedFrom = repoBuilder.normalizePath(symlink1Path)
           const expectedTo = repoBuilder.joinPath('the-topic', 'page-one-link.adoc')
           const expectedLink = `${expectedFrom} -> ${expectedTo}`
-          const expectedMessage = `Symbolic link cycle detected: ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink}`
+          if (repoBuilder.local) {
+            const messages = await captureLog(() => aggregateContent(playbookSpec))
+            expect(messages).to.have.lengthOf(2)
+            expect(messages[0]).to.have.property('msg', expectedMessage)
+            expect(messages[0]).to.have.nested.property('file.path', ospath.join(repoBuilder.repoPath, symlink1Path))
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+          } else {
+            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 
-      describe('should throw if directory symlink cycle is detected', async () => {
+      describe('should report error if directory symlink cycle is detected', async () => {
         testAll(async (repoBuilder) => {
           const symlink1Path = 'modules/ROOT/pages/foo'
           const symlink2Path = 'modules/ROOT/pages/bar'
@@ -3173,12 +3266,21 @@ describe('aggregateContent()', () => {
           const expectedFrom = repoBuilder.normalizePath(symlink2Path)
           const expectedTo = 'foo'
           const expectedLink = `${expectedFrom} -> ${expectedTo}`
-          const expectedMessage = `Symbolic link cycle detected: ${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = `ELOOP: symbolic link cycle, ${expectedLink}`
+          if (repoBuilder.local) {
+            const messages = await captureLog(() => aggregateContent(playbookSpec))
+            expect(messages).to.have.lengthOf(2)
+            expect(messages[0]).to.have.property('msg', expectedMessage)
+            expect(messages[0]).to.have.nested.property('file.path', ospath.join(repoBuilder.repoPath, symlink2Path))
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+          } else {
+            expectedMessage += ` in ${repoBuilder.url} (ref: ${ref})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 
-      describe('should throw if reentrant directory symlink cycle is detected', async () => {
+      describe('should report error if reentrant directory symlink cycle is detected', async () => {
         testAll(async (repoBuilder) => {
           await initRepoWithFiles(repoBuilder, {}, [], () =>
             repoBuilder
@@ -3193,11 +3295,18 @@ describe('aggregateContent()', () => {
           const expectedFrom = repoBuilder.joinPath('a', 'e')
           const expectedTo = repoBuilder.joinPath('..', 'a')
           const expectedLink = `${expectedFrom} -> ${expectedTo}`
-          // NOTE: glob produces a wacky result in this case, so don't try to assert it
-          const expectedMessage =
-            'Symbolic link cycle detected: ' +
-            (repoBuilder.bare || repoBuilder.remote ? `${expectedLink} in ${repoBuilder.url} (ref: ${ref})` : '')
-          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          let expectedMessage = 'ELOOP: symbolic link cycle, '
+          if (repoBuilder.local) {
+            const messages = await captureLog(() => aggregateContent(playbookSpec))
+            expect(messages).to.have.lengthOf(2)
+            // NOTE: glob produces a wacky result in this case, so don't try to assert link info
+            expect(messages[0].msg).to.startWith(expectedMessage)
+            expect(messages[0].file.path).to.startWith(ospath.join(repoBuilder.repoPath, expectedFrom))
+            expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
+          } else {
+            expectedMessage += `${expectedLink} in ${repoBuilder.url} (ref: ${ref})`
+            expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+          }
         })
       })
 

@@ -379,8 +379,8 @@ function srcFs (cwd) {
             done(
               Object.assign(statErr, {
                 message: statErr.symlink
-                  ? (statErr.code === 'ELOOP' ? 'Symbolic link cycle' : 'Broken symbolic link') +
-                    ` detected: ${relpath} -> ${statErr.symlink}`
+                  ? (statErr.code === 'ELOOP' ? 'ELOOP: symbolic link cycle, ' : 'ENOENT: broken symbolic link, ') +
+                    `${relpath} -> ${statErr.symlink}`
                   : statErr.message.replace(`'${abspath}'`, relpath),
               })
             )

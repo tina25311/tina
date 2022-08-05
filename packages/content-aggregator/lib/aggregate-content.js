@@ -16,6 +16,7 @@ const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
 const globStream = require('glob-stream')
 const invariably = require('./invariably')
+const logger = require('./logger')
 const { makeMatcherRx, versionMatcherOpts: VERSION_MATCHER_OPTS } = require('./matcher')
 const MultiProgress = require('multi-progress') // calls require('progress') as a peer dependencies
 const ospath = require('path')
@@ -417,16 +418,14 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
 }
 
 function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, version) {
-  return (
-    worktreePath ? readFilesFromWorktree(worktreePath, startPath) : readFilesFromGitTree(repo, ref.oid, startPath)
-  )
-    .then((files) => {
-      const origin = computeOrigin(originUrl, authStatus, repo.gitdir, ref, startPath, worktreePath, editUrl)
-      return Object.assign(loadComponentDescriptor(files, ref, version), {
+  const origin = computeOrigin(originUrl, authStatus, repo.gitdir, ref, startPath, worktreePath, editUrl)
+  return (worktreePath ? readFilesFromWorktree(origin) : readFilesFromGitTree(repo, ref.oid, startPath))
+    .then((files) =>
+      Object.assign(loadComponentDescriptor(files, ref, version), {
         files: files.map((file) => assignFileProperties(file, origin)),
         origins: [origin],
       })
-    })
+    )
     .catch((err) => {
       const msg = err.message
       const refInfo = `ref: ${ref.fullname.replace(HEADS_DIR_RX, '')}${worktreePath ? ' <worktree>' : ''}`
@@ -435,12 +434,13 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
     })
 }
 
-function readFilesFromWorktree (worktreePath, startPath) {
-  const cwd = ospath.join(worktreePath, startPath, '.') // . shaves off trailing slash
+function readFilesFromWorktree (origin) {
+  const startPath = origin.startPath
+  const cwd = ospath.join(origin.worktree, startPath, '.') // . shaves off trailing slash
   return fsp.stat(cwd).then(
     (startPathStat) => {
       if (!startPathStat.isDirectory()) throw new Error(`the start path '${startPath}' is not a directory`)
-      return srcFs(cwd)
+      return srcFs(cwd, origin)
     },
     () => {
       throw new Error(`the start path '${startPath}' does not exist`)
@@ -448,7 +448,7 @@ function readFilesFromWorktree (worktreePath, startPath) {
   )
 }
 
-function srcFs (cwd) {
+function srcFs (cwd, origin) {
   const relpathStart = cwd.length + 1
   return new Promise((resolve, reject, cache = Object.create(null), files = []) =>
     pipeline(
@@ -466,19 +466,28 @@ function srcFs (cwd) {
                 done()
               },
               (readErr) => {
-                done(Object.assign(readErr, { message: readErr.message.replace(`'${abspath}'`, relpath) }))
+                const logObject = { file: { abspath, origin } }
+                readErr.code === 'ENOENT'
+                  ? logger.warn(logObject, `ENOENT: file or directory disappeared, ${readErr.syscall} ${relpath}`)
+                  : logger.error(logObject, readErr.message.replace(`'${abspath}'`, relpath))
+                done()
               }
             )
           },
           (statErr) => {
-            done(
-              Object.assign(statErr, {
-                message: statErr.symlink
-                  ? (statErr.code === 'ELOOP' ? 'Symbolic link cycle' : 'Broken symbolic link') +
-                    ` detected: ${relpath} -> ${statErr.symlink}`
-                  : statErr.message.replace(`'${abspath}'`, relpath),
-              })
-            )
+            const logObject = { file: { abspath, origin } }
+            if (statErr.symlink) {
+              logger.error(
+                logObject,
+                (statErr.code === 'ELOOP' ? 'ELOOP: symbolic link cycle, ' : 'ENOENT: broken symbolic link, ') +
+                  `${relpath} -> ${statErr.symlink}`
+              )
+            } else if (statErr.code === 'ENOENT') {
+              logger.warn(logObject, `ENOENT: file or directory disappeared, ${statErr.syscall} ${relpath}`)
+            } else {
+              logger.error(logObject, statErr.message.replace(`'${abspath}'`, relpath))
+            }
+            done()
           }
         )
       }),
@@ -559,8 +568,8 @@ function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '
               (err) => {
                 if (err.symlink) {
                   err.message =
-                    (err.code === 'ELOOP' ? 'Symbolic link cycle' : 'Broken symbolic link') +
-                    ` detected: ${vfilePath} -> ${err.symlink}`
+                    (err.code === 'ELOOP' ? 'ELOOP: symbolic link cycle' : 'ENOENT: broken symbolic link') +
+                    `, ${vfilePath} -> ${err.symlink}`
                 }
                 throw err
               }

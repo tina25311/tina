@@ -115,6 +115,26 @@ function emptyDirSync (dir) {
 }
 
 module.exports = {
+  captureLog: async (fn) => {
+    const messages = []
+    configureLogger({
+      level: 'all',
+      failureLevel: 'all',
+      destination: {
+        write (messageString) {
+          const { time, ...message } = JSON.parse(messageString)
+          messages.push(message)
+          return messageString.length
+        },
+      },
+    })
+    const returnValue = await fn()
+    return Object.defineProperty(messages, 'withReturnValue', {
+      get () {
+        return () => ({ messages: this, returnValue })
+      },
+    })
+  },
   captureLogSync: (fn) => {
     const messages = []
     configureLogger({
