@@ -58,6 +58,9 @@ Next, let's install the CLI package within the playbook project so you can run t
  $ node -e "fs.writeFileSync('package.json', '{}')"
  $ npm i -D -E @antora/cli@{page-component-version}
 
+As an alternative to the first command, you can use `npm init -y`.
+However, `npm init` adds a lot of extra keys that you may not need.
+
 The `@antora/cli` package and its dependencies will be installed into the [.path]_node_modules_ folder inside your playbook project.
 The optional `-D` option tells `npm` to save the package as a development dependency in [.path]_package.json_.
 The `-E` option tells `npm` to store the exact version in [.path]_package.json_ rather than prefixing it with a semver range operator.
