@@ -2,7 +2,7 @@
 
 const logger = require('../logger')
 
-const ATTR_REF_RX = /\{(\w[\w-]*)\}/g
+const ATTR_REF_RX = /\\?\{(\w[\w-]*)\}/g
 
 function collateAsciiDocAttributes (scoped, { initial, merge, mdc }) {
   if (!scoped) return initial
@@ -19,6 +19,7 @@ function collateAsciiDocAttributes (scoped, { initial, merge, mdc }) {
       if (val && val.constructor === String) {
         let alias
         val = val.replace(ATTR_REF_RX, (ref, refname) => {
+          if (ref.charAt() === '\\') return ref.substr(1)
           const refval = accum[refname]
           if (refval == null || refval === false) {
             if (refname in accum && ref === val) {
