@@ -2580,7 +2580,7 @@ describe('aggregateContent()', () => {
       })
     })
 
-    describe('should read file with path that refers to location outside of repository', () => {
+    describe('should fail to read file with path that refers to location outside of repository', () => {
       testRemote(async (repoBuilder) => {
         const maliciousPath = 'modules/ROOT/pages/../../../../the-page.adoc'
         await initRepoWithFiles(repoBuilder, undefined, ['modules/ROOT/pages/page-one.adoc'], async () =>
