@@ -134,6 +134,7 @@ function createPrettyDestination (destination, colorize) {
             const sameSource =
               source.url === prevSource.url &&
               source.refname === prevSource.refname &&
+              source.worktree === prevSource.worktree &&
               source.startPath === prevSource.startPath
             prevSource = source
             return sameSource ? `\n    file: ${file}` : `\n    file: ${file}\n    source: ${this.source(source)}`
