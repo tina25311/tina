@@ -27,6 +27,9 @@
     "include": [
       "packages/*/{bin,lib}/**/*.js"
     ],
+    "exclude": [
+      "packages/test-harness/lib/*.js"
+    ],
     "reporter": [
       "cobertura",
       "lcov",
