@@ -13,17 +13,19 @@ const {
 const { default: pinoPretty, prettyFactory } = require('pino-pretty')
 const SonicBoom = require('sonic-boom')
 
+const INF = Infinity
+const WRAP = '\n    '
+
 const closedLogger = { closed: true }
 const finalizers = []
-const INF = Infinity
 const minLevel = levelLabels[Math.min.apply(null, Object.keys(levelLabels))]
 const noopLogger = pino({ base: null, enabled: false, timestamp: false }, {})
 const rootLoggerHolder = new Map()
+const standardStreams = { 1: 1, 2: 2, stderr: 2, stdout: 1 }
 const errSerializer = (err) => {
   if (!(err = defaultErrSerializer(err)).message) delete err.message
   return err
 }
-const standardStreams = { 1: 1, 2: 2, stderr: 2, stdout: 1 }
 
 function close () {
   const rootLogger = rootLoggerHolder.get() || closedLogger
@@ -137,7 +139,7 @@ function createPrettyDestination (destination, colorize) {
               source.worktree === prevSource.worktree &&
               source.startPath === prevSource.startPath
             prevSource = source
-            return sameSource ? `\n    file: ${file}` : `\n    file: ${file}\n    source: ${this.source(source)}`
+            return sameSource ? `${WRAP}file: ${file}` : `${WRAP}file: ${file}${WRAP}source: ${this.source(source)}`
           })
           .join('')
       },
@@ -177,7 +179,7 @@ function reshapeErrorForLog (err, msg, prettyPrint) {
   if ((stack = err.backtrace)) {
     stack = ['Error', ...stack.slice(1)].join('\n')
   } else if ((stack = err.stack || name) && err instanceof SyntaxError && stack.includes('\nSyntaxError: ')) {
-    stack = `SyntaxError: ${message}\n    at ` + stack.split(/\n+SyntaxError: [^\n]+\n?/).join('\n')
+    stack = `SyntaxError: ${message}${WRAP}at ` + stack.split(/\n+SyntaxError: [^\n]+\n?/).join('\n')
   }
   if (message && (message === msg || !prettyPrint) && stack.startsWith(`${name}: ${message}`)) {
     stack = stack.replace(`${name}: ${message}`, name)
