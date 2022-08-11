@@ -9,12 +9,14 @@ This project utilizes semantic versioning.
 
 === Added
 
-* *playbook-builder*: Resolve attribute references in AsciiDoc attributes defined in playbook (#981)
+* *playbook-builder*: Resolve attribute references in value of AsciiDoc attribute defined in playbook (#981)
+* *playbook-builder*: Honor escaped attribute references in value of AsciiDoc attribute defined in playbook (#989)
 * *content-aggregator*: Add `origins` property containing unique origin objects to each entry in content aggregate (#978)
 * *content-aggregator*: Include target in error message for broken or cyclic symbolic link (#900)
 * *content-aggregator*: Log message instead of throwing fatal error if file in worktree disappears or cannot be read (#986)
 * *ui-loader*: Include target in error message for broken or cyclic symbolic link (#900)
-* *content-classifier*: Resolve attribute references in AsciiDoc attributes defined in component descriptor (#981)
+* *content-classifier*: Resolve attribute references in value of AsciiDoc attribute defined in component descriptor (#981)
+* *content-classifier*: Honor escaped attribute references in value of AsciiDoc attribute defined in component descriptor (#989)
 
 === Changed
 

@@ -714,6 +714,36 @@ describe('classifyContent()', () => {
       ])
     })
 
+    it('should ignore escaped attribute references', () => {
+      const siteAsciiDocConfig = {
+        attributes: { 'attribute-missing': 'warn', 'site-title': 'Docs' },
+      }
+
+      Object.assign(aggregate[0], {
+        asciidoc: {
+          attributes: { 'name-of-attribute': '\\{foo} and \\{bar}' },
+        },
+        origins: [{ url: 'https://githost/repo.git', startPath: 'docs', branch: 'v1.2.3' }],
+      })
+
+      const { messages, returnValue: contentCatalog } = captureLogSync(() =>
+        classifyContent(playbook, aggregate, siteAsciiDocConfig)
+      ).withReturnValue()
+      const component = contentCatalog.getComponent('the-component')
+      expect(component).to.exist()
+      const componentVersions = component.versions
+      expect(componentVersions).to.have.lengthOf(1)
+      const asciidocConfig = componentVersions[0].asciidoc
+      expect(asciidocConfig).to.exist()
+      expect(asciidocConfig).to.have.property('attributes')
+      expect(Object.entries(asciidocConfig.attributes)).to.have.deep.ordered.members([
+        ['attribute-missing', 'warn'],
+        ['site-title', 'Docs'],
+        ['name-of-attribute', '{foo} and {bar}'],
+      ])
+      expect(messages).to.be.empty()
+    })
+
     it('should skip attribute references to unknown or unset attribute', () => {
       const siteAsciiDocConfig = {
         attributes: {

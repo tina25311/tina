@@ -61,6 +61,18 @@ describe('resolveAsciiDocConfig()', () => {
     })
   })
 
+  it('should skip escaped attribute references', () => {
+    const playbook = {
+      file: '/path/to/antora-playbook.yml',
+      asciidoc: {
+        attributes: { 'name-of-attribute': '\\{foo} \\{bar}' },
+      },
+    }
+    const { messages, returnValue: config } = captureLogSync(() => resolveAsciiDocConfig(playbook)).withReturnValue()
+    expect(config.attributes).to.have.property('name-of-attribute', '{foo} {bar}')
+    expect(messages).to.be.empty()
+  })
+
   it('should not warn about unresolved attribute reference if attribute-missing attribute is not warn', () => {
     const playbook = {
       file: '/path/to/antora-playbook.yml',
