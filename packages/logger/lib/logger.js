@@ -126,14 +126,12 @@ function createPrettyDestination (destination, colorize) {
     colorize,
     customPrettifiers: {
       file: ({ path: path_, line }) => (line == null ? path_ : `${path_}:${line}`),
-      stack (stack, _, log) {
+      stack (stack, _, { source: prevSource = {} }) {
         if (!Array.isArray(stack)) return JSON.stringify(stack, null, 2)
-        let prevSource = log.source
         return stack
           .map(({ file: { path: path_, line }, source }) => {
             const file = line == null ? path_ : `${path_}:${line}`
             const sameSource =
-              prevSource &&
               source.url === prevSource.url &&
               source.refname === prevSource.refname &&
               source.startPath === prevSource.startPath
