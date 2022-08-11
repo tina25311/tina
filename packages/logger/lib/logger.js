@@ -129,7 +129,7 @@ function createPrettyDestination (destination, colorize) {
       stack (stack, _, { source: prevSource = {} }) {
         if (!Array.isArray(stack)) return JSON.stringify(stack, null, 2)
         return stack
-          .map(({ file: { path: path_, line }, source }) => {
+          .map(({ file: { path: path_, line }, source = {} }) => {
             const file = line == null ? path_ : `${path_}:${line}`
             const sameSource =
               source.url === prevSource.url &&

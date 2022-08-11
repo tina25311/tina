@@ -831,40 +831,6 @@ describe('logger', () => {
       expect(lines[7]).to.equal('        source: /path/to/repo-a (refname: main <worktree>, start path: docs)')
     })
 
-    it('should consider source with same refname and different worktree as unique', () => {
-      configure({ format: 'pretty' })
-      const name = 'foobar'
-      const logger = get(name)
-      const file = {
-        path: 'modules/ROOT/partials/include.adoc',
-        origin: {
-          type: 'git',
-          refname: 'v3.0.x',
-          startPath: 'docs',
-          url: 'https://git.example.org/repo-b.git',
-        },
-      }
-      const stack = [
-        {
-          file: {
-            path: 'modules/ROOT/pages/index.adoc',
-            origin: {
-              type: 'git',
-              refname: 'v3.0.x',
-              startPath: 'docs',
-              url: 'https://git.example.org/repo-b.git',
-              worktree: '/path/to/repo-a',
-            },
-          },
-          line: 10,
-        },
-      ]
-      const lines = captureStderrSync(() => logger.warn({ file, line: 2, stack }, 'something is out of place'))
-      expect(lines).to.have.lengthOf(6)
-      expect(lines[4]).to.equal('        file: docs/modules/ROOT/pages/index.adoc:10')
-      expect(lines[5]).to.equal('        source: /path/to/repo-a (refname: v3.0.x <worktree>, start path: docs)')
-    })
-
     it('should not show line after path if line is missing for top-level object or entry in stack', () => {
       configure({ format: 'pretty' })
       const name = 'foobar'
@@ -897,6 +863,40 @@ describe('logger', () => {
       expect(lines[1]).to.equal('    file: docs/modules/ROOT/partials/nested-include.adoc')
       expect(lines[4]).to.equal('        file: docs/modules/ROOT/pages/index.adoc')
       expect(lines[5]).to.equal('        source: /path/to/repo-a (refname: main <worktree>, start path: docs)')
+    })
+
+    it('should consider source with same refname and different worktree as unique', () => {
+      configure({ format: 'pretty' })
+      const name = 'foobar'
+      const logger = get(name)
+      const file = {
+        path: 'modules/ROOT/partials/include.adoc',
+        origin: {
+          type: 'git',
+          refname: 'v3.0.x',
+          startPath: 'docs',
+          url: 'https://git.example.org/repo-b.git',
+        },
+      }
+      const stack = [
+        {
+          file: {
+            path: 'modules/ROOT/pages/index.adoc',
+            origin: {
+              type: 'git',
+              refname: 'v3.0.x',
+              startPath: 'docs',
+              url: 'https://git.example.org/repo-b.git',
+              worktree: '/path/to/repo-a',
+            },
+          },
+          line: 10,
+        },
+      ]
+      const lines = captureStderrSync(() => logger.warn({ file, line: 2, stack }, 'something is out of place'))
+      expect(lines).to.have.lengthOf(6)
+      expect(lines[4]).to.equal('        file: docs/modules/ROOT/pages/index.adoc:10')
+      expect(lines[5]).to.equal('        source: /path/to/repo-a (refname: v3.0.x <worktree>, start path: docs)')
     })
 
     it('should show file and source for each entry in stack that comes from a unique source with no start path', () => {
@@ -1014,6 +1014,23 @@ describe('logger', () => {
       expect(lines[4]).to.equal('        file: docs/modules/ROOT/partials/include.adoc:5')
       expect(lines[5]).to.equal('        file: docs/modules/ROOT/pages/index.adoc:20')
       expect(lines[6]).to.equal('        source: https://git.example.org/repo-2.git (refname: main, start path: docs)')
+    })
+
+    it('should not show source if origin is not available', () => {
+      configure({ format: 'pretty' })
+      const name = 'foobar'
+      const logger = get(name)
+      const file = { path: 'modules/ROOT/partials/include.adoc' }
+      const stack = [
+        {
+          file: { path: 'modules/ROOT/pages/index.adoc' },
+          line: 20,
+        },
+      ]
+      const lines = captureStderrSync(() => logger.warn({ file, line: 9, stack }, 'something is out of place'))
+      expect(lines).to.have.lengthOf(4)
+      expect(lines[1]).to.equal('    file: modules/ROOT/partials/include.adoc:9')
+      expect(lines[3]).to.equal('        file: modules/ROOT/pages/index.adoc:20')
     })
 
     it('should print <unknown> if source in stack entry does not define a url', () => {
