@@ -126,7 +126,7 @@ function createPrettyDestination (destination, colorize) {
     colorize,
     customPrettifiers: {
       file: ({ path: path_, line }) => (line == null ? path_ : `${path_}:${line}`),
-      stack: (stack, _, log) => {
+      stack (stack, _, log) {
         if (!Array.isArray(stack)) return JSON.stringify(stack, null, 2)
         let prevSource = log.source
         return stack
@@ -138,12 +138,7 @@ function createPrettyDestination (destination, colorize) {
               source.refname === prevSource.refname &&
               source.startPath === prevSource.startPath
             prevSource = source
-            if (sameSource) return `\n    file: ${file}`
-            const { url, worktree, refname, startPath } = source
-            source = worktree
-              ? `${worktree} (refname: ${refname} <worktree>${startPath ? ', start path: ' + startPath : ''})`
-              : `${url || '<unknown>'} (refname: ${refname}${startPath ? ', start path: ' + startPath : ''})`
-            return `\n    file: ${file}\n    source: ${source}`
+            return sameSource ? `\n    file: ${file}` : `\n    file: ${file}\n    source: ${this.source(source)}`
           })
           .join('')
       },
