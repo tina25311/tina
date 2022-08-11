@@ -47,7 +47,6 @@ const VENTILATED_CSV_RX = /\s*,\s+/
 const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name)|path)\}/g
 const GIT_SUFFIX_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
-const HEADS_DIR_RX = /^heads\//
 const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
 const HTTP_ERROR_CODE_RX = new RegExp('^' + git.Errors.HttpError.code + '$', 'i')
 const PATH_SEPARATOR_RX = /[/]/g
@@ -404,8 +403,9 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
       ? resolvePathGlobsFs(worktreePath, startPaths)
       : resolvePathGlobsGit(repo, ref.oid, startPaths))
     if (!startPaths.length) {
-      const refInfo = `ref: ${ref.fullname.replace(HEADS_DIR_RX, '')}${worktreePath ? ' <worktree>' : ''}`
-      throw new Error(`no start paths found in ${displayUrl} (${refInfo})`)
+      const where = worktreePath || (worktreePath === null ? repo.gitdir : displayUrl)
+      const flag = worktreePath ? ' <worktree>' : worktreePath === null && ref.remote ? ` <remotes/${ref.remote}>` : ''
+      throw new Error(`no start paths found in ${where} (${ref.type}: ${ref.shortname}${flag})`)
     }
     return Promise.all(
       startPaths.map((startPath) =>
@@ -427,10 +427,11 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
       })
     )
     .catch((err) => {
-      const msg = err.message
-      const refInfo = `ref: ${ref.fullname.replace(HEADS_DIR_RX, '')}${worktreePath ? ' <worktree>' : ''}`
-      const pathInfo = !startPath || msg.startsWith('the start path ') ? '' : ' | path: ' + startPath
-      throw Object.assign(err, { message: msg.replace(/$/m, ` in ${repo.url || repo.dir} (${refInfo}${pathInfo})`) })
+      const where = worktreePath || (worktreePath === null ? repo.gitdir : repo.url || repo.dir)
+      const flag = worktreePath ? ' <worktree>' : worktreePath === null && ref.remote ? ` <remotes/${ref.remote}>` : ''
+      const pathInfo = startPath ? (err.message.startsWith('the start path ') ? '' : ` | start path: ${startPath}`) : ''
+      const message = err.message.replace(/$/m, ` in ${where} (${ref.type}: ${ref.shortname}${flag}${pathInfo})`)
+      throw Object.assign(err, { message })
     })
 }
 
@@ -714,7 +715,7 @@ function loadComponentDescriptor (files, ref, version) {
 }
 
 function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = undefined, editUrl = true) {
-  const { shortname: refname, oid: refhash, type: reftype } = ref
+  const { shortname: refname, oid: refhash, remote, type: reftype } = ref
   const origin = { type: 'git', url, gitdir, refname, [reftype]: refname, startPath }
   if (authStatus) origin.private = authStatus
   if (worktreePath === undefined) {
@@ -726,6 +727,7 @@ function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = 
         (startPath ? '/' + startPath + '/%s' : '/%s')
     } else {
       origin.refhash = refhash
+      if (remote) origin.remote = remote
     }
     origin.worktree = worktreePath
     if (url.startsWith('file://')) url = undefined

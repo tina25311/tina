@@ -11,6 +11,7 @@ const versionCompare = require('./util/version-compare-desc')
 
 const { ROOT_INDEX_ALIAS_ID, ROOT_INDEX_PAGE_ID } = require('./constants')
 const SPACE_RX = / /g
+const LOG_WRAP = '\n    '
 
 const $components = Symbol('components')
 const $files = Symbol('files')
@@ -140,12 +141,12 @@ class ContentCatalog {
         throw new Error(`Duplicate alias: ${generateResourceSpec(src)}`)
       } else {
         const details = [filesForFamily.get(key), file]
-          .map((it, idx) => `  ${idx + 1}: ${getFileLocation(it)}`)
-          .join('\n')
+          .map((it, idx) => `${idx + 1}: ${getFileLocation(it)}`)
+          .join(LOG_WRAP)
         if (family === 'nav') {
-          throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}\n${details}`)
+          throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}${LOG_WRAP}${details}`)
         } else {
-          throw new Error(`Duplicate ${family}: ${generateResourceSpec(src)}\n${details}`)
+          throw new Error(`Duplicate ${family}: ${generateResourceSpec(src)}${LOG_WRAP}${details}`)
         }
       }
     }
@@ -360,10 +361,10 @@ class ContentCatalog {
         throw new Error(
           existingPage === target
             ? `Page cannot define alias that references itself: ${generateResourceSpec(src)}` +
-              ` (specified as: ${spec})\n  source: ${getFileLocation(existingPage)}`
-            : `Page alias cannot reference an existing page: ${generateResourceSpec(src)} (specified as: ${spec})\n` +
-              `  source: ${getFileLocation(target)}\n` +
-              `  existing page: ${getFileLocation(existingPage)}`
+              ` (specified as: ${spec})${LOG_WRAP}source: ${getFileLocation(existingPage)}`
+            : `Page alias cannot reference an existing page: ${generateResourceSpec(src)} (specified as: ${spec})` +
+              `${LOG_WRAP}source: ${getFileLocation(target)}` +
+              `${LOG_WRAP}existing page: ${getFileLocation(existingPage)}`
         )
       }
     } else if (src.version == null) {
@@ -374,7 +375,8 @@ class ContentCatalog {
     const existingAlias = this.getById(src)
     if (existingAlias) {
       throw new Error(
-        `Duplicate alias: ${generateResourceSpec(src)} (specified as: ${spec})\n  source: ${getFileLocation(target)}`
+        `Duplicate alias: ${generateResourceSpec(src)} (specified as: ${spec})` +
+          `${LOG_WRAP}source: ${getFileLocation(target)}`
       )
     }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
@@ -593,10 +595,12 @@ function createSymbolicVersionAlias (component, version, symbolicVersionSegment,
 }
 
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {
-  if (abspath) return abspath
-  if (!origin) return path_
-  const { url, refname, startPath } = origin
-  return `${path.join(startPath, path_)} in ${url} (ref: ${refname}${startPath ? ' | path: ' + startPath : ''})`
+  if (!origin) return abspath || path_
+  const { url, gitdir, worktree, refname, tag, reftype = tag ? 'tag' : 'branch', remote, startPath } = origin
+  let details = `${reftype}: ${refname}`
+  if ('worktree' in origin) details += worktree ? ' <worktree>' : remote ? ` <remotes/${remote}>` : ''
+  if (startPath) details += ` | start path: ${startPath}`
+  return `${abspath || path.join(startPath, path_)} in ${'worktree' in origin ? worktree || gitdir : url} (${details})`
 }
 
 module.exports = ContentCatalog

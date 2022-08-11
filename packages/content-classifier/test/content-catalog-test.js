@@ -1842,7 +1842,7 @@ describe('ContentCatalog', () => {
       const expectedError =
         'Page cannot define alias that references itself: 1.2.3@the-component::the-page.adoc' +
         ` (specified as: ${aliasSpec})\n` +
-        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+        '    source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (branch: v1.2.3)'
       expect(() => contentCatalog.registerPageAlias(aliasSpec, targetPage)).to.throw(expectedError)
     })
 
@@ -1854,7 +1854,7 @@ describe('ContentCatalog', () => {
       const expectedError =
         'Page cannot define alias that references itself: 1.2.3@the-component::the-page.adoc' +
         ` (specified as: ${aliasSpec})\n` +
-        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+        '    source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (branch: v1.2.3)'
       expect(() => contentCatalog.registerPageAlias(aliasSpec, targetPage)).to.throw(expectedError)
     })
 
@@ -1866,7 +1866,7 @@ describe('ContentCatalog', () => {
       const expectedError =
         'Page cannot define alias that references itself: 1.2.3@the-component::the-page.adoc' +
         ` (specified as: ${aliasSpec})\n` +
-        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+        '    source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (branch: v1.2.3)'
       expect(() => contentCatalog.registerPageAlias(aliasSpec, targetPage)).to.throw(expectedError)
     })
 
@@ -1882,8 +1882,8 @@ describe('ContentCatalog', () => {
       const expectedError =
         'Page alias cannot reference an existing page: 1.2.3@the-component::the-existing-page.adoc' +
         ` (specified as: ${aliasSpec})\n` +
-        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)\n' +
-        '  existing page: modules/ROOT/pages/the-existing-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+        '    source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (branch: v1.2.3)\n' +
+        '    existing page: modules/ROOT/pages/the-existing-page.adoc in https://githost/repo.git (branch: v1.2.3)'
       expect(() => contentCatalog.registerPageAlias(aliasSpec, targetPage)).to.throw(expectedError)
     })
 
@@ -1893,7 +1893,7 @@ describe('ContentCatalog', () => {
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
       const expectedError =
         'Duplicate alias: 1.2.3@the-component::alias.adoc (specified as: ROOT:alias.adoc)\n' +
-        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+        '    source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (branch: v1.2.3)'
       expect(() => contentCatalog.registerPageAlias('alias.adoc', targetPage)).to.not.throw()
       expect(() => contentCatalog.registerPageAlias('ROOT:alias.adoc', targetPage)).to.throw(expectedError)
     })
@@ -1904,7 +1904,7 @@ describe('ContentCatalog', () => {
       targetPage.path = `modules/${targetPageSrc.module}/pages/${targetPageSrc.relative}`
       const expectedError =
         'Duplicate alias: next@unknown::alias.adoc (specified as: next@unknown:ROOT:alias.adoc)\n' +
-        '  source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (ref: v1.2.3)'
+        '    source: modules/ROOT/pages/the-page.adoc in https://githost/repo.git (branch: v1.2.3)'
       expect(() => contentCatalog.registerPageAlias('next@unknown::alias.adoc', targetPage)).to.not.throw()
       expect(() => contentCatalog.registerPageAlias('next@unknown:ROOT:alias.adoc', targetPage)).to.throw(expectedError)
     })

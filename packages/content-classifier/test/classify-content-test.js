@@ -788,6 +788,7 @@ describe('classifyContent()', () => {
         name: '@antora/asciidoc-loader',
         file: { path: 'docs/antora.yml' },
         source: {
+          reftype: 'branch',
           startPath: 'docs',
           url: 'https://githost/repo.git',
         },
@@ -851,8 +852,41 @@ describe('classifyContent()', () => {
       aggregate[0].files.push(file2)
       const expectedMessage =
         'Duplicate page: v1.2.3@the-component::page-one.adoc\n' +
-        '  1: modules/ROOT/pages/page-one.adoc in https://githost/repo.git (ref: v1.2.3)\n' +
-        '  2: modules/ROOT/pages/page-one.adoc in https://githost/repo.git (ref: v1.2.x)'
+        '    1: modules/ROOT/pages/page-one.adoc in https://githost/repo.git (branch: v1.2.3)\n' +
+        '    2: modules/ROOT/pages/page-one.adoc in https://githost/repo.git (branch: v1.2.x)'
+      expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
+    })
+
+    it('should throw when attempting to add a duplicate page between local branch and worktree', () => {
+      const file1 = createFile('modules/ROOT/pages/page-one.adoc')
+      const file2 = createFile('modules/ROOT/pages/page-one.adoc')
+      file2.src.origin.branch = file2.src.origin.refname = 'v1.2.x'
+      file2.src.origin.worktree = '/path/to/worktree'
+      file2.src.abspath = '/path/to/worktree/' + file2.path
+      aggregate[0].files.push(file1)
+      aggregate[0].files.push(file2)
+      const expectedMessage =
+        'Duplicate page: v1.2.3@the-component::page-one.adoc\n' +
+        '    1: modules/ROOT/pages/page-one.adoc in https://githost/repo.git (branch: v1.2.3)\n' +
+        '    2: /path/to/worktree/modules/ROOT/pages/page-one.adoc in /path/to/worktree (branch: v1.2.x <worktree>)'
+      expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
+    })
+
+    it('should throw when attempting to add a duplicate page between remote branch and worktree', () => {
+      const file1 = createFile('modules/ROOT/pages/page-one.adoc')
+      const file2 = createFile('modules/ROOT/pages/page-one.adoc')
+      file1.src.origin.worktree = null
+      file1.src.origin.remote = 'origin'
+      file1.src.origin.gitdir = '/path/to/repo/.git'
+      file2.src.origin.branch = file2.src.origin.refname = 'v1.2.x'
+      file2.src.origin.worktree = '/path/to/worktree'
+      file2.src.abspath = '/path/to/worktree/' + file2.path
+      aggregate[0].files.push(file1)
+      aggregate[0].files.push(file2)
+      const expectedMessage =
+        'Duplicate page: v1.2.3@the-component::page-one.adoc\n' +
+        '    1: modules/ROOT/pages/page-one.adoc in /path/to/repo/.git (branch: v1.2.3 <remotes/origin>)\n' +
+        '    2: /path/to/worktree/modules/ROOT/pages/page-one.adoc in /path/to/worktree (branch: v1.2.x <worktree>)'
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
@@ -1121,8 +1155,8 @@ describe('classifyContent()', () => {
       aggregate[0].files.push(file2)
       const expectedMessage =
         'Duplicate image: v1.2.3@the-component:admin:image$foo.png\n' +
-        '  1: modules/admin/images/foo.png in https://githost/repo.git (ref: v1.2.3)\n' +
-        '  2: modules/admin/images/foo.png in https://githost/repo.git (ref: v1.2.x)'
+        '    1: modules/admin/images/foo.png in https://githost/repo.git (branch: v1.2.3)\n' +
+        '    2: modules/admin/images/foo.png in https://githost/repo.git (branch: v1.2.x)'
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
@@ -1322,8 +1356,8 @@ describe('classifyContent()', () => {
       aggregate[0].nav = ['modules/nav.adoc']
       const expectedMessage =
         'Duplicate nav in v1.2.3@the-component: modules/nav.adoc\n' +
-        '  1: docs/modules/nav.adoc in https://githost/repo.git (ref: v1.2.3 | path: docs)\n' +
-        '  2: docs/modules/nav.adoc in https://githost/repo.git (ref: v1.2.x | path: docs)'
+        '    1: docs/modules/nav.adoc in https://githost/repo.git (branch: v1.2.3 | start path: docs)\n' +
+        '    2: docs/modules/nav.adoc in https://githost/repo.git (branch: v1.2.x | start path: docs)'
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
@@ -1338,8 +1372,8 @@ describe('classifyContent()', () => {
       aggregate[0].nav = ['modules/install/nav.adoc']
       const expectedMessage =
         'Duplicate nav in v1.2.3@the-component: modules/install/nav.adoc\n' +
-        '  1: modules/install/nav.adoc in https://githost/repo.git (ref: v1.2.x)\n' +
-        '  2: modules/install/nav.adoc in https://githost/repo.git (ref: v1.2.3)'
+        '    1: modules/install/nav.adoc in https://githost/repo.git (branch: v1.2.x)\n' +
+        '    2: modules/install/nav.adoc in https://githost/repo.git (tag: v1.2.3)'
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
