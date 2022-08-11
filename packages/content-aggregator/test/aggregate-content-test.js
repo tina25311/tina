@@ -3914,6 +3914,20 @@ describe('aggregateContent()', () => {
         expect(origin.worktree).to.equal(worktreePath)
       })
 
+      it('should generate correct origin data for file taken from remote branch of local repository', () => {
+        const worktreePath = ospath.join(CONTENT_REPOS_DIR, 'the-component')
+        const gitdir = ospath.join(worktreePath, '.git')
+        const branch = 'v1.0.x'
+        const remote = 'origin'
+        const url = 'https://github.com/org-name/repo-name.git'
+        const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch', remote }, '', null)
+        expect(origin.gitdir).to.equal(gitdir)
+        expect(origin.url).to.equal(url)
+        expect(origin.branch).to.equal(branch)
+        expect(origin.refname).to.equal(branch)
+        expect(origin.worktree).to.be.null()
+      })
+
       it('should set correct origin data if URL requires auth', () => {
         const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
         const gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(url))
