@@ -28,7 +28,7 @@
       "packages/*/{bin,lib}/**/*.js"
     ],
     "exclude": [
-      "packages/test-harness/lib/*.js"
+      "packages/test-harness/lib/**/*.js"
     ],
     "reporter": [
       "cobertura",
