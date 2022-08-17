@@ -2270,7 +2270,7 @@ describe('aggregateContent()', () => {
         const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
         const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
         expect(pageOne.src.abspath).to.be.undefined()
-        expect(pageOne.src.origin.worktree).to.be.null()
+        expect(pageOne.src.origin.worktree).to.be.false()
         expect(pageTwo).to.be.undefined()
       })
 
@@ -2299,7 +2299,7 @@ describe('aggregateContent()', () => {
         const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
         const pageTwo = files.find((it) => it.relative === 'modules/ROOT/pages/page-two.adoc')
         expect(pageOne.src.abspath).to.be.undefined()
-        expect(pageOne.src.origin.worktree).to.be.null()
+        expect(pageOne.src.origin.worktree).to.be.false()
         expect(pageTwo).to.be.undefined()
       })
 
@@ -2636,7 +2636,7 @@ describe('aggregateContent()', () => {
       const origin = origins[0]
       expect(origin.branch).to.equal('remote-branch')
       expect(origin.remote).to.equal('origin')
-      expect(origin.worktree).to.be.null()
+      expect(origin.worktree).to.be.false()
       expect(aggregate[0].files).to.have.lengthOf(1)
       expect(aggregate[0].files[0].path).to.equal('modules/ROOT/pages/page-one.adoc')
     })
@@ -2673,7 +2673,7 @@ describe('aggregateContent()', () => {
         if (repoBuilder.remote) {
           expect(fixtureFile.src.origin.worktree).to.be.undefined()
         } else {
-          expect(fixtureFile.src.origin.worktree).to.be.null()
+          expect(fixtureFile.src.origin.worktree).to.be.false()
         }
         expect(fixtureFile.stat.mode).to.equal(expectedMode)
       })
@@ -2715,7 +2715,7 @@ describe('aggregateContent()', () => {
         if (repoBuilder.remote) {
           expect(fixtureFile.src.origin.worktree).to.be.undefined()
         } else {
-          expect(fixtureFile.src.origin.worktree).to.be.null()
+          expect(fixtureFile.src.origin.worktree).to.be.false()
         }
         expect(fixtureFile.stat.mode).to.equal(expectedMode)
       })
@@ -2791,7 +2791,7 @@ describe('aggregateContent()', () => {
           if (repoBuilder.remote) {
             expect(symlinkPage.src.origin.worktree).to.be.undefined()
           } else if (repoBuilder.bare) {
-            expect(symlinkPage.src.origin.worktree).to.be.null()
+            expect(symlinkPage.src.origin.worktree).to.be.false()
           }
         })
       })
@@ -2821,7 +2821,7 @@ describe('aggregateContent()', () => {
           if (repoBuilder.remote) {
             expect(symlinkPage.src.origin.worktree).to.be.undefined()
           } else if (repoBuilder.bare) {
-            expect(symlinkPage.src.origin.worktree).to.be.null()
+            expect(symlinkPage.src.origin.worktree).to.be.false()
           }
         })
       })
@@ -2851,7 +2851,7 @@ describe('aggregateContent()', () => {
           if (repoBuilder.remote) {
             expect(symlinkPage.src.origin.worktree).to.be.undefined()
           } else if (repoBuilder.bare) {
-            expect(symlinkPage.src.origin.worktree).to.be.null()
+            expect(symlinkPage.src.origin.worktree).to.be.false()
           }
         })
       })
@@ -2885,7 +2885,7 @@ describe('aggregateContent()', () => {
           if (repoBuilder.remote) {
             expect(symlinkPage.src.origin.worktree).to.be.undefined()
           } else if (repoBuilder.bare) {
-            expect(symlinkPage.src.origin.worktree).to.be.null()
+            expect(symlinkPage.src.origin.worktree).to.be.false()
           }
         })
       })
@@ -2919,7 +2919,7 @@ describe('aggregateContent()', () => {
           if (repoBuilder.remote) {
             expect(page.src.origin.worktree).to.be.undefined()
           } else if (repoBuilder.bare) {
-            expect(page.src.origin.worktree).to.be.null()
+            expect(page.src.origin.worktree).to.be.false()
           }
         })
       })
@@ -2951,7 +2951,7 @@ describe('aggregateContent()', () => {
           if (repoBuilder.remote) {
             expect(page.src.origin.worktree).to.be.undefined()
           } else if (repoBuilder.bare) {
-            expect(page.src.origin.worktree).to.be.null()
+            expect(page.src.origin.worktree).to.be.false()
           }
         })
       })
@@ -2983,7 +2983,7 @@ describe('aggregateContent()', () => {
           if (repoBuilder.remote) {
             expect(page.src.origin.worktree).to.be.undefined()
           } else if (repoBuilder.bare) {
-            expect(page.src.origin.worktree).to.be.null()
+            expect(page.src.origin.worktree).to.be.false()
           }
         })
       })
@@ -3403,7 +3403,7 @@ describe('aggregateContent()', () => {
           if (repoBuilder.remote) {
             expect(symlinkPage.src.origin.worktree).to.be.undefined()
           } else if (repoBuilder.bare) {
-            expect(symlinkPage.src.origin.worktree).to.be.null()
+            expect(symlinkPage.src.origin.worktree).to.be.false()
           }
         })
       })
@@ -3576,7 +3576,7 @@ describe('aggregateContent()', () => {
           expectedFileSrc.origin.gitdir = repoBuilder.url
           expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
           expectedFileSrc.origin.refhash = refhash
-          expectedFileSrc.origin.worktree = null
+          expectedFileSrc.origin.worktree = false
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
           expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
@@ -3629,7 +3629,7 @@ describe('aggregateContent()', () => {
           expectedFileSrc.origin.gitdir = repoBuilder.url
           expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
           expectedFileSrc.origin.refhash = refhash
-          expectedFileSrc.origin.worktree = null
+          expectedFileSrc.origin.worktree = false
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, repoBuilder.startPath, expectedFileSrc.path)
           expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
@@ -3682,7 +3682,7 @@ describe('aggregateContent()', () => {
           expectedFileSrc.origin.gitdir = repoBuilder.url
           expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
           expectedFileSrc.origin.refhash = refhash
-          expectedFileSrc.origin.worktree = null
+          expectedFileSrc.origin.worktree = false
         } else {
           expectedFileSrc.abspath = ospath.join(repoBuilder.repoPath, expectedFileSrc.path)
           expectedFileSrc.origin.url = pathToFileURL(repoBuilder.url)
@@ -3811,7 +3811,7 @@ describe('aggregateContent()', () => {
         expect(page).to.not.be.undefined()
         const expectedOriginUrl = pathToFileURL(repoBuilder.url)
         expect(page.src.origin.url).to.equal(expectedOriginUrl)
-        expect(page.src.origin.worktree).to.be.null()
+        expect(page.src.origin.worktree).to.be.false()
       })
 
       it('should set origin url for local repository if using worktree and remote url is not set in git config', async () => {
@@ -3986,13 +3986,13 @@ describe('aggregateContent()', () => {
         const branch = 'v1.0.x'
         const remote = 'origin'
         const url = 'https://github.com/org-name/repo-name.git'
-        const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch', remote }, '', null)
+        const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch', remote }, '', false)
         expect(origin.gitdir).to.equal(gitdir)
         expect(origin.url).to.equal(url)
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
         expect(origin.remote).to.equal(remote)
-        expect(origin.worktree).to.be.null()
+        expect(origin.worktree).to.be.false()
       })
 
       it('should set correct origin data if URL requires auth', () => {

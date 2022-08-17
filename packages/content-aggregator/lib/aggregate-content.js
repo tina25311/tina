@@ -267,7 +267,7 @@ async function selectReferences (source, repo, remote) {
   let { branches: branchPatterns, tags: tagPatterns, worktrees: worktreePatterns = '.' } = source
   const isBare = repo.noCheckout
   const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
-  const noWorktree = repo.url ? undefined : null
+  const noWorktree = repo.url ? undefined : false
   const refs = new Map()
   if (
     tagPatterns &&
@@ -403,8 +403,8 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
       ? resolvePathGlobsFs(worktreePath, startPaths)
       : resolvePathGlobsGit(repo, ref.oid, startPaths))
     if (!startPaths.length) {
-      const where = worktreePath || (worktreePath === null ? repo.gitdir : displayUrl)
-      const flag = worktreePath ? ' <worktree>' : worktreePath === null && ref.remote ? ` <remotes/${ref.remote}>` : ''
+      const where = worktreePath || (worktreePath === false ? repo.gitdir : displayUrl)
+      const flag = worktreePath ? ' <worktree>' : ref.remote && worktreePath === false ? ` <remotes/${ref.remote}>` : ''
       throw new Error(`no start paths found in ${where} (${ref.type}: ${ref.shortname}${flag})`)
     }
     return Promise.all(
@@ -427,8 +427,8 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
       })
     )
     .catch((err) => {
-      const where = worktreePath || (worktreePath === null ? repo.gitdir : repo.url || repo.dir)
-      const flag = worktreePath ? ' <worktree>' : worktreePath === null && ref.remote ? ` <remotes/${ref.remote}>` : ''
+      const where = worktreePath || (worktreePath === false ? repo.gitdir : repo.url || repo.dir)
+      const flag = worktreePath ? ' <worktree>' : ref.remote && worktreePath === false ? ` <remotes/${ref.remote}>` : ''
       const pathInfo = startPath ? (err.message.startsWith('the start path ') ? '' : ` | start path: ${startPath}`) : ''
       const message = err.message.replace(/$/m, ` in ${where} (${ref.type}: ${ref.shortname}${flag}${pathInfo})`)
       throw Object.assign(err, { message })

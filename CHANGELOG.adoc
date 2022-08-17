@@ -24,6 +24,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *content-aggregator*: Set `worktree` property on origin to false when branch or tag is local but not taken from worktree (#993)
 * *asciidoc-loader*: Move logic to collate AsciiDoc attributes to a helper function (#982)
 * *content-classifier*: Use helper function to collate AsciiDoc attributes from playbook and component version (#982)
 * Consistently format origin information in log and error messages (#988)
