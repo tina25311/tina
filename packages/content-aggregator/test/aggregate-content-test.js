@@ -2754,8 +2754,8 @@ describe('aggregateContent()', () => {
             path: ospath.join(repoBuilder.repoPath, fixturePath),
           },
           source: {
-            refname: 'main',
             reftype: 'branch',
+            refname: 'main',
             worktree: repoBuilder.repoPath,
             local: repoBuilder.local,
             url: pathToFileURL(repoBuilder.url),
@@ -3563,8 +3563,9 @@ describe('aggregateContent()', () => {
           extname: expectedFile.extname,
           origin: {
             type: 'git',
-            branch: 'main',
+            reftype: 'branch',
             refname: 'main',
+            branch: 'main',
             startPath: '',
           },
         }
@@ -3616,8 +3617,9 @@ describe('aggregateContent()', () => {
           extname: expectedFile.extname,
           origin: {
             type: 'git',
-            branch: 'main',
+            reftype: 'branch',
             refname: 'main',
+            branch: 'main',
             startPath: 'docs',
           },
         }
@@ -3669,8 +3671,9 @@ describe('aggregateContent()', () => {
           extname: expectedFile.extname,
           origin: {
             type: 'git',
-            branch: 'main',
+            reftype: 'branch',
             refname: 'main',
+            branch: 'main',
             startPath: '',
           },
         }
@@ -3846,6 +3849,7 @@ describe('aggregateContent()', () => {
               const origin = computeOrigin(url, false, gitdir, { shortname, type, remote: 'origin' }, '')
               expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
+              expect(origin.reftype).to.equal(type)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'github.com') {
                 const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/${action[type]}/${shortname}/%s`
@@ -3876,6 +3880,7 @@ describe('aggregateContent()', () => {
               const origin = computeOrigin(url, false, gitdir, { shortname, type, remote: 'origin' }, '')
               expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
+              expect(origin.reftype).to.equal(type)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'gitlab.com') {
                 const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/${action[type]}/${shortname}/%s`
@@ -3905,6 +3910,7 @@ describe('aggregateContent()', () => {
               const origin = computeOrigin(url, false, gitdir, { shortname, type, remote: 'origin' }, '')
               expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
+              expect(origin.reftype).to.equal(type)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'bitbucket.org') {
                 const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/src/${shortname}/%s`
@@ -3934,6 +3940,7 @@ describe('aggregateContent()', () => {
               const origin = computeOrigin(url, false, gitdir, { shortname, type, remote: 'origin' }, '')
               expect(origin.gitdir).to.equal(gitdir)
               expect(origin.url).to.equal(url)
+              expect(origin.reftype).to.equal(type)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'pagure.io') {
                 const expectedEditUrlPattern = `https://${hostname}/group-name/repo-name/blob/${shortname}/f/%s`
@@ -3955,6 +3962,7 @@ describe('aggregateContent()', () => {
         const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch' }, '', worktreePath)
         expect(origin.gitdir).to.equal(gitdir)
         expect(origin.url).to.equal(url)
+        expect(origin.reftype).to.equal('branch')
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
         expect(origin).to.not.have.property('remote')
@@ -3972,6 +3980,7 @@ describe('aggregateContent()', () => {
         const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch' }, '', worktreePath)
         expect(origin.gitdir).to.equal(gitdir)
         expect(origin.url).to.equal(url)
+        expect(origin.reftype).to.equal('branch')
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
         expect(origin).to.not.have.property('remote')
@@ -3989,6 +3998,7 @@ describe('aggregateContent()', () => {
         const origin = computeOrigin(url, false, gitdir, { shortname: branch, type: 'branch', remote }, '', false)
         expect(origin.gitdir).to.equal(gitdir)
         expect(origin.url).to.equal(url)
+        expect(origin.reftype).to.equal('branch')
         expect(origin.branch).to.equal(branch)
         expect(origin.refname).to.equal(branch)
         expect(origin.remote).to.equal(remote)

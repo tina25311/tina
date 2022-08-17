@@ -196,7 +196,7 @@ function reshapeErrorForLog (err, msg, prettyPrint) {
 
 function reshapeFileForLog ({ file: { abspath, origin, path: vpath }, line, stack }) {
   if (origin) {
-    const { url, gitdir, worktree, refname, tag, reftype = tag ? 'tag' : 'branch', remote, startPath } = origin
+    const { url, gitdir, worktree, tag, reftype = tag ? 'tag' : 'branch', refname, remote, startPath } = origin
     const local = 'worktree' in origin && (gitdir || url)
     const logObject = {
       file: { path: abspath || path.join(startPath, vpath), line },

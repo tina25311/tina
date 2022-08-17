@@ -411,8 +411,9 @@ describe('loadAsciiDoc()', () => {
       inputFile.src.origin = {
         type: 'git',
         url: 'https://git.example.org/repo.git',
-        startPath: 'docs',
         refname: 'main',
+        branch: 'main',
+        startPath: 'docs',
       }
       const config = {
         attributes: { 'attribute-missing': 'warn' },
@@ -612,6 +613,8 @@ describe('loadAsciiDoc()', () => {
         type: 'git',
         url: 'https://example.org/component-a.git',
         startPath: 'docs',
+        reftype: 'branch',
+        refname: 'v4.5.x',
         branch: 'v4.5.x',
         refhash: 'a185bc03d7c07a3a98dcd14214d884ebd6387578',
       }
@@ -641,6 +644,8 @@ describe('loadAsciiDoc()', () => {
         type: 'git',
         url: 'https://example.org/component-a.git',
         startPath: 'docs',
+        reftype: 'branch',
+        refname: 'v4.5.x',
         branch: 'v4.5.x',
         worktree: '/path/to/worktree',
       }
@@ -670,6 +675,8 @@ describe('loadAsciiDoc()', () => {
         type: 'git',
         url: 'https://example.org/component-a.git',
         startPath: '',
+        reftype: 'tag',
+        refname: 'v4.5.1',
         tag: 'v4.5.1',
         refhash: 'a185bc03d7c07a3a98dcd14214d884ebd6387578',
       }
@@ -1880,8 +1887,9 @@ describe('loadAsciiDoc()', () => {
       inputFile.src.origin = {
         type: 'git',
         url: 'https://git.example.org/repo-a.git',
-        startPath: '',
         refname: 'main',
+        branch: 'main',
+        startPath: '',
       }
       const contentCatalog = mockContentCatalog({
         component: 'another-component',
@@ -1894,8 +1902,9 @@ describe('loadAsciiDoc()', () => {
       contentCatalog.getFiles()[0].src.origin = {
         type: 'git',
         url: 'https://git.example.org/repo-b.git',
-        startPath: 'docs',
         refname: 'v4.5.x',
+        branch: 'v4.5.x',
+        startPath: 'docs',
       }
       setInputFileContents('include::1.1@another-component::partial$greeting.adoc[]')
       const messages = captureLogSync(() => loadAsciiDoc(inputFile, contentCatalog, { sourcemap: true }).convert())
