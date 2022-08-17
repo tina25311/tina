@@ -135,7 +135,7 @@ function createPrettyDestination (destination, colorize) {
             const file = line == null ? path_ : `${path_}:${line}`
             const sameSource =
               source.url === prevSource.url &&
-              source.worktree === prevSource.worktree &&
+              source.reftype === prevSource.reftype &&
               source.refname === prevSource.refname &&
               source.worktree === prevSource.worktree &&
               source.startPath === prevSource.startPath
