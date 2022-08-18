@@ -201,7 +201,7 @@ function reshapeFileForLog ({ file: { abspath, origin, path: vpath }, line, stac
     const logObject = {
       file: { path: abspath || path.join(startPath, vpath), line },
       source: local
-        ? { url, local, worktree: worktree || false, refname, reftype, remote, startPath: startPath || undefined }
+        ? { url, local, worktree, refname, reftype, remote, startPath: startPath || undefined }
         : { url, refname, reftype, startPath: startPath || undefined },
     }
     if (stack) logObject.stack = stack.map(reshapeFileForLog)

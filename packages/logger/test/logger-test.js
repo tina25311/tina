@@ -412,7 +412,7 @@ describe('logger', () => {
           startPath: '',
           url: 'https://git.example.org/repo.git',
           gitdir: '/path/to/repo/.git',
-          worktree: null,
+          worktree: false,
         },
       }
       const messages = captureStdoutLogSync(() => logger.warn({ file }, 'something is out of place'))
@@ -444,7 +444,7 @@ describe('logger', () => {
           startPath: '',
           url: 'https://git.example.org/repo.git',
           gitdir: '/path/to/repo/.git',
-          worktree: null,
+          worktree: false,
           remote: 'origin',
         },
       }
@@ -801,7 +801,7 @@ describe('logger', () => {
           url: 'https://git.example.org/repo.git',
           gitdir: '/path/to/repo/.git',
           remote: 'origin',
-          worktree: null,
+          worktree: false,
         },
       }
       const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
@@ -823,7 +823,7 @@ describe('logger', () => {
           url: 'https://git.example.org/repo.git',
           gitdir: '/path/to/repo/.git',
           remote: 'origin',
-          worktree: null,
+          worktree: false,
         },
       }
       const lines = captureStderrSync(() => logger.warn({ file }, 'something is out of place'))
