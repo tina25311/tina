@@ -44,7 +44,7 @@ const {
 const ANY_SEPARATOR_RX = /[:/]/
 const CSV_RX = /\s*,\s*/
 const VENTILATED_CSV_RX = /\s*,\s+/
-const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name)|path)\}/g
+const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name|type)|path)\}/g
 const GIT_SUFFIX_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
 const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
@@ -716,7 +716,7 @@ function loadComponentDescriptor (files, ref, version) {
 
 function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = undefined, editUrl = true) {
   const { shortname: refname, oid: refhash, remote, type: reftype } = ref
-  const origin = { type: 'git', url, gitdir, refname, [reftype]: refname, refhash, startPath }
+  const origin = { type: 'git', url, gitdir, reftype, refname, [reftype]: refname, refhash, startPath }
   if (worktreePath !== undefined) {
     if ((origin.worktree = worktreePath)) {
       delete origin.refhash
@@ -749,6 +749,7 @@ function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = 
     const vars = {
       path: () => (startPath ? path.join(startPath, '%s') : '%s'),
       refhash: () => refhash,
+      reftype: () => reftype,
       refname: () => refname,
       web_url: () => origin.webUrl || '',
     }
