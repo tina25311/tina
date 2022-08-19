@@ -14,15 +14,14 @@ const {
 
 const fs = require('fs')
 const { default: Kapok } = require('kapok-js')
-const pkg = require('@antora/cli/package.json')
 const ospath = require('path')
+const { version: VERSION } = require('@antora/cli/package.json')
 
 const ANTORA_CLI = ospath.resolve('node_modules', '.bin', process.platform === 'win32' ? 'antora.cmd' : 'antora')
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const UI_BUNDLE_URL =
   'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable'
-const VERSION = pkg.version
 const WORK_DIR = ospath.join(__dirname, 'work')
 const ANTORA_CACHE_DIR = ospath.join(WORK_DIR, '.antora/cache')
 const TMP_DIR = require('os').tmpdir()
