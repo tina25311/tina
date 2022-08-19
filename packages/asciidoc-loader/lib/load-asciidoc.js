@@ -1,6 +1,6 @@
 'use strict'
 
-const Asciidoctor = require('@asciidoctor/core')()
+const Asciidoctor = require('./asciidoctor')
 const { Extensions, LoggerManager, NullLogger } = Asciidoctor
 const Opal = global.Opal
 const collateAsciiDocAttributes = require('./util/collate-asciidoc-attributes')
