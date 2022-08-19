@@ -1038,12 +1038,12 @@ function camelCaseKeys (o, stopPaths = [], p = '') {
   return accum
 }
 
-function coerceToString (value) {
-  return value == null ? '' : String(value)
-}
-
 function cleanStartPath (value) {
   return value && ~value.indexOf('/') ? value.replace(SUPERFLUOUS_SEPARATORS_RX, '') : value
+}
+
+function coerceToString (value) {
+  return value == null ? '' : String(value)
 }
 
 function findWorktrees (repo, patterns) {
