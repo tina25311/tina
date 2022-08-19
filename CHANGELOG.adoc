@@ -17,6 +17,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Add `reftype` property to origin object to explicitly identify type of ref (branch or tag) (#988)
 * *content-aggregator*: Add `remote` property to origin object to identify a remote tracking branch (#988)
 * *content-aggregator*: Add `origins` property containing unique origin objects to each entry in content aggregate (#978)
+* *content-aggregator*: Attach parsed component version descriptor to `descriptor` property on origin object (#525)
 * *content-aggregator*: Include target in error message for broken or cyclic symbolic link (#900)
 * *content-aggregator*: Log warning message instead of throwing fatal error if file in worktree disappears or cannot be read (#986)
 * *ui-loader*: Include target in error message for broken or cyclic symbolic link (#900)
