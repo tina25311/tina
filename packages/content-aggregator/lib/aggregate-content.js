@@ -2,8 +2,8 @@
 
 const { createHash } = require('crypto')
 const createGitHttpPlugin = require('./git-plugin-http')
-const deepFlatten = require('./deep-flatten')
 const decodeUint8Array = require('./decode-uint8-array')
+const deepFlatten = require('./deep-flatten')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
