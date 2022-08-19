@@ -2,12 +2,12 @@
 
 const { createHash } = require('crypto')
 const createGitHttpPlugin = require('./git-plugin-http')
+const deepFlatten = require('./deep-flatten')
 const decodeUint8Array = require('./decode-uint8-array')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
 const filterRefs = require('./filter-refs')
-const flattenDeep = require('./flatten-deep')
 const fs = require('fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
@@ -153,7 +153,7 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
 
 function buildAggregate (componentVersionBuckets) {
   return [
-    ...flattenDeep(componentVersionBuckets)
+    ...deepFlatten(componentVersionBuckets)
       .reduce((accum, batch) => {
         const key = batch.version + '@' + batch.name
         const entry = accum.get(key)
