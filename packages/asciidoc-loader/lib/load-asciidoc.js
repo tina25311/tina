@@ -82,7 +82,10 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   try {
     return Asciidoctor.load(contents.toString(), opts)
   } finally {
-    if (extensions.length) freeExtensions()
+    if (extensions.length) {
+      // low-level operation to free objects from memory that have been weaved into an extension DSL module
+      EXTENSION_DSL_TYPES.forEach((type) => (Opal.const_get_local(Extensions, type).$$iclasses.length = 0))
+    }
   }
 }
 
@@ -184,13 +187,6 @@ function resolveAsciiDocConfig (playbook = {}) {
 
 function isExtensionRegistered (ext, registry) {
   return Object.values(registry.getGroups()).includes(ext)
-}
-
-/**
- * Low-level operation to free objects from memory that have been weaved into an extension DSL module
- */
-function freeExtensions () {
-  EXTENSION_DSL_TYPES.forEach((type) => (Opal.const_get_local(Extensions, type).$$iclasses.length = 0))
 }
 
 module.exports = Object.assign(loadAsciiDoc, {
