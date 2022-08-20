@@ -49,6 +49,7 @@ const CSV_RX = /\s*,\s*/
 const VENTILATED_CSV_RX = /\s*,\s+/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
 const HTTP_ERROR_CODE_RX = new RegExp('^' + git.Errors.HttpError.code + '$', 'i')
+const NEWLINE_RX = /\n/g
 const PATH_SEPARATOR_RX = /[/]/g
 const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
 const SPACE_RX = / /g
@@ -257,9 +258,17 @@ function extractCredentials (url) {
 
 async function collectFilesFromSource (source, repo, remoteName, authStatus) {
   const originUrl = repo.url || (await resolveRemoteUrl(repo, remoteName))
-  return selectReferences(source, repo, remoteName).then((refs) =>
-    Promise.all(refs.map((ref) => collectFilesFromReference(source, repo, remoteName, authStatus, ref, originUrl)))
-  )
+  return selectReferences(source, repo, remoteName).then((refs) => {
+    if (!refs.length) {
+      const { url, branches, tags, startPath, startPaths } = source
+      const startPathInfo =
+        'startPaths' in source ? { 'start paths': startPaths || undefined } : { 'start path': startPath || undefined }
+      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 })
+      logger.info(`No references found for content source entry (${sourceInfo.trimRight().replace(NEWLINE_RX, ' | ')})`)
+      return []
+    }
+    return Promise.all(refs.map((it) => collectFilesFromReference(source, repo, remoteName, authStatus, it, originUrl)))
+  })
 }
 
 // QUESTION should we resolve HEAD to a ref eagerly to avoid having to do a match on it?
