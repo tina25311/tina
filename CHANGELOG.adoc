@@ -24,6 +24,8 @@ This project utilizes semantic versioning.
 * *ui-loader*: Include target in error message for broken or cyclic symbolic link (#900)
 * *content-classifier*: Resolve attribute references in value of AsciiDoc attribute defined in component descriptor (#981)
 * *content-classifier*: Honor escaped attribute references in value of AsciiDoc attribute defined in component descriptor (#989)
+* *asciidoc-loader*: Define `page-component-latest-version` attribute with value of version string from latest component version (#921)
+* *asciidoc-loader*: Define boolean `page-component-version-is-latest` attribute if page is in latest version of component (#921)
 * Define exports for all packages, locking down what paths can be required to the public API
 
 === Changed

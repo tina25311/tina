@@ -94,9 +94,14 @@ function computePageAttrs ({ component: componentName, version, module: module_,
   attrs['page-component-version'] = attrs['page-version'] = version
   const component = contentCatalog && contentCatalog.getComponent(componentName)
   if (component) {
-    const componentVersion = component.versions.find((it) => it.version === version)
-    if (componentVersion) attrs['page-component-display-version'] = componentVersion.displayVersion
     attrs['page-component-title'] = component.title
+    const componentVersion = component.versions.find((it) => it.version === version)
+    if (componentVersion) {
+      attrs['page-component-display-version'] = componentVersion.displayVersion
+      const latestVersion = component.latest.version
+      if (version === latestVersion) attrs['page-component-version-is-latest'] = ''
+      attrs['page-component-latest-version'] = latestVersion
+    }
   }
   attrs['page-module'] = module_
   attrs['page-relative-src-path'] = relative
