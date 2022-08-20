@@ -3,6 +3,7 @@
 const { createHash } = require('crypto')
 const createGitHttpPlugin = require('./git-plugin-http')
 const decodeUint8Array = require('./decode-uint8-array')
+const deepClone = require('./deep-clone')
 const deepFlatten = require('./deep-flatten')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
@@ -421,7 +422,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePa
   const origin = computeOrigin(originUrl, authStatus, repo.gitdir, ref, startPath, worktreePath, editUrl)
   return (worktreePath ? readFilesFromWorktree(origin) : readFilesFromGitTree(repo, ref.oid, startPath))
     .then((files) =>
-      Object.assign(loadComponentDescriptor(files, ref, version), {
+      Object.assign(deepClone((origin.descriptor = loadComponentDescriptor(files, ref, version))), {
         files: files.map((file) => assignFileProperties(file, origin)),
         origins: [origin],
       })

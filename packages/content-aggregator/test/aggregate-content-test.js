@@ -231,6 +231,8 @@ describe('aggregateContent()', () => {
         const origins = aggregate[0].origins
         expect(origins).to.have.lengthOf(1)
         expect(origins[0].refname).to.equal('main')
+        expect(origins[0].descriptor).to.eql(componentDesc)
+        expect(origins[0].descriptor).not.to.equal(componentDesc)
       })
     })
 
@@ -3567,6 +3569,11 @@ describe('aggregateContent()', () => {
             refname: 'main',
             branch: 'main',
             startPath: '',
+            descriptor: {
+              name: 'the-component',
+              title: 'The Component',
+              version: 'v1.2.3',
+            },
           },
         }
         if (repoBuilder.remote) {
@@ -3621,6 +3628,11 @@ describe('aggregateContent()', () => {
             refname: 'main',
             branch: 'main',
             startPath: 'docs',
+            descriptor: {
+              name: 'the-component',
+              title: 'The Component',
+              version: 'v1.2.3',
+            },
           },
         }
         if (repoBuilder.remote) {
@@ -3675,6 +3687,11 @@ describe('aggregateContent()', () => {
             refname: 'main',
             branch: 'main',
             startPath: '',
+            descriptor: {
+              name: 'the-component',
+              title: 'The Component',
+              version: 'v1.2.3',
+            },
           },
         }
         if (repoBuilder.remote) {
@@ -4101,12 +4118,14 @@ describe('aggregateContent()', () => {
     describe('should add all origins to origins property on component version bucket', () => {
       testAll(async (repoBuilder) => {
         const componentDesc = { name: 'the-component', version: 'v1.2.3' }
+        const extraComponentDesc = { ...componentDesc, asciidoc: { attributes: { foo: 'bar' } } }
         await repoBuilder
           .init(componentDesc.name)
           .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
           .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-one.adoc'))
           .then(() => repoBuilder.createTag('v1.2.3'))
           .then(() => repoBuilder.checkoutBranch('v1.2.3-extra'))
+          .then(() => repoBuilder.addComponentDescriptorToWorktree(extraComponentDesc))
           .then(() => repoBuilder.removeFromWorktree('modules/ROOT/pages/page-one.adoc'))
           .then(() => repoBuilder.addFilesFromFixture('modules/ROOT/pages/page-two.adoc'))
           .then(() => repoBuilder.close('main'))
@@ -4122,6 +4141,12 @@ describe('aggregateContent()', () => {
         origins.sort((a, b) => a.refname.localeCompare(b.refname))
         expect(origins[0].refname).to.equal('v1.2.3')
         expect(origins[1].refname).to.equal('v1.2.3-extra')
+        expect(aggregate[0]).not.to.equal(aggregate[0].origins[0].descriptor)
+        expect(aggregate[0]).not.to.equal(aggregate[0].origins[1].descriptor)
+        expect(aggregate[0].origins[0].descriptor).not.to.equal(aggregate[0].origins[1].descriptor)
+        expect(aggregate[0].origins[0].descriptor).not.to.have.property('asciidoc')
+        expect(aggregate[0].origins[1].descriptor).to.have.property('asciidoc')
+        expect(aggregate[0].origins[1].descriptor.asciidoc).to.eql({ attributes: { foo: 'bar' } })
       })
     })
 
