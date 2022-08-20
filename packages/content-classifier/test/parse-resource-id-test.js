@@ -3,7 +3,7 @@
 
 const { expect } = require('@antora/test-harness')
 
-const parseResourceId = require('@antora/content-classifier/lib/util/parse-resource-id')
+const parseResourceId = require('@antora/content-classifier/util/parse-resource-id')
 
 describe('parseResourceId()', () => {
   it('should return undefined if input is not a valid resource ID spec', () => {

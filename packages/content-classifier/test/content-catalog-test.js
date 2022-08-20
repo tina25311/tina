@@ -4,11 +4,11 @@
 const { captureLogSync, expect, spy } = require('@antora/test-harness')
 
 const classifyContent = require('@antora/content-classifier')
-const ContentCatalog = require('@antora/content-classifier/lib/content-catalog')
-const File = require('@antora/content-classifier/lib/file')
+const ContentCatalog = require('@antora/content-classifier/content-catalog')
+const File = require('@antora/content-classifier/file')
 const { posix: path } = require('path')
 
-const { ROOT_INDEX_PAGE_ID } = require('@antora/content-classifier/lib/constants')
+const { ROOT_INDEX_PAGE_ID } = require('#constants')
 
 // TODO change these to pure unit tests that don't rely on the classifyContent function
 describe('ContentCatalog', () => {

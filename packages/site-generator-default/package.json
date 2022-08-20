@@ -14,6 +14,9 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js"
+  },
   "dependencies": {
     "@antora/site-generator": "3.0.3"
   },

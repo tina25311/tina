@@ -1,5 +1,6 @@
 'use strict'
 
+const computeOrigin = require('./compute-origin')
 const { createHash } = require('crypto')
 const createGitHttpPlugin = require('./git-plugin-http')
 const decodeUint8Array = require('./decode-uint8-array')
@@ -22,7 +23,8 @@ const { makeMatcherRx, versionMatcherOpts: VERSION_MATCHER_OPTS } = require('./m
 const MultiProgress = require('multi-progress') // calls require('progress') as a peer dependencies
 const ospath = require('path')
 const { posix: path } = ospath
-const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
+const posixify = require('./posixify')
+const removeGitSuffix = require('./remove-git-suffix')
 const { fs: resolvePathGlobsFs, git: resolvePathGlobsGit } = require('./resolve-path-globs')
 const { pipeline, Writable } = require('stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
@@ -45,10 +47,7 @@ const {
 const ANY_SEPARATOR_RX = /[:/]/
 const CSV_RX = /\s*,\s*/
 const VENTILATED_CSV_RX = /\s*,\s+/
-const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name|type)|path)\}/g
-const GIT_SUFFIX_RX = /(?:(?:(?:\.git)?\/)?\.git|\/)$/
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
-const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
 const HTTP_ERROR_CODE_RX = new RegExp('^' + git.Errors.HttpError.code + '$', 'i')
 const PATH_SEPARATOR_RX = /[/]/g
 const SHORTEN_REF_RX = /^refs\/(?:heads|remotes\/[^/]+|tags)\//
@@ -715,50 +714,6 @@ function loadComponentDescriptor (files, ref, version) {
   return camelCaseKeys(data, ['asciidoc'])
 }
 
-function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = undefined, editUrl = true) {
-  const { shortname: refname, oid: refhash, remote, type: reftype } = ref
-  const origin = { type: 'git', url, gitdir, reftype, refname, [reftype]: refname, refhash, startPath }
-  if (worktreePath !== undefined) {
-    if ((origin.worktree = worktreePath)) {
-      delete origin.refhash
-      origin.fileUriPattern =
-        (posixify ? 'file:///' + posixify(worktreePath) : 'file://' + worktreePath) +
-        (startPath ? '/' + startPath + '/%s' : '/%s')
-    } else if (remote) {
-      origin.remote = remote
-    }
-    if (url.startsWith('file://')) url = undefined
-  }
-  if (authStatus) origin.private = authStatus
-  if (url) origin.webUrl = url.replace(GIT_SUFFIX_RX, '')
-  if (editUrl === true) {
-    const match = url && url.match(HOSTED_GIT_REPO_RX)
-    if (match) {
-      const host = match[1]
-      let action = 'blob'
-      let category = ''
-      if (host === 'pagure.io') {
-        category = 'f'
-      } else if (host === 'bitbucket.org') {
-        action = 'src'
-      } else if (reftype === 'branch') {
-        action = 'edit'
-      }
-      origin.editUrlPattern = 'https://' + path.join(match[1], match[2], action, refname, category, startPath, '%s')
-    }
-  } else if (editUrl) {
-    const vars = {
-      path: () => (startPath ? path.join(startPath, '%s') : '%s'),
-      refhash: () => refhash,
-      reftype: () => reftype,
-      refname: () => refname,
-      web_url: () => origin.webUrl || '',
-    }
-    origin.editUrlPattern = editUrl.replace(EDIT_URL_TEMPLATE_VAR_RX, (_, name) => vars[name]())
-  }
-  return origin
-}
-
 function assignFileProperties (file, origin) {
   if (!file.src) file.src = {}
   Object.assign(file.src, { path: file.path, basename: file.basename, stem: file.stem, extname: file.extname, origin })
@@ -890,7 +845,7 @@ function resolveCredentials (credentialsFromUrlHolder, url, auth) {
 function generateCloneFolderName (url) {
   let normalizedUrl = url.toLowerCase()
   if (posixify) normalizedUrl = posixify(normalizedUrl)
-  normalizedUrl = normalizedUrl.replace(GIT_SUFFIX_RX, '')
+  normalizedUrl = removeGitSuffix(normalizedUrl)
   const basename = normalizedUrl.split(ANY_SEPARATOR_RX).pop()
   const hash = createHash('sha1')
   hash.update(normalizedUrl)
@@ -1083,4 +1038,3 @@ function findWorktrees (repo, patterns) {
 }
 
 module.exports = aggregateContent
-module.exports._computeOrigin = computeOrigin

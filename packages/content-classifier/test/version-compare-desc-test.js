@@ -3,7 +3,7 @@
 
 const { expect } = require('@antora/test-harness')
 
-const versionCompareDesc = require('@antora/content-classifier/lib/util/version-compare-desc')
+const versionCompareDesc = require('@antora/content-classifier/util/version-compare-desc')
 
 describe('versionCompareDesc()', () => {
   it('should consider same version string as equal', () => {

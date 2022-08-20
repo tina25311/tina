@@ -16,6 +16,17 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./git": "./lib/git.js",
+    "./git/http-plugin": "./lib/git-plugin-http.js",
+    "./lib/git-plugin-http": "./lib/git-plugin-http.js",
+    "./package.json": "./package.json"
+  },
+  "imports": {
+    "#compute-origin": "./lib/compute-origin.js",
+    "#constants": "./lib/constants.js"
+  },
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
     "@antora/logger": "3.0.3",

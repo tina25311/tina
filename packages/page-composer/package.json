@@ -14,6 +14,12 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./build-ui-model": "./lib/build-ui-model.js",
+    "./lib/build-ui-model": "./lib/build-ui-model.js",
+    "./package.json": "./package.json"
+  },
   "dependencies": {
     "@antora/logger": "3.0.3",
     "handlebars": "~4.7",

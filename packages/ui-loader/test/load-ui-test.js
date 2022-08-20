@@ -27,7 +27,7 @@ const map = (transform) => new Transform({ objectMode: true, transform })
 const net = require('net')
 const zip = require('gulp-vinyl-zip')
 
-const { UI_CACHE_FOLDER } = require('@antora/ui-loader/lib/constants')
+const { UI_CACHE_FOLDER } = require('#constants')
 const CACHE_DIR = getCacheDir('antora-test')
 const UI_CACHE_DIR = ospath.join(CACHE_DIR, UI_CACHE_FOLDER)
 const CWD = process.cwd()

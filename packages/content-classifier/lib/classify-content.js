@@ -1,7 +1,7 @@
 'use strict'
 
 const ContentCatalog = require('./content-catalog')
-const collateAsciiDocAttributes = require('@antora/asciidoc-loader/lib/util/collate-asciidoc-attributes')
+const collateAsciiDocAttributes = require('@antora/asciidoc-loader/config/collate-asciidoc-attributes')
 
 /**
  * Organizes the raw aggregate of virtual files into a {ContentCatalog}.

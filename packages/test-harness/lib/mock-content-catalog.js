@@ -1,7 +1,7 @@
 'use strict'
 
 const { posix: path } = require('path')
-const resolveResource = require('@antora/content-classifier/lib/util/resolve-resource')
+const resolveResource = require('@antora/content-classifier/util/resolve-resource')
 
 const SPACE_RX = / /g
 

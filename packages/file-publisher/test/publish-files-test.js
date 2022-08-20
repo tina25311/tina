@@ -14,7 +14,7 @@ const forEach = (write) => new Writable({ objectMode: true, write })
 const vzip = require('gulp-vinyl-zip')
 
 const CWD = process.cwd()
-const { DEFAULT_DEST_FS, DEFAULT_DEST_ARCHIVE } = require('@antora/file-publisher/lib/constants')
+const { DEFAULT_DEST_FS, DEFAULT_DEST_ARCHIVE } = require('#constants')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const HTML_RX = /<html>[\S\s]+<\/html>/
 //const PROJECT_ROOT_DIR = ospath.join(__dirname, '../../..')
