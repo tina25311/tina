@@ -205,7 +205,7 @@ describe('createPageComposer()', () => {
     defineHelper('trim', '(str) => str.trim()', 'helpers/not-used/trim.js')
     defineLayout('bare', '<!DOCTYPE html>\n{{> page-contents}}', 'layouts/not-used/bare.hbs')
     definePartial('page-contents', '{{{page.contents}}}', 'partials/not-used/page-contents.hbs')
-    const { composePage, handlebars } = createPageComposer(playbook, contentCatalog, uiCatalog)
+    const { handlebars } = createPageComposer(playbook, contentCatalog, uiCatalog)
     expect(handlebars.helpers).to.have.property('trim')
     expect(handlebars.layouts).to.have.property('bare')
     expect(handlebars.partials).to.have.property('page-contents')
