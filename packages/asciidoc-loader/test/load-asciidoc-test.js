@@ -637,6 +637,19 @@ describe('loadAsciiDoc()', () => {
       expect(doc.getAttributes()).to.not.have.property('page-component-version-is-latest')
     })
 
+    it('should set page-edit-url attribute if edit URL is set on page src', () => {
+      const contentCatalog = mockContentCatalog({
+        version: '4.5.x',
+        family: 'page',
+        relative: 'page-a.adoc',
+        contents: '= Document Title',
+      })
+      const inputFile = contentCatalog.getFiles()[0]
+      inputFile.src.editUrl = 'https://git.example.org/component-a/edit/main/docs/modules/ROOT/pages/index.adoc'
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(doc.getAttributes()).to.have.property('page-edit-url', inputFile.src.editUrl)
+    })
+
     it('should set page origin attributes if origin information is available for file from branch', () => {
       const contentCatalog = mockContentCatalog({
         version: '4.5.x',
@@ -653,6 +666,7 @@ describe('loadAsciiDoc()', () => {
         refname: 'v4.5.x',
         branch: 'v4.5.x',
         refhash: 'a185bc03d7c07a3a98dcd14214d884ebd6387578',
+        private: true,
       }
       const docFromBranch = loadAsciiDoc(inputFileFromBranch, contentCatalog)
       expect(docFromBranch.getAttributes()).to.include({
@@ -663,6 +677,7 @@ describe('loadAsciiDoc()', () => {
         'page-origin-refname': 'v4.5.x',
         'page-origin-reftype': 'branch',
         'page-origin-refhash': 'a185bc03d7c07a3a98dcd14214d884ebd6387578',
+        'page-origin-private': '',
       })
       expect(docFromBranch.hasAttribute('page-origin-tag')).to.be.false()
       expect(docFromBranch.hasAttribute('page-origin-worktree')).to.be.false()
@@ -696,6 +711,7 @@ describe('loadAsciiDoc()', () => {
         'page-origin-refhash': '(worktree)',
         'page-origin-worktree': '/path/to/worktree',
       })
+      expect(docFromBranch.hasAttribute('page-origin-private')).to.be.false()
       expect(docFromBranch.hasAttribute('page-origin-tag')).to.be.false()
     })
 
@@ -728,6 +744,7 @@ describe('loadAsciiDoc()', () => {
       })
       expect(docFromTag.hasAttribute('page-origin-branch')).to.be.false()
       expect(docFromTag.hasAttribute('page-origin-worktree')).to.be.false()
+      expect(docFromTag.hasAttribute('page-origin-private')).to.be.false()
     })
 
     it('should add custom attributes to document', () => {

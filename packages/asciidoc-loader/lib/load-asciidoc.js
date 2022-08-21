@@ -88,12 +88,11 @@ function loadAsciiDoc (file, contentCatalog = undefined, config = {}) {
   }
 }
 
-function computePageAttrs ({ component: componentName, version, module: module_, relative, origin }, contentCatalog) {
+function computePageAttrs ({ component, version, module: module_, relative, origin, editUrl }, contentCatalog) {
   const attrs = {}
-  attrs['page-component-name'] = componentName
+  attrs['page-component-name'] = component
   attrs['page-component-version'] = attrs['page-version'] = version
-  const component = contentCatalog && contentCatalog.getComponent(componentName)
-  if (component) {
+  if ((component = contentCatalog && contentCatalog.getComponent(component))) {
     attrs['page-component-title'] = component.title
     const componentVersion = component.versions.find((it) => it.version === version)
     if (componentVersion) {
@@ -105,6 +104,7 @@ function computePageAttrs ({ component: componentName, version, module: module_,
   }
   attrs['page-module'] = module_
   attrs['page-relative-src-path'] = relative
+  if (editUrl) attrs['page-edit-url'] = editUrl
   if (origin) {
     attrs['page-origin-type'] = origin.type
     attrs['page-origin-url'] = origin.url
@@ -117,6 +117,7 @@ function computePageAttrs ({ component: componentName, version, module: module_,
     } else {
       attrs['page-origin-refhash'] = origin.refhash
     }
+    if (origin.private) attrs['page-origin-private'] = ''
   }
   return attrs
 }
