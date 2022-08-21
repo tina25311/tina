@@ -5,9 +5,10 @@ The playbook keys configured under `content` and `sources` define the locations 
 [#content-key]
 == content key
 
-The content sources git references and other source location properties are defined under the required `content` key.
-The `branches`, `tags`, and `edit_url` keys can be specified directly on `content`.
-They can also be listed under `sources` or under both `content` and `sources` in a playbook.
+The `content` category key encapsulates the list of content sources (i.e., git repositories) in an Antora site.
+The content sources are defined using the `sources` key.
+The `branches`, `tags`, and `edit_url` keys can be used to define default values for all content sources.
+These keys can be redefined per content source, alongside other keys that are specific to a content source.
 
 [,yaml]
 ----
@@ -40,8 +41,8 @@ Keys-value pairs that are specified directly under `content` are applied to all 
 == sources key
 
 The `sources` key is required and nested under the `content` key.
-The `sources` key contains a list of source entries, which consist of a git repository location, branch and tag name patterns, and other repository properties that Antora uses when aggregating the site content.
-The `sources` key must contain at least one entry with a `url` key defined.
+The `sources` key contains a list of source entries.
+Each entry, designated by a hyphen, consists of a git repository location (URL or filesystem path), patterns to match branches and/or tags, an optional start path or paths, and other repository properties that Antora uses when aggregating the site content.
 
 [,yaml]
 ----
