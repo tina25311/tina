@@ -4086,6 +4086,14 @@ describe('aggregateContent()', () => {
         expect(origin.worktree).to.be.false()
       })
 
+      it('should set refhash property on origin to oid of ref', () => {
+        const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
+        const gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(url))
+        const oid = 'abc123xyz'
+        const origin = computeOrigin(url, false, gitdir, { shortname: 'main', type: 'branch', oid }, '', false)
+        expect(origin.refhash).to.equal(oid)
+      })
+
       it('should set correct origin data if URL requires auth', () => {
         const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
         const gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(url))
