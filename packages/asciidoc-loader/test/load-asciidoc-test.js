@@ -601,6 +601,42 @@ describe('loadAsciiDoc()', () => {
       })
     })
 
+    it('should set latest version attributes for page in latest component version', () => {
+      const contentCatalog = mockContentCatalog({
+        version: '4.5',
+        family: 'page',
+        relative: 'page-a.adoc',
+        contents: '= Document Title',
+      })
+      const inputFile = contentCatalog.getFiles()[0]
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(doc.getAttributes()).to.include({
+        'page-component-latest-version': '4.5',
+        'page-component-version-is-latest': '',
+      })
+    })
+
+    it('should not set page-component-version-is-latest attribute if page not in latest component version', () => {
+      const contentCatalog = mockContentCatalog([
+        {
+          version: '4.0',
+          family: 'page',
+          relative: 'page-a.adoc',
+          contents: '= Document Title',
+        },
+        {
+          version: '4.5',
+          family: 'page',
+          relative: 'page-a.adoc',
+          contents: '= Document Title',
+        },
+      ])
+      const inputFile = contentCatalog.getFiles()[0]
+      const doc = loadAsciiDoc(inputFile, contentCatalog)
+      expect(doc.getAttributes()).to.include({ 'page-component-latest-version': '4.5' })
+      expect(doc.getAttributes()).to.not.have.property('page-component-version-is-latest')
+    })
+
     it('should set page origin attributes if origin information is available for file from branch', () => {
       const contentCatalog = mockContentCatalog({
         version: '4.5.x',
