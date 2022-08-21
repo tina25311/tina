@@ -14,12 +14,17 @@ describe('createPageComposer()', () => {
   let playbook
   let uiCatalog
 
-  const defineLayout = (stem, contents) => {
-    layouts.push({ stem, contents: Buffer.from(contents + '\n') })
+  const defineHelper = (stem, contents, path) => {
+    contents = 'module.exports = ' + contents
+    helpers.push({ contents: Buffer.from(contents + '\n'), path: path || `helpers/${stem}.js`, stem })
   }
 
-  const definePartial = (stem, contents) => {
-    partials.push({ stem, contents: Buffer.from(contents + '\n') })
+  const defineLayout = (stem, contents, path) => {
+    layouts.push({ contents: Buffer.from(contents + '\n'), path: path || `layouts/${stem}.hbs`, stem })
+  }
+
+  const definePartial = (stem, contents, path) => {
+    partials.push({ contents: Buffer.from(contents + '\n'), path: path || `partials/${stem}.hbs`, stem })
   }
 
   const replaceCallToBodyPartial = (replacement) => {
@@ -169,8 +174,15 @@ describe('createPageComposer()', () => {
     const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
     expect(composePage).to.be.instanceOf(Function)
     expect(composePage.composePage).to.equal(composePage)
-    expect(require('handlebars').partials).to.be.empty()
-    expect(require('handlebars').helpers).to.not.have.property('relativize')
+    expect(composePage).to.have.property('handlebars')
+    const handlebars = composePage.handlebars
+    expect(handlebars.helpers).to.have.property('relativize')
+    expect(handlebars.layouts).to.have.property('default')
+    expect(handlebars.partials).to.have.property('head')
+    const defaultHandlebars = require('handlebars')
+    expect(defaultHandlebars.helpers).to.not.have.property('relativize')
+    expect(defaultHandlebars).to.not.have.property('layouts')
+    expect(defaultHandlebars.partials).to.be.empty()
   })
 
   it('should create a 404 page creator function', () => {
@@ -187,6 +199,16 @@ describe('createPageComposer()', () => {
     createPageComposer(playbook, contentCatalog, uiCatalog)
     const types = uiCatalog.findByType.__spy.calls.map((call) => call[0]).sort((a, b) => a.localeCompare(b, 'en'))
     expect(types).to.eql(['helper', 'layout', 'partial'])
+  })
+
+  it('should drop subdirectory in partials, layouts, and helpers', () => {
+    defineHelper('trim', '(str) => str.trim()', 'helpers/not-used/trim.js')
+    defineLayout('bare', '<!DOCTYPE html>\n{{> page-contents}}', 'layouts/not-used/bare.hbs')
+    definePartial('page-contents', '{{{page.contents}}}', 'partials/not-used/page-contents.hbs')
+    const { composePage, handlebars } = createPageComposer(playbook, contentCatalog, uiCatalog)
+    expect(handlebars.helpers).to.have.property('trim')
+    expect(handlebars.layouts).to.have.property('bare')
+    expect(handlebars.partials).to.have.property('page-contents')
   })
 
   describe('composePage()', () => {
