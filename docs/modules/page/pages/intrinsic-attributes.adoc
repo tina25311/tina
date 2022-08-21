@@ -78,9 +78,17 @@ These attributes are reassigned for each page as well as each xref:navigation:fi
 |The xref:ROOT:component-title.adoc[component title] of the component version as specified in  _antora.yml_.
 |Silver Leaf
 
+|`page-component-latest-version`
+|The version string of the latest version in the component for the current page.
+|7.5
+
 |`page-component-version`
 |The xref:ROOT:component-version-key.adoc[version] of the component version as specified in _antora.yml_.
 |7.1
+
+|`page-component-version-is-latest`
+|Set if the component version for the current page is the latest version in the component for the current page.
+|_empty_
 
 |`page-module`
 |The xref:ROOT:module-directories.adoc#module[name of the page's module].
