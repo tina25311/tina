@@ -263,8 +263,8 @@ async function collectFilesFromSource (source, repo, remoteName, authStatus) {
       const { url, branches, tags, startPath, startPaths } = source
       const startPathInfo =
         'startPaths' in source ? { 'start paths': startPaths || undefined } : { 'start path': startPath || undefined }
-      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 })
-      logger.info(`No references found for content source entry (${sourceInfo.trimRight().replace(NEWLINE_RX, ' | ')})`)
+      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 }).trimRight()
+      logger.info(`No matching references found for content source entry (${sourceInfo.replace(NEWLINE_RX, ' | ')})`)
       return []
     }
     return Promise.all(refs.map((it) => collectFilesFromReference(source, repo, remoteName, authStatus, it, originUrl)))

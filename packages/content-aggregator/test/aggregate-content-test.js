@@ -1688,7 +1688,7 @@ describe('aggregateContent()', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['nope', 'nada'], startPath: 'docs' })
-        const expectedMessage = `No references found for content source entry (url: ${repoBuilder.url} | branches: [nope, nada] | start path: docs)`
+        const expectedMessage = `No matching references found for content source entry (url: ${repoBuilder.url} | branches: [nope, nada] | start path: docs)`
         const { messages, returnValue: aggregate } = (
           await captureLog(() => aggregateContent(playbookSpec))
         ).withReturnValue()
@@ -1705,7 +1705,7 @@ describe('aggregateContent()', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'maint/*', startPaths: 'docu*' })
-        const expectedMessage = `No references found for content source entry (url: ${repoBuilder.url} | branches: maint/* | start paths: docu*)`
+        const expectedMessage = `No matching references found for content source entry (url: ${repoBuilder.url} | branches: maint/* | start paths: docu*)`
         const { messages, returnValue: aggregate } = (
           await captureLog(() => aggregateContent(playbookSpec))
         ).withReturnValue()
@@ -1722,7 +1722,7 @@ describe('aggregateContent()', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'no-such-ref', startPath: '' })
-        const expectedMessage = `No references found for content source entry (url: ${repoBuilder.url} | branches: no-such-ref)`
+        const expectedMessage = `No matching references found for content source entry (url: ${repoBuilder.url} | branches: no-such-ref)`
         const { messages, returnValue: aggregate } = (
           await captureLog(() => aggregateContent(playbookSpec))
         ).withReturnValue()
@@ -2463,7 +2463,7 @@ describe('aggregateContent()', () => {
         await initRepoWithBranches(repoBuilder)
         playbookSpec.content.branches = undefined
         playbookSpec.content.sources.push({ url: repoBuilder.url, tags: ['nope', 'nada'], startPath: 'docs' })
-        const expectedMessage = `No references found for content source entry (url: ${repoBuilder.url} | tags: [nope, nada] | start path: docs)`
+        const expectedMessage = `No matching references found for content source entry (url: ${repoBuilder.url} | tags: [nope, nada] | start path: docs)`
         const { messages, returnValue: aggregate } = (
           await captureLog(() => aggregateContent(playbookSpec))
         ).withReturnValue()
