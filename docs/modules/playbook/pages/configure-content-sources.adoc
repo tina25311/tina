@@ -74,10 +74,13 @@ content: # <.>
 <.> Optional `branches` key
 <.> Optional `version` key
 
-The `content` and `sources` keys are required.
 The `sources` key must contain at least one entry with the `url` key defined.
 All other keys are optional.
 The xref:content-branches.adoc#default[branches] and xref:content-edit-url.adoc#default[edit_url] keys have built-in values Antora automatically applies at runtime if they're not explicitly defined in the playbook.
+
+NOTE: If no git references (branches or tags) are matched for a content source entry, Antora will log a message at the info level.
+You must have the log severity level set to at least info to see this message.
+We recommend configuring Antora's logger accordingly to aid with debugging.
 
 The `version` key provides a fallback value for the `version` key in the xref:ROOT:component-version-descriptor.adoc[component version descriptor (_antora.yml_)].
 You should only use it if you're matching a single reference or you want the value to be derived from the refname.
