@@ -33,6 +33,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Set `worktree` property on origin to false when branch or tag is local but not taken from worktree (#993)
 * *asciidoc-loader*: Move logic to collate AsciiDoc attributes to a helper function (#982)
 * *content-classifier*: Use helper function to collate AsciiDoc attributes from playbook and component version (#982)
+* *page-composer*: Use isolated handlebars environment instead of the default (global) environment
 * Consistently format origin information in log and error messages (#988)
 * Set Node.js 16.0.0 as minimum supported Node.js version
 * Upgrade dependencies that require Node.js > 12 and remove workarounds

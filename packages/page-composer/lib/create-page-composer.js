@@ -1,7 +1,7 @@
 'use strict'
 
 const { buildBaseUiModel, buildUiModel } = require('./build-ui-model')
-const handlebars = require('handlebars')
+const Handlebars = require('handlebars')
 const logger = require('./logger')
 const relativize = require('./helpers/relativize')
 const resolvePage = require('./helpers/resolve-page')
@@ -26,6 +26,7 @@ const requireFromString = require('require-from-string')
  *   HTML contents in a standalone page layout).
  */
 function createPageComposer (playbook, contentCatalog, uiCatalog) {
+  const handlebars = Handlebars.create()
   handlebars.registerHelper('relativize', relativize)
   handlebars.registerHelper('resolvePage', resolvePage)
   handlebars.registerHelper('resolvePageURL', resolvePageURL)

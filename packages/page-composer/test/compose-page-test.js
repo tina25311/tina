@@ -165,10 +165,12 @@ describe('createPageComposer()', () => {
     }
   })
 
-  it('should create a page composer function', () => {
+  it('should create a page composer function that uses isolated handlebars environment', () => {
     const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
     expect(composePage).to.be.instanceOf(Function)
     expect(composePage.composePage).to.equal(composePage)
+    expect(require('handlebars').partials).to.be.empty()
+    expect(require('handlebars').helpers).to.not.have.property('relativize')
   })
 
   it('should create a 404 page creator function', () => {
