@@ -26,6 +26,8 @@ This project utilizes semantic versioning.
 * *content-classifier*: Honor escaped attribute references in value of AsciiDoc attribute defined in component descriptor (#989)
 * *asciidoc-loader*: Define `page-component-latest-version` attribute with value of version string from latest component version (#921)
 * *asciidoc-loader*: Define boolean `page-component-version-is-latest` attribute if page is in latest version of component (#921)
+* *asciidoc-loader*: Assign edit URL of current page, if set, to `page-edit-url` attribute (#354)
+* *asciidoc-loader*: Define boolean `page-origin-private` attribute if origin of page is private (#354)
 * Define exports for all packages, locking down what paths can be required to the public API
 
 === Changed

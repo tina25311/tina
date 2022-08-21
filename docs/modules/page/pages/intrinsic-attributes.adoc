@@ -90,6 +90,10 @@ These attributes are reassigned for each page as well as each xref:navigation:fi
 |Set if the component version for the current page is the latest version in the component for the current page.
 |_empty_
 
+|`page-edit-url`
+|The URL where the page's source file can be edited.
+|\https://gitlab.com/forest-co/silver-leaf/edit/main/modules/ROOT/pages/index.adoc
+
 |`page-module`
 |The xref:ROOT:module-directories.adoc#module[name of the page's module].
 |ROOT
@@ -97,6 +101,10 @@ These attributes are reassigned for each page as well as each xref:navigation:fi
 |`page-origin-branch`
 |The name of the repository branch where the page's source file is stored. (mutually exclusive with `page-origin-tag`)
 |v7.1.0
+
+|`page-origin-private`
+|Set if the origin where the page's source file is stored is private.
+|_empty_
 
 |`page-origin-refhash`
 |The SHA-1 hash of the reference where the page's source file is stored.
