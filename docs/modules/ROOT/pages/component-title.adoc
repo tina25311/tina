@@ -1,15 +1,25 @@
 = Customize the Title
 
-The `title` key is used for xref:how-component-versions-are-sorted.adoc[sorting the versions by name] and for display purposes in the reference UI when a component name contains uppercase letters, symbols, or blank spaces.
-It doesn't affect page and resource IDs or the component name segment in the page URL.
+The `title` key is used to assign a title to the component version (and, by relation, the component).
+The title is the formal, user-facing text for a component version, typically the proper name of the product, project, or subject matter.
+The title is also used for xref:how-component-versions-are-sorted.adoc[sorting the versions] in the explore panel of the default UI.
+
+The title doesn't affect page and resource IDs or the component name segment in the page URL.
 
 [#title-key]
 == title key
 
 The `title` key is optional.
-It's set in a component version's [.path]_antora.yml_ file and used by the reference UI where ever the component's name is displayed, including the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector], and first breadcrumb position on a component version's pages.
+This key is set in a component version's [.path]_antora.yml_ file.
+The value is used by the reference UI wherever the component or component version is referenced, including the xref:navigation:index.adoc#component-menu[component version page menu], xref:navigation:index.adoc#component-dropdown[component version selector], and first breadcrumb position on a component version's pages.
 
-If `title` isn't set, the reference UI uses the xref:component-name-key.adoc[value of name] instead.
+Although the title is set per component version, it should almost always be uniform across all versions of a component.
+Antora uses the title of the latest version as the title of the component.
+When viewing a specific version, such as in the breadcrumb navigation, the title of that version will be displayed instead.
+If the title differs between versions, it may confuse the reader.
+If you do need to change the title in a newer version, and you don't want to update older versions, you can customize the UI template to always use the title of the latest version.
+
+If `title` isn't set, the reference UI uses the xref:component-name-key.adoc[component name] (the value of the `name` key) instead.
 Unlike `name`, the value of `title` can contain spaces, uppercase letters, and a broader range of characters (e.g., `SUSE Manager`, `APIkit`).
 
 .antora.yml
