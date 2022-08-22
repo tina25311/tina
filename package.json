@@ -12,7 +12,7 @@
     "version": "node npm/version.js"
   },
   "devDependencies": {
-    "eslint": "~8.20",
+    "eslint": "~8.22",
     "eslint-config-standard": "~17.0",
     "mocha": "~10.0",
     "nyc": "~15.1",
