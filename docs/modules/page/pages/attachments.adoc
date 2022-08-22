@@ -1,7 +1,8 @@
 = Attachments
 :page-aliases: asciidoc:link-attachment.adoc
 
-Attachments are resources, such as PDFs or the ZIP archives of sample projects, that are stored in an xref:ROOT:attachments-directory.adoc[_attachments_ family directory].
+Attachments are downloadable resources, such as PDFs or the ZIP archives of sample projects, that are stored in an xref:ROOT:attachments-directory.adoc[_attachments_ family directory].
+Although not as common, an example file can be promoted to an attachment to make it downloadable as well.
 
 == AsciiDoc xref macro for attachments
 
@@ -180,6 +181,29 @@ Download xref:attachment$practice-project.zip[the sample project] to try it out!
 ----
 
 When link text is specified in the xref macro, Antora displays the specified content as the link to the attachment in the published page.
+
+[#include-attachment]
+== Include an attachment
+
+Instead of linking to an attachment, you can include it into an AsciiDoc page or partial using the include directive.
+The only restriction is that the file must be a text file.
+Storing a text file as an attachment allows it to be included while still being downloadable.
+
+Here's the full syntax that shows how to include the text of an attachment into a page.
+
+[subs=+quotes]
+----
+\include::version@component:module:**attachment$**name-of-file.ext[optional attributes]
+----
+
+The `attachment$` segment tells Antora to look for the file in the attachments folder.
+If the attachment lives in the same component version and module as the page, the target can start with the `attachment$` segment.
+
+----
+\include::attachment$name-of-file.ext[optional attributes]
+----
+
+You can use the same attachment in both an xref macro and an include directive.
 
 == Learn more
 
