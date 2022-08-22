@@ -10,8 +10,8 @@ asciidoc:
     listing-caption: Example@
     patch: '.0'
     version-node-major: '16'
-    version-node: '16.16.0'
-    version-npm: '8.2.0'
+    version-node: '16.17.0'
+    version-npm: '8.15.0'
     url-node-releases: https://nodejs.org/en/about/releases/
     url-chat: https://chat.antora.org
     url-repo: https://gitlab.com/antora/antora
