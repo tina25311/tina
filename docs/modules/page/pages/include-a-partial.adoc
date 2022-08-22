@@ -424,7 +424,7 @@ You can now include that source into your page as follows:
 ----
 [plantuml,my-schema,svg]
 ....
-include::partial$diagrams/my-schema.puml[]
+\include::partial$diagrams/my-schema.puml[]
 ....
 ----
 
