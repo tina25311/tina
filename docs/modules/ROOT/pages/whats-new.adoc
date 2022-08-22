@@ -18,9 +18,9 @@ _**Release date:** 2022.08.22 | *Issue label:* {url-milestone-3-1-0}[3.1.0^]_
 The highlights of the Antora {page-component-version}.0 release include:
 
 * raising the minimum version of Node.js to Node.js 16 and defining public-facing exports for all packages,
-* referencing xref:playbook:asciidoc-attributes.adoc#references-in-values[site attributes in site and component version attribute values] and xref:component-attributes.adoc#references-in-values[component version attributes in component version attribute values],
-* providing more context to log and error messages and formatting them consistently,
-* adding more information about content roots to the model for use in extensions, and
+* adding support for attribute references in the value of xref:playbook:asciidoc-attributes.adoc#references-in-values[site attributes defined in the playbook] and xref:component-attributes.adoc#references-in-values[component version attributes defined in component version descriptors],
+* providing more context to log and error messages and formatting the information consistently,
+* including more information about content roots in the model for use by extensions, and
 * assigning additional xref:page:intrinsic-attributes.adoc#page-attributes[intrinsic page attributes] that relay more of a page's identity and origin.
 
 You can find a summary of the issues resolved in this release below.
@@ -67,7 +67,7 @@ Use isolated Handlebars environment instead of the default (global) environment.
 
 === Removed
 
-Node.js 12 and 14 support:: Antora no longer supports Node.js < 16 (specifically dropping Node.js 12 and 14) since those Node.js release lines are now EOL.
+Node.js 12 and 14 support:: Antora no longer supports Node.js < 16 (specifically dropping support for Node.js 12 and 14) since those Node.js release lines are now EOL.
 This change is consistent with Antora's Node.js support policy.
 
 == Antora 2 is EOL
