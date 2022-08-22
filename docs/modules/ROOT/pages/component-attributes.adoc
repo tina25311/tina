@@ -47,10 +47,6 @@ Press kbd:[spacebar] once after the colon, then enter the value of the attribute
 A set component version attribute is applied and available to every page that belongs to the component version.
 The values of custom attributes, such as `page-level`, can be displayed in a page using the attribute reference syntax (e.g., `+{page-level}+`).
 
-Any xref:playbook:asciidoc-attributes.adoc[site attribute] or component version attribute already set can be referenced from the value of another component version attribute using the attribute reference syntax (e.g., `+You can find the {site-title} at {site-url}.+`). 
-To prevent this substitution, insert a backslash in front of the reference (e.g., `\{not-substituted}`).
-In this case, the attribute reference will not be substituted and the backslash will be omitted.
-
 The attributes in <<ex-hard-set>> are all hard set.
 [.term]*Hard set* component version attributes cannot be overridden from a page.
 By default, an attribute is hard set when it's assigned a value that isn't reserved for unsetting the attribute (i.e., `false` or `~`) and doesn't end with a modifier (i.e., `@`).
@@ -74,6 +70,31 @@ asciidoc:
 <.> To soft set and assign a built-in attribute's default value, or in the case of a boolean attribute, the _empty string_ value, type an opening single quotation mark, followed by the `@` modifier, and then a closing single quotation mark (`'`).
 
 Since the component version attributes in <<ex-soft-set>> are soft set, a page could modify their values or unset them.
+
+[#references-in-values]
+=== Reference a component version attributes in attribute values
+
+The value of a component version attribute can contain an attribute reference to a xref:playbook:asciidoc-attributes.adoc[site attribute] or another component version attribute already set in the same [.path]_antora.yml_ file using the AsciiDoc attribute reference syntax (e.g., `+{site-title}+`, `+{page-level}+`).
+
+.Reference a component version attribute in a component version attribute value
+[#ex-attribute-value-references,yaml]
+----
+name: light
+title: Data Light
+version: '2.3'
+asciidoc:
+  attributes:
+    table-caption: Data Set
+    url-plugins: https://example.com/plugins
+    url-data-plugin: {url-plugins}/data-light
+nav:
+- modules/ROOT/nav.adoc
+----
+
+A component version attribute can also be referenced in the value of a xref:page:attributes.adoc[page attribute].
+
+To prevent an attribute reference substitution in an attribute value, insert a backslash in front of the reference (e.g., `+\{not-substituted}+`).
+In this case, the attribute reference will not be substituted and the backslash will be omitted.
 
 [#hard-unset]
 == Unset attributes in antora.yml

@@ -2,11 +2,12 @@
 == Upgrade from Antora 2.3 to Antora {page-component-version} checklist
 // tag::new[]
 *Antora 2 is EOL*.
-If you're currently using Antora 2, you may need to make some of the following changes to your documentation system before upgrading to Antora {page-component-version}.
+If you're currently using Antora 2, you may need to make the following changes to your documentation system before upgrading to Antora {page-component-version}.
+If you're already using Antora 3.0, skip this section and go to xref:install:upgrade-antora.adoc#node[Upgrade Node.js].
 
 Are you using an active LTS version of Node.js?::
 We recommend upgrading to the {url-node-releases}[latest active long term support (LTS) release of Node].
-Antora 3 officially supports Node.js 16 LTS and is tested on Node.js 18 LTS.
+Antora 3 officially supports Node.js 16 LTS and Node.js 18 LTS.
 Antora 3 doesn't support Node.js versions that have reached end of life (EOL).
 See xref:install:upgrade-antora.adoc#node[Upgrade Node.js] for instructions.
 

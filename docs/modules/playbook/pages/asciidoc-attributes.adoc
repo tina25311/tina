@@ -67,11 +67,8 @@ By default, an attribute is hard set when it's assigned a value that isn't reser
 To allow a component version or page to modify or unset a site attribute, you need to <<soft-set,soft set the site attribute>>.
 
 Attributes set in the playbook are site-wide and, thus, available to every page in your site.
-The values of custom attributes, such as `page-team` and `db` can be displayed in a page using the attribute reference syntax (e.g., `+{page-team}+`, `+{db}+`).
-
-Any xref:playbook:asciidoc-attributes.adoc[site attribute] already set can be referenced from the value of another site attribute using the attribute reference syntax (e.g., `+http://localhost:9090/{db}+`).
-To prevent this substitution, insert a backslash in front of the reference (e.g., `\{not-substituted}`).
-In this case, the attribute reference will not be substituted and the backslash will be omitted.
+The values of custom attributes, such as `page-team` and `db` can be displayed in a page using the AsciiDoc attribute reference syntax (e.g., `+{page-team}+`, `+{db}+`).
+Site attributes can also be referenced from the <<references-in-values,value of another site attribute>>, xref:ROOT:component-attributes.adoc#references-in-values[component version attribute], or xref:page:attributes.adoc[page attribute].
 
 [#soft-set]
 === Soft set attributes
@@ -91,6 +88,26 @@ asciidoc:
 <.> To soft set and assign a built-in attribute's default value, or in the case of a boolean attribute, the _empty string_ value, type an opening single quotation mark, followed by the `@` modifier, and then a closing single quotation mark (`'`).
 
 Since the site attributes in <<ex-soft-set>> are soft set, a component version descriptor or page could modify their values or unset them.
+
+[#references-in-values]
+=== Reference site attributes in attribute values
+
+Any site attribute already set in the playbook can be referenced from the value of another site attribute using the AsciiDoc attribute reference syntax (e.g., `+{page-team}+`).
+
+.Reference a site attribute in a site attribute value
+[#ex-attribute-value-references,yaml]
+----
+asciidoc:
+  attributes:
+    page-team: Coco B@
+    db: graphical-peaks-pack.db
+    test-server: http://localhost:9090/{db}
+----
+
+A site attribute can also be referenced in the value of a xref:ROOT:component-attributes.adoc#references-in-values[component version attribute] or xref:page:attributes.adoc[page attribute].
+
+To prevent an attribute reference substitution, insert a backslash in front of the reference (e.g., `+\{not-substituted}+`).
+In this case, the attribute reference will not be substituted and the backslash will be omitted.
 
 [#hard-unset]
 == Unset attributes in the playbook
