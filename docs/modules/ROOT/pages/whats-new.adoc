@@ -11,62 +11,69 @@
 :url-milestone-3-1-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.0
 :url-mr: {url-repo}/merge_requests
 
-IMPORTANT: *Antora 2 is EOL*.
-If you're still using Antora 2, review the checklist on xref:install:upgrade-antora.adoc[] to learn about what changes you should make to your source content and Antora configuration prior to upgrading to Antora {page-component-version}.
-
 = Antora {page-component-version}.0
 
-_**Release date:** Unreleased | *Issue label:* {url-milestone-3-1-0}[3.1.0^]_
+_**Release date:** 2022.08.22 | *Issue label:* {url-milestone-3-1-0}[3.1.0^]_
 
-The highlights of the Antora {page-component-version}.0 release include raising the minimum version of Node.js to Node.js 16 and defining public-facing exports for all packages, adding more context to log and error messages and formatting them consistently, adding more information about content roots to the model for use in extensions, and assigning additional intrinsic AsciiDoc attributes that relay more of a page's identity and origin.
+The highlights of the Antora {page-component-version}.0 release include:
+
+* raising the minimum version of Node.js to Node.js 16 and defining public-facing exports for all packages,
+* referencing xref:playbook:asciidoc-attributes.adoc#references-in-values[site attributes in site and component version attribute values] and xref:component-attributes.adoc#references-in-values[component version attributes in component version attribute values],
+* providing more context to log and error messages and formatting them consistently,
+* adding more information about content roots to the model for use in extensions, and
+* assigning additional xref:page:intrinsic-attributes.adoc#page-attributes[intrinsic page attributes] that relay more of a page's identity and origin.
+
 You can find a summary of the issues resolved in this release below.
-
-//The Antora {page-component-version}.0 release introduces an event-based extension facility and structured logging, delivers the latest Asciidoctor capabilities, and adds new ways to manage versions.
-//These are just a few of the new capabilities and updates packed into Antora {page-component-version}.
 
 == Resolved issues
 
 === Added
 
-Issue {url-issues}/981[#981^]:: Resolve attribute references in AsciiDoc attributes defined in the playbook ([.path]_antora-playbook.yml_) and component version descriptors ([.path]_antora.yml_), honoring any escaped attribute references.
-Issue {url-issues}/978[#978^]:: Add `origins` property containing unique origin objects to each entry in the content aggregate.
-Issue {url-issues}/525[#525^]:: Attach parsed component version descriptor to `descriptor` property on origin object.
-Issue {url-issues}/988[#988^]:: Add `reftype` key with value of branch or tag to source object in structured log message.
-Add `reftype` property to origin object to explicitly identify type of git reference (branch or tag).
-Add `remote` key with value of remote tracking branch to source object in structured log message, if applicable.
-Add `remote` property to origin object to identify a remote tracking branch.
-Add `local` key with path of local repository to source object in structured log message, if applicable.
-Issue {url-issues}/814[#814^]:: Add `removeFile` method to the content catalog and UI catalog.
 Issue {url-issues}/221[#221^]:: Log info message if no references are found for content source.
-Issue {url-issues}/921[#921^]:: Define `page-component-latest-version` AsciiDoc attribute with value of version string from latest component version.
-Define boolean `page-component-version-is-latest` AsciiDoc attribute if page is in latest version of component.
 Issue {url-issues}/354[#354^]:: Assign edit URL of current page, if set, to `page-edit-url` AsciiDoc attribute.
 Define boolean `page-origin-private` AsciiDoc attribute if origin of page is private.
+Issue {url-issues}/525[#525^]:: Attach parsed component version descriptor to `descriptor` property on origin object.
+Issue {url-issues}/814[#814^]:: Add `removeFile` method to the content catalog and UI catalog.
+Issue {url-issues}/921[#921^]:: Define `page-component-latest-version` AsciiDoc attribute with value of version string from latest component version.
+Define boolean `page-component-version-is-latest` AsciiDoc attribute if page is in latest version of component.
+See xref:page:intrinsic-attributes.adoc#page-attributes[intrinsic page attributes] for more information.
+Issue {url-issues}/978[#978^]:: Add `origins` property containing unique origin objects to each entry in the content aggregate.
+Issue {url-issues}/981[#981^]:: Resolve attribute references in AsciiDoc attributes defined in the xref:playbook:asciidoc-attributes.adoc#references-in-values[playbook] ([.path]_antora-playbook.yml_) and xref:component-attributes.adoc#references-in-values[component version descriptors] ([.path]_antora.yml_), honoring any escaped attribute references.
 Issue {url-issues}/984[#984^]:: Define exports for all packages, locking down what paths can be required to the public API.
+Issue {url-issues}/988[#988^]::
+* Add `reftype` key with value of branch or tag to source object in structured log message.
+* Add `reftype` property to origin object to explicitly identify type of git reference (branch or tag).
+* Add `remote` key with value of remote tracking branch to source object in structured log message, if applicable.
+* Add `remote` property to origin object to identify a remote tracking branch.
+* Add `local` key with path of local repository to source object in structured log message, if applicable.
 
 === Changed
 
+Issue {url-issues}/900[#900^]:: Include target in error message for broken or cyclic symbolic link in local content source or UI bundle directory.
 Issue {url-issues}/979[#979^]:: Set Node.js 16.0.0 as minimum supported Node.js version.
 Upgrade dependencies that require Node.js > 12 and remove workarounds.
-Issue {url-issues}/900[#900^]:: Include target in error message for broken or cyclic symbolic link in local content source or UI bundle directory.
-Issue {url-issues}/986[#986^]:: Log warning message instead of throwing fatal error if file in worktree disappears or cannot be read.
-Issue {url-issues}/993[#993^]:: Set `worktree` property on origin to false when branch or tag is local but not taken from worktree.
 Issue {url-issues}/982[#982^]:: Move logic to collate AsciiDoc attributes to a helper function.
 Use helper function to collate AsciiDoc attributes from playbook and component version.
-Issue {url-issues}/988[#988^]:: Consistently format origin information in log and error messages.
 Issue {url-issues}/985[#985^]:: Add context to error and preserve cause if failure occurs when reading supplemental UI files.
-
+Issue {url-issues}/986[#986^]:: Log warning message instead of throwing fatal error if file in worktree disappears or cannot be read.
+Issue {url-issues}/988[#988^]:: Consistently format origin information in log and error messages.
+Issue {url-issues}/993[#993^]:: Set `worktree` property on origin to false when branch or tag is local but not taken from worktree.
 Use isolated Handlebars environment instead of the default (global) environment.
 
 === Fixed
 
-Don't append `undefined` after path of file in stack in pretty log format if line is missing.
-Make warning message about missing page layout consistent with other log messages.
+* Don't append `undefined` after path of file in stack in pretty log format if line is missing.
+* Make warning message about missing page layout consistent with other log messages.
 
 === Removed
 
 Node.js 12 and 14 support:: Antora no longer supports Node.js < 16 (specifically dropping Node.js 12 and 14) since those Node.js release lines are now EOL.
 This change is consistent with Antora's Node.js support policy.
+
+== Antora 2 is EOL
+
+*Antora 2 is EOL*.
+Review the checklist on xref:install:upgrade-antora.adoc[] to learn about what changes you should make to your source content, including xref:asciidoctor-upgrade-notes.adoc[AsciiDoc syntax and Asciidoctor updates introduced in Asciidoctor 2.2], and Antora configuration prior to upgrading to from Antora 2 to Antora {page-component-version}.
 
 [#thanks-3-1-0]
 == Thank you!
@@ -95,27 +102,4 @@ Paul Wright ({url-gitlab}/finp[@finp^])::
 Raphael Das Gupta ({url-gitlab}/das-g[@das-g^])::
 Sturt Ison ({url-gitlab}/sturtison[@sturtison^])::
 Vladimir Markiev ({url-gitlab}/Grolribasi[@Grolribasi^])::
-
-[#checklist]
-== Upgrade checklist
-
-include::install:partial$upgrade-checklist.adoc[tag=new]
-
-== Deprecation summary
-
-The following deprecations are final in Antora {page-component-version}.0.
-
-* The default branches pattern of `[master, v*]` is deprecated; the default branches pattern is now `HEAD, v{0..9}*`.
-* Referencing attachments with the link macro (`+link:[]+`) and the `attachmentsdir` attribute are deprecated; use the xref:page:attachments.adoc[AsciiDoc xref macro and the resource ID of the attachment] to link to an attachment.
-* Using parent references in the target of the AsciiDoc include directive; use the resource ID of the page, partial, or example, or in the case of relative files within the same family use the relative path token (`./`) instead.
-* The `partialsdir` and `examplesdir` attributes are deprecated.
-Use the resource ID of the xref:page:include-a-partial.adoc[partial] or xref:page:include-an-example.adoc[example] to reference the resource instead.
-* Using the value `master` to represent an unversioned (empty) version when assigned to the `version` key in a component descriptor file is deprecated; use the tilde symbol (`~`) to represent an unversioned component version instead.
-In Antora 4, the value `master`, when assigned to the `version` will be treated as a regular value.
-* The fallback mechanism that automatically assigned the _.adoc_ file extension to the resource IDs of pages if it was missing in AsciiDoc xref macros and `page-aliases` values is deprecated in to make way for using non-AsciiDoc pages in AsciiDoc xref macros.
-* isomorphic-git no longer includes the `cores` API.
-Antora still honors the `cores` API, but the call to register the credential manager is now responsible for creating it because it runs before Antora loads.
-Refer to xref:playbook:private-repository-auth.adoc#custom[Configure a custom credential manager] for the latest instructions.
-
-The <<deprecated>> and <<removed>> sections list all of the deprecated and removed features in Antora {page-component-version}.
 ////

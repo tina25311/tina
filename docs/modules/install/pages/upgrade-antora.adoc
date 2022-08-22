@@ -7,7 +7,7 @@ On this page, you'll learn:
 * [x] How to upgrade Antora globally.
 * [x] How to upgrade the Antora CLI and site generator individually.
 
-NOTE: If you're already on Antora 3.0 and ready to upgrade to Antora {page-component-version}{patch}, skip the next section and go directly to <<node>>.
+NOTE: If you're already on Antora 3.0 and ready to upgrade to Antora {page-component-version}{patch}, skip the next section and go directly to <<node,Upgrade Node.js>>.
 
 include::partial$upgrade-checklist.adoc[]
 
