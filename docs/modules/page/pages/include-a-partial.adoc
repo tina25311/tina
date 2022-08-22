@@ -20,6 +20,11 @@ If you aren't familiar with the Antora resource ID and its coordinates, see:
 An AsciiDoc include directive inserts content from a partial's source file into another partial or a page.
 The include directive accepts the xref:resource-id.adoc[Antora resource ID] of partials, examples, and pages as a value.
 
+Although a partial is typically an AsciiDoc fragment, a partial can be any text document with no restriction on the file's extension.
+If the partial is not AsciiDoc, you have to be sure you're inserting into a place in the AsciiDoc document that accepts non-AsciiDoc content, such as a diagram block, a code block, or CSV table.
+If the partial is a code example, you're encouraged to store it as an example rather than a partial since an example is a specialized form of a partial.
+This page focuses on partials which are AsciiDoc files.
+
 <<ex-base>> shows the structure of an include directive with the fully qualified resource ID of a partial.
 Because the include directive is used to reference other resources, the `partial$` family coordinate must be specified in the partial's resource ID when it's assigned to an include directive.
 
@@ -402,6 +407,28 @@ Another line of content.
 ----
 <.> To display the included content as a standalone block, make sure there is an empty line above the include directive and after the include directive.
 <.> To attach the included content to a block in the current page, enter the include directive on a new line directly above, between, or below the content lines of the block.
+
+[#include-diagram]
+== Include diagram source
+
+If you use diagrams in your pages that are generated from source, you may want to store the diagram's source in a separate file.
+It's up to you whether to store that source as an example or partial.
+Since the source is not a code example, a partial seems like the more logical place.
+
+Create a folder under the partials directory and name it diagrams.
+Then, store the source of your diagram in that folder.
+Let's assume the file is named [.path]_partials/diagrams/my-schema.puml_.
+You can now include that source into your page as follows:
+
+.Include the source of a diagram
+----
+[plantuml,my-schema,svg]
+....
+include::partial$diagrams/my-schema.puml[]
+....
+----
+
+You can refer to diagram sources in other modules, versions, or components, just like with other partials.
 
 == Learn more
 
