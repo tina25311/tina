@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *asciidoc-loader*: Define public export `@antora/asciidoc-loader/include/resolve-include-file` for requiring `resolveIncludeFile` function
+
 == 3.1.0 (2022-08-22)
 
 === Added

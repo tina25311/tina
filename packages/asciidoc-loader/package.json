@@ -19,6 +19,7 @@
   "exports": {
     ".": "./lib/index.js",
     "./config/collate-asciidoc-attributes": "./lib/config/collate-asciidoc-attributes.js",
+    "./include/resolve-include-file": "./lib/include/resolve-include-file.js",
     "./util/compute-relative-url-path": "./lib/util/compute-relative-url-path.js",
     "./package.json": "./package.json"
   },
