@@ -14,7 +14,7 @@ The custom provider is a JavaScript function that matches the following signatur
 
 [,js]
 ----
-async function publish (destConfig, files, playbook)
+async function (destConfig, files, playbook)
 ----
 
 Here's a template you can use to get started.
@@ -24,7 +24,7 @@ Here's a template you can use to get started.
 ----
 'use strict'
 
-async function publish (destConfig, files, playbook) {
+module.exports = async function (destConfig, files, playbook) {
   const to = destConfig.path || '_site'
   console.log(`Publishing files to ${to}`)
   for await (const file of files) {
@@ -32,8 +32,6 @@ async function publish (destConfig, files, playbook) {
   }
   return {}
 }
-
-module.exports = publish
 ----
 
 The destConfig argument is an object containing key-value pairs that correspond to the properties of the xref:configure-output.adoc#destinations-key[destination specification].
