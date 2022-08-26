@@ -17,7 +17,8 @@ _**Release date:** 2022.08.22 | *Issue label:* {url-milestone-3-1-0}[3.1.0^]_
 
 The highlights of the Antora {page-component-version}.0 release include:
 
-* raising the minimum version of Node.js to Node.js 16 and defining public-facing exports for all packages,
+* raising the minimum version of Node.js to Node.js 16,
+* locking down the exported require paths to clearly demarcate the public API,
 * adding support for attribute references in the value of xref:playbook:asciidoc-attributes.adoc#references-in-values[site attributes defined in the playbook] and xref:component-attributes.adoc#references-in-values[component version attributes defined in component version descriptors],
 * providing more context to log and error messages and formatting the information consistently,
 * including more information about content roots in the model for use by extensions, and
