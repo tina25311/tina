@@ -30,6 +30,7 @@ async function publish (destConfig, files, playbook) {
   for await (const file of files) {
     console.log(`Writing file to ${file.path}`)
   }
+  return {}
 }
 
 module.exports = publish
