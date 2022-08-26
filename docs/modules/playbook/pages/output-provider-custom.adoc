@@ -17,6 +17,25 @@ The custom provider is a JavaScript function that matches the following signatur
 async function publish (destConfig, files, playbook)
 ----
 
+Here's a template you can use to get started.
+
+.custom-output-provider.js
+[,js]
+----
+'use strict'
+
+async function publish (destConfig, files, playbook) {
+  const to = destConfig.path || '_site'
+  console.log(`Publishing files to ${to}`)
+  for await (const file of files) {
+    console.log(`Writing file to ${file.path}`)
+  }
+}
+
+module.exports = publish
+----
+
 The destConfig argument is an object containing key-value pairs that correspond to the properties of the xref:configure-output.adoc#destinations-key[destination specification].
-The files argument is a `ReadableStream` of virtual files.
+The files argument is a `ReadableStream` of virtual files (use `for await` to iterate over it).
+Each file is a `Vinyl` object that contains the properties `contents`, `path`, and `stat`.
 The playbook argument is the object containing key-value pairs from the playbook as a whole.
