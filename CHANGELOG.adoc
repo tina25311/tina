@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *asciidoc-loader*: Define public export `@antora/asciidoc-loader/include/resolve-include-file` for requiring `resolveIncludeFile` function
+* *site-generator*: Don't require custom output provider to return a report object
 
 == 3.1.0 (2022-08-22)
 

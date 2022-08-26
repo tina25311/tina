@@ -1849,6 +1849,23 @@ describe('generateSite()', () => {
         .to.be.a.file()
         .with.contents.that.match(/^\/acme\/from\.html \/acme\/to\.html 301!/)
     })
+
+    it('should not require custom output provider to return a value', async () => {
+      const providerPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const providerCode = heredoc`
+        module.exports = async (dest, files, playbook) => {
+          console.log('publish files to ' + dest.path)
+        }
+      `
+      fs.writeFileSync(providerPath, providerCode)
+      playbookSpec.runtime.quiet = false
+      playbookSpec.output.destinations[0].provider = providerPath
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.equal('publish files to ' + playbookSpec.output.destinations[0].path)
+      expect(lines[1]).to.equal('Site generation complete!')
+    })
   })
 
   describe('integration', () => {

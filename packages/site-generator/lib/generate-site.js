@@ -51,7 +51,7 @@ async function generateSite (playbook) {
           const log = (msg) => process.stdout.write(msg + '\n')
           log('Site generation complete!')
           publications.forEach(
-            ({ fileUri }) => fileUri && log(`Open ${fileUri}${indexPath} in a browser to view your site.`)
+            ({ fileUri } = {}) => fileUri && log(`Open ${fileUri}${indexPath} in a browser to view your site.`)
           )
         }
         return context
