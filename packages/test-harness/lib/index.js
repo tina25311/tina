@@ -94,7 +94,7 @@ function unlinkSync (path_) {
 }
 
 // Removes the specified directory (including all of its contents) or file.
-const wipeSync = (dir) => fs['rmSync' in fs ? 'rmSync' : 'rmdirSync'](dir, { recursive: true, force: true })
+const wipeSync = (dir) => fs.rmSync(dir, { recursive: true, force: true })
 
 function emptyDirSync (dir) {
   let lst
