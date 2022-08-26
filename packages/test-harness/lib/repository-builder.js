@@ -194,7 +194,7 @@ class RepositoryBuilder {
 
   async commitSelect (filepaths = [], message = 'make it so') {
     const repo = this.repository
-    if (filepaths.length) await Promise.all(filepaths.map((filepath) => git.add({ ...repo, fs, filepath })))
+    if (filepaths.length) await Promise.all(filepaths.map((filepath) => git.add({ ...repo, filepath })))
     await git.commit({ ...repo, author: this.author, message })
     return this
   }
@@ -216,7 +216,7 @@ class RepositoryBuilder {
       Promise.all(
         status.map(([filepath, _, worktreeStatus]) =>
           // NOTE sometimes isomorphic-git reports a changed file as unmodified, so always add if not removing
-          worktreeStatus === 0 ? git.remove({ ...repo, filepath }) : git.add({ ...repo, fs, filepath })
+          git[worktreeStatus === 0 ? 'remove' : 'add']({ ...repo, filepath })
         )
       )
     )
