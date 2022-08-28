@@ -3429,9 +3429,10 @@ describe('aggregateContent()', () => {
             const messages = await captureLog(() => aggregateContent(playbookSpec))
             expect(messages).to.have.lengthOf(2)
             // NOTE: glob produces a wacky result in this case, so don't try to assert link info
-            console.log([messages[0].msg, expectedMessage]) // NOTE: added to debug failure on Windows
             expect(messages[0].msg).to.startWith(expectedMessage)
-            expect(messages[0].file.path).to.startWith(ospath.join(repoBuilder.repoPath, expectedFrom))
+            // NOTE: on Windows, link direction is not determinant
+            const linkStart = messages[0].msg.substr(expectedMessage.length).split(ospath.sep, 2).join(ospath.sep)
+            expect(messages[0].file.path).to.startWith(repoBuilder.joinPath(repoBuilder.repoPath, linkStart))
             expect(messages[0]).to.have.nested.property('source.worktree', repoBuilder.repoPath)
           } else {
             expectedMessage += `${expectedLink} in ${repoBuilder.url} (branch: ${ref})`
