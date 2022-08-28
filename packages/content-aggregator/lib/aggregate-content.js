@@ -852,13 +852,9 @@ function resolveCredentials (credentialsFromUrlHolder, url, auth) {
  * @returns {String} The generated folder name.
  */
 function generateCloneFolderName (url) {
-  let normalizedUrl = url.toLowerCase()
-  if (posixify) normalizedUrl = posixify(normalizedUrl)
-  normalizedUrl = removeGitSuffix(normalizedUrl)
+  const normalizedUrl = removeGitSuffix(posixify ? posixify(url.toLowerCase()) : url.toLowerCase())
   const basename = normalizedUrl.split(ANY_SEPARATOR_RX).pop()
-  const hash = createHash('sha1')
-  hash.update(normalizedUrl)
-  return basename + '-' + hash.digest('hex') + '.git'
+  return basename + '-' + createHash('sha1').update(normalizedUrl).digest('hex') + '.git'
 }
 
 /**

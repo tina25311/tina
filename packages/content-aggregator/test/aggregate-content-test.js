@@ -114,9 +114,7 @@ describe('aggregateContent()', () => {
       /(?:(?:(?:\.git)?\/)?\.git|\/)$/,
       ''
     )
-    const hash = createHash('sha1')
-    hash.update(normalizedUrl)
-    return `${ospath.basename(normalizedUrl)}-${hash.digest('hex')}.git`
+    return `${ospath.basename(normalizedUrl)}-${createHash('sha1').update(normalizedUrl).digest('hex')}.git`
   }
 
   const clean = (fin) => {
