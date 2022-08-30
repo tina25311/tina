@@ -1476,7 +1476,12 @@ describe('aggregateContent()', () => {
         await initRepoWithComponentDescriptor(repoBuilderA1, componentDescA1)
         playbookSpec.content.sources.push({ url: repoBuilderA1.url })
 
-        const componentDescA2 = { name: 'the-component', repoName: 'the-component-repo-2', version: 'v1.2', prerelease: true }
+        const componentDescA2 = {
+          name: 'the-component',
+          repoName: 'the-component-repo-2',
+          version: 'v1.2',
+          prerelease: true,
+        }
         await initRepoWithComponentDescriptor(repoBuilderA2, componentDescA2)
         playbookSpec.content.sources.push({ url: repoBuilderA2.url })
 
