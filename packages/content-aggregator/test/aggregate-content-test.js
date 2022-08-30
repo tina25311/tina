@@ -1487,6 +1487,18 @@ describe('aggregateContent()', () => {
       }, 2)
     })
 
+    describe('should be able to scan the same repository twice', () => {
+      testAll(async (repoBuilder) => {
+        const componentDesc = { name: 'the-component', title: 'The Component', version: 'v1.2' }
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
+        playbookSpec.content.sources.push({ url: repoBuilder.url }, { url: repoBuilder.url })
+
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include(componentDesc)
+      })
+    })
+
     it('should resolve relative repository path starting from cwd', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
       const componentDesc = {
