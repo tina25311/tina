@@ -81,6 +81,8 @@ You'll then need to xref:playbook:index.adoc[create a playbook] to tell Antora w
 If you already have a documentation component set up, and you're ready to create your first site, check that you've met Antora's xref:install:supported-platforms.adoc[system requirements], then xref:install:install-antora.adoc[install Antora], and finally xref:run-antora.adoc[generate your site] using the `antora` command.
 
 If you want to jump into writing, learn how to use the AsciiDoc syntax to xref:page:index.adoc[make documentation pages].
+You may find the https://intellij-asciidoc-plugin.ahus1.de/docs[IntelliJ AsciiDoc Plugin] to be an author's best friend.
+Not only does the plugin assist with writing and previewing content in AsciiDoc, it also provides state of the art assistance for configuring Antora and for creating and validating references.
 
 If you want to dive deeper into the details of the site generator pipeline, check out xref:how-antora-works.adoc[how Antora works].
 
