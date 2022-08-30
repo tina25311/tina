@@ -82,7 +82,7 @@ If you already have a documentation component set up, and you're ready to create
 
 If you want to jump into writing, learn how to use the AsciiDoc syntax to xref:page:index.adoc[make documentation pages].
 You may find the https://intellij-asciidoc-plugin.ahus1.de/docs[IntelliJ AsciiDoc Plugin] to be an author's best friend.
-Not only does the plugin assist with writing and previewing content in AsciiDoc, it also provides state of the art assistance for configuring Antora and for creating and validating references.
+Not only does it assist with writing and previewing content in AsciiDoc, it also provides state of the art tooling for creating and validating Antora configuration and resource references.
 
 If you want to dive deeper into the details of the site generator pipeline, check out xref:how-antora-works.adoc[how Antora works].
 
