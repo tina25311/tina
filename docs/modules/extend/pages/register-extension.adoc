@@ -36,7 +36,7 @@ antora:
 ----
 
 We prefix the path with `./` to indicate that its location is relative to the playbook file.
-See the https://gitlab.com/antora/user-require-helper/-/blob/main/README.adoc#user-content-usage[@antora/user-require-helper usage] to learn how Antora resolves require requests in the playbook file.
+See the https://gitlab.com/antora/user-require-helper/blob/main/README.adoc#user-content-usage[@antora/user-require-helper usage] to learn how Antora resolves require requests in the playbook file.
 
 When you run Antora, you should now see a line like this in your terminal:
 

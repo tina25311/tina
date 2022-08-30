@@ -286,7 +286,7 @@ Antora uses highlight.js to automatically add syntax highlighting to source bloc
 
 Syntax highlighting also requires a contribution from the UI.
 The reference Antora UI bundles the highlight.js library (both the JavaScript and the CSS) and adds it to each page.
-The names of the languages that are currently supported are listed in the https://gitlab.com/antora/antora-ui-default/-/blob/HEAD/src/js/vendor/highlight.bundle.js[highlight.bundle.js file in Antora's UI repository^].
+The names of the languages that are currently supported are listed in the https://gitlab.com/antora/antora-ui-default/-/raw/HEAD/src/js/vendor/highlight.bundle.js[highlight.bundle.js file in Antora's UI repository^].
 
 You can disable or override the `source-highlighter` attribute in the playbook or a component version descriptor.
 To disable syntax highlighting, unset the `source-highlighter` attribute in your playbook.
