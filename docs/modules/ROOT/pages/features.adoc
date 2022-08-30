@@ -191,7 +191,7 @@ When Antora runs, it fuses the latest content and the latest UI together.
 This means it's easy to swap one UI and theme with another, which can be useful for redesigns, A/B testing, or campaigns.
 You have maximum freedom to tailor the UI and its theme(s) to your needs.
 
-== Native support for page redirects
+== Built-in support for page redirects
 
 *Retain URLs of old pages in a transparent way by storing the information in the target document.*
 
