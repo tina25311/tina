@@ -459,17 +459,16 @@ function readFilesFromWorktree (origin) {
 }
 
 function srcFs (cwd, origin) {
-  const relpathStart = cwd.length + 1
-  return new Promise((resolve, reject, cache = Object.create(null), files = []) =>
+  return new Promise((resolve, reject, cache = Object.create(null), files = [], relpathStart = cwd.length + 1) =>
     pipeline(
       globStream(CONTENT_SRC_GLOB, Object.assign({ cache, cwd }, CONTENT_SRC_OPTS)),
       forEach(({ path: abspathPosix }, _, done) => {
-        if (Array.isArray(cache[abspathPosix])) return done() // detects some directories, but not all
+        if ((cache[abspathPosix] || {}).constructor === Array) return done() // detects some directories
         const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
         const relpath = abspath.substr(relpathStart)
         symlinkAwareStat(abspath).then(
           (stat) => {
-            if (stat.isDirectory()) return done() // detects remaining directories
+            if (stat.isDirectory()) return done() // detects directories that slipped through cache check
             fsp.readFile(abspath).then(
               (contents) => {
                 files.push(new File({ path: posixify ? posixify(relpath) : relpath, contents, stat, src: { abspath } }))

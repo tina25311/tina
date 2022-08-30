@@ -12,6 +12,5 @@ module.exports = Object.freeze({
     nosort: true,
     nounique: true,
     strict: false,
-    uniqueBy: (m) => m,
   },
 })

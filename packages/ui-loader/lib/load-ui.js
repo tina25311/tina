@@ -353,21 +353,20 @@ function resolveOut (file, outputDir = '_') {
 }
 
 function srcFs (cwd) {
-  const relpathStart = cwd.length + 1
-  return new Promise((resolve, reject, cache = Object.create(null), files = new Map()) =>
+  return new Promise((resolve, reject, cache = Object.create(null), files = new Map(), relpathStart = cwd.length + 1) =>
     pipeline(
       globStream(UI_SRC_GLOB, Object.assign({ cache, cwd }, UI_SRC_OPTS)),
       forEach(({ path: abspathPosix }, _, done) => {
-        if (Array.isArray(cache[abspathPosix])) return done() // detects some directories, but not all
+        if ((cache[abspathPosix] || {}).constructor === Array) return done() // detects some directories
         const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
         const relpath = abspath.substr(relpathStart)
         symlinkAwareStat(abspath).then(
           (stat) => {
-            if (stat.isDirectory()) return done() // detects remaining directories
+            if (stat.isDirectory()) return done() // detects directories that slipped through cache check
+            const relpathPosix = posixify ? posixify(relpath) : relpath
             fsp.readFile(abspath).then(
               (contents) => {
-                const path_ = posixify ? posixify(relpath) : relpath
-                files.set(path_, new File({ cwd, path: path_, contents, stat, local: true }))
+                files.set(relpathPosix, new File({ cwd, path: relpathPosix, contents, stat, local: true }))
                 done()
               },
               (readErr) => {
