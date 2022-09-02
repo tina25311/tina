@@ -11,6 +11,7 @@ This project utilizes semantic versioning.
 
 * *asciidoc-loader*: Define public export `@antora/asciidoc-loader/include/resolve-include-file` for requiring `resolveIncludeFile` function
 * *site-generator*: Don't require custom output provider to return a report object
+* *cli*: If logger cannot be found, print error message to stderr instead of crashing during shutdown
 
 == 3.1.0 (2022-08-22)
 

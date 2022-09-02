@@ -13,7 +13,6 @@ async function run (argv = process.argv) {
 }
 
 function exitWithError (err, opts, msg = undefined) {
-  const { getLogger, configureLogger } = requireLogger()
   let errMessage = String(
     err instanceof Error ? err.message : Object.assign((err = new Error(String(err))), { stack: undefined }).message
   )
@@ -21,6 +20,8 @@ function exitWithError (err, opts, msg = undefined) {
     ? (errMessage = errMessage.slice(21)) && 'asciidoctor'
     : cli.name()
   if (!msg) msg = errMessage
+  const { configureLogger, getLogger } = requireLogger()
+  if (!getLogger) return lastDitchExit(err, msg)
   if (!getLogger(null)) {
     configureLogger({ format: 'pretty', level: opts.silent ? 'silent' : 'fatal', failureLevel: 'fatal' })
   }
@@ -38,6 +39,12 @@ function exit () {
     .then((failOnExit) => process.exitCode || (process.exitCode = failOnExit ? 1 : 0))
 }
 
+function lastDitchExit (err, msg) {
+  if (msg !== err.message) console.error(msg)
+  console.error(err)
+  process.exitCode = process.exitCode || 1
+}
+
 function getTTYColumns () {
   return +process.env.COLUMNS || process.stdout.columns || 80
 }
@@ -53,7 +60,7 @@ function requireLogger (fromPath = undefined, moduleName = '@antora/logger') {
       (requireLogger.cache = fromPath ? userRequire(moduleName, { paths: [fromPath] }) : require(moduleName))
     ) // dynamic require('@antora/logger')
   } catch {
-    return fromPath && (requireLogger.cache = require(moduleName))
+    return fromPath ? (requireLogger.cache = require(moduleName)) : {}
   }
 }
 
