@@ -80,7 +80,7 @@ Alternately, if the function accepts the generator context as the first paramete
 .my-extension.js without binding
 [,js]
 ----
-module.exports.register = (context) {
+module.exports.register = (context) => {
   context.on(...)
 }
 ----
