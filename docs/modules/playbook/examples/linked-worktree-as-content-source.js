@@ -20,12 +20,12 @@ module.exports.register = function () {
     for (const contentSource of playbook.content.sources) {
       const { url, branches } = contentSource
       if (url.charAt() !== '.') continue
-      let absdir = expandPath(url, { dot: playbook.dir })
-      let gitfile = ospath.join(absdir, '.git')
+      const absdir = expandPath(url, { dot: playbook.dir })
+      const gitfile = ospath.join(absdir, '.git')
       if (await fsp.stat(gitfile).then((stat) => !stat.isDirectory(), () => false)) {
-        let worktreeGitdir = await fsp.readFile(gitfile, 'utf8')
+        const worktreeGitdir = await fsp.readFile(gitfile, 'utf8')
           .then((contents) => contents.trimRight().substr(8))
-        let worktreeBranch = await fsp.readFile(ospath.join(worktreeGitdir, 'HEAD'), 'utf8')
+        const worktreeBranch = await fsp.readFile(ospath.join(worktreeGitdir, 'HEAD'), 'utf8')
           .then((contents) => contents.trimRight().replace(/^ref: (?:refs\/heads\/)?/, ''))
         const reldir = ospath.relative(
           playbook.dir,
