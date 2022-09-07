@@ -9,12 +9,15 @@ Worktrees are only relevant for branches, not tags.
 == worktrees key
 
 The `worktrees` key is optional.
-If not specified, Antora will use the worktree if the repository is local and the current branch of that repository is among the branches matched by the `branches` key.
-If a match is made, Antora uses the files from the worktree instead of the files from the git tree for that branch.
+If not specified, Antora will automatically use the main (i.e., primary) worktree of a local repository if the current branch of that repository is among the branches matched by the `branches` key.
+If such a match is made, Antora will take the files from the worktree instead of the files from the git tree for that branch.
+
 By default, Antora only uses the main worktree (not to be confused with the main branch), not linked worktrees.
 To customize this behavior, you can set the `worktrees` key.
 
-The `worktrees` key is specified on the entry for a content .
+NOTE: The main worktree is not necessarily linked to the main branch, but rather to the current branch of the local repository.
+
+The `worktrees` key is specified on the entry for a content source.
 The key accepts a keyword or a list of branch name patterns.
 Each branch name pattern can either be an exact branch name or a positive or negative glob pattern.
 
@@ -30,8 +33,21 @@ content:
     worktrees: true
 ----
 
-NOTE: In order for Antora to discover linked worktrees, the `url` key must point to the location of the main worktree (where the [.path]_.git_ folder is located).
-The main worktree is not necessarily linked to the main branch, but rather the current branch of the local repository.
+In order for Antora to discover linked worktrees, the `url` key must point to the location of the main worktree (where the [.path]_.git_ folder is located).
+If the `url` points directly to a linked worktree, Antora will not recognize it as a valid git repository.
+
+=== Linked worktree as content source
+
+It's possible to get Antora to support using a linked worktree as a content source with the help of an extension.
+The following Antora extension will detect when the `url` key of a content source points to a linked worktree, then reconfigure the content source to point to the main worktree instead.
+
+[,js]
+----
+include::example$linked-worktree-as-content-source.js[]
+----
+
+Save this file next to your playbook file and load it using `--extension ./linked-worktree-as-content-source.js` when invoking Antora.
+Once https://gitlab.com/antora/antora/-/issues/535[#535] is resolved, this patch will no longer be necessary.
 
 == Specify worktrees by keyword
 
