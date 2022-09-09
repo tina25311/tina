@@ -22,6 +22,17 @@ Every page should have a page title.
 Without a page title, the page lacks a critical part of its identity and certain features in Antora will not work.
 If you don't want to display the page title on a certain page, you can add conditional logic in the UI template to hide it.
 
+The page title may contain basic text formatting.
+For example:
+
+----
+= A _Formatted_ Page Title
+----
+
+However, the page title cannot contain resource references, such as an image.
+The page title is used in different contexts and the resource references are not always appropriate or resolvable.
+Therefore, they are not permitted.
+
 == Page description and keywords
 
 If set, `description` is output to an HTML `<meta>` tag with the same name.
