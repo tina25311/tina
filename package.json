@@ -2,6 +2,14 @@
   "private": true,
   "name": "antora-build",
   "version": "3.1.0",
+  "description": "The development build for the Antora monorepo.",
+  "license": "MPL-2.0",
+  "author": "OpenDevise Inc. (https://opendevise.com)",
+  "homepage": "https://antora.org",
+  "repository": "gitlab:antora/antora",
+  "bugs": {
+    "url": "https://gitlab.com/antora/antora/issues"
+  },
   "scripts": {
     "build": "npm test && npm run lint",
     "coverage": "nyc _mocha",
