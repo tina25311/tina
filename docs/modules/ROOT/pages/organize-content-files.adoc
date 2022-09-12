@@ -5,7 +5,7 @@ Before setting up or migrating your repositories, let's review some key concepts
 
 == Storing your content source files
 
-Antora can retrieve content source files from numerous git repositories by searching for files or their xref:symlinks.adoc[symlinks] under a xref:playbook:content-source-start-path.adoc[start path] or xref:playbook:content-source-start-paths.adoc[multiple start paths] in branches, tags, or the local worktree.
+Antora can retrieve content source files from numerous git repositories by searching for files or their xref:symlinks.adoc[symlinks] under a xref:playbook:content-source-start-path.adoc[start path] or xref:playbook:content-source-start-paths.adoc[multiple start paths] in branches, tags, or a local worktree.
 The repositories Antora uses don't have to be reserved exclusively for storing documentation (hence the start path).
 Antora can retrieve files from repositories that also host application code, tests, and other materials in sibling hierarchies.
 Antora relies on both xref:standard-directories.adoc[convention] and xref:playbook:configure-content-sources.adoc[configuration] to identify the documentation content.
@@ -15,6 +15,10 @@ In order to fetch source files from multiple and multi-use repositories, Antora 
 * Located under a xref:content-source-repositories.adoc[content source root]
 * Labeled with a file named xref:component-version-descriptor.adoc[_antora.yml_]
 * Organized into a xref:standard-directories.adoc[standard set of directories]
+
+Although not required, we *strongly* recommend that you always use lowercase for filenames.
+Some filesystems are case sensitive, while others are not.
+By always using lowercase, you avoid any problems that occur if the filesystem, webserver, or transfer tool does not preserve the casing.
 
 == Classifying your content source files
 
