@@ -25,9 +25,12 @@ asciidoc:
   - ./path/to/extension
 ----
 
-IMPORTANT: If you're trying to require a Node.js module that ends with a file extension, such as `.js`, you must append a trailing forward slash (e.g., `highlight.js/` instead of `highlight.js`).
-This modifier tells Antora to resolve the request as a module.
-Otherwise, Antora tries to resolve it as a local file, which could result in the error message _Cannot find module_.
+IMPORTANT: If you're trying to require a Node.js module (e.g., a package installed from npmjs.com) whose name ends with a file extension, such as `.js`, you must append a trailing forward slash.
+For example, the Node.js module `highlight.js` must be written as `highlight.js/`.
+This suffix tells Antora to resolve the request as the name of a module, not as a local file.
+Without this suffix, Antora assumes the request is a local file.
+If it's not a local file, this can result in the error message _Cannot find module_.
+If the request is already a local file, the suffix is not needed.
 
 [#global-extensions]
 == Global Asciidoctor extensions
