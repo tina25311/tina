@@ -8,7 +8,7 @@ asciidoc:
     xrefstyle: short@
     example-caption: false
     listing-caption: Example@
-    patch: '.0'
+    patch: '.1'
     version-node-major: '16'
     version-node: '16.17.0'
     version-npm: '8.15.0'

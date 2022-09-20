@@ -9,7 +9,27 @@
 :url-gitlab: https://gitlab.com
 :url-issues: {url-repo}/issues
 :url-milestone-3-1-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.0
+:url-milestone-3-1-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.1
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.1
+
+_**Release date:** 2022.09.21 | *Issue label:* {url-milestone-3-1-1}[3.1.1^]_
+
+== Resolved issues
+
+=== Changed
+
+Issue {url-issues}/1004[#1004^]:: Use pretty log format by default if `IS_TTY` environment variable is set to `true`.
+Print success message if `IS_TTY` environment variable is set to `true`.
+See xref:playbook:runtime-log-format.adoc[] for more information.
+
+=== Fixed
+
+Issue {url-issues}/1003[#1003^]:: Prevent message from ignored log message from overwriting message from next reported log message.
+Update to Issue {url-issues}/984[#984^]:: Define public export `@antora/asciidoc-loader/include/resolve-include-file` for requiring `resolveIncludeFile` function.
+Site generator:: Don't require custom output provider to return a report object.
+CLI:: If logger can't be found, print error message to stderr instead of crashing during shutdown.
 
 = Antora {page-component-version}.0
 
