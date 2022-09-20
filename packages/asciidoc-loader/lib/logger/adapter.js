@@ -37,19 +37,13 @@ const LoggerAdapter = (() => {
   })
 
   Opal.defn(classDef, '$add', function add (severity, message, progname) {
+    const block = add.$$p
+    add.$$p = null
     if (severity < this.level) {
       if (severity >= this.failureLevel) this.delegate.setFailOnExit()
       return true
     }
-    if (message === Opal.nil) {
-      const block = add.$$p
-      if (block) {
-        message = block()
-        add.$$p = null
-      } else {
-        message = progname
-      }
-    }
+    if (message === Opal.nil) message = block ? block() : progname
     if (message.$$is_hash) message = Object.assign({}, message.$$smap)
     const logMethod = severityMap.get(severity) || 'info'
     const logObject = { file: this.context }
