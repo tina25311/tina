@@ -99,6 +99,9 @@ Once cloning is complete, Antora converts the AsciiDoc pages to embeddable HTML,
 --
 
 . Antora has completed generation when the command prompt (`$`) reappears in the terminal.
+If the terminal is interactive (TTY), Antora will also print a message that the site generation is complete.
+The message will include the URL where you can view the site locally.
+(You can override Antora's TTY detection by setting the `IS_TTY` environment variable to `true` or `false`).
 +
 [TIP#error-stacktrace]
 ====

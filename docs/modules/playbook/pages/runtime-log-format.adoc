@@ -10,7 +10,7 @@ Instead, the error message is printed directly to standard error (STDERR).
 
 Explicitly assigning a value to the `format` key is optional.
 When `format` isn't set, Antora assigns one of the key's accepted values, either `json` or `pretty`, based on the environment it detects at runtime.
-Antora assigns the value `pretty` to the `format` key when the terminal is interactive (TTY) or it detects a <<ci,continuous integration environment (CI=true)>>.
+Antora assigns the value `pretty` to the `format` key when Antora is running in a <<ci,continous integration environment (CI=true)>>, the `IS_TTY` environment variable is `true`, or the terminal is interactive (TTY) and the `IS_TTY` environment variable is not `false`.
 In all other cases, Antora uses the `json` value.
 
 [#format-key]
@@ -28,14 +28,14 @@ runtime:
 
 The `format` key accepts the following built-in values:
 
-json:: _Default when terminal is not interactive an Antora is not running in a CI environment._
+json:: _Default if the `CI` environment variable is not set (not running in a CI environment variable), `IS_TTY=false`, or the terminal is not interactive._
 The structured log messages are emitted in JSON format to the standard out stream (STDOUT) so they can be piped to other applications and processed.
 The output adheres to the https://jsonlines.org[JSON Lines] (jsonl) text format (also known as Newline delimited JSON, or ndjson).
 Each message is output on its own line using UTF-8 encoding and each line is a valid JSON value.
 The levels of the messages are expressed as labels, _error_, _info_, etc., by default.
 The level format can be changed to numbers by setting the <<level-format-key,log.level_format key>> and assigning the value `number` to it.
 
-pretty:: _Default if `CI=true` or terminal is interactive._
+pretty:: _Default if `CI=true`, `IS_TTY=true`, or the terminal is interactive._
 The log messages are formatted for readability and emitted to the standard error stream (STDERR).
 
 The `format` key can also be specified using the <<format-option,--log-format option>> or xref:playbook:environment-variables.adoc#log-format[ANTORA_LOG_FORMAT variable].
