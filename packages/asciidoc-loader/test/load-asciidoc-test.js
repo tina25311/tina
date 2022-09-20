@@ -406,6 +406,29 @@ describe('loadAsciiDoc()', () => {
       expect(Asciidoctor.LoggerManager.getLogger().failureLevel).to.equal(0)
     })
 
+    it('should not use message from ignored log object as next log message', () => {
+      configureLogger({ level: 'warn' })
+      const config = {
+        attributes: { 'attribute-missing': 'drop-line' },
+      }
+      const contents = heredoc`
+        image::{no-such-attribute}[]
+
+        image:missing.png[]
+      `
+      const contentCatalog = mockContentCatalog({
+        version: '',
+        family: 'page',
+        relative: 'page-a.adoc',
+        contents,
+      })
+      inputFile = contentCatalog.getFiles()[0]
+      const messages = captureStdoutLogSync(() => loadAsciiDoc(inputFile, contentCatalog, config).convert())
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('error')
+      expect(messages[0].msg).to.equal('target of image not found: missing.png')
+    })
+
     it('should include file and source keys in log object when Asciidoctor does not provide source location', () => {
       setInputFileContents('= Page Title\n\n{no-such-attribute}')
       inputFile.src.origin = {
