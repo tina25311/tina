@@ -948,6 +948,21 @@ describe('buildPlaybook()', () => {
     }
   })
 
+  it('should set runtime.log.format to pretty when IS_TTY=true and stdout is not a TTY', () => {
+    const oldEnv = process.env
+    const oldIsTTY = process.stdout.isTTY
+    try {
+      process.env = Object.assign({}, oldEnv)
+      process.env.IS_TTY = 'true'
+      process.stdout.isTTY = undefined
+      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
+      expect(playbook.runtime.log.format).to.equal('pretty')
+    } finally {
+      process.env = oldEnv
+      process.stdout.isTTY = oldIsTTY
+    }
+  })
+
   it('should set runtime.log.format to json when CI is not set and stdout is not a TTY', () => {
     const oldEnv = process.env
     const oldIsTTY = process.stdout.isTTY

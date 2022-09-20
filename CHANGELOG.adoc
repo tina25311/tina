@@ -7,6 +7,11 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *logger*: Use pretty log format by default if `IS_TTY` environment variable is set to `true` (#1004)
+* *site-generator*: Print success message if `IS_TTY` environment variable is set to `true` (#1004)
+
 === Fixed
 
 * *asciidoc-loader*: Define public export `@antora/asciidoc-loader/include/resolve-include-file` for requiring `resolveIncludeFile` function

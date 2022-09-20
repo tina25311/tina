@@ -264,7 +264,9 @@ module.exports = {
         {
           get (target, property) {
             if (property !== 'default') return target[property]
-            return process.env.CI === 'true' || process.stdout.isTTY ? 'pretty' : 'json'
+            return process.env.CI === 'true' || (process.env.IS_TTY || String(process.stdout.isTTY)) === 'true'
+              ? 'pretty'
+              : 'json'
           },
         }
       ),
