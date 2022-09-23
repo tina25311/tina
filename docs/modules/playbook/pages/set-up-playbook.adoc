@@ -1,7 +1,7 @@
 = Set Up a Playbook
 :page-aliases: playbook-schema.adoc
 
-Let's create a basic playbook file.
+Let's create a basic playbook file in the YAML format.
 The steps in the following sections will walk you through setting up a playbook that configures a site title and URL, fetches source files from the Demo Component A and Demo Component B repositories, and applies Antora's reference UI to the converted pages.
 
 == Configure your site's properties
@@ -9,6 +9,7 @@ The steps in the following sections will walk you through setting up a playbook 
 First, let's configure your site's title and URL.
 
 . Open a new file in the text editor or IDE of your choice.
+You'll typically name this file [.path]_antora-playbook.yml_.
 . On the first line, type `site:` and
 press kbd:[Enter] to go to the next line.
 +
