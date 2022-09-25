@@ -116,6 +116,9 @@ Finally, if the extension finds unlisted pages, it adds them to a new category i
 include::example$unlisted-pages-extension.js[tag=add-to-nav,indent=0]
 ----
 
+The `addToNavigation` variable comes from the configuration key `add_to_navigation` on the extension entry.
+Antora automatically converts configuration key names to camelCase to make them consistent with variable naming conventions in JavaScript.
+
 Now that the extension is written, and you understand what it does, it's time to register it.
 
 == Register the extension
