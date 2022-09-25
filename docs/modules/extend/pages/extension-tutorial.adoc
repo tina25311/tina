@@ -119,6 +119,20 @@ include::example$unlisted-pages-extension.js[tag=add-to-nav,indent=0]
 The `addToNavigation` variable comes from the configuration key `add_to_navigation` on the extension entry.
 Antora automatically converts configuration key names to camelCase to make them consistent with variable naming conventions in JavaScript.
 
+.Remove unlisted pages
+[#remove-unlisted]
+****
+Instead of adding unlisted pages to the navigation, you could instead remove them from the site.
+This would be one way of limiting which pages get published.
+
+[,js]
+----
+unlistedPages.forEach((page) => contentCatalog.removeFile(page))
+----
+
+If you go this route, you'll probably want to remove the warning for unlisted pages, or downgrade it to the info or debug severity level.
+****
+
 Now that the extension is written, and you understand what it does, it's time to register it.
 
 == Register the extension
