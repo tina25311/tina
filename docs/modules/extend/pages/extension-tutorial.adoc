@@ -109,8 +109,7 @@ The `origin` key should point to the `src.origin` property on the virtual file, 
 You can also pass in an optional line number using the `line` key.
 The custom formatter will compile all this information into a formatted message to help the user locate the relevant file.
 
-Finally, if the extension finds unlisted pages.
-If configured to do so, it also adds them to a new category in the navigation with the specified heading.
+Finally, if the extension finds unlisted pages, it adds them to a new category in the navigation with the special heading if configured to do so.
 
 [,js]
 ----
