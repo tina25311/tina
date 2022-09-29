@@ -1,0 +1,42 @@
+= Extension Use Cases
+
+This page provides a catalog of simple examples to showcase how you can enhance the capabilities of Antora through the use of extensions.
+Each section introduces a different use case and presents the extension code you can build on as a starting point.
+
+You can also reference official extension projects provided by the Antora project to study more complex examples.
+
+== Exclude private content sources
+
+If some contributors or CI jobs don't have permission to the private content sources in the playbook, you can use an extension to filter them out instead of having to modify the playbook file.
+
+This extension runs during the `playbookBuilt` event.
+It retrieves the playbook, iterates over the content sources, and removes any content source that it detects as private and thus require authentication.
+We'll rely on a convention to communicate to the extension which content source is private.
+That convention is to use an SSH URL that starts with `git@`.
+Antora automatically converts SSH URLs to HTTP URLs, so the use of this syntax merely serves as a hint to users and extensions that the URL is private and is going to request authentication.
+
+.exclude-private-content-sources-extension.js
+[,js]
+----
+include::example$exclude-private-content-sources-extension.js[]
+----
+
+This extension works because the playbook is mutable until the end of this event, at which point Antora freezes it.
+The call to `this.updateVariables` to replace the `playbook` variable in the generator context is not required, but is used here to express intent and to future proof the extension.
+
+== Report unlisted pages
+
+After you create a new page, it's easy to forget to add it to the navigation so that the reader can access it.
+We can use an extension to identify pages which are not in the navigation and report them using the logger.
+
+This extension runs during the `navigationBuilt` event.
+It iterates over each component version, retrieves a flattened list of its internal navigation entries, then checks to see if there are any pages that are not in that list.
+It compares pages by URL.
+
+.unlisted-pages-extension.js
+[,js]
+----
+include::example$unlisted-pages-extension.js[tags=**]
+----
+
+You can read more about this extension and how to configure it in the xref:extension-tutorial.adoc[].

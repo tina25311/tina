@@ -13,4 +13,5 @@
 ** xref:extension-tutorial.adoc[]
 ** xref:generator-events-reference.adoc[]
 ** xref:generator-context-reference.adoc[]
+** xref:extension-use-cases.adoc[]
 * xref:supported-components.adoc[]
