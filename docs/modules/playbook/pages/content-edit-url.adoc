@@ -65,7 +65,7 @@ This placeholder can be omitted if you use a web URL that differs from the one A
 
 refname:: The `+{refname}+` is the name of the git reference (e.g., v2.1.x, main, rawhide).
 
-refname:: The `+{reftype}+` is the type of the git reference (i.e., tag or branch).
+reftype:: The `+{reftype}+` is the type of the git reference (i.e., tag or branch).
 
 refhash:: The `+{refhash}+` is the commit hash of the git reference (e.g., aab0e5684afe0d4e05955fbef72b6e5538bb1ec5).
 
