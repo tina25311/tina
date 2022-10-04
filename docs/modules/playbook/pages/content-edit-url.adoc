@@ -40,7 +40,7 @@ Let's now look at how you can customize the value.
 The `edit_url` key is useful when you're using an unrecognized git solution, or you want <<source-view,Edit this Page to link to an alternate view>>, such as the raw or rendered display, of a page's source file.
 
 The `edit_url` key is set in the playbook and can be applied to all of the content sources or customized per individual source.
-The key accepts a URL pattern that contains the URL segments of the git solution or source file view plus three placeholder segments, `+{web_url}+`, `+{refname}+`, `+{reftype}`+, `+{refhash}+`, and `+{path}+`.
+The key accepts a URL pattern that contains the URL segments of the git solution or source file view plus three placeholder segments, `+{web_url}+`, `+{refname}+`, `+{reftype}+`, `+{refhash}+`, and `+{path}+`.
 Antora automatically fulfills these placeholders with the file's origin information at processing time.
 
 .edit_url key and value
