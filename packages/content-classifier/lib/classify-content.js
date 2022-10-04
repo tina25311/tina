@@ -21,10 +21,9 @@ function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}) {
   const contentCatalog = new ContentCatalog(playbook)
   aggregate
     .reduce((accum, componentVersionData) => {
-      const { name, version } = componentVersionData
-      // drop startPage to defer registration of start page
       // drop files since they aren't needed to register component version
-      const { files, startPage, ...descriptor } = Object.assign({}, componentVersionData, {
+      // drop startPage to defer registration of start page
+      const { name, version, files, startPage, ...descriptor } = Object.assign({}, componentVersionData, {
         asciidoc: resolveAsciiDocConfig(siteAsciiDocConfig, componentVersionData),
       })
       return new Map(accum).set(
