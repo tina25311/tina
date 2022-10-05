@@ -698,7 +698,7 @@ describe('ContentCatalog', () => {
       }
       const result = contentCatalog.addFile({ src })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
-      expect(componentVersion.version).to.equal('1.2.3')
+      expect(componentVersion).to.have.property('activeVersionSegment', componentVersion.version)
       expect(componentVersion.url).to.equal('/the-component/1.2.3/index.html')
       const splatVersionAlias = contentCatalog.getById({
         component: 'the-component',
@@ -733,6 +733,7 @@ describe('ContentCatalog', () => {
       })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('')
+      expect(componentVersion).to.have.property('activeVersionSegment', componentVersion.version)
       expect(componentVersion.url).to.equal('/the-component/index.html')
       const splatVersionAlias = contentCatalog.getById({
         component: 'the-component',
@@ -763,6 +764,7 @@ describe('ContentCatalog', () => {
       })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('latest')
+      expect(componentVersion).to.have.property('activeVersionSegment', componentVersion.version)
       expect(componentVersion.url).to.equal('/the-component/latest/index.html')
       const splatVersionAlias = contentCatalog.getById({
         component: 'the-component',
@@ -795,6 +797,8 @@ describe('ContentCatalog', () => {
       const result = contentCatalog.addFile({ src })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('1.2.3')
+      expect(componentVersion).to.not.have.property('versionSegment')
+      expect(componentVersion).to.have.property('activeVersionSegment', 'current')
       expect(componentVersion.url).to.equal('/the-component/current/index.html')
       const splatVersionAlias = contentCatalog.getById({
         component: 'the-component',
@@ -852,6 +856,7 @@ describe('ContentCatalog', () => {
       })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('')
+      expect(componentVersion).to.have.property('activeVersionSegment', componentVersion.version)
       expect(componentVersion.url).to.equal('/the-component/index.html')
       const splatVersionAlias = contentCatalog.getById({
         component: 'the-component',
@@ -1329,6 +1334,32 @@ describe('ContentCatalog', () => {
       expect(result.pub).to.include({ url: '/the-component/current/the-page.html', rootPath: '../..' })
     })
 
+    it('should replace versionSegment in pub.url and out.path with symbolic name if specified', () => {
+      const contentCatalog = new ContentCatalog({ urls: { latestVersionSegment: 'current' } })
+      const componentVersion = contentCatalog.registerComponentVersion('the-component', '1.2.3', {
+        title: 'The Component',
+        versionSegment: '1.2',
+        startPage: true,
+      })
+      expect(componentVersion).to.have.property('versionSegment', '1.2')
+      expect(componentVersion).to.have.property('activeVersionSegment', 'current')
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        extname: '.adoc',
+        stem: 'the-page',
+      }
+      const result = contentCatalog.addFile(new File({ src }))
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({ path: 'the-component/current/the-page.html', rootPath: '../..' })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({ url: '/the-component/current/the-page.html', rootPath: '../..' })
+    })
+
     it('should replace latest prerelease in pub.url and out.path with symbolic name if specified', () => {
       const contentCatalog = new ContentCatalog({ urls: { latestPrereleaseVersionSegment: 'next' } })
       contentCatalog.registerComponentVersion('the-component', '1.0.0', { title: 'The Component' })
@@ -1533,6 +1564,24 @@ describe('ContentCatalog', () => {
       expect(result.src).to.eql(expectedSrc)
       expect(result).to.have.property('out')
       expect(result).to.have.property('pub')
+    })
+
+    it('should use componentVersion specified as second argument', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+      }
+      const contentCatalog = new ContentCatalog()
+      const componentVersion = contentCatalog.registerComponentVersion('the-component', '1.2.3', {
+        versionSegment: '1',
+      })
+      contentCatalog.getComponentVersion = spy(contentCatalog.getComponentVersion)
+      const result = contentCatalog.addFile({ path: src.relative, src }, componentVersion)
+      expect(result.pub.url).to.eql('/the-component/1/the-page.html')
+      expect(contentCatalog.getComponentVersion).to.not.have.been.called()
     })
 
     it('should process file using family from rel property if set', () => {

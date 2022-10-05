@@ -7,7 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
-_No changes since previous release._
+=== Added
+
+* *content-classifier*: Use value of `versionSegment` property on component version in place of version in output path and URL of pages (#1006)
+* *content-classifier*: Set dynamic `activeVersionSegment` property on component version to indicate which version segment is in use (#1006)
 
 == 3.1.1 (2022-09-20)
 
