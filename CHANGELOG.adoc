@@ -34,12 +34,15 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Attach parsed component version descriptor to `descriptor` property on origin object (#525)
 * *content-aggregator*: Log info message if no references are found for content source (#221)
 * *ui-loader*: Include target in error message for broken or cyclic symbolic link (#900)
+* *ui-loader*: Add `removeFile` method to `UiCatalog` for removing file (#814)
 * *content-classifier*: Resolve attribute references in value of AsciiDoc attribute defined in component descriptor (#981)
 * *content-classifier*: Honor escaped attribute references in value of AsciiDoc attribute defined in component descriptor (#989)
+* *content-classifier*: Add `removeFile` method to `ContentCatalog` for removing file (#814)
 * *asciidoc-loader*: Define `page-component-latest-version` attribute with value of version string from latest component version (#921)
 * *asciidoc-loader*: Define boolean `page-component-version-is-latest` attribute if page is in latest version of component (#921)
 * *asciidoc-loader*: Assign edit URL of current page, if set, to `page-edit-url` attribute (#354)
 * *asciidoc-loader*: Define boolean `page-origin-private` attribute if origin of page is private (#354)
+* *site-generator*: Add `removeFile` method to `SiteCatalog` for removing file (#814)
 * Define exports for all packages, locking down what paths can be required to the public API (#984)
 
 === Changed
