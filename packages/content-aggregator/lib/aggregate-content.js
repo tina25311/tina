@@ -883,7 +883,7 @@ function resolveRemoteUrl (repo, remoteName) {
  * Checks whether the specified URL matches a directory on the local filesystem.
  *
  * @param {String} url - The URL to check.
- * @return {Boolean} A flag indicating whether the URL matches a directory on the local filesystem.
+ * @returns {Boolean} A flag indicating whether the URL matches a directory on the local filesystem.
  */
 function isDirectory (url) {
   return fsp.stat(url).then((stat) => stat.isDirectory(), invariably.false)

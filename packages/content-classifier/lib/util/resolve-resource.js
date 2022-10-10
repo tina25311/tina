@@ -21,7 +21,7 @@ const parseResourceId = require('./parse-resource-id')
  *   The value "page" is used if not specified. This value is always used instead of family value provided by the ctx.
  * @param {Array<String>} [permittedFamilies=undefined] - An optional array of family names to allow.
  *
- * @return {File} The virtual file to which the contextual resource ID spec refers, undefined if
+ * @returns {File} The virtual file to which the contextual resource ID spec refers, undefined if
  * the file cannot be resolved, or false if the resource ID spec is invalid.
  */
 function resolveResource (spec, catalog, ctx = {}, defaultFamily = undefined, permittedFamilies = undefined) {

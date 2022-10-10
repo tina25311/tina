@@ -402,7 +402,7 @@ class ContentCatalog {
    * @param {ContentCatalog} catalog - The content catalog in which to resolve the page file.
    * @param {Object} [ctx={}] - The context to use to qualified the contextual page ID.
    *
-   * @return {File} The virtual file to which the contextual page ID spec refers, or undefined if the
+   * @returns {File} The virtual file to which the contextual page ID spec refers, or undefined if the
    * file cannot be resolved.
    */
   resolvePage (spec, context = {}) {
