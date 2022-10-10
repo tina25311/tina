@@ -54,6 +54,8 @@ class ContentCatalog {
    * component version. A true value is a special case to tell this method to register the default start page and is
    * intended for testing.
    * @param {String} [descriptor.title=name] - The title for this component version.
+   *
+   * @returns {Object} The constructed component version object.
    */
   registerComponentVersion (name, version, descriptor = {}) {
     const { asciidoc, displayVersion, prerelease, startPage: startPageSpec, title } = descriptor
