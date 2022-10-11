@@ -1,6 +1,7 @@
 workflow:
   rules:
   - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_PIPELINE_SOURCE == 'schedule' || $CI_PIPELINE_SOURCE == 'web'
+  # See https://docs.gitlab.com/ee/ci/yaml/workflow.html#switch-between-branch-pipelines-and-merge-request-pipelines
   - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null && $CI_COMMIT_BRANCH !~ /^docs\//
     changes:
     - .eslintrc
@@ -104,12 +105,12 @@ test:macos:
 test:windows:
   extends: .npm
   tags: [windows]
-  # cache does not currently work on the Windows runner
+  # cache does not currently work with the shared Windows runner
   cache: []
   before_script:
   - choco upgrade -y nodejs --version=16.17.0
   - *platform_info
-  - npm ci --audit --quiet
+  - npm ci --quiet
   script: npm run coverage
   <<: *save_report_artifacts
 release:
