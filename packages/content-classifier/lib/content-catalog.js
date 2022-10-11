@@ -58,8 +58,9 @@ class ContentCatalog {
    * @returns {Object} The constructed component version object.
    */
   registerComponentVersion (name, version, descriptor = {}) {
-    const { asciidoc, displayVersion, prerelease, startPage: startPageSpec, title } = descriptor
+    const { asciidoc, displayVersion, prerelease, startPage: startPageSpec, title, versionSegment } = descriptor
     const componentVersion = { displayVersion: displayVersion || version || 'default', title: title || name, version }
+    if (versionSegment != null) componentVersion.versionSegment = versionSegment
     Object.defineProperty(componentVersion, 'name', { value: name, enumerable: true })
     if (prerelease) {
       componentVersion.prerelease = prerelease
@@ -127,14 +128,15 @@ class ContentCatalog {
       )
     }
     if (startPageSpec) {
+      // @deprecated use separate call to register start page for component version
       this.registerComponentVersionStartPage(name, componentVersion, startPageSpec === true ? undefined : startPageSpec)
     }
     return componentVersion
   }
 
-  addFile (file) {
+  addFile (file, componentVersion) {
     const src = file.src
-    let family = src.family
+    let { component, version, family } = src
     let filesForFamily = this[$files].get(family)
     if (!filesForFamily) this[$files].set(family, (filesForFamily = new Map()))
     const key = generateKey(src)
@@ -146,7 +148,7 @@ class ContentCatalog {
           .map((it, idx) => `${idx + 1}: ${getFileLocation(it)}`)
           .join(LOG_WRAP)
         if (family === 'nav') {
-          throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}${LOG_WRAP}${details}`)
+          throw new Error(`Duplicate nav in ${version}@${component}: ${file.path}${LOG_WRAP}${details}`)
         } else {
           throw new Error(`Duplicate ${family}: ${generateResourceSpec(src)}${LOG_WRAP}${details}`)
         }
@@ -171,7 +173,7 @@ class ContentCatalog {
       file.mediaType = src.mediaType = resolveMimeType(src.extname) || (family === 'page' ? 'text/asciidoc' : undefined)
     }
     let publishable
-    let versionSegment
+    let activeVersionSegment
     if (file.out) {
       publishable = true
     } else if ('out' in file) {
@@ -181,12 +183,16 @@ class ContentCatalog {
       ('/' + src.relative).indexOf('/_') < 0
     ) {
       publishable = true
-      versionSegment = computeVersionSegment.call(this, src.component, src.version)
-      file.out = computeOut(src, family, versionSegment, this.htmlUrlExtensionStyle)
+      if (componentVersion == null) componentVersion = this.getComponentVersion(component, version) || { version }
+      activeVersionSegment = computeVersionSegment.call(this, componentVersion)
+      file.out = computeOut(src, family, activeVersionSegment, this.htmlUrlExtensionStyle)
     }
     if (!file.pub && (publishable || family === 'nav')) {
-      if (versionSegment == null) versionSegment = computeVersionSegment.call(this, src.component, src.version)
-      file.pub = computePub(src, file.out, family, versionSegment, this.htmlUrlExtensionStyle)
+      if (activeVersionSegment == null) {
+        if (componentVersion == null) componentVersion = this.getComponentVersion(component, version) || { version }
+        activeVersionSegment = computeVersionSegment.call(this, componentVersion)
+      }
+      file.pub = computePub(src, file.out, family, activeVersionSegment, this.htmlUrlExtensionStyle)
     }
     filesForFamily.set(key, file)
     return file
@@ -277,6 +283,7 @@ class ContentCatalog {
       if (!(componentVersion = this.getComponentVersion(name, componentVersion))) return
       version = componentVersion.version
     }
+    const activeVersionSegment = computeVersionSegment.call(this, componentVersion)
     let startPage
     let startPageSrc
     const indexPageId = Object.assign({}, ROOT_INDEX_PAGE_ID, { component: name, version })
@@ -291,7 +298,7 @@ class ContentCatalog {
           const indexAlias = this.getById(indexAliasId)
           indexAlias
             ? indexAlias.synthetic && Object.assign(indexAlias, { rel: startPage })
-            : this.addFile({ src: indexAliasId, rel: startPage, synthetic: true })
+            : this.addFile({ src: indexAliasId, rel: startPage, synthetic: true }, componentVersion)
         }
       } else {
         // TODO pass componentVersion as logObject
@@ -311,23 +318,36 @@ class ContentCatalog {
       componentVersion.url = startPage.pub.url
     } else {
       // QUESTION: should we warn if the default start page cannot be found?
-      const versionSegment = computeVersionSegment.call(this, name, version)
       componentVersion.url = computePub(
         (startPageSrc = prepareSrc(Object.assign({}, indexPageId, { family: 'page' }))),
-        computeOut(startPageSrc, startPageSrc.family, versionSegment, this.htmlUrlExtensionStyle),
+        computeOut(startPageSrc, startPageSrc.family, activeVersionSegment, this.htmlUrlExtensionStyle),
         startPageSrc.family,
-        versionSegment,
+        activeVersionSegment,
         this.htmlUrlExtensionStyle
       ).url
     }
 
+    Object.defineProperty(
+      componentVersion,
+      'activeVersionSegment',
+      activeVersionSegment === version
+        ? {
+            configurable: true,
+            get () {
+              return this.version
+            },
+          }
+        : { configurable: true, value: activeVersionSegment }
+    )
+
     const symbolicVersionAlias = createSymbolicVersionAlias(
       name,
       version,
-      computeVersionSegment.call(this, name, version, 'alias'),
+      computeVersionSegment.call(this, componentVersion, 'original'),
+      computeVersionSegment.call(this, componentVersion, 'alias'),
       this.latestVersionUrlSegmentStrategy
     )
-    if (symbolicVersionAlias) this.addFile(symbolicVersionAlias)
+    if (symbolicVersionAlias) this.addFile(symbolicVersionAlias, componentVersion)
   }
 
   registerSiteStartPage (startPageSpec) {
@@ -337,7 +357,8 @@ class ContentCatalog {
       if (this.getById(ROOT_INDEX_PAGE_ID)) return
       const indexAlias = this.getById(ROOT_INDEX_ALIAS_ID)
       if (indexAlias) return indexAlias.synthetic ? Object.assign(indexAlias, { rel }) : undefined
-      return this.addFile({ src: Object.assign({}, ROOT_INDEX_ALIAS_ID), rel, synthetic: true })
+      const src = Object.assign({}, ROOT_INDEX_ALIAS_ID)
+      return this.addFile({ src, rel, synthetic: true }, { version: src.version })
     } else if (rel === false) {
       logger.warn('Start page specified for site has invalid syntax: %s', startPageSpec)
     } else if (startPageSpec.lastIndexOf(':') > startPageSpec.indexOf(':')) {
@@ -355,9 +376,14 @@ class ContentCatalog {
     // QUESTION should we throw an error if alias is invalid?
     if (!src || (inferredSpec && src.relative === '.adoc')) return
     const component = this.getComponent(src.component)
+    let componentVersion
     if (component) {
       // NOTE version is not set when alias specifies a component, but not a version
-      if (src.version == null) src.version = component.latest.version
+      if (src.version == null) {
+        src.version = (componentVersion = component.latest).version
+      } else {
+        componentVersion = this.getComponentVersion(component, src.version)
+      }
       const existingPage = this.getById(src)
       if (existingPage) {
         throw new Error(
@@ -382,7 +408,7 @@ class ContentCatalog {
       )
     }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
-    const alias = this.addFile({ src, rel: target })
+    const alias = this.addFile({ src, rel: target }, componentVersion)
     // NOTE record the first alias this target claims as the preferred one
     if (!target.rel) target.rel = alias
     return alias
@@ -544,32 +570,34 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
   return pub
 }
 
-function computeVersionSegment (name, version, mode) {
+function computeVersionSegment (componentVersion, mode) {
+  const version = componentVersion.version
   // special designation for master verson is @deprecated; special designation scheduled to be removed in Antora 4
-  if (mode === 'original') return !version || version === 'master' ? '' : version
+  const normalizedVersion = version && version !== 'master' ? version : ''
+  const { versionSegment = normalizedVersion } = componentVersion
+  if (mode === 'original') return versionSegment
   const strategy = this.latestVersionUrlSegmentStrategy
-  if (!version || version === 'master') {
-    if (mode !== 'alias') return ''
+  if (!versionSegment) {
+    if (!mode) return ''
     if (strategy === 'redirect:to') return
   }
-  if (strategy === 'redirect:to' || strategy === (mode === 'alias' ? 'redirect:from' : 'replace')) {
-    const component = this.getComponent(name)
-    const componentVersion = component && this.getComponentVersion(component, version)
-    if (componentVersion) {
-      const segment =
+  if (strategy === 'redirect:to' || strategy === (mode ? 'redirect:from' : 'replace')) {
+    let component
+    if ((component = 'name' in componentVersion && this.getComponent(componentVersion.name))) {
+      const latestSegment =
         componentVersion === component.latest
           ? this.latestVersionUrlSegment
           : componentVersion === component.latestPrerelease
             ? this.latestPrereleaseVersionUrlSegment
             : undefined
-      return segment == null ? version : segment
+      return latestSegment == null ? versionSegment : latestSegment
     }
   }
-  return version
+  return versionSegment
 }
 
-function createSymbolicVersionAlias (component, version, symbolicVersionSegment, strategy) {
-  if (symbolicVersionSegment == null || symbolicVersionSegment === version) return
+function createSymbolicVersionAlias (component, version, originalVersionSegment, symbolicVersionSegment, strategy) {
+  if (symbolicVersionSegment == null || symbolicVersionSegment === originalVersionSegment) return
   const family = 'alias'
   const baseVersionAliasSrc = { component, module: 'ROOT', family, relative: '', basename: '', stem: '', extname: '' }
   const symbolicVersionAliasSrc = Object.assign({}, baseVersionAliasSrc, { version: symbolicVersionSegment })
@@ -582,7 +610,6 @@ function createSymbolicVersionAlias (component, version, symbolicVersionSegment,
     ),
   }
   const originalVersionAliasSrc = Object.assign({}, baseVersionAliasSrc, { version })
-  const originalVersionSegment = computeVersionSegment(component, version, 'original')
   const originalVersionAlias = {
     src: originalVersionAliasSrc,
     pub: computePub(

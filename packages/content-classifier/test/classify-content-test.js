@@ -1872,6 +1872,31 @@ describe('classifyContent()', () => {
       })
     })
 
+    it('with custom version segment', () => {
+      aggregate = [
+        {
+          name: 'the-component',
+          title: 'The Component',
+          version: '5.8.0',
+          versionSegment: '5.8',
+          files: [createFile('modules/the-module/pages/page-one.adoc')],
+        },
+      ]
+      const contentCatalog = classifyContent(playbook, aggregate)
+      expect(contentCatalog.getComponentVersion('the-component', '5.8.0').versionSegment).to.equal('5.8')
+      const files = contentCatalog.getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.out).to.include({
+        dirname: 'the-component/5.8/the-module',
+        basename: 'page-one.html',
+        path: 'the-component/5.8/the-module/page-one.html',
+        moduleRootPath: '.',
+        rootPath: '../../..',
+      })
+      expect(file.pub).to.include({ url: '/the-component/5.8/the-module/page-one.html' })
+    })
+
     it('image', () => {
       aggregate[0].files.push(createFile('modules/the-module/assets/images/foo.png'))
       const files = classifyContent(playbook, aggregate).getFiles()
