@@ -4,3 +4,4 @@
 .Project Governance
 * xref:project/release-schedule.adoc[]
 * xref:project/copyright-and-license.adoc[]
+* xref:project/land-acknowledgement.adoc[]
