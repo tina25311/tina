@@ -823,11 +823,11 @@ function onGitComplete (err) {
 }
 
 function resolveCredentials (credentialsFromUrlHolder, url, auth) {
-  const credentialsFromUrl = credentialsFromUrlHolder.get()
+  const credentialsFromUrl = credentialsFromUrlHolder.get() || {}
+  credentialsFromUrlHolder.clear()
   if ('Authorization' in auth.headers) {
-    if (!credentialsFromUrl) return this.rejected({ url, auth })
-    credentialsFromUrlHolder.clear()
-  } else if (credentialsFromUrl) {
+    if (!('username' in credentialsFromUrl)) return this.rejected({ url, auth })
+  } else if ('username' in credentialsFromUrl) {
     return credentialsFromUrl
   } else {
     auth = undefined

@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *content-aggregator*: Fix infinite auth loop if credentials embedded in content source URL are empty and repository requires auth (#1010)
+
 == 3.1.1 (2022-09-20)
 
 === Changed
