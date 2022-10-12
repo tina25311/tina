@@ -23,17 +23,17 @@ class ContentCatalog {
     const urls = playbook.urls || {}
     this.htmlUrlExtensionStyle = urls.htmlExtensionStyle || 'default'
     this.urlRedirectFacility = urls.redirectFacility || 'static'
-    this.latestVersionUrlSegment = urls.latestVersionSegment
-    this.latestPrereleaseVersionUrlSegment = urls.latestPrereleaseVersionSegment
-    if (this.latestVersionUrlSegment == null && this.latestPrereleaseVersionUrlSegment == null) {
-      this.latestVersionUrlSegmentStrategy = undefined
+    this.latestVersionSegment = urls.latestVersionSegment
+    this.latestPrereleaseVersionSegment = urls.latestPrereleaseVersionSegment
+    if (this.latestVersionSegment == null && this.latestPrereleaseVersionSegment == null) {
+      this.latestVersionSegmentStrategy = undefined
     } else {
-      this.latestVersionUrlSegmentStrategy = urls.latestVersionSegmentStrategy || 'replace'
-      if (this.latestVersionUrlSegmentStrategy === 'redirect:from') {
-        if (!this.latestVersionUrlSegment) this.latestVersionUrlSegment = undefined
-        if (!this.latestPrereleaseVersionUrlSegment) {
-          this.latestPrereleaseVersionUrlSegment = undefined
-          if (!this.latestVersionUrlSegment) this.latestVersionUrlSegmentStrategy = undefined
+      this.latestVersionSegmentStrategy = urls.latestVersionSegmentStrategy || 'replace'
+      if (this.latestVersionSegmentStrategy === 'redirect:from') {
+        if (!this.latestVersionSegment) this.latestVersionSegment = undefined
+        if (!this.latestPrereleaseVersionSegment) {
+          this.latestPrereleaseVersionSegment = undefined
+          if (!this.latestVersionSegment) this.latestVersionSegmentStrategy = undefined
         }
       }
     }
@@ -345,7 +345,7 @@ class ContentCatalog {
       version,
       computeVersionSegment.call(this, componentVersion, 'original'),
       computeVersionSegment.call(this, componentVersion, 'alias'),
-      this.latestVersionUrlSegmentStrategy
+      this.latestVersionSegmentStrategy
     )
     if (symbolicVersionAlias) this.addFile(symbolicVersionAlias, componentVersion)
   }
@@ -576,7 +576,7 @@ function computeVersionSegment (componentVersion, mode) {
   const normalizedVersion = version && version !== 'master' ? version : ''
   const { versionSegment = normalizedVersion } = componentVersion
   if (mode === 'original') return versionSegment
-  const strategy = this.latestVersionUrlSegmentStrategy
+  const strategy = this.latestVersionSegmentStrategy
   if (!versionSegment) {
     if (!mode) return ''
     if (strategy === 'redirect:to') return
@@ -586,9 +586,9 @@ function computeVersionSegment (componentVersion, mode) {
     if ((component = 'name' in componentVersion && this.getComponent(componentVersion.name))) {
       const latestSegment =
         componentVersion === component.latest
-          ? this.latestVersionUrlSegment
+          ? this.latestVersionSegment
           : componentVersion === component.latestPrerelease
-            ? this.latestPrereleaseVersionUrlSegment
+            ? this.latestPrereleaseVersionSegment
             : undefined
       return latestSegment == null ? versionSegment : latestSegment
     }

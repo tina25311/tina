@@ -44,9 +44,9 @@ describe('classifyContent()', () => {
       const contentCatalog = classifyContent(playbook, aggregate)
       expect(contentCatalog.htmlUrlExtensionStyle).to.equal('default')
       expect(contentCatalog.urlRedirectFacility).to.equal('static')
-      expect(contentCatalog.latestVersionUrlStrategy).to.be.undefined()
-      expect(contentCatalog.latestVersionUrlSegment).to.be.undefined()
-      expect(contentCatalog.latestPrereleaseVersionUrlSegment).to.be.undefined()
+      expect(contentCatalog.latestVersionStrategy).to.be.undefined()
+      expect(contentCatalog.latestVersionSegment).to.be.undefined()
+      expect(contentCatalog.latestPrereleaseVersionSegment).to.be.undefined()
     })
 
     it('should set url options on ContentCatalog from playbook', () => {
@@ -56,17 +56,17 @@ describe('classifyContent()', () => {
       const contentCatalog = classifyContent(playbook, aggregate)
       expect(contentCatalog.htmlUrlExtensionStyle).to.equal('indexify')
       expect(contentCatalog.urlRedirectFacility).to.equal('nginx')
-      expect(contentCatalog.latestVersionUrlSegmentStrategy).to.equal('replace')
-      expect(contentCatalog.latestVersionUrlSegment).to.equal('latest')
-      expect(contentCatalog.latestPrereleaseVersionUrlSegment).to.be.undefined()
+      expect(contentCatalog.latestVersionSegmentStrategy).to.equal('replace')
+      expect(contentCatalog.latestVersionSegment).to.equal('latest')
+      expect(contentCatalog.latestPrereleaseVersionSegment).to.be.undefined()
     })
 
     it('should unset latest version segment properties if only strategy is set', () => {
       playbook.urls.latestVersionSegmentStrategy = 'replace'
       const contentCatalog = classifyContent(playbook, aggregate)
-      expect(contentCatalog.latestVersionUrlSegmentStrategy).to.be.undefined()
-      expect(contentCatalog.latestVersionUrlSegment).to.be.undefined()
-      expect(contentCatalog.latestPrereleaseVersionUrlSegment).to.be.undefined()
+      expect(contentCatalog.latestVersionSegmentStrategy).to.be.undefined()
+      expect(contentCatalog.latestVersionSegment).to.be.undefined()
+      expect(contentCatalog.latestPrereleaseVersionSegment).to.be.undefined()
     })
 
     it('should unset latest version segment properties if strategy is redirect:from and segments are empty', () => {
@@ -74,17 +74,17 @@ describe('classifyContent()', () => {
       playbook.urls.latestVersionSegment = ''
       playbook.urls.latestPrereleaseVersionSegment = ''
       const contentCatalog = classifyContent(playbook, aggregate)
-      expect(contentCatalog.latestVersionUrlSegmentStrategy).to.be.undefined()
-      expect(contentCatalog.latestVersionUrlSegment).to.be.undefined()
-      expect(contentCatalog.latestPrereleaseVersionUrlSegment).to.be.undefined()
+      expect(contentCatalog.latestVersionSegmentStrategy).to.be.undefined()
+      expect(contentCatalog.latestVersionSegment).to.be.undefined()
+      expect(contentCatalog.latestPrereleaseVersionSegment).to.be.undefined()
     })
 
     it('should be able to set latest prerelease version segment without setting latest version segment', () => {
       playbook.urls.latestPrereleaseVersionSegment = 'next'
       const contentCatalog = classifyContent(playbook, aggregate)
-      expect(contentCatalog.latestVersionUrlSegmentStrategy).to.equal('replace')
-      expect(contentCatalog.latestVersionUrlSegment).to.be.undefined()
-      expect(contentCatalog.latestPrereleaseVersionUrlSegment).to.equal('next')
+      expect(contentCatalog.latestVersionSegmentStrategy).to.equal('replace')
+      expect(contentCatalog.latestVersionSegment).to.be.undefined()
+      expect(contentCatalog.latestPrereleaseVersionSegment).to.equal('next')
     })
   })
 
