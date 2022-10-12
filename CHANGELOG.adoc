@@ -16,6 +16,10 @@ This project utilizes semantic versioning.
 
 * *content-classifier*: shorten `urlSegment` fragment in property names on ContentCatalog to `segment` (e.g., `latestVersionUrlSegment` -> `latestVersionSegment`)
 
+=== Fixed
+
+* *content-aggregator*: Fix infinite auth loop if credentials embedded in content source URL are empty and repository requires auth (#1010)
+
 == 3.1.1 (2022-09-20)
 
 === Changed
