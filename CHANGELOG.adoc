@@ -15,6 +15,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *content-aggregator*: Always assign the value `auth-required` to `origin.private` if the server requests credentials (even when credentials are embedded in content source URL) (#1012)
 * *content-classifier*: shorten `urlSegment` fragment in property names on ContentCatalog to `segment` (e.g., `latestVersionUrlSegment` -> `latestVersionSegment`)
 
 === Fixed

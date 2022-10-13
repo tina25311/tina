@@ -86,11 +86,11 @@ class GitCredentialManagerStore {
   }
 
   async approved ({ url }) {
-    this.urls[url] = 'approved'
+    this.urls[url] = (url in this.urls ? this.urls[url] + ',' : '') + 'approved'
   }
 
   async rejected ({ url, auth }) {
-    this.urls[url] = 'rejected'
+    this.urls[url] = (url in this.urls ? this.urls[url] + ',' : '') + 'rejected'
     const statusCode = 401
     const statusMessage = 'HTTP Basic: Access Denied'
     const err = new Error(`HTTP Error: ${statusCode} ${statusMessage}`)

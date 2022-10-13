@@ -6077,6 +6077,7 @@ describe('aggregateContent()', () => {
             user((username, password) => {
               credentialsRequestCount++
               credentialsSent = { username, password }
+              if (username === 'reject' && !password) return next('try again!')
               credentialsVerdict ? next(credentialsVerdict) : next()
             })
           }
@@ -6280,6 +6281,19 @@ describe('aggregateContent()', () => {
       const aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u=:p=').toString('base64'))
       expect(credentialsSent).to.eql({ username: 'u=', password: 'p=' })
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
+    })
+
+    it('should read credentials for URL from git credential store if embedded credentials are rejected', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const credentials = repoBuilder.url.replace('//', '//oauth2:secret@')
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials + '\n')
+      playbookSpec.content.sources.push({ url: repoBuilder.url.replace('//', '//reject@') })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('oauth2:secret').toString('base64'))
+      expect(credentialsSent).to.eql({ username: 'oauth2', password: 'secret' })
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
     })

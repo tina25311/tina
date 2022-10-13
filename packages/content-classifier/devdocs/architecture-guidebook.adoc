@@ -143,6 +143,7 @@ Each virtual file object should include the following Antora-specific properties
 * `extname`
 * `mediaType`
 * `origin`
+ ** `origin.private` - `auth-required` if server requests credentials, otherwise `auth-embedded` if credentials are embedded in the content source URL, otherwise not set
 
 .out property
 // dirname may not be needed on out
