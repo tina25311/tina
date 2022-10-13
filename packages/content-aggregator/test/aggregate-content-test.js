@@ -4117,6 +4117,14 @@ describe('aggregateContent()', () => {
         expect(origin.private).to.equal('auth-required')
       })
 
+      it('should expand ref placeholder in editUrl to full name of reference', () => {
+        const url = 'https://git.example.org/repo.git'
+        const gitdir = ospath.join(CONTENT_CACHE_DIR, generateCloneFolderName(url))
+        const editUrl = '{web_url}/view/{path}?ref={ref}'
+        const origin = computeOrigin(url, false, gitdir, { shortname: 'v5.8', type: 'branch' }, '', false, editUrl)
+        expect(origin.editUrlPattern).to.equal('https://git.example.org/repo/view/%s?ref=refs/heads/v5.8')
+      })
+
       it('should not populate editUrl if edit_url key on content source is falsy', async () => {
         const url = 'https://gitlab.com/antora/demo/demo-component-a.git'
         playbookSpec.content.branches = ['v*', 'main']
@@ -4130,8 +4138,8 @@ describe('aggregateContent()', () => {
       it('should use editUrl pattern to generate editUrl', async () => {
         const webUrl = 'https://gitlab.com/antora/demo/demo-component-b'
         const url = webUrl + '.git'
-        const sourcePre = { url, branches: 'main', startPath: 'docs', editUrl: '{web_url}/blob/{refhash}/{path}' }
-        const sourceTwo = { url, branches: 'v2.0', startPath: 'docs', editUrl: '{web_url}/blob/{refname}/{path}' }
+        const sourcePre = { url, branches: 'main', startPath: 'docs', editUrl: '{web_url}/raw/{refhash}/{path}' }
+        const sourceTwo = { url, branches: 'v2.0', startPath: 'docs', editUrl: '{web_url}/{reftype}/{refname}/{path}' }
         playbookSpec.content.sources.push(sourcePre)
         playbookSpec.content.sources.push(sourceTwo)
         const aggregate = await aggregateContent(playbookSpec)
@@ -4141,10 +4149,10 @@ describe('aggregateContent()', () => {
         const filePre = aggregatePre.files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
         const fileTwo = aggregateTwo.files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
         expect(filePre.src.editUrl).to.equal(
-          `${webUrl}/blob/${filePre.src.origin.refhash}/${filePre.src.origin.startPath}/${filePre.src.path}`
+          `${webUrl}/raw/${filePre.src.origin.refhash}/${filePre.src.origin.startPath}/${filePre.src.path}`
         )
         expect(fileTwo.src.editUrl).to.equal(
-          `${webUrl}/blob/${fileTwo.src.origin.branch}/${fileTwo.src.origin.startPath}/${fileTwo.src.path}`
+          `${webUrl}/branch/${fileTwo.src.origin.branch}/${fileTwo.src.origin.startPath}/${fileTwo.src.path}`
         )
       })
     })
