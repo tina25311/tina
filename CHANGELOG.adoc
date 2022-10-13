@@ -65,7 +65,7 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Include target in error message for broken or cyclic symbolic link (#900)
 * *content-aggregator*: Log warning message instead of throwing fatal error if file in worktree disappears or cannot be read (#986)
-* *content-aggregator*: Set `worktree` property on origin to false when branch or tag is local but not taken from worktree (#993)
+* *content-aggregator*: Set `worktree` property on origin to `false` when branch or tag is local but not taken from worktree (#993)
 * *ui-loader*: Add context to error and preserve cause if failure occurs when reading supplemental UI (#985)
 * *asciidoc-loader*: Move logic to collate AsciiDoc attributes to a helper function (#982)
 * *content-classifier*: Use helper function to collate AsciiDoc attributes from playbook and component version (#982)
