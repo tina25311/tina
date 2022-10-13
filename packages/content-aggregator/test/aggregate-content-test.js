@@ -6139,6 +6139,21 @@ describe('aggregateContent()', () => {
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.url', urlWithoutAuth)
     })
 
+    it('should not resend empty credentials if auth is required', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const urlWithoutAuth = repoBuilder.url
+      repoBuilder.url = urlWithoutAuth.replace('//', '//@')
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const expectedErrorMessage = `Content repository not found or requires credentials (url: ${urlWithoutAuth})`
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .with.property('stack')
+        .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
+      expect(authorizationHeaderValue).to.be.undefined()
+      expect(credentialsSent).to.be.undefined()
+    })
+
     it('should remove credentials with empty username and password from URL', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
@@ -6169,6 +6184,34 @@ describe('aggregateContent()', () => {
       expect(aggregate[0].files).to.not.be.empty()
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-embedded')
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.url', urlWithoutAuth)
+    })
+
+    it('should not resend credentials without a username if auth is required', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const urlWithoutAuth = repoBuilder.url
+      repoBuilder.url = urlWithoutAuth.replace('//', '//:p@')
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const expectedErrorMessage = `Content repository not found or requires credentials (url: ${urlWithoutAuth})`
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .with.property('stack')
+        .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
+      expect(authorizationHeaderValue).to.be.undefined()
+      expect(credentialsSent).to.be.undefined()
+    })
+
+    it('should pass empty password if only username is specified in URL', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      repoBuilder.url = repoBuilder.url.replace('//', '//u@')
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:').toString('base64'))
+      expect(credentialsSent).to.not.be.undefined()
+      expect(credentialsSent.username).to.equal('u')
+      expect(credentialsSent.password).to.equal('')
+      expect(aggregate).to.have.lengthOf(1)
     })
 
     it('should throw exception if credentials in URL are not accepted', async () => {
@@ -6217,19 +6260,6 @@ describe('aggregateContent()', () => {
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.url', urlWithoutAuth)
-    })
-
-    it('should pass empty password if only username is specified in URL', async () => {
-      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
-      await initRepoWithFiles(repoBuilder)
-      repoBuilder.url = repoBuilder.url.replace('//', '//u@')
-      playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const aggregate = await aggregateContent(playbookSpec)
-      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:').toString('base64'))
-      expect(credentialsSent).to.not.be.undefined()
-      expect(credentialsSent.username).to.equal('u')
-      expect(credentialsSent.password).to.equal('')
-      expect(aggregate).to.have.lengthOf(1)
     })
 
     it('should read credentials for URL from git credential store if auth is required', async () => {
