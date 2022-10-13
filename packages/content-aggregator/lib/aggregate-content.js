@@ -188,8 +188,7 @@ async function loadRepository (url, opts) {
         await git
           .fetch(fetchOpts)
           .then(() => {
-            const credentialManager = gitPlugins.credentialManager
-            authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
+            authStatus = identifyAuthStatus(gitPlugins.credentialManager, credentials, url)
             return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
           })
           .catch((fetchErr) => {
@@ -210,8 +209,7 @@ async function loadRepository (url, opts) {
         .clone(fetchOpts)
         .then(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)))
         .then(() => {
-          const credentialManager = gitPlugins.credentialManager
-          authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
+          authStatus = identifyAuthStatus(gitPlugins.credentialManager, credentials, url)
           return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
         .catch((cloneErr) => {
@@ -824,9 +822,12 @@ function onGitComplete (err) {
 
 function resolveCredentials (credentialsFromUrlHolder, url, auth) {
   const credentialsFromUrl = credentialsFromUrlHolder.get() || {}
-  credentialsFromUrlHolder.clear()
   if ('Authorization' in auth.headers) {
-    if (!('username' in credentialsFromUrl)) return this.rejected({ url, auth })
+    if ('username' in credentialsFromUrl) {
+      credentialsFromUrlHolder.clear()
+    } else {
+      return this.rejected({ url, auth })
+    }
   } else if ('username' in credentialsFromUrl) {
     return credentialsFromUrl
   } else {
@@ -837,6 +838,15 @@ function resolveCredentials (credentialsFromUrlHolder, url, auth) {
       ? { username: credentials.token || credentials.username, password: credentials.token ? '' : credentials.password }
       : this.rejected({ url, auth })
   )
+}
+
+function identifyAuthStatus (credentialManager, credentials, url) {
+  const status = credentialManager.status({ url })
+  if (credentials) {
+    return typeof status === 'string' && status.startsWith('requested,') ? 'auth-required' : 'auth-embedded'
+  } else if (status != null) {
+    return 'auth-required'
+  }
 }
 
 /**
