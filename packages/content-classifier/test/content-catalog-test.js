@@ -2065,6 +2065,146 @@ describe('ContentCatalog', () => {
     })
   })
 
+  describe('#addSplatAlias()', () => {
+    let contentCatalog
+
+    beforeEach(() => {
+      contentCatalog = new ContentCatalog()
+    })
+
+    it('should add splat alias from version segment to version segment of same component', () => {
+      const from = { component: 'the-component', versionSegment: '3.1.0' }
+      const to = { component: 'the-component', versionSegment: 'latest', version: '3.1.0' }
+      const file = contentCatalog.addSplatAlias(from, to)
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: '3.1.0',
+        module: 'ROOT',
+        family: 'alias',
+        relative: '',
+      })
+      expect(file.src).to.not.have.property('versionSegment')
+      expect(file.pub).to.eql({
+        url: '/the-component/3.1.0',
+        splat: true,
+        moduleRootPath: '.',
+        rootPath: '../..',
+      })
+      expect(file.rel.src).to.include({
+        component: 'the-component',
+        version: '3.1.0',
+        module: 'ROOT',
+        family: 'alias',
+        relative: '',
+      })
+      expect(file.rel.pub).to.eql({
+        url: '/the-component/latest',
+        splat: true,
+        moduleRootPath: '.',
+        rootPath: '../..',
+      })
+    })
+
+    it('should add splat alias to empty version segment', () => {
+      const from = { component: 'the-component', versionSegment: '1.0.0' }
+      const to = { component: 'the-component', versionSegment: '', version: '1.0.0' }
+      const file = contentCatalog.addSplatAlias(from, to)
+      expect(file.rel.pub).to.include({ url: '/the-component', splat: true })
+      expect(file.rel.src).to.have.property('version', '1.0.0')
+    })
+
+    it('should add splat alias with fallback to version if not specified', () => {
+      const from = { component: 'the-component', versionSegment: '3.1.0' }
+      const to = { component: 'the-component', versionSegment: 'latest' }
+      const file = contentCatalog.addSplatAlias(from, to)
+      expect(file.rel.src).to.have.property('version', 'latest')
+    })
+
+    it('should add splat alias across versions', () => {
+      const from = { component: 'old-component', versionSegment: '1.0' }
+      const to = { component: 'new-component', versionSegment: '1.0', version: '1.0' }
+      const file = contentCatalog.addSplatAlias(from, to)
+      expect(file.src).to.include({
+        component: 'old-component',
+        version: '1.0',
+        module: 'ROOT',
+        family: 'alias',
+        relative: '',
+      })
+      expect(file.pub).to.include({ url: '/old-component/1.0', splat: true })
+      expect(file.rel.src).to.include({
+        component: 'new-component',
+        version: '1.0',
+        module: 'ROOT',
+        family: 'alias',
+        relative: '',
+      })
+      expect(file.rel.pub).to.include({ url: '/new-component/1.0', splat: true })
+    })
+
+    it('should look up active version segment of to in content catalog if version segment not specified', () => {
+      contentCatalog.registerComponentVersion('new-component', '1.0', { startPage: true })
+      const from = { component: 'old-component', versionSegment: '1.0' }
+      const to = { component: 'new-component', version: '1.0' }
+      const file = contentCatalog.addSplatAlias(from, to)
+      expect(file.rel.src).to.include({
+        component: 'new-component',
+        version: '1.0',
+        module: 'ROOT',
+        family: 'alias',
+        relative: '',
+      })
+      expect(file.rel.pub).to.include({ url: '/new-component/1.0', splat: true })
+    })
+
+    it('should use component on to if component is not specified on from', () => {
+      contentCatalog.registerComponentVersion('new-component', '1.0', { startPage: true })
+      const to = { component: 'new-component', version: '1.0' }
+      const file = contentCatalog.addSplatAlias({ versionSegment: 'greatest' }, to)
+      const baseSrc = { component: 'new-component', module: 'ROOT', family: 'alias', relative: '' }
+      expect(file.src).to.include(Object.assign({ version: 'greatest' }, baseSrc))
+      expect(file.pub).to.include({ url: '/new-component/greatest', splat: true })
+      expect(file.rel.src).to.include(Object.assign({ version: '1.0' }, baseSrc))
+      expect(file.rel.pub).to.include({ url: '/new-component/1.0', splat: true })
+    })
+
+    it('should use version as to version segment if version not specified and not found in content catalog', () => {
+      const from = { component: 'old-component', versionSegment: '1.0' }
+      const to = { component: 'new-component', version: '1.0' }
+      const file = contentCatalog.addSplatAlias(from, to)
+      expect(file.rel.src).to.include({
+        component: 'new-component',
+        version: '1.0',
+        module: 'ROOT',
+        family: 'alias',
+        relative: '',
+      })
+      expect(file.rel.pub).to.include({ url: '/new-component/1.0', splat: true })
+    })
+
+    it('should drop component segment in URL if value is ROOT', () => {
+      const from = { component: 'ROOT', versionSegment: 'old' }
+      const to = { component: 'ROOT', versionSegment: 'new', version: '3.0' }
+      const file = contentCatalog.addSplatAlias(from, to)
+      expect(file.pub).to.include({ url: '/old', splat: true, rootPath: '..' })
+      expect(file.rel.pub).to.include({ url: '/new', splat: true, rootPath: '..' })
+    })
+
+    it('should drop component and version segment in URL if value is ROOT and version is empty', () => {
+      const from = { component: 'ROOT', versionSegment: 'old' }
+      const to = { component: 'ROOT', versionSegment: '', version: '3.0' }
+      const file = contentCatalog.addSplatAlias(from, to)
+      expect(file.pub).to.include({ url: '/old', splat: true, rootPath: '..' })
+      expect(file.rel.pub).to.include({ url: '/', splat: true, rootPath: '.' })
+    })
+
+    it('should throw error if from version segment is empty', () => {
+      const from = { component: 'the-component' }
+      const to = { component: 'the-component', version: '1.0' }
+      expect(() => contentCatalog.addSplatAlias(from, to)).to.throw('from empty version segment')
+    })
+  })
+
   describe('#resolvePage()', () => {
     beforeEach(() => {
       aggregate = [

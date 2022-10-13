@@ -342,14 +342,7 @@ class ContentCatalog {
         : { configurable: true, value: activeVersionSegment }
     )
 
-    const symbolicVersionAlias = createSymbolicVersionAlias(
-      component,
-      version,
-      computeVersionSegment.call(this, componentVersion, 'original'),
-      computeVersionSegment.call(this, componentVersion, 'alias'),
-      this.latestVersionSegmentStrategy
-    )
-    if (symbolicVersionAlias) this.addFile(symbolicVersionAlias, componentVersion)
+    addSymbolicVersionAlias.call(this, componentVersion)
   }
 
   registerSiteStartPage (startPageSpec) {
@@ -414,6 +407,28 @@ class ContentCatalog {
     // NOTE record the first alias this target claims as the preferred one
     if (!target.rel) target.rel = alias
     return alias
+  }
+
+  /**
+   * Adds a splat (directory) alias from the specified version segment in one component to the specified
+   * version segment in the same or different component.
+   *
+   * @returns {File} The virtual file that represents the splat alias.
+   */
+  addSplatAlias (from, to) {
+    if (!from.versionSegment) throw new Error('cannot map splat alias from empty version segment')
+    const family = 'alias'
+    const baseSrc = { module: 'ROOT', family, relative: '', basename: '', stem: '', extname: '' }
+    const basePub = { splat: true }
+    const { component: fromComponent = to.component, versionSegment: fromVersionSegment } = from
+    const fromSrc = Object.assign({ component: fromComponent, version: fromVersionSegment }, baseSrc)
+    const fromPub = Object.assign(computePub(fromSrc, computeOut(fromSrc, family, fromVersionSegment), family), basePub)
+    const { component: toComponent, version: toVersion } = to
+    const toVersionSegment =
+      to.versionSegment ?? this.getComponentVersion(toComponent, toVersion)?.activeVersionSegment ?? toVersion
+    const toSrc = Object.assign({ component: toComponent, version: toVersion ?? toVersionSegment }, baseSrc)
+    const toPub = Object.assign(computePub(toSrc, computeOut(toSrc, family, toVersionSegment), family), basePub)
+    return this.addFile({ pub: fromPub, src: fromSrc, rel: { pub: toPub, src: toSrc } })
   }
 
   /**
@@ -557,12 +572,23 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
       urlSegments[lastUrlSegmentIdx] = ''
     }
     url = '/' + urlSegments.join('/')
-  } else {
-    if ((url = '/' + out.path) === '/.') url = '/'
-    if (family === 'alias' && !src.relative) pub.splat = true
+  } else if ((url = '/' + out.path) === '/.') {
+    url = '/'
   }
   pub.url = ~url.indexOf(' ') ? url.replace(SPACE_RX, '%20') : url
   return out ? Object.assign(pub, { moduleRootPath: out.moduleRootPath, rootPath: out.rootPath }) : pub
+}
+
+function addSymbolicVersionAlias (componentVersion) {
+  const { name: component, version } = componentVersion
+  const originalVersionSegment = computeVersionSegment.call(this, componentVersion, 'original')
+  const symbolicVersionSegment = computeVersionSegment.call(this, componentVersion, 'alias')
+  if (symbolicVersionSegment === originalVersionSegment || symbolicVersionSegment == null) return
+  const originalVersionSrc = { component, version, versionSegment: originalVersionSegment }
+  const symbolicVersionSrc = { component, version, versionSegment: symbolicVersionSegment }
+  return this.latestVersionSegmentStrategy === 'redirect:to'
+    ? this.addSplatAlias(originalVersionSrc, symbolicVersionSrc)
+    : this.addSplatAlias(symbolicVersionSrc, originalVersionSrc)
 }
 
 function computeVersionSegment (componentVersion, mode) {
@@ -589,36 +615,6 @@ function computeVersionSegment (componentVersion, mode) {
     }
   }
   return versionSegment
-}
-
-function createSymbolicVersionAlias (component, version, originalVersionSegment, symbolicVersionSegment, strategy) {
-  if (symbolicVersionSegment == null || symbolicVersionSegment === originalVersionSegment) return
-  const family = 'alias'
-  const baseSrc = { component, version, module: 'ROOT', family, relative: '', basename: '', stem: '', extname: '' }
-  const symbolicVersionAliasSrc = Object.assign({}, baseSrc)
-  const symbolicVersionAlias = {
-    src: symbolicVersionAliasSrc,
-    pub: computePub(
-      symbolicVersionAliasSrc,
-      computeOut(symbolicVersionAliasSrc, family, symbolicVersionSegment),
-      family
-    ),
-  }
-  const originalVersionAliasSrc = Object.assign({}, baseSrc)
-  const originalVersionAlias = {
-    src: originalVersionAliasSrc,
-    pub: computePub(
-      originalVersionAliasSrc,
-      computeOut(originalVersionAliasSrc, family, originalVersionSegment),
-      family
-    ),
-  }
-  if (strategy === 'redirect:to') {
-    originalVersionAlias.src.version = originalVersionSegment
-    return Object.assign(originalVersionAlias, { rel: symbolicVersionAlias })
-  }
-  symbolicVersionAlias.src.version = symbolicVersionSegment
-  return Object.assign(symbolicVersionAlias, { rel: originalVersionAlias })
 }
 
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {
