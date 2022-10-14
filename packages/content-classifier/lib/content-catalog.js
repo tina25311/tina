@@ -277,24 +277,25 @@ class ContentCatalog {
   }
 
   registerComponentVersionStartPage (name, componentVersion, startPageSpec = undefined) {
+    const component = name
     let version = componentVersion.version
     if (version == null) {
       // QUESTION: should we warn or throw error if component version cannot be found?
-      if (!(componentVersion = this.getComponentVersion(name, componentVersion))) return
+      if (!(componentVersion = this.getComponentVersion(component, componentVersion))) return
       version = componentVersion.version
     }
     const activeVersionSegment = computeVersionSegment.call(this, componentVersion)
     let startPage
     let startPageSrc
-    const indexPageId = Object.assign({}, ROOT_INDEX_PAGE_ID, { component: name, version })
+    const indexPageId = Object.assign({}, ROOT_INDEX_PAGE_ID, { component, version })
     if (startPageSpec) {
       if (
         (startPage = this.resolvePage(startPageSpec, indexPageId)) &&
-        (startPageSrc = startPage.src).component === name &&
+        (startPageSrc = startPage.src).component === component &&
         startPageSrc.version === version
       ) {
         if (!this.getById(indexPageId)) {
-          const indexAliasId = Object.assign({}, ROOT_INDEX_ALIAS_ID, { component: name, version })
+          const indexAliasId = Object.assign({}, ROOT_INDEX_ALIAS_ID, { component, version })
           const indexAlias = this.getById(indexAliasId)
           indexAlias
             ? indexAlias.synthetic && Object.assign(indexAlias, { rel: startPage })
@@ -305,7 +306,7 @@ class ContentCatalog {
         logger.warn(
           'Start page specified for %s@%s %s: %s',
           version,
-          name,
+          component,
           startPage === false ? 'has invalid syntax' : 'not found',
           startPageSpec
         )
@@ -341,7 +342,7 @@ class ContentCatalog {
     )
 
     const symbolicVersionAlias = createSymbolicVersionAlias(
-      name,
+      component,
       version,
       computeVersionSegment.call(this, componentVersion, 'original'),
       computeVersionSegment.call(this, componentVersion, 'alias'),
