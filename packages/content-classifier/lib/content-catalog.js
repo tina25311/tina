@@ -164,12 +164,14 @@ class ContentCatalog {
       file = new File(file)
     }
     if (family === 'alias') {
-      src.mediaType = 'text/asciidoc'
       file.mediaType = 'text/html'
       // NOTE: an alias masquerades as the target file
       family = file.rel.src.family
-      // QUESTION: should we preserve the mediaType property on file if already defined?
+      // NOTE: short circuit in case of splat alias (alias -> alias)
+      if (family === 'alias' && (file.pub || {}).splat) return filesForFamily.set(key, file) && file
+      src.mediaType = 'text/asciidoc'
     } else if (!(file.mediaType = src.mediaType) && !('mediaType' in src)) {
+      // QUESTION: should we preserve the mediaType property on file if already defined?
       file.mediaType = src.mediaType = resolveMimeType(src.extname) || (family === 'page' ? 'text/asciidoc' : undefined)
     }
     let publishable
@@ -194,8 +196,7 @@ class ContentCatalog {
       }
       file.pub = computePub(src, file.out, family, activeVersionSegment, this.htmlUrlExtensionStyle)
     }
-    filesForFamily.set(key, file)
-    return file
+    return filesForFamily.set(key, file) && file
   }
 
   removeFile (file) {
@@ -620,8 +621,8 @@ function createSymbolicVersionAlias (component, version, originalVersionSegment,
     ),
   }
   return strategy === 'redirect:to'
-    ? Object.assign(originalVersionAlias, { out: undefined, rel: symbolicVersionAlias })
-    : Object.assign(symbolicVersionAlias, { out: undefined, rel: originalVersionAlias })
+    ? Object.assign(originalVersionAlias, { rel: symbolicVersionAlias })
+    : Object.assign(symbolicVersionAlias, { rel: originalVersionAlias })
 }
 
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {
