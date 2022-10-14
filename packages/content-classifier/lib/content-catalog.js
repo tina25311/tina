@@ -601,8 +601,8 @@ function computeVersionSegment (componentVersion, mode) {
 function createSymbolicVersionAlias (component, version, originalVersionSegment, symbolicVersionSegment, strategy) {
   if (symbolicVersionSegment == null || symbolicVersionSegment === originalVersionSegment) return
   const family = 'alias'
-  const baseVersionAliasSrc = { component, module: 'ROOT', family, relative: '', basename: '', stem: '', extname: '' }
-  const symbolicVersionAliasSrc = Object.assign({}, baseVersionAliasSrc, { version: symbolicVersionSegment })
+  const baseSrc = { component, version, module: 'ROOT', family, relative: '', basename: '', stem: '', extname: '' }
+  const symbolicVersionAliasSrc = Object.assign({}, baseSrc)
   const symbolicVersionAlias = {
     src: symbolicVersionAliasSrc,
     pub: computePub(
@@ -611,7 +611,7 @@ function createSymbolicVersionAlias (component, version, originalVersionSegment,
       family
     ),
   }
-  const originalVersionAliasSrc = Object.assign({}, baseVersionAliasSrc, { version })
+  const originalVersionAliasSrc = Object.assign({}, baseSrc)
   const originalVersionAlias = {
     src: originalVersionAliasSrc,
     pub: computePub(
@@ -620,9 +620,12 @@ function createSymbolicVersionAlias (component, version, originalVersionSegment,
       family
     ),
   }
-  return strategy === 'redirect:to'
-    ? Object.assign(originalVersionAlias, { rel: symbolicVersionAlias })
-    : Object.assign(symbolicVersionAlias, { rel: originalVersionAlias })
+  if (strategy === 'redirect:to') {
+    originalVersionAlias.src.version = originalVersionSegment
+    return Object.assign(originalVersionAlias, { rel: symbolicVersionAlias })
+  }
+  symbolicVersionAlias.src.version = symbolicVersionSegment
+  return Object.assign(symbolicVersionAlias, { rel: originalVersionAlias })
 }
 
 function getFileLocation ({ path: path_, src: { abspath, origin } }) {
