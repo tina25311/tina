@@ -708,6 +708,7 @@ describe('ContentCatalog', () => {
         relative: '',
       })
       expect(splatVersionAlias).to.exist()
+      expect(splatVersionAlias).to.not.have.property('out')
       expect(splatVersionAlias.pub.url).to.equal('/the-component/current')
       expect(splatVersionAlias.pub.splat).to.be.true()
       expect(splatVersionAlias.pub.rootPath).to.equal('../..')
@@ -743,6 +744,7 @@ describe('ContentCatalog', () => {
         relative: '',
       })
       expect(splatVersionAlias).to.exist()
+      expect(splatVersionAlias).to.not.have.property('out')
       expect(splatVersionAlias.pub.url).to.equal('/the-component/current')
       expect(splatVersionAlias.pub.splat).to.be.true()
       expect(splatVersionAlias.pub.rootPath).to.equal('../..')
@@ -808,6 +810,7 @@ describe('ContentCatalog', () => {
         relative: '',
       })
       expect(splatVersionAlias).to.exist()
+      expect(splatVersionAlias).to.not.have.property('out')
       expect(splatVersionAlias.pub.url).to.equal('/the-component/1.2.3')
       expect(splatVersionAlias.pub.splat).to.be.true()
       expect(splatVersionAlias.pub.rootPath).to.equal('../..')
