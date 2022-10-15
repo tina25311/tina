@@ -83,6 +83,7 @@ describe('aggregateContent()', () => {
         'modules/ROOT/pages/page-two.adoc',
         'modules/ROOT/pages/topic-a/_attributes.adoc',
         'modules/ROOT/pages/topic-a/page-three.adoc',
+        'modules/ROOT/pages/page.tutorial.adoc',
       ]
     }
     return repoBuilder
@@ -2599,6 +2600,7 @@ describe('aggregateContent()', () => {
           'modules/ROOT/pages/page-two.adoc',
           'modules/ROOT/pages/topic-a/_attributes.adoc',
           'modules/ROOT/pages/topic-a/page-three.adoc',
+          'modules/ROOT/pages/page.tutorial.adoc',
         ]
         const files = componentVersion.files
         expect(files).to.have.lengthOf(expectedPaths.length)
@@ -3629,7 +3631,8 @@ describe('aggregateContent()', () => {
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
         expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
-        const pageOne = aggregate[0].files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
+        const files = aggregate[0].files
+        const pageOne = files.find((file) => file.path === 'modules/ROOT/pages/page-one.adoc')
         const expectedFile = {
           path: 'modules/ROOT/pages/page-one.adoc',
           relative: 'modules/ROOT/pages/page-one.adoc',
@@ -3674,6 +3677,9 @@ describe('aggregateContent()', () => {
         }
         expect(pageOne).to.include(expectedFile)
         expect(pageOne.src).to.eql(expectedFileSrc)
+        const pageWithDoubleFileExtension = files.find((file) => file.path === 'modules/ROOT/pages/page.tutorial.adoc')
+        expect(pageWithDoubleFileExtension.src.stem).to.equal('page.tutorial')
+        expect(pageWithDoubleFileExtension.src.extname).to.equal('.adoc')
       })
     })
 

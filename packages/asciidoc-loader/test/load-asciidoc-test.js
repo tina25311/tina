@@ -3317,6 +3317,22 @@ describe('loadAsciiDoc()', () => {
       })
     })
 
+    it('should resolve page with double file extension', () => {
+      const contentCatalog = mockContentCatalog({
+        relative: 'the.page.adoc',
+      }).spyOn('getById')
+      setInputFileContents('xref:the.page.adoc[The Page Title]')
+      const html = loadAsciiDoc(inputFile, contentCatalog).convert()
+      expect(contentCatalog.getById).nth(1).called.with({
+        component: 'component-a',
+        version: '',
+        module: 'module-a',
+        family: 'page',
+        relative: 'the.page.adoc',
+      })
+      expectPageLink(html, 'the.page.html', 'The Page Title')
+    })
+
     it('should skip and log page reference with double .adoc file extension', () => {
       const contentCatalog = mockContentCatalog({
         relative: 'the-page.adoc',

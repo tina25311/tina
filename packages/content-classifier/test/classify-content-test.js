@@ -927,6 +927,37 @@ describe('classifyContent()', () => {
       })
     })
 
+    it('should classify a page with a double file extension that ends with .adoc', () => {
+      aggregate[0].files.push(createFile('modules/ROOT/pages/options.ref.adoc'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('modules/ROOT/pages/options.ref.adoc')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'options.ref.adoc',
+        basename: 'options.ref.adoc',
+        stem: 'options.ref',
+        extname: '.adoc',
+        mediaType: 'text/asciidoc',
+        moduleRootPath: '..',
+      })
+      expect(file.mediaType).to.equal('text/asciidoc')
+      expect(file.out).to.include({
+        path: 'the-component/v1.2.3/options.ref.html',
+        dirname: 'the-component/v1.2.3',
+        basename: 'options.ref.html',
+      })
+      expect(file.pub).to.include({
+        url: '/the-component/v1.2.3/options.ref.html',
+        moduleRootPath: '.',
+        rootPath: '../..',
+      })
+    })
+
     it('should classify a page in a topic dir', () => {
       aggregate[0].files.push(createFile('modules/ROOT/pages/the-topic/page-one.adoc'))
       const files = classifyContent(playbook, aggregate).getFiles()
