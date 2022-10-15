@@ -678,7 +678,7 @@ describe('ContentCatalog', () => {
       expect(messages[0].msg).to.equal(expectedMessage)
     })
 
-    it('should register splat alias for component version if strategy is redirect:from but not replace latest version in pub.url/out.path', () => {
+    it.only('should register splat alias for component version if strategy is redirect:from but not replace latest version in pub.url/out.path', () => {
       const contentCatalog = new ContentCatalog({
         urls: {
           latestVersionSegmentStrategy: 'redirect:from',
@@ -687,7 +687,6 @@ describe('ContentCatalog', () => {
       })
       const componentVersion = contentCatalog.registerComponentVersion('the-component', '1.2.3', {
         title: 'The Component',
-        startPage: undefined,
       })
       const src = {
         component: 'the-component',
@@ -766,7 +765,6 @@ describe('ContentCatalog', () => {
       })
       const componentVersion = contentCatalog.registerComponentVersion('the-component', '', {
         title: 'The Component',
-        startPage: undefined,
       })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('')
@@ -799,7 +797,6 @@ describe('ContentCatalog', () => {
       })
       const componentVersion = contentCatalog.registerComponentVersion('the-component', 'latest', {
         title: 'The Component',
-        startPage: undefined,
       })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('latest')
@@ -824,7 +821,6 @@ describe('ContentCatalog', () => {
       })
       const componentVersion = contentCatalog.registerComponentVersion('the-component', '1.2.3', {
         title: 'The Component',
-        startPage: undefined,
       })
       const src = {
         component: 'the-component',
@@ -928,7 +924,6 @@ describe('ContentCatalog', () => {
       })
       const componentVersion = contentCatalog.registerComponentVersion('the-component', '', {
         title: 'The Component',
-        startPage: undefined,
       })
       contentCatalog.registerComponentVersionStartPage('the-component', componentVersion)
       expect(componentVersion.version).to.equal('')
@@ -950,7 +945,6 @@ describe('ContentCatalog', () => {
       })
       const componentVersion = contentCatalog.registerComponentVersion('ROOT', '3.0', {
         title: 'The Component',
-        startPage: undefined,
       })
       contentCatalog.registerComponentVersionStartPage('ROOT', componentVersion)
       expect(componentVersion.version).to.equal('3.0')
