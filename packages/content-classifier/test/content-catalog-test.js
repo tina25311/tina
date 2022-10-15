@@ -678,7 +678,7 @@ describe('ContentCatalog', () => {
       expect(messages[0].msg).to.equal(expectedMessage)
     })
 
-    it.only('should register splat alias for component version if strategy is redirect:from but not replace latest version in pub.url/out.path', () => {
+    it('should register splat alias for component version if strategy is redirect:from but not replace latest version in pub.url/out.path', () => {
       const contentCatalog = new ContentCatalog({
         urls: {
           latestVersionSegmentStrategy: 'redirect:from',
@@ -851,6 +851,7 @@ describe('ContentCatalog', () => {
       expect(splatVersionAlias.rel.pub.url).to.equal('/the-component/current')
       expect(splatVersionAlias.rel.pub.splat).to.be.true()
       expect(splatVersionAlias.rel.pub.rootPath).to.equal('../..')
+      expect(splatVersionAlias.rel.src.version).to.equal('1.2.3')
       expect(result).to.have.property('out')
       expect(result.out).to.include({ path: 'the-component/current/the-page.html', rootPath: '../..' })
       expect(result).to.have.property('pub')
@@ -964,6 +965,7 @@ describe('ContentCatalog', () => {
       expect(splatVersionAlias.rel.pub.url).to.equal('/')
       expect(splatVersionAlias.rel.pub.splat).to.be.true()
       expect(splatVersionAlias.rel.pub.rootPath).to.equal('.')
+      expect(splatVersionAlias.rel.src.version).to.equal('3.0')
     })
   })
 
