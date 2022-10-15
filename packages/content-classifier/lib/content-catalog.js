@@ -561,15 +561,8 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
     if ((url = '/' + out.path) === '/.') url = '/'
     if (family === 'alias' && !src.relative) pub.splat = true
   }
-
   pub.url = ~url.indexOf(' ') ? url.replace(SPACE_RX, '%20') : url
-
-  if (out) {
-    pub.moduleRootPath = out.moduleRootPath
-    pub.rootPath = out.rootPath
-  }
-
-  return pub
+  return out ? Object.assign(pub, { moduleRootPath: out.moduleRootPath, rootPath: out.rootPath }) : pub
 }
 
 function computeVersionSegment (componentVersion, mode) {
