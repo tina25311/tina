@@ -678,7 +678,7 @@ describe('ContentCatalog', () => {
       expect(messages[0].msg).to.equal(expectedMessage)
     })
 
-    it('should register splat alias for component version if strategy is redirect:from but not replace latest version in pub.url/out.path', () => {
+    it('should add splat alias for component version if strategy is redirect:from but not replace latest version in pub.url/out.path', () => {
       const contentCatalog = new ContentCatalog({
         urls: {
           latestVersionSegmentStrategy: 'redirect:from',
@@ -721,7 +721,7 @@ describe('ContentCatalog', () => {
       expect(result.pub).to.include({ url: '/the-component/1.2.3/the-page.html', rootPath: '../..' })
     })
 
-    it('should register splat alias for component version with versionSegment if strategy is redirect:from', () => {
+    it('should add splat alias for component version with versionSegment if strategy is redirect:from', () => {
       const contentCatalog = new ContentCatalog({
         urls: {
           latestVersionSegmentStrategy: 'redirect:from',
@@ -756,7 +756,7 @@ describe('ContentCatalog', () => {
       expect(splatVersionAlias.rel.pub.splat).to.be.true()
     })
 
-    it('should register splat alias for versionless component version if strategy is redirect:from', () => {
+    it('should add splat alias for versionless component version if strategy is redirect:from', () => {
       const contentCatalog = new ContentCatalog({
         urls: {
           latestVersionSegmentStrategy: 'redirect:from',
@@ -812,7 +812,7 @@ describe('ContentCatalog', () => {
       expect(splatVersionAlias).to.not.exist()
     })
 
-    it('should register splat alias for component version if strategy is redirect:to and replace latest version in pub.url/out.path', () => {
+    it('should add splat alias for component version if strategy is redirect:to and replace latest version in pub.url/out.path', () => {
       const contentCatalog = new ContentCatalog({
         urls: {
           latestVersionSegmentStrategy: 'redirect:to',
@@ -858,7 +858,7 @@ describe('ContentCatalog', () => {
       expect(result.pub).to.include({ url: '/the-component/current/the-page.html', rootPath: '../..' })
     })
 
-    it('should register splat alias for component version if strategy is redirect:to and versionSegment is set', () => {
+    it('should add splat alias for component version if strategy is redirect:to and versionSegment is set', () => {
       const contentCatalog = new ContentCatalog({
         urls: {
           latestVersionSegmentStrategy: 'redirect:to',
@@ -940,7 +940,7 @@ describe('ContentCatalog', () => {
       expect(splatVersionAlias).to.not.exist()
     })
 
-    it('should register splat alias for ROOT component when version segment is empty and strategy is redirect:to', () => {
+    it('should add splat alias for ROOT component when version segment is empty and strategy is redirect:to', () => {
       const contentCatalog = new ContentCatalog({
         urls: { latestVersionSegmentStrategy: 'redirect:to', latestVersionSegment: '' },
       })
