@@ -34,8 +34,7 @@ const ENCODED_SPACE_RX = /%20/g
 function produceRedirects (playbook, aliases) {
   if ('findBy' in aliases) aliases = aliases.findBy({ family: 'alias' }) // @deprecated remove in Antora 4
   if (!aliases.length) return []
-  let siteUrl = playbook.site.url
-  if (siteUrl) siteUrl = stripTrailingSlash(siteUrl, '')
+  const siteUrl = playbook.site.url
   const directoryRedirects = (playbook.urls.htmlExtensionStyle || 'default') !== 'default'
   switch (playbook.urls.redirectFacility) {
     case 'gitlab':
@@ -163,8 +162,8 @@ function ensureTrailingSlash (str) {
   return str.charAt(str.length - 1) === '/' ? str : str + '/'
 }
 
-function stripTrailingSlash (str, root = '/') {
-  if (str === '/') return root
+function stripTrailingSlash (str) {
+  if (str === '/') return str
   const lastIdx = str.length - 1
   return str.charAt(lastIdx) === '/' ? str.substr(0, lastIdx) : str
 }

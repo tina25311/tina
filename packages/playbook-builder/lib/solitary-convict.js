@@ -151,6 +151,7 @@ function registerFormats (convict) {
       }
       if (~parsedUrl.pathname.indexOf('%20')) throw new Error('pathname segment must not contain spaces')
     },
+    coerce: (val) => (val.length > 1 && val.charAt(val.length - 1) === '/' ? val.slice(0, -1) : val),
   })
 }
 

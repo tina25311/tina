@@ -21,7 +21,8 @@ runtime:
       sync: false
       append: false
 site:
-  url: https://example.com
+  # trailing slash is only present to verify it gets removed
+  url: https://docs.example.com/
   title: Example site
   start_page: 1.0@server::intro
   keys:

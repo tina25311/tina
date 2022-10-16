@@ -9,9 +9,10 @@ async function generateSite (playbook) {
     if (Array.isArray(playbook)) playbook = buildPlaybookFromArguments.apply(context, arguments)
     const { fxns, vars } = await GeneratorContext.start(context, playbook)
     await context.notify('playbookBuilt')
-    deepFreeze((playbook = vars.lock('playbook')))
-    vars.siteAsciiDocConfig = fxns.resolveAsciiDocConfig(playbook)
-    vars.siteCatalog = new SiteCatalog()
+    let url = (playbook = vars.lock('playbook')).site.url
+    if (url && url.length > 1 && url.charAt(url.length - 1) === '/') playbook.site.url = url = url.slice(0, -1)
+    deepFreeze(playbook)
+    Object.assign(vars, { siteAsciiDocConfig: fxns.resolveAsciiDocConfig(playbook), siteCatalog: new SiteCatalog() })
     await context.notify('beforeProcess')
     const siteAsciiDocConfig = vars.lock('siteAsciiDocConfig')
     await Promise.all([
@@ -32,12 +33,12 @@ async function generateSite (playbook) {
     ;(({ composePage, create404Page }) => {
       const navigationCatalog = vars.remove('navigationCatalog')
       contentCatalog.getPages((page) => page.out && composePage(page, contentCatalog, navigationCatalog))
-      if (playbook.site.url) vars.siteCatalog.addFile(create404Page(siteAsciiDocConfig))
+      if (url) vars.siteCatalog.addFile(create404Page(siteAsciiDocConfig))
     })(fxns.createPageComposer(playbook, contentCatalog, uiCatalog, playbook.env))
     await context.notify('pagesComposed')
     vars.siteCatalog.addFiles(fxns.produceRedirects(playbook, contentCatalog.findBy({ family: 'alias' })))
     await context.notify('redirectsProduced')
-    if (playbook.site.url) {
+    if (url) {
       const publishablePages = contentCatalog.getPages((page) => page.out)
       vars.siteCatalog.addFiles(fxns.mapSite(playbook, publishablePages))
       await context.notify('siteMapped')

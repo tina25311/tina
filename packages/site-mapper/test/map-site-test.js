@@ -87,11 +87,12 @@ describe('mapSite()', () => {
     expect(componentSitemap.contents.toString()).to.include('<urlset ')
   })
 
-  it('should trim trailing slash from site url', () => {
+  // NOTE removing trailing slash is handled by playbook builder
+  it('should not remove trailing slash from site url', () => {
     const contentCatalog = mockContentCatalog({ family: 'page', module: 'ROOT', relative: 'index.adoc' })
     playbook.site.url = playbook.site.url + '/'
     const sitemaps = mapSite(playbook, contentCatalog.getPages())
-    expect(sitemaps[0].contents.toString()).to.include('<loc>https://docs.example.org/component-a/index.html</loc>')
+    expect(sitemaps[0].contents.toString()).to.include('<loc>https://docs.example.org//component-a/index.html</loc>')
   })
 
   it('should generate sitemaps containing valid XML', () => {

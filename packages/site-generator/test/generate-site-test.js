@@ -1148,12 +1148,14 @@ describe('generateSite()', () => {
     it('should freeze playbook after playbookBuilt event is fired', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = function ({ playbook }) {
-          this.on('playbookBuilt', () => {
+        module.exports.register = function () {
+          this.on('playbookBuilt', ({ playbook }) => {
             console.log('frozen at playbookBuilt: ' + (Object.isFrozen(playbook) ? 'true' : 'false'))
+            playbook.site.url = 'https://docs.example.org/'
           })
-          this.on('beforeProcess', () => {
+          this.on('beforeProcess', ({ playbook }) => {
             console.log('frozen at beforeProcess: ' + (Object.isFrozen(playbook) ? 'true' : 'false'))
+            console.log(playbook.site.url)
           })
         }
       `
@@ -1162,7 +1164,11 @@ describe('generateSite()', () => {
       playbookSpec.output.destinations = []
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
-      expect(lines).to.eql(['frozen at playbookBuilt: false', 'frozen at beforeProcess: true'])
+      expect(lines).to.eql([
+        'frozen at playbookBuilt: false',
+        'frozen at beforeProcess: true',
+        'https://docs.example.org',
+      ])
     })
 
     it('should always emit contentClassified event after both content is classified and UI is loaded', async () => {
