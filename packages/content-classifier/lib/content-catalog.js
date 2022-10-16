@@ -518,7 +518,7 @@ function prepareSrc (src) {
   return update ? Object.assign(src, { basename, extname, stem }) : src
 }
 
-function computeOut (src, family, version, htmlUrlExtensionStyle) {
+function computeOut (src, family, versionSegment, htmlUrlExtensionStyle) {
   let { component, module: module_, basename, extname, relative, stem } = src
   if (component === 'ROOT') component = ''
   if (module_ === 'ROOT') module_ = ''
@@ -538,7 +538,7 @@ function computeOut (src, family, version, htmlUrlExtensionStyle) {
     familyPathSegment = '_attachments'
   }
 
-  const modulePath = path.join(component, version, module_)
+  const modulePath = path.join(component, versionSegment, module_)
   const dirname = path.join(modulePath, familyPathSegment, path.dirname(relative), indexifyPathSegment)
   const path_ = path.join(dirname, basename)
   const moduleRootPath = path.relative(dirname, modulePath) || '.'
@@ -547,13 +547,13 @@ function computeOut (src, family, version, htmlUrlExtensionStyle) {
   return { dirname, basename, path: path_, moduleRootPath, rootPath }
 }
 
-function computePub (src, out, family, version, htmlUrlExtensionStyle) {
+function computePub (src, out, family, versionSegment, htmlUrlExtensionStyle) {
   const pub = {}
   let url
   if (family === 'nav') {
     const component = src.component || 'ROOT'
     const urlSegments = component === 'ROOT' ? [] : [component]
-    if (version) urlSegments.push(version)
+    if (versionSegment) urlSegments.push(versionSegment)
     const module_ = src.module || 'ROOT'
     if (module_ !== 'ROOT') urlSegments.push(module_)
     if (urlSegments.length) urlSegments.push('')
