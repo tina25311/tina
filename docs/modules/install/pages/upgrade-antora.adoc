@@ -7,7 +7,7 @@ On this page, you'll learn:
 * [x] How to upgrade Antora globally.
 * [x] How to upgrade the Antora CLI and site generator individually.
 
-NOTE: If you're already on Antora 3.0 and ready to upgrade to Antora {page-component-version}{patch}, skip the next section and go directly to <<node,Upgrade Node.js>>.
+NOTE: If you're already on Antora 3.0 and ready to upgrade to Antora {page-component-version}, skip the next section and go directly to <<node,Upgrade Node.js>>.
 
 include::partial$upgrade-checklist.adoc[]
 
@@ -44,7 +44,7 @@ Now you're ready to upgrade to the latest version of Antora.
 
 == Upgrade Antora locally
 
-If you have installed Antora locally, you will use [.path]_package.json_ to manage the version.
+If you installed Antora locally, you will use [.path]_package.json_ to manage the version.
 This file tracks which version of Antora you currently have installed.
 You can use the file to specify a different version.
 The `npm i` command will consult this file to determine which packages and which versions of those packages to install.
@@ -59,8 +59,8 @@ The `npm i` command will consult this file to determine which packages and which
 ----
 {
   "devDependencies": {
-    "@antora/cli": "{page-component-version}{patch}",
-    "@antora/site-generator": "{page-component-version}{patch}"
+    "@antora/cli": "{page-component-version}",
+    "@antora/site-generator": "{page-component-version}"
   }
 }
 ----
@@ -73,7 +73,7 @@ TIP: Unless you're installing a prerelease, we recommend specifying only the maj
 Although removing the [.path]_node_modules_ folder is not always required, doing so ensures you get a fresh installation.
 If you're using at least npm 8, this step is usually unnecessary.
 
-. Upgrade the site generator by running the `npm i` command.
+. Upgrade the Antora packages by running the `npm i` command.
 
  $ npm i
 
@@ -83,12 +83,12 @@ As an alternative to removing the [.path]_node_modules_ folder, you can use `npm
 
 == Upgrade Antora globally
 
-If you installed the Antora CLI and site generator globally, you can upgrade them by reinstalling the packages:
+If you installed Antora globally, you can upgrade them by reinstalling the packages:
 
 In a terminal, run:
 
 [subs=attributes+]
- $ npm i -g @antora/cli@{page-component-version} @antora/site-generator@{page-component-version}
+ $ npm i -g antora@{page-component-version}
 
 The `npm i` command will remove any existing packages with the same name and install them anew.
 
@@ -98,7 +98,7 @@ To list your globally installed Node.js packages, type the following command in 
 
  $ npm ls -g --depth=0
 
-If you've installed the Antora CLI and site generator globally, you'll see them listed in the terminal output alongside their version numbers.
+If you've installed Antora globally, you'll see entries for the Antora CLI and Antora site generator packages listed in the terminal output alongside their version numbers.
 
 .List of globally installed Node.js packages
 [subs=attributes+]

@@ -94,7 +94,7 @@ To generate a site with Antora, you need the Antora CLI and an Antora site gener
 Once these packages are installed, you use the `antora` command to generate your site.
 To install these packages globally using npm, in your terminal, type:
 
- $ npm install -g @antora/cli @antora/site-generator
+ $ npm i -g antora
 
 Verify the `antora` command is available on your PATH by running:
 

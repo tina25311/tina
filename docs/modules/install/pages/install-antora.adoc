@@ -143,7 +143,7 @@ You have the option of installing Antora globally so that the `antora` command i
 To install Antora globally, pass the `-g` option to `npm i`.
 
 [subs=attributes+]
- $ npm i -g @antora/cli@{page-component-version} @antora/site-generator@{page-component-version}
+ $ npm i -g antora@{page-component-version}
 
 Verify the `antora` command is available on your PATH by running:
 
@@ -166,21 +166,25 @@ Installing Antora locally and running it using `npx` will give you the best chan
 CAUTION: If you're using a system-wide Node.js installation managed by your operating system's package manager, you may run into permission problems when installing packages globally.
 In that case, you'll need to <<install-dir,install Antora directly in your project repository>>.
 
-== Uninstalling a global Antora installation
+== Uninstall a global Antora installation
 
 To uninstall a global installation of Antora, use the `npm rm` command:
 
-[subs=attributes+]
-$ npm rm antora @antora/cli @antora/site-generator
+ $ npm rm antora @antora/cli @antora/site-generator
 
 Verify the `antora` command is no longer available on your PATH by running:
 
  $ antora -v
 
-If the uninstall was successful, the command should report a command similar to the following:
+If the removal was successful, the command should report information similar to the following output snippets in your terminal:
 
- Need to install the following packages:
-  antora@3.1.1
+[subs=attributes+]
+....
+bash: antora: command not found...
+
+Need to install the following packages:
+ antora@{page-component-version}{patch}
+....
 
 == Learn more
 
