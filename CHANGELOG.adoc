@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Added
 
 * *content-aggregate*: Introduce syntax to match branches by worktree name (for inclusion or exclusion) (e.g., `HEAD@5.8.x`) (#1016)
+* *content-aggregate*: Allow linked worktree to be used as content source; automatically resolve main repository location and remap HEAD reference in branches (#535)
 * *content-aggregate*: Add support for `ref` placeholder to insert full name of git ref (e.g., `refs/heads/v3.1.x`) in value of `edit_url` key on content source (#1013)
 * *content-classifier*: Use value of `versionSegment` property on component version in place of version in output path and URL of pages (#1006)
 * *content-classifier*: Set dynamic `activeVersionSegment` property on component version to indicate which version segment is in use (#1006)
