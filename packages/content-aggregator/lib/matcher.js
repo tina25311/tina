@@ -22,7 +22,7 @@ function makeMatcherRx (input, opts) {
 }
 
 module.exports = {
-  MATCH_ALL_RX: { test: () => true },
+  MATCH_ALL_RX: Object.defineProperty({ test: () => true }, 'pattern', { value: '*' }),
   expandBraces,
   makeMatcherRx,
   pathMatcherOpts: Object.assign({}, BASE_OPTS, { dot: false }),
