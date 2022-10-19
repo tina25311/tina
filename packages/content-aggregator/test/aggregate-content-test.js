@@ -103,12 +103,11 @@ describe('aggregateContent()', () => {
 
   const regexpEscape = (str) => str.replace(/[.*[\](|)\\]/g, '\\$&')
 
-  const sortAggregate = (aggregate) => {
+  const sortAggregate = (aggregate) =>
     aggregate.sort(
       ({ name: nameA, version: versionA }, { name: nameB, version: versionB }) =>
         nameA.localeCompare(nameB) || versionA.localeCompare(versionB)
     )
-  }
 
   const generateCloneFolderName = (url) => {
     const normalizedUrl = (posixify ? posixify(url.toLowerCase()) : url.toLowerCase()).replace(
@@ -2220,7 +2219,7 @@ describe('aggregateContent()', () => {
         )
       })
 
-      it('should resolve branches pattern HEAD to worktree if repository is on branch', async () => {
+      it('should resolve branches pattern HEAD to main worktree if repository is on branch', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         const componentDesc = { name: 'the-component', version: '3.0' }
         await initRepoWithFiles(repoBuilder, componentDesc, 'modules/ROOT/pages/page-one.adoc', () => {
