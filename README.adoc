@@ -176,21 +176,32 @@ Antora is designed to help you easily write and publish your documentation.
 However, we can't fully realize this goal without your feedback!
 We encourage you to report issues, ask questions, share ideas, or discuss other aspects of this project using the communication tools provided below.
 
-=== Issues
-
-The preferred means of communicating problems, ideas, and other feedback is through the project issue tracker.
-
-* {url-issues}[Issue tracker] (GitLab)
-
-Any significant change or decision about the project must be logged there.
-
 === Chat
 
-If you need to switch to real time input, visit our community chat room.
+*The project chat is the preferred means of communication for all Antora users.*
+This policy helps keep the project sustainable.
+If you want to ask for help, share feedback, or exchange ideas with project maintainers and fellow community members in real time, please join us in the project chat.
 
 * {url-chat}[Chat] (Zulip)
 
-Keep in mind that the discussion logs for these rooms are archived, but there's no guarantee those logs will be saved indefinitely.
+The chat is partitioned into streams.
+If you find an active discussion that matches the topic of your post, feel free to join that discussion.
+Otherwise, please select a stream most relevant to your topic, click "`New Topic`", enter a subject, then write your post.
+If you aren't sure where to post, please create a new topic in the `#users` stream and a moderator may choose to reclassify it.
+
+The discussions in the project chat are archived, but there's no guarantee those logs will be saved indefinitely.
+Understand that users participate in the project chat voluntarily, so please be respectful of their time and interest.
+
+=== Issues
+
+The issue tracker is used to track changes to the software and for planning releases.
+The issue tracker is not a support portal.
+Instead, the issue tracker is reserved for reporting problems (verifiable bugs, regressions, and security vulnerabilities) and requesting new features.
+If you aren't confident that a change to the software is required, please post to the <<Chat>> instead.
+
+* {url-issues}[Issue tracker] (GitLab)
+
+Any significant change to the software or decision about the project must be logged in the issue tracker.
 
 === Social
 
