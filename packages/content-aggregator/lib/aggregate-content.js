@@ -301,6 +301,8 @@ async function selectReferences (source, repo, remote) {
         ? worktreePatterns.map((pattern) => String(pattern))
         : splitRefPatterns(String(worktreePatterns))
     }
+  } else {
+    worktreePatterns = []
   }
   const branchPatternsString = String(branchPatterns)
   if (branchPatternsString === 'HEAD' || branchPatternsString === '.') {

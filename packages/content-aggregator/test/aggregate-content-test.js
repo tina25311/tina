@@ -2241,7 +2241,7 @@ describe('aggregateContent()', () => {
         expect(page.src.origin.worktree).to.equal(repoBuilder.url)
       })
 
-      it('should resolve branches pattern HEAD to current branch in git index if worktrees is false', async () => {
+      it('should resolve branches pattern HEAD to current branch in git tree if worktrees is falsy or empty', async () => {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
         const componentDesc = { name: 'the-component', version: '3.0' }
         await initRepoWithFiles(repoBuilder, componentDesc, 'modules/ROOT/pages/page-one.adoc', () => {
@@ -2249,13 +2249,15 @@ describe('aggregateContent()', () => {
             .checkoutBranch('v3.0.x')
             .then(() => repoBuilder.addToWorktree('modules/ROOT/pages/page-two.adoc', '= Page Two\n\ncontent\n'))
         })
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD', worktrees: false })
-        deepFreeze(playbookSpec)
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        const expectedPaths = ['modules/ROOT/pages/page-one.adoc']
-        expect(aggregate[0]).to.include(componentDesc)
-        expect(aggregate[0].files).to.have.lengthOf(expectedPaths.length)
+        for (const worktrees of [false, null, [], '']) {
+          playbookSpec.content.sources = [{ url: repoBuilder.url, branches: 'HEAD', worktrees }]
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          const expectedPaths = ['modules/ROOT/pages/page-one.adoc']
+          expect(aggregate[0]).to.include(componentDesc)
+          expect(aggregate[0].files).to.have.lengthOf(expectedPaths.length)
+          expect(aggregate[0].files[0].src.origin.worktree).to.be.false()
+        }
       })
 
       it('should resolve branches pattern HEAD to current branch in git index if worktrees is *', async () => {
