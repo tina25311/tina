@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *content-aggregator*: Fix infinite auth loop if credentials embedded in content source URL are empty and repository requires auth (#1010)
+* *content-aggregator*: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified (#1018)
 
 == 3.1.1 (2022-09-20)
 
