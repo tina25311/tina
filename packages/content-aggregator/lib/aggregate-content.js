@@ -395,7 +395,7 @@ async function selectReferences (source, repo, remote) {
  */
 function getCurrentBranchName (repo, remote) {
   return (
-    repo.noCheckout
+    repo.noCheckout && remote
       ? git
         .resolveRef(Object.assign({ ref: 'refs/remotes/' + remote + '/HEAD', depth: 2 }, repo))
         .catch(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo)))
@@ -1032,7 +1032,7 @@ function findWorktrees (repo, patterns) {
   if (!patterns.length) return new Map()
   const mainWorktree =
     patterns[0] === '.' && (patterns = patterns.slice(1))
-      ? git.currentBranch(repo).then((branch) => (branch ? [branch, { head: repo.dir, name: '.' }] : undefined))
+      ? getCurrentBranchName(repo).then((branch) => (branch ? [branch, { head: repo.dir, name: '.' }] : undefined))
       : Promise.resolve()
   const worktreesDir = patterns.length ? ospath.join(repo.dir, '.git', 'worktrees') : undefined
   const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
