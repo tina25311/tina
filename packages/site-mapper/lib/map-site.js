@@ -43,11 +43,10 @@ const SITEMAP_PREFIX = 'sitemap-'
  * @returns {Array<File>} An array of File objects that represent the sitemaps.
  */
 function mapSite (playbook, pages) {
-  let siteUrl = playbook.site.url
+  const siteUrl = playbook.site.url
   if (!(siteUrl && pages.length)) return []
   const robots = playbook.site.robots
   if (siteUrl.charAt() === '/') return robots ? [createRobotsExclusionFile(robots)] : []
-  if (siteUrl.charAt(siteUrl.length - 1) === '/') siteUrl = siteUrl.substr(0, siteUrl.length - 1)
   const lastmodISO = new Date().toISOString()
   let sitemaps = pages.reduce((accum, file) => {
     const componentSitemap = getSitemapForComponent(siteUrl, accum, file.src.component)

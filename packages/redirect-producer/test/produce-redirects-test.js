@@ -138,10 +138,11 @@ describe('produceRedirects()', () => {
       })
     })
 
-    it('should remove trailing / from value of site.url', () => {
+    // NOTE removing trailing slash is handled by playbook builder
+    it('should not remove trailing slash from value of site.url', () => {
       playbook.site.url = playbook.site.url + '/'
       produceRedirects(playbook, contentCatalog)
-      const expectedQualifiedUrl = 'https://docs.example.org/component-a/module-a/the-target.html'
+      const expectedQualifiedUrl = 'https://docs.example.org//component-a/module-a/the-target.html'
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
         const html = file.contents.toString()
         expect(html).to.include(`<link rel="canonical" href="${expectedQualifiedUrl}">`)
@@ -354,7 +355,8 @@ describe('produceRedirects()', () => {
       ])
     })
 
-    it('should drop trailing slash from site URL path when using it as prefix for rewrite rule', () => {
+    // NOTE removing trailing slash should be handled by playbook builder
+    it('should not remove trailing slash from site URL path when using it as prefix for rewrite rule', () => {
       playbook.site.url = 'https://example.org/docs/'
       const result = produceRedirects(playbook, contentCatalog)
       expect(result).to.have.lengthOf(1)
@@ -362,7 +364,7 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.include(
-        '/docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html 301!'
+        '/docs//component-a/module-a/alias-a.html /docs//component-a/module-a/the-target.html 301!'
       )
     })
 
@@ -650,7 +652,8 @@ describe('produceRedirects()', () => {
       ])
     })
 
-    it('should drop trailing slash from site URL path when using it as prefix for rewrite rule', () => {
+    // NOTE removing trailing slash should be handled by playbook builder
+    it('should not remove trailing slash from site URL path when using it as prefix for rewrite rule', () => {
       playbook.site.url = 'https://example.org/docs/'
       const result = produceRedirects(playbook, contentCatalog)
       expect(result).to.have.lengthOf(1)
@@ -658,7 +661,7 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.include(
-        'location = /docs/component-a/module-a/alias-a.html { return 301 /docs/component-a/module-a/the-target.html; }'
+        'location = /docs//component-a/module-a/alias-a.html { return 301 /docs//component-a/module-a/the-target.html; }'
       )
     })
 
@@ -812,7 +815,8 @@ describe('produceRedirects()', () => {
       ])
     })
 
-    it('should drop trailing slash from site URL path when using it as prefix for rewrite rule', () => {
+    // NOTE removing trailing slash should be handled by playbook builder
+    it('should not remomve trailing slash from site URL path when using it as prefix for rewrite rule', () => {
       playbook.site.url = 'https://example.org/docs/'
       const result = produceRedirects(playbook, contentCatalog)
       expect(result).to.have.lengthOf(1)
@@ -820,7 +824,7 @@ describe('produceRedirects()', () => {
       expect(result[0].contents.toString()).to.endWith('\n')
       const rules = extractRules(result[0])
       expect(rules).to.include(
-        'Redirect 301 /docs/component-a/module-a/alias-a.html /docs/component-a/module-a/the-target.html'
+        'Redirect 301 /docs//component-a/module-a/alias-a.html /docs//component-a/module-a/the-target.html'
       )
     })
 

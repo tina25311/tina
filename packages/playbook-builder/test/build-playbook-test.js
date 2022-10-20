@@ -748,7 +748,7 @@ describe('buildPlaybook()', () => {
         data: { key_name: 'value' },
       },
     ])
-    expect(playbook.site.url).to.equal('https://example.com')
+    expect(playbook.site.url).to.equal('https://docs.example.com')
     expect(playbook.site.title).to.equal('Example site')
     expect(playbook.site.startPage).to.equal('1.0@server::intro')
     expect(playbook.site.keys.googleAnalytics).to.equal('XX-123456')
@@ -820,12 +820,27 @@ describe('buildPlaybook()', () => {
 
   it('should export default schema', () => {
     const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {}, buildPlaybook.defaultSchema)
-    expect(playbook.site.url).to.equal('https://example.com')
+    expect(playbook.site.url).to.equal('https://docs.example.com')
+  })
+
+  it('should remove trailing slash from site.url that is a URL', () => {
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--url', 'https://docs.example.org/'], {})
+    expect(playbook.site.url).to.equal('https://docs.example.org')
   })
 
   it('should allow site.url to be a pathname', () => {
     const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--url', '/docs'], {})
     expect(playbook.site.url).to.equal('/docs')
+  })
+
+  it('should removing trailing slash from site.url that is a pathname', () => {
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--url', '/docs/'], {})
+    expect(playbook.site.url).to.equal('/docs')
+  })
+
+  it('should allow site.url to be a forward slash', () => {
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec, '--url', '/'], {})
+    expect(playbook.site.url).to.equal('/')
   })
 
   it('should throw error if site.url is a relative path', () => {

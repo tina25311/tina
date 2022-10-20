@@ -29,13 +29,12 @@ function buildUiModel (baseUiModel, file, contentCatalog, navigationCatalog) {
 function buildSiteUiModel (playbook, contentCatalog) {
   const model = { title: playbook.site.title }
 
-  let siteUrl = playbook.site.url
+  const siteUrl = playbook.site.url
   if (siteUrl) {
     if (siteUrl === '/') {
       model.url = siteUrl
       model.path = ''
     } else {
-      if (siteUrl.charAt(siteUrl.length - 1) === '/') siteUrl = siteUrl.substr(0, siteUrl.length - 1)
       if (siteUrl.charAt() === '/') {
         model.path = siteUrl
       } else if ((model.path = new URL(siteUrl).pathname) === '/') {
@@ -111,7 +110,6 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
       },
     })
   }
-  // NOTE site URL has already been normalized at this point
   const siteUrl = siteUiModel.url
   if (siteUrl && siteUrl.charAt() !== '/') {
     if (versions) {

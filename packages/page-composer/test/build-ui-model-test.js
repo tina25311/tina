@@ -201,16 +201,17 @@ describe('build UI model', () => {
       expect(model.url).to.equal('https://example.com')
     })
 
-    it('should remove trailing slash from site URL before assigning to url property', () => {
+    // NOTE removing trailing slash is handled by playbook builder
+    it('should not remove trailing slash from site URL before assigning to url property', () => {
       playbook.site.url = 'https://example.com/'
       const model = buildSiteUiModel(playbook, contentCatalogModel)
-      expect(model.url).to.equal('https://example.com')
+      expect(model.url).to.equal('https://example.com/')
     })
 
-    it('should remove trailing slash from site URL with subpath before assigning to url property', () => {
+    it('should not remove trailing slash from site URL with subpath before assigning to url property', () => {
       playbook.site.url = 'https://example.com/docs/'
       const model = buildSiteUiModel(playbook, contentCatalogModel)
-      expect(model.url).to.equal('https://example.com/docs')
+      expect(model.url).to.equal('https://example.com/docs/')
     })
 
     it('should not set path property if site.url property is not set in playbook', () => {
@@ -227,7 +228,7 @@ describe('build UI model', () => {
     })
 
     it('should set path property to pathname of URL if site.url property set in playbook', () => {
-      ;['https://example.com/docs', 'https://example.com/docs/', '/docs', '/docs/'].forEach((siteUrl) => {
+      ;['https://example.com/docs', '/docs'].forEach((siteUrl) => {
         playbook.site.url = siteUrl
         const model = buildSiteUiModel(playbook, contentCatalogModel)
         expect(model.path).to.equal('/docs')

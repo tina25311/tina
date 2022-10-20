@@ -837,6 +837,14 @@ describe('loadAsciiDoc()', () => {
       expect(doc.getAttributes()).to.include(expectedAttributes)
     })
 
+    // NOTE removing trailing slash is handled by playbook builder
+    it('should not remove trailing slash from value of site-url attribute', () => {
+      setInputFileContents('= Document Title')
+      const playbook = { site: { url: 'https://docs.example.org/' } }
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig(playbook))
+      expect(doc.getAttributes()).to.have.property('site-url', 'https://docs.example.org/')
+    })
+
     it('should assign site-title attribute if site title is set in playbook', () => {
       setInputFileContents('= Document Title')
       const playbook = {
