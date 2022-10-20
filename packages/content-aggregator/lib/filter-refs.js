@@ -4,9 +4,11 @@ const { makeMatcherRx, refMatcherOpts: getMatcherOpts, MATCH_ALL_RX } = require(
 
 function compileRx (pattern, opts) {
   if (pattern === '*' || pattern === '**') return MATCH_ALL_RX
-  return pattern.charAt() === '!' // do our own negate
-    ? Object.defineProperty(makeMatcherRx(pattern.substr(1), opts), 'negated', { value: true })
-    : makeMatcherRx(pattern, opts)
+  const rx =
+    pattern.charAt() === '!' // we handle negate ourselves
+      ? Object.defineProperty(makeMatcherRx((pattern = pattern.substr(1)), opts), 'negated', { value: true })
+      : makeMatcherRx(pattern, opts)
+  return Object.defineProperty(rx, 'pattern', { value: pattern })
 }
 
 function createMatcher (patterns, cache, opts) {
@@ -15,8 +17,8 @@ function createMatcher (patterns, cache, opts) {
       cache.get(pattern) || cache.set(pattern, compileRx(pattern, opts || (opts = getMatcherOpts(cache)))).get(pattern)
   )
   if (rxs[0].negated) rxs.unshift(MATCH_ALL_RX)
-  return (candidate) => {
-    let matched
+  return (candidate, onMatch) => {
+    let matched, symbolic
     for (const rx of rxs) {
       let voteIfMatched = true
       if (matched) {
@@ -25,16 +27,22 @@ function createMatcher (patterns, cache, opts) {
       } else if (rx.negated) {
         continue
       }
-      if (rx.test(candidate)) matched = voteIfMatched
+      if (rx.test(candidate) || (symbolic && rx.test(symbolic) && (candidate = symbolic))) {
+        if (onMatch) {
+          if (!(matched = onMatch(candidate, rx))) continue
+          ;[symbolic, candidate] = [candidate, matched]
+        }
+        matched = voteIfMatched && candidate
+      }
     }
     return matched
   }
 }
 
-function filterRefs (candidates, patterns, cache = Object.assign(new Map(), { braces: new Map() })) {
-  const isMatch = createMatcher(patterns, cache)
+function filterRefs (candidates, patterns, cache = Object.assign(new Map(), { braces: new Map() }), onMatch) {
+  const match = createMatcher(patterns, cache)
   return candidates.reduce((accum, candidate) => {
-    if (isMatch(candidate)) accum.push(candidate)
+    if ((candidate = match(candidate, onMatch))) accum.push(candidate)
     return accum
   }, [])
 }
