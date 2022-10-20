@@ -8,41 +8,16 @@
 :url-releases-asciidoctorjs: https://github.com/asciidoctor/asciidoctor.js/releases
 :url-gitlab: https://gitlab.com
 :url-issues: {url-repo}/issues
-:url-milestone-3-1-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.0
-:url-milestone-3-1-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.1
+:url-milestone-3-2-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.2.0
+//:url-milestone-3-2-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.2.1
 :url-mr: {url-repo}/merge_requests
 
-= Antora {page-component-version}.1
+= Antora {page-component-display-version}
 
-_**Release date:** 2022.09.21 | *Issue label:* {url-milestone-3-1-1}[3.1.1^]_
+_**Release date:** TBD | *Issue label:* {url-milestone-3-2-0}[3.2.0^]_
 
-== Resolved issues
-
-=== Changed
-
-Issue {url-issues}/1004[#1004^]:: Use pretty log format by default if `IS_TTY` environment variable is set to `true`.
-Print success message if `IS_TTY` environment variable is set to `true`.
-See xref:playbook:runtime-log-format.adoc[] for more information.
-
-=== Fixed
-
-Issue {url-issues}/1003[#1003^]:: Prevent message from ignored log message from overwriting message from next reported log message.
-Update to Issue {url-issues}/984[#984^]:: Define public export `@antora/asciidoc-loader/include/resolve-include-file` for requiring `resolveIncludeFile` function.
-Site generator:: Don't require custom output provider to return a report object.
-CLI:: If logger can't be found, print error message to stderr instead of crashing during shutdown.
-
-= Antora {page-component-version}.0
-
-_**Release date:** 2022.08.22 | *Issue label:* {url-milestone-3-1-0}[3.1.0^]_
-
-The highlights of the Antora {page-component-version}.0 release include:
-
-* raising the minimum version of Node.js to Node.js 16,
-* locking down the exported require paths to clearly demarcate the public API,
-* adding support for attribute references in the value of xref:playbook:asciidoc-attributes.adoc#references-in-values[site attributes defined in the playbook] and xref:component-attributes.adoc#references-in-values[component version attributes defined in component version descriptors],
-* providing more context to log and error messages and formatting the information consistently,
-* including more information about content roots in the model for use by extensions, and
-* assigning additional xref:page:intrinsic-attributes.adoc#page-attributes[intrinsic page attributes] that relay more of a page's identity and origin.
+The primary focus of Antora {page-component-version} is to provide and refine certain API methods and endpoints to support the development of Antora extensions.
+This release also added syntax for the inclusion and exclusion matching of worktrees and the ability to use the `ref` placeholder in the `edit_url` key.
 
 You can find a summary of the issues resolved in this release below.
 
@@ -50,53 +25,27 @@ You can find a summary of the issues resolved in this release below.
 
 === Added
 
-Issue {url-issues}/221[#221^]:: Log info message if no references are found for content source.
-Issue {url-issues}/354[#354^]:: Assign edit URL of current page, if set, to `page-edit-url` AsciiDoc attribute.
-Define boolean `page-origin-private` AsciiDoc attribute if origin of page is private.
-Issue {url-issues}/525[#525^]:: Attach parsed component version descriptor to `descriptor` property on origin object.
-Issue {url-issues}/814[#814^]:: Add `removeFile` method to the content catalog and UI catalog.
-Issue {url-issues}/921[#921^]:: Define `page-component-latest-version` AsciiDoc attribute with value of version string from latest component version.
-Define boolean `page-component-version-is-latest` AsciiDoc attribute if page is in latest version of component.
-See xref:page:intrinsic-attributes.adoc#page-attributes[intrinsic page attributes] for more information.
-Issue {url-issues}/978[#978^]:: Add `origins` property containing unique origin objects to each entry in the content aggregate.
-Issue {url-issues}/981[#981^]:: Resolve attribute references in AsciiDoc attributes defined in the xref:playbook:asciidoc-attributes.adoc#references-in-values[playbook] ([.path]_antora-playbook.yml_) and xref:component-attributes.adoc#references-in-values[component version descriptors] ([.path]_antora.yml_), honoring any escaped attribute references.
-Issue {url-issues}/984[#984^]:: Define exports for all packages, locking down what paths can be required to the public API.
-Issue {url-issues}/988[#988^]::
-* Add `reftype` key with value of branch or tag to source object in structured log message.
-* Add `reftype` property to origin object to explicitly identify type of git reference (branch or tag).
-* Add `remote` key with value of remote tracking branch to source object in structured log message, if applicable.
-* Add `remote` property to origin object to identify a remote tracking branch.
-* Add `local` key with path of local repository to source object in structured log message, if applicable.
+Issue {url-issues}/535[#535^]:: Allow linked worktree to be used as content source; automatically resolve main repository location and remap HEAD reference in branches.
+Issue {url-issues}/1006[#1006^]:: Use value of `versionSegment` property on component version in place of version in output path and URL of pages.
+Also, set dynamic `activeVersionSegment` property on component version to indicate which version segment is in use.
+Issue {url-issues}/1008[#1008^]:: Add `addSplatAlias` method to `ContentCatalog` for adding a splat (directory) alias.
+Issue {url-issues}/1013[#1013^]:: Add support for `ref` placeholder to insert full name of git ref (e.g., `refs/heads/v4.0.x`) in value of `edit_url` key on content source.
+Issue {url-issues}/1016[#1016^]:: Add syntax to match current branch of specific worktrees in branches pattern (for inclusion or exclusion) (e.g., `HEAD@5.8.x`).
 
 === Changed
 
-Issue {url-issues}/900[#900^]:: Include target in error message for broken or cyclic symbolic link in local content source or UI bundle directory.
-Issue {url-issues}/979[#979^]:: Set Node.js 16.0.0 as minimum supported Node.js version.
-Upgrade dependencies that require Node.js > 12 and remove workarounds.
-Issue {url-issues}/982[#982^]:: Move logic to collate AsciiDoc attributes to a helper function.
-Use helper function to collate AsciiDoc attributes from playbook and component version.
-Issue {url-issues}/985[#985^]:: Add context to error and preserve cause if failure occurs when reading supplemental UI files.
-Issue {url-issues}/986[#986^]:: Log warning message instead of throwing fatal error if file in worktree disappears or cannot be read.
-Issue {url-issues}/988[#988^]:: Consistently format origin information in log and error messages.
-Issue {url-issues}/993[#993^]:: Set `worktree` property on origin to false when branch or tag is local but not taken from worktree.
-Use isolated Handlebars environment instead of the default (global) environment.
+Issue {url-issues}/1009[#1009^]:: Remove invalid trailing slash from value of `site.url` when building playbook and from value of `site.url` after `playbookBuilt` event (i.e., when it's provided by an extension).
+Issue {url-issues}/1012[#1012^]:: Always assign the value `auth-required` to `origin.private` if the server requests credentials, even when the credentials are embedded in content source URL.
+Content classifier:: Shorten `urlSegment` fragment in internal property names on ContentCatalog to `segment` (e.g., `latestVersionUrlSegment` -> `latestVersionSegment`).
+Release process:: Automatically populate additional version and release attributes during release.
 
 === Fixed
 
-* Don't append `undefined` after path of file in stack in pretty log format if line is missing.
-* Make warning message about missing page layout consistent with other log messages.
+Issue {url-issues}/1007[#1007^]:: Set `src.version` to original version segment and `src.rel.version` to actual version on splat alias file.
+Issue {url-issues}/1010[#1010^]:: Fix infinite authorization loop if credentials embedded in the content source URL are empty and the repository requires authorization.
+Issue {url-issues}/1018[#1018^]:: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified.
 
-=== Removed
-
-Node.js 12 and 14 support:: Antora no longer supports Node.js < 16 (specifically dropping support for Node.js 12 and 14) since those Node.js release lines are now EOL.
-This change is consistent with Antora's Node.js support policy.
-
-== Antora 2 is EOL
-
-*Antora 2 is EOL*.
-Review the checklist on xref:install:upgrade-antora.adoc[] to learn about what changes you should make to your source content, including xref:asciidoctor-upgrade-notes.adoc[AsciiDoc syntax and Asciidoctor updates introduced in Asciidoctor 2.2], and Antora configuration prior to upgrading to from Antora 2 to Antora {page-component-version}.
-
-[#thanks-3-1-0]
+[#thanks-3-2-0]
 == Thank you!
 
 Most important of all, a huge *thank you!* to all the folks who helped make Antora even better.
@@ -104,9 +53,11 @@ The {url-chat}[Antora community] has provided invaluable feedback and testing he
 
 We also want to call out the following people for making contributions to this release:
 
-Gautier de Saint Martin Lacaze ({url-gitlab}/jabby[@jabby^]):: Add `removeFile` method to `contentCatalog` and `uiCatalog` ({url-issues}/814[#814^]).
+Raphael ({url-gitlab}/reitzig[@reitzig^]):: Fixing an error in the edit URL documentation ({url-mr}/940[!940^]).
+{url-gitlab}/stoobie[@stoobie^]:: Documenting how to uninstall Antora globally resolves ({url-issues}/1014[#1014^]).
 
 ////
+Gautier de Saint Martin Lacaze ({url-gitlab}/jabby[@jabby^])
 Alexander Schwartz ({url-gitlab}/ahus1[@ahus1^])::
 Andreas Deininger ({url-gitlab}/deining[@deining^])::
 Ben Walding ({url-gitlab}/bwalding[@bwalding^])::
