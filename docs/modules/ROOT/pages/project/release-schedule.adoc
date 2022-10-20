@@ -10,7 +10,7 @@ Each major release line of the Antora Core components is typically supported for
 |Release Line |Latest Release |Status |GA |Maintenance |EOL
 
 |Antora 3
-|{page-component-version}{patch}
+|{release-version}
 |Active
 |2021/12/25
 |TBD
@@ -22,7 +22,6 @@ Each major release line of the Antora Core components is typically supported for
 |2018/12/25
 |2022/01/25
 |2022/02/25
-
 |===
 
 General Availability (GA):: A release line, such as Antora 2.x, enters general availability on the date the initial, final major version (e.g., Antora 2.0.0) of the software is released and available for download.

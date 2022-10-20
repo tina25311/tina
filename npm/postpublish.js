@@ -1,6 +1,7 @@
 'use strict'
 
 const { promises: fsp } = require('fs')
+
 const README_SRC = 'README.adoc'
 const README_HIDDEN = '.' + README_SRC
 const README_DEST = 'README.md'

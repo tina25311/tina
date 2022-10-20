@@ -16,6 +16,7 @@
     "deps": "node npm/validate-deps.js",
     "format": "node npm/format.js packages/${npm_config_package},npm",
     "lint": "eslint \"{docs,npm}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
+    "prepareForDev": "node npm/prepare-for-dev.js",
     "test": "_mocha",
     "version": "node npm/version.js"
   },

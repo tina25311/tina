@@ -71,10 +71,12 @@ echo -e "access=public\ntag=$RELEASE_NPM_TAG\n//registry.npmjs.org/:_authToken=$
     sed -i "s/^tag=$RELEASE_NPM_TAG$/tag=latest/" .npmrc
     RELEASE_NPM_TAG=latest
   fi
-  git commit -a -m "release $RELEASE_VERSION [skip ci]"
+  git commit -a -m "release $RELEASE_VERSION"
   git tag -m "version $RELEASE_VERSION" v$RELEASE_VERSION
   git push origin $(git describe --tags --exact-match)
   npm publish $(node npm/publish-workspace-args.js)
+  npm run prepareForDev
+  git commit -a -m "prepare branch for development [skip ci]"
   git push origin $RELEASE_BRANCH
 )
 exit_code=$?
@@ -82,6 +84,7 @@ exit_code=$?
 # nuke npm settings
 unlink .npmrc
 
+# check for any uncommitted files
 git status -s -b
 
 # kill the ssh-agent
