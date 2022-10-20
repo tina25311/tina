@@ -4823,6 +4823,103 @@ describe('aggregateContent()', () => {
         expect(pageOne.contents.toString()).to.include('= Page One\n')
         expect(pageOne.src.origin.refname).to.equal('main')
       })
+
+      it('should locate and use main worktree and gitdir if content source is linked worktree', async () => {
+        const { linkedWorktreeRepoBuilder } = await initRepoWithFilesAndMultipleWorktrees()
+        playbookSpec.content.sources.push({ url: linkedWorktreeRepoBuilder.url, branches: 'HEAD' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '1.2' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+          'modules/ROOT/pages/page-two.adoc',
+          'modules/ROOT/pages/page-three.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
+        expect(pageOne.contents.toString()).to.include('= Page One (Linked Worktree)\n')
+        expect(pageOne.src.origin.refname).to.equal('v1.2.x')
+        expect(pageOne.src.abspath).to.equal(
+          ospath.join(linkedWorktreeRepoBuilder.repoPath, 'modules/ROOT/pages/page-one.adoc')
+        )
+      })
+
+      it('should not use worktree if content source is linked worktree and worktrees is .', async () => {
+        const { linkedWorktreeRepoBuilder } = await initRepoWithFilesAndMultipleWorktrees()
+        playbookSpec.content.sources.push({ url: linkedWorktreeRepoBuilder.url, branches: 'v1.2.x', worktrees: '.' })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '1.2' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
+        expect(pageOne.contents.toString()).to.include('= Page One\n')
+        expect(pageOne.src.origin.refname).to.equal('v1.2.x')
+        expect(pageOne.src.abspath).to.be.undefined()
+      })
+
+      it('should use worktree if content source is linked worktree and worktrees contains @', async () => {
+        const { linkedWorktreeRepoBuilder } = await initRepoWithFilesAndMultipleWorktrees({ checkout: true })
+        playbookSpec.content.sources.push({
+          url: linkedWorktreeRepoBuilder.url,
+          branches: 'v1.2.x',
+          worktrees: ['.', '@'],
+        })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '1.2' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+          'modules/ROOT/pages/page-two.adoc',
+          'modules/ROOT/pages/page-three.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
+        expect(pageOne.contents.toString()).to.include('= Page One (Linked Worktree)\n')
+        expect(pageOne.src.abspath).to.equal(
+          ospath.join(linkedWorktreeRepoBuilder.repoPath, 'modules/ROOT/pages/page-one.adoc')
+        )
+        expect(pageOne.src.origin.refname).to.equal('v1.2.x')
+      })
+
+      it('should resolve HEAD@. to main worktree when starting from linked worktree', async () => {
+        const { repoBuilder, linkedWorktreeRepoBuilder } = await initRepoWithFilesAndMultipleWorktrees()
+        playbookSpec.content.sources.push({ url: linkedWorktreeRepoBuilder.url, branches: 'HEAD@.', worktrees: true })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '2.0' })
+        const expectedPaths = [
+          'README.adoc',
+          'modules/ROOT/_attributes.adoc',
+          'modules/ROOT/pages/_attributes.adoc',
+          'modules/ROOT/pages/page-one.adoc',
+          'modules/ROOT/pages/page-two.adoc',
+        ]
+        const files = aggregate[0].files
+        expect(files).to.have.lengthOf(expectedPaths.length)
+        expect(files.map((file) => file.relative)).to.have.members(expectedPaths)
+        const pageOne = files.find((it) => it.relative === 'modules/ROOT/pages/page-one.adoc')
+        expect(pageOne.contents.toString()).to.include('= Page One (Main Worktree)\n')
+        expect(pageOne.src.origin.refname).to.equal('main')
+        expect(pageOne.src.abspath).to.equal(ospath.join(repoBuilder.repoPath, 'modules/ROOT/pages/page-one.adoc'))
+      })
     })
   })
 

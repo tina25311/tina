@@ -221,8 +221,15 @@ async function loadRepository (url, opts) {
         .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
     }
   } else if (await isDirectory((dir = expandPath(url, { dot: opts.startDir })))) {
-    const gitdir = ospath.join(dir, '.git')
-    repo = (await isDirectory(gitdir)) ? { cache, dir, fs, gitdir } : { cache, dir, fs, gitdir: dir, noCheckout: true }
+    const dotgit = ospath.join(dir, '.git')
+    const dotgitStat = await fsp.stat(dotgit).catch(() => ({ isFile: invariably.false, isDirectory: invariably.false }))
+    if (dotgitStat.isDirectory()) {
+      repo = { cache, dir, fs, gitdir: dotgit }
+    } else if (dotgitStat.isFile()) {
+      repo = await resolveRepositoryFromWorktree({ cache, dir, fs, gitdir: dotgit })
+    } else {
+      repo = { cache, dir, fs, gitdir: dir, noCheckout: true }
+    }
     try {
       await git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo))
     } catch {
@@ -295,6 +302,8 @@ async function selectReferences (source, repo, remote) {
     ? branchPatterns.map((pattern) => String(pattern))
     : splitRefPatterns(String(branchPatterns))
   if (!branchPatterns.length) return [...refs.values()]
+  const worktreeName = repo.worktreeName // possibly switch to worktree property ({ name, dir}) in future
+  if (worktreeName) branchPatterns = branchPatterns.map((it) => (it === 'HEAD' ? 'HEAD@' + worktreeName : it))
   if (worktreePatterns) {
     if (worktreePatterns === '.') {
       worktreePatterns = ['.']
@@ -304,9 +313,10 @@ async function selectReferences (source, repo, remote) {
       worktreePatterns = Array.isArray(worktreePatterns)
         ? worktreePatterns.map((pattern) => String(pattern))
         : splitRefPatterns(String(worktreePatterns))
+      if (worktreeName) worktreePatterns = worktreePatterns.map((it) => (it === '@' ? worktreeName : it))
     }
   } else {
-    worktreePatterns = worktreePatterns === undefined ? ['.'] : []
+    worktreePatterns = worktreePatterns === undefined ? [worktreeName || '.'] : []
   }
   if (branchPatterns.length === 1 && (branchPatterns[0] === 'HEAD' || branchPatterns[0] === '.')) {
     const currentBranch = await getCurrentBranchName(repo, remote)
@@ -1023,6 +1033,24 @@ function cleanStartPath (value) {
 
 function coerceToString (value) {
   return value == null ? '' : String(value)
+}
+
+async function resolveRepositoryFromWorktree (repo) {
+  return fsp
+    .readFile(repo.gitdir, 'utf8')
+    .then((contents) => contents.trimRight().substr(8))
+    .then((worktreeGitdir) => {
+      const worktreeName = ospath.basename(worktreeGitdir)
+      return fsp.readFile(ospath.join(worktreeGitdir, 'commondir'), 'utf8').then(
+        (contents) => {
+          const gitdir = ospath.join(worktreeGitdir, contents.trimRight())
+          return ospath.basename(gitdir) === '.git'
+            ? Object.assign(repo, { dir: ospath.dirname(gitdir), gitdir, worktreeName })
+            : Object.assign(repo, { dir: gitdir, gitdir, worktreeName })
+        },
+        () => repo
+      )
+    })
 }
 
 function findWorktrees (repo, patterns) {
