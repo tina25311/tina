@@ -394,15 +394,13 @@ async function selectReferences (source, repo, remote) {
  * Returns the current branch name unless the HEAD is detached.
  */
 function getCurrentBranchName (repo, remote) {
-  let refPromise
-  if (repo.noCheckout) {
-    refPromise = git
-      .resolveRef(Object.assign({ ref: 'refs/remotes/' + remote + '/HEAD', depth: 2 }, repo))
-      .catch(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo)))
-  } else {
-    refPromise = git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo))
-  }
-  return refPromise.then((ref) => (ref.startsWith('refs/') ? ref.replace(SHORTEN_REF_RX, '') : undefined))
+  return (
+    repo.noCheckout
+      ? git
+        .resolveRef(Object.assign({ ref: 'refs/remotes/' + remote + '/HEAD', depth: 2 }, repo))
+        .catch(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo)))
+      : git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo))
+  ).then((ref) => (ref.startsWith('refs/') ? ref.replace(SHORTEN_REF_RX, '') : undefined))
 }
 
 async function collectFilesFromReference (source, repo, remoteName, authStatus, ref, originUrl) {
