@@ -271,7 +271,7 @@ async function collectFilesFromSource (source, repo, remoteName, authStatus) {
 
 // QUESTION should we resolve HEAD to a ref eagerly to avoid having to do a match on it?
 async function selectReferences (source, repo, remote) {
-  let { branches: branchPatterns, tags: tagPatterns, worktrees: worktreePatterns = '.' } = source
+  let { branches: branchPatterns, tags: tagPatterns, worktrees: worktreePatterns } = source
   const isBare = repo.noCheckout
   const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
   const noWorktree = repo.url ? undefined : false
@@ -291,6 +291,10 @@ async function selectReferences (source, repo, remote) {
     }
   }
   if (!branchPatterns) return [...refs.values()]
+  branchPatterns = Array.isArray(branchPatterns)
+    ? branchPatterns.map((pattern) => String(pattern))
+    : splitRefPatterns(String(branchPatterns))
+  if (!branchPatterns.length) return [...refs.values()]
   if (worktreePatterns) {
     if (worktreePatterns === '.') {
       worktreePatterns = ['.']
@@ -302,10 +306,9 @@ async function selectReferences (source, repo, remote) {
         : splitRefPatterns(String(worktreePatterns))
     }
   } else {
-    worktreePatterns = []
+    worktreePatterns = worktreePatterns === undefined ? ['.'] : []
   }
-  const branchPatternsString = String(branchPatterns)
-  if (branchPatternsString === 'HEAD' || branchPatternsString === '.') {
+  if (branchPatterns.length === 1 && (branchPatterns[0] === 'HEAD' || branchPatterns[0] === '.')) {
     const currentBranch = await getCurrentBranchName(repo, remote)
     if (currentBranch) {
       branchPatterns = [currentBranch]
@@ -317,11 +320,7 @@ async function selectReferences (source, repo, remote) {
       refs.set('HEAD', { shortname: 'HEAD', fullname: 'HEAD', type: 'branch', detached: true, head })
       return [...refs.values()]
     }
-  } else if (
-    (branchPatterns = Array.isArray(branchPatterns)
-      ? branchPatterns.map((pattern) => String(pattern))
-      : splitRefPatterns(branchPatternsString)).length
-  ) {
+  } else {
     let headBranchIdx
     // NOTE we can assume at least two entries if HEAD or . are present
     if (~(headBranchIdx = branchPatterns.indexOf('HEAD')) || ~(headBranchIdx = branchPatterns.indexOf('.'))) {
@@ -346,8 +345,6 @@ async function selectReferences (source, repo, remote) {
         branchPatterns.splice(headBranchIdx, 1)
       }
     }
-  } else {
-    return [...refs.values()]
   }
   // NOTE isomorphic-git includes HEAD in list of remote branches (see https://isomorphic-git.org/docs/listBranches)
   const remoteBranches = (await git.listBranches(Object.assign({ remote }, repo))).filter((it) => it !== 'HEAD')
