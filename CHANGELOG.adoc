@@ -22,6 +22,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Always assign the value `auth-required` to `origin.private` if the server requests credentials (even when credentials are embedded in content source URL) (#1012)
 * *content-classifier*: shorten `urlSegment` fragment in property names on ContentCatalog to `segment` (e.g., `latestVersionUrlSegment` -> `latestVersionSegment`)
 * *site-generator*: Remove trailing slash from value of `site.url` after `playbookBuilt` event (#1009)
+* release process: Automatically populate version and release attributes during release
 
 === Fixed
 

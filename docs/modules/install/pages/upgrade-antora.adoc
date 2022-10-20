@@ -104,8 +104,8 @@ If you've installed Antora globally, you'll see entries for the Antora CLI and A
 [subs=attributes+]
 ....
 /home/user/.nvm/versions/node/v{version-node}/lib
-├── @antora/cli@{page-component-version}{patch}
-├── @antora/site-generator@{page-component-version}{patch}
+├── @antora/cli@{release-version}
+├── @antora/site-generator@{release-version}
 ├── npm@{version-npm}
 └── ...
 ....
