@@ -1,6 +1,7 @@
 /.cache/
 /.idea/
 /.nyc_output/
-/coverage/
+/build/
 /node_modules/
 /packages/*/node_modules/
+/reports/
