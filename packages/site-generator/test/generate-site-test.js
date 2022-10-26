@@ -1950,6 +1950,7 @@ describe('generateSite()', () => {
 
     it('should report completion message if runtime.quiet is false and IS_TTY is set', async () => {
       playbookSpec.runtime.quiet = false
+      env.IS_TTY = 'true'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const defaultStdout = 'isTTY write'.split(' ').reduce((accum, name) => {
         accum[name] = process.stdout[name]
@@ -1957,7 +1958,6 @@ describe('generateSite()', () => {
       }, {})
       const messages = []
       try {
-        process.env.IS_TTY = 'true'
         Object.assign(process.stdout, { isTTY: false, write: (line) => messages.push(line) })
         await generateSite(getPlaybook(playbookFile))
         expect(messages).to.have.lengthOf(2)
@@ -1965,7 +1965,6 @@ describe('generateSite()', () => {
         const expectedFileUri = pathToFileURL(absDestDir)
         expect(messages[1]).to.equal(`Open ${expectedFileUri} in a browser to view your site.\n`)
       } finally {
-        delete process.env.IS_TTY
         Object.assign(process.stdout, defaultStdout)
       }
     })

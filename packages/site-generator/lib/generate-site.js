@@ -46,7 +46,7 @@ async function generateSite (playbook) {
     return await fxns
       .publishFiles(playbook, [contentCatalog, uiCatalog, vars.lock('siteCatalog')])
       .then((publications) => {
-        if (!playbook.runtime.quiet && (process.env.IS_TTY || String(process.stdout.isTTY)) === 'true') {
+        if (!playbook.runtime.quiet && (playbook.env.IS_TTY || String(process.stdout.isTTY)) === 'true') {
           const indexPath = contentCatalog.getSiteStartPage() ? '/index.html' : ''
           const log = (msg) => process.stdout.write(msg + '\n')
           log('Site generation complete!')
