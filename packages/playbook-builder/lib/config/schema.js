@@ -253,23 +253,13 @@ module.exports = {
         arg: 'log-failure-level',
         env: 'ANTORA_LOG_FAILURE_LEVEL',
       },
-      format: new Proxy(
-        {
-          doc: 'Set the format of log messages. Defaults to pretty if CI=true or stdout is a TTY, json otherwise.',
-          format: ['json', 'pretty'],
-          default: undefined,
-          arg: 'log-format',
-          env: 'ANTORA_LOG_FORMAT',
-        },
-        {
-          get (target, property) {
-            if (property !== 'default') return target[property]
-            return process.env.CI === 'true' || (process.env.IS_TTY || String(process.stdout.isTTY)) === 'true'
-              ? 'pretty'
-              : 'json'
-          },
-        }
-      ),
+      format: {
+        doc: 'Set the format of log messages. Defaults to pretty if CI=true or stdout is a TTY, json otherwise.',
+        format: ['json', 'pretty'],
+        default: 'auto',
+        arg: 'log-format',
+        env: 'ANTORA_LOG_FORMAT',
+      },
       destination: {
         file: {
           doc: 'Write log messages to this file or stream. Defaults to stderr if format is pretty, stdout otherwise.',
@@ -344,8 +334,13 @@ module.exports = {
       default: undefined,
     },
   },
-  [Symbol.for('convict.beforeValidate')]: ({ _schema: schema, _instance: data }) => {
+  [Symbol.for('convict.beforeValidate')]: ({ getEnv, _instance: data, _schema: schema }) => {
     const runtime = data.runtime
+    const log = runtime.log
+    if (log.format === 'auto') {
+      const env = getEnv()
+      log.format = env.CI === 'true' || (env.IS_TTY || String(process.stdout.isTTY)) === 'true' ? 'pretty' : 'json'
+    }
     if (runtime.silent) {
       if (runtime.quiet === false) runtime.quiet = true
       if (runtime.log.level !== 'silent') runtime.log.level = 'silent'

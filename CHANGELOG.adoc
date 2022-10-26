@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *playbook-builder*: Decouple logic to compute default log format from process environment (#1022)
+
 === Fixed
 
 * *content-classifier*: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop (#1020)
