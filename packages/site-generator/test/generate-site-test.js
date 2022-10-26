@@ -1956,6 +1956,7 @@ describe('generateSite()', () => {
 
     it('should report completion message if runtime.quiet is false and IS_TTY is set', async () => {
       playbookSpec.runtime.quiet = false
+      env.IS_TTY = 'true'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const defaultStdout = 'isTTY write'.split(' ').reduce((accum, name) => {
         accum[name] = process.stdout[name]
@@ -1963,7 +1964,6 @@ describe('generateSite()', () => {
       }, {})
       const messages = []
       try {
-        process.env.IS_TTY = 'true'
         Object.assign(process.stdout, { isTTY: false, write: (line) => messages.push(line) })
         await generateSite(getPlaybook(playbookFile))
         expect(messages).to.have.lengthOf(2)
@@ -1971,14 +1971,15 @@ describe('generateSite()', () => {
         const expectedFileUri = pathToFileURL(absDestDir)
         expect(messages[1]).to.equal(`Open ${expectedFileUri} in a browser to view your site.\n`)
       } finally {
-        delete process.env.IS_TTY
         Object.assign(process.stdout, defaultStdout)
       }
     })
 
-    it('should append index path to file URI in completion message if start page is set', async () => {
+    it('should append index path to site URL in completion message if start page is set and CI=true', async () => {
+      playbookSpec.site.url = 'https://docs.example.org'
       playbookSpec.site.start_page = 'the-component::the-page.adoc'
       playbookSpec.runtime.quiet = false
+      env.CI = 'true'
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const defaultStdout = 'clearLine columns cursorTo isTTY moveCursor write'.split(' ').reduce((accum, name) => {
         accum[name] = process.stdout[name]
@@ -1998,8 +1999,8 @@ describe('generateSite()', () => {
         await generateSite(getPlaybook(playbookFile))
         expect(messages).to.have.lengthOf(2)
         expect(messages[0]).to.equal('Site generation complete!\n')
-        const expectedFileUri = pathToFileURL(ospath.join(absDestDir, 'index.html'))
-        expect(messages[1]).to.equal(`Open ${expectedFileUri} in a browser to view your site.\n`)
+        const expectedStartPageUrl = 'https://docs.example.org/index.html'
+        expect(messages[1]).to.equal(`Open ${expectedStartPageUrl} in a browser to view your site.\n`)
       } finally {
         Object.assign(process.stdout, defaultStdout)
       }
