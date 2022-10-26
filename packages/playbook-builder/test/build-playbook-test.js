@@ -721,7 +721,7 @@ describe('buildPlaybook()', () => {
   })
 
   it('should use default schema if no schema is specified', () => {
-    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
+    const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], { IS_TTY: 'false' })
     expect(playbook.runtime.cacheDir).to.equal('./.antora-cache')
     expect(playbook.runtime.fetch).to.be.true()
     expect(playbook.runtime.quiet).to.be.false()
@@ -729,7 +729,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.runtime.log.level).to.equal('info')
     expect(playbook.runtime.log.levelFormat).to.equal('number')
     expect(playbook.runtime.log.failureLevel).to.equal('warn')
-    expect(playbook.runtime.log.format).to.equal(process.env.CI === 'true' || process.stdout.isTTY ? 'pretty' : 'json')
+    expect(playbook.runtime.log.format).to.equal('json')
     expect(playbook.runtime.log.destination.file).to.equal('stdout')
     expect(playbook.runtime.log.destination.bufferSize).to.equal(4096)
     expect(playbook.runtime.log.destination.sync).to.equal(false)
@@ -919,61 +919,49 @@ describe('buildPlaybook()', () => {
   })
 
   it('should set runtime.log.format to pretty when stdout is a TTY', () => {
-    const oldEnv = process.env
     const oldIsTTY = process.stdout.isTTY
     try {
-      process.env = Object.assign({}, oldEnv)
-      delete process.env.CI
       process.stdout.isTTY = true
       const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
+      expect(playbook.env.CI).to.be.undefined()
       expect(playbook.runtime.log.format).to.equal('pretty')
     } finally {
-      process.env = oldEnv
       process.stdout.isTTY = oldIsTTY
     }
   })
 
   it('should set runtime.log.format to pretty when CI=true and stdout is not a TTY', () => {
-    const oldEnv = process.env
     const oldIsTTY = process.stdout.isTTY
     try {
-      process.env = Object.assign({}, oldEnv)
-      process.env.CI = 'true'
       process.stdout.isTTY = undefined
-      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
+      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], { CI: 'true' })
+      expect(playbook.env.CI).to.equal('true')
       expect(playbook.runtime.log.format).to.equal('pretty')
     } finally {
-      process.env = oldEnv
       process.stdout.isTTY = oldIsTTY
     }
   })
 
   it('should set runtime.log.format to pretty when IS_TTY=true and stdout is not a TTY', () => {
-    const oldEnv = process.env
     const oldIsTTY = process.stdout.isTTY
     try {
-      process.env = Object.assign({}, oldEnv)
-      process.env.IS_TTY = 'true'
       process.stdout.isTTY = undefined
-      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
+      const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], { IS_TTY: 'true' })
+      expect(playbook.env.IS_TTY).to.equal('true')
       expect(playbook.runtime.log.format).to.equal('pretty')
     } finally {
-      process.env = oldEnv
       process.stdout.isTTY = oldIsTTY
     }
   })
 
   it('should set runtime.log.format to json when CI is not set and stdout is not a TTY', () => {
-    const oldEnv = process.env
     const oldIsTTY = process.stdout.isTTY
     try {
-      process.env = Object.assign({}, oldEnv)
-      delete process.env.CI
       process.stdout.isTTY = undefined
       const playbook = buildPlaybook(['--playbook', defaultSchemaSpec], {})
+      expect(playbook.env.CI).to.be.undefined()
       expect(playbook.runtime.log.format).to.equal('json')
     } finally {
-      process.env = oldEnv
       process.stdout.isTTY = oldIsTTY
     }
   })
