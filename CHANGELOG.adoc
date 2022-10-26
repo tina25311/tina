@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *playbook-builder*: Decouple logic to compute default log format from process environment (#1022)
+* *site-generator*: Look for IS_TTY on `playbook.env` in site generator to decouple check from process environment
 * *site-generator*: Print site URL instead of file URI in completion message if CI=true
 
 === Fixed
