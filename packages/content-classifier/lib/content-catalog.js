@@ -350,8 +350,8 @@ class ContentCatalog {
     const rel = this.resolvePage(startPageSpec)
     if (rel) {
       if (this.getById(ROOT_INDEX_PAGE_ID)) return
-      const rootIndexAlias = this.getById(ROOT_INDEX_ALIAS_ID)
       if (rel.pub.url === (this.htmlUrlExtensionStyle === 'default' ? '/index.html' : '/')) return
+      const rootIndexAlias = this.getById(ROOT_INDEX_ALIAS_ID)
       if (rootIndexAlias) return rootIndexAlias.synthetic ? Object.assign(rootIndexAlias, { rel }) : undefined
       const src = Object.assign({}, ROOT_INDEX_ALIAS_ID)
       return this.addFile({ src, rel, synthetic: true }, { version: src.version })
