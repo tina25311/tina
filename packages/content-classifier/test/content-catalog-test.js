@@ -2154,7 +2154,7 @@ describe('ContentCatalog', () => {
       contentCatalog = new ContentCatalog()
     })
 
-    it('should not register site start page if page already exists at that location', () => {
+    it('should not register site start page alias if page already exists at that location', () => {
       const pageSrc = { ...ROOT_INDEX_PAGE_ID }
       const pageContents = Buffer.from('I am your home base!')
       contentCatalog.addFile({ contents: pageContents, src: pageSrc })
@@ -2164,6 +2164,29 @@ describe('ContentCatalog', () => {
       expect(files).to.have.lengthOf(1)
       expect(files[0].src.family).to.equal('page')
       expect(files[0].contents).to.equal(pageContents)
+    })
+
+    it('should not register site start page alias that redirects to itself', () => {
+      ;['default', 'indexify', 'drop'].forEach((htmlExtensionStyle) => {
+        contentCatalog = new ContentCatalog({ urls: { latestVersionSegment: '', htmlExtensionStyle } })
+        contentCatalog.registerComponentVersion('ROOT', '6.0', { title: 'Home' })
+        contentCatalog.addFile({
+          contents: Buffer.from('= Home\n\nI am your home base!'),
+          src: {
+            component: 'ROOT',
+            version: '6.0',
+            module: 'ROOT',
+            family: 'page',
+            relative: 'index.adoc',
+          },
+        })
+        contentCatalog.registerComponentVersionStartPage('ROOT', '6.0')
+        const startPage = contentCatalog.registerSiteStartPage('ROOT::index.adoc')
+        expect(startPage).to.be.undefined()
+        const files = contentCatalog.getFiles()
+        expect(files).to.have.lengthOf(1)
+        expect(contentCatalog.getSiteStartPage()).to.be.undefined()
+      })
     })
 
     it('should return page registered as site start page', () => {

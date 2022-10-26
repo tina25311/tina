@@ -335,9 +335,11 @@ class ContentCatalog {
     const rel = this.resolvePage(startPageSpec)
     if (rel) {
       if (this.getById(ROOT_INDEX_PAGE_ID)) return
-      const indexAlias = this.getById(ROOT_INDEX_ALIAS_ID)
-      if (indexAlias) return indexAlias.synthetic ? Object.assign(indexAlias, { rel }) : undefined
-      return this.addFile({ src: Object.assign({}, ROOT_INDEX_ALIAS_ID), rel, synthetic: true })
+      const rootIndexAlias = this.getById(ROOT_INDEX_ALIAS_ID)
+      if (rootIndexAlias) return rootIndexAlias.synthetic ? Object.assign(rootIndexAlias, { rel }) : undefined
+      if (rel.pub.url === (this.htmlUrlExtensionStyle === 'default' ? '/index.html' : '/')) return
+      const src = Object.assign({}, ROOT_INDEX_ALIAS_ID)
+      return this.addFile({ src, rel, synthetic: true }, { version: src.version })
     } else if (rel === false) {
       logger.warn('Start page specified for site has invalid syntax: %s', startPageSpec)
     } else if (startPageSpec.lastIndexOf(':') > startPageSpec.indexOf(':')) {
