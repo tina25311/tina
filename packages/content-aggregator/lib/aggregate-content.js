@@ -1035,22 +1035,20 @@ function coerceToString (value) {
   return value == null ? '' : String(value)
 }
 
-async function resolveRepositoryFromWorktree (repo) {
+function resolveRepositoryFromWorktree (repo) {
   return fsp
     .readFile(repo.gitdir, 'utf8')
     .then((contents) => contents.trimRight().substr(8))
-    .then((worktreeGitdir) => {
-      const worktreeName = ospath.basename(worktreeGitdir)
-      return fsp.readFile(ospath.join(worktreeGitdir, 'commondir'), 'utf8').then(
+    .then((worktreeGitdir) =>
+      fsp.readFile(ospath.join(worktreeGitdir, 'commondir'), 'utf8').then(
         (contents) => {
           const gitdir = ospath.join(worktreeGitdir, contents.trimRight())
-          return ospath.basename(gitdir) === '.git'
-            ? Object.assign(repo, { dir: ospath.dirname(gitdir), gitdir, worktreeName })
-            : Object.assign(repo, { dir: gitdir, gitdir, worktreeName })
+          const dir = ospath.basename(gitdir) === '.git' ? ospath.dirname(gitdir) : gitdir
+          return Object.assign(repo, { dir, gitdir, worktreeName: ospath.basename(worktreeGitdir) })
         },
         () => repo
       )
-    })
+    )
 }
 
 function findWorktrees (repo, patterns) {
