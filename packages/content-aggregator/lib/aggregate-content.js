@@ -297,11 +297,14 @@ async function selectReferences (source, repo, remote) {
       }
     }
   }
-  if (!branchPatterns) return [...refs.values()]
-  branchPatterns = Array.isArray(branchPatterns)
-    ? branchPatterns.map((pattern) => String(pattern))
-    : splitRefPatterns(String(branchPatterns))
-  if (!branchPatterns.length) return [...refs.values()]
+  if (
+    !branchPatterns &&
+    !(branchPatterns = Array.isArray(branchPatterns)
+      ? branchPatterns.map((pattern) => String(pattern))
+      : splitRefPatterns(String(branchPatterns))).length
+  ) {
+    return [...refs.values()]
+  }
   const worktreeName = repo.worktreeName // possibly switch to worktree property ({ name, dir}) in future
   if (worktreeName) branchPatterns = branchPatterns.map((it) => (it === 'HEAD' ? 'HEAD@' + worktreeName : it))
   if (worktreePatterns) {
