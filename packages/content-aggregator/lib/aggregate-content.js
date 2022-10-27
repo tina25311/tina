@@ -298,7 +298,7 @@ async function selectReferences (source, repo, remote) {
     }
   }
   if (
-    !branchPatterns &&
+    !branchPatterns ||
     !(branchPatterns = Array.isArray(branchPatterns)
       ? branchPatterns.map((pattern) => String(pattern))
       : splitRefPatterns(String(branchPatterns))).length
