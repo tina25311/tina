@@ -15,6 +15,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *playbook-builder*: Use consistent formatting for error messages in playbook builder
 * *content-classifier*: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop (#1020)
 
 == 3.2.0-alpha.1 (2022-10-20)

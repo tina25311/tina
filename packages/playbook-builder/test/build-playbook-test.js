@@ -898,7 +898,7 @@ describe('buildPlaybook()', () => {
       default: undefined,
     }
     expect(() => buildPlaybook([], { PLAYBOOK: invalidStringOrBooleanSpec }, schema)).to.throw(
-      'must be a boolean or string'
+      'must be a boolean, string, or null'
     )
   })
 

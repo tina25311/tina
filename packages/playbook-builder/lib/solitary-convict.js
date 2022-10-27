@@ -89,7 +89,7 @@ function registerFormats (convict) {
   convict.addFormat({
     name: 'require-array',
     validate: (val) => {
-      if (!Array.isArray(val)) throw new Error('must be of type Array')
+      if (!Array.isArray(val)) throw new Error('must be an array')
     },
     coerce: (val, config, name) => {
       const accum = config && config.has(name) ? config.get(name) : []
@@ -109,7 +109,7 @@ function registerFormats (convict) {
     name: 'boolean-or-string',
     validate: (val) => {
       if (!(val == null || val.constructor === String || val.constructor === Boolean)) {
-        throw new Error('must be a boolean or string')
+        throw new Error('must be a boolean, string, or null')
       }
     },
   })
