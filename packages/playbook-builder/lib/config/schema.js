@@ -66,7 +66,7 @@ module.exports = {
   content: {
     branches: {
       doc: 'The default branch pattern to use when no specific pattern is provided.',
-      format: Array,
+      format: 'array-or-string',
       default: ['HEAD', 'v{0..9}*'],
     },
     edit_url: {
@@ -82,7 +82,7 @@ module.exports = {
     },
     tags: {
       doc: 'The default tag pattern to use when no specific pattern is provided.',
-      format: Array,
+      format: 'array-or-string',
       default: undefined,
     },
   },

@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *playbook-builder*: Decouple logic to compute default log format from process environment (#1022)
+* *playbook-builder*: Allow content aggregator to parse value of `content.branches` and `content.tags` playbook keys (#1025)
 * *content-aggregator*: Fix infinite auth loop if credentials embedded in content source URL are empty and repository requires auth (#1010)
 * *content-aggregator*: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified (#1018)
 * *content-classifier*: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop (#1020)

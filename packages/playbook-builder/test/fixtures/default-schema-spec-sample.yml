@@ -28,7 +28,7 @@ site:
     google_analytics: 'XX-123456'
     jira_collector_id: 'xyz123'
 content:
-  branches: v*
+  branches: HEAD, v*
   edit_url: '{web_url}/blob/{refname}/{path}'
   sources:
   - url: https://gitlab.com/antora/demo/demo-component-a.git

@@ -331,7 +331,7 @@ describe('aggregateContent()', () => {
         await initRepoWithComponentDescriptor(repoBuilder, { name: 'the-component', version: true }, () =>
           repoBuilder.checkoutBranch('v/2.1').then(() => repoBuilder.deleteBranch('main'))
         )
-        playbookSpec.content.branches = ['HEAD', 'v/*']
+        playbookSpec.content.branches = 'HEAD, v/*'
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
