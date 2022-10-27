@@ -133,17 +133,24 @@ function populateStaticRedirectFiles (files, siteUrl) {
 
 function createStaticRedirectContents (file, siteUrl) {
   const targetUrl = file.rel.pub.url
-  const relativeUrl = computeRelativeUrlPath(file.pub.url, targetUrl)
-  const canonicalUrl = siteUrl && siteUrl.charAt() !== '/' ? siteUrl + targetUrl : undefined
-  const canonicalLink = canonicalUrl ? `<link rel="canonical" href="${canonicalUrl}">\n` : ''
+  let linkTag
+  let to = targetUrl.charAt() === '/' ? computeRelativeUrlPath(file.pub.url, targetUrl) : undefined
+  let toText = to
+  if (to) {
+    if (siteUrl && siteUrl.charAt() !== '/') {
+      linkTag = `<link rel="canonical" href="${(toText = siteUrl + targetUrl)}">\n`
+    }
+  } else {
+    linkTag = `<link rel="canonical" href="${(toText = to = targetUrl)}">\n`
+  }
   return `<!DOCTYPE html>
 <meta charset="utf-8">
-${canonicalLink}<script>location="${relativeUrl}"</script>
-<meta http-equiv="refresh" content="0; url=${relativeUrl}">
+${linkTag || ''}<script>location="${to}"</script>
+<meta http-equiv="refresh" content="0; url=${to}">
 <meta name="robots" content="noindex">
 <title>Redirect Notice</title>
 <h1>Redirect Notice</h1>
-<p>The page you requested has been relocated to <a href="${relativeUrl}">${canonicalUrl || relativeUrl}</a>.</p>`
+<p>The page you requested has been relocated to <a href="${to}">${toText}</a>.</p>`
 }
 
 function unpublish (files) {
@@ -152,11 +159,8 @@ function unpublish (files) {
 }
 
 function computeRelativeUrlPath (from, to) {
-  return from === to
-    ? to.charAt(to.length - 1) === '/'
-      ? './'
-      : path.basename(to)
-    : (path.relative(path.dirname(from + '.'), to) || '.') + (to.charAt(to.length - 1) === '/' ? '/' : '')
+  if (to === from) return to.charAt(to.length - 1) === '/' ? './' : path.basename(to)
+  return (path.relative(path.dirname(from + '.'), to) || '.') + (to.charAt(to.length - 1) === '/' ? '/' : '')
 }
 
 function ensureTrailingSlash (str) {

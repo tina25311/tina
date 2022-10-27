@@ -131,6 +131,32 @@ describe('produceRedirects()', () => {
       })
     })
 
+    it('should leave target as is if absolute URL', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'page', component: 'external', module: 'ROOT', version: '3.0', relative: 'the-page.adoc' },
+        { family: 'alias', relative: 'to-the-page.adoc' },
+      ])
+      const alias = contentCatalog.findBy({ family: 'alias' })[0]
+      const target = contentCatalog.getPages()[0]
+      target.pub = { url: 'https://other-docs.example.org' + target.pub.url }
+      alias.rel = target
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.be.empty()
+      const expectedQualifiedUrl = 'https://other-docs.example.org/external/3.0/the-page.html'
+      const expectedRelativeUrls = {
+        'to-the-page.adoc': expectedQualifiedUrl,
+      }
+      contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
+        const expectedRelativeUrl = expectedRelativeUrls[file.src.relative]
+        expect(file).to.have.property('contents')
+        const html = file.contents.toString()
+        expect(html).to.include(`<link rel="canonical" href="${expectedQualifiedUrl}">`)
+        expect(html).to.include(`<script>location="${expectedRelativeUrl}"</script>`)
+        expect(html).to.include(`<meta http-equiv="refresh" content="0; url=${expectedRelativeUrl}">`)
+        expect(html).to.include(`<a href="${expectedRelativeUrl}">${expectedQualifiedUrl}</a>`)
+      })
+    })
+
     it('should not remove the out property on alias files', () => {
       produceRedirects(playbook, contentCatalog)
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => {
@@ -275,6 +301,23 @@ describe('produceRedirects()', () => {
       const rules = extractRules(result[0])
       expect(rules).to.eql([
         '/component-a/module-a/alias%20with%20spaces.html /component-a/module-a/target%20with%20spaces.html 301!',
+      ])
+    })
+
+    it('should leave target as is if absolute URL', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'page', component: 'external', module: 'ROOT', version: '3.0', relative: 'the-page.adoc' },
+        { family: 'alias', relative: 'to-the-page.adoc' },
+      ])
+      const alias = contentCatalog.findBy({ family: 'alias' })[0]
+      const target = contentCatalog.getPages()[0]
+      target.pub = { url: 'https://other-docs.example.org' + target.pub.url }
+      alias.rel = target
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        '/component-a/module-a/to-the-page.html https://other-docs.example.org/external/3.0/the-page.html 301!',
       ])
     })
 
@@ -618,6 +661,23 @@ describe('produceRedirects()', () => {
       ])
     })
 
+    it('should leave target as is if absolute URL', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'page', component: 'external', module: 'ROOT', version: '3.0', relative: 'the-page.adoc' },
+        { family: 'alias', relative: 'to-the-page.adoc' },
+      ])
+      const alias = contentCatalog.findBy({ family: 'alias' })[0]
+      const target = contentCatalog.getPages()[0]
+      target.pub = { url: 'https://other-docs.example.org' + target.pub.url }
+      alias.rel = target
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        'location = /component-a/module-a/to-the-page.html { return 301 https://other-docs.example.org/external/3.0/the-page.html; }',
+      ])
+    })
+
     it('should prefix each rewrite rule with URL context derived from absolute URL', () => {
       playbook.site.url = 'https://example.org/docs'
       const result = produceRedirects(playbook, contentCatalog)
@@ -777,6 +837,23 @@ describe('produceRedirects()', () => {
       const rules = extractRules(result[0])
       expect(rules).to.eql([
         "Redirect 301 '/component-a/module-a/alias with spaces.html' '/component-a/module-a/target with spaces.html'",
+      ])
+    })
+
+    it('should leave target as is if absolute URL', () => {
+      contentCatalog = mockContentCatalog([
+        { family: 'page', component: 'external', module: 'ROOT', version: '3.0', relative: 'the-page.adoc' },
+        { family: 'alias', relative: 'to-the-page.adoc' },
+      ])
+      const alias = contentCatalog.findBy({ family: 'alias' })[0]
+      const target = contentCatalog.getPages()[0]
+      target.pub = { url: 'https://other-docs.example.org' + target.pub.url }
+      alias.rel = target
+      const result = produceRedirects(playbook, contentCatalog)
+      expect(result).to.have.lengthOf(1)
+      const rules = extractRules(result[0])
+      expect(rules).to.eql([
+        'Redirect 301 /component-a/module-a/to-the-page.html https://other-docs.example.org/external/3.0/the-page.html',
       ])
     })
 
