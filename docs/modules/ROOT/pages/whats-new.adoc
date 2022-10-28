@@ -10,7 +10,24 @@
 :url-issues: {url-repo}/issues
 :url-milestone-3-1-0: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.0
 :url-milestone-3-1-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.1
+:url-milestone-3-1-2: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.2
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.2
+
+_**Release date:** 2022.10.28 | *Issue label:* {url-milestone-3-1-2}[3.1.2^]_
+
+== Resolved issues
+
+=== Fixed
+
+Issue {url-issues}/1010[#1010^]:: Fix infinite auth loop if credentials embedded in content source URL are empty and repository requires auth.
+Issue {url-issues}/1018[#1018^]:: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified.
+Issue {url-issues}/1020[#1020^]:: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop.
+Issue {url-issues}/1022[#1022^]:: Decouple logic to compute default log format from process environment.
+Issue {url-issues}/1024[#1024^]:: Preserve target when creating static route if target is an absolute URL.
+Issue {url-issues}/1025[#1025^]:: Allow content aggregator to parse value of `content.branches` and `content.tags` playbook keys.
+Site generator:: Look for IS_TTY on `playbook.env` in site generator to decouple check from process environment.
 
 = Antora {page-component-version}.1
 
