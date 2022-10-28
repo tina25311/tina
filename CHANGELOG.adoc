@@ -17,6 +17,7 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Use consistent formatting for error messages in playbook builder
 * *content-classifier*: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop (#1020)
+* *redirect-producer*: Preserve target when creating static route if target is an absolute URL (#1024)
 
 == 3.2.0-alpha.1 (2022-10-20)
 
