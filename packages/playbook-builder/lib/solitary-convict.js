@@ -36,6 +36,14 @@ function registerParsers (convict) {
 
 function registerFormats (convict) {
   convict.addFormat({
+    name: 'array-or-string',
+    validate: (val) => {
+      if (!(val == null || val.constructor === String || Array.isArray(val))) {
+        throw new Error('must be an array, string, or null')
+      }
+    },
+  })
+  convict.addFormat({
     name: 'map',
     validate: (val) => {
       if (!(val == null || val.constructor === Object)) throw new Error('must be a map (i.e., key/value pairs)')

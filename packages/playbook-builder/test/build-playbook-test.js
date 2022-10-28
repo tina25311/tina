@@ -753,7 +753,7 @@ describe('buildPlaybook()', () => {
     expect(playbook.site.startPage).to.equal('1.0@server::intro')
     expect(playbook.site.keys.googleAnalytics).to.equal('XX-123456')
     expect(playbook.site.keys.jiraCollectorId).to.equal('xyz123')
-    expect(playbook.content.branches).to.eql(['v*'])
+    expect(playbook.content.branches).to.eql('HEAD, v*')
     expect(playbook.content.editUrl).to.equal('{web_url}/blob/{refname}/{path}')
     expect(playbook.content.sources).to.have.lengthOf(1)
     expect(playbook.content.sources[0]).to.eql({

@@ -15,6 +15,7 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Decouple logic to compute default log format from process environment (#1022)
 * *playbook-builder*: Use consistent formatting for error messages in playbook builder
+* *playbook-builder*: Allow content aggregator to parse value of `content.branches` and `content.tags` playbook keys (#1025)
 * *content-classifier*: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop (#1020)
 * *redirect-producer*: Preserve target when creating static route if target is an absolute URL (#1024)
 * *site-generator*: Look for IS_TTY on `playbook.env` in site generator to decouple check from process environment
