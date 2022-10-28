@@ -16,6 +16,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop (#1020)
 * *redirect-producer*: Preserve target when creating static route if target is an absolute URL (#1024)
 * *site-generator*: Look for IS_TTY on `playbook.env` in site generator to decouple check from process environment
+* release process: Automatically populate version and release attributes during release (#1011)
 
 == 3.1.1 (2022-09-20)
 

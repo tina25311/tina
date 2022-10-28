@@ -7,7 +7,7 @@ On this page, you'll learn:
 * [x] How to upgrade Antora globally.
 * [x] How to upgrade the Antora CLI and site generator individually.
 
-NOTE: If you're already on Antora 3.0 and ready to upgrade to Antora {page-component-version}{patch}, skip the next section and go directly to <<node,Upgrade Node.js>>.
+NOTE: If you're already on Antora 3.0 and ready to upgrade to Antora {page-component-version}, skip the next section and go directly to <<node,Upgrade Node.js>>.
 
 include::partial$upgrade-checklist.adoc[]
 
@@ -59,8 +59,8 @@ The `npm i` command will consult this file to determine which packages and which
 ----
 {
   "devDependencies": {
-    "@antora/cli": "{page-component-version}{patch}",
-    "@antora/site-generator": "{page-component-version}{patch}"
+    "@antora/cli": "{release-version}",
+    "@antora/site-generator": "{release-version}"
   }
 }
 ----
@@ -104,8 +104,8 @@ If you've installed the Antora CLI and site generator globally, you'll see them 
 [subs=attributes+]
 ....
 /home/user/.nvm/versions/node/v{version-node}/lib
-├── @antora/cli@{page-component-version}{patch}
-├── @antora/site-generator@{page-component-version}{patch}
+├── @antora/cli@{release-version}
+├── @antora/site-generator@{release-version}
 ├── npm@{version-npm}
 └── ...
 ....

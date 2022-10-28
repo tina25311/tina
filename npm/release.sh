@@ -7,17 +7,17 @@ if [ -z "$RELEASE_DEPLOY_KEY" ]; then
     exit 1
   fi
 fi
-if [ -z $RELEASE_NPM_TOKEN ]; then
+if [ -z "$RELEASE_NPM_TOKEN" ]; then
   declare -n RELEASE_NPM_TOKEN="RELEASE_NPM_TOKEN_$GITLAB_USER_LOGIN"
-  if [ -z $RELEASE_NPM_TOKEN ]; then
+  if [ -z "$RELEASE_NPM_TOKEN" ]; then
     echo No release npm token \(RELEASE_NPM_TOKEN or RELEASE_NPM_TOKEN_$GITLAB_USER_LOGIN\) defined. Halting release.
     exit 1
   fi
 fi
-RELEASE_BRANCH=$CI_COMMIT_BRANCH
+export RELEASE_BRANCH=${CI_COMMIT_BRANCH:-main}
 # RELEASE_VERSION can be a version number (exact) or increment keyword (next in sequence)
-if [ -z $RELEASE_VERSION ]; then RELEASE_VERSION=prerelease; fi
-if [ -z $RELEASE_NPM_TAG ]; then
+if [ -z "$RELEASE_VERSION" ]; then RELEASE_VERSION=prerelease; fi
+if [ -z "$RELEASE_NPM_TAG" ]; then
   if case $RELEASE_VERSION in major|minor|patch) ;; *) false;; esac; then
     RELEASE_NPM_TAG=latest
   elif case $RELEASE_VERSION in pre*) ;; *) false;; esac; then
@@ -54,13 +54,13 @@ git fetch --depth ${GIT_DEPTH:-5} --update-shallow origin $RELEASE_BRANCH
 # make sure the release branch exists as a local branch
 git checkout -b $RELEASE_BRANCH -t origin/$RELEASE_BRANCH
 
-if [ "$(git rev-parse $RELEASE_BRANCH)" != $CI_COMMIT_SHA ]; then
+if [ "$(git rev-parse $RELEASE_BRANCH)" != "$CI_COMMIT_SHA" ]; then
   echo $RELEASE_BRANCH moved forward from $CI_COMMIT_SHA. Halting release.
   exit 1
 fi
 
 # configure npm client for publishing
-echo -e "access=public\ntag=$RELEASE_NPM_TAG\n//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" > .npmrc
+echo -e "//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" > $HOME/.npmrc
 
 # release!
 (
@@ -68,20 +68,22 @@ echo -e "access=public\ntag=$RELEASE_NPM_TAG\n//registry.npmjs.org/:_authToken=$
   npm version --workspaces --include-workspace-root --no-git-tag-version $RELEASE_VERSION
   RELEASE_VERSION=$(npm exec -c 'echo -n $npm_package_version')
   if case $RELEASE_VERSION in 1.0.0-*) ;; *) false;; esac; then
-    sed -i "s/^tag=$RELEASE_NPM_TAG$/tag=latest/" .npmrc
     RELEASE_NPM_TAG=latest
   fi
-  git commit -a -m "release $RELEASE_VERSION [skip ci]"
+  git commit -a -m "release $RELEASE_VERSION"
   git tag -m "version $RELEASE_VERSION" v$RELEASE_VERSION
   git push origin $(git describe --tags --exact-match)
-  npm publish $(node npm/publish-workspace-args.js)
+  npm publish --access public --tag $RELEASE_NPM_TAG $(node npm/publish-workspace-args.js)
+  npm run prepareForDev
+  git commit -a -m "prepare branch for development [skip ci]"
   git push origin $RELEASE_BRANCH
 )
 exit_code=$?
 
 # nuke npm settings
-unlink .npmrc
+unlink $HOME/.npmrc
 
+# check for any uncommitted files
 git status -s -b
 
 # kill the ssh-agent
