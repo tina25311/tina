@@ -644,6 +644,17 @@ describe('cli', () => {
     })
   })
 
+  it('should be able to use classifyContent as synchronous function in custom site generator', () => {
+    playbookSpec.antora = { generator: ospath.resolve(FIXTURES_DIR, 'sync-classify-content-generator') }
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    return new Promise((resolve) => runAntora('--stacktrace antora-playbook').on('exit', resolve)).then((exitCode) => {
+      expect(exitCode).to.equal(0)
+      expect(ospath.join(absDestDir, 'index.html'))
+        .to.be.a.file()
+        .with.contents.that.match(/Pages: 2/)
+    })
+  })
+
   it('should clean output directory before generating when --clean switch is used', () => {
     const residualFile = ospath.join(absDestDir, 'the-component/1.0/old-page.html')
     fs.mkdirSync(ospath.dirname(residualFile), { recursive: true })

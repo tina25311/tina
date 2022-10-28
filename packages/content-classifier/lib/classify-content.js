@@ -8,37 +8,48 @@ const collateAsciiDocAttributes = require('@antora/asciidoc-loader/config/collat
  *
  * @memberof content-classifier
  *
- * @param {Object} playbook - The configuration object for Antora.
+ * @param {Object} playbook - The configuration object for Antora. See ContentCatalog constructor for relevant keys.
  * @param {Object} playbook.site - Site-related configuration data.
  * @param {String} playbook.site.startPage - The start page for the site; redirects from base URL.
- * @param {Object} playbook.urls - URL settings for the site.
- * @param {String} playbook.urls.htmlExtensionStyle - The style to use when computing page URLs.
  * @param {Object} aggregate - The raw aggregate of virtual file objects to be classified.
  * @param {Object} [siteAsciiDocConfig={}] - Site-wide AsciiDoc processor configuration options.
- * @returns {ContentCatalog} A structured catalog of content components and virtual content files.
+ * @param {Function} [onComponentsRegistered] - A function (optionally async) to invoke after components are
+ *  registered. Must return an instance of ContentCatalog. If async, this function will also return a Promise.
+ *
+ * @returns {ContentCatalog} A structured catalog of content components, versions, and virtual content files.
  */
-function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}) {
-  const contentCatalog = new ContentCatalog(playbook)
-  aggregate
-    .reduce((accum, componentVersionData) => {
-      // drop files since they aren't needed to register component version
-      // drop startPage to defer registration of start page
-      const { name, version, files, startPage, ...descriptor } = Object.assign({}, componentVersionData, {
-        asciidoc: resolveAsciiDocConfig(siteAsciiDocConfig, componentVersionData),
-      })
-      return new Map(accum).set(
-        contentCatalog.registerComponentVersion(name, version, descriptor),
-        componentVersionData
-      )
-    }, new Map())
-    .forEach((componentVersionData, componentVersion) => {
-      const { name, version } = componentVersion
-      const { files, nav, startPage } = componentVersionData
-      componentVersionData.files = undefined // clean up memory
-      files.forEach((file) => allocateSrc(file, name, version, nav) && contentCatalog.addFile(file, componentVersion))
-      contentCatalog.registerComponentVersionStartPage(name, componentVersion, startPage)
+function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}, onComponentsRegistered) {
+  const siteStartPage = playbook.site.startPage
+  let contentCatalog = registerComponentVersions(new ContentCatalog(playbook), aggregate, siteAsciiDocConfig)
+  return typeof onComponentsRegistered === 'function' &&
+    (contentCatalog = onComponentsRegistered(contentCatalog)) instanceof Promise
+    ? contentCatalog.then((contentCatalogValue) => addFilesAndRegisterStartPages(contentCatalogValue, siteStartPage))
+    : addFilesAndRegisterStartPages(contentCatalog, siteStartPage)
+}
+
+function registerComponentVersions (contentCatalog, aggregate, siteAsciiDocConfig) {
+  for (const componentVersionBucket of aggregate) {
+    // drop files since they aren't needed to register component version
+    // drop startPage to defer registration of start page
+    const { name, version, files, nav, startPage, ...data } = Object.assign(componentVersionBucket, {
+      asciidoc: resolveAsciiDocConfig(siteAsciiDocConfig, componentVersionBucket),
     })
-  contentCatalog.registerSiteStartPage(playbook.site.startPage)
+    Object.assign(contentCatalog.registerComponentVersion(name, version, data), { files, nav, startPage })
+  }
+  return contentCatalog
+}
+
+function addFilesAndRegisterStartPages (contentCatalog, siteStartPage) {
+  for (const { versions: componentVersions } of contentCatalog.getComponents()) {
+    for (const componentVersion of componentVersions) {
+      const { name: component, version, files = [], nav, startPage } = componentVersion
+      for (let file, iter = files.reverse(); (file = iter.pop());) {
+        allocateSrc(file, component, version, nav) && contentCatalog.addFile(file, componentVersion)
+      }
+      contentCatalog.registerComponentVersionStartPage(component, componentVersion, startPage)
+    }
+  }
+  contentCatalog.registerSiteStartPage(siteStartPage)
   return contentCatalog
 }
 

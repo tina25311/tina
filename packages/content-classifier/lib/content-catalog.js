@@ -328,20 +328,22 @@ class ContentCatalog {
         this.htmlUrlExtensionStyle
       ).url
     }
-
-    Object.defineProperty(
-      componentVersion,
-      'activeVersionSegment',
-      activeVersionSegment === version
-        ? {
-            configurable: true,
-            get () {
-              return this.version
-            },
-          }
-        : { configurable: true, value: activeVersionSegment }
-    )
-
+    Object.defineProperties(componentVersion, {
+      activeVersionSegment:
+        activeVersionSegment === version
+          ? { configurable: true, enumerable: false, get: getVersion }
+          : { configurable: true, enumerable: false, value: activeVersionSegment },
+      files: {
+        configurable: true,
+        enumerable: false,
+        get: getComponentVersionFiles.bind(this, { component, version }),
+      },
+      startPage: {
+        configurable: true,
+        enumerable: false,
+        get: getComponentVersionStartPage.bind(this, { component, version }),
+      },
+    })
     addSymbolicVersionAlias.call(this, componentVersion)
   }
 
@@ -625,6 +627,18 @@ function getFileLocation ({ path: path_, src: { abspath, origin } }) {
   if ('worktree' in origin) details += worktree ? ' <worktree>' : remote ? ` <remotes/${remote}>` : ''
   if (startPath) details += ` | start path: ${startPath}`
   return `${abspath || path.join(startPath, path_)} in ${'worktree' in origin ? worktree || gitdir : url} (${details})`
+}
+
+function getComponentVersionFiles (componentVersionId) {
+  return this.findBy(componentVersionId)
+}
+
+function getComponentVersionStartPage (componentVersionId) {
+  return this.resolvePage('index.adoc', componentVersionId)
+}
+
+function getVersion () {
+  return this.version
 }
 
 module.exports = ContentCatalog

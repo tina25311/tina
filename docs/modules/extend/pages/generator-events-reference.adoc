@@ -22,8 +22,11 @@ If the variable is locked, meaning it cannot be replaced, it's italicized.
 |beforeProcess
 |_playbook_, siteAsciiDocConfig, siteCatalog
 
-|contentAggregated{empty}footnote:event-sequence[The order of the `contentAggregated` and `uiLoaded` events relative to each other is not guaranteed.]
+|contentAggregated{empty}footnote:event-sequence[The `uiLoaded` event may be emitted before, between, or after the `contentAggregated` and `componentsRegistered` events.]
 |_playbook_, _siteAsciiDocConfig_, siteCatalog, contentAggregate
+
+|componentsRegistered{empty}footnote:event-sequence[]
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, contentCatalogfootnote:[The contentCatalog only provides access to the components at this phase and is, as such, still being constructed.]
 
 |uiLoaded{empty}footnote:event-sequence[]
 |_playbook_, _siteAsciiDocConfig_, siteCatalog, uiCatalog

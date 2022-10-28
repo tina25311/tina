@@ -1089,6 +1089,7 @@ describe('generateSite()', () => {
         playbookBuilt: [common[0]],
         beforeProcess: common.slice().sort(),
         contentAggregated: [...common, 'contentAggregate'].sort(),
+        componentsRegistered: [...common, 'contentCatalog'].sort(),
         uiLoaded: [...common, 'uiCatalog'].sort(),
         contentClassified: [...common, 'contentCatalog', 'uiCatalog'].sort(),
         documentsConverted: [...common, 'contentCatalog', 'uiCatalog'].sort(),
