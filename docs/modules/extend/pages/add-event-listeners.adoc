@@ -66,7 +66,7 @@ To learn more about the `exit` event and other events emitted by the Node.js pro
 
 The EventEmitter API, which the generator context inherits, also allows listeners to be retrieved, removed, and added again.
 That opens up the possibility that one extension can rearrange listeners added by other extensions, if the need arises.
-Extensions can also raise and listen for custom events using the same methods.
+Extensions can also emit and listen for custom events using the same methods.
 
 To do something more interesting than time the execution and print messages to the console, we need to xref:use-context-variables.adoc[use context variables].
 Let's learn how that's done next.
