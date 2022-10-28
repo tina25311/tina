@@ -2,7 +2,6 @@
 
 const EventEmitter = require('events')
 const getLogger = require('@antora/logger')
-const noopNotify = async function notify () {}
 const userRequire = require('@antora/user-require-helper')
 
 const FUNCTION_PROVIDERS = {
@@ -23,6 +22,10 @@ const FUNCTION_PROVIDERS = {
 
 const FUNCTION_WITH_POSITIONAL_PARAMETER_RX = /^(?:function *)?(?:\w+ *)?\( *\w|^\w+(?: *, *\w+)* *=>/
 const NEWLINES_RX = /\r?\n/g
+
+const notifyNoop = async function notify (_, variableUpdates) {
+  if (variableUpdates) this.updateVariables(variableUpdates)
+}
 
 class StopSignal extends Error {}
 
@@ -51,14 +54,15 @@ class GeneratorContext extends EventEmitter {
     return Object.defineProperty(this.#vars, name, { configurable: false, writable: false })[name]
   }
 
-  async notify (eventName) {
+  async notify (eventName, variableUpdates) {
+    if (variableUpdates) this.updateVariables(variableUpdates)
     if (!this.listenerCount(eventName)) return
     for (const listener of this.rawListeners(eventName)) {
       const wantsVariables = (listener.listener || listener).length === 1
       const outcome = wantsVariables ? listener.call(this, this.getVariables()) : listener.call(this)
       if (outcome instanceof Promise) await outcome
     }
-    if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: noopNotify })
+    if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: notifyNoop })
   }
 
   removeVariable (name) {
@@ -155,7 +159,7 @@ class GeneratorContext extends EventEmitter {
         }
       })
     }
-    if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: noopNotify })
+    if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: notifyNoop })
   }
 
   _registerFunctions (fxns) {

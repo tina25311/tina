@@ -12,16 +12,18 @@ async function generateSite (playbook) {
     let url = (playbook = vars.lock('playbook')).site.url
     if (url && url.length > 1 && url.charAt(url.length - 1) === '/') playbook.site.url = url = url.slice(0, -1)
     deepFreeze(playbook)
-    Object.assign(vars, { siteAsciiDocConfig: fxns.resolveAsciiDocConfig(playbook), siteCatalog: new SiteCatalog() })
-    await context.notify('beforeProcess')
+    await context.notify('beforeProcess', {
+      siteAsciiDocConfig: fxns.resolveAsciiDocConfig(playbook),
+      siteCatalog: new SiteCatalog(),
+    })
     const siteAsciiDocConfig = vars.lock('siteAsciiDocConfig')
     await Promise.all([
       fxns.aggregateContent(playbook).then((contentAggregate) =>
-        context.notify('contentAggregated', Object.assign(vars, { contentAggregate })).then(() => {
+        context.notify('contentAggregated', { contentAggregate }).then(() => {
           vars.contentCatalog = fxns.classifyContent(playbook, vars.remove('contentAggregate'), siteAsciiDocConfig)
         })
       ),
-      fxns.loadUi(playbook).then((uiCatalog) => context.notify('uiLoaded', Object.assign(vars, { uiCatalog }))),
+      fxns.loadUi(playbook).then((uiCatalog) => context.notify('uiLoaded', { uiCatalog })),
     ])
     await context.notify('contentClassified')
     const contentCatalog = vars.lock('contentCatalog')
@@ -57,9 +59,7 @@ async function generateSite (playbook) {
             if (baseUri) log(`Open ${baseUri}${indexPath} in a browser to view your site.`)
           })
         }
-        return context
-          .notify('sitePublished', Object.assign(vars, { publications }))
-          .then(() => vars.remove('publications'))
+        return context.notify('sitePublished', { publications }).then(() => vars.remove('publications'))
       })
   } catch (err) {
     if (!GeneratorContext.isStopSignal(err)) throw err
