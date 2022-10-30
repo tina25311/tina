@@ -52,8 +52,8 @@ function registerFormats (convict) {
       if (config == null) return val
       const accum = config.has(name) ? config.get(name) : {}
       let match
-      ARGS_SCANNER_RX.lastIndex = 0
-      while ((match = ARGS_SCANNER_RX.exec(val))) {
+      const scanner = new RegExp(ARGS_SCANNER_RX)
+      while ((match = scanner.exec(val))) {
         const [, k, v] = match
         if (k) accum[k] = v ? (v === '-' ? '-' : yaml.load(v, { schema: yaml.CORE_SCHEMA })) : ''
       }
@@ -77,8 +77,8 @@ function registerFormats (convict) {
       if (config == null) return val
       const accum = config.has(name) ? config.get(name) : {}
       let match
-      ARGS_SCANNER_RX.lastIndex = 0
-      while ((match = ARGS_SCANNER_RX.exec(val))) {
+      const scanner = new RegExp(ARGS_SCANNER_RX)
+      while ((match = scanner.exec(val))) {
         const [, k, v] = match
         if (k) {
           let parsed
