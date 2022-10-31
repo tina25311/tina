@@ -958,6 +958,44 @@ describe('classifyContent()', () => {
       })
     })
 
+    it('should not recompute resource ID if src.family is set', () => {
+      const rawFile = createFile('modules/ROOT/pages/the-page.adoc')
+      delete rawFile.path
+      Object.assign(rawFile.src, { module: 'ROOT', family: 'page', relative: 'the-page.adoc', moduleRootPath: '..' })
+      aggregate[0].files.push(rawFile)
+      const files = classifyContent(playbook, aggregate).getFiles()
+      const file = files[0]
+      expect(file.path).to.be.undefined()
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-page.adoc',
+        basename: 'the-page.adoc',
+        moduleRootPath: '..',
+      })
+    })
+
+    it('should compute moduleRootPath if not set and src.family is set', () => {
+      const rawFile = createFile('modules/ROOT/pages/the-topic/the-page.adoc')
+      delete rawFile.path
+      Object.assign(rawFile.src, { module: 'ROOT', family: 'page', relative: 'the-topic/the-page.adoc' })
+      aggregate[0].files.push(rawFile)
+      const files = classifyContent(playbook, aggregate).getFiles()
+      const file = files[0]
+      expect(file.path).to.be.undefined()
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'the-topic/the-page.adoc',
+        basename: 'the-page.adoc',
+        moduleRootPath: '../..',
+      })
+    })
+
     it('should classify a page in a topic dir', () => {
       aggregate[0].files.push(createFile('modules/ROOT/pages/the-topic/page-one.adoc'))
       const files = classifyContent(playbook, aggregate).getFiles()
