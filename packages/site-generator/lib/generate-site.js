@@ -11,9 +11,8 @@ async function generateSite (playbook) {
     await context.notify('playbookBuilt')
     let url = (playbook = vars.lock('playbook')).site.url
     if (url && url.length > 1 && url.charAt(url.length - 1) === '/') playbook.site.url = url = url.slice(0, -1)
-    deepFreeze(playbook)
     await context.notify('beforeProcess', {
-      siteAsciiDocConfig: fxns.resolveAsciiDocConfig(playbook),
+      siteAsciiDocConfig: fxns.resolveAsciiDocConfig(deepFreeze(playbook)),
       siteCatalog: new SiteCatalog(),
     })
     const siteAsciiDocConfig = vars.lock('siteAsciiDocConfig')
