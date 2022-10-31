@@ -27,6 +27,8 @@ const notifyNoop = async function notify (_, variableUpdates) {
   if (variableUpdates) this.updateVariables(variableUpdates)
 }
 
+const $unsafe = Symbol.for('unsafe')
+
 class StopSignal extends Error {}
 
 class GeneratorContext extends EventEmitter {
@@ -39,7 +41,7 @@ class GeneratorContext extends EventEmitter {
   }
 
   getFunctions () {
-    return arguments.length ? this.#fxns : Object.assign({}, this.#fxns)
+    return arguments[0] === $unsafe ? this.#fxns : Object.assign({}, this.#fxns)
   }
 
   getLogger (name = 'antora') {

@@ -1,5 +1,7 @@
 'use strict'
 
+const $unsafe = Symbol.for('unsafe')
+
 /**
  * Converts the contents on the specified file from AsciiDoc to embedded HTML.
  *
@@ -24,7 +26,7 @@ function convertDocument (file, contentCatalog = undefined, asciidocConfig = {})
   const {
     extractAsciiDocMetadata = requireAsciiDocLoader().extractAsciiDocMetadata,
     loadAsciiDoc = requireAsciiDocLoader(),
-  } = this ? this.getFunctions(false) : {}
+  } = this ? this.getFunctions($unsafe) : {}
   const doc = loadAsciiDoc(file, contentCatalog, asciidocConfig)
   if (!file.asciidoc) {
     file.asciidoc = extractAsciiDocMetadata(doc)

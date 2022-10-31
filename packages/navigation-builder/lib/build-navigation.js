@@ -2,6 +2,8 @@
 
 const NavigationCatalog = require('./navigation-catalog')
 
+const $unsafe = Symbol.for('unsafe')
+
 const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
 
 /**
@@ -26,7 +28,7 @@ const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
  * @returns {NavigationCatalog} A navigation catalog built from the navigation files in the content catalog.
  */
 function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
-  const { loadAsciiDoc = require('@antora/asciidoc-loader') } = this ? this.getFunctions(false) : {}
+  const { loadAsciiDoc = require('@antora/asciidoc-loader') } = this ? this.getFunctions($unsafe) : {}
   const navCatalog = new NavigationCatalog()
   const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizeResourceRefs: false }
   contentCatalog

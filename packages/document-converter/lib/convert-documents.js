@@ -2,6 +2,8 @@
 
 const _convertDocument = require('./convert-document')
 
+const $unsafe = Symbol.for('unsafe')
+
 /**
  * Converts the contents of publishable pages with the media type text/asciidoc
  * in the content catalog to embedded HTML.
@@ -29,7 +31,7 @@ function convertDocuments (contentCatalog, siteAsciiDocConfig = {}) {
     convertDocument = _convertDocument,
     extractAsciiDocMetadata = requireAsciiDocLoader().extractAsciiDocMetadata,
     loadAsciiDoc = requireAsciiDocLoader(),
-  } = this ? this.getFunctions(false) : {}
+  } = this ? this.getFunctions($unsafe) : {}
   const mainAsciiDocConfigs = new Map()
   contentCatalog.getComponents().forEach(({ name: component, versions }) => {
     versions.forEach(({ version, asciidoc }) => {
