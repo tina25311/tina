@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *content-classifier*: Don't recompute resource ID on file from content aggregate if `src.family` is set (#1026)
 * *site-generator*: Print site URL instead of file URI in completion message if CI=true
 
 === Fixed

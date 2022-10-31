@@ -43,7 +43,12 @@ function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}) {
 }
 
 function allocateSrc (file, component, version, nav) {
-  const extname = file.src.extname
+  const { extname, family } = file.src
+  if (family && family !== 'nav') {
+    Object.assign(file.src, { component, version })
+    file.src.moduleRootPath ??= calculateRootPath(file.src.relative.split('/').length)
+    return true
+  }
   const filepath = file.path
   const navInfo = nav && getNavInfo(filepath, nav)
   const pathSegments = filepath.split('/')
