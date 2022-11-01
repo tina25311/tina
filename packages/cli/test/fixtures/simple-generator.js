@@ -1,7 +1,7 @@
 'use strict'
 
 const buildPlaybook = require('@antora/playbook-builder')
-const publishSite = require('@antora/site-publisher') // verifies alias
+const publishSite = require('@antora/site-publisher') // must keep to verify package alias
 
 async function generateSite (args, env) {
   const playbook = buildPlaybook(args, env)

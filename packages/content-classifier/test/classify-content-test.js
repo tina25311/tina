@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { captureLogSync, expect } = require('@antora/test-harness')
+const { captureLogSync, expect, spy } = require('@antora/test-harness')
 
 const classifyContent = require('@antora/content-classifier')
 const { posix: path } = require('path')
@@ -841,6 +841,53 @@ describe('classifyContent()', () => {
       ])
       expect(messages).to.be.empty()
     })
+
+    it('should invoke onComponentsRegistered callback after registering components and versions', () => {
+      const siteAsciiDocConfig = { attributes: {} }
+      const files = aggregate[0].files
+      files.push({ path: 'modules/ROOT/pages/index.adoc', src: { extname: '.adoc' } })
+      const contentCatalog = classifyContent(playbook, aggregate, siteAsciiDocConfig, (contentCatalog) => {
+        expect(contentCatalog.getComponentVersion('the-component', 'v1.2.3').files).to.equal(files)
+        contentCatalog.registerComponentVersion('the-other-component', '1.0', { title: 'The Other Compmonent' })
+        return contentCatalog
+      })
+      expect(contentCatalog.getComponents()).to.have.lengthOf(2)
+      const otherComponent = contentCatalog.getComponent('the-other-component')
+      expect(otherComponent).to.exist()
+      const otherComponentVersions = otherComponent.versions
+      expect(otherComponentVersions).to.have.lengthOf(1)
+      const componentVersion = contentCatalog.getComponentVersion('the-component', 'v1.2.3')
+      const expectedMembers = ['displayVersion', 'title', 'version', 'name', 'asciidoc', 'nav', 'url']
+      expect(Object.keys(componentVersion)).to.have.members(expectedMembers)
+      expect(componentVersion.files).to.eql(contentCatalog.findBy({ component: 'the-component', version: 'v1.2.3' }))
+    })
+
+    it('should invoke async onComponentsRegistered callback after registering components and versions', async () => {
+      const siteAsciiDocConfig = { attributes: {} }
+      const onComponentsRegistered = async (contentCatalog) => contentCatalog
+      const contentCatalogP = classifyContent(playbook, aggregate, siteAsciiDocConfig, onComponentsRegistered)
+      expect(contentCatalogP).to.be.instanceOf(Promise)
+      const contentCatalog = await contentCatalogP
+      expect(contentCatalog.getComponents()).to.have.lengthOf(1)
+      const component = contentCatalog.getComponent('the-component')
+      expect(component).to.exist()
+    })
+
+    it('should allow onComponentsRegistered callback to replace content catalog', async () => {
+      const siteAsciiDocConfig = { attributes: {} }
+      const emptyContentCatalog = classifyContent(playbook, [], siteAsciiDocConfig)
+      const onComponentsRegistered = () => emptyContentCatalog
+      const contentCatalog = classifyContent(playbook, aggregate, siteAsciiDocConfig, onComponentsRegistered)
+      expect(contentCatalog.getComponents()).to.be.empty()
+    })
+
+    it('should allow async onComponentsRegistered callback to replace content catalog', async () => {
+      const siteAsciiDocConfig = { attributes: {} }
+      const emptyContentCatalog = classifyContent(playbook, [], siteAsciiDocConfig)
+      const onComponentsRegistered = async () => emptyContentCatalog
+      const contentCatalog = await classifyContent(playbook, aggregate, siteAsciiDocConfig, onComponentsRegistered)
+      expect(contentCatalog.getComponents()).to.be.empty()
+    })
   })
 
   describe('classify files', () => {
@@ -1070,6 +1117,8 @@ describe('classifyContent()', () => {
       const startPage = contentCatalog.getFiles().find((it) => it.src.family === 'alias')
       expect(startPage.mediaType).to.equal('text/html')
       expect(startPage.src.mediaType).to.equal('text/asciidoc')
+      expect(component.versions[0].startPage).to.equal(startPage.rel)
+      expect(component.versions[0]).to.haveOwnPropertyDescriptor('startPage').that.has.property('enumerable', false)
     })
 
     it('should allow the start page in non-ROOT module to be specified for a component version', () => {
@@ -1085,10 +1134,15 @@ describe('classifyContent()', () => {
     it('should warn if start page specified for component version cannot be resolved', () => {
       aggregate[0].startPage = 'no-such-page.adoc'
       aggregate[0].files.push(createFile('modules/ROOT/pages/home.adoc'))
-      const messages = captureLogSync(() => classifyContent(playbook, aggregate))
+      const { returnValue: contentCatalog, messages } = captureLogSync(() =>
+        classifyContent(playbook, aggregate)
+      ).withReturnValue()
       expect(messages).to.have.lengthOf(1)
       expect(messages[0].level).to.equal('warn')
       expect(messages[0].msg).to.match(/Start page .* not found/)
+      const componentVersion = contentCatalog.getComponentVersion('the-component', 'v1.2.3')
+      expect(componentVersion.startPage).to.be.undefined()
+      expect(componentVersion).to.haveOwnPropertyDescriptor('startPage').that.has.property('enumerable', false)
     })
 
     it('should warn if start page specified for component version has invalid syntax', () => {
@@ -1471,6 +1525,8 @@ describe('classifyContent()', () => {
         url: '/the-component/v1.2.3/module-a/',
         moduleRootPath: '.',
       })
+      const componentVersion = contentCatalog.getComponentVersion('the-component', 'v1.2.3')
+      expect(componentVersion.nav).to.equal(aggregate[0].nav)
     })
 
     it('should classify a navigation file in subdir of module', () => {
@@ -1611,6 +1667,34 @@ describe('classifyContent()', () => {
       expect(files[0].src).to.include({ component: 'the-other-component', version: 'v4.5.6', module: 'basics' })
       expect(files[1].path).to.equal('modules/ROOT/pages/page-one.adoc')
       expect(files[1].src).to.include({ component: 'the-component', version: 'v1.2.3', module: 'ROOT' })
+    })
+
+    it('should configure files accessor to get files for component version from content catalog on access', () => {
+      aggregate = [
+        {
+          name: 'component-a',
+          title: 'Component A',
+          version: '1.0',
+          files: [createFile('modules/ROOT/pages/page-one.adoc')],
+        },
+        {
+          name: 'component-b',
+          title: 'Component B',
+          version: '2.0',
+          files: [createFile('modules/basics/pages/page-two.adoc')],
+        },
+      ]
+      const contentCatalog = classifyContent(playbook, aggregate)
+      contentCatalog.findBy = spy(contentCatalog.findBy)
+      const componentA = contentCatalog.getComponent('component-a')
+      const componentB = contentCatalog.getComponent('component-b')
+      const filesA = componentA.versions[0].files
+      const filesB = componentB.versions[0].files
+      expect(filesA).to.have.lengthOf(1)
+      expect(filesA[0].src).to.include({ component: 'component-a', version: '1.0' })
+      expect(filesB).to.have.lengthOf(1)
+      expect(filesB[0].src).to.include({ component: 'component-b', version: '2.0' })
+      expect(contentCatalog.findBy).to.have.been.called.twice()
     })
 
     it('should throw when two identical files are found in different sources', () => {

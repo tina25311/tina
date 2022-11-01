@@ -18,9 +18,14 @@ async function generateSite (playbook) {
     const siteAsciiDocConfig = vars.lock('siteAsciiDocConfig')
     await Promise.all([
       fxns.aggregateContent(playbook).then((contentAggregate) =>
-        context.notify('contentAggregated', { contentAggregate }).then(() => {
-          vars.contentCatalog = fxns.classifyContent(playbook, vars.remove('contentAggregate'), siteAsciiDocConfig)
-        })
+        context
+          .notify('contentAggregated', { contentAggregate })
+          .then(() =>
+            fxns.classifyContent(playbook, vars.remove('contentAggregate'), siteAsciiDocConfig, (contentCatalog) =>
+              context.notify('componentsRegistered', { contentCatalog }).then(() => vars.remove('contentCatalog'))
+            )
+          )
+          .then((contentCatalog) => (vars.contentCatalog = contentCatalog))
       ),
       fxns.loadUi(playbook).then((uiCatalog) => context.notify('uiLoaded', { uiCatalog })),
     ])

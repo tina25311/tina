@@ -7,6 +7,13 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *content-classifier*: Emit `componentsRegistered` event after all components and versions have been registered (#1015)
+* *content-classifier*: Store raw files, nav, and startPage data on partially constructed component version until processed (#1015)
+* *content-classifier*: Add readable property named `files` to component version in `ContentCatalog#registerComponentVersionStartPage` to get files for component version on access (#1015)
+* *content-classifier*: Add readable property named `startPage` to component version in `ContentCatalog#registerComponentVersionStartPage` to look up start page for component version on access (#1015)
+
 === Changed
 
 * *content-classifier*: Don't recompute resource ID on file from content aggregate if `src.family` is set (#1026)
