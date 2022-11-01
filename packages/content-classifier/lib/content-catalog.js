@@ -353,6 +353,7 @@ class ContentCatalog {
       },
     })
     addSymbolicVersionAlias.call(this, componentVersion)
+    return startPage
   }
 
   registerSiteStartPage (startPageSpec) {

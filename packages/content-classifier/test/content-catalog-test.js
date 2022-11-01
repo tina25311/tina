@@ -524,7 +524,7 @@ describe('ContentCatalog', () => {
         },
       })
       const homePage = contentCatalog.getFiles()[0]
-      contentCatalog.registerComponentVersionStartPage(name, componentVersion, 'home.adoc')
+      const actual = contentCatalog.registerComponentVersionStartPage(name, componentVersion, 'home.adoc')
       expect(contentCatalog.getFiles()).to.have.lengthOf(2)
       const indexAlias = contentCatalog.getById({
         component: name,
@@ -535,6 +535,7 @@ describe('ContentCatalog', () => {
       })
       expect(indexAlias).to.exist()
       expect(indexAlias.rel).to.equal(homePage)
+      expect(actual).to.equal(homePage)
       expect(indexAlias.synthetic).to.be.true()
     })
 

@@ -14,6 +14,7 @@ This project utilizes semantic versioning.
 * *content-classifier*: Add readable property named `files` to component version in `ContentCatalog#registerComponentVersionStartPage` to get files for component version on access (#1015)
 * *content-classifier*: Add readable property named `startPage` to component version in `ContentCatalog#registerComponentVersionStartPage` to look up start page for component version on access (#1015)
 * *content-classifier*: Discover implicit site start page in component version promoted to site root (#1021)
+* *content-classifier*: Update `ContentCatalog#registerComponentVersionStartPage` to return start page
 
 === Changed
 
