@@ -609,12 +609,12 @@ describe('ContentCatalog', () => {
       const name = 'the-component'
       const version = '1.0.0'
       const title = 'The Component'
-      const url = '/the-component/1.0.0/home.html'
+      const url = '/custom/page.html'
       const contentCatalog = new ContentCatalog()
       const componentVersion = contentCatalog.registerComponentVersion(name, version, { title })
-      componentVersion.url = '/custom/page.html'
+      componentVersion.url = url
       contentCatalog.registerComponentVersionStartPage(name, componentVersion)
-      expect(componentVersion.url).to.eql('/custom/page.html')
+      expect(componentVersion.url).to.eql(url)
     })
 
     it('should respect htmlUrlExtensionStyle setting when computing default start page', () => {
