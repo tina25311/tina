@@ -29,8 +29,7 @@ function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}, onCompon
 
 function registerComponentVersions (contentCatalog, aggregate, siteAsciiDocConfig) {
   for (const componentVersionBucket of aggregate) {
-    // drop files since they aren't needed to register component version
-    // drop startPage to defer registration of start page
+    // advance files, nav, and startPage to component version to be used in later phase
     const { name, version, files, nav, startPage, ...data } = Object.assign(componentVersionBucket, {
       asciidoc: resolveAsciiDocConfig(siteAsciiDocConfig, componentVersionBucket),
     })
@@ -45,7 +44,7 @@ function addFilesAndRegisterStartPages (contentCatalog, siteStartPage) {
       const { name: component, version, files = [], nav, startPage } = componentVersion
       for (let file, i = 0, len = files.length; i < len; i++) {
         allocateSrc((file = files[i]), component, version, nav) && contentCatalog.addFile(file, componentVersion)
-        files[i] = undefined
+        files[i] = undefined // free memory
       }
       contentCatalog.registerComponentVersionStartPage(component, componentVersion, startPage)
     }

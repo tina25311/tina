@@ -42,6 +42,8 @@ class ContentCatalog {
   /**
    * Registers a new component version with the content catalog. Also registers the component if it does not yet exist.
    *
+   * Must be followed by a call to registerComponentVersionStartPage to finalize object.
+   *
    * @param {String} name - The name of the component to which this component version belongs.
    * @param {String} version - The version of the component to register.
    * @param {Object} [descriptor={}] - The configuration data for the component version.
