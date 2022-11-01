@@ -605,6 +605,18 @@ describe('ContentCatalog', () => {
       expect(components[0].latest).to.eql({ name, version, displayVersion: version, title, url })
     })
 
+    it('should not change url if implicit start page not found and url is already set', () => {
+      const name = 'the-component'
+      const version = '1.0.0'
+      const title = 'The Component'
+      const url = '/the-component/1.0.0/home.html'
+      const contentCatalog = new ContentCatalog()
+      const componentVersion = contentCatalog.registerComponentVersion(name, version, { title })
+      componentVersion.url = '/custom/page.html'
+      contentCatalog.registerComponentVersionStartPage(name, componentVersion)
+      expect(componentVersion.url).to.eql('/custom/page.html')
+    })
+
     it('should respect htmlUrlExtensionStyle setting when computing default start page', () => {
       const contentCatalog = new ContentCatalog({ urls: { htmlExtensionStyle: 'indexify' } })
       const descriptor = { title: 'The Component' }

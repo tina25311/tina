@@ -328,7 +328,7 @@ class ContentCatalog {
     }
     if (startPage) {
       componentVersion.url = startPage.pub.url
-    } else {
+    } else if (!componentVersion.url) {
       // QUESTION: should we warn if the default start page cannot be found?
       componentVersion.url = computePub(
         (startPageSrc = prepareSrc(Object.assign({}, indexPageId, { family: 'page' }))),
