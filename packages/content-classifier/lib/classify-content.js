@@ -43,8 +43,9 @@ function addFilesAndRegisterStartPages (contentCatalog, siteStartPage) {
   for (const { versions: componentVersions } of contentCatalog.getComponents()) {
     for (const componentVersion of componentVersions) {
       const { name: component, version, files = [], nav, startPage } = componentVersion
-      for (let file, iter = files.reverse(); (file = iter.pop());) {
-        allocateSrc(file, component, version, nav) && contentCatalog.addFile(file, componentVersion)
+      for (let file, i = 0, len = files.length; i < len; i++) {
+        allocateSrc((file = files[i]), component, version, nav) && contentCatalog.addFile(file, componentVersion)
+        files[i] = undefined
       }
       contentCatalog.registerComponentVersionStartPage(component, componentVersion, startPage)
     }
