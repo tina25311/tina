@@ -1082,6 +1082,10 @@ describe('ContentCatalog', () => {
       ]
     })
 
+    it('should return empty array if content catalog has no pages', () => {
+      expect(new ContentCatalog().getPages()).to.be.empty()
+    })
+
     it('should find all pages', () => {
       const contentCatalog = classifyContent(playbook, aggregate)
       const pages = contentCatalog.getPages()
