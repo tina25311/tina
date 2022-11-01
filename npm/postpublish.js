@@ -11,11 +11,8 @@ const README_DEST = 'README.md'
  * and restores the hidden AsciiDoc README (.README.adoc -> README.adoc).
  */
 ;(async () => {
-  const nukeP = fsp.stat(README_DEST).then((stat) => {
-    if (stat.isFile()) return fsp.unlink(README_DEST)
-  })
-  const restoreP = fsp.stat(README_HIDDEN).then((stat) => {
-    if (stat.isFile()) return fsp.rename(README_HIDDEN, README_SRC)
-  })
-  await Promise.all([nukeP, restoreP])
+  await Promise.all([
+    fsp.stat(README_DEST).then((stat) => stat.isFile() && fsp.unlink(README_DEST)),
+    fsp.stat(README_HIDDEN).then((stat) => stat.isFile() && fsp.rename(README_HIDDEN, README_SRC)),
+  ])
 })()

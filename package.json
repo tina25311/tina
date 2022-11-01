@@ -21,6 +21,7 @@
     "version": "node npm/version.js"
   },
   "devDependencies": {
+    "downdoc": "github:mojavelinux/downdoc",
     "eslint": "~8.25",
     "eslint-config-standard": "~17.0",
     "mocha": "~10.1",
