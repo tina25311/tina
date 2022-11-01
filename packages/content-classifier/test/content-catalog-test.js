@@ -2357,7 +2357,7 @@ describe('ContentCatalog', () => {
       expect(contentCatalog.getById).to.have.been.called.with(ROOT_INDEX_PAGE_ID)
     })
 
-    it('should return site start page if stored as a concrete page', () => {
+    it('should return site start page if present as a concrete page', () => {
       const pageSrc = { ...ROOT_INDEX_PAGE_ID }
       const expectedSrc = { ...pageSrc, basename: 'index.adoc', extname: '.adoc', stem: 'index' }
       contentCatalog.addFile({
@@ -2404,6 +2404,72 @@ describe('ContentCatalog', () => {
       expect(result.src).to.eql(expectedPageSrc)
       expect(result.contents.toString()).to.equal('I am your home base!')
     })
+
+    it('should return site start page if pub.url of concrete page in latest version resolves to root of site', () => {
+      contentCatalog = new ContentCatalog({ urls: { latestVersionSegment: '' } })
+      contentCatalog.registerComponentVersion('ROOT', '6.0', { title: 'Home' })
+      let expectedSrc
+      contentCatalog.addFile({
+        contents: Buffer.from('= Home\n\nI am your home base!'),
+        src: (expectedSrc = {
+          component: 'ROOT',
+          version: '6.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'index.adoc',
+        }),
+      })
+      contentCatalog.registerComponentVersionStartPage('ROOT', '6.0')
+      const result = contentCatalog.getSiteStartPage()
+      expect(result).to.exist()
+      expect(result.src).to.include(expectedSrc)
+      expect(result.pub.url).to.equal('/index.html')
+    })
+
+    it('should return site start page if pub.url of concrete page in latest prerelease resolves to root of site', () => {
+      contentCatalog = new ContentCatalog({
+        urls: { latestVersionSegment: 'stable', latestPrereleaseVersionSegment: '' },
+      })
+      contentCatalog.registerComponentVersion('ROOT', '5.0', { title: 'Home' })
+      contentCatalog.registerComponentVersion('ROOT', '6.0', { title: 'Home', prerelease: true })
+      let expectedSrc
+      contentCatalog.addFile({
+        contents: Buffer.from('= Home\n\nI am your home base!'),
+        src: (expectedSrc = {
+          component: 'ROOT',
+          version: '6.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'index.adoc',
+        }),
+      })
+      contentCatalog.registerComponentVersionStartPage('ROOT', '6.0')
+      const result = contentCatalog.getSiteStartPage()
+      expect(result).to.exist()
+      expect(result.src).to.include(expectedSrc)
+      expect(result.pub.url).to.equal('/index.html')
+    })
+
+    it('should return site start page if pub.url of alias resolves to root of site', () => {
+      contentCatalog = new ContentCatalog({ urls: { latestVersionSegment: '' } })
+      contentCatalog.registerComponentVersion('ROOT', '6.0', { title: 'Home' })
+      let expectedSrc
+      contentCatalog.addFile({
+        contents: Buffer.from('= Home\n\nI am your home base!'),
+        src: (expectedSrc = {
+          component: 'ROOT',
+          version: '6.0',
+          module: 'ROOT',
+          family: 'page',
+          relative: 'home.adoc',
+        }),
+      })
+      contentCatalog.registerComponentVersionStartPage('ROOT', '6.0', 'home.adoc')
+      const result = contentCatalog.getSiteStartPage()
+      expect(result).to.exist()
+      expect(result.src).to.include(expectedSrc)
+      expect(result.pub.url).to.equal('/home.html')
+    })
   })
 
   describe('#registerSiteStartPage()', () => {
@@ -2440,11 +2506,13 @@ describe('ContentCatalog', () => {
           },
         })
         contentCatalog.registerComponentVersionStartPage('ROOT', '6.0')
-        const startPage = contentCatalog.registerSiteStartPage('ROOT::index.adoc')
+        let startPage = contentCatalog.registerSiteStartPage('ROOT::index.adoc')
         expect(startPage).to.be.undefined()
         const files = contentCatalog.getFiles()
         expect(files).to.have.lengthOf(1)
-        expect(contentCatalog.getSiteStartPage()).to.be.undefined()
+        startPage = contentCatalog.getSiteStartPage()
+        expect(startPage).to.exist()
+        expect(startPage.pub.url).to.equal(htmlExtensionStyle === 'default' ? '/index.html' : '/')
       })
     })
 

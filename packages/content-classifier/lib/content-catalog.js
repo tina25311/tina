@@ -274,7 +274,15 @@ class ContentCatalog {
 
   // TODO add `follow` argument to control whether alias is followed
   getSiteStartPage () {
-    return this.getById(ROOT_INDEX_PAGE_ID) || (this.getById(ROOT_INDEX_ALIAS_ID) || {}).rel
+    let file
+    if ((file = this.getById(ROOT_INDEX_PAGE_ID))) return file
+    if ((file = this.getById(ROOT_INDEX_ALIAS_ID))) return file.rel
+    const rootComponent = this.getComponent('ROOT')
+    if (!rootComponent) return
+    const version = rootComponent.versions.find(({ activeVersionSegment }) => activeVersionSegment === '')?.version
+    if (!version) return
+    if ((file = this.getById(Object.assign({}, ROOT_INDEX_PAGE_ID, { version })))) return file
+    if ((file = this.getById(Object.assign({}, ROOT_INDEX_ALIAS_ID, { version })))) return file.rel
   }
 
   registerComponentVersionStartPage (name, componentVersion, startPageSpec = undefined) {
