@@ -65,7 +65,7 @@ function updateDocsDesc (releaseDate) {
           .replace(/^(prerelease:) \S+$/m, `$1 ${prerelease ? 'true' : 'false'}`)
           .replace(/^( {4}release-version:) \S+$/m, `$1 ${q(VERSION)}`)
           .replace(/^( {4}release-tag:) \S+$/m, `$1 ${prerelease ? 'testing' : 'latest'}`)
-          .replace(/^( {4}release-date:) \S+$/m, `$1 ${releaseDate}`)
+          .replace(/^( {4}release-date:) \S+$/m, `$1 ${q(releaseDate)}`)
           .replace(/^( {4}version-node-major:) \S+$/m, `$1 ${q(nodeVersion.split('.')[0])}`)
           .replace(/^( {4}version-node:) \S+$/m, `$1 ${q(nodeVersion)}`)
           .replace(/^( {4}version-npm:) \S+$/m, `$1 ${q(npmVersion)}`)

@@ -4,7 +4,7 @@ prerelease: '.0-alpha.2'
 title: Antora
 asciidoc:
   attributes:
-    release-date: 2022-11-01
+    release-date: '2022-11-01'
     release-tag: testing
     release-version: '3.2.0-alpha.2'
     source-language: asciidoc@
