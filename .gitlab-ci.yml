@@ -120,6 +120,6 @@ release:
   environment: releases
   <<: *if_release
   script:
-  - npm run prepublishOnly
+  - npm run prepublishOnly --workspace antora
   #- npm/release.sh
   #- env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=$RELEASE_BRANCH" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'
