@@ -38,8 +38,10 @@ The version coordinate is the same value as the version of the component to whic
 The value of the version is assigned to the xref:ROOT:component-version-key.adoc[version key].
 The `version` key is specified either in the [.path]_antora.yml_ file that defines the resource's component version or on the content source in your playbook that specified from where Antora collected the component version's files.
 
-The version coordinate should be used when the target resource and current page belong to difference component versions.
+The version coordinate should be used to reference a resource in a different version of the same component or a specific version of a different component.
 When entering a version coordinate in a resource ID, it should always be the first coordinate and end with an at sign (`@`).
+If the component coordinate is not specified, the current component will be used.
+If the component coordinate is specified without specifying a version coordinate, the latest version of that component will be choosen.
 
 [#id-component]
 == Component coordinate
@@ -49,6 +51,7 @@ The component name is specified by the xref:ROOT:component-name-key.adoc[name ke
 
 The component coordinate must be used when the target resource and current page belong to different documentation components.
 The component name is entered before the module coordinate in a resource ID and is directly followed by one colon (`:`).
+If the component coordinate is specified without specifying a version coordinate, the latest version of that component will be choosen.
 
 [#id-module]
 == Module coordinate
