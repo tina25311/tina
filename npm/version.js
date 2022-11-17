@@ -25,8 +25,7 @@ function compareSemVer (a, b) {
   return 0
 }
 
-function getCurrentDate () {
-  const now = new Date()
+function getCurrentDate (now = new Date()) {
   return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
 }
 
@@ -55,7 +54,7 @@ function readFromURL (url) {
   })
 }
 
-function updateDocsDesc (releaseDate) {
+function updateDocsConfig (releaseDate) {
   return getToolVersions().then(({ nodeVersion, npmVersion }) =>
     Promise.all([
       fsp.readFile(DOCS_CONFIG_FILE, 'utf8').then((contents) => {
@@ -137,7 +136,7 @@ function q (str) {
 
 ;(async () => {
   const releaseDate = getCurrentDate().toISOString().split('T')[0]
-  await updateDocsDesc(releaseDate)
+  await updateDocsConfig(releaseDate)
   await updateChangelog(releaseDate)
   await updatePackageLock()
 })()
