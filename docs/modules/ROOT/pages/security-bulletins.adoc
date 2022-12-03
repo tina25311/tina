@@ -23,6 +23,22 @@ The maintainer of vinyl-fs refuses to address the problem, so we will be removin
 However, this is not a trivial change and will require time to address.
 We plan to remove it completely in a later release in the 3.x release line.
 
+In the meantime, you can explicitly upgrade this dependency in your dependency chain, thus eliminating the warning emitted by npm, by adding the following override to your [.path]_package.json_ file.
+
+[,json]
+----
+"overrides": {
+  "vinyl-fs": {
+    "glob-stream": "~7.0"
+  }
+}
+----
+
+This remediation is used in the https://gitlab.com/antora/docs.antora.org/-/blob/main/netlify/package.json[build for this site].
+You can learn more about npm overrides in the https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides[package.json documentation].
+Unfortunately, npm overrides can only be used by the consumer of a library, not the library itself.
+Thus, this is not a remdiation solution Antora itself can enact.
+
 === Assessment
 
 Fortunately, Antora uses glob-parent in a controlled way, so this vulnerability is not an attack vector for Antora.
