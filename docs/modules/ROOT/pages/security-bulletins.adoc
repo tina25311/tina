@@ -10,8 +10,8 @@ Published:: Jun 7, 2021
 
 === Summary
 
-There's a known security vulnerability in the version of glob-parent that this project pulls in as a transitive dependency of vinyl-fs.
-We're aware of this problem and are working to eliminate it from the dependency chain as soon as possible.
+There's a known security vulnerability in the version of glob-parent that this project pulls in as a transitive dependency of vinyl-fs (by way of glob-stream).
+We're aware of this problem and are planning to eliminate it from the dependency chain as soon as we are able to.
 
 === Affected versions
 
