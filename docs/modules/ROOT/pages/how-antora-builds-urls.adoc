@@ -60,7 +60,7 @@ For example, using the absolute site URL in <<fig-subpath>>, Antora extracts the
 When the value assigned to `site.url` is a root-relative site URL, Antora extracts the entire value and uses it as the site pathname.
 Antora appends the <<resource,resource URLs>> to the site pathname to create a <<domain-relative,domain-relative URLs>> when a feature, such as redirects, requires the computed URLs be relative to the site domain or site root.
 
-==  Right URL, right place
+== Right URL, right place
 
 Antora generates and manages all URLs in your site.
 Antora builds the <<resource,resource URLs>> for publishable resources as absolute paths relative to the <<pathname,site pathname>>.
