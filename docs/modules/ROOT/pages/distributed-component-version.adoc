@@ -5,7 +5,7 @@ Antora can collect source files that belong to the same component version from m
 
 == What's a distributed component version?
 
-When a component version's source files are stored in multiple repositories, it's referred to as a [.term]*distributed component version*.
+When a component version's source files are stored in multiple content roots (i.e., multiple repositories, multiple start pages, etc), it's referred to as a [.term]*distributed component version*.
 // or, simply, a *distributed component*.
 
 A common use case of a distributed component version is when most of its source files are stored in one repository, but a number of examples ([.path]_examples_ family directory) and tutorials ([.path]_pages_ family directory) are stored in another repository managed by a training team.
