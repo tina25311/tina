@@ -30,8 +30,8 @@ After you create a new page, it's easy to forget to add it to the navigation so 
 We can use an extension to identify pages which are not in the navigation and report them using the logger.
 
 This extension runs during the `navigationBuilt` event.
-It iterates over each component version, retrieves a flattened list of its internal navigation entries, then checks to see if there are any pages that are not in that list.
-It compares pages by URL.
+It iterates over each component version, retrieves a flattened list of its internal navigation entries, then checks to see if there are any pages that are not in that list, comparing pages by URL.
+If it finds any such pages, it creates a report of them, optionally adding them to the navigation.
 
 .unlisted-pages-extension.js
 [,js]
@@ -40,3 +40,21 @@ include::example$unlisted-pages-extension.js[tags=**]
 ----
 
 You can read more about this extension and how to configure it in the xref:extension-tutorial.adoc[].
+
+== Unpublish unlisted pages
+
+Instead of reporting unlisted pages, you could instead remove those pages from publishing.
+This is one way you can use the navigation to drive which pages are published.
+
+This extension runs during the `navigationBuilt` event.
+It iterates over each component version, retrieves a flattened list of its internal navigation entries, then checks to see if there are any pages that are not in that list, comparing pages by URL.
+If it finds any such pages, it unpublishes them.
+
+.unpublish-unlisted-pages-extension.js
+[,js]
+----
+include::example$unpublish-unlisted-pages-extension.js[]
+----
+
+By removing the `out` property from the page, it prevents the page from being published, but is still referencable using an include directive.
+Alternately, you could choose to remove the page entirely from the content catalog.
