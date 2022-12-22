@@ -1,5 +1,6 @@
 [#checklist]
 == Upgrade from Antora 2.3 to Antora {page-component-version} checklist
+
 // tag::new[]
 *Antora 2 is EOL*.
 If you're currently using Antora 2, you may need to make the following changes to your documentation system before upgrading to Antora {page-component-version}.
