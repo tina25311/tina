@@ -52,14 +52,14 @@ Example files are often inserted into xref:asciidoc:source.adoc[source blocks].
 <<ex-code>> shows a source block with a title and an assigned language set up in the current page.
 
 .phases.adoc (current page)
-[#ex-code]
-------
+[source#ex-code]
+....
 .First test phase
 [,js]
 ----
 
 ----
-------
+....
 
 The current page, [.path]_phases.adoc_, belongs to the component version _mapper 8.0_ and module _testing_, shown in <<ex-map>>.
 
@@ -85,14 +85,14 @@ The current page, [.path]_phases.adoc_, belongs to the component version _mapper
 At the beginning of the line, enter the name of the directive followed by two colons, `include::`.
 +
 .phases.adoc (current page)
-[listing,subs=+quotes]
-------
+[source,subs=+quotes]
+....
 .First test phase
 [,js]
 ----
 **include::**
 ----
-------
+....
 
 . Let's reference the target example, [.path]_timer.js_, from the current page.
 Assign the resource ID of the target example to the include directive.
@@ -101,14 +101,14 @@ Therefore, only the `example$` family coordinate and file coordinate of the targ
 +
 --
 .phases.adoc (current page)
-[listing,subs="+quotes"]
-------
+[source,subs=+quotes]
+....
 .First test phase
 [,js]
 ----
 include::**example$timer.js**
 ----
-------
+....
 
 The file coordinate for the [.path]_timer.js_ example is `timer.js`.
 The target example's file coordinate consists solely of its filename and file extension because [.path]_timer.js_ is stored at the root of the [.path]_examples_ directory.
@@ -121,14 +121,14 @@ If you forget to use the `example$` coordinate, Antora will report an error beca
 +
 --
 .phases.adoc (current page)
-[listing,subs="+quotes"]
-------
+[source,subs=+quotes]
+....
 .First test phase
 [,js]
 ----
 include::example$timer.js**[]**
 ----
-------
+....
 
 The brackets of the include directive can contain an optional list of attributes, such as `lines`, `tag`, or `tags`.
 The attributes are entered as key-value pairs separated by commas.
@@ -194,13 +194,13 @@ As you can see in <<ex-grid-subdir>> above, the example and page belong to the _
 In <<ex-subdir>>, an include directive in the [.path]_interface-loader.adoc_ page (current page) references the [.path]_job.yml_ file (target example).
 
 .interface-loader.adoc (current page)
-[#ex-subdir]
-------
+[source#ex-subdir]
+....
 [,yaml]
 ----
 \include::example$providers/job.yml[]
 ----
-------
+....
 
 As shown in <<ex-subdir>>, the family coordinate is `example$` and the file coordinate for [.path]_job.yml_ is `providers/job.yml`.
 The file coordinate for [.path]_job.yml_ consists of its [.path]__examples__-relative directory path, filename, and file extension because it's stored in the subdirectory [.path]_providers_.
@@ -255,13 +255,13 @@ As shown in <<ex-map-mod>> above, the [.path]_index.adoc_ page belongs to the _t
 The module, `example$`, and file coordinates of the target example are assigned to the include directive.
 
 .index.adoc (current page)
-[#ex-module]
-------
+[source#ex-module]
+....
 [,js]
 ----
 \include::ROOT:example$warm-up.js[]
 ----
-------
+....
 
 As shown in <<ex-module>>, the target example's module coordinate is `ROOT`, its family coordinate is `example$`, and its file coordinate is `warm-up.js`.
 
@@ -334,13 +334,13 @@ The [.path]_interface-loader.adoc_ page belongs to the component version _grid-t
 The include directive in <<ex-across-components>> will embed the content of the [.path]_warm-up.js_ example into the [.path]_interface-loader.adoc_ page.
 
 .interface-loader.adoc (current page)
-[#ex-across-components]
-------
+[source#ex-across-components]
+....
 [,js]
 ----
 \include::8.0@mapper:ROOT:example$warm-up.js[]
 ----
-------
+....
 
 As shown in <<ex-across-components>>, the target example's version coordinate is `8.0`, its component coordinate is `mapper`, its module coordinate is `ROOT`, its family coordinate is `example$`, and its file coordinate is `warm-up.js`.
 You could also specify the resource ID for [.path]_warm-up.js_ as `8.0@mapper::example$warm-up.js` (notice the module coordinate `ROOT` seems to be missing).
@@ -414,13 +414,13 @@ One [.path]_timer.js_ belongs to version _8.0_, the other [.path]_timer.js_ to v
 Notice that the target example's version coordinate isn't specified.
 
 .interface-loader.adoc (current page)
-[#ex-across-components-latest]
-------
+[source#ex-across-components-latest]
+....
 [,js]
 ----
 \include::mapper:testing:example$timer.js[]
 ----
-------
+....
 
 When Antora runs, it will identify _mapper 8.1_ as the latest version of the _mapper_ component according to its xref:ROOT:how-component-versions-are-sorted.adoc#version-sorting-rules[version sorting rules] and xref:ROOT:how-component-versions-are-sorted.adoc#latest-version[latest version criteria].
 Because a version coordinate isn't specified in <<ex-across-components-latest>>, Antora will complete the resource ID assigned to the include directive using the version coordinate -- `8.1` -- from the latest _mapper_ component.
