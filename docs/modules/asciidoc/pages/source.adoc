@@ -67,8 +67,8 @@ The comma is required, otherwise the language would be assigned to the first pos
 <<ex-source-position>> shows the `source` attribute being applied implicitly to a listing block.
 
 .Apply source implicitly to a listing block
-[#ex-source-position]
-------
+[source#ex-source-position]
+....
 [,name-of-language] <.>
 ---- // <.>
 Content of source block <.>
@@ -76,7 +76,7 @@ Content of source block <.>
 
 Content of source block
 ---- // <.>
-------
+....
 <.> Directly after the opening square bracket (`[`) of the attribute list, enter a comma (`,`), followed by the name of the source language in which the block's content is written.
 Complete the attribute list with a closing square bracket (`]`) and select kbd:[Enter] to go to the next line.
 <.> On the new line directly below the attribute list, enter the opening delimiter of a listing block (`----`) and then select kbd:[Enter] to go to the next line.
@@ -103,14 +103,14 @@ Complete the attribute list with a closing square bracket (`]`) and select kbd:[
 In <<ex-haskell>>, `source` is assigned implicitly and `haskell` is assigned as the language.
 
 .Assign source and the language haskell to a block
-[#ex-haskell]
-------
+[source#ex-haskell]
+....
 [,haskell]
 ----
 main :: IO ()
 main = putStrLn "Hello, World!"
 ----
-------
+....
 
 <<ex-haskell-result>> shows how the source block appears when displayed in a site.
 
@@ -145,13 +145,13 @@ Content of source block
 In <<ex-sql>>, `source` is assigned to the first position and `sql` is assigned as the language to the second position.
 
 .Assign source and the language sql to a block
-[#ex-sql]
-------
+[source#ex-sql]
+....
 [source,sql]
 ----
 IF EXISTS (SELECT name FROM myobjects WHERE name = 'hello')
 ----
-------
+....
 
 <<ex-sql-result>> shows how the source block appears when displayed in a site.
 
@@ -166,27 +166,28 @@ The content in <<ex-sql-result>> is colorized, and when you hover over the block
 To assign an element ID, role, or option to a source block using their applicable shorthand syntax, specify the `source` attribute and append the ID, role, or options to the attribute.
 <<ex-source-id>> shows the `source` attribute and an element ID being assigned to a listing block.
 
-.Assign source and an element ID to a block
-[#ex-source-id]
-------
-[source#element-id,name-of-language] <.> <.>
+.Assign an element ID to a source block
+[source#ex-source-id]
+....
+[#element-id,name-of-language] <.> <.>
 ----
 Content of source block
   Content of source block
 ----
-------
-<.> In the attribute list, assign `source` to the first position followed by an element ID.
-An element ID is directly appended to `source` using the hash symbol (`+#+`) and the ID name you define.
+....
+<.> In the attribute list, specify the element ID in the first position.
+An element ID is directly appended to the style (which is empty in this case) using the hash symbol (`+#+`) followed by the ID name.
+The `source` style is implied since a langauge is specified in the second position.
 <.> Directly after the element ID, enter a comma (`,`), and then the name of the source language in which the block's content is written.
 
 Now let's look at a source block that's created with a delimited literal block and is assigned an element ID using the shorthand hash symbol (`+#+`).
-In <<ex-diff>>, `source` is assigned directly to the first position in the attribute list and an element ID is appended to it with a `+#+`.
+In <<ex-diff>>, an element ID is appended to the implicit `source` style with a `+#+`.
 The line comparison syntax, `diff`, is assigned to the second position.
 
 .Assign source, an element ID, and the language diff to a block
 [#ex-diff]
 ----
-[source#temper-change,diff]
+[#temper-change,diff]
 ....
 -   temperDestination(destination)
 +   if (destination instanceof Boom) moderateDestination(destination)
@@ -243,8 +244,8 @@ When `source-language` is set, you may want some listing blocks to not be promot
 <<ex-source-override>> shows how to prevent a listing block from being promoted to a source block and how to override the language assigned to the `source-language` attribute.
 
 .Override source-language on select blocks
-[#ex-source-override]
-------
+[source#ex-source-override]
+....
 = Title of Page
 :source-language: java <.>
 
@@ -265,7 +266,7 @@ Content of listing block
 ----
 Content of source block
 ----
-------
+....
 <.> The document attribute `source-language` is set in the header of the page and assigned the value `java`.
 All of the listing blocks on this page that aren't directly assigned a style will be promoted to source blocks and all source blocks that aren't directly assigned a source language will be assigned the language `java`.
 <.> This listing block is automatically promoted to a source block and assigned the language `java`.
