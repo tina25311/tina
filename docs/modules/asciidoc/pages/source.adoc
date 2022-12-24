@@ -185,27 +185,27 @@ In <<ex-diff>>, an element ID is appended to the implicit `source` style with a 
 The line comparison syntax, `diff`, is assigned to the second position.
 
 .Assign source, an element ID, and the language diff to a block
-[source#ex-diff]
-....
-[#temper-change,diff]
+[#ex-diff]
 ----
+[#temper-change,diff]
+....
 -   temperDestination(destination)
 +   if (destination instanceof Boom) moderateDestination(destination)
   }
   rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))
-----
 ....
+----
 
 <<temper-change>> shows how the source block appears when displayed in a site.
 
 .Rendered source block with syntax highlighting applied
-[#temper-change,diff]
-----
+[source#temper-change,diff]
+....
 -   temperDestination(destination)
 +   if (destination instanceof Boom) moderateDestination(destination)
   }
   rootLoggerHolder.set(undefined, addFailOnExitHooks(logger, failureLevel))
-----
+....
 
 The content in <<temper-change>> is colorized, and when you hover over the block, the language name _DIFF_ appears in the upper right corner of the block.
 
