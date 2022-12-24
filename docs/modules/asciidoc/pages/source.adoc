@@ -70,12 +70,12 @@ The comma is required, otherwise the language would be assigned to the first pos
 [source#ex-source-position]
 ....
 [,name-of-language] <.>
----- // <.>
+---- <.>
 Content of source block <.>
   Content of source block
 
 Content of source block
----- // <.>
+---- <.>
 ....
 <.> Directly after the opening square bracket (`[`) of the attribute list, enter a comma (`,`), followed by the name of the source language in which the block's content is written.
 Complete the attribute list with a closing square bracket (`]`) and select kbd:[Enter] to go to the next line.
@@ -219,22 +219,22 @@ In <<ex-source-document>>, the `source-language` attribute is set in the header 
 
 .Set source-language in the document header
 [#ex-source-document]
-------
+----
 = Title of Page
 :source-language: name-of-language <.>
 
 A paragraph.
 
----- // <.>
+---- <.>
 Content of source block
-----
+---- <2>
 
 A paragraph.
 
-.... // <.>
+.... <.>
 Content of a literal block.
-....
-------
+.... <3>
+----
 <.> On a new line in the header of the page, set the built-in document attribute `source-language` and assign it the name of a language as a value.
 <.> Because `source-language` is set, this listing block is automatically promoted to a source block.
 <.> This literal block remains a literal block.
@@ -251,13 +251,13 @@ When `source-language` is set, you may want some listing blocks to not be promot
 
 A paragraph.
 
----- // <.>
+---- <.>
 Content of source block
-----
+---- <2>
 
 A paragraph.
 
-[listing]  <.>
+[listing] <.>
 ----
 Content of listing block
 ----
