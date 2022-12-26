@@ -29,7 +29,7 @@ Because the include directive is used to reference other resources, the `example
 \include::version@component:module:example$file-coordinate-of-target-example.ext[optional attribute]
 ----
 
-An include directive consists of the directive's prefix (`+include::+`), the resource ID of the target example, and a set of square brackets (`[]`).
+An include directive consists of the directive's prefix (`include::`), the resource ID of the target example, and a set of square brackets (`[]`).
 You can specify optional attributes within the square brackets as key-value pairs separated by commas.
 [[target]]The [.term]*target example* is the source file of an example that's being referenced by the current page.
 The target example is referenced by assigning its resource ID to an include directive in the content of the current page.

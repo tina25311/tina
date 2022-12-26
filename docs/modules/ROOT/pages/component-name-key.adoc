@@ -38,7 +38,7 @@ It's set and assigned a value in a component version descriptor file ([.path]_an
 ----
 name: colorado # <.>
 ----
-<.> At the beginning of a new line, type `name`, directly followed by a colon and a space (`++: ++`).
+<.> At the beginning of a new line, type `name`, directly followed by a colon and a space (`:{sp}`).
 Then type the value you want assigned to `name`.
 
 [#requirements]

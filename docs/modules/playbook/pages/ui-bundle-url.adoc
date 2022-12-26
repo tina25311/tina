@@ -24,7 +24,7 @@ ui: # <.>
 <.> The `bundle` key is a child of `ui`.
 Enter the key's name, `bundle`, followed by a colon (`:`), and then press kbd:[Enter].
 <.> The `url` key is a child of `bundle`.
-Enter `url`, followed by a colon and a blank space (`++: ++`), and then enter a URL or filesystem path value.
+Enter `url`, followed by a colon and a blank space (`:{sp}`), and then enter a URL or filesystem path value.
 
 Alternatively, the `url` key can be assigned from the xref:cli:options.adoc#ui-bundle[CLI].
 

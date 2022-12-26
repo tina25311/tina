@@ -71,7 +71,7 @@ Follow these steps to set up a local content source with multiple worktrees:
 . In the folder that git creates for the clone, make a folder named [.path]_workspace_.
 . Switch to the [.path]_workspace_ folder and make another folder to hold the worktrees for your content repository (e.g., [.path]_workspace/software-with-docs_) (Note that this is not a git repository).
 . Switch to that folder.
-. Clone the content repository to the folder main (or whatever your default branch is) (e.g., `+git clone https://github.com/my-antora-demo/server-docs main+`)
+. Clone the content repository to the folder main (or whatever your default branch is) (e.g., `git clone \https://github.com/my-antora-demo/server-docs main`)
 . Switch to that folder.
 . Now create a worktree for each branch you want to edit using git worktree.
 For example: `git worktree add ../6.0 6.0`.

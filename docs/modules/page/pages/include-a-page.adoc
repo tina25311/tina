@@ -21,7 +21,7 @@ By default, the include directive assumes the family coordinate is `page$` when 
 \include::version@component:module:file-coordinate-of-target-page.adoc[optional attribute]
 ----
 
-An include directive consists of the directive's prefix (`+include::+`), the resource ID of the target page, and a set of square brackets (`[]`).
+An include directive consists of the directive's prefix (`include::`), the resource ID of the target page, and a set of square brackets (`[]`).
 You can specify optional attributes within the square brackets as key-value pairs separated by commas.
 [[target]]The [.term]*target page* is the source file of a page that's being referenced by the current page.
 The target page is referenced by assigning its resource ID to an include directive in the content of the current page.

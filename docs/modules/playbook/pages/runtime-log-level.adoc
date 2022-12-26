@@ -59,7 +59,7 @@ runtime: # <.>
 <.> The `log` key is a child of `runtime`.
 Type the key's name, `log`, followed by a colon (`:`), and press kbd:[Enter].
 <.> The `level` key is a child of `log`.
-Type `level`, followed by a colon and a blank space (`++: ++`), then type the value `info`.
+Type `level`, followed by a colon and a blank space (`:{sp}`), then type the value `info`.
 
 When Antora runs and `level` is assigned `info`, messages that meet or exceed the `info` threshold are logged.
 Messages that don't meet the `info` severity level aren't reported.

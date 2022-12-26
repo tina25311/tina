@@ -15,7 +15,7 @@ The `~` is shorthand for the value `null`, which has the same effect.
 name: component-name
 version: ~ # <.>
 ----
-<.> On a new line, type the key `version`, directly followed by a colon and a blank space (`++: ++`).
+<.> On a new line, type the key `version`, directly followed by a colon and a blank space (`:{sp}`).
 Then enter the value `~`.
 
 Antora doesn't apply the same behavior and output rules to an unversioned component version that it does to a component version with a named or semantic version.

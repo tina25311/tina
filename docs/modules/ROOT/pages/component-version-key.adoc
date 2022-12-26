@@ -58,7 +58,7 @@ The following example shows how to assign a named identifier to the `version` ke
 name: star
 version: rigel # <.>
 ----
-<.> On a new line, type `version`, directly followed by a colon and a space (`++: ++`).
+<.> On a new line, type `version`, directly followed by a colon and a space (`:{sp}`).
 Then type the value you want assigned to `version`.
 
 [#semver-identifier]
