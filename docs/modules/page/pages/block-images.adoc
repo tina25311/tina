@@ -32,7 +32,7 @@ This is another paragraph.
 <.> A block image is designated by two colons (`::`) after the macro name.
 It's preceded by an empty line, entered on a line by itself, and then followed by an empty line.
 
-At a minimum, a block image macro consists of the macro's prefix (`+image::+`), the resource ID of the target image, and a set of square brackets (`[]`).
+At a minimum, a block image macro consists of the macro's prefix (`image::`), the resource ID of the target image, and a set of square brackets (`[]`).
 include::image-resource-id-examples.adoc[tag=target-current-def]
 
 Each part of the block image macro shown in <<ex-block-base>> is described in more detail below.
@@ -42,7 +42,7 @@ An block image macro begins with the macro's name, `image`, followed by two colo
 
 resource ID of target image::
 The image macro accepts the resource ID of an image source file as its value.
-The value is entered directly after the second colon that follows the macro's name (`+image::+`).
+The value is entered directly after the second colon that follows the macro's name (`image::`).
 How many of the target image's xref:resource-id-coordinates.adoc[resource ID coordinates] you need to specify depends on the component version and module of the target image in relation to the current page.
 When referencing an image from an image macro, you don't need to include the `image$` family coordinate in the target image's resource ID.
 It's applied automatically at runtime.
@@ -64,7 +64,7 @@ For this exercise, we've opened the file [.path]_satellites.adoc_.
 [.path]_satellites.adoc_ is the current page.
 . In [.path]_satellites.adoc_, let's embed the block image [.path]_console.svg_.
 
-. At the beginning of a new line, enter the macro's name followed by two colons, `+image::+`.
+. At the beginning of a new line, enter the macro's name followed by two colons, `image::`.
 Make sure there is a blank line between the previous element, such as a paragraph or source block, and the line where you place the image macro.
 +
 .satellites.adoc (current page)

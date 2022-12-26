@@ -23,7 +23,7 @@ The xref:configure-site.adoc[site key] accepts a map of key-value pairs that def
 --
 
 . The xref:site-title.adoc[title key] is a child of `site`.
-Type `++title: ++` and then the text that will become the title of your site.
+Type `title:{sp}` and then the text that will become the title of your site.
 Press kbd:[Enter].
 +
 [,yaml]
@@ -32,7 +32,7 @@ site:
   title: My Demo Site
 ----
 
-. Type `++url: ++` and then the base URL of your site.
+. Type `url:{sp}` and then the base URL of your site.
 +
 --
 [,yaml]
@@ -45,7 +45,7 @@ site:
 Assigning an xref:site-url.adoc[absolute URL to the url key] activates secondary features such as the sitemap.
 --
 
-. On the next line, enter `++start_page: ++` and the page ID of the page Antora should use as the site's home page.
+. On the next line, enter `start_page:{sp}` and the page ID of the page Antora should use as the site's home page.
 +
 --
 [,yaml]
@@ -94,7 +94,7 @@ Let's assign the URL for a remote repository named _Demo Component A_ to `url` i
 --
 
 . Type a hyphen (`-`) followed by a blank space.
-Then type `++url: ++` and the URL of a content source repository.
+Then type `url:{sp}` and the URL of a content source repository.
 +
 --
 [,yaml]
@@ -114,7 +114,7 @@ Since the _Demo Component A_ repository only has one branch, and that branch's n
 --
 
 . Let's add the URL for the _Demo Component B_ repository.
-On a new line, type `++- url: ++` and the repository's URL.
+On a new line, type `- url:{sp}` and the repository's URL.
 +
 --
 [,yaml]
@@ -133,7 +133,7 @@ However, you can't use the xref:content-branches.adoc#default[default branches f
 Instead, you'll have to tell Antora what branches it should fetch from the _Demo Component B_ repository.
 --
 
-. On the next line, type `++branches: ++` and an opening square bracket (`+[+`).
+. On the next line, type `branches:{sp}` and an opening square bracket (`+[+`).
 Inside the `+[+`, type each branch name that Antora should fetch.
 Separate the values with commas.
 It doesn't matter what order you list the branch names.
@@ -162,7 +162,7 @@ The xref:ROOT:content-source-repositories.adoc#content-source-root[content sourc
 You'll need to set the `start_path` key on `url` so Antora can locate the content source root.
 --
 
-. Type `++start_path: ++` and the repository root relative path.
+. Type `start_path:{sp}` and the repository root relative path.
 +
 --
 [,yaml]
@@ -209,7 +209,7 @@ ui:
 ----
 
 . The `url` key is a child of `bundle`.
-Type `++url: ++` and then the URL of Antora's reference UI bundle.
+Type `url:{sp}` and then the URL of Antora's reference UI bundle.
 +
 --
 [,yaml]
@@ -224,7 +224,7 @@ ui:
 Antora's reference UI archive changes over time, but its URL doesn't, so you need to activate the xref:ui-bundle-url.adoc#snapshot[snapshot key].
 --
 
-. On the next line, enter `++snapshot: ++` and the value `true`.
+. On the next line, enter `snapshot:{sp}` and the value `true`.
 +
 --
 [,yaml]

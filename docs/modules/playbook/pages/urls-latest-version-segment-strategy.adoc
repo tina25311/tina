@@ -21,9 +21,9 @@ urls: # <.>
 ----
 <.> Type the parent key `urls`, followed by a colon (`:`), and press kbd:[Enter] to go to a new line.
 <.> The `latest_version_segment_strategy` key must be nested under the `urls` key.
-Type `latest_version_segment_strategy`, followed by a colon and a space (`++: ++`), then type the built-in strategy value you want Antora to use, and press kbd:[Enter].
+Type `latest_version_segment_strategy`, followed by a colon and a space (`:{sp}`), then type the built-in strategy value you want Antora to use, and press kbd:[Enter].
 This example uses the value `redirect:to`.
-<.> Type `latest_prerelease_version_segment`, followed by a colon and a space (`++: ++`), and then type your symbolic version value.
+<.> Type `latest_prerelease_version_segment`, followed by a colon and a space (`:{sp}`), and then type your symbolic version value.
 This example uses the symbolic version `next` for the latest prerelease version segment.
 
 The `latest_version_segment_strategy` key accepts the following built-in values:
