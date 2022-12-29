@@ -58,3 +58,28 @@ include::example$unpublish-unlisted-pages-extension.js[]
 
 By removing the `out` property from the page, it prevents the page from being published, but is still referencable using an include directive.
 Alternately, you could choose to remove the page entirely from the content catalog.
+
+== Audit includes
+
+In order to audit include requests in an AsciiDoc document, you must intercept the built-in include processor that Antora provides.
+Technically, this is not an Antora extension, but rather an Asciidoctor extension.
+However, since it use facilities from Antora, it's acting like a specialized Antora extension.
+
+IMPORTANT: When registering an Asciidoctor extension, make sure you're using the nested key `asciidoc.extensions` and not `antora.extensions`
+
+What we'll do is intercept each include request and log an info message with information about the include and the stack leading up to the include.
+To set up the include processor to intercept calls, it must be configured as the preferred processor by calling `this.prefer()`.
+At the end of the process method, it must delegate back to the include processor provided by Antora.
+
+WARNING: You must be careful when intercepting the include processor not to disrupt the built-in function of the include processor itself.
+The include processor should not try to process the include itself as it won't be able to easily replicate the logic that Antora uses.
+Rather, the include processor must delegate to Antora's include processor.
+
+.audit-includes-asciidoctor-extension.js
+[,js]
+----
+include::example$audit-includes-asciidoctor-extension.js[]
+----
+
+In order to resolve the file being included, the processor must determine the file that contains the include directive from the cursor where the include directive is found or the file on which the extension is being run.
+It then must use the content catalog to resolve the file from that context.

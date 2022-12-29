@@ -13,7 +13,7 @@ You can install it globally, declare it as a dependency of the project, or add t
 An Asciidoctor extension is registered using the `extensions` key.
 The `extensions` key accepts a list of node module names (i.e., npm package names) and relative or absolute filesystem paths.
 
-WARNING: When registering an Asciidoctor extension, make sure you're using the nested key `asciidoc.extensions` and not `antora.extensions`.
+IMPORTANT: When registering an Asciidoctor extension, make sure you're using the nested key `asciidoc.extensions` and not `antora.extensions`.
 The latter key is for registering Antora extensions, which use a different extension facility.
 
 .antora-playbook.yml
