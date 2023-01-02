@@ -49,7 +49,7 @@ You can add multiple emphasis styles to bold text as long as the syntax is place
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----
 
-xref:monospace.adoc[Monospace syntax] (`++`++`) must be the outermost formatting set (i.e., outside the bold formatting set).
+xref:monospace.adoc[Monospace syntax] (`{backtick}`) must be the outermost formatting set (i.e., outside the bold formatting set).
 xref:italic.adoc[Italic syntax] (`+_+`) is always the innermost formatting set.
 
 The result of <<ex-order>> is displayed below.
