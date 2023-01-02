@@ -48,4 +48,4 @@ When a component version is defined as unversioned:
 == Reference an unversioned resource
 
 Because an unversioned component version is often the only version or always the latest component version in a component, Antora automatically routes any incoming references that originate from other components that don't specify a version coordinate to it.
-However, in rare cases, such as when referencing an unversioned prerelease from another component version, you can use the reserved keyword `+_+` (an underscore) as the xref:page:resource-id-coordinates.adoc#id-version[version coordinate in the resource ID] (e.g., `+xref:_@component:module:file-name.adoc[]+`) to reference an unversioned component version.
+However, in rare cases, such as when referencing an unversioned prerelease from another component version, you can use the reserved keyword `+_+` (an underscore) as the xref:page:resource-id-coordinates.adoc#id-version[version coordinate in the resource ID] (e.g., `\xref:_@component:module:file.adoc[]`) to reference an unversioned component version.
