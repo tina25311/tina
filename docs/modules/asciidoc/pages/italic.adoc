@@ -50,7 +50,7 @@ You can add multiple emphasis styles to italic text as long as the syntax is pla
 `*_monospace bold italic phrase_*` & ``**__char__**``acter``**__s__**``
 ----
 
-xref:monospace.adoc[Monospace syntax] (`++`++`) must be the outermost formatting set.
+xref:monospace.adoc[Monospace syntax] (`{backtick}`) must be the outermost formatting set.
 xref:bold.adoc[Bold syntax] (`+*+`) must be outside the italics formatting set.
 Italic syntax is always the innermost formatting set.
 
