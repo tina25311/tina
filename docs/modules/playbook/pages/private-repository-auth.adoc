@@ -69,7 +69,9 @@ If you need to specify multiple credentials for a single hostname (such as multi
 The structure of each entry is as follows:
 
 [listing]
+----
 https://<credentials>@<hostname>
+----
 
 `<credentials>` is either a username/password pair (`username:password`) or an access token (`token:`).
 `<hostname>` is the address of the git server (e.g., `github.com`).
@@ -139,23 +141,31 @@ If you're using multiple git hosts or multiple deploy tokens, you'll need more t
 Here's an example entry that uses a username/password pair:
 
 [listing]
+----
 https://octocat:ilovegit@github.com
+----
 
 Here's an example that uses a token (pay attention to the trailing `:` after the token):
 
 [listing]
+----
 https://abcdefg0123456:@github.com
+----
 
 To use different credentials for a given repository, you can append a repository path (i.e., `<repo>`) to the entry to make the matching more strict.
 (The `.git` file extension in the repository path is optional).
 
 [listing]
+----
 https://<credentials>@<hostname>/<repo>
+----
 
 Here's an example for a specific repository path:
 
 [listing]
+----
 https://octocat:ilovegit@github.com/octocat/Hello-World
+----
 
 Here are examples for several popular git hosts (for which you'd substitute the placeholders in bold with the real values):
 

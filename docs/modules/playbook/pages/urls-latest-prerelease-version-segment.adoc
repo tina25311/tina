@@ -59,7 +59,9 @@ By default, Antora uses the actual version in the version segment of page and as
 
 .URL for colorado 6.0 tour.adoc page
 [listing#result-default]
+----
 https://docs.example.com/colorado/6.0/get-started/tour.html
+----
 
 Now, let's assign a symbolic prerelease version to the latest prerelease component versions in this site.
 The `latest_prerelease_version_segment` key is configured in the playbook file, not the component version descriptor files, because it applies to all of the latest prerelease component versions in a site.
@@ -85,7 +87,9 @@ Now, in <<result-latest>>, the version segment contains the symbolic prerelease 
 
 .URL for colorado 6.0 tour.adoc page when latest_prerelease_version_segment is set
 [listing#result-latest]
+----
 https://docs.example.com/colorado/next/get-started/tour.html
+----
 
 The actual version with appended prerelease identifier, _6.0-beta.2_, is still displayed in the reference UI menus.
 The symbolic prerelease version, _next_, is only used in the URLs.

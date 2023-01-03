@@ -82,13 +82,17 @@ As shown in <<result-default>>, the version segment uses the actual version _5.2
 
 .URL for colorado 5.2 tour.adoc page
 [listing#result-default]
+----
 https://docs.example.com/colorado/5.2/get-started/tour.html
+----
 
 In <<result-default-latest>>, the version segment uses the actual version _5.6_ for the [.path]_tour.adoc_ page that belongs to the _colorado 5.6_ component version.
 
 .URL for colorado 5.6 tour.adoc page
 [listing#result-default-latest]
+----
 https://docs.example.com/colorado/5.6/get-started/tour.html
+----
 
 While there's nothing in the URL to signify version _5.6_ as the latest version of the component _colorado_, Antora applies the default sorting order in the reference UI, so version _5.6_ is listed first under the _colorado_ component name in the xref:navigation:index.adoc#component-dropdown[component version selector] and first in the listed versions in the xref:navigation:index.adoc#page-dropdown[page version selector].
 
@@ -115,13 +119,17 @@ In <<result-not-latest>>, the version segment uses the actual version because _c
 
 .URL for colorado 5.2 tour.adoc page when latest_version_segment is set
 [listing#result-not-latest]
+----
 https://docs.example.com/colorado/5.2/get-started/tour.html
+----
 
 However, in <<result-latest>>, the version segment uses the symbolic version, _stable_, because Antora determined _colorado 5.6_ is the latest version of the _colorado_ component.
 
 .URL for colorado 5.6 tour.adoc page when latest_version_segment is set
 [listing#result-latest]
+----
 https://docs.example.com/colorado/stable/get-started/tour.html
+----
 
 The actual version, _5.6_, is still displayed in the reference UI menus.
 The symbolic version, _stable_, is only used in the URLs.

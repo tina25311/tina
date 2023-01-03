@@ -142,8 +142,10 @@ Since the component and module are the same as the target, it could equivalently
 :page-aliases: _@:{page-src-path}
 ----
 
-* static redirect:
-[source,html]
+static redirect::
++
+[,html]
+----
 <!DOCTYPE html>
 <meta charset="utf-8">
 <link rel="canonical" href="http://example.com/component1/v2/topic/topic.html">
@@ -153,14 +155,21 @@ Since the component and module are the same as the target, it could equivalently
 <title>Redirect Notice</title>
 <h1>Redirect Notice</h1>
 <p>The page you requested has been relocated to <a href="../v2/topic/topic.html">http://example.com/component1/v2/topic/topic.html</a>.</p>
+----
 
-* netlify redirect:
-[source,text]
+netlify redirect::
++
+[,text]
+----
 /component1/topic/topic.html /component1/v2/topic/topic.html 301
+----
 
-* nginx redirect:
-[source,text]
+nginx redirect::
++
+[,text]
+----
 location = /component1/topic/topic.html { return 301 /component1/v2/topic/topic.html; }
+----
 
 Discussion TODO: While this use case would work, it wasn't the original intent of the page-aliases attribute. page-aliases was originally created for renaming a file or moving individual pages to other modules and topic folders, etc. It really wasn't meant for wholesale rerouting and I'm not sure we want to recommend it to users as such. Instead, we probably want to recommend an actual router for such bulk URL changes and/or create a discrete routing component for Antora.
 
