@@ -29,9 +29,9 @@ If you use or extend the xref:antora-ui-default::index.adoc[default UI], the lay
 The 404 layout template is compiled with a reduced UI model that does not include any information about the current page (since there isn't one) except for `page.title` and `page.layout`.
 The template has access to all other variables in the UI model, such as `uiRootPath` and `site.components`.
 
-Unlike for regular pages, the `uiRootPath` and `siteRootPath` template variables are root-relative paths in the 404 template.
+Unlike for regular pages, the `uiRootPath` and `siteRootPath` template variables are root-relative paths in the 404 template (they begin with /).
 This is necessary for the 404 page to work correctly when served by the server.
-That's because the 404 page content is served from whatever URL the visitor originally requested.
+That's because the 404 page content is served from whatever URL the visitor originally requested, not necessarily where the 404 page is located.
 
 [#activate]
 == Activate the 404 page
