@@ -56,6 +56,19 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified (#1018)
 * *content-classifier*: Set `src.version` to original version segment and `src.rel.version` to actual version on splat alias file (#1007)
 
+== 3.1.2 (2022-10-28)
+
+=== Fixed
+
+* *playbook-builder*: Decouple logic to compute default log format from process environment (#1022)
+* *playbook-builder*: Allow content aggregator to parse value of `content.branches` and `content.tags` playbook keys (#1025)
+* *content-aggregator*: Fix infinite auth loop if credentials embedded in content source URL are empty and repository requires auth (#1010)
+* *content-aggregator*: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified (#1018)
+* *content-classifier*: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop (#1020)
+* *redirect-producer*: Preserve target when creating static route if target is an absolute URL (#1024)
+* *site-generator*: Look for IS_TTY on `playbook.env` in site generator to decouple check from process environment
+* release process: Automatically populate version and release attributes during release (#1011)
+
 == 3.1.1 (2022-09-20)
 
 === Changed
@@ -98,6 +111,7 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *playbook-builder*: Require that keys in the playbook be snake_case (notably entries in `site.keys`)
 * *content-aggregator*: Include target in error message for broken or cyclic symbolic link (#900)
 * *content-aggregator*: Log warning message instead of throwing fatal error if file in worktree disappears or cannot be read (#986)
 * *content-aggregator*: Set `worktree` property on origin to `false` when branch or tag is local but not taken from worktree (#993)
