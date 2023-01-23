@@ -177,7 +177,7 @@ Content of source block
 ....
 <.> In the attribute list, specify the element ID in the first position.
 An element ID is directly appended to the style (which is empty in this case) using the hash symbol (`+#+`) followed by the ID name.
-The `source` style is implied since a langauge is specified in the second position.
+The `source` style is implied since a language is specified in the second position.
 <.> Directly after the element ID, enter a comma (`,`), and then the name of the source language in which the block's content is written.
 
 Now let's look at a source block that's created with a delimited literal block and is assigned an element ID using the shorthand hash symbol (`+#+`).
