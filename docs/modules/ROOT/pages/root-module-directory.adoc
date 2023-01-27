@@ -15,7 +15,8 @@ A [.path]_ROOT_ directory stores content source files in one or more of the xref
     📂 modules <.>
       📂 ROOT <.>
         📂 pages <.>
-          📄 page-source-file.adoc <.>
+          📄 index.adoc <.>
+          📄 another-page.adoc <.>
         📄 nav.adoc <.>
 ----
 <.> Content source root
@@ -23,14 +24,17 @@ A [.path]_ROOT_ directory stores content source files in one or more of the xref
 <.> Required [.path]_modules_ directory
 <.> [.path]_ROOT_ module directory
 <.> [.path]_pages_ family directory
-<.> A source file for a page
+<.> A source file for the default component version start page
+<.> A source file for another page in the ROOT module
 <.> A navigation file
 
-A [.path]_ROOT_ module directory must contain at least one xref:family-directories.adoc[family directory] with at least one source file.
+If the [.path]_ROOT_ module directory is present, it must contain at least one xref:family-directories.adoc[family directory] with at least one source file.
 It can also contain an optional navigation file.
 
 The source files stored in a [.path]_ROOT_ directory become part of a <<root-module,ROOT module>> in a component version.
-It's recommended that you create a [.path]_ROOT_ module directory because Antora applies special preset behavior to the publishable resources in a <<root-module,ROOT module>>.
+We recommended that you create a [.path]_ROOT_ module directory because Antora applies special preset behavior to the publishable resources in a <<root-module,ROOT module>>.
+For example, the source file [.path]_index.adoc_ in the [.path]_pages_ directory becomes the xref:component-start-page.adoc#default-start-page[default start page] for a component version.
+Those familiar with the terminology of HTML web hosting will recognize this as the index page for a component version.
 
 Small documentation projects may never need more than a [.path]_ROOT_ module directory.
 However, as your project grows, you can easily add more module directories and gradually reorganize your source files.
