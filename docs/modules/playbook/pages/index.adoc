@@ -40,7 +40,7 @@ Regardless of its format, a playbook contains structured key-value pairs for spe
 
 By default, Antora resolves relative paths in the playbook from the current working directory.
 For example, the path [.path]_public_ is effectively [.path]_$PWD/public_.
-If, instead, you want Antora to relative relative paths from the directory where the playbook file is located, prepend `./` to the path (e.g., [.path]_./public_).
+If, instead, you want Antora to resolve relative paths from the directory where the playbook file is located, prepend `./` to the path (e.g., [.path]_./public_).
 
 By starting relative paths with `./`, you make your playbook more portable.
 It means you can run the `antora` command from any directory on the filesystem and the behavior will be the same.
