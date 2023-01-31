@@ -30,7 +30,7 @@ Branches map well to the system of references provided by git and are flexible e
 == Version content using tags
 
 Using this method, you store each xref:component-version.adoc[documentation version] in a tag of a git repository, just like you use tags to store software releases.
-You then set the xref:playbook:content-tags.adoc[tags key] on the content source to tell Antora which branches to use.
+You then set the xref:playbook:content-tags.adoc[tags key] on the content source to tell Antora which tags to use.
 Tags provide many of the same benefits of branches, but with some notable downsides.
 
 Like branches, tags allow you to compare different instances of a file across versions and the repository only stores what's changed since the previous tag point.
