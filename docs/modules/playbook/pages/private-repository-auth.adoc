@@ -78,7 +78,7 @@ https://<credentials>@<hostname>
 
 [IMPORTANT]
 ====
-If the username or password contains characters which have special meaning in a URL, such as `/, `#`, or `:`, these characters must be URL encoded.
+If the username or password contains characters which have special meaning in a URL, such as `/`, `#`, or `:`, these characters must be URL encoded.
 (The `@` does not have special meaning in a username or password).
 It's usually safe to always URL encode the username and password components in the URL.
 This requirement only applies for URLs that are defined in the git credential store.
