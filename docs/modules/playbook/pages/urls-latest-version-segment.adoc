@@ -30,8 +30,9 @@ The value can contain letters, numbers, periods (`.`), underscores (`+_+`), and 
 To ensure portability between host platforms, use lowercase letters.
 
 The value of the `latest_version_segment` key *cannot* contain spaces, forward slashes (`/`), or HTML special characters (`&`, `<`, or `>`).
-The value can only be empty if the value of `latest_version_segment_strategy` is `redirect:to` or `replace`.
-The value *cannot* be empty if the value of `latest_version_segment_strategy` is `redirect:from`.
+The value cannot be `null` (which also means it cannot be missing or `~`).
+The value can only be an empty string if the value of `latest_version_segment_strategy` is `redirect:to` or `replace`.
+The value *cannot* be an empty string if the value of `latest_version_segment_strategy` is `redirect:from`.
 This restriction is due to the fact that adding a redirect on the parent folder could prevent access to other versions.
 
 == Specify a latest version segment
@@ -134,6 +135,33 @@ https://docs.example.com/colorado/stable/get-started/tour.html
 The actual version, _5.6_, is still displayed in the reference UI menus.
 The symbolic version, _stable_, is only used in the URLs.
 To customize the value displayed in the reference UI menus, use the xref:ROOT:component-display-version.adoc[display_version key].
+
+If you want to drop the version segment from the URL, you can do so by setting the value to empty string (which is different from no value, which represents `null`).
+
+.Playbook that defines an empty symbolic version
+[#ex-playbook-empty,yaml]
+----
+site:
+  title: The Ranges
+  url: https://docs.example.com
+urls:
+  latest_version_segment: '' # <.>
+content:
+  # ...
+----
+<.> Set the value of the `latest_version_segment` to empty string to drop the version segment from the URL.
+
+A page in the latest version will now be accessible from a URL that does not include the version segment.
+
+.URL for colorado 5.6 tour.adoc page when latest_version_segment is empty
+[listing#result-latest-empty]
+----
+https://docs.example.com/colorado/get-started/tour.html
+----
+
+The version is no longer present in the URL.
+The actual version, _5.6_, is still displayed in the reference UI menus.
+Recall that you cannot set the `latest_version_segment` to empty string if the `latest_version_segment_strategy` is `redirect:from`.
 
 The examples in this section assumed the `latest_version_segment_strategy` key wasn't set.
 Therefore, when Antora detected the `latest_version_segment` key, it automatically set the `latest_version_segment_strategy` key and assigned it the `replace` strategy at runtime.
