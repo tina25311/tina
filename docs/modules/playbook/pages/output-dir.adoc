@@ -61,8 +61,10 @@ output:
 
 This key only applies to the filesystem provider.
 
-[#clean-warning]
-WARNING: Use this key with great care.
+[WARNING#clean-warning]
+====
+Use this key with great care.
 For example, if you set `dir` to your [.path]_home_ directory and `clean` to `true`, you'll delete ALL of the folders and files in [.path]_home_.
+====
 
 The `clean` key can also be activated via the CLI using the xref:cli:options.adoc#clean[--clean option].
