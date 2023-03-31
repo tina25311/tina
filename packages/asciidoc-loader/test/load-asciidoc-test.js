@@ -561,6 +561,26 @@ describe('loadAsciiDoc()', () => {
       })
     })
 
+    it('should not fail to compute attributes if pub.moduleRootPath property is not set on imput file', () => {
+      const contents = heredoc`
+      = Document Title
+      `
+      setInputFileContents(contents)
+      delete inputFile.pub.moduleRootPath
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig())
+      expect(doc.getAttributes()).to.include({ imagesdir: '_images', attachmentsdir: '_attachments' })
+    })
+
+    it('should not fail to compute attributes if pub property is not set on imput file', () => {
+      const contents = heredoc`
+      = Document Title
+      `
+      setInputFileContents(contents)
+      delete inputFile.pub
+      const doc = loadAsciiDoc(inputFile, undefined, resolveAsciiDocConfig())
+      expect(doc.getAttributes()).to.include({ imagesdir: '_images', attachmentsdir: '_attachments' })
+    })
+
     it('should assign Antora integration attributes on document for page in topic folder', () => {
       inputFile = mockContentCatalog({
         version: '4.5.6',

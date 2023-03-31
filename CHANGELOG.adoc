@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
+* *asciidoc-loader*: Do not fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file
 
 == 3.2.0-alpha.2 (2022-11-01)
 
