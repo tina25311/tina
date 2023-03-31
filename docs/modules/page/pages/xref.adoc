@@ -47,16 +47,14 @@ How many of the target page's xref:resource-id-coordinates.adoc[resource ID coor
 The `page$` family coordinate isn't required in the resource ID when the target resource is a page.
 Also, remember that the xref:resource-id-coordinates.adoc#id-resource[file coordinate] of a target page is calculated from the [.path]_pages_ family directory.
 
-[#id-fragment]
-#fragment::
+[[id-fragment]]#fragment::
 A [.term]*fragment* is an element ID that links to a section, block, or inline location within the target page.
 Fragments are also referred to as [.term]*deep links*.
 A fragment is optional.
 The fragment starts with the hash symbol (`#`) and is entered directly after the resource ID of the target page.
 A target page's reference text, whether assigned by default or using the `reftext` attribute, isn't used as <<link-text,link text>> when a fragment is specified.
 
-[#link-text]
-[link text]::
+[[link-text]][link text]::
 The xref macro is completed with a set of square brackets (`[]`) at the end of the target page's resource ID, or, if specified, at the end of the <<id-fragment,fragment>>.
 You can enter optional text between these brackets or leave them empty.
 When Antora converts the xref macro and its value into a link, the text entered between the square brackets is displayed in the current page when it's published to your site.
