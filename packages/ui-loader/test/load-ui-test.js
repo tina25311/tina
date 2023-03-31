@@ -132,6 +132,9 @@ describe('loadUi()', () => {
         response.writeHead(301, { Location: `/${request.url.substr(13)}` })
         response.end('<!DOCTYPE html><html><body>Moved.</body></html>', 'utf8')
         return
+      } else if (request.url === '/hang-up.zip') {
+        response.destroy()
+        return
       }
       fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
         if (err) {
@@ -1295,6 +1298,17 @@ describe('loadUi()', () => {
     }
     const expectedMessage = 'Failed to download UI bundle'
     expect(await trapAsyncError(loadUi, playbook)).to.throw(expectedMessage)
+  })
+
+  it('should throw error if connection error occurs when retrieving remote UI bundle', async () => {
+    const playbook = {
+      runtime: { fetch: true },
+      ui: { bundle: { url: httpServerUrl + 'hang-up.zip', snapshot: true } },
+    }
+    const expectedMessage = 'Failed to download UI bundle'
+    expect(await trapAsyncError(loadUi, playbook)).to.throw(expectedMessage)
+      .with.property('stack')
+      .that.matches(/Caused by: Error: socket hang up/)
   })
 
   it('should cache bundle if a valid zip file', async () => {

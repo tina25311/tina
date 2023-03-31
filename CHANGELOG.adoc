@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
+
 == 3.2.0-alpha.2 (2022-11-01)
 
 === Added
