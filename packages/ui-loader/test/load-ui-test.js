@@ -1306,7 +1306,8 @@ describe('loadUi()', () => {
       ui: { bundle: { url: httpServerUrl + 'hang-up.zip', snapshot: true } },
     }
     const expectedMessage = 'Failed to download UI bundle'
-    expect(await trapAsyncError(loadUi, playbook)).to.throw(expectedMessage)
+    expect(await trapAsyncError(loadUi, playbook))
+      .to.throw(expectedMessage)
       .with.property('stack')
       .that.matches(/Caused by: Error: socket hang up/)
   })
