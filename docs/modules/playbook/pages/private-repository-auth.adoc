@@ -169,6 +169,7 @@ https://octocat:ilovegit@github.com/octocat/Hello-World
 
 Here are examples for several popular git hosts (for which you'd substitute the placeholders in bold with the real values):
 
+.Formats supported by popular Git hosts for embedding credentials in the URL
 [listing#host-credential-structure,subs=+quotes]
 ----
 https://**TOKEN**:@github.com/org/project-docs
