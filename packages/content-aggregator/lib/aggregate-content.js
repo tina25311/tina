@@ -1041,7 +1041,7 @@ function coerceToString (value) {
 function resolveRepositoryFromWorktree (repo) {
   return fsp
     .readFile(repo.gitdir, 'utf8')
-    .then((contents) => contents.trimRight().substr(8))
+    .then((contents) => contents.substr(8).trimRight())
     .then((worktreeGitdir) =>
       fsp.readFile(ospath.join(worktreeGitdir, 'commondir'), 'utf8').then(
         (contents) => {
