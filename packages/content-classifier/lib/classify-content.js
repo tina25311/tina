@@ -152,7 +152,7 @@ function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc, origins = [] }) 
     const initial = siteAsciiDocConfig.attributes
     const mdc = { file: { path: 'antora.yml', origin: origins[origins.length - 1] } }
     const attributes = collateAsciiDocAttributes(scopedAttributes, { initial, mdc, merge: true })
-    if (attributes !== initial) siteAsciiDocConfig = Object.assign({}, siteAsciiDocConfig, { attributes })
+    if (attributes !== initial) return Object.assign({}, siteAsciiDocConfig, { attributes })
   }
   return siteAsciiDocConfig
 }
