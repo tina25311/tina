@@ -9,6 +9,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *logger*: Restore error stack in log output when using pino-std-serializers >= 6.1 (#1049)
 * *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
 
 == 3.1.2 (2022-10-28)
