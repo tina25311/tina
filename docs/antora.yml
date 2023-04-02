@@ -1,19 +1,19 @@
 name: antora
-version: '3.1'
+version: '3.1.3'
 prerelease: false
 title: Antora
 asciidoc:
   attributes:
-    release-date: 2022-10-28
+    release-date: 2023-04-02
     release-tag: latest
-    release-version: '3.1.2'
+    release-version: '3.1.3'
     source-language: asciidoc@
     xrefstyle: short@
     example-caption: false
     listing-caption: Example@
     version-node-major: '16'
-    version-node: '16.18.0'
-    version-npm: '8.19.2'
+    version-node: '16.20.0'
+    version-npm: '8.19.4'
     url-node-releases: https://nodejs.org/en/about/releases/
     url-chat: https://chat.antora.org
     url-repo: https://gitlab.com/antora/antora
