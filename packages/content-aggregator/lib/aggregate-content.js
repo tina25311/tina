@@ -268,7 +268,7 @@ async function collectFilesFromSource (source, repo, remoteName, authStatus) {
       const { url, branches, tags, startPath, startPaths } = source
       const startPathInfo =
         'startPaths' in source ? { 'start paths': startPaths || undefined } : { 'start path': startPath || undefined }
-      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 }).trimRight()
+      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 }).trimEnd()
       logger.info(`No matching references found for content source entry (${sourceInfo.replace(NEWLINE_RX, ' | ')})`)
       return []
     }
@@ -1007,7 +1007,7 @@ function transformGitCloneError (err, displayUrl) {
     trimMessage = true
   }
   if (trimMessage) {
-    wrappedMsg = ~(wrappedMsg = wrappedMsg.trimRight()).indexOf('. ') ? wrappedMsg : wrappedMsg.replace(/\.$/, '')
+    wrappedMsg = ~(wrappedMsg = wrappedMsg.trimEnd()).indexOf('. ') ? wrappedMsg : wrappedMsg.replace(/\.$/, '')
   }
   const errWrapper = new Error(`${wrappedMsg} (url: ${displayUrl})`)
   errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
@@ -1041,11 +1041,11 @@ function coerceToString (value) {
 function resolveRepositoryFromWorktree (repo) {
   return fsp
     .readFile(repo.gitdir, 'utf8')
-    .then((contents) => contents.substr(8).trimRight())
+    .then((contents) => contents.substr(8).trimEnd())
     .then((worktreeGitdir) =>
       fsp.readFile(ospath.join(worktreeGitdir, 'commondir'), 'utf8').then(
         (contents) => {
-          const gitdir = ospath.join(worktreeGitdir, contents.trimRight())
+          const gitdir = ospath.join(worktreeGitdir, contents.trimEnd())
           const dir = ospath.basename(gitdir) === '.git' ? ospath.dirname(gitdir) : gitdir
           return Object.assign(repo, { dir, gitdir, worktreeName: ospath.basename(worktreeGitdir) })
         },
@@ -1077,7 +1077,7 @@ function findWorktrees (repo, patterns) {
                 .then((branch = worktreeName) =>
                   fsp
                     .readFile(ospath.join(gitdir, 'gitdir'), 'utf8')
-                    .then((contents) => [branch, { head: ospath.dirname(contents.trimRight()), name: worktreeName }])
+                    .then((contents) => [branch, { head: ospath.dirname(contents.trimEnd()), name: worktreeName }])
                 )
             })
           )

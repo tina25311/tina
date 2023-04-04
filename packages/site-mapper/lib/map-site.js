@@ -135,7 +135,7 @@ function createRobotsExclusionFile (robots) {
   } else if (robots === 'disallow') {
     robots = 'User-agent: *\nDisallow: /'
   } else {
-    robots = robots.trimRight()
+    robots = robots.trimEnd()
   }
   return new File({
     out: { path: 'robots.txt' },

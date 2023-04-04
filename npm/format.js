@@ -34,7 +34,7 @@ async function formatAll (dirs, ignores, cwd = process.cwd()) {
   const cwd = process.cwd()
   const ignores = await fsp.readFile('.eslintignore', 'utf8').then((contents) =>
     contents
-      .trimRight()
+      .trimEnd()
       .split('\n')
       .map((it) => ospath.join(cwd, it))
   )

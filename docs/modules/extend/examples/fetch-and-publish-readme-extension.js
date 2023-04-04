@@ -6,7 +6,7 @@ module.exports.register = function () {
       https
         .get('https://gitlab.com/antora/antora/-/raw/HEAD/README.adoc', (response) => {
           response.on('data', (chunk) => buffer.push(chunk.toString()))
-          response.on('end', () => resolve(buffer.join('').trimRight()))
+          response.on('end', () => resolve(buffer.join('').trimEnd()))
         })
         .on('error', reject)
     })

@@ -48,7 +48,7 @@ function readFromURL (url) {
     https
       .get(url, (response) => {
         response.on('data', (chunk) => buffer.push(chunk.toString()))
-        response.on('end', () => resolve(buffer.join('').trimRight()))
+        response.on('end', () => resolve(buffer.join('').trimEnd()))
       })
       .on('error', reject)
   })
