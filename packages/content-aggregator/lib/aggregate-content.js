@@ -47,6 +47,7 @@ const {
 const ANY_SEPARATOR_RX = /[:/]/
 const CSV_RX = /\s*,\s*/
 const VENTILATED_CSV_RX = /\s*,\s+/
+const EDIT_URL_PATTERN_TEMPLATE_VAR_RX = /\{(module|family|file_path)\}|(%s)/g
 const GIT_URI_DETECTOR_RX = /:(?:\/\/|[^/\\])/
 const HTTP_ERROR_CODE_RX = new RegExp('^' + git.Errors.HttpError.code + '$', 'i')
 const NEWLINE_RX = /\n/g
@@ -752,7 +753,19 @@ function assignFileProperties (file, origin) {
     file.src.fileUri = ~fileUri.indexOf(' ') ? fileUri.replace(SPACE_RX, '%20') : fileUri
   }
   if (origin.editUrlPattern) {
-    const editUrl = origin.editUrlPattern.replace('%s', file.src.path)
+    // NOTE: file.src.path has the following pattern: modules/{module}/{familiy}/{file_path}
+    const pathSegments = file.src.path ? file.src.path.split(path.sep) : []
+    pathSegments.shift() // NOTE: remove top level directory "modules/" from segments list
+    const vars = {
+      '%s': file.src.path,
+      module: pathSegments.shift() || '',
+      family: pathSegments.shift() || '',
+      file_path: path.join.apply(path, pathSegments),
+    }
+    const editUrl = origin.editUrlPattern.replace(
+      EDIT_URL_PATTERN_TEMPLATE_VAR_RX,
+      (_, match1, match2) => vars[match1 || match2]
+    )
     file.src.editUrl = ~editUrl.indexOf(' ') ? editUrl.replace(SPACE_RX, '%20') : editUrl
   }
   return file
