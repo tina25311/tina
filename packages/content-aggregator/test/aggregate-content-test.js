@@ -4189,11 +4189,12 @@ describe('aggregateContent()', () => {
       it('should use extended path of editUrl pattern to generate editUrl', async () => {
         const webUrl = 'https://gitlab.com/antora/demo/demo-component-b'
         const url = webUrl + '.git'
-        const sourcePre = { 
-			url, branches: 'main', 
-			startPath: 'docs', 
-			editUrl: '{web_url}/blob/{refhash}/{start_path}/modules/{module}/{family}/{file_path}' 
-		}
+        const sourcePre = {
+          url,
+          branches: 'main',
+          startPath: 'docs',
+          editUrl: '{web_url}/blob/{refhash}/{start_path}/modules/{module}/{family}/{file_path}',
+        }
         playbookSpec.content.sources.push(sourcePre)
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(1)
