@@ -69,7 +69,13 @@ xref:playbook:environment-variables.adoc[ANTORA_CACHE_DIR variable].
 |`false`
 |<<boolean-value,Boolean>>
 |This option xref:playbook:output-dir.adoc#clean-warning[erases entire folders and their files]; use it with great care!
-See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>> and <<ex-boolean-true>>.
+See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>>, and <<ex-boolean-true>>.
+
+|[[extension]]`--extension`
+|Not set
+|Filesystem path or extension ID
+|Can be specified multiple times.
+See xref:extend:register-extension.adoc[].
 
 |[[fetch]]`--fetch`
 |`false`
@@ -79,8 +85,8 @@ See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>> 
 |`--generator`
 |`@antora/site-generator`
 |Node.js package (i.e., module) name or filesystem path to a script
-|Intended for advanced users comfortable with the inner workings of Antora.
-Substitutes Antora's default site generator with an alternate implementation exported by the specified module or script.
+|Substitutes Antora's default site generator with an alternate implementation exported by the specified module or script.
+Intended for advanced users comfortable with the inner workings of Antora.
 
 |[[git-credentials-path]]`--git-credentials-path`
 |_$HOME/.git-credentials_ or +
@@ -118,7 +124,7 @@ See xref:playbook:network-proxy.adoc#https-proxy[https_proxy].
 |[[key]]`--key`
 |Not set
 |API key in the form `<name=value>`
-|Can specify multiple times.
+|Can be specified multiple times.
 See xref:playbook:site-keys.adoc[] and <<ex-multiple-values>>.
 
 |[[failure-level]]`--log-failure-level`
