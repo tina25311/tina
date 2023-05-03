@@ -33,7 +33,7 @@ The UI bundle can be augmented using a xref:ui-supplemental-files.adoc[supplemen
 [#remote-bundle]
 == Load a remote bundle
 
-When the value of `url` is a remote URL, Antora downloads and caches the ZIP archive the first time it runs.
+When the value of `url` is a remote URL, Antora downloads and caches the UI bundle the first time it runs.
 In this case, the target must be a ZIP archive.
 
 .Remote UI bundle
@@ -44,20 +44,20 @@ ui:
     url: https://repo.org/path/to/a-ui-bundle.zip
 ----
 
-On subsequent runs, Antora loads the bundle from the cache as long as the value of `url` remains the same.
+The UI bundle is cached based on the signature of the URL.
+On subsequent runs, Antora loads the bundle from the cache as long as the value of `url` remains unchanged.
 This saves Antora from having to download the bundle each time you generate your site.
-In order to retrieve UI bundle updates without changing the `url` value, you need to activate the `snapshot` and `fetch` keys.
 
 [#snapshot]
 === Use a snapshot
 
-A UI bundle is cached based on the signature of the URL.
-If the `url` value remains the same, but the archive it points to changes over time, the UI bundle needs to be identified as a snapshot with the `snapshot` key.
-Otherwise, Antora won't download the UI bundle again as long as it exists in the cache, even when `fetch` is used.
+Antora won't download the UI bundle again if it exists in the cache, even when xref:runtime-fetch.adoc[fetch] is enabled.
+If the `url` value remains the same, but the archive it points to changes over time, the UI bundle needs to be identified as a snapshot to bypass this cache.
 
-The optional `snapshot` key is mapped to the `bundle` key.
-By default, it's deactivated (set to `false`).
-When `snapshot` is set to `true`, Antora will download the UI bundle whenever `fetch` is activated in the playbook or from the CLI.
+In order to retrieve UI bundle updates without changing the `url` value, you need to enable the `snapshot` key adjacent to the `url` key.
+By default, snapshot is not enabled (set to `false`).
+When snapshot is set to `true`, Antora will download the UI bundle whenever the xref:runtime-fetch.adoc#fetch-key[fetch key] under the `runtime` category of the playbook is enabled.
+The xref:runtime-fetch.adoc#fetch-key[fetch key] instructs Antora to retrieve updates (including the UI bundle snapshot).
 
 .Remote UI bundle marked as a snapshot
 [,yaml]
@@ -68,10 +68,20 @@ ui:
     snapshot: true
 ----
 
-If you're using Antora's reference UI bundle, you should mark it as a snapshot.
+TIP: If you're using Antora's reference UI bundle, you should mark the bundle as a snapshot because its URL never changes.
+
+If you want to control when Antora retrieves updates, pass the `--fetch` option when invoking the `antora` command.
+To make this setting permanent, set the `runtime.fetch` key in the playbook to `true`.
+
+.Fetch updates as persistent setting
+[,yaml]
+----
+runtime:
+  fetch: true
+----
 
 The snapshot key is only required if you're referring to a remote bundle (which Antora caches by default).
-If you're referencing a bundle from the filesystem, Antora will always use the file as specified.
+If you're referencing a bundle from the filesystem, Antora will always use the file specified.
 
 [#local-bundle]
 == Load a bundle from the filesystem
