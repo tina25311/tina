@@ -788,7 +788,7 @@ When you ran `npm i` to install the dependencies, it set up a bin stub from [.pa
 
 Therefore, the most convenient way to run your development code is to use the local bin stub:
 
- $ $(npm bin)/antora /path/to/your/antora-playbook.yml
+ $ npx --offline antora /path/to/your/antora-playbook.yml
 
 which is equivalent to running:
 
