@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *content-aggregator*: Try credentials from credentials store if auth fails with credentials in URL (#1063)
+
 == 3.1.3 (2023-04-02)
 
 === Fixed
