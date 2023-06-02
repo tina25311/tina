@@ -6396,6 +6396,7 @@ describe('aggregateContent()', () => {
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const aggregate = await aggregateContent(playbookSpec)
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
+      expect(credentialsRequestCount).to.equal(2)
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
     })
