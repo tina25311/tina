@@ -6386,6 +6386,20 @@ describe('aggregateContent()', () => {
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
     })
 
+    it('should fallback to credentials store if auth is required and URL has fake credentials', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const urlWithoutAuth = repoBuilder.url
+      repoBuilder.url = urlWithoutAuth.replace('//', '//reject@')
+      const credentials = urlWithoutAuth.replace('//', '//u:p@').replace('.git', '') + '\n'
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+    })
+
     it('should clone with valid credentials after failed attempt to clone with invalid credentials', async () => {
       credentialsVerdict = 'no entry!'
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
