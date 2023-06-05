@@ -21,7 +21,6 @@
     "version": "node npm/version.js"
   },
   "devDependencies": {
-    "downdoc": "latest",
     "eslint": "~8.26",
     "eslint-config-standard": "~17.0",
     "mocha": "~10.2",
