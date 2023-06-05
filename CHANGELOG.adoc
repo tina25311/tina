@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *logger*: Restore error stack in log output when using pino-std-serializers >= 6.1 (#1049)
+* *content-aggregator*: Consider local branches in non-managed bare repository that has at least one remote branch (#1064)
 * *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
 * *asciidoc-loader*: Do not fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file
 
