@@ -37,7 +37,7 @@
   ],
   "scripts": {
     "test": "_mocha",
-    "prepublishOnly": "node $npm_config_local_prefix/npm/prepublishOnly.js",
-    "postpublish": "node $npm_config_local_prefix/npm/postpublish.js"
+    "prepublishOnly": "npx -y downdoc --prepublish",
+    "postpublish": "npx -y downdoc --postpublish"
   }
 }
