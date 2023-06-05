@@ -826,9 +826,12 @@ function onGitComplete (err) {
 
 function resolveCredentials (credentialsFromUrlHolder, url, auth) {
   const credentialsFromUrl = credentialsFromUrlHolder.get() || {}
-  credentialsFromUrlHolder.clear()
   if ('Authorization' in auth.headers) {
-    if (!('username' in credentialsFromUrl)) return this.rejected({ url, auth })
+    if ('username' in credentialsFromUrl) {
+      credentialsFromUrlHolder.clear()
+    } else {
+      return this.rejected({ url, auth })
+    }
   } else if ('username' in credentialsFromUrl) {
     return credentialsFromUrl
   } else {
