@@ -274,9 +274,10 @@ async function collectFilesFromSource (source, repo, remoteName, authStatus) {
 // QUESTION should we resolve HEAD to a ref eagerly to avoid having to do a match on it?
 async function selectReferences (source, repo, remote) {
   let { branches: branchPatterns, tags: tagPatterns, worktrees: worktreePatterns = '.' } = source
-  const isBare = repo.noCheckout
+  const managed = 'url' in repo
+  const isBare = managed || repo.noCheckout
   const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
-  const noWorktree = repo.url ? undefined : false
+  const noWorktree = managed ? undefined : false
   const refs = new Map()
   if (
     tagPatterns &&
@@ -369,10 +370,11 @@ async function selectReferences (source, repo, remote) {
         refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head })
       }
     }
-  } else if (!remoteBranches.length) {
+  } else if (!managed || !remoteBranches.length) {
     const localBranches = await git.listBranches(repo)
     if (localBranches.length) {
       for (const shortname of filterRefs(localBranches, branchPatterns, patternCache)) {
+        if (refs.has(shortname)) continue // NOTE prefer remote branches in bare repository
         refs.set(shortname, { shortname, fullname: 'heads/' + shortname, type: 'branch', head: noWorktree })
       }
     }

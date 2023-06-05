@@ -5476,6 +5476,33 @@ describe('aggregateContent()', () => {
     expect(pageOne.contents.toString()).to.not.have.string('= Local Modification')
   })
 
+  // NOTE this can happen if PRs are mapped as remote branches in a bare repository created by the user
+  it('should discover local branches in a non-managed bare repository that has at least one remote branch', async () => {
+    const remoteRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+    const remoteComponentDesc = {
+      repoName: 'the-component-remote',
+      name: 'the-component',
+      version: 'v2.0',
+    }
+    await initRepoWithFiles(remoteRepoBuilder, remoteComponentDesc, undefined, () =>
+      remoteRepoBuilder.checkoutBranch('pr/100').then(() => remoteRepoBuilder.deleteBranch('main'))
+    )
+
+    const localRepoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
+    await initRepoWithFiles(localRepoBuilder, { repoName: 'the-component-local' }, undefined, () =>
+      localRepoBuilder
+        .addRemote('origin', remoteRepoBuilder.url)
+        .then(() => localRepoBuilder.checkoutBranch('v1.2.3'))
+        .then(() => localRepoBuilder.deleteBranch('main'))
+    )
+
+    playbookSpec.content.sources.push({ url: localRepoBuilder.url, branches: 'v1.2.3' })
+
+    const aggregate = await aggregateContent(playbookSpec)
+    expect(aggregate).to.have.lengthOf(1)
+    expect(aggregate[0]).to.include({ name: 'the-component', version: 'v1.2.3' })
+  })
+
   // NOTE this test doesn't always trigger the condition being tested; it depends on the order the refs are returned
   // FIXME use a spy to make the order determinant
   it('should discover components in specified remote', async () => {
