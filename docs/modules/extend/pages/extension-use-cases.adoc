@@ -58,3 +58,23 @@ include::example$unpublish-unlisted-pages-extension.js[]
 
 By removing the `out` property from the page, it prevents the page from being published, but is still referenceable using an include directive.
 Alternately, you could choose to remove the page entirely from the content catalog.
+
+== Resolve attribute references in attachments
+
+Files in the attachment family are passed directly through to the output site.
+Antora does not resolve AsciiDoc attribute references in attachment files.
+(Asciidoctor, on the other hand, will resolve AsciiDoc attribute references in the attachment's contents only if the attachment is included in an AsciiDoc page where the attribute substitution is enabled.)
+You can use an Antora extension to have Antora resolve attribute references in the attachment file before that file is published.
+
+This extension runs during the `contentClassified` event, which is when attachment files are first identified and classified.
+It iterates over all attachments and resolves any references to attributes scoped to that attachment's component version.
+If any changes were made to the contents of the file, it replaces the contents on the virtual file with the updated value.
+
+.resolve-attributes-references-in-attachments.js
+[,js]
+----
+include::example$resolve-attribute-references-in-attachments.js[]
+----
+
+This extension is only know to work with text-based attachments.
+You may need to modify this extension for it to work with binary files.
