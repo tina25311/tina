@@ -34,7 +34,7 @@
     "braces": "~3.0",
     "cache-directory": "~2.0",
     "glob-stream": "~7.0",
-    "hpagent": "~1.1",
+    "hpagent": "~1.2",
     "isomorphic-git": "~1.21",
     "js-yaml": "~4.1",
     "multi-progress": "~4.0",
