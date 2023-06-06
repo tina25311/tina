@@ -83,3 +83,23 @@ include::example$audit-includes-asciidoctor-extension.js[]
 
 In order to resolve the file being included, the processor must determine the file that contains the include directive from the cursor where the include directive is found or the file on which the extension is being run.
 It then must use the content catalog to resolve the file from that context.
+
+== Resolve attribute references in attachments
+
+Files in the attachment family are passed directly through to the output site.
+Antora does not resolve AsciiDoc attribute references in attachment files.
+(Asciidoctor, on the other hand, will resolve AsciiDoc attribute references in the attachment's contents only if the attachment is included in an AsciiDoc page where the attribute substitution is enabled.)
+You can use an Antora extension to have Antora resolve attribute references in the attachment file before that file is published.
+
+This extension runs during the `contentClassified` event, which is when attachment files are first identified and classified.
+It iterates over all attachments and resolves any references to attributes scoped to that attachment's component version.
+If any changes were made to the contents of the file, it replaces the contents on the virtual file with the updated value.
+
+.resolve-attributes-references-in-attachments.js
+[,js]
+----
+include::example$resolve-attribute-references-in-attachments.js[]
+----
+
+This extension is only know to work with text-based attachments.
+You may need to modify this extension for it to work with binary files.
