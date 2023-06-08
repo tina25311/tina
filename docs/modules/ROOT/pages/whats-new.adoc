@@ -12,7 +12,19 @@
 :url-milestone-3-1-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.1
 :url-milestone-3-1-2: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.2
 :url-milestone-3-1-3: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.3
+:url-milestone-3-1-4: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.4
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.4
+
+_**Release date:** 2023.06.07 | *Issue label:* {url-milestone-3-1-4}[3.1.4^]_
+
+== Resolved issues
+
+=== Fixed
+
+Issue {url-issues}/1063[#1063^]:: Try credentials from credentials store if auth fails with credentials in URL.
+Issue {url-issues}/1064[#1064^]:: Consider local branches in non-managed bare repository that has at least one remote branch.
 
 = Antora {page-component-version}.3
 
