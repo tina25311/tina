@@ -10,12 +10,41 @@ Understanding how Antora sorts xref:component-version.adoc[component versions] i
 [#sort-docs-components]
 == Docs component sort order
 
-Antora sorts component versions into xref:component-version.adoc#docs-component[documentation components] according to the xref:component-title.adoc[title key] defined in each component version's [.path]_antora.yml_ file.
-If the `title` key isn't set, Antora falls back to the xref:component-name-key.adoc[name key] to sort the components.
+Antora groups component versions into xref:component-version.adoc#docs-component[documentation components].
+The sort order of components in the content catalog is not deterministic.
+However, when the docs components are accessed through the UI model (`site.components`), they are sorted in alphabetical order by title.
+The title of a component is defined by the xref:component-title.adoc[title key] defined in each component version's [.path]_antora.yml_ file.
+If the `title` key isn't set, Antora falls back to the xref:component-name-key.adoc[name key] when sorting the component.
+In each component, the versions are sorted according to the <<version-sorting-rules,component version sorting rules>>.
 
-Docs components are sorted in alphabetical order.
-The resulting alphabetical list of components is used for display purposes in the xref:navigation:index.adoc#component-dropdown[component version selector menu].
-Under each component title or name, a list of versions, sorted according to the <<version-sorting-rules,component version sorting rules>>, is presented in the menu.
+This sorted list of components is typically used by the UI to present a menu widget that the reader can use to navigate between different components and versions.
+Antora's default UI provides such a widget.
+In the default UI, the list of versions for a given component is shown beneath each component's title.
+
+Antora does not require that components and versions be displayed in this order.
+If you want them to be shown in a different order, you need to customize the UI template that generates this list.
+When customizing Antora's default UI, you would need to edit the partial named `nav-explore` located at [.path]_src/partials/nav-explore.hbs_ in the UI project.
+The key fragment of that template is the iteration over `site.components`:
+
+[,hbs]
+----
+{{#each site.components}}
+...
+{{/each}}
+----
+
+Antora's default UI uses the order in which components are stored in the UI model.
+You can modify this order by passing the list of components to a custom helper function that you must also provide:
+
+[,hbs]
+----
+{{#each (rearrange site.components 'component-b,component-a'}}
+...
+{{/each}}
+----
+
+You also have the choice of manually creating a menu entry for each component you want displayed.
+This strategy would also allow you to exclude certain components.
 
 [#version-schemes]
 == Versioning schemes
