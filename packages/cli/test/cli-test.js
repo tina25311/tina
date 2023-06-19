@@ -302,7 +302,7 @@ describe('cli', () => {
       .done()
   })
 
-  // NOTE process.stdout.isTTY is always undefined when Antora is run with with kapok
+  // NOTE process.stdout.isTTY is always undefined when Antora is run with kapok
   it('should use pretty log format if CI=true', () => {
     delete playbookSpec.runtime
     playbookSpec.ui.bundle.url = 'does-not-exist.zip'

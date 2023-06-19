@@ -235,13 +235,13 @@ describe('buildPlaybook()', () => {
 
   it('should throw error if specified playbook file does not exist', () => {
     const expectedMessage =
-      `playbook file not found at ${ospath.resolve('non-existent/file.yml')} ` +
-      `(cwd: ${process.cwd()}, playbook: non-existent/file.yml)`
-    expect(() => buildPlaybook([], { PLAYBOOK: 'non-existent/file.yml' }, schema)).to.throw(expectedMessage)
+      `playbook file not found at ${ospath.resolve('nonexistent/file.yml')} ` +
+      `(cwd: ${process.cwd()}, playbook: nonexistent/file.yml)`
+    expect(() => buildPlaybook([], { PLAYBOOK: 'nonexistent/file.yml' }, schema)).to.throw(expectedMessage)
   })
 
   it('should not show details in error message if specified playbook file matches resolved path', () => {
-    const playbookFilePath = ospath.resolve('non-existent/file.yml')
+    const playbookFilePath = ospath.resolve('nonexistent/file.yml')
     const unexpectedMessage = `playbook file not found at ${playbookFilePath} (`
     const expectedMessage = `playbook file not found at ${playbookFilePath}`
     expect(() => buildPlaybook([], { PLAYBOOK: playbookFilePath }, schema)).to.not.throw(unexpectedMessage)
@@ -249,19 +249,19 @@ describe('buildPlaybook()', () => {
   })
 
   it('should not show cwd in error message if specified playbook file does not match resolved path and is absolute', () => {
-    const playbookFilePath = ospath.resolve('non-existent/file.yml')
-    const requestedPlaybookFilePath = [process.cwd(), 'non-existent', '..', 'non-existent/file.yml'].join(ospath.sep)
+    const playbookFilePath = ospath.resolve('nonexistent/file.yml')
+    const requestedPlaybookFilePath = [process.cwd(), 'nonexistent', '..', 'nonexistent/file.yml'].join(ospath.sep)
     const expectedMessage = `playbook file not found at ${playbookFilePath} (playbook: ${requestedPlaybookFilePath})`
     expect(() => buildPlaybook([], { PLAYBOOK: requestedPlaybookFilePath }, schema)).to.throw(expectedMessage)
   })
 
   it('should throw error if playbook file without extension cannot be resolved', () => {
-    const resolvedRootPath = ospath.resolve('non-existent/file')
+    const resolvedRootPath = ospath.resolve('nonexistent/file')
     const expectedMessage =
       'playbook file not found at ' +
       `${resolvedRootPath}.yml, ${resolvedRootPath}.json, or ${resolvedRootPath}.toml` +
-      ` (cwd: ${process.cwd()}, playbook: non-existent/file)`
-    expect(() => buildPlaybook([], { PLAYBOOK: 'non-existent/file' }, schema)).to.throw(expectedMessage)
+      ` (cwd: ${process.cwd()}, playbook: nonexistent/file)`
+    expect(() => buildPlaybook([], { PLAYBOOK: 'nonexistent/file' }, schema)).to.throw(expectedMessage)
   })
 
   it('should not freeze properties playbook object', () => {

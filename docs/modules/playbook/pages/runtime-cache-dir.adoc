@@ -32,7 +32,7 @@ runtime:
 ----
 
 In this case, the value resolves to the folder [.path]_.cache/antora_ relative to the location of the playbook file.
-We know the the resolved location is relative to the playbook file because it starts with `./`.
+We know the resolved location is relative to the playbook file because it starts with `./`.
 
 The resolution rules for `cache_dir` are the same as for any path in the playbook.
 include::partial$relative-path-rules.adoc[]

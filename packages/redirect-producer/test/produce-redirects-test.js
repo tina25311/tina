@@ -893,7 +893,7 @@ describe('produceRedirects()', () => {
     })
 
     // NOTE removing trailing slash should be handled by playbook builder
-    it('should not remomve trailing slash from site URL path when using it as prefix for rewrite rule', () => {
+    it('should not remove trailing slash from site URL path when using it as prefix for rewrite rule', () => {
       playbook.site.url = 'https://example.org/docs/'
       const result = produceRedirects(playbook, contentCatalog)
       expect(result).to.have.lengthOf(1)

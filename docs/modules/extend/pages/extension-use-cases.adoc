@@ -56,7 +56,7 @@ If it finds any such pages, it unpublishes them.
 include::example$unpublish-unlisted-pages-extension.js[]
 ----
 
-By removing the `out` property from the page, it prevents the page from being published, but is still referencable using an include directive.
+By removing the `out` property from the page, it prevents the page from being published, but is still referenceable using an include directive.
 Alternately, you could choose to remove the page entirely from the content catalog.
 
 == Audit includes

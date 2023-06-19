@@ -11,7 +11,7 @@ const ospath = require('path')
  *
  * Accepts an array of command line arguments (in the form of option flags and
  * switches) and a map of environment variables and translates this data into a
- * playbook object according the the specified schema. If no schema is
+ * playbook object according the specified schema. If no schema is
  * specified, the default schema provided by this package is used.
  *
  * @memberof playbook-builder

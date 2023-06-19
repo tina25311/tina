@@ -32,7 +32,7 @@ Finally, end with a pair of square brackets (`+[]+`).
 
 To embed a video hosted on YouTube or Vimeo, put the video's ID in the macro target and the name of the hosting service (`youtube`, `vimeo`) between the brackets.
 
-.Embedded Youtube video syntax
+.Embedded YouTube video syntax
 ----
 video::rPQoq7ThGAU[youtube]
 ----

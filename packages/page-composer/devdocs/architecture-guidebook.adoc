@@ -115,7 +115,7 @@ The model should have the following properties:
   *** url - the start URL of the page's version
  ** versions - all the versions for the current domain
 
-These properties are available to the Handlbars template.
+These properties are available to the Handlebars template.
 For example, to access the site title in the template, you can use:
 
 ----

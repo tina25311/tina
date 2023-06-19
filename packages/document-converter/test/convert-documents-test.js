@@ -97,7 +97,7 @@ describe('convertDocuments()', () => {
     pages.forEach((page) => expect(page.src).to.not.have.property('contents'))
   })
 
-  it('should not remove src.contents property if keepSource is set on site-wide asciidocConfg', () => {
+  it('should not remove src.contents property if keepSource is set on site-wide asciidocConfig', () => {
     const contentCatalog = mockContentCatalog([
       {
         relative: 'index.adoc',

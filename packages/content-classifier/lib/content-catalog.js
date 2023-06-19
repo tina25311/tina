@@ -607,7 +607,7 @@ function addSymbolicVersionAlias (componentVersion) {
 
 function computeVersionSegment (componentVersion, mode) {
   const version = componentVersion.version
-  // special designation for master verson is @deprecated; special designation scheduled to be removed in Antora 4
+  // special designation for master version is @deprecated; special designation scheduled to be removed in Antora 4
   const normalizedVersion = version && version !== 'master' ? version : ''
   const { versionSegment = normalizedVersion } = componentVersion
   if (mode === 'original') return versionSegment

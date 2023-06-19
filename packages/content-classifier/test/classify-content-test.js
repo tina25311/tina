@@ -265,7 +265,7 @@ describe('classifyContent()', () => {
 
     it('should group non-semantic versions by prerelease status', () => {
       aggregate.length = 0
-      ;['fiesty', 'zany', 'zesty', 'breezy', 'contrary'].forEach((version) => {
+      ;['feisty', 'zany', 'zesty', 'breezy', 'contrary'].forEach((version) => {
         aggregate.push({
           name: 'the-component',
           title: 'The Component',
@@ -276,7 +276,7 @@ describe('classifyContent()', () => {
       })
       const component = classifyContent(playbook, aggregate).getComponent('the-component')
       const versions = component.versions.map(({ version }) => version)
-      expect(versions).to.eql(['zany', 'contrary', 'zesty', 'fiesty', 'breezy'])
+      expect(versions).to.eql(['zany', 'contrary', 'zesty', 'feisty', 'breezy'])
       expect(component.latest.version).to.eql('zesty')
       expect(component.latestPrerelease.version).to.eql('zany')
     })
@@ -848,7 +848,7 @@ describe('classifyContent()', () => {
       files.push({ path: 'modules/ROOT/pages/index.adoc', src: { extname: '.adoc' } })
       const contentCatalog = classifyContent(playbook, aggregate, siteAsciiDocConfig, (contentCatalog) => {
         expect(contentCatalog.getComponentVersion('the-component', 'v1.2.3').files).to.equal(files)
-        contentCatalog.registerComponentVersion('the-other-component', '1.0', { title: 'The Other Compmonent' })
+        contentCatalog.registerComponentVersion('the-other-component', '1.0', { title: 'The Other Component' })
         return contentCatalog
       })
       expect(contentCatalog.getComponents()).to.have.lengthOf(2)
@@ -1581,7 +1581,7 @@ describe('classifyContent()', () => {
     })
 
     // QUESTION should we throw an error or warning?
-    it('should not register navigation file that points to non-existent file', () => {
+    it('should not register navigation file that points to nonexistent file', () => {
       aggregate[0].nav = ['modules/ROOT/no-such-file.adoc']
       aggregate[0].files.push(createFile('modules/ROOT/pages/the-page.adoc'))
       aggregate[0].files.push(createFile('modules/ROOT/nav.adoc'))

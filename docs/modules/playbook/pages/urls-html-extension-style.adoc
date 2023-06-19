@@ -1,7 +1,7 @@
 = HTML Extension Styles
 
 Antora allows you to customize the file extension used in the URL of HTML pages.
-By default, the URL will end with [.ext]_.html_, mirroring the name of the the published file.
+By default, the URL will end with [.ext]_.html_, mirroring the name of the published file.
 If you want to "`prettify`" the URL by hiding the extension for SEO or other reasons, you can configure Antora to do so.
 You either have the option to drop the extension outright or to replace the extension with forward slash (a technique known as indexify).
 When using either of these options, Antora will also drop the last URL segment if the source page is named [.path]_index.adoc_.
