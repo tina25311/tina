@@ -10,7 +10,7 @@ Instead, the error message is printed directly to standard error (STDERR).
 
 Explicitly assigning a value to the `format` key is optional.
 When `format` isn't set, Antora assigns one of the key's accepted values, either `json` or `pretty`, based on the environment it detects at runtime.
-Antora assigns the value `pretty` to the `format` key when Antora is running in a <<ci,continous integration environment (CI=true)>>, the `IS_TTY` environment variable is `true`, or the terminal is interactive (TTY) and the `IS_TTY` environment variable is not `false`.
+Antora assigns the value `pretty` to the `format` key when Antora is running in a <<ci,continuous integration environment (CI=true)>>, the `IS_TTY` environment variable is `true`, or the terminal is interactive (TTY) and the `IS_TTY` environment variable is not `false`.
 In all other cases, Antora uses the `json` value.
 
 [#format-key]

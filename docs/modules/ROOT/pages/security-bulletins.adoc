@@ -37,7 +37,7 @@ In the meantime, you can explicitly upgrade this dependency in your dependency c
 This remediation is used in the https://gitlab.com/antora/docs.antora.org/-/blob/main/netlify/package.json[build for this site].
 You can learn more about npm overrides in the https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides[package.json documentation].
 Unfortunately, npm overrides can only be used by the consumer of a library, not the library itself.
-Thus, this is not a remdiation solution Antora itself can enact.
+Thus, this is not a remediation solution Antora itself can enact.
 
 === Assessment
 

@@ -44,6 +44,6 @@ For interactive terminals, limiting the fetch concurrency also limits the number
 Once a repository is fetched, or if a fetch is not required, Antora puts the repository into a pool to be scanned.
 Antora never places a limit on how many repositories are scanned concurrently.
 The limit is only applied to the fetch step.
-Thus, the `fetch_concurrency` setting will not have any effect on the content aggreator's behavior unless it's fetching content from remote repositories.
+Thus, the `fetch_concurrency` setting will not have any effect on the content aggregator's behavior unless it's fetching content from remote repositories.
 
 Antora fetches content from a remote repository if it has not previously cloned the repository or the xref:runtime-fetch.adoc[runtime.fetch key] is set.

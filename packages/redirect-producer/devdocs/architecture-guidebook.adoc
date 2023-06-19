@@ -16,7 +16,7 @@ Which configuration to produce is controlled by the redirect facility setting in
 Then, the redirect configuration files (i.e., bounce pages or a rewrite rule file) get put into the site catalog to be published along with the other files in the site.
 
 The redirect configuration is based on files in the `alias` family that are retrieved from the content catalog.
-Each entry represents an association between an alias page (i.e., a non-existent page) and the target page to which it points.
+Each entry represents an association between an alias page (i.e., a nonexistent page) and the target page to which it points.
 (The contents of the alias file is empty).
 If the redirect facility is static, the redirect producer populates the contents of the alias file with a static HTML page that redirects the browser to the target page.
 In all other cases, the URL of the alias page is mapped to the URL of the target page.

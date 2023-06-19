@@ -33,7 +33,7 @@ The _Getting Started_ list will be read from the partial file and included in th
 
 == Include a nested list
 
-In some circumstances, you aren't sure where the the partial list will be included in the navigation tree, and you cannot assume it's being added at the top level.
+In some circumstances, you aren't sure where the partial list will be included in the navigation tree, and you cannot assume it's being added at the top level.
 What you want is for the navigation list from the include to be a level below the current list item.
 
 In order to accomplish this layout, wrap the included list in an open block:

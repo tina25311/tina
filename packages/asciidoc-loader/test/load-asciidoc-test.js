@@ -3011,7 +3011,7 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, '#section-a', 'Section A')
     })
 
-    it('should resolve internal reference propertly if path attribute is set on document', () => {
+    it('should resolve internal reference properly if path attribute is set on document', () => {
       const contentCatalog = mockContentCatalog({
         family: 'page',
         module: 'other-module',

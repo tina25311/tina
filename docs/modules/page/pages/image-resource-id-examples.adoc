@@ -282,7 +282,7 @@ Let's use the files that belong to the component versions _colorado 5.2_ (<<ex-c
 <.> Defines subsequent files as pages
 
 Using files from <<ex-co-v>> and <<ex-wy>>, let's insert [.path]_panorama.png_ (target image) into [.path]_ranges.adoc_ (current page).
-The image [.path]_panorama.png_ belongs to the the _sierra-madre_ module of _wyoming 1.0_.
+The image [.path]_panorama.png_ belongs to the _sierra-madre_ module of _wyoming 1.0_.
 In <<ex-across-components>>, the resource ID assigned to the image macro specifies the version, component, module, and file coordinates of the target image because the target image belongs to the _wyoming 1.0_ component version whereas the current page belongs to _colorado 5.2_.
 
 .Insert panorama.png (target image) as a block image into ranges.adoc (current page)
@@ -418,7 +418,7 @@ image::5.2@wilderness-map.jpg[]
 As shown in <<ex-across-versions>>, the target image's version coordinate is `5.2` and its file coordinate is `wilderness-map.jpg`.
 
 ////
-This needs to either become its Fown page or be added as section to another page
+This needs to either become its own page or be added as section to another page
 
 == Apply attributes to an image
 

@@ -547,7 +547,7 @@ function computePub (src, out, family, version, htmlUrlExtensionStyle) {
 }
 
 function computeVersionSegment (name, version, mode) {
-  // special designation for master verson is @deprecated; special designation scheduled to be removed in Antora 4
+  // special designation for master version is @deprecated; special designation scheduled to be removed in Antora 4
   if (mode === 'original') return !version || version === 'master' ? '' : version
   const strategy = this.latestVersionUrlSegmentStrategy
   if (!version || version === 'master') {
