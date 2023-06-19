@@ -46,7 +46,7 @@ The repository will be named *antora-community* because the files will communica
 
 == Consequences
 
-Initially, the project will only contain a few files, such as the lifecyle and versioning policy and communication channel information.
+Initially, the project will only contain a few files, such as the lifecycle and versioning policy and communication channel information.
 Files currently stored in the Antora core repository and other repositories that are selected for the community repository will need to be moved.
 The original repositories will then need to be updated with redirects, symlinks, links, notices, etc. to the community content.
 

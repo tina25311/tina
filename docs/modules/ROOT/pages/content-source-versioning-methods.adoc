@@ -68,7 +68,7 @@ You should only consider versioning content using folders if either the reposito
 == Documentation versions and software releases
 
 We view documentation as the explanation for the software in a release line.
-The documentation describes the software that has been been published.
+The documentation describes the software that has been published.
 Thus, it should be possible to update the documentation even after the software has been released (perhaps even long after).
 
 The documentation lifecycle isn't bound to the software lifecycle, but rather follows it.

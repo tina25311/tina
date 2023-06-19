@@ -1135,7 +1135,7 @@ _No changes since previous release._
 * *content-classifier*: Change arguments of ContentCatalog#registerComponentVersion(...) to `name, version, { title, prerelease, startPage } = {}` (#287)
 * *content-classifier*: Rename latestVersion property on component version to latest; add alias for latestVersion (#287)
 * *page-composer*: Set canonicalUrl to qualified URL of latest page version unless version is a prerelease (#287)
-* *page-composer*: Look up page version using ContentCatalog#getById(resourceId) instead of ContentCatalog#findBy(critiera) (#287)
+* *page-composer*: Look up page version using ContentCatalog#getById(resourceId) instead of ContentCatalog#findBy(criteria) (#287)
 * *page-composer*: Assign components to `site.components` as a map instead of an array (#253)
 
 === Fixed

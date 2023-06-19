@@ -15,7 +15,7 @@
 :url-issue-labels: {url-project}/labels
 :url-ci-pipelines: {url-project}/pipelines
 :url-members: {url-project}/-/project_members
-// Project documentation URIs (alphebetized)
+// Project documentation URIs (alphabetized)
 :url-adrs: {url-project}/tree/main/devdocs/adr
 :url-adr-0001: {url-project}/blob/main/devdocs/adr/0001-minimum-node-version.adoc
 :url-packages: {url-project}/blob/main/packages
@@ -31,7 +31,7 @@
 :url-site-mapper-arch: {url-packages}/site-mapper/devdocs/architecture-guidebook.adoc
 :url-file-publisher-arch: {url-packages}/file-publisher/devdocs/architecture-guidebook.adoc
 :url-ui-loader-arch: {url-packages}/ui-loader/devdocs/architecture-guidebook.adoc
-// External URLs (alphebetized)
+// External URLs (alphabetized)
 :url-asciidoc-recommended: https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line
 :url-async-func: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 :url-chai: http://chaijs.com/api/bdd/
@@ -451,7 +451,7 @@ Here are a few rules when writing tests and assertions:
  ** See https://eslint.org/docs/rules/no-unused-expressions
  ** The functional assertion syntax is provided by the dirty-chai plugin.
 * When creating a negated assertion, please write it as `.to.not` instead of `.not.to` (e.g., `expect(actual).to.not.have.property('bar')`).
- ** To help you remember, the assertion should always begin wtih `.to`.
+ ** To help you remember, the assertion should always begin with `.to`.
 * Use `.equal` instead of `.eql` to compare strings (e.g., `expect(actual).to.equal('foo')`).
  ** expect#equal is a strict === comparison
 * Use `.eql` to compare arrays and objects (e.g., `expect(actual).to.equal(['a', 'b', 'c'])`).

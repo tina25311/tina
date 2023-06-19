@@ -157,7 +157,7 @@ branches: v{5,6}.*.x
 
 This expression will match `v5.0.x`, `v5.1.x`, and `v6.0.x`.
 
-You can use an alternation expression to match the absense of a character or segment using an empty entry.
+You can use an alternation expression to match the absence of a character or segment using an empty entry.
 Let's consider of making the `v` prefix optional.
 
 ----
