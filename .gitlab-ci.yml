@@ -76,50 +76,49 @@ docs:
   <<: *if_docs_mr
   script: echo 'we love docs!'
 # this job also seeds the dependency cache
-#lint:
+lint:
+  extends: .npm
+  stage: .pre
+  <<: *unless_docs_mr
+  cache:
+    <<: *npm_cache
+    policy: pull-push
+  script:
+  - npm run deps
+  - npm run lint
+  - if [ -n "$(npm --silent run format && git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
+test:node-16-linux:
+  extends: .npm
+  <<: *unless_docs_mr
+  script: npm run coverage
+  coverage: '/^All files *[|] *([0-9.]+) *[|]/'
+  <<: *save_report_artifacts
+test:node-18-linux:
+  extends: .npm
+  image: node:18-$LINUX_DISTRO
+  <<: *unless_docs_mr
+#test:macos:
 #  extends: .npm
-#  stage: .pre
-#  <<: *unless_docs_mr
-#  cache:
-#    <<: *npm_cache
-#    policy: pull-push
-#  script:
-#  - npm run deps
-#  - npm run lint
-#  - if [ -n "$(npm --silent run format && git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
-#test:node-16-linux:
-#  extends: .npm
-#  <<: *unless_docs_mr
-#  script: npm run coverage
-#  coverage: '/^All files *[|] *([0-9.]+) *[|]/'
-#  <<: *save_report_artifacts
-#test:node-18-linux:
-#  extends: .npm
-#  image: node:18-$LINUX_DISTRO
-#  <<: *unless_docs_mr
-##test:macos:
-##  extends: .npm
-##  image: macos-12-xcode-13
-##  tags: [shared-macos-amd64]
-## https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
-#test:windows:
-#  extends: .npm
-#  tags: [windows]
-#  # cache does not currently work with the shared Windows runner
-#  cache: []
-#  before_script:
-#  - choco upgrade -y nodejs --version=16.17.0
-#  - *platform_info
-#  - npm ci --quiet
-#  script: npm run coverage
-#  <<: *save_report_artifacts
+#  image: macos-12-xcode-13
+#  tags: [shared-macos-amd64]
+# https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
+test:windows:
+  extends: .npm
+  tags: [windows]
+  # cache does not currently work with the shared Windows runner
+  cache: []
+  before_script:
+  - choco upgrade -y nodejs --version=16.17.0
+  - *platform_info
+  - npm ci --quiet
+  script: npm run coverage
+  <<: *save_report_artifacts
 release:
   stage: deploy
   interruptible: false
   environment: releases
   <<: *if_release
   script:
-  #- npm/release.sh
-  #- env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=$RELEASE_BRANCH" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'
+  - npm/release.sh
   # NOTE docker-antora only has a single branch, so the ref will always be main for now
-  - sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=main" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'
+  - env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=main" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'
