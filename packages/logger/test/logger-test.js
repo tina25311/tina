@@ -707,6 +707,14 @@ describe('logger', () => {
       expect(lines[2]).to.match(/^ {8}at /)
     })
 
+    it('should not modify log name if error contains hostname property', () => {
+      const err = Object.assign(new Error('bad connection'), { hostname: 'example.org' })
+      const logger = configure({ format: 'pretty' }).get('antora')
+      const lines = captureStderrSync(() => logger.fatal(err, 'disruption!'))
+      expect(lines.length).to.be.greaterThan(2)
+      expect(lines[0]).to.endWith(' FATAL (antora): disruption!')
+    })
+
     it('should ignore levelFormat setting when format is pretty', () => {
       const logger = configure({ name: 'antora', format: 'pretty', levelFormat: 'number' }).get()
       const lines = captureStderrSync(() => logger.info('love is the message'))

@@ -13,6 +13,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *logger*: Add hostname to ignore list to prevent hostname property on logged error from modifying logger name (#1070)
 * *content-aggregator*: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (#1096)
 
 === Changed
