@@ -27,6 +27,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *logger*: Restore error stack in log output when using pino-std-serializers >= 6.1 (#1049)
+* *logger*: Add hostname to ignore list to prevent hostname property on logged error from modifying logger name (#1070)
 * *content-aggregator*: Consider local branches in non-managed bare repository that has at least one remote branch (#1064)
 * *content-aggregator*: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (#1096)
 * *ui-loader*: Correctly handle connection error when retrieving remote UI bundle

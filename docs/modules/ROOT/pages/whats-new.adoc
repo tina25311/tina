@@ -72,6 +72,7 @@ Issue {url-issues}/1022[#1022^]:: Decouple logic to compute default log format f
 Issue {url-issues}/1024[#1024^]:: Preserve target when creating static route if target is an absolute URL (redirect-producer).
 Issue {url-issues}/1025[#1025^]:: Allow content aggregator to parse value of `content.branches` and `content.tags` playbook keys (playbook-builder).
 Issue {url-issues}/1049[#1049^]:: Restore error stack in log output when using pino-std-serializers >= 6.1 (logger).
+Issue {url-issues}/1070[#1070^]:: Add hostname to ignore list to prevent hostname property on logged error from modifying logger name (logger)
 Issue {url-issues}/1064[#1064^]:: Consider local branches in non-managed bare repository that has at least one remote branch (content-aggregator).
 Issue {url-issues}/1092[#1092^]:: Don't fail to load AsciiDoc if target of image macro resolves to an unpublished image (asciidoc-loader).
 Issue {url-issues}/1095[#1095^]:: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle (site-generator).

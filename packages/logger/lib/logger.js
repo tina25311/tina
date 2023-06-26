@@ -150,7 +150,7 @@ function createPrettyDestination (destination, colorize) {
         return `${worktree || local || url || '<unknown>'} (${reftype}: ${refname}${flag}${pathInfo})`
       },
     },
-    ignore: 'hint',
+    ignore: 'hint,hostname', // ignore hostname in case it's set on an error object
     messageFormat: (log, msgKey) => {
       let hint, msg
       if (typeof (msg = log[msgKey]) !== 'string') return
