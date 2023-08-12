@@ -38,6 +38,11 @@ ui:
   bundle:
     url: ./../ui/build/ui-bundle.zip
     start_path: dark-theme
+    custom_headers:
+      - header: 'x-test-header'
+        value: 'foo'
+      - header: 'x-other-header'
+        value: 'bar'
   default_layout: default
   supplemental_files:
   - path: head-meta.hbs
