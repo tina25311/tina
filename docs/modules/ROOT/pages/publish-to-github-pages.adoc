@@ -76,7 +76,7 @@ Let's get started!
 This workflow assumes that the name of the default branch of your playbook repository is _main_, that the name of your playbook file is [.path]_antora-playbook.yml_, and that Antora is configured to publish the files to the [.path]_build/site_ directory.
 If your site uses different settings, you'll need to update the values in the workflow file accordingly.
 
-..github/workflow/publish.yml builds the Antora site and deploys it to GitHub Pages using GitHub Actions
+..github/workflows/publish.yml builds the Antora site and deploys it to GitHub Pages using GitHub Actions
 [#github-actions-workflow,yaml]
 ----
 include::example$github-actions-workflow.yml[]
@@ -93,7 +93,7 @@ First, you need to update your playbook repository and UI to meet the minimum re
 Once that's done, return to the GitHub Actions workflow and configure it to install the extension at the same time it installs Antora.
 The result is shown in <<github-actions-workflow-with-lunr>>.
 
-..github/workflow/publish.yml includes the Antora Lunr Extension
+..github/workflows/publish.yml includes the Antora Lunr Extension
 [#github-actions-workflow-with-lunr,yaml]
 ----
 include::example$github-actions-workflow-with-lunr.yml[]
