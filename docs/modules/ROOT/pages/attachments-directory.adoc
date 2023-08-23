@@ -41,7 +41,7 @@ Antora uses the family directory, __attachments__-relative directory path (if pr
 === Binaries and other large files
 
 If your content includes large attachment files, such as sample project binaries, libraries, or PDFs, we don't recommend storing them in a regular git repository.
-Instead, host them in a binary repository such as Bintray or S3, or use git LFS (Large File Storage).
+Instead, host them in a binary repository such as S3, or use git LFS (Large File Storage).
 
 include::partial$assets-directory.adoc[]
 
