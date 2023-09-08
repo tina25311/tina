@@ -83,7 +83,7 @@ exit_code=$?
 # nuke npm settings
 unlink $HOME/.npmrc
 
-# check for any uncommitted files
+# report any uncommitted files
 git status -s -b
 
 # kill the ssh-agent
