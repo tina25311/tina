@@ -44,7 +44,7 @@ In turn, `\&#167;` will display as `&#167;`.
 |(C)
 |
 
-|Ellipses
+|Ellipsis
 |...
 |\&#8230;
 |...
