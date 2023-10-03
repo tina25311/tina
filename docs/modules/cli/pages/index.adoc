@@ -57,6 +57,17 @@ Commands:
 Run 'antora <command> --help' to see options and examples for a command (e.g., antora generate --help).
 ....
 
+.Windows troubleshooting
+[TIP]
+====
+You may get the message "`running scripts is disabled`" when running the `antora` command in Powershell.
+If you do, you can work around this problem by running the following command in PowerShell as an administrator:
+
+ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+
+An alternate workaround is to run Antora using the Windows Command Prompt.
+====
+
 The usage statement provides an overview of the `antora` program, which includes:
 
 * the command syntax,
