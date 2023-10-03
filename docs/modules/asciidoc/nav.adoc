@@ -1,5 +1,6 @@
 .AsciiDoc Primer
 * xref:asciidoc.adoc[Why AsciiDoc?]
+* xref:document-header.adoc[Document Header]
 * xref:section-headings.adoc[Sections]
 * xref:text-and-punctuation.adoc[Text and Punctuation Styles]
 ** xref:bold.adoc[Bold]
