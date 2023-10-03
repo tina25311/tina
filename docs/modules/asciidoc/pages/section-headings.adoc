@@ -5,7 +5,8 @@ On this page, you'll learn:
 
 * [x] How to mark up section headings with AsciiDoc.
 
-== Heading level syntax
+[#heading-level-syntax]
+== Heading syntax and levels
 
 Sections partition a page into a content hierarchy.
 In AsciiDoc, sections are defined using section titles.
