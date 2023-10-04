@@ -24,6 +24,50 @@ include::example$exclude-private-content-sources-extension.js[]
 This extension works because the playbook is mutable until the end of this event, at which point Antora freezes it.
 The call to `this.updateVariables` to replace the `playbook` variable in the generator context is not required, but is used here to express intent and to future proof the extension.
 
+== Unpublish flagged pages
+
+If you don't want a page to ever be published, you can prefix the filename with an underscore (e.g., _hidden.adoc).
+However, if you only want the page to be unpublished conditionally, then you need to reach for an extension.
+
+When using this extension, any page that sets the `page-unpublish` page attribute will not be published (meaning it will be unpublished).
+For example:
+
+[,asciidoc]
+----
+= Secret Page
+:page-unpublish:
+
+This page will not be published.
+----
+
+You can set the `page-unpublish` page attribute based on the presence (or absence) of another AsciiDoc attribute, perhaps one set in the playbook or as a CLI option.
+For example:
+
+[,asciidoc]
+----
+= Secret Page
+ifndef::include-secret[:page-unpublish:]
+
+This page will not be published.
+----
+
+This extension runs during the `documentsConverted` event.
+This is the earliest event that provides access to the AsciiDoc metadata on the virtual file.
+The extension iterates over all publishable pages in the content catalog and unpublishes any page that sets the `page-unpublish` attribute.
+To unpublish the page, the extension removes the `out` property on the virtual file.
+If the `out` property is absent, the page will not be published.
+
+.page-unpublish-tag-extension.js
+[,js]
+----
+include::example$unlisted-pages-extension.js[tags=**]
+----
+
+Keep in mind that there may be references to the unpublished page.
+While they will be resolved by Antora, the target of the reference will not be available, which would result in a 404 response from the web server.
+
+For more fine-grained control for how a page is unpublished, you could write an extension that replaces the `convertDocument` or `convertDocuments` functions.
+
 == Report unlisted pages
 
 After you create a new page, it's easy to forget to add it to the navigation so that the reader can access it.
