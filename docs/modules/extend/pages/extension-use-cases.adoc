@@ -46,7 +46,7 @@ For example:
 [,asciidoc]
 ----
 = Secret Page
-ifndef::include-secret[:page-unpublish:]
+\ifndef::include-secret[:page-unpublish:]
 
 This page will not be published.
 ----
