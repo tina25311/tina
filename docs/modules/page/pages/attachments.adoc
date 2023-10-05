@@ -26,7 +26,7 @@ When referencing an attachment, the xref macro is structured and behaves much li
 * The xref:resource-id.adoc[resource ID of an attachment] must specify the `attachment$` xref:resource-id-coordinates.adoc#id-family[family coordinate] when an attachment is assigned to an xref macro, otherwise Antora will assume the resource ID is that of a page at runtime.
 * A fragment (element ID) can't be appended to the end of the attachment's resource ID.
 * Attachments don't have default reference text.
-If <<link-text,link text>> isn't specified in the xref macro, the URL of the published attachment is displayed as the link text in the current page.
+If <<link-text,link text>> isn't specified in the xref macro, the target of the xref is displayed as the link text.
 
 How many of the target attachment's xref:resource-id-coordinates.adoc[resource ID coordinates] you need to specify depends on the component version and module of the target attachment in relation to the current page.
 
@@ -163,14 +163,13 @@ No link text has been specified between the xref macro's square brackets.
 Download xref:attachment$practice-project.zip[] to try it out!
 ----
 
-Because the xref macro in <<ex-no-text>> isn't assigned link text, Antora will display the URL of the attachment as the link text in the published page.
+Because the xref macro in <<ex-no-text>> isn't assigned link text, Antora will display the xref target as the link text.
 
 ....
-Download https://docs.example.com/component/version/module/_attachments/practice-project.zip to try it out!
+Download attachment$practice-project.zip to try it out!
 ....
 
-Antora uses the xref:ROOT:how-antora-builds-urls.adoc[URL of the published attachment] for display purposes when you don't specify link text.
-(Unlike pages, attachments don't have xref:link-content.adoc#default[default reference text].)
+Unlike pages, attachments don't have xref:link-content.adoc#default[default reference text], so it's always good to specify link text to ensure a good reader experience.
 
 You can specify link text by entering it between the square brackets of the xref macro.
 
