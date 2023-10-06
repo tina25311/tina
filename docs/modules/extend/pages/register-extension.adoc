@@ -1,16 +1,33 @@
 = Register an Extension
 
-An extension is inactive until it's registered with Antora.
+An extension is not active until registered with Antora.
 There are two ways to register an extension.
-You can list it as an entry in the `extensions` key under the `antora` category key in the playbook file or specify it using the `--extension` CLI option.
-The `--extension` CLI option adds entries to the `extensions` key at runtime.
+You can specify it using the `--extension` CLI option or you can list it as an entry in the `extensions` key under the `antora` category key in the playbook file.
 
 Once registered, Antora invokes the xref:define-extension.adoc[register function] of the extension in the order it's listed in the playbook file or passed to the CLI.
 The extensions in the playbook file are registered before the extensions passed to the CLI, though this order can be changed by xref:enable-extension.adoc[enabling a registered extension on request].
 
-== extensions key
+[#extension-option]
+== CLI option
 
-The `extensions` key is specified under the `antora` category key in the playbook file.
+A quick way to register (and enable) an extension without modifying the playbook file is to specify it using the `--extension` option provided by the `antora` CLI.
+The `--extension` CLI option adds entries to the `extensions` key in the Antora playbook at runtime.
+
+Here's an example of how to use this CLI option to register our extension.
+
+ --extension ./my-extension.js
+
+If you have more than one extension to register, you can specify this option multiple times.
+
+Using the CLI option requires you to type a longer command each time you run Antora.
+For that reason, it's often better to specify it in the playbook file, particularly if you're going to always use it.
+Later on you'll learn that even if you do add it to the playbook file, it's still possible to control when it's activated using the CLI.
+
+[#extensions-key]
+== Playbook key
+
+An Antora extension can be registered in the playbook file using the `extensions` key.
+The `extensions` key is specified under the `antora` category key.
 The value of the `extensions` key must be an array.
 Each entry in the array is either a string or a map (key/value pairs).
 
