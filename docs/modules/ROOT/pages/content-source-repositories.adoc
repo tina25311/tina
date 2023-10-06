@@ -8,14 +8,19 @@ These source files are only retrieved and processed correctly if Antora can loca
 
 The source files containing a site's content are stored in one or more git repositories.
 These repositories can be remote, local, or a combination of both.
-In a playbook file, you'll enter several parameters (url, git references, and start paths) that 1. allow Antora to locate and connect to your content source repositories, and 2. provide Antora with the location criteria that resolves to one or more <<content-source-root,content source roots>> within a git repository.
-//A [.term]*content source* is one or more routes--git references and start paths--that lead to unique <<content-source-root,content source roots>>.
-//Content sources are specified in an Antora playbook file.
+In a playbook file, you'll enter several parameters (e.g., url, branches, tags, and start paths) that:
+
+. allow Antora to locate and connect to your content source repositories, and
+. provide Antora with the location criteria that resolves to one or more <<content-source-root,content source roots>> within a git repository.
 
 If the repository is local, by default Antora will attempt to use the worktree of that repository if the current branch matches one of the branches defined on the content source.
 This behavior is configurable.
-Antora requires that a local directory is a git repository (thus making the local directory a worktree).
-However, you can initialize an empty repository at that location and Antora will then be able to use it (e.g., `git init . && git commit --allow-empty -m init`).
+
+Antora requires a local directory to be a git repository, which means the local directory is a git worktree.
+The git repository itself can be empty, meaning you don't have to commit any files in order for it to work.
+If the local directory is not yet a git repository, you can make it one by running the following commands:
+
+ $ git init . && git commit --allow-empty -m init
 
 Before configuring a site's playbook, you'll want to determine where to set up the content source roots in your repositories.
 // to be located and then set up the directories Antora requires.
