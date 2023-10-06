@@ -60,13 +60,14 @@ If the `out` property is absent, the page will not be published.
 .page-unpublish-tag-extension.js
 [,js]
 ----
-include::example$unlisted-pages-extension.js[tags=**]
+include::example$page-unpublish-flag-extension.js[]
 ----
 
 Keep in mind that there may be references to the unpublished page.
-While they will be resolved by Antora, the target of the reference will not be available, which would result in a 404 response from the web server.
+While they will be resolved by Antora, the target of the reference will not be available, which will result in a 404 response from the web server.
 
-For more fine-grained control for how a page is unpublished, you could write an extension that replaces the `convertDocument` or `convertDocuments` functions.
+For more fine-grained control over when a page is unpublished, you could write an extension that replaces the `convertDocument` or `convertDocuments` functions.
+Doing so would allow you to unpublish the page before references to it from other pages are resolved so that they appear as warnings.
 
 == Report unlisted pages
 
