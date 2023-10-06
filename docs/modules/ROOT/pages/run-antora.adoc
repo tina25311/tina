@@ -163,6 +163,38 @@ If you've been following along with the Demo materials, once you find the demo-s
 Antora can authenticate with private repositories using HTTP Basic authentication over HTTPS.
 See xref:playbook:private-repository-auth.adoc[Private repository authentication] to learn more.
 
+== Repositories with large pack files
+
+Antora may fail to read a git repository if it contains very large pack files (those > 2g).
+If this situation occurs, you will get the following error:
+
+....
+FATAL (antora) : Cannot read properties of null (reading 'slice')
+....
+
+This failure is caused by a https://github.com/isomorphic-git/isomorphic-git/issues/1163[known limitation] of the git client Antora uses (isomorphic-git).
+The limitation is due to a hard limit in the memory settings of the Node.js runtime.
+Here's the underlying error message:
+
+....
+RangeError [ERR_FS_FILE_TOO_LARGE]: File size is greater than 2 GiB
+....
+
+2g is the max buffer size in Node.js.
+In other words, Node.js has an upper limit to the size of a file it's able to read into memory.
+If the pack file exceeds this size, Node.js and, in turn, isomoprhic-git, will fail.
+In order to read larger files, isomorphic-git would have to switch to streams instead of putting the whole file in a buffer, if that's even feasible.
+
+For a local git repository, the workaround is to configure git so it caps the size of any pack files it creates locally.
+This is done using the `pack.packSizeLimit` config setting.
+
+ $ git config pack.packSizeLimit 1g && git gc
+
+You can find information about this setting on the https://www.git-scm.com/docs/git-pack-objects[git-pack-objects] help page in the git documentation.
+
+Keep in mind that this workaround will only help with a local repository (a repository that is already cloned and configured).
+Changing the pack size of the local repository isn't going to change the storage settings of the remote repository.
+The `pack.packSizeLimit` needs to be adjusted on the git server as well so git doesn't attempt to send pack files that are too large over the wire.
 
 ////
 The script loads and executes Antora and passes any trailing configuration flags and switches.
