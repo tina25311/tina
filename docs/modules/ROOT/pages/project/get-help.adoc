@@ -18,13 +18,19 @@ If you want to ask for help, share feedback, or exchange ideas with project main
 
 * {url-chat}[Chat^] (Zulip)
 
-The chat is partitioned into streams.
-If you find an active discussion that matches the topic of your post, feel free to join that discussion.
-Otherwise, please select a stream most relevant to your topic, click "`New Topic`", enter a subject, write your post, then click "`Send`".
-Please do not post unrelated questions or comments to an existing topic since that disrupts the discussion and makes answers more difficult to find.
-If you aren't sure where to post, please create a new topic in the `#users` stream and a moderator may choose to reclassify it.
+If you find an ongoing (unresolved) discussion that matches the topic of your post, feel free to join that discussion.
 
 TIP: Please use the filter or search feature to find existing topics before starting a new one.
+You may find the information you're looking for within the discussions that have already taken place.
+
+If you can't find an existing topic that answers your question, you can start a new topic.
+The chat is partitioned into streams by subject matter.
+We ask that you select an appropraite stream before you create a new topic.
+
+NOTE: If you aren't sure where to post, create a new topic in the `#users` stream and a moderator will reclassify it if necessary.
+
+Once you've selected a stream, click "`New Topic`", enter a subject, write your post, then click "`Send`".
+You can also select a stream after you click "`New Topic`".
 
 The discussions in the project chat are archived and public.
 There's no guarantee the logs will be saved indefinitely, though we do plan keep them as long as we're permitted to do so.
@@ -33,8 +39,8 @@ Keep in mind that users participate in the project chat voluntarily, so please b
 The project chat is not 1-on-1 support.
 You're in a public space.
 
-Do not `@` mention someone when writing a message unless a) the subject matter absolutely requires the attention of that person or b) that person has already replied to the topic and is interacting with you.
-Using the `@` mention to draw attention to your question is not courteous to that person or fair to others.
+IMPORTANT: Do not `@` mention someone when writing a message unless a) the subject matter absolutely requires the attention of that person or b) that person has already replied to the topic and is interacting with you.
+Using the `@` mention to draw attention to your question is not courteous to that person or fair to others participating.
 You're free to post your message to the community at large (no `@` mention).
 If someone has something to share in response, they will do so if and when they have time.
 You can reference someone without notifying them using the `@_` prefix, which is considered acceptable conduct.
