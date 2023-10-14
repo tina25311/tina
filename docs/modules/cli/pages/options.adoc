@@ -24,7 +24,8 @@ See xref:index.adoc#help[Display Antora CLI help].
 |[[require]]`-r`, `--require`
 |Not set
 |Node.js package (i.e., module) name or filesystem path to a script
-|Can specify multiple times.
+|Requires additional code (a Node.js module or a local JavaScript file) before Antora is loaded.
+Can specify multiple times.
 See xref:playbook:asciidoc-extensions.adoc#preload-extensions[Preload Asciidoctor extensions].
 
 |`--stacktrace`
