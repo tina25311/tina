@@ -124,7 +124,7 @@ Instead of registering extensions using the playbook, you can preload extensions
 The value of this option may be either a path to a file (relative to the current directory), or a node module name.
 The `-r` option may be specified multiple times.
 
-This option gives site authors the ability to load additional code into the runtime before Antora begins executing.
+This option gives site authors the ability to load additional code into the runtime before Antora begins executing, in fact, before Antora is even loaded.
 The option follows the module resolution rules of the `require()` function in Node.js.
 A common use case for this option is to register Asciidoctor extensions globally.
 
