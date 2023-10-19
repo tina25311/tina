@@ -43,13 +43,13 @@ However, the result it produces is the same.
 === *nix
 
 To make a symlink on a Unix-like operating system (aka *nix), you use the `ln` command with the `-s` flag.
-Here's an example of how to make a symlink to an adjacent file:
+Here's an example of how to make a symlink to a sibling file:
 
  $ ln -s target.adoc link.adoc
 
 In this scenario, [.path]_link.adoc_ is a symlink to (i.e., points to) the file [.path]_target.adoc_.
 
-This also works for directories (aka folders):
+This also works for directories (i.e., folders):
 
  $ ln -s target link
 
@@ -77,35 +77,48 @@ The symlink acts as a directory.
 
 === Windows
 
-To make a symlink on Windows, you use the `mklink` command.
-Here's an example of how to make a symlink to an adjacent file using `mklink`:
+To make a symlink on Windows, you use the https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mklink[mklink^] command.
+This command can be used to create a symlink to either a file or a directory.
+(Using a symlink is preferred over a hard link or a directory junction).
 
- $ mklink target.adoc link.adoc
+To create a symlink to a file, the syntax is as follows:
+
+ mklink <link> <target>
+
+To create a symlink to a directory, the syntax is as follows:
+
+ mklink /d <link> <target>
+
+NOTE: In Windows, the order of the link and target is reversed when compared to the *nix `ln` command.
+
+Here's an example of how to make a symlink to a sibling file using `mklink`:
+
+ $ mklink link.adoc target.adoc
 
 In this scenario, [.path]_link.adoc_ is a symlink to (i.e., points to) the file [.path]_target.adoc_.
 
-To create a symlink to a folder, you must add the `/d` parameter.
+Now let's create a symlink to a sibling folder.
 
- $ mklink /d target link
+ mklink /d link target
 
 In this scenario, [.path]_link_ is a symlink to (i.e., points to) the directory [.path]_target_.
 The symlink acts as a directory.
 
-More often, you'll want to map to a location outside of the current directory.
+More often, you'll want to link to a location outside of the current directory.
 That means including one or more directory segments in the path of the symlink target.
 
 To make a symlink to a file in a directory, first navigate to the directory where you want it to be made.
 Then, specify the target as the path relative from that directory.
-This is going to look backwards, but it will create a pointer starting at link and pointing to target.
+This is going to create a pointer starting at link and pointing to target.
 
- $ mklink ..\..\path\to\target.adoc link.adoc
+ $ mklink link.adoc ..\..\path\to\target.adoc
 
 In this scenario, [.path]_link.adoc_ is a symlink to (i.e., points to) the file [.path]_..\..\path\to\target.adoc_ relative to the directory containing the symlink.
 The target could be in a nested directory instead of a parent directory.
 
 You can do the same for directories:
 
- $ mklink /d ..\..\path\to\target link
+ $ mklink /d link ..\..\path\to\target
 
 In this scenario, [.path]_link_ is a symlink to (i.e., points to) the directory [.path]_..\..\path\to\target_ relative to the directory containing the symlink.
 The symlink acts as a directory.
@@ -190,7 +203,7 @@ Start by switching to that directory in your terminal.
 Then, create the symlink using the command appropriate for your operating system.
 
 .*nix
- $ ln -s MyClass.java ../../../src/main/java/org/example/MyClass.java
+ $ ln -s ../../../src/main/java/org/example/MyClass.java MyClass.java
 
 .Windows
  $ mklink MyClass.java ..\..\..\src\main\java\org\example\MyClass.java
@@ -215,7 +228,7 @@ Here's the result.
         📒 example
           📄 MyClass.java
 ----
-<.> MyClass.java is a symlink to the MyClass.java file under src/main/java/org/example
+<.> MyClass.java is a symlink to the MyClass.java file under src/main/java/org/example at the repository root
 
 TIP: If you're sourcing your documentation content from a git reference, commit the symlink to the git repository, just like you would any other file.
 
@@ -238,7 +251,7 @@ Again, start by switching to the [.path]_examples_ directory.
 Then, create the symlink using the command appropriate for your operating system.
 
 .*nix
- $ ln -s src ../../../src
+ $ ln -s ../../../src src
 
 .Windows
  $ mklink src ..\..\..\src
@@ -263,7 +276,7 @@ Here's the result:
         📒 example
           📄 MyClass.java
 ----
-<.> src is a symlink to the src folder at the project/repository root
+<.> src is a symlink to the src folder at the repository root
 
 TIP: If you're sourcing your documentation content from a git reference, commit the symlink to the git repository, just like you would any other file.
 Even though the symlink points to a directory, in git, it's still treated like a file.
@@ -272,7 +285,7 @@ You can now include the source file in the [.path]_index.adoc_ page using the fo
 
 [source]
 ----
-\include::example$src/main/java/MyClass.java[]
+\include::example$src/main/java/org/example/MyClass.java[]
 ----
 
 You can create symlinks for any type of resource, including examples, partials, pages, images, and so forth.
