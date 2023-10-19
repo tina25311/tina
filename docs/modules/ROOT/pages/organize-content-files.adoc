@@ -63,3 +63,22 @@ The association between where the source file is found, where the published file
 //Except for the relative path of files stored in the family directories, the source files`' storage locations don't impact how they're referenced internally, organized, labeled, and versioned in the published site, or even how their resulting page URLs are constructed when the site is being generated.
 
 See xref:component-version.adoc[What's a component version?] and xref:component-version-descriptor.adoc[What's antora.yml?] to learn how to assign a component name, version and other optional information to groups of content source files.
+
+=== git refnames
+
+git refnames, which includes the names of branches and tags, should only contain characters that do not need to be URL encoded.
+This rule is not enforced by git, but violating it can cause subtle problems in Antora.
+
+While the refname does not appear in the URL of published resources, it is used in references back to the file's origin.
+Specifically, using characters in the refname which have to be URL encoded complicates the assembly of the edit URL for pages.
+
+As an example, the character `+#+` violates this rule, which would have to be encoded as `%23`.
+Although Antora will happily build the edit URL to include this character, the URL will not be interpreted as expected by the browser.
+That's because `+#+` marks the boundary between the URL that's sent to the server and the fragment that's only seen by the browser.
+The result will be an incomplete URL and thus a 404 page.
+
+It's acceptable to use the universal directory separator, `/`, in refnames.
+By doing so, it effectively organizes the refs into a folder structure (e.g., `r/3.0.x`).
+However, this strategy can impact refname matching.
+The `+*+` character in a refname pattern does not match `/` (it does not cross the boundary of a folder).
+Therefore, to match a refname such as `r/3.0.x`, you must use the pattern `+r/*+` instead of `+r*+`.
