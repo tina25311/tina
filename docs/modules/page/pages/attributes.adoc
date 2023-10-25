@@ -42,16 +42,18 @@ See xref:define-and-modify-attributes.adoc#custom-attribute[Define a custom Asci
 == Page attributes
 
 Where things get interesting is when the name of the attribute starts with `page-`.
-In this case, the attribute becomes a page attribute.
+With this special designation, the attribute becomes a page attribute.
 
-To the AsciiDoc document, page attributes are just like any other attribute.
+To the AsciiDoc document, page attributes are just like any other AsciiDoc attribute.
 For example, you can refer to the component for the current page using built-in page attribute `+{page-version}+`.
 Or you can define your own page attribute named `page-edition` and refer to it in the page using `+{page-edition}+`.
+In this context, the `page-` prefix is not significant.
 
-What's different about page attributes is that they get promoted to the page UI model so they can be accessed from a xref:antora-ui-default::templates.adoc#template-variables[UI template] (using the expression `page.attributes.<name>`).
-Thus, a page attribute allows the author to pass metadata about a page to the UI, thus allowing it to be used outside of the AsciiDoc content.
-It's even possible to read page attributes from other pages in the UI template.
-Attributes that are not prefixed with `page-` are not accessible in this way.
+Where this special designation comes into play is when the UI template is applied to the page's contents.
+Page attributes get promoted to the page's UI model so they can be accessed using the expression `page.attributes.<name>` within a xref:antora-ui-default::templates.adoc#template-variables[UI template] (e.g., _layouts/default.hbs_).
+In effect, a page attribute allows the author to pass metadata defined using attributes either in the page's header or in a configuration file (e.g., the Antora playbook), thus allowing that information to be used outside of the AsciiDoc document.
+It's even possible to access page attributes from pages other than the current page in the UI template.
+Attributes that are not prefixed with `page-` are not accessible in this way (though it's still possible to access all attributes using a UI helper).
 
 While page attributes are primarily custom attributes, Antora defines a handful of built-in page attributes to control Antora-specific features or get information about the current page.
 See xref:page-attributes.adoc[] to learn more about page attributes, and how to define and use them.
