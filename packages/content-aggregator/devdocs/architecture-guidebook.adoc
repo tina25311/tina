@@ -112,10 +112,19 @@ Each virtual file object should include the following properties:
 * `extname`
 * `mediaType` - resolved from the MIME types catalog by the value of `extname`
 * `origin` - identifies the file's origin; shared by all files taken from the same branch of the same repository
- ** includes `type`, `url`, `branch`, `startPath`, `editUrlPattern`, and `worktree`
  ** `type` should default to git
+ ** `gitdir` should be the git dir that Antora uses to read information about this reference
+ ** `reftype` the type of the git ref (branch or tag)
+ ** `refname` the name of the git ref (also stored in either the `branch` or `tag` property)
+ ** `refhash` the SHA-1 hash of the commit from which files at this origin are retrieved; not set if origin is worktree
+ ** `startPath` the relative filepath where antora.yml is located
  ** `url` should be remote url if it can be resolved; otherwise the absolute path to the repository
- ** `worktree` should only be set if origin is the repository worktree
+ ** `editUrlPattern` the pattern used to construct the edit URL for a page from this origin, if applicable
+ ** `fileUriPattern` the pattern used to construct the local file:// URL for a page from this origin, if applicable
+ ** `worktree` the absolute path to the worktree; only be set if origin is the repository worktree
+ ** `remote` the name of the git remote for this origin, if applicable
+ ** `private` `auth-required` if server requests credentials, otherwise `auth-embedded` if credentials are embedded in the content source URL, otherwise not set
+ ** `webUrl` the URL for this origin (without the .git suffix)
 * `editUrl` - takes the reader to a page where the source can be edited (file URI if worktree, otherwise a URL)
 
 The `mediaType` property should also be set directly on the file object to match the value of `src.mediaType`.
