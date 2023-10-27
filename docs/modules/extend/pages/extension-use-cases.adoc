@@ -140,10 +140,10 @@ This extension runs during the `contentClassified` event, which is when attachme
 It iterates over all attachments and resolves any references to attributes scoped to that attachment's component version.
 If any changes were made to the contents of the file, it replaces the contents on the virtual file with the updated value.
 
-.resolve-attributes-references-in-attachments.js
+.resolve-attributes-references-in-attachments-extension.js
 [,js]
 ----
-include::example$resolve-attribute-references-in-attachments.js[]
+include::example$resolve-attribute-references-in-attachments-extension.js[]
 ----
 
 This extension is only know to work with text-based attachments.
