@@ -32,7 +32,9 @@ If the value matches either of the two rules listed below, the value will always
 [#remote-urls]
 == Use remote content repositories
 
-Remote content repositories can be fetched via URLs (http, https), SSH URIs, and git URIs.
+All remote content repositories must be accessible via a URL (a web address that's fetched using either the basic or encrypted HTTP protocol) (i.e., http:// or https://).
+The repository location can be expressed using a URL, an SSH URI, or a git URI.
+Internally, that location is always converted to a URL.
 
 [,yaml]
 ----
