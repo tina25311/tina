@@ -123,3 +123,18 @@ include::example$resolve-attribute-references-in-attachments.js[]
 
 This extension is only know to work with text-based attachments.
 You may need to modify this extension for it to work with binary files.
+
+== Convert word processor attachments to PDF
+
+Much like AsciiDoc files (.adoc) are converted to HTML (.html) by Antora, you can do the same with attachments.
+This extension runs during the `contentClassified` event, which is when attachment files are first identified and classified.
+It iterates over all attachments in a word processor format (i.e., .docx, .odt, .fodt) and uses the *libreoffcie* command (LibreOffice in server mode) to convert each file to PDF.
+
+.doc-to-pdf-extension.js
+[,js]
+----
+include::example$doc-to-pdf-extension.js[]
+----
+
+By converting the files and updating the metadata, it's possible to reference the source document using the xref macro.
+That reference will automatically translate to a link to the PDF in the generated site.
