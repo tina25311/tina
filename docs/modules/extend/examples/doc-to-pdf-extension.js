@@ -7,7 +7,7 @@ const { execFile } = require('node:child_process')
 
 module.exports.register = function () {
   this.on('contentClassified', async ({ playbook, contentCatalog }) => {
-    const docExtnames = { '.docx': true, '.fodt': true }
+    const docExtnames = { '.docx': true, '.fodt': true, '.odt': true }
     const filesToConvert = contentCatalog.getFiles().filter(({ src } ) => src.family == 'attachment' && docExtnames[src.extname])
     if (!filesToConvert.length) return
     const buildDirBase = ospath.join(playbook.dir, 'build/doc-to-pdf')
