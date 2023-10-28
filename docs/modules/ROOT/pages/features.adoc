@@ -37,6 +37,11 @@ Chances are, your software product already has a well-defined team, permission s
 You can use the same organization or build on it to manage your docs team.
 These platforms can serve as an administrative and management interface for your docs, whether it's to monitor activity or grant access to perform certain actions.
 
+The primary goal of Antora is not necessarily to be the easiest way to write, though that goal is very important to us.
+It's about being able to write collaboratively using an efficient workflow that also offers flexibility when it comes to publishing, add-ons, content organization, and content discovery.
+There may be easier ways for an individual to write in isolation.
+We're looking at the challenge of writing in a distributed, often large team.
+
 //== Publish a site from a simple playbook
 == Produce a site from a simple playbook
 
