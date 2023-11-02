@@ -113,6 +113,16 @@ The passes usually open in late spring.
 
 The block image macro shown in <<ex-element>> will embed the image _panorama.png_ into the current page and create a link from the image to the beginning of the section _Pass elevations_ on the current page.
 
+[#link-self]
+== Link to the image itself to open it in its original size
+
+To allow opening an image in its original, unconstrained size (in html output), add the `link=self` attribute.
+
+[#ex-link-self]
+----
+image::panorama.png[link=self]
+----
+
 == Learn more
 
 Refer to the AsciiDoc documentation for {url-image-attributes}[additional image macro attributes^] and more information about {url-element-id}[element IDs^].
