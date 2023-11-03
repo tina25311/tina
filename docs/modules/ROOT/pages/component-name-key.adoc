@@ -14,7 +14,7 @@ The value of a `name` key, in combination with the value of a `version` key, def
 The component name is fundamental to many of Antora's operations.
 Antora uses the name:
 
-* as the xref:how-antora-builds-urls.adoc#component[component segment] in page and asset URLs, unless the name of the component is _ROOT_.
+* as the xref:how-antora-builds-urls.adoc#component[component segment] in page and asset URLs, unless <<root-component,the name of the component is _ROOT_>>.
 
 Additionally, if the component title key isn't set, Antora uses the name:
 
@@ -48,13 +48,59 @@ The value assigned to the `name` key can contain letters, numbers, underscores (
 To ensure portability between host platforms, letters used in the `name` value should be lowercase.
 
 IMPORTANT: We *strongly* encouraged you to select a name that only consists of _lowercase_ characters.
-Component names, except for the special _ROOT_ value, are used in your site's URLs, therefore, using consistent casing makes the component name, and thus your site, more portable.
+Component names, except for <<root-component,the special _ROOT_ value>>, are used in your site's URLs, therefore, using consistent casing makes the component name, and thus your site, more portable.
 That's because some file systems, and thus the web server running on it, can't distinguish between uppercase and lowercase characters.
 
 The value *cannot* contain spaces, forward slashes (`/`), or HTML special characters (`&`, `<`, or `>`).
 The value *cannot* be empty.
 
 See xref:component-title.adoc[] to learn how to display a name that contains spaces, uppercase letters, and other characters in your site's UI.
+
+[#root-component]
+=== _ROOT_ component
+
+When a component's name is set to _ROOT_ and its version is set to `~` in its [.path]_antora.yml_, then that component will be placed directly at the site's root instead of at the path `/ROOT`.
+(This is analogous to how modules named _ROOT_ are placed at the root of their component.)
+
+Like other components, a _ROOT_ component must have an [.path]_antora.yml_ file and a [.path]_modules_ folder.
+Let's re-use the example from xref:module-url-segment#ex-modules[Module Segment in Page URLs]:
+
+[listing#ex-modules]
+----
+📒 repository
+  📄 antora.yml  # name: ROOT
+  📂 modules
+    📂 admin
+      📂 pages
+        📄 user-management.adoc
+      📄 nav.adoc
+    📂 ROOT
+      📁 images
+      📂 pages
+        📄 deploy.adoc
+        📄 index.adoc
+      📄 nav.adoc
+----
+
+But now let's instead assume that this component is named _ROOT_ instead of _hyperlemur_, and its version set to `~`.
+Here is what the URLs of the various pages would be, assuming that `html_extension_style` is set to `default` in your playbook:
+
+[.path]_repository/modules/ROOT/pages/index.adoc_:: \https://my-company.com/index.html (which means it will also be found at \https://my-company.com)
+[.path]_repository/modules/ROOT/pages/deploy.adoc_:: \https://my-company.com/deploy.html
+[.path]_repository/modules/admin/pages/user-management.adoc_:: \https://my-company.com/admin/user-management.html
+
+In particular, because both the component name _ROOT_ and the module name _ROOT_ are elided from URLs, the pages in the _ROOT_ component's _ROOT_ module live directly at your site's root, with [.path]_root_component/modules/ROOT/pages/index.adoc_ serving as the site's home page.
+
+[CAUTION]
+====
+Because the _ROOT_ component's name does not appear in URLs, its modules are scoped under your site's root.
+This means it is possible for a module in _ROOT_ to be clobbered by a separate component with the same name as that module.
+For instance, [.path]_root_component/modules/xyz/pages/index.adoc_ and [.path]_component_named_xyz/modules/ROOT/pages/index.adoc_ would both try to live at the URL \https://my-company.com/xyz/index.html, which is not possible.
+Therefore, you should make sure that the modules in your _ROOT_ component have names distinct from other components.
+====
+
+Because _ROOT_ is not a good title for a component, you should set the title in [.path]_antora.yml_ as demonstrated in xref:component-title[Customize the Title].
+
 
 ////
 Antora uses the `name` key when interpreting resource IDs and generating the URLs for the component version's pages.
