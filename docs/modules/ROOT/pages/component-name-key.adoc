@@ -100,7 +100,7 @@ This means it's possible for pages in the _ROOT_ component to be clobbered by pa
 For instance, [.path]root/modules/xyz/pages/index.adoc_ and [.path]xyz/modules/ROOT/pages/index.adoc_ would both try to live at the URL \https://my-company.com/xyz/index.html, which is invalid.
 Therefore, you should use caution when using modules in the _ROOT_ component.
 
-Because _ROOT_ is not a user-friendly title for a component, you should also set the title in [.path]_antora.yml_, as demonstrated in xref:component-title[Customize the Title].
+Because _ROOT_ is not a user-friendly title for a component, you should also set the title in [.path]_antora.yml_, as demonstrated in xref:component-title.adoc[Customize the Title].
 
 ////
 Antora uses the `name` key when interpreting resource IDs and generating the URLs for the component version's pages.
