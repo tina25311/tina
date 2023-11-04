@@ -101,6 +101,7 @@ test:macos:
   extends: .npm
   image: macos-12-xcode-14
   tags: [saas-macos-medium-m1]
+  <<: *unless_docs_mr
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
 #test:windows:
 #  extends: .npm
