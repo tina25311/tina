@@ -93,27 +93,27 @@ test:node-16-linux:
   script: npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   <<: *save_report_artifacts
-#test:node-18-linux:
-#  extends: .npm
-#  image: node:18-$LINUX_DISTRO
-#  <<: *unless_docs_mr
+test:node-18-linux:
+  extends: .npm
+  image: node:18-$LINUX_DISTRO
+  <<: *unless_docs_mr
 test:macos:
   extends: .npm
   image: macos-12-xcode-14
   tags: [saas-macos-medium-m1]
   <<: *unless_docs_mr
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
-#test:windows:
-#  extends: .npm
-#  tags: [windows]
-#  # cache does not currently work with the shared Windows runner
-#  cache: []
-#  before_script:
-#  - choco upgrade -y nodejs --version=16.17.0
-#  - *platform_info
-#  - npm ci --quiet
-#  script: npm run coverage
-#  <<: *save_report_artifacts
+test:windows:
+  extends: .npm
+  tags: [windows]
+  # cache does not currently work with the shared Windows runner
+  cache: []
+  before_script:
+  - choco upgrade -y nodejs --version=16.17.0
+  - *platform_info
+  - npm ci --quiet
+  script: npm run coverage
+  <<: *save_report_artifacts
 release:
   stage: deploy
   interruptible: false
