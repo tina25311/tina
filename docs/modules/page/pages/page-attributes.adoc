@@ -103,18 +103,13 @@ Additional predefined page attributes may be added in the future to allow simila
 [#access-attributes-from-ui-template]
 == Access page attributes from the UI template
 
-One of the primary roles of page attributes is to pass metadata about the page to the UI template via the xref:antora-ui-default::templates.adoc#template-variables[UI model].
-The UI template can use the information provided by the page attributes in a variety of ways, from populating metadata in the published page to toggling or configuring behavior in the UI.
+One of the primary roles of a page attribute is to pass metadata about the page to the UI template via the xref:antora-ui-default::templates.adoc#template-variables[UI model].
+The UI template can then use the information provided by the page attributes in a variety of ways, from populating metadata in the published page (i.e, the HTML) to toggling or configuring behavior in the UI.
 
-As an example, the default UI allows you do configure the depth of the sidebar TOC using the page attribute named `toclevels` (i.e., `page-toclevels` when defined).
-For example:
+Let's look at an example.
+The default UI allows you do configure the depth of the sidebar TOC using the page attribute named `toclevels` (i.e., `page-toclevels` when defined).
 
-----
-= Page Title
-:page-toclevels: 3
-----
-
-You could also set this attribute in your playbook (adding a trailing `@` so it still can be overridden per page):
+You could set this attribute globally in your playbook (or component descriptor).
 
 [,yaml]
 ----
@@ -123,10 +118,19 @@ asciidoc:
     page-toclevels: 3@
 ----
 
-The page attributes are accessible in the UI model via the `page.attributes` property.
+The trailing `@` is added so the attribute can still can be overridden in the header of a page.
+For example:
+
+[,asciidoc]
+----
+= Page Title
+:page-toclevels: 2
+----
+
+Page attributes are accessible in the UI model via the `page.attributes` property.
 The value of this property is a map of attributes.
 
-For example, to access the page attribute named `toclevels` in a UI template, you'd use:
+To access the value of the `page-toclevels` attribute in a UI template, you'd use:
 
 [,hbs]
 ----
@@ -135,13 +139,51 @@ For example, to access the page attribute named `toclevels` in a UI template, yo
 
 So where's the `page-` prefix gone?
 
-When a page attribute is promoted to the UI model, the `page-` prefix is dropped.
-That's why we say the page attribute is named `toclevels` instead of `page-toclevels`.
-The `page-` prefix is just a namespace to identify it as a page attribute.
-So a page attribute named `page-toclevels` becomes `toclevels` in the UI model (e.g., `page.attributes.toclevels`).
+When a page attribute is promoted to the UI model, the `page-` prefix is dropped from its name.
+That's why we often refer to the page attribute using its short name (e.g., `toclevels`).
+The `page-` prefix acts as a namespace to identify the attribute as a page attribute.
+Thus, a page attribute named `page-toclevels` becomes `toclevels` in the UI model (e.g., `page.attributes.toclevels`).
+
+Let's look at another example that shows how the default UI uses a page attribute to control pagination.
+You'll often set this attribute globally in your playbook or component descriptor.
+This time, however, we hard set the attribute so it cannot be turned off by a page.
+
+[,yaml]
+----
+asciidoc:
+  attributes:
+    page-pagination: ''
+----
+
+Now, in the footer-scripts.hbs partial template, we can check whether this attribute is set and include the pagination controls if it is.
+
+[,hbs]
+----
+{{#unless (eq page.attributes.pagination undefined)}}
+<nav class="pagination">
+...
+</nav>
+{{/unless}}
+----
+
+Notice we check whether the value is not equal to undefined rather than checking if it truthy.
+That's because an empty value in JavaScript is falsy, so we have to make the assertion more specific.
+Inside the clause, the template can check whether the attribute has the value next or prev, implying the opposite direction should be turned off.
 
 The `page-` prefix on the attribute name is what hoists it to the UI model.
-All other document attributes are effectively hidden from the UI model.
+All other document attributes are still accessible from the UI model, just not as easily.
+Here's an example of how to reference a non-page attribute from the UI model:
+
+[,hbs]
+----
+{{#with (resolvePage page.relativeSrcPath model=false)}}
+{{./asciidoc.attributes.policy-number}}
+{{/with}}
+----
+
+Passing the `page.relativeSrcPath` value to the built-in `resolvePage` helper resolves to the current page.
+The `model=false` option instructions the helper to return the virtual file rather than the UI model for the resolved page.
+From there, all the AsciiDoc attributes can be access through the nested `asciidoc.attributes` property.
 
 == Intrinsic page attributes
 // I have reservations about these examples - SW
