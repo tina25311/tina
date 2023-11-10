@@ -6488,6 +6488,21 @@ describe('aggregateContent()', () => {
       expect(aggregate[0].files[0]).to.have.nested.property('src.origin.private', 'auth-required')
     })
 
+    it('should fallback to credentials store if auth is required and URL has fake credentials', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const urlWithoutAuth = repoBuilder.url
+      repoBuilder.url = urlWithoutAuth.replace('//', '//reject@')
+      const credentials = urlWithoutAuth.replace('//', '//u:p@').replace('.git', '') + '\n'
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
+      expect(credentialsRequestCount).to.equal(2)
+      expect(aggregate).to.have.lengthOf(1)
+      expect(aggregate[0].files).to.not.be.empty()
+    })
+
     it('should read credentials with percent encoding for URL from git credential store if auth is required', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
       await initRepoWithFiles(repoBuilder)
