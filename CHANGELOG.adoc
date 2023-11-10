@@ -19,6 +19,7 @@ This project utilizes semantic versioning.
 * *logger*: Restore error stack in log output when using pino-std-serializers >= 6.1 (#1049)
 * *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
 * *asciidoc-loader*: Do not fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file
+* *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
 
 == 3.1.2 (2022-10-28)
 

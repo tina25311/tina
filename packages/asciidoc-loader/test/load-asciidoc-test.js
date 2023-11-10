@@ -3362,9 +3362,8 @@ describe('loadAsciiDoc()', () => {
       })
     })
 
-    it('should skip and log page reference to non-publishable file', () => {
+    it('should skip and log page reference to non-publishable page', () => {
       const contentCatalog = mockContentCatalog({ relative: '_hidden.adoc' }).spyOn('getById')
-      delete contentCatalog.getPages()[0].pub
       setInputFileContents('xref:_hidden.adoc[Hidden Page]')
       const { messages, returnValue: html } = captureLogSync(() =>
         loadAsciiDoc(inputFile, contentCatalog).convert()
@@ -4532,6 +4531,29 @@ describe('loadAsciiDoc()', () => {
         level: 'error',
         name: 'asciidoctor',
         msg: 'target of image not found: module-b:image$$',
+        file: { path: inputFile.src.path },
+      })
+    })
+
+    it('should skip and log page reference to non-publishable image', () => {
+      const contentCatalog = mockContentCatalog({ relative: '_hidden.png', family: 'image' }).spyOn('getById')
+      setInputFileContents('image::_hidden.png[Not published]')
+      const { messages, returnValue: html } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog).convert()
+      ).withReturnValue()
+      expect(contentCatalog.getById).nth(1).called.with({
+        component: 'component-a',
+        version: '',
+        module: 'module-a',
+        family: 'image',
+        relative: '_hidden.png',
+      })
+      expect(html).to.include(' class="imageblock unresolved"')
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.eql({
+        level: 'error',
+        name: 'asciidoctor',
+        msg: 'target of image not found: _hidden.png',
         file: { path: inputFile.src.path },
       })
     })
