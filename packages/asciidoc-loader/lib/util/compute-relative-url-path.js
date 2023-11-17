@@ -6,8 +6,7 @@ const { posix: path } = require('path')
  * Computes the shortest relative path between two URLs.
  *
  * This function takes into account directory index URLs and extensionless
- * URLs. It assumes it's working with root-relative URLs, not qualified URLs
- * with potentially different hosts.
+ * URLs. It assumes it's working with root-relative URLs, not absolute URLs.
  *
  * @memberof asciidoc-loader
  *
@@ -20,7 +19,8 @@ const { posix: path } = require('path')
 function computeRelativeUrlPath (from, to, hash = '') {
   if (to.charAt() !== '/') return to + hash
   if (to === from) return hash || (isDir(to) ? './' : path.basename(to))
-  return (path.relative(path.dirname(from + '.'), to) || '.') + (isDir(to) ? '/' + hash : hash)
+  const rel = path.relative(path.dirname(from + '.'), to)
+  return rel ? (isDir(to) ? rel + '/' : rel) + hash : (isDir(to) ? './' : '../' + path.basename(to)) + hash
 }
 
 function isDir (str) {
