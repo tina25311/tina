@@ -25,9 +25,11 @@ It accepts the following built-in values:
 `default`:: Published page URLs are displayed with the _.html_ extension, i.e., [.path]_\https://base-url.com/component/version/module/my-file.html_.
 Antora automatically applies this style when `html_extension_style` isn't set in the playbook or via the CLI.
 
-`drop`:: The _.html_ extension is dropped from the end of the published page URLs, i.e., [.path]_\https://base-url.com/component/version/module/my-file_.
-
 `indexify`:: The _.html_ extension is dropped and a forward slash (`/`) is appended to the end of the published page URLs, i.e., [.path]_\https://base-url.com/component/version/module/my-file/_.
+This is the preferred style if you don't want the _.html_ extension to appear in URLs.
+
+`drop`:: The _.html_ extension is dropped from the end of the published page URLs, i.e., [.path]_\https://base-url.com/component/version/module/my-file_.
+This style requires support from the web server and should only be used if you're comfortable applying the necessary web server configuration.
 
 [#default]
 == Using the default style
@@ -74,5 +76,20 @@ urls:
 
 When `drop` is applied, the site's published URLs don't end with the extension _.html_.
 This results in the URL for the page [.path]_my-file.adoc_ to be displayed in a browser as [.path]_\https://example.com/component/version/module/my-file_.
+In order for the site to work properly when using this style, you must view the site through a web server.
+You also need to configure the web server to look for a file with the _.html_ extension.
 
-To locally preview all the features of a site, such as redirects and the 404 page, when the style is `drop`, you'll need to xref:ROOT:preview-site.adoc[run a local server].
+WARNING: Not all web servers have the ability to support extensionless HTML URLs.
+
+If you're using nginx, you need to add the following directive to the `location /` stanza in the configuration for your host:
+
+[,nginx]
+----
+location / {
+  # ...
+  try_files $uri $uri.html $uri/index.html = 404;
+}
+----
+
+This directive tells nginx to first look for the requested file, then look for the same file with the _.html_ extension added, then look for a file named [.path]_index.html_ in a directory that matches the requested file.
+These attempts match the layout of the published files.
