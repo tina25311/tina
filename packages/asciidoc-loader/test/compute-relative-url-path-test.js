@@ -37,12 +37,27 @@ describe('computeRelativeUrlPath()', () => {
       expect(computeRelativeUrlPath('/dir/from', '/dir/subdir/to')).to.equal('subdir/to')
     })
 
+    it('should compute URL to file in subdirectory with same name as from basename', () => {
+      // NOTE: the "from" in this case is actually the file /dir/topic.html
+      expect(computeRelativeUrlPath('/dir/topic', '/dir/topic/to')).to.equal('topic/to')
+    })
+
     it('should compute URL to file in parent directory', () => {
       expect(computeRelativeUrlPath('/dir/subdir/from', '/dir/to')).to.equal('../to')
     })
 
     it('should compute URL to self', () => {
       expect(computeRelativeUrlPath('/dir/file', '/dir/file')).to.equal('file')
+    })
+
+    // NOTE: this case isn't used, but test for it anyway
+    it('should compute URL to parent folder', () => {
+      expect(computeRelativeUrlPath('/dir/file', '/dir/')).to.equal('./')
+    })
+
+    it('should compute URL to file in parent folder with same name as subdir', () => {
+      // NOTE: the "to" in this case is actually the file /dir/subdir.html
+      expect(computeRelativeUrlPath('/dir/topic/file', '/dir/topic')).to.equal('../topic')
     })
   })
 

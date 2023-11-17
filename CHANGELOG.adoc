@@ -15,6 +15,8 @@ This project utilizes semantic versioning.
 === Changed
 
 * *ui-loader*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
+* *asciidoc-loader*: Fix relative path computation when path is extensionless and to matches parent folder of from (#1094)
+* *page-composer*: Fix result of relativize helper when path is extensionless and to matches parent folder of from (#1094)
 * *file-publisher*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
 
 == 3.1.4 (2023-06-08)

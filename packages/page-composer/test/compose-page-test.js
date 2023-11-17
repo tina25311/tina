@@ -673,6 +673,36 @@ describe('createPageComposer()', () => {
       </ul>`)
     })
 
+    it('should compute URL when to is indexified and to matches parent folder of from', () => {
+      file.pub.url = '/the-component/1.0/topic/overview/'
+      file.pub.rootPath = '../../../..'
+      definePartial(
+        'body-relativize-url',
+        heredoc`
+        <p>{{relativize '/the-component/1.0/topic/'}}</p>
+        `
+      )
+      replaceCallToBodyPartial('{{> body-relativize-url}}')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include('<p>../</p>')
+    })
+
+    it('should compute URL when to is extensionless and to matches parent folder of from', () => {
+      file.pub.url = '/the-component/1.0/topic/overview'
+      file.pub.rootPath = '../../..'
+      definePartial(
+        'body-relativize-url',
+        heredoc`
+        <p>{{relativize '/the-component/1.0/topic'}}</p>
+        `
+      )
+      replaceCallToBodyPartial('{{> body-relativize-url}}')
+      const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
+      composePage(file, contentCatalog, navigationCatalog)
+      expect(file.contents.toString()).to.include('<p>../topic</p>')
+    })
+
     it('should relativize URL by prepending site path if page.url is undefined', () => {
       definePartial(
         'body-relativize-url',
@@ -706,13 +736,13 @@ describe('createPageComposer()', () => {
       definePartial(
         'body-relativize-url',
         heredoc`
-        <p>{{relativize '/to.html#fragment'}}</p>
+        <p>{{relativize '/the-component/1.0/to.html#fragment'}}</p>
         `
       )
       replaceCallToBodyPartial('{{> body-relativize-url}}')
       const composePage = createPageComposer(playbook, contentCatalog, uiCatalog)
       composePage(file, contentCatalog, navigationCatalog)
-      expect(file.contents.toString()).to.include('<p>../../to.html#fragment</p>')
+      expect(file.contents.toString()).to.include('<p>to.html#fragment</p>')
     })
 
     it('should include template name of layout in error message', () => {
