@@ -22,21 +22,22 @@ Although the site is viewable without a web server, you may still need to view y
 You can use the *http-server* package for this purpose.
 https://yarnpkg.com/en/package/http-server[http-server] is a simple, static web server for Node.js.
 
-Install the *http-server* package globally using npm:
+The most straightforward way to use *http-server* is to invoke it using npx:
+
+ demo-site $ npx http-server -v
+
+If you prefer, you can install the package globally using npm instead.
 
  demo-site $ npm i -g http-server
 
-or Yarn:
-
- demo-site $ yarn global add http-server
-
-That puts a command by the same name on your PATH.
+That puts a command by the same name on your PATH so you don't need to prefix it with `npx`.
+We'll assume for the purpose of this tutorial that you are calling *http-server* using `npx`.
 
 Now launch the web server by pointing it at the location of the generated site.
-In the terminal, type the command name, `http-server`, followed by the location of the generated site (i.e., the output dir).
+In the terminal, type the command name, `npx http-server`, followed by the location of the generated site (i.e., the output dir).
 We also recommend adding the `-c-1` flag to disable caching.
 
- demo-site $ http-server build/site -c-1
+ demo-site $ npx http-server build/site -c-1
 
 Upon launching the command, the local address of the web server will be displayed in your terminal.
 You should see the following output in your terminal:
@@ -57,7 +58,7 @@ Press kbd:[Ctrl,C] to stop the server.
 TIP: If you get a port conflict when starting the server (i.e., `listen EADDRINUSE: address already in use`), you can use the `-p <port>` option to change to another port.
 For example, append `-p 5000` to the command to switch to port 5000.
 
- demo-site $ http-server build/site -c-1 -p 5000
+ demo-site $ npx http-server build/site -c-1 -p 5000
 
 ////
 When generation is complete, you'll see a URL in the terminal that is specific to your machine.
