@@ -14,6 +14,7 @@ This project utilizes semantic versioning.
 * *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
 * *asciidoc-loader*: Do not fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file
 * *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
+* *cli*: Remove empty default on description for `--extension` option
 
 == 3.2.0-alpha.2 (2022-11-01)
 

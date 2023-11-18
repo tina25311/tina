@@ -193,7 +193,46 @@ describe('commander', () => {
         long: '--host',
         flags: '--host <host>',
         description: 'Server hostname (required)',
+        required: true,
       })
+    })
+
+    it('should not set default on option if default is object', () => {
+      const configSchema = {
+        attributes: {
+          arg: 'attribute',
+          default: {},
+          doc: 'A document attribute',
+          format: Object,
+        },
+      }
+      const options = createCli(configSchema).options
+      expect(options).to.have.lengthOf(1)
+      expect(options[0]).to.include({
+        long: '--attribute',
+        flags: '--attribute <attribute>',
+        description: configSchema.attributes.doc,
+      })
+      expect(options[0].defaultValue).to.be.undefined()
+    })
+
+    it('should not set default on option if default is array', () => {
+      const configSchema = {
+        extensions: {
+          arg: 'extension',
+          default: [],
+          doc: 'An extension require path or ID',
+          format: Array,
+        },
+      }
+      const options = createCli(configSchema).options
+      expect(options).to.have.lengthOf(1)
+      expect(options[0]).to.include({
+        long: '--extension',
+        flags: '--extension <extension>',
+        description: configSchema.extensions.doc,
+      })
+      expect(options[0].defaultValue).to.be.undefined()
     })
 
     it('should import boolean option from convict config', () => {
