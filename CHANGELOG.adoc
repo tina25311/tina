@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
+* *cli*: Remove empty default on description for `--extension` option
 
 == 3.1.4 (2023-06-08)
 

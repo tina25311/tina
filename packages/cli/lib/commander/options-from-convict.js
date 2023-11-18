@@ -39,7 +39,7 @@ function collectOptions (props, context = undefined) {
       if (default_ === null) {
         //option.mandatory = true
         option.description += ' (required)'
-      } else if (default_ && default_.constructor !== Object) {
+      } else if (default_ && typeof default_ !== 'object') {
         option.default = default_
       }
       accum.push(option)
