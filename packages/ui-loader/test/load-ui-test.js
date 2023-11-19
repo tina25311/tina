@@ -1306,10 +1306,24 @@ describe('loadUi()', () => {
       ui: { bundle: { url: httpServerUrl + 'hang-up.zip', snapshot: true } },
     }
     const expectedMessage = 'Failed to download UI bundle'
-    expect(await trapAsyncError(loadUi, playbook))
+    const err = await trapAsyncError(loadUi, playbook)
+    expect(err)
       .to.throw(expectedMessage)
       .with.property('stack')
       .that.matches(/Caused by: Error: socket hang up/)
+    expect(err).to.throw(expectedMessage).with.property('recoverable', true)
+  })
+
+  it('should throw error if timeout occurs when retrieving remote UI bundle', async () => {
+    httpServer.setTimeout(1)
+    const playbook = {
+      runtime: { fetch: true },
+      ui: { bundle: { url: httpServerUrl + 'hang-up.zip', snapshot: true } },
+    }
+    const expectedMessage = 'Failed to download UI bundle'
+    expect(await trapAsyncError(loadUi, playbook))
+      .to.throw(expectedMessage)
+      .with.property('recoverable', true)
   })
 
   it('should cache bundle if a valid zip file', async () => {

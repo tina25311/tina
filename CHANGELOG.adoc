@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
+* *site-generator*: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle (#1095)
 * *cli*: Remove empty default on description for `--extension` option
 
 === Changed

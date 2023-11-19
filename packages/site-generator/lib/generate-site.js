@@ -14,14 +14,21 @@ async function generateSite (playbook) {
     vars.siteCatalog = new SiteCatalog()
     await context.notify('beforeProcess')
     const siteAsciiDocConfig = vars.lock('siteAsciiDocConfig')
+    const loadUiHandler = {
+      onFulfilled: (uiCatalog) => context.notify('uiLoaded', Object.assign(vars, { uiCatalog })),
+      onRejected: (loadUiErr) => {
+        if (!(loadUiHandler.retry = loadUiErr.recoverable)) throw loadUiErr
+      },
+    }
     await Promise.all([
       fxns.aggregateContent(playbook).then((contentAggregate) =>
         context.notify('contentAggregated', Object.assign(vars, { contentAggregate })).then(() => {
           vars.contentCatalog = fxns.classifyContent(playbook, vars.remove('contentAggregate'), siteAsciiDocConfig)
         })
       ),
-      fxns.loadUi(playbook).then((uiCatalog) => context.notify('uiLoaded', Object.assign(vars, { uiCatalog }))),
+      fxns.loadUi(playbook).then(loadUiHandler.onFulfilled, loadUiHandler.onRejected),
     ])
+    if (loadUiHandler.retry) await fxns.loadUi(playbook).then(loadUiHandler.onFulfilled)
     await context.notify('contentClassified')
     const contentCatalog = vars.lock('contentCatalog')
     const uiCatalog = vars.lock('uiCatalog')
