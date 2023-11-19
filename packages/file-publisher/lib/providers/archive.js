@@ -2,7 +2,7 @@
 
 const expandPath = require('@antora/expand-path-helper')
 const publishStream = require('./common/publish-stream')
-const { dest: vzipDest } = require('gulp-vinyl-zip')
+const { dest: vzipDest } = require('@vscode/gulp-vinyl-zip')
 
 const { DEFAULT_DEST_ARCHIVE } = require('../constants.js')
 

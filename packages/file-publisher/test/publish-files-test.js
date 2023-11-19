@@ -11,7 +11,7 @@ const ospath = require('path')
 const publishFiles = require('@antora/file-publisher')
 const { PassThrough, pipeline, Writable } = require('stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
-const vzip = require('gulp-vinyl-zip')
+const vzip = require('@vscode/gulp-vinyl-zip')
 
 const CWD = process.cwd()
 const { DEFAULT_DEST_FS, DEFAULT_DEST_ARCHIVE } = require('#constants')

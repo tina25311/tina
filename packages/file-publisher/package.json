@@ -24,7 +24,7 @@
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
     "@antora/user-require-helper": "~2.0",
-    "gulp-vinyl-zip": "~2.5",
+    "@vscode/gulp-vinyl-zip": "~2.5",
     "vinyl": "~2.2",
     "vinyl-fs": "~3.0"
   },

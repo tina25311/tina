@@ -25,7 +25,7 @@ const { pipeline, Transform, Writable } = require('stream')
 const sink = () => new Writable({ objectMode: true, write: (_chunk, _, done) => done() })
 const map = (transform) => new Transform({ objectMode: true, transform })
 const net = require('net')
-const zip = require('gulp-vinyl-zip')
+const zip = require('@vscode/gulp-vinyl-zip')
 
 const { UI_CACHE_FOLDER } = require('#constants')
 const CACHE_DIR = getCacheDir('antora-test')
