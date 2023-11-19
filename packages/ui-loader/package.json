@@ -26,10 +26,10 @@
   },
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
+    "@vscode/gulp-vinyl-zip": "~2.5",
     "braces": "~3.0",
     "cache-directory": "~2.0",
     "glob-stream": "~7.0",
-    "gulp-vinyl-zip": "~2.5",
     "hpagent": "~1.2",
     "js-yaml": "~4.1",
     "picomatch": "~2.3",

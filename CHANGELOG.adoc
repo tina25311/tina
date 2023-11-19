@@ -16,6 +16,11 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
 * *cli*: Remove empty default on description for `--extension` option
 
+=== Changed
+
+* *ui-loader*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
+* *file-publisher*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
+
 == 3.2.0-alpha.2 (2022-11-01)
 
 === Added
@@ -620,7 +625,7 @@ _No changes since previous release._
 * *content-aggregator*: Store refname of content source on `src.origin.refname` property of virtual file (#694)
 * *ui-loader*: Allow extracted UI bundle to be loaded from directory (#150) (@g.grossetie)
 
-=== Changes
+=== Changed
 
 * Upgrade dependencies
 

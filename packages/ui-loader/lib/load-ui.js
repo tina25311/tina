@@ -17,7 +17,7 @@ const forEach = (write, final) => new Writable({ objectMode: true, write, final 
 const map = (transform) => new Transform({ objectMode: true, transform })
 const UiCatalog = require('./ui-catalog')
 const yaml = require('js-yaml')
-const vzip = require('gulp-vinyl-zip')
+const vzip = require('@vscode/gulp-vinyl-zip')
 
 const STATIC_FILE_MATCHER_OPTS = {
   expandRange: (begin, end, step, opts) => bracesToGroup(opts ? `{${begin}..${end}..${step}}` : `{${begin}..${end}}`),
