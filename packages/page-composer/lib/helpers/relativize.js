@@ -13,9 +13,9 @@ module.exports = (to, { data }) => {
     hash = to.substr(hashIdx)
     to = to.substr(0, hashIdx)
   }
-  return to === from
-    ? hash || (isDir(to) ? './' : path.basename(to))
-    : (path.relative(path.dirname(from + '.'), to) || '.') + (isDir(to) ? '/' + hash : hash)
+  if (to === from) return hash || (isDir(to) ? './' : path.basename(to))
+  const rel = path.relative(path.dirname(from + '.'), to)
+  return rel ? (isDir(to) ? rel + '/' : rel) + hash : (isDir(to) ? './' : '../' + path.basename(to)) + hash
 }
 
 function isDir (str) {
