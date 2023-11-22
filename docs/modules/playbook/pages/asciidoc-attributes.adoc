@@ -56,7 +56,9 @@ Enter `attributes`, followed by a colon (`:`), and press kbd:[Enter].
 <.> Site attributes are nested under the `attributes` key.
 Enter the name of the attribute, followed by a colon (`:`).
 Press kbd:[spacebar] once after the colon, then enter the value of the attribute.
-<.> To assign the default value, or in the case of a boolean attribute, the _empty string_ value to a built-in attribute, type two consecutive single quotation marks (`''`) in the value field.
+<.> To set an attribute without specifying an explicit value, assign an _empty string_ by entering two consecutive single quotation marks (`''`) in the value part.
+For certain built-in attributes, an empty value is equivalent to the default value, though it depends on the attribute.
+Although using the boolean value `true` often works in this case, attribute values in AsciiDoc are strings, so it will likely be coerced to the string value `'true'`.
 <.> To declare a custom page attribute, type `page-` and the name of your attribute, followed by a colon (`:`).
 Press kbd:[spacebar] once after the colon, then enter the value of the attribute.
 <.> This custom attribute, like the previous three attributes, is hard set.
