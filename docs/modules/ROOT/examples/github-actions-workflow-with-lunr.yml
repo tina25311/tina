@@ -24,7 +24,7 @@ jobs:
     - name: Configure Pages
       uses: actions/configure-pages@v3
     - name: Install Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
     - name: Install Antora with the Antora Lunr Extension
