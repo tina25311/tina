@@ -194,8 +194,10 @@ function downloadBundle (url, to, agent) {
     })
   }).catch((err) => {
     const errWrapper = new Error(`${err.summary || 'Failed to download UI bundle'}: ${url}`)
-    errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
-    throw errWrapper
+    if (err.code === 'ECONNRESET' || (err.message || '').toLowerCase() === 'request timed out') {
+      errWrapper.recoverable = true
+    }
+    throw Object.assign(errWrapper, { stack: `${errWrapper.stack}\nCaused by: ${err.stack || 'unknown'}` })
   })
 }
 
