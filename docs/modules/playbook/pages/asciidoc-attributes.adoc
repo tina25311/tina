@@ -127,7 +127,7 @@ asciidoc:
     hide-uri-scheme: ~ # <.>
 ----
 <.> To hard unset an attribute, assign it the tilde symbol (`~`).
-The `~` is a reserved value that hard unsets a site attribute.
+`~` is shorthand in YAML for `nil`, which is a reserved value that hard unsets a site attribute.
 <.> Boolean attributes are also hard unset when assigned the tilde symbol (`~`).
 
 [.term]*Hard unset* site attributes cannot be overridden from a component version descriptor or a page.
