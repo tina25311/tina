@@ -24,7 +24,7 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 :url-git-credential-store: https://git-scm.com/docs/git-credential-store
 // Versions:
 :version-node-major: 16
-:version-node: 16.20.0
+:version-node: 16.20.2
 
 {url-project}[Antora] is a modular, multi-repository site generator designed for creating documentation sites from content composed in AsciiDoc(R) and processed with {url-asciidoctor}[Asciidoctor].
 
