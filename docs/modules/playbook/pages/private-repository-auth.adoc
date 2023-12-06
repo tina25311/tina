@@ -7,9 +7,9 @@
 :url-credential-manager-plugin: https://github.com/isomorphic-git/isomorphic-git/blob/v0.78.5/docs/plugin_credentialManager.md
 :url-oauth2-formats: https://isomorphic-git.org/docs/en/authentication
 
-In order for Antora to access private repositories, you need to supply it with authentication credentials for any private repository URL you want to use.
+In order for Antora to access private repositories, you must supply it with authentication credentials for any private repository URL you use in your playbook.
 These credentials can be externalized so they don't have to be hard-coded into the playbook.
-This page covers various ways you can pass the credentials to Antora, including the built-in git credential store, a custom credential store, or even your own credential manager.
+This page covers various ways you can pass the credentials to Antora, including the built-in git credential store, a custom credential store, and even your own credential manager.
 
 Let's start by looking at the authentication credential types Antora accepts by default, then move on to how to set them up and put them to use.
 
@@ -48,7 +48,7 @@ Next, let's see how to supply these credentials to Antora's built-in credential 
 == Supply credentials using the default git credential store
 
 By default, Antora's built-in credential manager automatically checks for credentials in the {url-credential-store}[git credential store^] (a database file).
-The default path for the git credential store is _$HOME/.git-credentials_, or _$XDG_CONFIG_HOME/git/credentials_ if the previous location doesn't exist.
+The default path for the git credential store is _$HOME/.git-credentials_, or _$XDG_CONFIG_HOME/git/credentials_ if the first location doesn't exist.
 
 Since Antora consults the credential manager automatically when credentials are requested by the git host (aka on demand), you don't have to specify credentials directly in your playbook.
 In fact, the content sources in your playbook that are private will look just like content sources that are public.
@@ -61,7 +61,8 @@ content:
   - url: https://hostname/your-org/private-repository
 ----
 
-When Antora is notified by the git host that a URL requires authentication, it will look for an entry in the credentials store that has a matching context.
+When Antora is notified by the git host that a URL requires authentication, it will look for a matching entry in the credentials store.
+Antora looks for a match using the URL as the key.
 If a protocol (e.g., `https`) and hostname (and, optionally, the repository path) are found in the credentials store, those credentials are returned to Antora's credential manager and passed on to the git server.
 
 The credential store contains zero or more line-based entries.
@@ -152,7 +153,7 @@ Here's an example that uses a token (pay attention to the trailing `:` after the
 https://abcdefg0123456:@github.com
 ----
 
-To use different credentials for a given repository, you can append a repository path (i.e., `<repo>`) to the entry to make the matching more strict.
+To use different credentials for a given repository on the same git host, you can append a repository path (i.e., `<repo>`) to the entry to make the matching more strict.
 (The `.git` file extension in the repository path is optional).
 
 [listing]
@@ -160,7 +161,7 @@ To use different credentials for a given repository, you can append a repository
 https://<credentials>@<hostname>/<repo>
 ----
 
-Here's an example for a specific repository path:
+Here's an example of an entry for a specific repository path:
 
 [listing]
 ----
@@ -178,8 +179,8 @@ https://x-oauth-token:**TOKEN**@bitbucket.org/org/project-docs.git
 https://**USERNAME**:**APP_PASSWORD**@bitbucket.org/org/project-docs.git
 ----
 
-NOTE: Specifying the repository path is optional.
-If you don't include it, the credential will be used for all URLs that share the same git host.
+NOTE: Specifying the repository path in the URL is optional.
+If you don't include it, that credential pair will be used for all URLs that share the same git host.
 
 CAUTION: You may need to append the `.git` file extension depending on which URL format you use for your content sources and whether you've configured the xref:git-suffix.adoc[ensure_git_suffix key] in your playbook.
 
@@ -194,18 +195,19 @@ To ensure the credentials file is protected, immediately set its file permission
 [#custom-credential-path]
 == Specify a custom git credential store path
 
-Instead of using the credential store at the default path(s), you can instruct Antora to look for the file in a different location using either the `--git-credentials-path` CLI option or `GIT_CREDENTIALS_PATH` environment variable.
+Instead of using the credential store at the default path(s), you can instruct Antora to look for the file in a different location using either the `--git-credentials-path` CLI option or `GIT_CREDENTIALS_PATH` environment variable, both of which set the `git.credentials.path` playbook key a runtime.
 
 Here's an example that uses the CLI option to specify a path relative to the playbook file:
 
  $ antora --git-credentials-path=./.git-credentials antora-playbook.yml
 
-You can also specify this location directly in your playbook using the xref:git-credentials-path-and-contents.adoc#path-key[credentials.path key] under the xref:configure-git.adoc[git key].
+To learn more about how to use the `git.credentials.path` playbook key, including how to set it directly in the playbook, consult the reference for the xref:git-credentials-path-and-contents.adoc#path-key[git.credentials.path key].
 
 [#git-credentials-environment-variable]
 == Pass credentials via an environment variable
 
-Instead of reading the credentials from a file, you can have Antora read the credentials directly from the environment variable named `GIT_CREDENTIALS`.
+Instead of reading the credentials from a file, you can have Antora read the credentials directly from the environment variable named `GIT_CREDENTIALS`, which sets the `git.credentials.contents` playbook key at runtime.
+
 Here's an example that demonstrates the concept:
 
  $ export GIT_CREDENTIALS='https://octocat:ilovegit@github.com'
@@ -228,6 +230,8 @@ For example:
  $ GIT_CREDENTIALS='https://my-github-token:@github.com,https://oauth2:my-gitlab-token@gitlab.com' antora antora-playbook.yml
 
 Exporting the environment variable saves you from having to type it each time you run Antora.
+
+To learn more about how to use the `git.credentials.contents` playbook key, including how to set it directly in the playbook, consult the reference for the xref:git-credentials-path-and-contents.adoc#contents-key[git.credentials.contents key].
 
 == Encode credentials in a URL (not recommended)
 
