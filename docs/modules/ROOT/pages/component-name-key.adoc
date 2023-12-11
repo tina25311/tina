@@ -23,7 +23,7 @@ Additionally, if the component title key isn't set, Antora uses the name:
 the first breadcrumb position on a component version's pages
 
 Note that component name is case sensitive.
-This means that you have two components with the same name that only different in case, Antora will treat them as different components.
+This means that if you have two components with the same name that only are different in case, Antora will treat them as different components.
 
 Content writers use the name as the xref:page:resource-id-coordinates.adoc#id-component[component coordinate in resource IDs] when referencing a resource in another documentation component.
 
@@ -47,7 +47,7 @@ Then type the value you want assigned to `name`.
 The value assigned to the `name` key can contain letters, numbers, underscores (`+_+`), hyphens (`-`), and periods (`.`).
 To ensure portability between host platforms, letters used in the `name` value should be lowercase.
 
-IMPORTANT: We *strongly* encouraged you to select a name that only consists of _lowercase_ characters.
+IMPORTANT: We *strongly* encourage you to select a name that only consists of _lowercase_ characters.
 Component names, except for <<root-component,the special _ROOT_ value>>, are used in your site's URLs, therefore, using consistent casing makes the component name, and thus your site, more portable.
 That's because some file systems, and thus the web server running on it, can't distinguish between uppercase and lowercase characters.
 
@@ -96,7 +96,7 @@ If the ROOT component were to be versioned (i.e., have a non-empty version), the
 
 [CAUTION]
 Because the _ROOT_ component's name does not appear in URLs, its modules are effectively scoped under your site's root.
-This means it's possible for pages in the _ROOT_ component to conflict by pages in a named component.
+This means it's possible for pages in the _ROOT_ component to conflict with pages in a named component.
 For instance, the file [.path]_modules/xyz/pages/index.adoc_ in the (unversioned) _ROOT_ component and the file [.path]_modules/ROOT/pages/index.adoc_ in the (unversioned) _xyz_ component will both resolve to the URL \https://my-company.com/xyz/index.html, which is invalid.
 Therefore, you should be mindful of this situation when using modules in the _ROOT_ component.
 
