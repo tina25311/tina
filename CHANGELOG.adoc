@@ -75,6 +75,21 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified (#1018)
 * *content-classifier*: Set `src.version` to original version segment and `src.rel.version` to actual version on splat alias file (#1007)
 
+== 3.1.5 (2023-11-23)
+
+=== Fixed
+
+* *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
+* *site-generator*: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle (#1095)
+* *cli*: Remove empty default on description for `--extension` option
+
+=== Changed
+
+* *ui-loader*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
+* *asciidoc-loader*: Fix relative path computation when path is extensionless and to matches parent folder of from (#1094)
+* *page-composer*: Fix result of relativize helper when path is extensionless and to matches parent folder of from (#1094)
+* *file-publisher*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
+
 == 3.1.4 (2023-06-08)
 
 === Fixed
