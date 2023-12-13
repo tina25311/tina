@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Changed
+
+* *content-aggregator*: don't read git tree twice if start path is empty; add dirname to tree object in same function
+
 == 3.1.5 (2023-11-23)
 
 === Fixed
