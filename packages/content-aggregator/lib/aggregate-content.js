@@ -528,26 +528,25 @@ function srcFs (cwd, origin) {
 }
 
 function readFilesFromGitTree (repo, oid, startPath) {
-  return git
-    .readTree(Object.assign({ oid }, repo))
-    .then((root) =>
-      getGitTreeAtStartPath(repo, oid, startPath).then((start) =>
-        srcGitTree(repo, Object.assign(root, { dirname: '' }), start)
-      )
-    )
+  return git.readTree(Object.assign({ oid }, repo)).then((root) => {
+    Object.assign(root, { dirname: '' })
+    return startPath
+      ? getGitTreeAtStartPath(repo, oid, startPath).then((start) => {
+        Object.assign(start, { dirname: startPath })
+        return srcGitTree(repo, root, start)
+      })
+      : srcGitTree(repo, root)
+  })
 }
 
 function getGitTreeAtStartPath (repo, oid, startPath) {
-  return git.readTree(Object.assign({ oid, filepath: startPath }, repo)).then(
-    (result) => Object.assign(result, { dirname: startPath }),
-    (err) => {
-      const m = err instanceof ObjectTypeError && err.data.expected === 'tree' ? 'is not a directory' : 'does not exist'
-      throw new Error(`the start path '${startPath}' ${m}`)
-    }
-  )
+  return git.readTree(Object.assign({ oid, filepath: startPath }, repo)).catch((err) => {
+    const m = err instanceof ObjectTypeError && err.data.expected === 'tree' ? 'is not a directory' : 'does not exist'
+    throw new Error(`the start path '${startPath}' ${m}`)
+  })
 }
 
-function srcGitTree (repo, root, start) {
+function srcGitTree (repo, root, start = root) {
   return new Promise((resolve, reject) => {
     const files = []
     createGitTreeWalker(repo, root, filterGitEntry, gitEntryToFile)
