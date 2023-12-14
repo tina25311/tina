@@ -984,7 +984,7 @@ function ensureCacheDir (preferredCacheDir, startDir) {
 }
 
 function transformGitCloneError (err, displayUrl, authRequested) {
-  let wrappedMsg, trimMessage
+  let wrappedMsg, recoverable, trimMessage
   if (HTTP_ERROR_CODE_RX.test(err.code)) {
     switch (err.data.statusCode) {
       case 401:
@@ -999,7 +999,7 @@ function transformGitCloneError (err, displayUrl, authRequested) {
         break
       default:
         wrappedMsg = err.message
-        trimMessage = true
+        recoverable = trimMessage = true
     }
   } else if (err instanceof UrlParseError || err instanceof UnknownTransportError) {
     wrappedMsg = 'Content source uses an unsupported transport protocol'
@@ -1007,14 +1007,14 @@ function transformGitCloneError (err, displayUrl, authRequested) {
     wrappedMsg = `Content repository host could not be resolved: ${err.hostname}`
   } else {
     wrappedMsg = `${err.name}: ${err.message}`
-    trimMessage = true
+    recoverable = trimMessage = true
   }
   if (trimMessage) {
     wrappedMsg = ~(wrappedMsg = wrappedMsg.trimEnd()).indexOf('. ') ? wrappedMsg : wrappedMsg.replace(/\.$/, '')
   }
   const errWrapper = new Error(`${wrappedMsg} (url: ${displayUrl})`)
   errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
-  return errWrapper
+  return recoverable ? Object.assign(errWrapper, { recoverable }) : errWrapper
 }
 
 function splitRefPatterns (str) {
