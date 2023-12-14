@@ -5981,6 +5981,7 @@ describe('aggregateContent()', () => {
       expect(userAgentHeader).to.startWith('git/isomorphic-git@')
     })
 
+    // NOTE this should probably not be a recoverable error
     it('should fail to clone repository with https URL if cert is unauthorized', async () => {
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1'
       const remote = { gitServerPort: secureGitServerPort, gitServerProtocol: 'https:' }
@@ -5988,7 +5989,9 @@ describe('aggregateContent()', () => {
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedMessage = new RegExp(`^Error: self.signed certificate \\(url: ${regexpEscape(repoBuilder.url)}\\)`)
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedMessage)
+        .with.property('recoverable', true)
     })
 
     it('should honor http_proxy setting when cloning repository over http', async () => {
@@ -6187,10 +6190,12 @@ describe('aggregateContent()', () => {
       repoBuilder.url = urlWithoutAuth.replace('//', '//@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${urlWithoutAuth})`
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
+      expect(result).to.throw(expectedErrorMessage).not.property('recoverable')
       expect(authorizationHeaderValue).to.be.undefined()
       expect(credentialsSent).to.be.undefined()
     })
@@ -6234,10 +6239,12 @@ describe('aggregateContent()', () => {
       repoBuilder.url = urlWithoutAuth.replace('//', '//:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${urlWithoutAuth})`
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
+      expect(result).to.throw(expectedErrorMessage).not.property('recoverable')
       expect(authorizationHeaderValue).to.be.undefined()
       expect(credentialsSent).to.be.undefined()
     })
@@ -6263,10 +6270,12 @@ describe('aggregateContent()', () => {
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${urlWithoutAuth})`
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
+      expect(result).to.throw(expectedErrorMessage).not.property('recoverable')
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
     })
 
@@ -6293,7 +6302,9 @@ describe('aggregateContent()', () => {
       repoBuilder.url = urlWithoutAuth.replace('//', '//u:p@')
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${urlWithoutAuth})`
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .not.property('recoverable')
       expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
       expect(CONTENT_CACHE_DIR).to.be.a.directory().and.be.empty()
       authorizationHeaderValue = undefined
@@ -6439,7 +6450,9 @@ describe('aggregateContent()', () => {
       playbookSpec.git = { credentials: { path: customGitCredentialsPath } }
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedMessage = `Content repository not found or requires credentials (url: ${repoBuilder.url})`
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedMessage)
+        .not.property('recoverable')
     })
 
     it('should read credentials from specified path if auth is required', async () => {
@@ -6473,7 +6486,9 @@ describe('aggregateContent()', () => {
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${repoBuilder.url})`
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .not.property('recoverable')
       expect(authorizationHeaderValue).to.be.undefined()
       expect(credentialsSent).to.be.undefined()
     })
@@ -6494,7 +6509,9 @@ describe('aggregateContent()', () => {
       playbookSpec.runtime.fetch = true
       return withMockStdout(async (lines) => {
         const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${repoBuilder.url})`
-        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec))
+          .to.throw(expectedErrorMessage)
+          .not.property('recoverable')
         expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('u:p').toString('base64'))
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(credentialsRequestCount).to.equal(1)
@@ -6636,14 +6653,18 @@ describe('aggregateContent()', () => {
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: invalidDir })
       const expectedErrorMessage = `Local content source does not exist: ${absInvalidDir} (url: ${invalidDir})`
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .not.property('recoverable')
     })
 
     it('should throw meaningful error if local absolute content directory does not exist', async () => {
       const absInvalidDir = ospath.join(WORK_DIR, 'no-such-directory')
       playbookSpec.content.sources.push({ url: absInvalidDir })
       const expectedErrorMessage = `Local content source does not exist: ${absInvalidDir}`
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .not.property('recoverable')
     })
 
     it('should throw meaningful error if local relative content directory is not a git repository', async () => {
@@ -6654,7 +6675,9 @@ describe('aggregateContent()', () => {
       playbookSpec.dir = WORK_DIR
       playbookSpec.content.sources.push({ url: regularDir })
       const expectedErrorMessage = `Local content source must be a git repository: ${absRegularDir} (url: ${regularDir})`
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .not.property('recoverable')
     })
 
     it('should throw meaningful error if local absolute content directory is not a git repository', async () => {
@@ -6663,7 +6686,9 @@ describe('aggregateContent()', () => {
       fs.writeFileSync(ospath.join(absRegularDir, 'antora.xml'), 'name: the-component\nversion: 1.0')
       playbookSpec.content.sources.push({ url: absRegularDir })
       const expectedErrorMessage = `Local content source must be a git repository: ${absRegularDir}`
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .not.property('recoverable')
     })
 
     // NOTE on Windows, : is a reserved filename character, so we can't use this test there
@@ -6726,7 +6751,9 @@ describe('aggregateContent()', () => {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .not.property('recoverable')
     })
 
     // NOTE this test also verifies that the SSH URL is still shown in the progress indicator and error message
@@ -6738,7 +6765,9 @@ describe('aggregateContent()', () => {
       playbookSpec.content.sources.push({ url })
       await withMockStdout(async (lines) => {
         playbookSpec.runtime.quiet = false
-        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec))
+          .to.throw(expectedErrorMessage)
+          .not.property('recoverable')
         expect(lines[0]).to.include(url)
       })
       if (oldSshAuthSock) process.env.SSH_AUTH_SOCK = oldSshAuthSock
@@ -6748,10 +6777,12 @@ describe('aggregateContent()', () => {
       const url = `http://localhost:${serverPort}/500/bar.git`
       const expectedErrorMessage = `HTTP Error: 500 Internal Server Error (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 500 Internal Server Error')
+      expect(result).to.throw(expectedErrorMessage).with.property('recoverable', true)
     })
 
     it('should throw meaningful error if git client throws exception', async () => {
@@ -6762,10 +6793,12 @@ describe('aggregateContent()', () => {
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` +
         `but received: 001e# service=git-upload-pack\n0007ref (url: ${url})`
       const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: ' + expectedCauseMessage)
+      expect(result).to.throw(expectedErrorMessage).with.property('recoverable', true)
     })
 
     it('should throw meaningful error if git server does not support required capabilities', async () => {
@@ -6776,10 +6809,12 @@ describe('aggregateContent()', () => {
         `${commonErrorMessage} Expected "001e# service=git-upload-pack" ` +
         `but received: 001e# service=git-upload-pack\n0009ref\x00 (url: ${url})`
       const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: ' + expectedCauseMessage)
+      expect(result).to.throw(expectedErrorMessage).with.property('recoverable', true)
     })
 
     it('should throw meaningful error if git server returns empty response', async () => {
@@ -6788,20 +6823,24 @@ describe('aggregateContent()', () => {
       const commonErrorMessage = 'Remote did not reply using the "smart" HTTP protocol.'
       const expectedErrorMessage = `${commonErrorMessage} Expected "001e# service=git-upload-pack" but received: 0000 (url: ${url})`
       const expectedCauseMessage = `SmartHttpError: ${commonErrorMessage}`
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: ' + expectedCauseMessage)
+      expect(result).to.throw(expectedErrorMessage).with.property('recoverable', true)
     })
 
     it('should throw meaningful error if remote repository URL not found', async () => {
       const url = `http://localhost:${serverPort}/404/invalid-repository.git`
       const expectedErrorMessage = `Content repository not found (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 404 Not Found')
+      expect(result).to.throw(expectedErrorMessage).not.property('recoverable')
     })
 
     describe('should not append .git suffix to URL if git.ensureGitSuffix is disabled in playbook', () => {
@@ -6810,7 +6849,9 @@ describe('aggregateContent()', () => {
         playbookSpec.git = { ensureGitSuffix: false }
         playbookSpec.content.sources.push({ url: repoBuilder.url.replace(/\.git$/, '') })
         const expectedErrorMessage = `Content repository not found (url: ${repoBuilder.url.replace(/\.git$/, '')})`
-        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+        expect(await trapAsyncError(aggregateContent, playbookSpec))
+          .to.throw(expectedErrorMessage)
+          .not.property('recoverable')
       })
     })
 
@@ -6818,11 +6859,34 @@ describe('aggregateContent()', () => {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${url})`
       playbookSpec.content.sources.push({ url })
-      expect(await trapAsyncError(aggregateContent, playbookSpec))
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result)
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
     })
+
+    it('should throw meaningful error if server returns unexpected error', async () => {
+      const url = `http://localhost:${serverPort}/301/invalid-repository.git`
+      playbookSpec.content.sources.push({ url })
+      const commonErrorMessage = 'Remote did not reply using the "smart" HTTP protocol.'
+      const expectedErrorMessage = `${commonErrorMessage} Expected "001e# service=git-upload-pack"`
+      expect(await trapAsyncError(aggregateContent, playbookSpec))
+        .to.throw(expectedErrorMessage)
+        .with.property('recoverable', true)
+    })
+
+    // NOTE Windows CI can get stuck resolving an unknown host
+    if (process.platform !== 'win32') {
+      it('should throw meaningful error if git host cannot be resolved', async () => {
+        const url = 'https://gitlab.info/org/repository.git'
+        playbookSpec.content.sources.push({ url })
+        const expectedErrorMessage = `Content repository host could not be resolved: gitlab.info (url: ${url})`
+        expect(await trapAsyncError(aggregateContent, playbookSpec))
+          .to.throw(expectedErrorMessage)
+          .not.property('recoverable')
+      })
+    }
 
     it('should not show auth information in progress bar label', async () => {
       const url = `http://0123456789@localhost:${serverPort}/401/invalid-repository.git`
@@ -6835,23 +6899,5 @@ describe('aggregateContent()', () => {
         expect(lines[0]).to.not.include('0123456789@')
       }, GIT_OPERATION_LABEL_LENGTH + 1 + url.length * 2)
     })
-
-    it('should throw meaningful error if server returns unexpected error', async () => {
-      const url = `http://localhost:${serverPort}/301/invalid-repository.git`
-      playbookSpec.content.sources.push({ url })
-      const commonErrorMessage = 'Remote did not reply using the "smart" HTTP protocol.'
-      const expectedErrorMessage = `${commonErrorMessage} Expected "001e# service=git-upload-pack"`
-      expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
-    })
-
-    // NOTE Windows CI can get stuck resolving an unknown host
-    if (process.platform !== 'win32') {
-      it('should throw meaningful error if git host cannot be resolved', async () => {
-        const url = 'https://gitlab.info/org/repository.git'
-        playbookSpec.content.sources.push({ url })
-        const expectedErrorMessage = `Content repository host could not be resolved: gitlab.info (url: ${url})`
-        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
-      })
-    }
   })
 })
