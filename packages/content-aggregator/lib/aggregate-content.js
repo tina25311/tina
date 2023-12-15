@@ -215,8 +215,7 @@ async function loadRepository (url, opts) {
           return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
         .catch((cloneErr) => {
-          // FIXME triggering the error handler here causes assertion problems in the test suite
-          //if (fetchOpts.onProgress) fetchOpts.onProgress.finish(cloneErr)
+          if (fetchOpts.onProgress) fetchOpts.onProgress.finish(cloneErr)
           throw transformGitCloneError(cloneErr, displayUrl)
         })
         .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
