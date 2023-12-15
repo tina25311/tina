@@ -814,7 +814,6 @@ function onGitProgress ({ phase, loaded, total }) {
 
 function onGitComplete (err) {
   if (err) {
-    // TODO could use progressBar.interrupt() to replace bar with message instead
     this.chars.incomplete = '?'
     this.update(0)
     // NOTE force progress bar to update regardless of throttle setting
