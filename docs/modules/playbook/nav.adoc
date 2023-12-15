@@ -21,6 +21,7 @@
 * xref:configure-git.adoc[]
 ** xref:git-suffix.adoc[]
 ** xref:git-fetch-concurrency.adoc[]
+** xref:git-read-concurrency.adoc[]
 ** xref:git-credentials-path-and-contents.adoc[]
 ** xref:git-plugins.adoc[]
 * xref:configure-asciidoc.adoc[]

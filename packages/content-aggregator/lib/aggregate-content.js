@@ -93,14 +93,17 @@ function aggregateContent (playbook) {
   return ensureCacheDir(requestedCacheDir, startDir).then((cacheDir) => {
     const gitConfig = Object.assign({ ensureGitSuffix: true }, playbook.git)
     const gitPlugins = loadGitPlugins(gitConfig, playbook.network || {}, startDir)
-    const fetchConcurrency = Math.max(gitConfig.fetchConcurrency || Infinity, 1)
+    const concurrency = {
+      fetch: Math.max(gitConfig.fetchConcurrency || Infinity, 1),
+      read: Math.max(gitConfig.readConcurrency || Infinity, 1),
+    }
     const sourcesByUrl = sources.reduce((accum, source) => {
       return accum.set(source.url, [...(accum.get(source.url) || []), Object.assign({}, sourceDefaults, source)])
     }, new Map())
     const progress = !quiet && createProgress(sourcesByUrl.keys(), process.stdout)
     const refPatternCache = Object.assign(new Map(), { braces: new Map() })
     const loadOpts = { cacheDir, fetch, gitPlugins, progress, startDir, refPatternCache }
-    return collectFiles(sourcesByUrl, loadOpts, fetchConcurrency).then(buildAggregate, (err) => {
+    return collectFiles(sourcesByUrl, loadOpts, concurrency).then(buildAggregate, (err) => {
       progress && progress.terminate()
       throw err
     })
@@ -113,7 +116,7 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
     if (tagsSpecified(sources)) loadOptsForUrl.fetchTags = true
     return () => loadRepository(url, loadOptsForUrl).then((result) => Object.assign(result, { sources }))
   })
-  return gracefulPromiseAllWithLimit(loadTasks, concurrency).then(([results, rejections]) => {
+  return gracefulPromiseAllWithLimit(loadTasks, concurrency.fetch).then(([results, rejections]) => {
     if (rejections.length) throw rejections[0]
     const collectTasks = results.map(
       ({ repo, authStatus, sources }) =>
@@ -127,7 +130,7 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
             })
           ).finally(() => (repo.cache = undefined))
     )
-    return promiseAllWithLimit(collectTasks, concurrency)
+    return promiseAllWithLimit(collectTasks, concurrency.read)
   })
 }
 

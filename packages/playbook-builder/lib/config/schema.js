@@ -167,7 +167,7 @@ module.exports = {
     fetch_concurrency: {
       doc: 'The maximum number of fetch or clone operations that are permitted to run at once. Use 0 for unlimited.',
       format: 'int',
-      default: 0,
+      default: 1,
     },
     plugins: {
       credential_manager: {
@@ -180,6 +180,11 @@ module.exports = {
         format: String,
         default: undefined,
       },
+    },
+    read_concurrency: {
+      doc: 'The maximum number of git indexes that are read into memory at once. Use 0 for unlimited.',
+      format: 'int',
+      default: 0,
     },
   },
   network: {

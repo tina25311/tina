@@ -4287,7 +4287,7 @@ describe('aggregateContent()', () => {
         const componentDescC = { name: 'the-component-c', version: null }
         await initRepoWithFiles(repoBuilderC, componentDescC, ['modules/ROOT/pages/page-one.adoc'])
         playbookSpec.content.sources.push({ url: repoBuilderC.url })
-        playbookSpec.git = { fetchConcurrency: 2 }
+        playbookSpec.git = { fetchConcurrency: 2, readConcurrency: 2 }
         const aggregate = await aggregateContent(playbookSpec)
         expect(aggregate).to.have.lengthOf(3)
         expect(aggregate.map(({ name }) => name)).to.eql(['the-component-a', 'the-component-b', 'the-component-c'])
