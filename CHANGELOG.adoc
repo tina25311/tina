@@ -13,6 +13,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Fill in progress bar with incomplete marks if cloning a repository fails
 * *content-aggregator*: Mention that credentials may have been rejected if server requests them, then sends 404 response
 * *content-aggregator*: Flag git clone/fetch error as recoverable if an unexpected network error occurs (#1096)
+* *content-aggregator*: Decouple step to load (fetch or clone) repositories from step to scan repositories to discover references and start paths and collect files (#1096)
 
 == 3.1.5 (2023-11-23)
 
