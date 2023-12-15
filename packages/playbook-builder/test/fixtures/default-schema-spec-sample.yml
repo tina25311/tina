@@ -60,7 +60,8 @@ git:
   credentials:
     path: ./.git-credentials
   ensure_git_suffix: true
-  fetch_concurrency: 15
+  fetch_concurrency: 5
+  read_concurrency: 2
   plugins:
     http: ./lib/git-http-plugin.js
 network:

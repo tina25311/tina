@@ -7,8 +7,13 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *playbook-builder*: Add `git.read_concurrency` playbook key to control how many git indexes to load into memory at once (#1096)
+
 === Changed
 
+* *playbook-builder*: Change default value of `git.fetch_concurrency` to 1 (#1096)
 * *content-aggregator*: Don't read git tree twice if start path is empty; add dirname to tree object in same function
 * *content-aggregator*: Fill in progress bar with incomplete marks if cloning a repository fails
 * *content-aggregator*: Mention that credentials may have been rejected if server requests them, then sends 404 response
