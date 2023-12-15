@@ -11,6 +11,10 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Add `git.read_concurrency` playbook key to control how many git indexes to load into memory at once (#1096)
 
+=== Fixed
+
+* *content-aggregator*: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (#1096)
+
 === Changed
 
 * *playbook-builder*: Change default value of `git.fetch_concurrency` to 1 (#1096)

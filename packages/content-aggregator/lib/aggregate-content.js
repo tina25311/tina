@@ -110,14 +110,25 @@ function aggregateContent (playbook) {
   })
 }
 
-async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
+async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls) {
   const loadTasks = [...sourcesByUrl.entries()].map(([url, sources]) => {
     const loadOptsForUrl = Object.assign({}, loadOpts)
+    if (loadOpts.fetch && fetchedUrls && fetchedUrls.length && fetchedUrls.includes(url)) loadOptsForUrl.fetch = false
     if (tagsSpecified(sources)) loadOptsForUrl.fetchTags = true
-    return () => loadRepository(url, loadOptsForUrl).then((result) => Object.assign(result, { sources }))
+    return loadRepository.bind(null, url, loadOptsForUrl, { url, sources })
   })
   return gracefulPromiseAllWithLimit(loadTasks, concurrency.fetch).then(([results, rejections]) => {
-    if (rejections.length) throw rejections[0]
+    if (rejections.length) {
+      if (concurrency.fetch > 1 && rejections.every(({ recoverable }) => recoverable)) {
+        if (loadOpts.progress) loadOpts.progress.terminate() // reset cursor position and allow it be reused
+        const msg0 = 'An unexpected error occurred while concurrently fetching content sources.'
+        const msg1 = 'Retrying with git.fetch_concurrency value of 1.'
+        logger.warn(msg0 + ' ' + msg1)
+        const fulfilledUrls = results.map((it) => it && it.repo.url && it.url).filter((it) => it)
+        return collectFiles(sourcesByUrl, loadOpts, Object.assign(concurrency, { fetch: 1 }), fulfilledUrls)
+      }
+      throw rejections[0]
+    }
     const collectTasks = results.map(
       ({ repo, authStatus, sources }) =>
         () =>
@@ -150,7 +161,7 @@ function buildAggregate (componentVersionBuckets) {
   return entries.accum
 }
 
-async function loadRepository (url, opts) {
+async function loadRepository (url, opts, result = {}) {
   let authStatus, dir, repo
   const cache = { [REF_PATTERN_CACHE_KEY]: opts.refPatternCache }
   if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
@@ -214,7 +225,7 @@ async function loadRepository (url, opts) {
   } else {
     throw new Error(`Local content source does not exist: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`)
   }
-  return { repo, authStatus }
+  return Object.assign(result, { repo, authStatus })
 }
 
 function extractCredentials (url) {
