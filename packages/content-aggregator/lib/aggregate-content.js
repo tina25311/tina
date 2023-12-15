@@ -108,48 +108,27 @@ function aggregateContent (playbook) {
 }
 
 async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
-  const tasks = [...sourcesByUrl.entries()].map(([url, sources]) => [
-    () => loadRepository(url, Object.assign({ fetchTags: tagsSpecified(sources) }, loadOpts)),
-    ({ repo, authStatus }) =>
-      Promise.all(
-        sources.map((source) => {
-          // NOTE if repository is managed (has a url property), we can assume the remote name is origin
-          // TODO if the repo has no remotes, then remoteName should be undefined
-          const remoteName = repo.url ? 'origin' : source.remote || 'origin'
-          return collectFilesFromSource(source, repo, remoteName, authStatus)
-        })
-      ),
-  ])
-  let rejection, started
-  const startedContinuations = []
-  const recordRejection = (err) => {
-    rejection = err
-  }
-  const runTask = (primary, continuation, idx) =>
-    primary().then((value) => {
-      if (!rejection) startedContinuations[idx] = continuation(value).catch(recordRejection)
-    }, recordRejection)
-  if (tasks.length > concurrency) {
-    started = []
-    const pending = []
-    for (const [primary, continuation] of tasks) {
-      const current = runTask(primary, continuation, started.length).finally(() =>
-        pending.splice(pending.indexOf(current), 1)
-      )
-      started.push(current)
-      if (pending.push(current) < concurrency) continue
-      await Promise.race(pending)
-      if (rejection) break
-    }
-  } else {
-    started = tasks.map(([primary, continuation], idx) => runTask(primary, continuation, idx))
-  }
-  return Promise.all(started).then(() =>
-    Promise.all(startedContinuations).then((result) => {
-      if (rejection) throw rejection
-      return result
-    })
-  )
+  const loadTasks = [...sourcesByUrl.entries()].map(([url, sources]) => {
+    const loadOptsForUrl = Object.assign({}, loadOpts)
+    if (tagsSpecified(sources)) loadOptsForUrl.fetchTags = true
+    return () => loadRepository(url, loadOptsForUrl).then((result) => Object.assign(result, { sources }))
+  })
+  return gracefulPromiseAllWithLimit(loadTasks, concurrency).then(([results, rejections]) => {
+    if (rejections.length) throw rejections[0]
+    const collectTasks = results.map(
+      ({ repo, authStatus, sources }) =>
+        () =>
+          Promise.all(
+            sources.map((source) => {
+              // NOTE if repository is managed (has a url property), we can assume the remote name is origin
+              // TODO if the repo has no remotes, then remoteName should be undefined
+              const remoteName = repo.url ? 'origin' : source.remote || 'origin'
+              return collectFilesFromSource(source, repo, remoteName, authStatus)
+            })
+          ).finally(() => (repo.cache = undefined))
+    )
+    return promiseAllWithLimit(collectTasks, concurrency)
+  })
 }
 
 function buildAggregate (componentVersionBuckets) {
@@ -1087,6 +1066,39 @@ function findWorktrees (repo, patterns) {
         )
       : Promise.resolve()
   ).then((entries = []) => mainWorktree.then((entry) => new Map(entry ? entries.push(entry) && entries : entries)))
+}
+
+async function gracefulPromiseAllWithLimit (tasks, limit = Infinity) {
+  const rejections = []
+  const recordRejection = (err) => rejections.push(err) && undefined
+  const started = []
+  if (tasks.length <= limit) {
+    for (const task of tasks) started.push(task().catch(recordRejection))
+  } else {
+    const pending = []
+    for (const task of tasks) {
+      const current = task()
+        .catch(recordRejection)
+        .finally(() => pending.splice(pending.indexOf(current), 1))
+      started.push(current)
+      if (pending.push(current) < limit) continue
+      await Promise.race(pending)
+      if (rejections.length) break
+    }
+  }
+  return Promise.all(started).then((results) => [results, rejections])
+}
+
+async function promiseAllWithLimit (tasks, limit = Infinity) {
+  if (tasks.length <= limit) return Promise.all(tasks.map((task) => task()))
+  const started = []
+  const pending = []
+  for (const task of tasks) {
+    const current = task().finally(() => pending.splice(pending.indexOf(current), 1))
+    started.push(current)
+    if (pending.push(current) >= limit) await Promise.race(pending)
+  }
+  return Promise.all(started)
 }
 
 module.exports = aggregateContent
