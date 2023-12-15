@@ -15,6 +15,7 @@ This project utilizes semantic versioning.
 
 * *logger*: Restore error stack in log output when using pino-std-serializers >= 6.1 (#1049)
 * *content-aggregator*: Consider local branches in non-managed bare repository that has at least one remote branch (#1064)
+* *content-aggregator*: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (#1096)
 * *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
 * *asciidoc-loader*: Do not fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file
 * *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)

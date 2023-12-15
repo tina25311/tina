@@ -4186,6 +4186,47 @@ describe('aggregateContent()', () => {
         )
       })
     })
+
+    it('should retry clone operations in serial if fetch concurrency is > 1 and unknown error occurs', async () => {
+      const fetches = []
+      let reject = true
+      const trapFetch = (fetch) => {
+        fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
+        reject ? (reject = false) || fetch.reject() : fetch.accept()
+      }
+      try {
+        gitServer.on('fetch', trapFetch)
+        const repoBuilderA = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        const componentDescA = { name: 'component-a', version: '1.0' }
+        const repoBuilderB = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        const componentDescB = { name: 'component-b', version: '1.0' }
+        await initRepoWithFiles(repoBuilderA, componentDescA, 'modules/ROOT/pages/page-one.adoc')
+        await initRepoWithFiles(repoBuilderB, componentDescB, 'modules/ROOT/pages/page-one.adoc')
+        playbookSpec.content.sources.push({ url: repoBuilderA.url, branches: 'HEAD' })
+        playbookSpec.content.sources.push({ url: repoBuilderB.url, branches: 'HEAD' })
+        playbookSpec.git = { fetchConcurrency: 2 }
+
+        const expectedMessage = [
+          'An unexpected error occurred while concurrently fetching content sources.',
+          'Retrying with git.fetch_concurrency value of 1.',
+        ].join(' ')
+        const { messages, returnValue: aggregate } = (
+          await captureLog(() => aggregateContent(playbookSpec))
+        ).withReturnValue()
+
+        expect(aggregate).to.have.lengthOf(2)
+        expect(messages).to.have.lengthOf(1)
+        expect(messages[0]).to.deep.include({
+          level: 'warn',
+          msg: expectedMessage,
+        })
+        expect(fetches).to.have.lengthOf(3)
+        expect(fetches).to.include(repoBuilderA.url)
+        expect(fetches).to.include(repoBuilderB.url)
+      } finally {
+        gitServer.off('fetch', trapFetch)
+      }
+    })
   })
 
   describe('distributed component', () => {
