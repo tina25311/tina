@@ -19,7 +19,8 @@ This project utilizes semantic versioning.
 
 === Changed
 
-* *content-aggregator*: don't read git tree twice if start path is empty; add dirname to tree object in same function
+* *content-aggregator*: Don't read git tree twice if start path is empty; add dirname to tree object in same function
+* *content-aggregator*: Fill in progress bar with incomplete marks if cloning a repository fails
 * *ui-loader*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
 * *asciidoc-loader*: Fix relative path computation when path is extensionless and to matches parent folder of from (#1094)
 * *page-composer*: Fix result of relativize helper when path is extensionless and to matches parent folder of from (#1094)

@@ -5899,7 +5899,7 @@ describe('aggregateContent()', () => {
         playbookSpec.content.sources.push({ url: 'https://gitlab.com/antora/no-such-repository-a.git' })
         playbookSpec.content.sources.push({ url: 'https://gitlab.com/antora/no-such-repository-b.git' })
         expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw('Content repository not found')
-        expect(process.stdout.clearLine).to.have.been.called.exactly(3)
+        expect(process.stdout.clearLine).to.have.been.called.gt(2)
       })
     })
   })
