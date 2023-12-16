@@ -153,20 +153,19 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
 }
 
 function buildAggregate (componentVersionBuckets) {
-  return [
-    ...deepFlatten(componentVersionBuckets)
-      .reduce((accum, batch) => {
-        const key = batch.version + '@' + batch.name
-        const entry = accum.get(key)
-        if (!entry) return accum.set(key, batch)
-        const { files, origins } = batch
-        ;(batch.files = entry.files).push(...files)
-        ;(batch.origins = entry.origins).push(origins[0])
-        Object.assign(entry, batch)
-        return accum
-      }, new Map())
-      .values(),
-  ]
+  const entries = Object.assign(new Map(), { accum: [] })
+  for (const batch of deepFlatten(componentVersionBuckets)) {
+    let key, entry
+    if ((entry = entries.get((key = batch.version + '@' + batch.name)))) {
+      const { files, origins } = batch
+      ;(batch.files = entry.files).push(...files)
+      ;(batch.origins = entry.origins).push(origins[0])
+      Object.assign(entry, batch)
+    } else {
+      entries.set(key, batch).accum.push(batch)
+    }
+  }
+  return entries.accum
 }
 
 async function loadRepository (url, opts) {
