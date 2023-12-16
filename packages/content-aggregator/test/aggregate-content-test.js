@@ -6079,6 +6079,7 @@ describe('aggregateContent()', () => {
     let credentialsVerdict
     let skipAuthenticateIfNoAuth
     let oldEnv
+    let currentResponse
 
     before(() => {
       oldEnv = Object.assign({}, process.env)
@@ -6088,6 +6089,8 @@ describe('aggregateContent()', () => {
         USERPROFILE: WORK_DIR,
         XDG_CONFIG_HOME: ospath.join(WORK_DIR, '.local'),
       })
+      const handleDelegate = gitServer.handle
+      gitServer.handle = (req, res) => handleDelegate.call(gitServer, req, (currentResponse = res))
       gitServer.authenticate = ({ type, repo, user, headers }, next) => {
         authorizationHeaderValue = headers.authorization
         if (type === 'fetch') {
@@ -6099,6 +6102,10 @@ describe('aggregateContent()', () => {
               credentialsRequestCount++
               credentialsSent = { username, password }
               if (username === 'reject' && !password) return next('try again!')
+              if (username === 'mask') {
+                currentResponse.writeHead(404, 'Not Found', { 'Content-Type': 'text/plain' }).end()
+                return
+              }
               credentialsVerdict ? next(credentialsVerdict) : next()
             })
           }
@@ -6120,6 +6127,10 @@ describe('aggregateContent()', () => {
       gitServer.authenticate = undefined
       Object.keys(process.env).forEach((name) => delete process.env[name])
       Object.assign(process.env, oldEnv)
+    })
+
+    afterEach(() => {
+      currentResponse = undefined
     })
 
     it('should read valid credentials from URL', async () => {
@@ -6488,6 +6499,24 @@ describe('aggregateContent()', () => {
         expect(credentialsSent).to.eql({ username: 'u', password: 'p' })
         expect(credentialsRequestCount).to.equal(1)
         expect(lines.filter((l) => l.startsWith('[clone]'))).to.be.empty()
+        expect(CONTENT_CACHE_DIR).to.be.a.directory().and.be.empty()
+      })
+    })
+
+    // NOTE this test simulates GitHub's behavior
+    it('should mention credentials in error message if requested and server returns 404', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+      await initRepoWithFiles(repoBuilder)
+      const credentials = repoBuilder.url.substr(0, repoBuilder.url.indexOf('/', 8)).replace('//', '//mask:p@') + '\n'
+      await fsp.writeFile(ospath.join(WORK_DIR, '.git-credentials'), credentials)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      playbookSpec.runtime.quiet = false
+      return withMockStdout(async (lines) => {
+        const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${repoBuilder.url})`
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+        expect(authorizationHeaderValue).to.equal('Basic ' + Buffer.from('mask:p').toString('base64'))
+        expect(credentialsSent).to.eql({ username: 'mask', password: 'p' })
+        expect(credentialsRequestCount).to.equal(1)
         expect(CONTENT_CACHE_DIR).to.be.a.directory().and.be.empty()
       })
     })

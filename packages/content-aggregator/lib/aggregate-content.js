@@ -179,6 +179,7 @@ async function loadRepository (url, opts) {
     dir = ospath.join(cacheDir, generateCloneFolderName(displayUrl))
     // NOTE the presence of the url property on the repo object implies the repository is remote
     repo = { cache, dir, fs, gitdir: dir, noCheckout: true, url }
+    const { credentialManager } = gitPlugins
     const validStateFile = ospath.join(dir, VALID_STATE_FILENAME)
     try {
       await fsp.access(validStateFile)
@@ -188,7 +189,6 @@ async function loadRepository (url, opts) {
         await git
           .fetch(fetchOpts)
           .then(() => {
-            const credentialManager = gitPlugins.credentialManager
             authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
             return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
           })
@@ -210,13 +210,13 @@ async function loadRepository (url, opts) {
         .clone(fetchOpts)
         .then(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)))
         .then(() => {
-          const credentialManager = gitPlugins.credentialManager
           authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
           return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
         .catch((cloneErr) => {
           if (fetchOpts.onProgress) fetchOpts.onProgress.finish(cloneErr)
-          throw transformGitCloneError(cloneErr, displayUrl)
+          const authRequested = credentialManager.status({ url }) === 'requested'
+          throw transformGitCloneError(cloneErr, displayUrl, authRequested)
         })
         .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
         .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
@@ -954,7 +954,7 @@ function ensureCacheDir (preferredCacheDir, startDir) {
   )
 }
 
-function transformGitCloneError (err, displayUrl) {
+function transformGitCloneError (err, displayUrl, authRequested) {
   let wrappedMsg, trimMessage
   if (HTTP_ERROR_CODE_RX.test(err.code)) {
     switch (err.data.statusCode) {
@@ -964,7 +964,9 @@ function transformGitCloneError (err, displayUrl) {
           : 'Content repository not found or requires credentials'
         break
       case 404:
-        wrappedMsg = 'Content repository not found'
+        wrappedMsg = authRequested
+          ? 'Content repository not found or credentials were rejected'
+          : 'Content repository not found'
         break
       default:
         wrappedMsg = err.message
