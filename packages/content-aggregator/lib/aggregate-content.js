@@ -5,7 +5,6 @@ const { createHash } = require('crypto')
 const createGitHttpPlugin = require('./git-plugin-http')
 const decodeUint8Array = require('./decode-uint8-array')
 const deepClone = require('./deep-clone')
-const deepFlatten = require('./deep-flatten')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
@@ -129,33 +128,29 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls) {
       }
       throw rejections[0]
     }
-    const collectTasks = results.map(
-      ({ repo, authStatus, sources }) =>
-        () =>
-          Promise.all(
-            sources.map((source) => {
-              // NOTE if repository is managed (has a url property), we can assume the remote name is origin
-              // TODO if the repo has no remotes, then remoteName should be undefined
-              const remoteName = repo.url ? 'origin' : source.remote || 'origin'
-              return collectFilesFromSource(source, repo, remoteName, authStatus)
-            })
-          ).finally(() => (repo.cache = undefined))
-    )
-    return promiseAllWithLimit(collectTasks, concurrency.read)
+    return Promise.all(
+      results.map(({ repo, authStatus, sources }) =>
+        selectStartPathsForRepository(repo, authStatus, sources).then((startPaths) =>
+          collectFilesFromStartPaths.bind(null, startPaths, repo, authStatus)
+        )
+      )
+    ).then((collectTasks) => promiseAllWithLimit(collectTasks, concurrency.read))
   })
 }
 
 function buildAggregate (componentVersionBuckets) {
   const entries = Object.assign(new Map(), { accum: [] })
-  for (const batch of deepFlatten(componentVersionBuckets)) {
-    let key, entry
-    if ((entry = entries.get((key = batch.version + '@' + batch.name)))) {
-      const { files, origins } = batch
-      ;(batch.files = entry.files).push(...files)
-      ;(batch.origins = entry.origins).push(origins[0])
-      Object.assign(entry, batch)
-    } else {
-      entries.set(key, batch).accum.push(batch)
+  for (const batchesForOrigin of componentVersionBuckets) {
+    for (const batch of batchesForOrigin) {
+      let key, entry
+      if ((entry = entries.get((key = batch.version + '@' + batch.name)))) {
+        const { files, origins } = batch
+        ;(batch.files = entry.files).push(...files)
+        ;(batch.origins = entry.origins).push(origins[0])
+        Object.assign(entry, batch)
+      } else {
+        entries.set(key, batch).accum.push(batch)
+      }
     }
   }
   return entries.accum
@@ -247,19 +242,33 @@ function extractCredentials (url) {
   }
 }
 
-async function collectFilesFromSource (source, repo, remoteName, authStatus) {
-  const originUrl = repo.url || (await resolveRemoteUrl(repo, remoteName))
-  return selectReferences(source, repo, remoteName).then((refs) => {
-    if (!refs.length) {
-      const { url, branches, tags, startPath, startPaths } = source
+async function selectStartPathsForRepository (repo, authStatus, sources) {
+  const startPaths = []
+  const originUrls = {}
+  for (const source of sources) {
+    const { version, editUrl } = source
+    // NOTE if repository is managed (has a url property), we can assume the remote name is origin
+    // TODO if the repo has no remotes, then remoteName should be undefined
+    const remoteName = repo.url ? 'origin' : source.remote || 'origin'
+    const originUrl = repo.url || (originUrls[remoteName] ||= await resolveRemoteUrl(repo, remoteName))
+    const refs = await selectReferences(source, repo, remoteName)
+    if (refs.length) {
+      for (const ref of refs) {
+        for (const startPath of await selectStartPaths(source, repo, remoteName, ref)) {
+          startPaths.push({ startPath, ref, originUrl, editUrl, version })
+        }
+      }
+    } else {
+      const { url, branches, tags } = source
       const startPathInfo =
-        'startPaths' in source ? { 'start paths': startPaths || undefined } : { 'start path': startPath || undefined }
-      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 }).trimEnd()
+        'startPaths' in source
+          ? { 'start paths': source.startPaths || undefined }
+          : { 'start path': source.startPath || undefined }
+      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 }).trimRight()
       logger.info(`No matching references found for content source entry (${sourceInfo.replace(NEWLINE_RX, ' | ')})`)
-      return []
     }
-    return Promise.all(refs.map((it) => collectFilesFromReference(source, repo, remoteName, authStatus, it, originUrl)))
-  })
+  }
+  return startPaths
 }
 
 // QUESTION should we resolve HEAD to a ref eagerly to avoid having to do a match on it?
@@ -388,10 +397,9 @@ function getCurrentBranchName (repo, remote) {
   return refPromise.then((ref) => (ref.startsWith('refs/') ? ref.replace(SHORTEN_REF_RX, '') : undefined))
 }
 
-async function collectFilesFromReference (source, repo, remoteName, authStatus, ref, originUrl) {
+async function selectStartPaths (source, repo, remoteName, ref) {
   const url = repo.url
   const displayUrl = url || repo.dir
-  const { version, editUrl } = source
   const worktreePath = ref.head
   if (!worktreePath) {
     ref.oid = await git.resolveRef(
@@ -411,14 +419,18 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
       const flag = worktreePath ? ' <worktree>' : ref.remote && worktreePath === false ? ` <remotes/${ref.remote}>` : ''
       throw new Error(`no start paths found in ${where} (${ref.type}: ${ref.shortname}${flag})`)
     }
-    return Promise.all(
-      startPaths.map((startPath) =>
-        collectFilesFromStartPath(startPath, repo, authStatus, ref, originUrl, editUrl, version)
-      )
-    )
+    return startPaths
   }
-  const startPath = cleanStartPath(coerceToString(source.startPath))
-  return collectFilesFromStartPath(startPath, repo, authStatus, ref, originUrl, editUrl, version)
+  return [cleanStartPath(coerceToString(source.startPath))]
+}
+
+async function collectFilesFromStartPaths (startPaths, repo, authStatus) {
+  const buckets = []
+  for (const { startPath, ref, originUrl, editUrl, version } of startPaths) {
+    buckets.push(await collectFilesFromStartPath(startPath, repo, authStatus, ref, originUrl, editUrl, version))
+  }
+  repo.cache = undefined
+  return buckets
 }
 
 function collectFilesFromStartPath (startPath, repo, authStatus, ref, originUrl, editUrl, version) {
