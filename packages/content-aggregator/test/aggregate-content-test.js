@@ -6275,14 +6275,16 @@ describe('aggregateContent()', () => {
       credentialsSent = undefined
       credentialsVerdict = undefined
       skipAuthenticateIfNoAuth = undefined
-      currentResponse = undefined
     })
 
     after(() => {
       gitServer.authenticate = undefined
-      currentResponse = undefined
       Object.keys(process.env).forEach((name) => delete process.env[name])
       Object.assign(process.env, oldEnv)
+    })
+
+    afterEach(() => {
+      currentResponse = undefined
     })
 
     it('should read valid credentials from URL', async () => {
