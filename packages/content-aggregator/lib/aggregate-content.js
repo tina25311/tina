@@ -441,15 +441,16 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
     }
     return Promise.all(
       startPaths.map((startPath) =>
-        collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, version)
+        collectFilesFromStartPath(startPath, repo, authStatus, ref, originUrl, editUrl, version)
       )
     )
   }
   const startPath = cleanStartPath(coerceToString(source.startPath))
-  return collectFilesFromStartPath(startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, version)
+  return collectFilesFromStartPath(startPath, repo, authStatus, ref, originUrl, editUrl, version)
 }
 
-function collectFilesFromStartPath (startPath, repo, authStatus, ref, worktreePath, originUrl, editUrl, version) {
+function collectFilesFromStartPath (startPath, repo, authStatus, ref, originUrl, editUrl, version) {
+  const worktreePath = ref.head
   const origin = computeOrigin(originUrl, authStatus, repo.gitdir, ref, startPath, worktreePath, editUrl)
   return (worktreePath ? readFilesFromWorktree(origin) : readFilesFromGitTree(repo, ref.oid, startPath))
     .then((files) =>
