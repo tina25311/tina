@@ -87,6 +87,26 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified (#1018)
 * *content-classifier*: Set `src.version` to original version segment and `src.rel.version` to actual version on splat alias file (#1007)
 
+== 3.1.6 (2023-12-19)
+
+=== Added
+
+* *playbook-builder*: Add `git.read_concurrency` playbook key to control how many git indexes to load into memory at once (#1096)
+
+=== Changed
+
+* *playbook-builder*: Change default value of `git.fetch_concurrency` to 1 (#1096)
+* *content-aggregator*: Don't read git tree twice if start path is empty; add dirname to tree object in same function
+* *content-aggregator*: Fill in progress bar with incomplete marks if cloning a repository fails
+* *content-aggregator*: Mention that credentials may have been rejected if server requests them, then sends 404 response
+* *content-aggregator*: Flag git clone/fetch error as recoverable if an unexpected network error occurs (#1096)
+* *content-aggregator*: Decouple step to load (fetch or clone) repositories from step to scan repositories to discover references and start paths and collect files (#1096)
+
+=== Fixed
+
+* *logger*: Add hostname to ignore list to prevent hostname property on logged error from modifying logger name (#1070)
+* *content-aggregator*: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (#1096)
+
 == 3.1.5 (2023-11-23)
 
 === Fixed
