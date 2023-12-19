@@ -14,7 +14,34 @@
 :url-milestone-3-1-3: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.3
 :url-milestone-3-1-4: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.4
 :url-milestone-3-1-5: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.5
+:url-milestone-3-1-6: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.6
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.6
+
+_**Release date:** 2023.12.19 | *Issue label:* {url-milestone-3-1-6}[3.1.6^]_
+
+== Resolved issues
+
+=== Added
+
+Issue {url-issues}/1096[#1096^]:: Add `git.read_concurrency` playbook key to control how many git indexes to load into memory at once (playbook-builder)
+
+=== Changed
+
+Issue {url-issues}/1096[#1096^]::
+* Change default value of `git.fetch_concurrency` to 1 (playbook-builder).
+* Flag git clone/fetch error as recoverable if an unexpected network error occurs (content-aggregator).
+* Decouple step to load (fetch or clone) repositories from step to scan repositories to discover references and start paths and collect files (content-aggregator).
+(No issue)::
+* Don't read git tree twice if start path is empty; add dirname to tree object in same function (content-aggregator).
+* Fill in progress bar with incomplete marks if cloning a repository fails (content-aggregator).
+* Mention that credentials may have been rejected if server requests them, then sends 404 response (content-aggregator).
+
+=== Fixed
+
+Issue {url-issues}/1070[#1070^]:: Add hostname to ignore list to prevent hostname property on logged error from modifying logger name (logger)
+Issue {url-issues}/1096[#1096^]:: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (content-aggregator)
 
 = Antora {page-component-version}.5
 
@@ -22,16 +49,16 @@ _**Release date:** 2023.11.22 | *Issue label:* {url-milestone-3-1-5}[3.1.5^]_
 
 == Resolved issues
 
-=== Fixed
-
-Issue {url-issues}/1092[#1092^]:: Don't fail to load AsciiDoc if target of image macro resolves to an unpublished image
-Issue {url-issues}/1095[#1095^]:: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle
-
 === Changed
 
 Issue {url-issues}/1094[#1094^]:: Fix relative path computation when path is extensionless and to matches parent folder of from
 
 Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip to remove warning (no functional changes).
+
+=== Fixed
+
+Issue {url-issues}/1092[#1092^]:: Don't fail to load AsciiDoc if target of image macro resolves to an unpublished image
+Issue {url-issues}/1095[#1095^]:: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle
 
 = Antora {page-component-version}.4
 
