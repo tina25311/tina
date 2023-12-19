@@ -9,7 +9,7 @@ describe('produceRedirects()', () => {
   let contentCatalog
   let playbook
 
-  const extractRules = ({ contents }) => contents.toString().trimRight().split('\n').sort()
+  const extractRules = ({ contents }) => contents.toString().trimEnd().split('\n').sort()
 
   beforeEach(() => {
     playbook = {

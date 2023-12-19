@@ -329,7 +329,7 @@ describe('createPageComposer()', () => {
       expect(result).to.equal(file)
       expect(file.contents).to.be.instanceOf(Buffer)
       expect(file.contents.toString()).to.endWith('\n')
-      expect(file.contents.toString().trimRight()).to.equal(heredoc`
+      expect(file.contents.toString().trimEnd()).to.equal(heredoc`
         <!DOCTYPE html>
         <html class="default">
         <title>The Page</title>
@@ -799,7 +799,7 @@ describe('createPageComposer()', () => {
         const result = create404Page()
         expect(result.contents).to.be.instanceOf(Buffer)
         expect(result.contents.toString()).to.endWith('\n')
-        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+        expect(result.contents.toString().trimEnd()).to.equal(heredoc`
           <!DOCTYPE html>
           <html class="status-404">
           <title>Page Not Found</title>
@@ -828,7 +828,7 @@ describe('createPageComposer()', () => {
         const result = create404Page()
         expect(result.contents).to.be.instanceOf(Buffer)
         expect(result.contents.toString()).to.endWith('\n')
-        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+        expect(result.contents.toString().trimEnd()).to.equal(heredoc`
           <!DOCTYPE html>
           <html class="status-404">
           <title>Page Not Found</title>
@@ -858,7 +858,7 @@ describe('createPageComposer()', () => {
         const result = create404Page({ attributes: { 'page-product-url': 'https://example.org/products' } })
         expect(result.contents).to.be.instanceOf(Buffer)
         expect(result.contents.toString()).to.endWith('\n')
-        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+        expect(result.contents.toString().trimEnd()).to.equal(heredoc`
           <!DOCTYPE html>
           <html class="status-404">
           <title>Page Not Found</title>
@@ -888,7 +888,7 @@ describe('createPageComposer()', () => {
         const result = create404Page({ attributes: { '404-page-title': 'Nothing to See Here' } })
         expect(result.contents).to.be.instanceOf(Buffer)
         expect(result.contents.toString()).to.endWith('\n')
-        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+        expect(result.contents.toString().trimEnd()).to.equal(heredoc`
           <!DOCTYPE html>
           <html class="status-404">
           <title>Nothing to See Here</title>
@@ -917,7 +917,7 @@ describe('createPageComposer()', () => {
         const result = create404Page()
         expect(result.contents).to.be.instanceOf(Buffer)
         expect(result.contents.toString()).to.endWith('\n')
-        expect(result.contents.toString().trimRight()).to.equal(heredoc`
+        expect(result.contents.toString().trimEnd()).to.equal(heredoc`
           <!DOCTYPE html>
           <html class="status-404">
           <title>Page Not Found</title>

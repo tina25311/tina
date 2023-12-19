@@ -189,7 +189,7 @@ module.exports = {
       literals.length > 1
         ? values.reduce((accum, value, idx) => accum + value + literals[idx + 1], literals[0])
         : literals[0]
-    const lines = str.trimRight().split(/^/m)
+    const lines = str.trimEnd().split(/^/m)
     if (lines.length > 1) {
       if (lines[0] === '\n') lines.shift()
     } else {
