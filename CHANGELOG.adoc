@@ -7,10 +7,15 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Added
+
+* *playbook-builder*: Add `git.read_concurrency` playbook key to control how many git indexes to load into memory at once (#1096)
+
 === Fixed
 
 * *logger*: Restore error stack in log output when using pino-std-serializers >= 6.1 (#1049)
 * *content-aggregator*: Consider local branches in non-managed bare repository that has at least one remote branch (#1064)
+* *content-aggregator*: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (#1096)
 * *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
 * *asciidoc-loader*: Do not fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file
 * *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
@@ -19,9 +24,12 @@ This project utilizes semantic versioning.
 
 === Changed
 
+* *playbook-builder*: Change default value of `git.fetch_concurrency` to 1 (#1096)
 * *content-aggregator*: Don't read git tree twice if start path is empty; add dirname to tree object in same function
 * *content-aggregator*: Fill in progress bar with incomplete marks if cloning a repository fails
 * *content-aggregator*: Mention that credentials may have been rejected if server requests them, then sends 404 response
+* *content-aggregator*: Flag git clone/fetch error as recoverable if an unexpected network error occurs (#1096)
+* *content-aggregator*: Decouple step to load (fetch or clone) repositories from step to scan repositories to discover references and start paths and collect files (#1096)
 * *ui-loader*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
 * *asciidoc-loader*: Fix relative path computation when path is extensionless and to matches parent folder of from (#1094)
 * *page-composer*: Fix result of relativize helper when path is extensionless and to matches parent folder of from (#1094)

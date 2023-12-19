@@ -5,7 +5,6 @@ const { createHash } = require('crypto')
 const createGitHttpPlugin = require('./git-plugin-http')
 const decodeUint8Array = require('./decode-uint8-array')
 const deepClone = require('./deep-clone')
-const deepFlatten = require('./deep-flatten')
 const EventEmitter = require('events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
@@ -93,82 +92,71 @@ function aggregateContent (playbook) {
   return ensureCacheDir(requestedCacheDir, startDir).then((cacheDir) => {
     const gitConfig = Object.assign({ ensureGitSuffix: true }, playbook.git)
     const gitPlugins = loadGitPlugins(gitConfig, playbook.network || {}, startDir)
-    const fetchConcurrency = Math.max(gitConfig.fetchConcurrency || Infinity, 1)
+    const concurrency = {
+      fetch: Math.max(gitConfig.fetchConcurrency || Infinity, 1),
+      read: Math.max(gitConfig.readConcurrency || Infinity, 1),
+    }
     const sourcesByUrl = sources.reduce((accum, source) => {
       return accum.set(source.url, [...(accum.get(source.url) || []), Object.assign({}, sourceDefaults, source)])
     }, new Map())
     const progress = !quiet && createProgress(sourcesByUrl.keys(), process.stdout)
     const refPatternCache = Object.assign(new Map(), { braces: new Map() })
     const loadOpts = { cacheDir, fetch, gitPlugins, progress, startDir, refPatternCache }
-    return collectFiles(sourcesByUrl, loadOpts, fetchConcurrency).then(buildAggregate, (err) => {
+    return collectFiles(sourcesByUrl, loadOpts, concurrency).then(buildAggregate, (err) => {
       progress && progress.terminate()
       throw err
     })
   })
 }
 
-async function collectFiles (sourcesByUrl, loadOpts, concurrency) {
-  const tasks = [...sourcesByUrl.entries()].map(([url, sources]) => [
-    () => loadRepository(url, Object.assign({ fetchTags: tagsSpecified(sources) }, loadOpts)),
-    ({ repo, authStatus }) =>
-      Promise.all(
-        sources.map((source) => {
-          // NOTE if repository is managed (has a url property), we can assume the remote name is origin
-          // TODO if the repo has no remotes, then remoteName should be undefined
-          const remoteName = repo.url ? 'origin' : source.remote || 'origin'
-          return collectFilesFromSource(source, repo, remoteName, authStatus)
-        })
-      ),
-  ])
-  let rejection, started
-  const startedContinuations = []
-  const recordRejection = (err) => {
-    rejection = err
-  }
-  const runTask = (primary, continuation, idx) =>
-    primary().then((value) => {
-      if (!rejection) startedContinuations[idx] = continuation(value).catch(recordRejection)
-    }, recordRejection)
-  if (tasks.length > concurrency) {
-    started = []
-    const pending = []
-    for (const [primary, continuation] of tasks) {
-      const current = runTask(primary, continuation, started.length).finally(() =>
-        pending.splice(pending.indexOf(current), 1)
-      )
-      started.push(current)
-      if (pending.push(current) < concurrency) continue
-      await Promise.race(pending)
-      if (rejection) break
+async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls) {
+  const loadTasks = [...sourcesByUrl.entries()].map(([url, sources]) => {
+    const loadOptsForUrl = Object.assign({}, loadOpts)
+    if (loadOpts.fetch && fetchedUrls && fetchedUrls.length && fetchedUrls.includes(url)) loadOptsForUrl.fetch = false
+    if (tagsSpecified(sources)) loadOptsForUrl.fetchTags = true
+    return loadRepository.bind(null, url, loadOptsForUrl, { url, sources })
+  })
+  return gracefulPromiseAllWithLimit(loadTasks, concurrency.fetch).then(([results, rejections]) => {
+    if (rejections.length) {
+      if (concurrency.fetch > 1 && rejections.every(({ recoverable }) => recoverable)) {
+        if (loadOpts.progress) loadOpts.progress.terminate() // reset cursor position and allow it be reused
+        const msg0 = 'An unexpected error occurred while concurrently fetching content sources.'
+        const msg1 = 'Retrying with git.fetch_concurrency value of 1.'
+        logger.warn(msg0 + ' ' + msg1)
+        const fulfilledUrls = results.map((it) => it && it.repo.url && it.url).filter((it) => it)
+        return collectFiles(sourcesByUrl, loadOpts, Object.assign(concurrency, { fetch: 1 }), fulfilledUrls)
+      }
+      throw rejections[0]
     }
-  } else {
-    started = tasks.map(([primary, continuation], idx) => runTask(primary, continuation, idx))
-  }
-  return Promise.all(started).then(() =>
-    Promise.all(startedContinuations).then((result) => {
-      if (rejection) throw rejection
-      return result
-    })
-  )
+    return Promise.all(
+      results.map(({ repo, authStatus, sources }) =>
+        selectStartPathsForRepository(repo, authStatus, sources).then((startPaths) =>
+          collectFilesFromStartPaths.bind(null, startPaths, repo, authStatus)
+        )
+      )
+    ).then((collectTasks) => promiseAllWithLimit(collectTasks, concurrency.read))
+  })
 }
 
 function buildAggregate (componentVersionBuckets) {
   const entries = Object.assign(new Map(), { accum: [] })
-  for (const batch of deepFlatten(componentVersionBuckets)) {
-    let key, entry
-    if ((entry = entries.get((key = batch.version + '@' + batch.name)))) {
-      const { files, origins } = batch
-      ;(batch.files = entry.files).push(...files)
-      ;(batch.origins = entry.origins).push(origins[0])
-      Object.assign(entry, batch)
-    } else {
-      entries.set(key, batch).accum.push(batch)
+  for (const batchesForOrigin of componentVersionBuckets) {
+    for (const batch of batchesForOrigin) {
+      let key, entry
+      if ((entry = entries.get((key = batch.version + '@' + batch.name)))) {
+        const { files, origins } = batch
+        ;(batch.files = entry.files).push(...files)
+        ;(batch.origins = entry.origins).push(origins[0])
+        Object.assign(entry, batch)
+      } else {
+        entries.set(key, batch).accum.push(batch)
+      }
     }
   }
   return entries.accum
 }
 
-async function loadRepository (url, opts) {
+async function loadRepository (url, opts, result = {}) {
   let authStatus, dir, repo
   const cache = { [REF_PATTERN_CACHE_KEY]: opts.refPatternCache }
   if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
@@ -239,7 +227,7 @@ async function loadRepository (url, opts) {
   } else {
     throw new Error(`Local content source does not exist: ${dir}${url !== dir ? ' (url: ' + url + ')' : ''}`)
   }
-  return { repo, authStatus }
+  return Object.assign(result, { repo, authStatus })
 }
 
 function extractCredentials (url) {
@@ -261,19 +249,33 @@ function extractCredentials (url) {
   }
 }
 
-async function collectFilesFromSource (source, repo, remoteName, authStatus) {
-  const originUrl = repo.url || (await resolveRemoteUrl(repo, remoteName))
-  return selectReferences(source, repo, remoteName).then((refs) => {
-    if (!refs.length) {
-      const { url, branches, tags, startPath, startPaths } = source
+async function selectStartPathsForRepository (repo, authStatus, sources) {
+  const startPaths = []
+  const originUrls = {}
+  for (const source of sources) {
+    const { version, editUrl } = source
+    // NOTE if repository is managed (has a url property), we can assume the remote name is origin
+    // TODO if the repo has no remotes, then remoteName should be undefined
+    const remoteName = repo.url ? 'origin' : source.remote || 'origin'
+    const originUrl = repo.url || (originUrls[remoteName] ||= await resolveRemoteUrl(repo, remoteName))
+    const refs = await selectReferences(source, repo, remoteName)
+    if (refs.length) {
+      for (const ref of refs) {
+        for (const startPath of await selectStartPaths(source, repo, remoteName, ref)) {
+          startPaths.push({ startPath, ref, originUrl, editUrl, version })
+        }
+      }
+    } else {
+      const { url, branches, tags } = source
       const startPathInfo =
-        'startPaths' in source ? { 'start paths': startPaths || undefined } : { 'start path': startPath || undefined }
-      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 }).trimEnd()
+        'startPaths' in source
+          ? { 'start paths': source.startPaths || undefined }
+          : { 'start path': source.startPath || undefined }
+      const sourceInfo = yaml.dump({ url, branches, tags, ...startPathInfo }, { flowLevel: 1 }).trimRight()
       logger.info(`No matching references found for content source entry (${sourceInfo.replace(NEWLINE_RX, ' | ')})`)
-      return []
     }
-    return Promise.all(refs.map((it) => collectFilesFromReference(source, repo, remoteName, authStatus, it, originUrl)))
-  })
+  }
+  return startPaths
 }
 
 // QUESTION should we resolve HEAD to a ref eagerly to avoid having to do a match on it?
@@ -415,10 +417,9 @@ function getCurrentBranchName (repo, remote) {
   ).then((ref) => (ref.startsWith('refs/') ? ref.replace(SHORTEN_REF_RX, '') : undefined))
 }
 
-async function collectFilesFromReference (source, repo, remoteName, authStatus, ref, originUrl) {
+async function selectStartPaths (source, repo, remoteName, ref) {
   const url = repo.url
   const displayUrl = url || repo.dir
-  const { version, editUrl } = source
   const worktreePath = ref.head
   if (!worktreePath) {
     ref.oid = await git.resolveRef(
@@ -438,14 +439,18 @@ async function collectFilesFromReference (source, repo, remoteName, authStatus, 
       const flag = worktreePath ? ' <worktree>' : ref.remote && worktreePath === false ? ` <remotes/${ref.remote}>` : ''
       throw new Error(`no start paths found in ${where} (${ref.type}: ${ref.shortname}${flag})`)
     }
-    return Promise.all(
-      startPaths.map((startPath) =>
-        collectFilesFromStartPath(startPath, repo, authStatus, ref, originUrl, editUrl, version)
-      )
-    )
+    return startPaths
   }
-  const startPath = cleanStartPath(coerceToString(source.startPath))
-  return collectFilesFromStartPath(startPath, repo, authStatus, ref, originUrl, editUrl, version)
+  return [cleanStartPath(coerceToString(source.startPath))]
+}
+
+async function collectFilesFromStartPaths (startPaths, repo, authStatus) {
+  const buckets = []
+  for (const { startPath, ref, originUrl, editUrl, version } of startPaths) {
+    buckets.push(await collectFilesFromStartPath(startPath, repo, authStatus, ref, originUrl, editUrl, version))
+  }
+  repo.cache = undefined
+  return buckets
 }
 
 function collectFilesFromStartPath (startPath, repo, authStatus, ref, originUrl, editUrl, version) {
@@ -984,7 +989,7 @@ function ensureCacheDir (preferredCacheDir, startDir) {
 }
 
 function transformGitCloneError (err, displayUrl, authRequested) {
-  let wrappedMsg, trimMessage
+  let wrappedMsg, recoverable, trimMessage
   if (HTTP_ERROR_CODE_RX.test(err.code)) {
     switch (err.data.statusCode) {
       case 401:
@@ -999,7 +1004,7 @@ function transformGitCloneError (err, displayUrl, authRequested) {
         break
       default:
         wrappedMsg = err.message
-        trimMessage = true
+        recoverable = trimMessage = true
     }
   } else if (err instanceof UrlParseError || err instanceof UnknownTransportError) {
     wrappedMsg = 'Content source uses an unsupported transport protocol'
@@ -1007,14 +1012,14 @@ function transformGitCloneError (err, displayUrl, authRequested) {
     wrappedMsg = `Content repository host could not be resolved: ${err.hostname}`
   } else {
     wrappedMsg = `${err.name}: ${err.message}`
-    trimMessage = true
+    recoverable = trimMessage = true
   }
   if (trimMessage) {
     wrappedMsg = ~(wrappedMsg = wrappedMsg.trimEnd()).indexOf('. ') ? wrappedMsg : wrappedMsg.replace(/\.$/, '')
   }
   const errWrapper = new Error(`${wrappedMsg} (url: ${displayUrl})`)
   errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
-  return errWrapper
+  return recoverable ? Object.assign(errWrapper, { recoverable }) : errWrapper
 }
 
 function splitRefPatterns (str) {
@@ -1087,6 +1092,39 @@ function findWorktrees (repo, patterns) {
         )
       : Promise.resolve()
   ).then((entries = []) => mainWorktree.then((entry) => new Map(entry ? entries.push(entry) && entries : entries)))
+}
+
+async function gracefulPromiseAllWithLimit (tasks, limit = Infinity) {
+  const rejections = []
+  const recordRejection = (err) => rejections.push(err) && undefined
+  const started = []
+  if (tasks.length <= limit) {
+    for (const task of tasks) started.push(task().catch(recordRejection))
+  } else {
+    const pending = []
+    for (const task of tasks) {
+      const current = task()
+        .catch(recordRejection)
+        .finally(() => pending.splice(pending.indexOf(current), 1))
+      started.push(current)
+      if (pending.push(current) < limit) continue
+      await Promise.race(pending)
+      if (rejections.length) break
+    }
+  }
+  return Promise.all(started).then((results) => [results, rejections])
+}
+
+async function promiseAllWithLimit (tasks, limit = Infinity) {
+  if (tasks.length <= limit) return Promise.all(tasks.map((task) => task()))
+  const started = []
+  const pending = []
+  for (const task of tasks) {
+    const current = task().finally(() => pending.splice(pending.indexOf(current), 1))
+    started.push(current)
+    if (pending.push(current) >= limit) await Promise.race(pending)
+  }
+  return Promise.all(started)
 }
 
 module.exports = aggregateContent
