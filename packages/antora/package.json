@@ -35,7 +35,7 @@
     "web publishing"
   ],
   "scripts": {
-    "prepublishOnly": "npx -y downdoc --prepublish",
-    "postpublish": "npx -y downdoc --postpublish"
+    "prepublishOnly": "npx -y downdoc@latest --prepublish",
+    "postpublish": "npx -y downdoc@latest --postpublish"
   }
 }
