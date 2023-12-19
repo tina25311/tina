@@ -12,7 +12,7 @@
 //:url-milestone-3-2-1: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.2.1
 :url-mr: {url-repo}/merge_requests
 
-= Antora {page-component-display-version}
+= Antora 3.2.0
 
 _**Release date:** TBD | *Issue label:* {url-milestone-3-2-0}[3.2.0^]_
 
@@ -25,41 +25,62 @@ You can find a summary of the issues resolved in this release below.
 
 === Added
 
-Issue {url-issues}/535[#535^]:: Allow linked worktree to be used as content source; automatically resolve main repository location and remap HEAD reference in branches.
-Issue {url-issues}/1006[#1006^]:: Use value of `versionSegment` property on component version in place of version in output path and URL of pages.
-Also, set dynamic `activeVersionSegment` property on component version to indicate which version segment is in use.
-Issue {url-issues}/1008[#1008^]:: Add `addSplatAlias` method to `ContentCatalog` for adding a splat (directory) alias.
-Issue {url-issues}/1013[#1013^]:: Add support for `ref` placeholder to insert full name of git ref (e.g., `refs/heads/v4.0.x`) in value of `edit_url` key on content source.
+Issue {url-issues}/535[#535^]:: Allow linked worktree to be used as content source; automatically resolve main repository location and remap HEAD reference in branches (content-aggregator).
+Issue {url-issues}/1006[#1006^]::
+* Use value of `versionSegment` property on component version in place of version in output path and URL of pages (content-classifier).
+* Set dynamic `activeVersionSegment` property on component version to indicate which version segment is in use (content-classifier).
+Issue {url-issues}/1008[#1008^]:: Add `addSplatAlias` method to `ContentCatalog` for adding a splat (i.e., directory) alias (content-classifier).
+Issue {url-issues}/1013[#1013^]:: Add support for `ref` placeholder to insert full name of git ref (e.g., `refs/heads/v4.0.x`) in value of `edit_url` key on content source (content-aggregator).
 Issue {url-issues}/1015[#1015^]::
-* Emit `componentsRegistered` event after all components and versions have been registered.
-* Store raw files, nav, and startPage data on partially constructed component version until processed.
-* Add readable property named `files` to component version in `ContentCatalog#registerComponentVersionStartPage` to get files for component version on access.
-* Add readable property named `startPage` to component version in `ContentCatalog#registerComponentVersionStartPage` to look up start page for component version on access.
-Issue {url-issues}/1016[#1016^]:: Add syntax to match current branch of specific worktrees in branches pattern (for inclusion or exclusion) (e.g., `HEAD@5.8.x`).
-Issue {url-issues}/1021[#1021^]:: Discover implicit site start page in component version promoted to site root.
-Content classifier:: Update `ContentCatalog#registerComponentVersionStartPage` to return start page.
+* Emit `componentsRegistered` event after all components and versions have been registered (site-generator).
+* Store raw files, nav, and startPage data on partially constructed component version until processed (content-classifier).
+* Add readable property named `files` to component version in `ContentCatalog#registerComponentVersionStartPage` to get files for component version on access (content-classifier).
+* Add readable property named `startPage` to component version in `ContentCatalog#registerComponentVersionStartPage` to look up start page for component version on access (content-classifier).
+* Update `ContentCatalog#registerComponentVersionStartPage` to return start page (content-classifier).
+Issue {url-issues}/1016[#1016^]:: Add syntax to match current branch of specific worktrees in branches pattern (for inclusion or exclusion) (e.g., `HEAD@5.8.x`) (content-aggregator).
+Issue {url-issues}/1021[#1021^]:: Discover implicit site start page in component version promoted to site root (content-classifier).
+Issue {url-issues}/1096[#1096^]:: Add `git.read_concurrency` playbook key to control how many git indexes to load into memory at once (playbook-builder).
 
 === Changed
 
-Issue {url-issues}/1009[#1009^]:: Remove invalid trailing slash from value of `site.url` when building playbook and from value of `site.url` after `playbookBuilt` event (i.e., when it's provided by an extension).
-Issue {url-issues}/1012[#1012^]:: Always assign the value `auth-required` to `origin.private` if the server requests credentials, even when the credentials are embedded in content source URL.
-Issue {url-issues}/1026[#1026^]:: Don't recompute resource ID on file from content aggregate if `src.family` is set.
-Content classifier:: Shorten `urlSegment` fragment in internal property names on ContentCatalog to `segment` (e.g., `latestVersionUrlSegment` -> `latestVersionSegment`).
-Content classifier:: Don't assign fallback value to `url` property on component version if property is already set.
-Release process:: Automatically populate additional version and release attributes during release.
-Site generator:: Print site URL instead of file URI in completion message if CI=true.
+Issue {url-issues}/1009[#1009^]:: Remove invalid trailing slash from value of `site.url` when building playbook and from value of `site.url` after `playbookBuilt` event (i.e., when it's provided by an extension) (playbook-builder).
+Issue {url-issues}/1012[#1012^]:: Always assign the value `auth-required` to `origin.private` if the server requests credentials, even when the credentials are embedded in content source URL (content-aggregator).
+Issue {url-issues}/1026[#1026^]:: Don't recompute resource ID on file from content aggregate if `src.family` is set (content-classifier).
+Issue {url-issues}/1094[#1094^]::
+* Fix relative path computation when path is extensionless and to matches parent folder of from (asciidoc-loader).
+* Fix result of relativize helper when path is extensionless and to matches parent folder of from (page-composer).
+Issue {url-issues}/1096[#1096^]::
+* Change default value of `git.fetch_concurrency` to 1 (playbook-builder).
+* Flag git clone/fetch error as recoverable if an unexpected network error occurs (content-aggregator).
+* Decouple step to load (fetch or clone) repositories from step to scan repositories to discover references and start paths and collect files (content-aggregator).
+(No issue)::
+* Don't read git tree twice if start path is empty; add dirname to tree object in same function (content-aggregator).
+* Fill in progress bar with incomplete marks if cloning a repository fails (content-aggregator).
+* Mention that credentials may have been rejected if server requests them, then sends 404 response (content-aggregator).
+* Shorten `urlSegment` fragment in internal property names on ContentCatalog to `segment` (e.g., `latestVersionUrlSegment` -> `latestVersionSegment`) (content-classifier).
+* Don't assign fallback value to `url` property on component version if property is already set (content-classifier).
+* Print site URL instead of file URI in completion message if CI=true (site-generator).
+* Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes) (ui-loader and file-publisher).
 
 === Fixed
 
-Issue {url-issues}/1007[#1007^]:: Set `src.version` to original version segment and `src.rel.version` to actual version on splat alias file.
-Issue {url-issues}/1010[#1010^]:: Fix infinite authorization loop if credentials embedded in the content source URL are empty and the repository requires authorization.
-Issue {url-issues}/1018[#1018^]:: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified.
-Issue {url-issues}/1020[#1020^]:: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop.
-Issue {url-issues}/1022[#1022^]:: Decouple logic to compute default log format from process environment.
-Issue {url-issues}/1024[#1024^]:: Preserve target when creating static route if target is an absolute URL.
-Issue {url-issues}/1025[#1025^]:: Allow content aggregator to parse value of `content.branches` and `content.tags` playbook keys.
-Playbook builder:: Use consistent formatting for error messages in playbook builder.
-Site generator:: Look for IS_TTY on `playbook.env` in site generator to decouple check from process environment.
+Issue {url-issues}/1007[#1007^]:: Set `src.version` to original version segment and `src.rel.version` to actual version on splat alias file (content-classifier).
+Issue {url-issues}/1010[#1010^]:: Fix infinite authorization loop if credentials embedded in the content source URL are empty and the repository requires authorization (content-aggregator).
+Issue {url-issues}/1018[#1018^]:: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified (content-aggregator).
+Issue {url-issues}/1020[#1020^]:: Add guard to prevent `ContentCatalog#registerSiteStartPage` from registering alias loop (content-classifier).
+Issue {url-issues}/1022[#1022^]:: Decouple logic to compute default log format from process environment (playbook-builder).
+Issue {url-issues}/1024[#1024^]:: Preserve target when creating static route if target is an absolute URL (redirect-producer).
+Issue {url-issues}/1025[#1025^]:: Allow content aggregator to parse value of `content.branches` and `content.tags` playbook keys (playbook-builder).
+Issue {url-issues}/1049[#1049^]:: Restore error stack in log output when using pino-std-serializers >= 6.1 (logger).
+Issue {url-issues}/1064[#1064^]:: Consider local branches in non-managed bare repository that has at least one remote branch (content-aggregator).
+Issue {url-issues}/1092[#1092^]:: Don't fail to load AsciiDoc if target of image macro resolves to an unpublished image (asciidoc-loader).
+Issue {url-issues}/1095[#1095^]:: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle (site-generator).
+Issue {url-issues}/1096[#1096^]:: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (content-aggregator).
+(No issue)::
+* Use consistent formatting for error messages in playbook builder (playbook-builder).
+* Correctly handle connection error when retrieving remote UI bundle (ui-loader).
+* Don't fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file (asciidoc-loader).
+* Look for IS_TTY on `playbook.env` in site generator to decouple check from process environment (site-generator).
 
 [#thanks-3-2-0]
 == Thank you!

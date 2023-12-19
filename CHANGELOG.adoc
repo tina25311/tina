@@ -11,17 +11,6 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Add `git.read_concurrency` playbook key to control how many git indexes to load into memory at once (#1096)
 
-=== Fixed
-
-* *logger*: Restore error stack in log output when using pino-std-serializers >= 6.1 (#1049)
-* *content-aggregator*: Consider local branches in non-managed bare repository that has at least one remote branch (#1064)
-* *content-aggregator*: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (#1096)
-* *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
-* *asciidoc-loader*: Do not fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file
-* *asciidoc-loader*: Do not fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
-* *site-generator*: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle (#1095)
-* *cli*: Remove empty default on description for `--extension` option
-
 === Changed
 
 * *playbook-builder*: Change default value of `git.fetch_concurrency` to 1 (#1096)
@@ -34,6 +23,17 @@ This project utilizes semantic versioning.
 * *asciidoc-loader*: Fix relative path computation when path is extensionless and to matches parent folder of from (#1094)
 * *page-composer*: Fix result of relativize helper when path is extensionless and to matches parent folder of from (#1094)
 * *file-publisher*: Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes)
+
+=== Fixed
+
+* *logger*: Restore error stack in log output when using pino-std-serializers >= 6.1 (#1049)
+* *content-aggregator*: Consider local branches in non-managed bare repository that has at least one remote branch (#1064)
+* *content-aggregator*: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (#1096)
+* *ui-loader*: Correctly handle connection error when retrieving remote UI bundle
+* *asciidoc-loader*: Don't fail to load AsciiDoc if pub or pub.moduleRootPath properties are not set on virtual file
+* *asciidoc-loader*: Don't fail to load AsciiDoc if target of image macro resolves to an unpublished image (#1092)
+* *site-generator*: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle (#1095)
+* *cli*: Remove empty default on description for `--extension` option
 
 == 3.2.0-alpha.2 (2022-11-01)
 
@@ -65,9 +65,9 @@ This project utilizes semantic versioning.
 
 === Added
 
-* *content-aggregate*: Introduce syntax to match branches by worktree name (for inclusion or exclusion) (e.g., `HEAD@5.8.x`) (#1016)
-* *content-aggregate*: Allow linked worktree to be used as content source; automatically resolve main repository location and remap HEAD reference in branches (#535)
-* *content-aggregate*: Add support for `ref` placeholder to insert full name of git ref (e.g., `refs/heads/v3.1.x`) in value of `edit_url` key on content source (#1013)
+* *content-aggregator*: Add syntax to match branches by worktree name (for inclusion or exclusion) (e.g., `HEAD@5.8.x`) (#1016)
+* *content-aggregator*: Allow linked worktree to be used as content source; automatically resolve main repository location and remap HEAD reference in branches (#535)
+* *content-aggregator*: Add support for `ref` placeholder to insert full name of git ref (e.g., `refs/heads/v3.1.x`) in value of `edit_url` key on content source (#1013)
 * *content-classifier*: Use value of `versionSegment` property on component version in place of version in output path and URL of pages (#1006)
 * *content-classifier*: Set dynamic `activeVersionSegment` property on component version to indicate which version segment is in use (#1006)
 * *content-classifier*: Add `addSplatAlias` method to `ContentCatalog` for adding a splat (directory) alias (#1008)
@@ -76,7 +76,7 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Remove trailing slash from value of `site.url` when building playbook (#1009)
 * *content-aggregator*: Always assign the value `auth-required` to `origin.private` if the server requests credentials (even when credentials are embedded in content source URL) (#1012) (related to #1063)
-* *content-classifier*: shorten `urlSegment` fragment in property names on ContentCatalog to `segment` (e.g., `latestVersionUrlSegment` -> `latestVersionSegment`)
+* *content-classifier*: Shorten `urlSegment` fragment in property names on ContentCatalog to `segment` (e.g., `latestVersionUrlSegment` -> `latestVersionSegment`)
 * *site-generator*: Remove trailing slash from value of `site.url` after `playbookBuilt` event (#1009)
 * release process: Automatically populate version and release attributes during release
 
@@ -391,7 +391,7 @@ _No changes since previous release._
 === Added
 
 * *content-classifier*: Drop component segment in URL (and output path) of resources if component name is ROOT (#872)
-* *site-generator-default*: Emit context lifecycle events (`contextStarted`, `contentStopped`, `contextClosed`) (#871)
+* *site-generator*: Emit context lifecycle events (`contextStarted`, `contentStopped`, `contextClosed`) (#871)
 
 === Changed
 
