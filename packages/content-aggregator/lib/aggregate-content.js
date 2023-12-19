@@ -188,7 +188,7 @@ async function loadRepository (url, opts) {
         await git
           .fetch(fetchOpts)
           .then(() => {
-            authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
+            authStatus = identifyAuthStatus(credentialManager, credentials, url)
             return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
           })
           .catch((fetchErr) => {
@@ -209,7 +209,7 @@ async function loadRepository (url, opts) {
         .clone(fetchOpts)
         .then(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)))
         .then(() => {
-          authStatus = credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
+          authStatus = identifyAuthStatus(credentialManager, credentials, url)
           return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
         .catch((cloneErr) => {
@@ -841,6 +841,10 @@ function resolveCredentials (credentialsFromUrlHolder, url, auth) {
       ? { username: credentials.token || credentials.username, password: credentials.token ? '' : credentials.password }
       : this.rejected({ url, auth })
   )
+}
+
+function identifyAuthStatus (credentialManager, credentials, url) {
+  return credentials ? 'auth-embedded' : credentialManager.status({ url }) ? 'auth-required' : undefined
 }
 
 /**
