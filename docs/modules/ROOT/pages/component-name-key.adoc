@@ -69,7 +69,7 @@ Let's re-use the example from xref:module-url-segment#ex-modules[Module Segment 
 [listing#ex-modules]
 ----
 📒 repository
-  📄 antora.yml # name: ROOT
+  📄 antora.yml # name: ROOT and version: ~
   📂 modules
     📂 admin
       📂 pages
@@ -90,7 +90,8 @@ Here is what the URLs of the pages would be (assuming that `html_extension_style
 [.path]_repository/modules/ROOT/pages/deploy.adoc_:: \https://my-company.com/deploy.html
 [.path]_repository/modules/admin/pages/user-management.adoc_:: \https://my-company.com/admin/user-management.html
 
-In particular, because both the component name _ROOT_ and the module name _ROOT_ are excluded from URLs, the pages in the _ROOT_ component's _ROOT_ module live directly at your site's root, with [.path]_root_component/modules/ROOT/pages/index.adoc_ serving as the site's home page.
+Because both the component name _ROOT_ and the module name _ROOT_ are excluded from URLs, the pages in the _ROOT_ component's _ROOT_ module live directly at your site's root, with [.path]_root_component/modules/ROOT/pages/index.adoc_ serving as the site's home page.
+That means that the index.adoc page in the ROOT module of the ROOT component acts as the site start page *without* having to specify it (no additional configuration is required).
 
 If the ROOT component were to be versioned (i.e., have a non-empty version), then the files in that component version would be placed inside the version folder at the root of the site.
 
