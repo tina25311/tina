@@ -4192,7 +4192,7 @@ describe('aggregateContent()', () => {
       let reject = true
       const trapFetch = (fetch) => {
         fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
-        reject ? (reject = false) || fetch.reject() : fetch.accept()
+        reject ? (reject = false) || fetch.reject(408) : fetch.accept()
       }
       try {
         gitServer.on('fetch', trapFetch)
@@ -4216,10 +4216,14 @@ describe('aggregateContent()', () => {
 
         expect(aggregate).to.have.lengthOf(2)
         expect(messages).to.have.lengthOf(1)
-        expect(messages[0]).to.deep.include({
+        expect(messages[0]).to.include({
           level: 'warn',
           msg: expectedMessage,
         })
+        expect(messages[0]).to.have.property('err')
+        expect(messages[0].err.type).to.equal('Error')
+        expect(messages[0].err.message).to.startWith('HTTP Error: 408 Request Timeout')
+        expect(messages[0].err.stack).to.include('Caused by: HttpError: HTTP Error: 408 Request Timeout')
         expect(fetches).to.have.lengthOf(3)
         expect(fetches).to.include(repoBuilderA.url)
         expect(fetches).to.include(repoBuilderB.url)
