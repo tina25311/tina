@@ -6927,7 +6927,7 @@ describe('aggregateContent()', () => {
       })
     })
 
-    it('should preserve stack of original git error', async () => {
+    it('should preserve stack and details of original git error', async () => {
       const url = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = `Content repository not found or requires credentials (url: ${url})`
       playbookSpec.content.sources.push({ url })
@@ -6936,6 +6936,8 @@ describe('aggregateContent()', () => {
         .to.throw(expectedErrorMessage)
         .with.property('stack')
         .that.includes('Caused by: HttpError: HTTP Error: 401 HTTP Basic: Access Denied')
+        .and.includes('statusCode: 401')
+        .and.includes("caller: 'git.clone'")
     })
 
     it('should throw meaningful error if server returns unexpected error', async () => {
@@ -6959,6 +6961,25 @@ describe('aggregateContent()', () => {
           .not.property('recoverable')
       })
     }
+
+    it('should show error as string if missing stack property', async () => {
+      const url = `http://localhost:${serverPort}/200/repository-name.git`
+      const pluginSource = heredoc`
+        module.exports = {
+          async request () {
+            return new Promise((resolve, reject) => reject(new String('no can do')))
+          },
+        }
+      `
+      await fsp.writeFile(ospath.join(WORK_DIR, 'git-http-plugin-throws-error.js'), pluginSource)
+      playbookSpec.dir = WORK_DIR
+      playbookSpec.content.sources.push({ url })
+      playbookSpec.git = { plugins: { http: './git-http-plugin-throws-error.js' } }
+      const expectedErrorMessage = `no can do (url: ${url})`
+      const result = await trapAsyncError(aggregateContent, playbookSpec)
+      expect(result).to.throw(expectedErrorMessage).with.property('recoverable', true)
+      expect(result).to.throw(expectedErrorMessage).with.property('stack').that.endWith('\nCaused by: no can do')
+    })
 
     it('should not show auth information in progress bar label', async () => {
       const url = `http://0123456789@localhost:${serverPort}/401/invalid-repository.git`
