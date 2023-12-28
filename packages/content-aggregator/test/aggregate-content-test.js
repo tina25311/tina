@@ -4171,7 +4171,7 @@ describe('aggregateContent()', () => {
         playbookSpec.git = { fetchConcurrency: 2 }
 
         const expectedMessage = [
-          'An unexpected error occurred while concurrently fetching content sources.',
+          'An unexpected error occurred while fetching content sources concurrently.',
           'Retrying with git.fetch_concurrency value of 1.',
         ].join(' ')
         const { messages, returnValue: aggregate } = (
