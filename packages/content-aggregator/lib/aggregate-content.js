@@ -1019,7 +1019,7 @@ function transformGitCloneError (err, displayUrl, authRequested) {
   }
   const errWrapper = new Error(`${wrappedMsg} (url: ${displayUrl})`)
   errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
-  return recoverable ? Object.assign(errWrapper, { recoverable }) : errWrapper
+  return recoverable ? Object.defineProperty(errWrapper, 'recoverable', { value: true }) : errWrapper
 }
 
 function splitRefPatterns (str) {
