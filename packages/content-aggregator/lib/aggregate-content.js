@@ -120,7 +120,7 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls) {
     if (rejections.length) {
       if (concurrency.fetch > 1 && rejections.every(({ recoverable }) => recoverable)) {
         if (loadOpts.progress) loadOpts.progress.terminate() // reset cursor position and allow it be reused
-        const msg0 = 'An unexpected error occurred while concurrently fetching content sources.'
+        const msg0 = 'An unexpected error occurred while fetching content sources concurrently.'
         const msg1 = 'Retrying with git.fetch_concurrency value of 1.'
         logger.warn(msg0 + ' ' + msg1)
         const fulfilledUrls = results.map((it) => it && it.repo.url && it.url).filter((it) => it)
