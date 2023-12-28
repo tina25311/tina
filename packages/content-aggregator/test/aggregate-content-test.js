@@ -6183,7 +6183,7 @@ describe('aggregateContent()', () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote })
       await initRepoWithFiles(repoBuilder)
       playbookSpec.content.sources.push({ url: repoBuilder.url })
-      const expectedMessage = new RegExp(`^Error: self.signed certificate \\(url: ${regexpEscape(repoBuilder.url)}\\)`)
+      const expectedMessage = new RegExp(`^self.signed certificate \\(url: ${regexpEscape(repoBuilder.url)}\\)`)
       expect(await trapAsyncError(aggregateContent, playbookSpec))
         .to.throw(expectedMessage)
         .with.property('recoverable', true)
