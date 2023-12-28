@@ -986,7 +986,7 @@ function transformGitCloneError (err, displayUrl, authRequested) {
   } else if (err.code === 'ENOTFOUND') {
     wrappedMsg = `Content repository host could not be resolved: ${err.hostname}`
   } else {
-    wrappedMsg = `${err.name}: ${err.message}`
+    wrappedMsg = err.message
     recoverable = trimMessage = true
   }
   if (trimMessage) {
