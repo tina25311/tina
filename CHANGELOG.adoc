@@ -10,6 +10,9 @@ This project utilizes semantic versioning.
 === Changed
 
 * *content-aggregator*: Don't retry failed clone/fetch operation if playbook only has one content source URL
+* *content-aggregator*: Preserve all information in wrapped error (#1099)
+* *ui-loader*: Preserve all information in wrapped error (#1099)
+* *file-publisher*: Preserve all information in wrapped error (#1099)
 
 == 3.2.0-alpha.3 (2023-12-19)
 

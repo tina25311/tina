@@ -16,6 +16,7 @@ const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
 const globStream = require('glob-stream')
+const { inspect } = require('util')
 const invariably = require('./invariably')
 const logger = require('./logger')
 const { makeMatcherRx, versionMatcherOpts: VERSION_MATCHER_OPTS } = require('./matcher')
@@ -1011,15 +1012,14 @@ function transformGitCloneError (err, displayUrl, authRequested) {
   } else if (err.code === 'ENOTFOUND') {
     wrappedMsg = `Content repository host could not be resolved: ${err.hostname}`
   } else {
-    wrappedMsg = err.message
+    wrappedMsg = err.message || String(err)
     recoverable = trimMessage = true
   }
-  if (trimMessage) {
-    wrappedMsg = ~(wrappedMsg = wrappedMsg.trimEnd()).indexOf('. ') ? wrappedMsg : wrappedMsg.replace(/\.$/, '')
-  }
+  if (trimMessage && !~(wrappedMsg = wrappedMsg.trimEnd()).indexOf('. ')) wrappedMsg = wrappedMsg.replace(/\.$/, '')
   const errWrapper = new Error(`${wrappedMsg} (url: ${displayUrl})`)
-  errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
-  return recoverable ? Object.defineProperty(errWrapper, 'recoverable', { value: true }) : errWrapper
+  errWrapper.stack += `\nCaused by: ${err.stack ? inspect(err).replace(/^Error \[(.+?)\](?=: )/, '$1') : err}`
+  if (recoverable) Object.defineProperty(errWrapper, 'recoverable', { value: true })
+  return errWrapper
 }
 
 function splitRefPatterns (str) {

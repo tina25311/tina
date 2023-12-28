@@ -208,7 +208,7 @@ describe('loadUi()', () => {
         expect(loadUiDeferred)
           .to.throw(expectedMessage)
           .with.property('stack')
-          .that.matches(/Caused by: HTTP.*404/)
+          .that.matches(/Caused by: HTTPError: .*404/)
       } else if (playbook.ui.bundle.url.startsWith('.')) {
         const expectedMessage =
           `UI bundle does not exist: ${ospath.join(FIXTURES_DIR, 'no-such-bundle.zip')} ` +
