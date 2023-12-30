@@ -4227,6 +4227,37 @@ describe('aggregateContent()', () => {
         gitServer.off('fetch', trapFetch)
       }
     })
+
+    it('should not retry clone operations in serial if fetch concurrency is > 1 and only one content source url', async () => {
+      const fetches = []
+      const trapFetch = (fetch) => {
+        fetches.push(`http://${fetch.req.headers.host}/${fetch.repo}`)
+        fetch.reject()
+      }
+      try {
+        gitServer.on('fetch', trapFetch)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc')
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
+        playbookSpec.git = { fetchConcurrency: 2 }
+
+        let messages
+        const result = await trapAsyncError((deferredError) =>
+          captureLog(() => aggregateContent(playbookSpec).catch((e) => (deferredError = e))).then((messages_) => {
+            messages = messages_
+            if (deferredError) throw deferredError
+          })
+        )
+        expect(result)
+          .to.throw(`HTTP Error: 500 Internal Server Error (url: ${repoBuilder.url})`)
+          .with.property('recoverable', true)
+        expect(messages).to.be.empty()
+        expect(fetches).to.have.lengthOf(1)
+        expect(fetches[0]).to.equal(repoBuilder.url)
+      } finally {
+        gitServer.off('fetch', trapFetch)
+      }
+    })
   })
 
   describe('distributed component', () => {
