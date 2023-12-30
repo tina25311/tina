@@ -707,7 +707,7 @@ describe('logger', () => {
       expect(lines[2]).to.match(/^ {8}at /)
     })
 
-    it.only('should report cause as no stacktrace if stack property is not set on error object', () => {
+    it('should report cause as no stacktrace if stack property is not set on error object', () => {
       const err = new Error('vague error')
       delete err.stack
       const logger = configure({ format: 'pretty' }).get()
