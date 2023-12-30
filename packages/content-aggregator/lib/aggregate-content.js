@@ -118,7 +118,7 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls) {
   })
   return gracefulPromiseAllWithLimit(loadTasks, concurrency.fetch).then(([results, rejections]) => {
     if (rejections.length) {
-      if (concurrency.fetch > 1 && rejections.every(({ recoverable }) => recoverable)) {
+      if (concurrency.fetch > 1 && results.length > 1 && rejections.every(({ recoverable }) => recoverable)) {
         if (loadOpts.progress) loadOpts.progress.terminate() // reset cursor position and allow it be reused
         const msg0 = 'An unexpected error occurred while fetching content sources concurrently.'
         const msg1 = 'Retrying with git.fetch_concurrency value of 1.'

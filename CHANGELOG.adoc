@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Changed
+
+* *content-aggregator*: Don't retry failed clone/fetch operation if playbook only has one content source URL
+
 == 3.1.6 (2023-12-19)
 
 === Added
