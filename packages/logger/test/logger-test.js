@@ -707,6 +707,16 @@ describe('logger', () => {
       expect(lines[2]).to.match(/^ {8}at /)
     })
 
+    it.only('should report cause as no stacktrace if stack property is not set on error object', () => {
+      const err = new Error('vague error')
+      delete err.stack
+      const logger = configure({ format: 'pretty' }).get()
+      const lines = captureStderrSync(() => logger.fatal(err, 'uh oh!'))
+      expect(lines).to.have.lengthOf(2)
+      expect(lines[0]).to.match(/^\[.+\] FATAL: uh oh!$/)
+      expect(lines[1]).to.equal('    Cause: Error (no stacktrace)')
+    })
+
     it('should not modify log name if error contains hostname property', () => {
       const err = Object.assign(new Error('bad connection'), { hostname: 'example.org' })
       const logger = configure({ format: 'pretty' }).get('antora')
