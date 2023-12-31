@@ -8,6 +8,7 @@ const { promises: fsp } = require('fs')
 const { concat: get } = require('simple-get')
 const getCacheDir = require('cache-directory')
 const globStream = require('glob-stream')
+const { inspect } = require('util')
 const ospath = require('path')
 const { posix: path } = ospath
 const picomatch = require('picomatch')
@@ -111,12 +112,10 @@ async function loadUi (playbook) {
             .on('error', reject)
             .pipe(collectFiles(resolve))
       ).catch((err) => {
-        const errWrapper = new Error(
+        const msg =
           `Failed to read UI ${bundleFile.isDirectory() ? 'directory' : 'bundle'}: ` +
-            (bundleUrl === bundleFile.path ? bundleUrl : `${bundleFile.path} (resolved from url: ${bundleUrl})`)
-        )
-        errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
-        throw errWrapper
+          (bundleUrl === bundleFile.path ? bundleUrl : `${bundleFile.path} (resolved from url: ${bundleUrl})`)
+        throw transformError(err, msg)
       })
     ),
     srcSupplementalFiles(supplementalFilesSpec, startDir),
@@ -193,11 +192,11 @@ function downloadBundle (url, to, agent) {
         )
     })
   }).catch((err) => {
-    const errWrapper = new Error(`${err.summary || 'Failed to download UI bundle'}: ${url}`)
+    const errWrapper = transformError(err, `${err.summary || 'Failed to download UI bundle'}: ${url}`)
     if (err.code === 'ECONNRESET' || (err.message || '').toLowerCase() === 'request timed out') {
       Object.defineProperty(errWrapper, 'recoverable', { value: true })
     }
-    throw Object.assign(errWrapper, { stack: `${errWrapper.stack}\nCaused by: ${err.stack || 'unknown'}` })
+    throw errWrapper
   })
 }
 
@@ -291,9 +290,7 @@ function srcSupplementalFiles (filesSpec, startDir) {
     if (err.code === 'ENOENT' && err.path === cwd) {
       throw new Error(`Specified ui.supplemental_files directory does not exist: ${dir}`)
     } else {
-      const errWrapper = new Error(`Failed to read ui.supplemental_files ${cwd ? `directory: ${dir}` : 'entry'}`)
-      errWrapper.stack += `\nCaused by: ${err.stack || 'unknown'}`
-      throw errWrapper
+      throw transformError(err, `Failed to read ui.supplemental_files ${cwd ? `directory: ${dir}` : 'entry'}`)
     }
   })
 }
@@ -405,6 +402,12 @@ function symlinkAwareStat (path_) {
         })
     )
   })
+}
+
+function transformError (err, msg) {
+  const errWrapper = new Error(msg)
+  errWrapper.stack += `\nCaused by: ${err.stack ? inspect(err).replace(/^Error \[(.+)\](?=: )/, '$1') : err}`
+  return errWrapper
 }
 
 module.exports = loadUi
