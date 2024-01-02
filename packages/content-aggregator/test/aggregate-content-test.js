@@ -6150,7 +6150,7 @@ describe('aggregateContent()', () => {
 
     before(() => {
       proxyServer = http.createServer().on('connect', (request, clientSocket, head) => {
-        serverRequests.push(proxyServerUrl + ' -> ' + request.url)
+        serverRequests.push(`${proxyServerUrl} -> ${request.url} (${request.headers.connection})`)
         proxyAuthorizationHeader = request.headers['proxy-authorization']
         const [host, port = 80] = request.url.split(':', 2)
         const serverSocket = net
@@ -6232,7 +6232,7 @@ describe('aggregateContent()', () => {
       const aggregate = await aggregateContent(playbookSpec)
       expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
       expect(serverRequests).to.not.be.empty()
-      expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${gitServerPort}`)
+      expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${gitServerPort} (close)`)
       expect(proxyAuthorizationHeader).to.be.undefined()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
@@ -6272,7 +6272,7 @@ describe('aggregateContent()', () => {
       const aggregate = await aggregateContent(playbookSpec)
       expect(RepositoryBuilder.hasPlugin('http', GIT_CORE)).to.be.false()
       expect(serverRequests).to.not.be.empty()
-      expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${secureGitServerPort}`)
+      expect(serverRequests[0]).to.equal(`${proxyServerUrl} -> localhost:${secureGitServerPort} (close)`)
       expect(proxyAuthorizationHeader).to.be.undefined()
       expect(aggregate).to.have.lengthOf(1)
       expect(aggregate[0].files).to.not.be.empty()
@@ -7179,4 +7179,27 @@ describe('aggregateContent()', () => {
       }, GIT_OPERATION_LABEL_LENGTH + 1 + url.length * 2)
     })
   })
+
+  if (process.env.RELEASE_VERSION && process.platform === 'linux') {
+    it('should not timeout if server does not respond in 5s', async () => {
+      const fetches = []
+      const trapFetch = (fetch) => {
+        fetches.push(`http://${fetch.req.headers.host}/${fetch.repo} (${fetch.req.headers.connection})`)
+        setTimeout(fetch.accept.bind(fetch), 5050)
+      }
+      try {
+        gitServer.on('fetch', trapFetch)
+        const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { remote: { gitServerPort } })
+        await initRepoWithFiles(repoBuilder, undefined, 'modules/ROOT/pages/page-one.adoc')
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
+        let aggregate
+        expect(await trapAsyncError(async () => (aggregate = await aggregateContent(playbookSpec)))).to.not.throw()
+        expect(aggregate).to.have.lengthOf(1)
+        expect(fetches).to.have.lengthOf(1)
+        expect(fetches[0]).to.equal(repoBuilder.url + ' (close)')
+      } finally {
+        gitServer.off('fetch', trapFetch)
+      }
+    })
+  }
 })
