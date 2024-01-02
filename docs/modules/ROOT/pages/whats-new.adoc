@@ -53,6 +53,13 @@ Issue {url-issues}/1096[#1096^]::
 * Change default value of `git.fetch_concurrency` to 1 (playbook-builder).
 * Flag git clone/fetch error as recoverable if an unexpected network error occurs (content-aggregator).
 * Decouple step to load (fetch or clone) repositories from step to scan repositories to discover references and start paths and collect files (content-aggregator).
+Issue {url-issues}/1099[#1099^]::
+* Preserve all information in wrapped error (content-aggregator, ui-loader, file-publisher)
+Issue {url-issues}/1098[#1098^]::
+* Upgrade isomorphic-git to incorporate patch for properly handling network error (content-aggregator)
+* Add cause in log message when retrying failed fetch/clone operations in series (content-aggregator)
+Issue {url-issues}/1101[#1101^]::
+* Clear timeout and keep-alive settings on git HTTP connections that don't use custom agent (content-aggregator)
 (No issue)::
 * Don't read git tree twice if start path is empty; add dirname to tree object in same function (content-aggregator).
 * Fill in progress bar with incomplete marks if cloning a repository fails (content-aggregator).
@@ -61,6 +68,7 @@ Issue {url-issues}/1096[#1096^]::
 * Don't assign fallback value to `url` property on component version if property is already set (content-classifier).
 * Print site URL instead of file URI in completion message if CI=true (site-generator).
 * Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes) (ui-loader and file-publisher).
+* Don't retry failed clone/fetch operation if playbook only has one content source URL (content-aggregator)
 
 === Fixed
 
