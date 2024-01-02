@@ -13,6 +13,7 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Preserve all information in wrapped error (#1099)
 * *content-aggregator*: Upgrade isomorphic-git to incorporate patch for properly handling network error (#1098)
 * *content-aggregator*: Add cause in log message when retrying failed fetch/clone operations in series (#1098)
+* *content-aggregator*: Clear timeout and keep-alive settings on git HTTP connections that don't use custom agent (#1101)
 * *ui-loader*: Preserve all information in wrapped error (#1099)
 * *file-publisher*: Preserve all information in wrapped error (#1099)
 

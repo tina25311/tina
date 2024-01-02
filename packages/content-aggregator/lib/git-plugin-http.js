@@ -49,11 +49,12 @@ module.exports = ({ headers: extraHeaders, httpProxy, httpsProxy, noProxy } = {}
   }
   return {
     async request ({ url, method, headers, body }) {
-      headers = mergeHeaders(headers, extraHeaders)
+      headers = Object.assign(mergeHeaders(headers, extraHeaders), { connection: 'close' })
       body = await mergeBuffers(body)
-      return new Promise((resolve, reject) =>
-        get({ url, method, headers, body }, (err, res) => (err ? reject(err) : resolve(distillResponse(res))))
-      )
+      return new Promise((resolve, reject) => {
+        const opts = { url, method, headers, body, timeout: 0, keepAlive: false }
+        return get(opts, (err, res) => (err ? reject(err) : resolve(distillResponse(res))))
+      })
     },
   }
 }
