@@ -1,6 +1,6 @@
 {
   "name": "@antora/site-mapper",
-  "version": "3.2.0-alpha.3",
+  "version": "3.2.0-alpha.4",
   "description": "Generates sitemap files that list all publishable pages in an Antora documentation pipeline.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
@@ -20,7 +20,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@antora/content-classifier": "3.2.0-alpha.3",
+    "@antora/content-classifier": "3.2.0-alpha.4",
     "vinyl": "~2.2"
   },
   "devDependencies": {
