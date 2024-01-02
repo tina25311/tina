@@ -15,7 +15,26 @@
 :url-milestone-3-1-4: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.4
 :url-milestone-3-1-5: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.5
 :url-milestone-3-1-6: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.6
+:url-milestone-3-1-7: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.7
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.7
+
+_**Release date:** 2024.01.02 | *Issue label:* {url-milestone-3-1-7}[3.1.7^]_
+
+== Resolved issues
+
+=== Changed
+
+Issue {url-issues}/1099[#1099^]::
+* Preserve all information in wrapped error (content-aggregator, ui-loader, file-publisher)
+Issue {url-issues}/1098[#1098^]::
+* Upgrade isomorphic-git to incorporate patch for properly handling network error (content-aggregator)
+* Add cause in log message when retrying failed fetch/clone operations in series (content-aggregator)
+Issue {url-issues}/1101[#1101^]::
+* Clear timeout and keep-alive settings on git HTTP connections that don't use custom agent (content-aggregator)
+(No issue)::
+* Don't retry failed clone/fetch operation if playbook only has one content source URL (content-aggregator)
 
 = Antora {page-component-version}.6
 
