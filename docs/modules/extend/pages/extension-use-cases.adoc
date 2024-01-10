@@ -104,6 +104,21 @@ include::example$unpublish-unlisted-pages-extension.js[]
 By removing the `out` property from the page, it prevents the page from being published, but is still referenceable using an include directive.
 Alternately, you could choose to remove the page entirely from the content catalog.
 
+== List discovered component versions
+
+When you're setting up your playbook, you may find that Antora is not discovering some of your component versions.
+Using an extension, it's possible to list the component versions Antora discovers during content aggregation along with the content sources it took them from.
+
+.discovered-component-versions-extension.js
+[,js]
+----
+include::example$discovered-component-versions-extension.js[lines=3..]
+----
+
+If an entry is missing, then you know you may need to tune the content source definitions in your playbook.
+
+For more information, you can print the whole bucket entry.
+
 == Audit includes
 
 In order to audit include requests in an AsciiDoc document, you must intercept the built-in include processor that Antora provides.
@@ -123,7 +138,7 @@ Rather, the include processor must delegate to Antora's include processor.
 .audit-includes-asciidoctor-extension.js
 [,js]
 ----
-include::example$audit-includes-asciidoctor-extension.js[]
+include::example$audit-includes-asciidoctor-extension.js[lines=3..]
 ----
 
 In order to resolve the file being included, the processor must determine the file that contains the include directive from the cursor where the include directive is found or the file on which the extension is being run.
@@ -158,7 +173,7 @@ It iterates over all attachments in a word processor format (i.e., .docx, .odt, 
 .doc-to-pdf-extension.js
 [,js]
 ----
-include::example$doc-to-pdf-extension.js[]
+include::example$doc-to-pdf-extension.js[lines=3..]
 ----
 
 By converting the files and updating the metadata, it's possible to reference the source document using the xref macro.
