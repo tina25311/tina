@@ -5,6 +5,25 @@ Each section introduces a different use case and presents the extension code you
 
 You can also reference official extension projects provided by the Antora project to study more complex examples.
 
+== Set global AsciiDoc attributes
+
+If you want to define global AsciiDoc attributes that dynamic values, you can do using an extension.
+The playbook holds the AsciiDoc config object, which itself contains the global AsciiDoc attributes.
+An extension can listen for the `playbookBuilt` event and add attributes to this map.
+
+.set-global-asciidoc-attributes-extension.js
+[,js]
+----
+include::example$set-global-asciidoc-attributes-extension.js[lines=3..]
+----
+
+The extension could read these values from a file or environment variables as well.
+
+If you need to set AsciiDoc attributes that are scoped to a component version, then you'll need to listen for the `contentClassified` event instead.
+From there, you can access the AsciiDoc attributes form the `asciidoc` property on a component version object.
+You can look up a component version by name and version using the `getComponentVersion` method on the content catalog object.
+Alternately, you can access component versions from the `versions` property on each component returned by the `getComponents` method on the content catalog object.
+
 == Exclude private content sources
 
 If some contributors or CI jobs don't have permission to the private content sources in the playbook, you can use an extension to filter them out instead of having to modify the playbook file.
