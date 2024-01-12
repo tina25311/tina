@@ -15,6 +15,8 @@ A [.term]*component*{mdash}more formally a *documentation component* or shortene
 A component is never declared directly.
 Instead, it gets created by having at least one component version.
 
+If there's only one version of a component, and the version is empty (i.e., a versionless component), then the terms component and component version are effectively interchangeable.
+
 ////
 move to better location
 
