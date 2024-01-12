@@ -21,9 +21,14 @@ When the source files of a component version are distributed, only one of the [.
 All of the other [.path]_antora.yml_ files that mark the locations of the component version's source files must only specify the component `name` and `version`.
 Conflicting or duplicate optional configuration keys may produce unpredictable results.
 
-== Managing modules and files
+== Conflicting files
 
-Antora will fail with an error if it finds two or more source files with identical filenames that belong to the same family and module in the distributed component version.
-This also occurs if Antora discovers a module has two or more navigation files with identical filenames.
+When setting up a distributed component version, each content source root must contribute a unique set of files (aside from [.path]_antora.yml_).
+In other words, the content source roots cannot overlap when combined.
+
+Antora will fail with an error if it finds two or more source files with same resource ID.
+These are identical filenames that belong to the same family and module in the distributed component version.
+This also occurs if Antora discovers a module that has two or more navigation files with identical filenames.
+See xref:page:resource-id.adoc#duplicate-resources[Duplicate resources] for more information about this situation.
 
 //== Playbook content source order
