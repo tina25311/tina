@@ -1478,7 +1478,7 @@ describe('classifyContent()', () => {
       aggregate[0].files.push(file2)
       aggregate[0].nav = ['modules/nav.adoc']
       const expectedMessage =
-        'Duplicate nav in v1.2.3@the-component: modules/nav.adoc\n' +
+        'Duplicate nav file: modules/nav.adoc in v1.2.3@the-component\n' +
         '    1: docs/modules/nav.adoc in https://githost/repo.git (branch: v1.2.3 | start path: docs)\n' +
         '    2: docs/modules/nav.adoc in https://githost/repo.git (branch: v1.2.x | start path: docs)'
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
@@ -1494,7 +1494,7 @@ describe('classifyContent()', () => {
       aggregate[0].files.push(file2)
       aggregate[0].nav = ['modules/install/nav.adoc']
       const expectedMessage =
-        'Duplicate nav in v1.2.3@the-component: modules/install/nav.adoc\n' +
+        'Duplicate nav file: modules/install/nav.adoc in v1.2.3@the-component\n' +
         '    1: modules/install/nav.adoc in https://githost/repo.git (branch: v1.2.x)\n' +
         '    2: modules/install/nav.adoc in https://githost/repo.git (tag: v1.2.3)'
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)

@@ -150,7 +150,7 @@ class ContentCatalog {
           .map((it, idx) => `${idx + 1}: ${getFileLocation(it)}`)
           .join(LOG_WRAP)
         if (family === 'nav') {
-          throw new Error(`Duplicate nav in ${version}@${component}: ${file.path}${LOG_WRAP}${details}`)
+          throw new Error(`Duplicate nav file: ${file.path} in ${version}@${component}${LOG_WRAP}${details}`)
         } else {
           throw new Error(`Duplicate ${family}: ${generateResourceSpec(src)}${LOG_WRAP}${details}`)
         }
