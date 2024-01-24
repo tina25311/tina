@@ -738,8 +738,8 @@ describe('generateSite()', () => {
     // assert correct component is marked as current
     expect($('.nav-panel-explore .component').eq(0)).to.have.class('is-current')
     expect($('.nav-panel-explore .component.is-current a')).to.have.lengthOf(2)
-    expect($('.nav-panel-explore .component.is-current a.title')).to.have.lengthOf(1)
-    expect($('.nav-panel-explore .component.is-current a.title').eq(0)).to.have.text('The Other Component')
+    expect($('.nav-panel-explore .component.is-current .title a')).to.have.lengthOf(1)
+    expect($('.nav-panel-explore .component.is-current .title a').eq(0)).to.have.text('The Other Component')
     expect($('.nav-panel-explore .component.is-current .versions a')).to.have.lengthOf(1)
     expect($('.nav-panel-explore .component.is-current .versions a').eq(0)).to.have.text('master')
     expect($('.nav-panel-explore .component.is-current .version').eq(0))
@@ -805,7 +805,7 @@ describe('generateSite()', () => {
     // assert correct component is marked as current
     expect($('.nav-panel-explore .component').eq(1)).to.have.class('is-current')
     expect($('.nav-panel-explore .component.is-current a')).to.have.lengthOf(3)
-    expect($('.nav-panel-explore .component.is-current a.title')).to.have.lengthOf(1)
+    expect($('.nav-panel-explore .component.is-current .title a')).to.have.lengthOf(1)
     expect($('.nav-panel-explore .component.is-current .versions a')).to.have.lengthOf(2)
     expect($('.nav-panel-explore .component.is-current .versions a').eq(0)).to.have.text('default')
     expect($('.nav-panel-explore .component.is-current .version').eq(0))
@@ -814,7 +814,7 @@ describe('generateSite()', () => {
     expect(ospath.join(absDestDir, 'the-component/2.0/index.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/index.html')
     // assert component link points to start page
-    expect($('.nav-panel-explore .component:not(.is-current) a.title')).to.have.attr(
+    expect($('.nav-panel-explore .component:not(.is-current) .title a')).to.have.attr(
       'href',
       '../../the-other-component/core/index.html'
     )
