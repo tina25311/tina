@@ -169,6 +169,11 @@ module.exports = {
       format: 'int',
       default: 1,
     },
+    fetch_depth: {
+      doc: 'Preferred number of commits to fetch from remote repository. 0 indicates full history.',
+      format: 'int',
+      default: 1,
+    },
     plugins: {
       credential_manager: {
         doc: 'A require request for a plugin to replace the built-in credential manager used by the git client.',
