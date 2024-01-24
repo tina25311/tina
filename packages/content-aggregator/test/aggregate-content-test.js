@@ -2693,15 +2693,30 @@ describe('aggregateContent()', () => {
     // NOTE in the future, files in the worktree of a local repo may get picked up in this scenario
     describe('should handle repository with no commits as expected', () => {
       testAll(async (repoBuilder) => {
-        const componentDesc = { name: 'the-component', version: 'v1.0' }
-        await repoBuilder
-          .init(componentDesc.name, { empty: true })
-          .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
-          .then(() => repoBuilder.copyToWorktree(['modules/ROOT/pages/page-one.adoc'], repoBuilder.fixtureBase))
-          .then(() => repoBuilder.close())
-        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.be.empty()
+        let trapInfo
+        try {
+          if (repoBuilder.remote) {
+            gitServer.on(
+              'info',
+              (trapInfo = (info) => {
+                // git/2.43.0 broadcasts capabilities when no refs; force old response until fixed in isomorphic-git
+                info.res.setHeader('content-type', 'application/x-git-upload-pack-advertisement')
+                info.res.end('001e# service=git-upload-pack\n0000')
+              })
+            )
+          }
+          const componentDesc = { name: 'the-component', version: 'v1.0' }
+          await repoBuilder
+            .init(componentDesc.name, { empty: true })
+            .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
+            .then(() => repoBuilder.copyToWorktree(['modules/ROOT/pages/page-one.adoc'], repoBuilder.fixtureBase))
+            .then(() => repoBuilder.close())
+          playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.be.empty()
+        } finally {
+          if (trapInfo) gitServer.off('info', trapInfo)
+        }
       })
     })
 
