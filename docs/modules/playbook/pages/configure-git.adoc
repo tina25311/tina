@@ -11,20 +11,22 @@ The `git` key holds all the git-related playbook keys, such as the git credentia
 [,yaml]
 ----
 git: # <.>
-  fetch_concurrency: 5 # <.>
+  fetch_concurrency: 3 # <.>
   ensure_git_suffix: false # <.>
   credentials: # <.>
     path: ./.git-credentials # <.>
   plugins: # <.>
     credential_manager: ./system-git-credential-manager.js # <.>
+  read_concurrency: 5 # <.>
 ----
 <.> Optional `git` category key
-<.> Optional `fetch_concurrency` key to limit number of concurrency fetch operations
+<.> Optional `fetch_concurrency` key to limit number of concurrent fetch operations
 <.> Optional `ensure_git_suffix` key
 <.> Optional `credentials` category key
 <.> `path` key to specify the location of optional credentials; mutually exclusive with the `contents` key
 <.> Optional `plugins` category key
 <.> Optional `credential_manager` key
+<.> Optional `read_concurrency` key to limit number of concurrent read operations (after repositories are fetched)
 
 The `git` category key and the child keys it accepts are all optional.
 When the `git` key isn't present in the playbook, Antora falls back to using the default configuration for the git client.
