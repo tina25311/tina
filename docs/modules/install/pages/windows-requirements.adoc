@@ -2,6 +2,9 @@
 :url-choco: https://chocolatey.org
 :url-nvm-windows: https://github.com/coreybutler/nvm-windows
 
+Antora is a portable application that runs on any Node.js installation.
+Since Node.js is distributed for and runs on Windows, that means Antora runs on Windows without any additional requirements.
+
 On this page, you'll learn:
 
 * [x] How to install Chocolatey, the Windows package manager.
