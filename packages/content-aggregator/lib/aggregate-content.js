@@ -102,7 +102,8 @@ function aggregateContent (playbook) {
     }, new Map())
     const progress = !quiet && createProgress(sourcesByUrl.keys(), process.stdout)
     const refPatternCache = Object.assign(new Map(), { braces: new Map() })
-    const loadOpts = { cacheDir, fetch, gitPlugins, progress, startDir, refPatternCache }
+    const fetchConfig = { always: fetch, depth: Math.max(0, gitConfig.fetchDepth ?? 1) }
+    const loadOpts = { cacheDir, fetch: fetchConfig, gitPlugins, progress, startDir, refPatternCache }
     return collectFiles(sourcesByUrl, loadOpts, concurrency).then(buildAggregate, (err) => {
       progress && progress.terminate()
       throw err
@@ -110,11 +111,11 @@ function aggregateContent (playbook) {
   })
 }
 
-async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls) {
+async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls = []) {
   const loadTasks = [...sourcesByUrl.entries()].map(([url, sources]) => {
     const loadOptsForUrl = Object.assign({}, loadOpts)
-    if (loadOpts.fetch && fetchedUrls && fetchedUrls.length && fetchedUrls.includes(url)) loadOptsForUrl.fetch = false
-    if (tagsSpecified(sources)) loadOptsForUrl.fetchTags = true
+    if (loadOpts.fetch.always && fetchedUrls.length && fetchedUrls.includes(url)) loadOptsForUrl.fetch.always = false
+    if (tagsSpecified(sources)) loadOptsForUrl.fetch.tags = true
     return loadRepository.bind(null, url, loadOptsForUrl, { url, sources })
   })
   return gracefulPromiseAllWithLimit(loadTasks, concurrency.fetch).then(([results, rejections]) => {
@@ -163,7 +164,7 @@ async function loadRepository (url, opts, result = {}) {
   if (~url.indexOf(':') && GIT_URI_DETECTOR_RX.test(url)) {
     let credentials, displayUrl
     ;({ displayUrl, url, credentials } = extractCredentials(url))
-    const { cacheDir, fetch, fetchTags, gitPlugins, progress } = opts
+    const { cacheDir, fetch, gitPlugins, progress } = opts
     dir = ospath.join(cacheDir, generateCloneFolderName(displayUrl))
     // NOTE the presence of the url property on the repo object implies the repository is remote
     repo = { cache, dir, fs, gitdir: dir, noCheckout: true, url }
@@ -171,9 +172,9 @@ async function loadRepository (url, opts, result = {}) {
     const validStateFile = ospath.join(dir, VALID_STATE_FILENAME)
     try {
       await fsp.access(validStateFile)
-      if (fetch) {
+      if (fetch.always) {
         await fsp.unlink(validStateFile)
-        const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetchTags, 'fetch')
+        const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetch, 'fetch')
         await git
           .fetch(fetchOpts)
           .then(() => {
@@ -193,7 +194,7 @@ async function loadRepository (url, opts, result = {}) {
     } catch (gitErr) {
       await fsp['rm' in fsp ? 'rm' : 'rmdir'](dir, { recursive: true, force: true })
       if (gitErr.rethrow) throw transformGitCloneError(gitErr, displayUrl)
-      const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetchTags, 'clone')
+      const fetchOpts = buildFetchOptions(repo, progress, displayUrl, credentials, gitPlugins, fetch, 'clone')
       await git
         .clone(fetchOpts)
         .then(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 1 }, repo)))
@@ -764,18 +765,20 @@ function assignFileProperties (file, origin) {
   return file
 }
 
-function buildFetchOptions (repo, progress, displayUrl, credentialsFromUrl, gitPlugins, fetchTags, operation) {
+function buildFetchOptions (repo, progress, displayUrl, credentialsFromUrl, gitPlugins, fetch, operation) {
   const { credentialManager, http, urlRouter } = gitPlugins
+  const corsProxy = false
+  const depth = fetch.depth || undefined
   const onAuth = resolveCredentials.bind(credentialManager, new Map().set(undefined, credentialsFromUrl))
   const onAuthFailure = onAuth
   const onAuthSuccess = (url) => credentialManager.approved({ url })
-  const opts = Object.assign({ corsProxy: false, depth: 1, http, onAuth, onAuthFailure, onAuthSuccess }, repo)
+  const opts = Object.assign({ corsProxy, depth, http, onAuth, onAuthFailure, onAuthSuccess }, repo)
   if (urlRouter) opts.url = urlRouter.ensureGitSuffix(opts.url)
   if (progress) opts.onProgress = createProgressListener(progress, displayUrl, operation)
   if (operation === 'fetch') {
     opts.prune = true
-    if (fetchTags) opts.tags = opts.pruneTags = true
-  } else if (!fetchTags) {
+    if (fetch.tags) opts.tags = opts.pruneTags = true
+  } else if (!fetch.tags) {
     opts.noTags = true
   }
   return opts

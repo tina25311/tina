@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Added
+
+* *playbook-builder*: Add `git.fetch_depth` key to control how many recent commits Antora fetches from a remote repository (#1090)
+
 == 3.2.0-alpha.4 (2024-01-02)
 
 === Changed

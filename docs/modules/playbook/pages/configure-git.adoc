@@ -12,6 +12,7 @@ The `git` key holds all the git-related playbook keys, such as the git credentia
 ----
 git: # <.>
   fetch_concurrency: 3 # <.>
+  fetch_depth: 0 # <.>
   ensure_git_suffix: false # <.>
   credentials: # <.>
     path: ./.git-credentials # <.>
@@ -21,6 +22,7 @@ git: # <.>
 ----
 <.> Optional `git` category key
 <.> Optional `fetch_concurrency` key to limit number of concurrent fetch operations
+<.> Optional `fetch_depth` key to control how many recent commits Antora fetches from a repository
 <.> Optional `ensure_git_suffix` key
 <.> Optional `credentials` category key
 <.> `path` key to specify the location of optional credentials; mutually exclusive with the `contents` key
@@ -51,6 +53,13 @@ When the `git` key isn't present in the playbook, Antora falls back to using the
 Accepts any positive integer or zero.
 When non-zero, limits the number of concurrent fetch operations to the specified value.
 When zero, does not limit the number of concurrent fetch operations.
+|No
+
+|xref:git-fetch-depth.adoc[fetch_depth]
+|`1` by default (latest commit).
+Accepts any positive integer or zero.
+When non-zero, limits the preferred number of recent commits that are fetched to the specified value.
+When zero, fetches all commits.
 |No
 
 |xref:git-plugins.adoc#credential-manager[plugins.credential_manager]
