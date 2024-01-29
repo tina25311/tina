@@ -20,7 +20,7 @@ const FUNCTION_PROVIDERS = {
   publishFiles: 'file-publisher', // dynamic require('@antora/file-publisher')
 }
 
-const FUNCTION_WITH_POSITIONAL_PARAMETER_RX = /^(?:function *)?(?:\w+ *)?\( *\w|^\w+(?: *, *\w+)* *=>/
+const FUNCTION_WITH_NAMED_PARAMETER_RX = /^(?:(?:function(?: *\w+)? *)?\( *\w+ *[,)]|\w+ *=>)/
 const NEWLINES_RX = /\r?\n/g
 
 const notifyNoop = async function notify (_, variableUpdates) {
@@ -151,7 +151,7 @@ class GeneratorContext extends EventEmitter {
         const { register } = userRequire(request, requireContext)
         if (typeof register !== 'function') return
         if (register.length) {
-          if (FUNCTION_WITH_POSITIONAL_PARAMETER_RX.test(register.toString().replace(NEWLINES_RX, ' '))) {
+          if (FUNCTION_WITH_NAMED_PARAMETER_RX.test(register.toString().replace(NEWLINES_RX, ' '))) {
             register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
           } else {
             register.call(this, Object.assign({ config }, vars))
