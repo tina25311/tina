@@ -6,7 +6,7 @@ const collateAsciiDocAttributes = require('./collate-asciidoc-attributes')
 const logger = require('../logger')
 const userRequire = require('@antora/user-require-helper')
 
-const REGISTER_FUNCTION_RX = /^(?:(?:function(\s+\w+)?)?\s*\(\s*registry\s*[,)])/
+const REGISTER_FUNCTION_RX = /^(?:(?:function(?:\s+\w+)?\s*)?\(\s*registry\s*[,)])/
 
 /**
  * Resolves a global AsciiDoc configuration object from data in the playbook.
