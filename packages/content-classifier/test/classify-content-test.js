@@ -595,7 +595,7 @@ describe('classifyContent()', () => {
     it('should attach site AsciiDoc config to component version if component version has no AsciiDoc config', () => {
       const siteAsciiDocConfig = {
         attributes: { foo: 'bar' },
-        extensions: [{ register: () => {} }],
+        extensions: [{ register: (registry) => {} }],
       }
 
       const contentCatalog = classifyContent(playbook, aggregate, siteAsciiDocConfig)
@@ -609,7 +609,7 @@ describe('classifyContent()', () => {
 
     it('should copy AsciiDoc extensions to scoped AsciiDoc config', () => {
       const siteAsciiDocConfig = {
-        extensions: [{ register: () => {} }],
+        extensions: [{ register: (registry) => {} }],
       }
 
       aggregate[0].asciidoc = { attributes: { foo: 'bar' } }

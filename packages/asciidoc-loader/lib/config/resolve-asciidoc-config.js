@@ -3,7 +3,10 @@
 const Asciidoctor = require('../asciidoctor')
 const { Extensions } = Asciidoctor
 const collateAsciiDocAttributes = require('./collate-asciidoc-attributes')
+const logger = require('../logger')
 const userRequire = require('@antora/user-require-helper')
+
+const REGISTER_FUNCTION_RX = /^(?:(?:function(\s+\w+)?)?\s*\(\s*registry\s*[,)])/
 
 /**
  * Resolves a global AsciiDoc configuration object from data in the playbook.
@@ -49,8 +52,13 @@ function resolveAsciiDocConfig (playbook = {}) {
     const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || '', __dirname] }
     const scopedExtensions = extensions.reduce((accum, extensionPath) => {
       const extension = userRequire(extensionPath, userRequireContext)
-      if ('register' in extension) {
-        accum.push(extension)
+      const { register } = extension
+      if (typeof register === 'function') {
+        if (register.length > 0 && REGISTER_FUNCTION_RX.test(register.toString())) {
+          accum.push(extension)
+        } else {
+          logger.warn('Skipping possible Antora extension registered as an AsciiDoc extension: %s', extensionPath)
+        }
       } else if (!isExtensionRegistered(extension, Extensions)) {
         // QUESTION should we assign an antora-specific group name?
         Extensions.register(extension)

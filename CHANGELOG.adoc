@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Added
+
+* *asciidoc-loader*: Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (#1084)
+
 == 3.1.7 (2024-01-02)
 
 === Changed
