@@ -51,17 +51,17 @@ function resolveAsciiDocConfig (playbook = {}) {
   if (extensions && extensions.length) {
     const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || '', __dirname] }
     const scopedExtensions = extensions.reduce((accum, extensionPath) => {
-      const extension = userRequire(extensionPath, userRequireContext)
-      const { register } = extension
+      const extensionExports = userRequire(extensionRequest, userRequireContext)
+      const { register } = extensionExports
       if (typeof register === 'function') {
         if (register.length > 0 && REGISTER_FUNCTION_RX.test(register.toString())) {
-          accum.push(extension)
+          accum.push(extensionExports)
         } else {
-          logger.warn('Skipping possible Antora extension registered as an AsciiDoc extension: %s', extensionPath)
+          logger.warn('Skipping possible Antora extension registered as an AsciiDoc extension: %s', extensionRequest)
         }
-      } else if (!isExtensionRegistered(extension, Extensions)) {
+      } else if (!isExtensionRegistered(extensionExports, Extensions)) {
         // QUESTION should we assign an antora-specific group name?
-        Extensions.register(extension)
+        Extensions.register(extensionExports)
       }
       return accum
     }, [])
