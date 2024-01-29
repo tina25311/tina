@@ -11,6 +11,7 @@ This project utilizes semantic versioning.
 
 * *playbook-builder*: Add `git.fetch_depth` key to control how many recent commits Antora fetches from a remote repository (#1090)
 * *asciidoc-loader*: Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (#1084)
+* *site-generator*: Detect (and skip) AsciiDoc extension registered as an Antora extension and log a warning (#1104)
 
 === Changed
 
