@@ -50,7 +50,7 @@ function resolveAsciiDocConfig (playbook = {}) {
   })
   if (extensions && extensions.length) {
     const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || '', __dirname] }
-    const scopedExtensions = extensions.reduce((accum, extensionPath) => {
+    const scopedExtensions = extensions.reduce((accum, extensionRequest) => {
       const extensionExports = userRequire(extensionRequest, userRequireContext)
       const { register } = extensionExports
       if (typeof register === 'function') {
