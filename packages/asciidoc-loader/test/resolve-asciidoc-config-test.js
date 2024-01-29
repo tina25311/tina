@@ -357,4 +357,21 @@ describe('resolveAsciiDocConfig()', () => {
       Extensions.unregisterAll()
     }
   })
+
+  it('should detect and warn if Antora extension is registered as AsciiDoc extension', () => {
+    const antoraExtensionPath = ospath.resolve(FIXTURES_DIR, 'ext/antora-ext.js')
+    const playbook = {
+      dir: FIXTURES_DIR,
+      asciidoc: { extensions: ['./ext/scoped-shout-block.js', antoraExtensionPath] },
+    }
+    const { messages, returnValue: config } = captureLogSync(() => resolveAsciiDocConfig(playbook)).withReturnValue()
+    expect(config.extensions).to.exist()
+    expect(config.extensions).to.have.lengthOf(1)
+    expect(messages).to.have.lengthOf(1)
+    expect(messages[0]).to.eql({
+      level: 'warn',
+      name: '@antora/asciidoc-loader',
+      msg: `Skipping possible Antora extension registered as an AsciiDoc extension: ${antoraExtensionPath}`,
+    })
+  })
 })
