@@ -326,9 +326,9 @@ async function selectReferences (source, repo, remote) {
   } else {
     worktreePatterns = worktreePatterns === undefined ? [worktreeName || '.'] : []
   }
+  let currentBranch
   if (branchPatterns.length === 1 && (branchPatterns[0] === 'HEAD' || branchPatterns[0] === '.')) {
-    const currentBranch = await getCurrentBranchName(repo, remote)
-    if (currentBranch) {
+    if ((currentBranch = await getCurrentBranchName(repo, remote).then((branch) => branch ?? false))) {
       branchPatterns = [currentBranch]
     } else if (isBare) {
       return [...refs.values()]
@@ -342,8 +342,7 @@ async function selectReferences (source, repo, remote) {
     let headBranchIdx
     // NOTE we can assume at least two entries if HEAD or . are present
     if (~(headBranchIdx = branchPatterns.indexOf('HEAD')) || ~(headBranchIdx = branchPatterns.indexOf('.'))) {
-      const currentBranch = await getCurrentBranchName(repo, remote)
-      if (currentBranch) {
+      if ((currentBranch = await getCurrentBranchName(repo, remote).then((branch) => branch ?? false))) {
         if (~branchPatterns.indexOf(currentBranch)) {
           branchPatterns.splice(headBranchIdx, 1)
         } else {
@@ -373,7 +372,11 @@ async function selectReferences (source, repo, remote) {
   }
   // NOTE only consider local branches if repo has a worktree or there are no remote tracking branches
   if (!isBare) {
-    const localBranches = await git.listBranches(repo)
+    const localBranches = await git.listBranches(repo).then((branches) => {
+      if (branches.length) return branches
+      if (currentBranch == null) return getCurrentBranchName(repo).then((branch) => (branch ? [branch] : []))
+      return currentBranch ? [currentBranch] : []
+    })
     if (localBranches.length) {
       const worktrees = await findWorktrees(repo, worktreePatterns)
       let onMatch

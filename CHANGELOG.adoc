@@ -12,6 +12,10 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Add `git.fetch_depth` key to control how many recent commits Antora fetches from a remote repository (#1090)
 * *asciidoc-loader*: Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (#1084)
 
+=== Changed
+
+* *content-aggregator*: Use worktree from local repository even if repository has no commits (#298)
+
 == 3.2.0-alpha.4 (2024-01-02)
 
 === Changed
