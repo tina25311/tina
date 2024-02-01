@@ -411,7 +411,7 @@ async function selectReferences (source, repo, remote) {
  */
 function getCurrentBranchName (repo, remote) {
   return (
-    repo.noCheckout && remote
+    remote && repo.noCheckout
       ? git
         .resolveRef(Object.assign({ ref: 'refs/remotes/' + remote + '/HEAD', depth: 2 }, repo))
         .catch(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo)))
