@@ -2690,7 +2690,6 @@ describe('aggregateContent()', () => {
       })
     })
 
-    // NOTE in the future, files in the worktree of a local repo may get picked up in this scenario
     describe('should handle repository with no commits as expected', () => {
       testAll(async (repoBuilder) => {
         let trapInfo
@@ -2713,7 +2712,16 @@ describe('aggregateContent()', () => {
             .then(() => repoBuilder.close())
           playbookSpec.content.sources.push({ url: repoBuilder.url, branches: 'HEAD' })
           const aggregate = await aggregateContent(playbookSpec)
-          expect(aggregate).to.be.empty()
+          if (repoBuilder.bare || repoBuilder.remote) {
+            expect(aggregate).to.be.empty()
+          } else {
+            // NOTE use files from worktree in this case
+            expect(aggregate).to.have.lengthOf(1)
+            const componentVersion = aggregate[0]
+            expect(componentVersion).to.include(componentDesc)
+            expect(componentVersion.files).to.not.be.empty()
+            expect(componentVersion.files[0].src.origin.branch).to.equal('main')
+          }
         } finally {
           if (trapInfo) gitServer.off('info', trapInfo)
         }

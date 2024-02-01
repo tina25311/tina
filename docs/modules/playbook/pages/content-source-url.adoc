@@ -54,7 +54,7 @@ Antora can connect to private git repositories as long as a xref:private-reposit
 [#local-urls]
 == Use local content repositories
 
-Antora permits the value of `url` to be a relative or absolute filesystem path to a local repository that has at least one commit.
+Antora permits the value of `url` to be a relative or absolute filesystem path to a local repository (even if the repository has no commits).
 
 [,yaml]
 ----
@@ -67,15 +67,12 @@ content:
 <.> Absolute path to git repository
 <.> Relative path to git repository (starting from the directory of the playbook)
 
-IMPORTANT: In order to use a local content repository with Antora, even when using the worktree (`HEAD`), the repository *must have at least one commit*.
-If you're not ready to commit any files, you can initialize a repository and create an empty commit (e.g., `git init . && git commit --allow-empty -m init`).
-
 include::partial$relative-path-rules.adoc[]
 
 [#git-worktree]
 == Use the git worktree
 
-When the URL for a content source is a local repository (which must have at least one commit), and the xref:content-branches.adoc[branches filter] matches the branch that's currently checked out (aka the worktree branch), Antora reads files from the worktree (i.e., the working directory on the local filesystem) *instead of* from the git index.
+When the URL for a content source is a local repository, and the xref:content-branches.adoc[branches filter] matches the branch that's currently checked out (aka the worktree branch), Antora reads files from the worktree (i.e., the working directory on the local filesystem) *instead of* from the git index.
 This behavior is central to the xref:author-mode.adoc[author mode] in Antora.
 It means you *don't have to commit files locally* before Antora can use them.
 
