@@ -1069,7 +1069,7 @@ function findWorktrees (repo, patterns) {
   if (!patterns.length) return new Map()
   const mainWorktree =
     patterns[0] === '.' && (patterns = patterns.slice(1))
-      ? getCurrentBranchName(repo).then((branch) => (branch ? [branch, { head: repo.dir, name: '.' }] : undefined))
+      ? getCurrentBranchName(repo).then((branch) => branch && [branch, { head: repo.dir, name: '.' }])
       : Promise.resolve()
   const worktreesDir = patterns.length ? ospath.join(repo.dir, '.git', 'worktrees') : undefined
   const patternCache = repo.cache[REF_PATTERN_CACHE_KEY]
