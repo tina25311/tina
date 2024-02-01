@@ -384,7 +384,7 @@ async function selectReferences (source, repo, remote) {
 }
 
 /**
- * Returns the current branch name or undefined the HEAD is detached.
+ * Returns the current branch name or undefined if the HEAD is detached.
  */
 function getCurrentBranchName (repo, remote) {
   let refPromise
