@@ -344,7 +344,6 @@ async function selectReferences (source, repo, remote) {
     if (~(headBranchIdx = branchPatterns.indexOf('HEAD')) || ~(headBranchIdx = branchPatterns.indexOf('.'))) {
       const currentBranch = await getCurrentBranchName(repo, remote)
       if (currentBranch) {
-        // NOTE ignore if current branch is already in list
         if (~branchPatterns.indexOf(currentBranch)) {
           branchPatterns.splice(headBranchIdx, 1)
         } else {
@@ -1083,13 +1082,11 @@ function findWorktrees (repo, patterns) {
             worktreeNames.map((worktreeName) => {
               const gitdir = ospath.resolve(worktreesDir, worktreeName)
               // NOTE branch name defaults to worktree name if HEAD is detached
-              return git
-                .currentBranch(Object.assign({}, repo, { gitdir }))
-                .then((branch = worktreeName) =>
-                  fsp
-                    .readFile(ospath.join(gitdir, 'gitdir'), 'utf8')
-                    .then((contents) => [branch, { head: ospath.dirname(contents.trimEnd()), name: worktreeName }])
-                )
+              return getCurrentBranchName(Object.assign({}, repo, { gitdir })).then((branch = worktreeName) =>
+                fsp
+                  .readFile(ospath.join(gitdir, 'gitdir'), 'utf8')
+                  .then((contents) => [branch, { head: ospath.dirname(contents.trimEnd()), name: worktreeName }])
+              )
             })
           )
         )
