@@ -24,6 +24,30 @@ From there, you can access the AsciiDoc attributes form the `asciidoc` property 
 You can look up a component version by name and version using the `getComponentVersion` method on the content catalog object.
 Alternately, you can access component versions from the `versions` property on each component returned by the `getComponents` method on the content catalog object.
 
+== Print AsciiDoc attributes
+
+If you're troubleshooting your site, you can use an extension to generate a report of AsciiDoc attributes at the site level and those per component verison.
+When making this report, you have a choice of whether you want to show the AsciiDoc attributes as they would be available to a page (aka compiled) or as defined (aka uncompiled)
+
+You can use the following extension to print all the AsciiDoc attributes compiled for each component version.
+The extension also prints all the attributes compiled from the playbook, though keep in mind these are integrated into the attributes for each component version.
+
+.print-compiled-asciidoc-attributes-extension.js
+[,js]
+----
+include::example$print-compiled-asciidoc-attributes-extension.js[lines=3..]
+----
+
+You can use the following extension to print all the AsciiDoc attributes as defined in the playbook and in the antora.yml file for each component version (by origin).
+
+.print-defined-asciidoc-attributes-extension.js
+[,js]
+----
+include::example$print-defined-asciidoc-attributes-extension.js[lines=3..]
+----
+
+You may find it useful to make use of these collections of AsciiDoc attributes when writing other extensions.
+
 == Exclude private content sources
 
 If some contributors or CI jobs don't have permission to the private content sources in the playbook, you can use an extension to filter them out instead of having to modify the playbook file.
