@@ -16,15 +16,10 @@ const BASE_OPTS = {
   strictSlashes: true,
 }
 
-function makeMatcherRx (input, opts) {
-  if (input && ~input.indexOf('{')) input = input.replace(/^([^({]+)\./, '$1(?:.)')
-  return makeRe(input, opts)
-}
-
 module.exports = {
   MATCH_ALL_RX: { test: () => true },
   expandBraces,
-  makeMatcherRx,
+  makeMatcherRx: makeRe,
   pathMatcherOpts: Object.assign({}, BASE_OPTS, { dot: false }),
   refMatcherOpts: (cache) =>
     Object.assign({}, BASE_OPTS, {
