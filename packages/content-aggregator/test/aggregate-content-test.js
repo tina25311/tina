@@ -1132,29 +1132,36 @@ describe('aggregateContent()', () => {
 
     describe('should resolve start paths using extglob', () => {
       testAll(async (repoBuilder) => {
-        const startPath1 = 'docs-8'
-        const startPath2 = 'doc-10'
+        const startPath1 = 'doc-0'
+        const startPath2 = 'docs-8'
+        const startPath3 = 'docs-101'
         const componentDesc1 = { name: 'the-component', title: 'Component Title', version: '1', startPath: startPath1 }
         const componentDesc2 = { name: 'the-component', title: 'Component Title', version: '2', startPath: startPath2 }
+        const componentDesc3 = { name: 'the-component', title: 'Component Title', version: '3', startPath: startPath3 }
         let componentDescEntry1
         let componentDescEntry2
+        let componentDescEntry3
         await repoBuilder
           .init(componentDesc1.name)
           .then(() => repoBuilder.addComponentDescriptor(componentDesc1))
           .then(() => repoBuilder.addComponentDescriptor(componentDesc2))
+          .then(() => repoBuilder.addComponentDescriptor(componentDesc3))
           .then(async () => {
             componentDescEntry1 = await repoBuilder.findEntry(startPath1 + '/antora.yml')
             componentDescEntry2 = await repoBuilder.findEntry(startPath2 + '/antora.yml')
+            componentDescEntry3 = await repoBuilder.findEntry(startPath3 + '/antora.yml')
           })
           .then(() => repoBuilder.close())
         expect(componentDescEntry1).to.exist()
         expect(componentDescEntry2).to.exist()
-        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc?(s)-+({0..9})' })
+        expect(componentDescEntry3).to.exist()
+        playbookSpec.content.sources.push({ url: repoBuilder.url, startPaths: 'doc?(s)-{0,{1..9}*({0..9})}' })
         const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(2)
+        expect(aggregate).to.have.lengthOf(3)
         sortAggregate(aggregate)
         expect(aggregate[0]).to.deep.include(componentDesc1)
         expect(aggregate[1]).to.deep.include(componentDesc2)
+        expect(aggregate[2]).to.deep.include(componentDesc3)
       })
     })
 
