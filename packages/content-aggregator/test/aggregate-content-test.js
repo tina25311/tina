@@ -364,6 +364,7 @@ describe('aggregateContent()', () => {
       })
     })
 
+    // related to https://github.com/micromatch/picomatch/issues/100
     describe('should extract version from refname if version key is a pattern that starts with number followed by dot', () => {
       testAll(async (repoBuilder) => {
         const componentDesc = { name: 'the-component', version: { '2.(?<minor>+({0..9})).x': '2.$<minor>' } }
@@ -1866,6 +1867,7 @@ describe('aggregateContent()', () => {
       })
     })
 
+    // related to https://github.com/micromatch/picomatch/issues/100
     describe('should filter branches when pattern starts with number followed by dot and contains brace expression', () => {
       testAll(async (repoBuilder) => {
         const componentName = 'the-component'
@@ -1887,6 +1889,7 @@ describe('aggregateContent()', () => {
       })
     })
 
+    // related to https://github.com/micromatch/picomatch/issues/100
     describe('should filter branches when pattern starts with word characters followed by dot and contains brace expression', () => {
       testAll(async (repoBuilder) => {
         const componentName = 'the-component'
@@ -1908,6 +1911,7 @@ describe('aggregateContent()', () => {
       })
     })
 
+    // related to https://github.com/micromatch/picomatch/issues/100
     describe('should filter branches when negated pattern starts with number followed by dot and contains brace expression', () => {
       testAll(async (repoBuilder) => {
         const componentName = 'the-component'
@@ -1929,6 +1933,7 @@ describe('aggregateContent()', () => {
       })
     })
 
+    // related to https://github.com/micromatch/picomatch/issues/100
     describe('should filter branches when negated pattern starts with word characters followed by dot and contains brace expression', () => {
       testAll(async (repoBuilder) => {
         const componentName = 'the-component'
