@@ -135,7 +135,7 @@ For example, an expression like `product-a/docs/*/index.adoc` is not supported.
 For example, `+docs/product-{a*,b}+` is recognized as a brace expression, but not `+docs/product-{a*}+`.
 * Single brace expressions that match multiple characters do not work when following a segment that contains a wildcard.
 For example, `+*/v{0..99}+` matches the start path [.path]_product-a/v2_ but not [.path]_product-a/v99_.
-Instead, use a nested brace expression for each length permutation, such as `+*/v{{1..9},{1..9}{0..9}}+`.
+Instead, use a repetition operation, such as `+*/v+({0..9})+`, or a nested brace expression for each length permutation, such as `+*/v{{1..9},{1..9}{0..9}}+`.
 * Double globstar patterns such as `**/docs` are not supported.
 A glob matches a single level in the hierarchy.
 
