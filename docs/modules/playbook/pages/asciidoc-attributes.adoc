@@ -14,7 +14,7 @@ In addition to being declared site-wide in a playbook, attributes can be xref:RO
 However, when an attribute is hard set or hard unset in the site's playbook, it overrides any subsequent declarations of the same attribute in a component version descriptor or page.
 Site attributes can also be xref:cli:options.adoc#attribute[configured from the CLI].
 
-include::partial$playbook-vs-descriptor.adoc[]
+include::partial$playbook-vs-descriptor.adoc[tags=**;!note-for-extension-writers]
 
 [#attributes-key]
 == attributes key

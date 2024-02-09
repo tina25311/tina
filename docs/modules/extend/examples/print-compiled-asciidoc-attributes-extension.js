@@ -7,7 +7,11 @@ module.exports.register = function () {
     contentCatalog.getComponents().forEach((component) => {
       component.versions.forEach((componentVersion) => {
         console.log(`${componentVersion.version}@${componentVersion.name} attributes (compiled)`)
-        console.log(componentVersion.asciidoc.attributes)
+        if (componentVersion.asciidoc === siteAsciiDocConfig) {
+          console.log('same as site-wide attributes')
+        } else {
+          console.log(componentVersion.asciidoc.attributes)
+        }
       })
     })
   })

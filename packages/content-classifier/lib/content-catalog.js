@@ -75,6 +75,7 @@ class ContentCatalog {
         }
       }
     }
+    // NOTE if no AsciiDoc attributes are defined in the component descriptor, asciidoc is the siteAsciiDocConfig object
     if (asciidoc) componentVersion.asciidoc = asciidoc
     const component = this[$components].get(name)
     if (component) {
