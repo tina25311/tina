@@ -74,11 +74,11 @@ asciidoc:
 Since the component version attributes in <<ex-soft-set>> are soft set, a page could modify their values or unset them.
 
 [#references-in-values]
-=== Reference a component version attributes in attribute values
+=== Insert the value of another attribute
 
-The value of a component version attribute can contain an attribute reference to a xref:playbook:asciidoc-attributes.adoc[site attribute] or another component version attribute already set in the same [.path]_antora.yml_ file using the AsciiDoc attribute reference syntax (e.g., `+{site-title}+`, `+{page-level}+`).
+The value of any component version attribute set earlier in the same [.path]_antora.yml_ file or the value of any xref:playbook:asciidoc-attributes.adoc[site attribute] can be inserted into the value of a component version attribute using an AsciiDoc attribute reference (e.g., `+{site-title}+`, `+{page-level}+`).
 
-.Reference a component version attribute in a component version attribute value
+.A component version attribute that references the value of another component version attribute
 [#ex-attribute-value-references,yaml]
 ----
 name: light
