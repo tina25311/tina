@@ -1,6 +1,6 @@
 = Page Attributes
 
-Certain AsciiDoc document attributes provide metadata to the Antora page or control how Antora processes the page.
+Certain AsciiDoc document attributes provide metadata to the Antora page (for use in the UI template) or control how Antora processes the page.
 We refer to these as [.term]*page attributes*.
 There are three types of page attributes: custom, predefined, and intrinsic.
 This page explains the purpose of each type of page attribute, how they're defined, and how they can be accessed from the UI template using the UI model.
@@ -190,6 +190,9 @@ From there, all the AsciiDoc attributes can be access through the nested `asciid
 
 Antora automatically sets a number of read-only, intrinsic page attributes at runtime that are derived from existing metadata about the current page.
 For example, the name of the current component can be read from the `page-component-name` attribute.
+
+These attributes are defined at the time the page or navigation file is loaded (i.e., parsed)
+They are not yet assigned when the attributes in the component descriptor are resolved, and are thus not visible to the component descriptor.
 
 ////
 One way to use the intrinsic page attributes is to construct references to a page in another product that shares the same version, as shown here:
