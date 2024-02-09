@@ -8,6 +8,9 @@ Antora uses these attributes to propagate information about the site and current
 Unlike other built-in attributes, such as xref:page-aliases.adoc[page-aliases], intrinsic attributes are meant to be a conduit to pass information from Antora to the page.
 Therefore, *intrinsic attributes are intended to be read-only and should not be reassigned*.
 
+These attributes are defined at the time the page or navigation file is loaded (i.e., parsed).
+They are not yet assigned when the attributes in the component descriptor are resolved, and are thus not visible to the component descriptor.
+
 [#environment-attributes]
 == Intrinsic environment attributes
 
