@@ -92,11 +92,11 @@ asciidoc:
 Since the site attributes in <<ex-soft-set>> are soft set, a component version descriptor or page could modify their values or unset them.
 
 [#references-in-values]
-=== Reference site attributes in attribute values
+=== Insert the value of another attribute
 
-Any site attribute already set in the playbook can be referenced from the value of another site attribute using the AsciiDoc attribute reference syntax (e.g., `+{page-team}+`).
+The value of any site attribute set earlier in the playbook or from the CLI can be inserted into the value of a site attribute using an AsciiDoc attribute reference (e.g., `+{page-team}+`).
 
-.Reference a site attribute in a site attribute value
+.A site attribute that references the value of another site attribute
 [#ex-attribute-value-references,yaml]
 ----
 asciidoc:
