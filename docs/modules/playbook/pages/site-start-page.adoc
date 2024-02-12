@@ -23,6 +23,12 @@ The `start_page` key accepts the resource ID of a page as a value.
 The xref:page:resource-id-coordinates.adoc#id-version[version coordinate] can be specified if you want to use a specific version of a page instead of the latest version.
 Alternatively, `start_page` can be assigned from the xref:cli:options.adoc#start-page[CLI].
 
+If your site has an xref:ROOT:component-name-key.adoc#root-component[unversioned component named ROOT] (i.e., name: ROOT, version: +~+), that component will be published to the root of the site.
+The component name will not appear in the URL of those pages.
+That means that the index.adoc page in the ROOT module (i.e., modules/ROOT/pages/index.adoc) of the unversioned ROOT component implicitly acts as the site start page without having to specify it in the playbook.
+In other words, the site start page is effectively `ROOT::index.adoc`.
+If you specify a different site start page in this case, it will be ignored since the site already has a start page.
+
 == Use a page's latest version
 
 To have the `start_page` key always point to the xref:ROOT:how-component-versions-are-sorted.adoc#latest-version[latest version] of the specified page, don't enter the version coordinate in the resource ID of the page.
