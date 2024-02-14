@@ -89,7 +89,7 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
     author: attributes.author,
     description: attributes.description,
     keywords: attributes.keywords,
-    role: attributes.docrole,
+    role: attributes.role,
     attributes: pageAttributes,
     component,
     version,

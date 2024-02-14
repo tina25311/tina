@@ -369,11 +369,11 @@ describe('build UI model', () => {
     it('should set title, author, description, keywords, and role based on AsciiDoc attributes', () => {
       file.asciidoc = {
         doctitle: 'The Page Title',
-        docrole: 'the-role',
         attributes: {
           author: 'Doc Writer',
           description: 'A description of this page',
           keywords: 'keyword-a, keyword-b',
+          role: 'the-role',
         },
       }
       const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
@@ -381,7 +381,7 @@ describe('build UI model', () => {
       expect(model.author).to.equal(file.asciidoc.attributes.author)
       expect(model.description).to.equal(file.asciidoc.attributes.description)
       expect(model.keywords).to.equal(file.asciidoc.attributes.keywords)
-      expect(model.role).to.equal(file.asciidoc.attributes.docrole)
+      expect(model.role).to.equal('the-role')
     })
 
     it('should derive value of attributes property based on AsciiDoc attributes prefixed with page-', () => {

@@ -11,6 +11,10 @@ This project utilizes semantic versioning.
 
 * *asciidoc-loader*: Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (#1084)
 
+=== Changed
+
+* *page-composer*: Fix `page.role` assignment to read value from `role` attribute instead of from (nonexistent) `docrole` attribute (#1109)
+
 == 3.1.7 (2024-01-02)
 
 === Changed
