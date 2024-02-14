@@ -460,6 +460,14 @@ describe('generateSite()', () => {
     expect($('article').text()).to.include('This is version 2.0 of component the-component.')
   })
 
+  it('should add document role to body tag', async () => {
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    await generateSite(getPlaybook(playbookFile))
+    expect(ospath.join(absDestDir, 'the-component/2.0/new-page.html')).to.be.a.file()
+    $ = loadHtmlFile('the-component/2.0/new-page.html')
+    expect($('body.new')).to.be.found()
+  })
+
   it('should pass AsciiDoc attributes defined in playbook to AsciiDoc processor', async () => {
     playbookSpec.asciidoc = {
       attributes: { sectanchors: null, sectnums: '', description: 'Stuff about stuff@' },
