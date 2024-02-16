@@ -15,6 +15,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *content-aggregator*: Use worktree from local repository even if repository has no commits (#298)
+* *page-composer*: Fix `page.role` assignment to read value from `role` attribute instead of from (non-existent) `docrole` attribute (#1109)
 
 == 3.2.0-alpha.4 (2024-01-02)
 
