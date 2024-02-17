@@ -7,7 +7,7 @@ The fun with extensions really starts once you start to access these context var
 [#access]
 == Access context variables
 
-A context variable is a variable that is in scope at the time an event is fired and that the generator binds to the generator context.
+A context variable is a variable that is in scope at the time an event is emitted and that the generator binds to the generator context.
 By accessing a context variable from an extension, you can:
 
 * read properties from the object,

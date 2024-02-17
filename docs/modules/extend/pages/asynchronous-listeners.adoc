@@ -27,7 +27,7 @@ As an exercise, you could try retrieving a file from each branch of each content
 To give you a hint, you would need to access the `playbook` variable to get a list of content sources.
 
 If you don't want Antora to wait for the completion of your asynchronous listener, you can either return an empty promise (e.g, `return Promise.resolve()`), or you can remove the `async` keyword from your listener.
-However, if you do so, you'll need to add a listener that listens for an event that fires later in the generator, such as `contextClosed`, so you can resolve the promise before Antora completes.
+However, if you do so, you'll need to add a listener that listens for an event that is emitted later in the generator, such as `contextClosed`, so you can resolve the promise before Antora completes.
 
 Let's look at the same example as earlier, except it downloads the README.adoc in the background while the site is being generated.
 To help manage the state of the pending promise, it has also been rewritten as a xref:class-based-extension.adoc[class-based extension].
