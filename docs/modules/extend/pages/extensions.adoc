@@ -8,12 +8,14 @@ Subsequent pages step you through creating your first extension.
 == Generator events
 
 As described in xref:ROOT:how-antora-works.adoc[], Antora's site generator is a sequence of discrete, functional steps that progressively work to generate a static site.
-This process of steps begins with reading the playbook and gathering the source material.
+This pipeline of steps begins with reading the playbook and gathering the source material.
 It ends with publishing the HTML files and web assets to the output destination.
 Antora's extension facility, which is implemented by Antora's site generator, provides a way to hook custom code into the generator's build process.
 
 Antora's extension facility is event-driven, meaning it works by emitting events.
-Once each discrete step in the generator is complete, and at other key transition points, Antora emits a named event (e.g., `contentAggregated`).
+Events are emitted (aka fired) to notify extension code (i.e., event listeners) of interesting transitions that occur during site generation (i.e., the execution of Antora).
+Specifically, once each discrete step in the generator is complete, and at other key transition points, Antora emits a named event (e.g., `contentAggregated`).
+
 Events are handled by functions called listeners, which must be registered with that event.
 To hook your code into the operation of Antora, you register extensions that listen to one or more of these events.
 These listeners are defined in the register function of the extension.
@@ -22,7 +24,7 @@ The listeners of an event can be synchronous or asynchronous, but are called syn
 Any value returned by an event listener is ignored.
 Once all the listeners for an event have finished running, the generator proceeds to the next step.
 
-In brief, Antora extensions register listeners that respond to transition events raised by the site generator.
+In brief, Antora extensions register listeners that respond to transition events emitted by the site generator.
 Subsequent pages go into detail about how to set up listeners, which events those listeners can observe, and how to access context variables.
 
 == The generator context
@@ -40,7 +42,7 @@ You can also use the generator context to provide custom generator functions.
 
 == What's an event listener?
 
-An [.term]*event listener* is a callback function that's invoked (i.e., notified) when an event is raised.
+An [.term]*event listener* is a callback function that's invoked (i.e., notified) when an event is emitted.
 This callback mechanism provides a way to insert code between any two discrete steps of the generator.
 Antora will wait for the listener to run to completion, even if it's async, before proceeding.
 

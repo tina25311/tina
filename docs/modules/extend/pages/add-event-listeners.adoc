@@ -9,7 +9,7 @@ It does so by passing the event name and the listener function to the `on` metho
 The xref:generator-context-reference.adoc[API of the generator context] follows that of a Node.js {url-event-emitter}[EventEmitter^].
 
 Let's build on the extension we have defined by updating it to add an event listener.
-We'll listen for the `playbookBuilt` and `sitePublished` events, which are the first and last events fired by the generator.
+We'll listen for the `playbookBuilt` and `sitePublished` events, which are the first and last events to be emitted by the generator.
 This gives us the opportunity to roughly measure how long it took to generate and publish the site.
 
 .time-generation-extension.js
@@ -18,7 +18,7 @@ This gives us the opportunity to roughly measure how long it took to generate an
 include::example$time-generation-extension.js[]
 ----
 
-In <<ex-listen>>, we use the `on` method of the generator context to add two listeners, one for when the `playbookBuilt` event is fired and one for when the `sitePublished` event is fired.
+In <<ex-listen>>, we use the `on` method of the generator context to add two listeners, one for when the `playbookBuilt` event is emitted and one for when the `sitePublished` event is emitted.
 The `on` method returns the generator context, so we can use it to chain calls, as show in the previous example.
 
 [TIP]
