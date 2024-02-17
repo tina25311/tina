@@ -1,38 +1,62 @@
 = Replace Generator Functions
 
-Antora's generator is a sequence of steps, where each step is performed by a function.
-These functions are known as generator functions.
-Generator functions also include functions for key substeps a generator function may perform, such as `loadAsciiDoc`.
+Antora's site generator is implemented as a series of steps.
+Each step is performed by a function.
+These functions are known as [.term]_generator functions_.
+Generator functions may contain functions for key substeps a generator function may perform, such as `convertDocument`.
+
 The generator retrieves these functions from the generator context.
+These functions can also be retrieved and replaced programmatically by an Antora extension.
 As such, these generator functions are designed to be replaceable, providing a more powerful way to extend Antora.
-Specifically, these functions can be retrieved and replaced programmatically by an extension.
 
 WARNING: Replacing functions in an extension does put the code at greater risk of breaking between major versions of Antora.
 
 == Get the functions
 
-Like with context variables, generator functions are available on the generator context.
-The generator functions can be retrieved by calling the `getFunctions` method.
+Like with context variables, generator functions are available from the generator context.
+The generator functions can be retrieved by calling the `getFunctions` method inside the listener of the `contextStarted` event, or at any point thereafter.
 This method returns an object of key-value pairs, where the keys are the function names and the values are the function objects.
-The built-in generator functions are not available until the `contentStarted` event is emitted.
+
+IMPORTANT: The built-in generator functions are not available until the `contextStarted` event is emitted.
 
 Here's an example that shows how to retrieve the `aggregateContent` function in an extension, assuming `this` is bound to the generator content.
 
 [,js]
 ----
-const { aggregateContent } = this.getFunctions()
+this.once('contextStarted', () => {
+  const { aggregateContent } = this.getFunctions()
+})
 ----
 
-You may want to retrieve a function so you can wrap it.
-Regardless, the interesting part happens when you replace a function.
+One reason to retrieve a generator function is to use it as a utility.
+For example, if you need your extension to load AsciiDoc as Antora does, you might retrieve the `loadAsciiDoc` function for this purpose.
+Here's an example:
+
+[,js]
+----
+this.once('contentClassified', (contentCatalog, siteAsciiDocConfig) => {
+  const { loadAsciiDoc } = this.getFunctions()
+  const page = contentCatalog.resolvePage('ROOT::index.adoc')
+  const scopedAsciiDocConfig = contentCatalog.getComponentVersion(page.src.component, page.src.version).asciidoc
+  const doc = loadAsciiDoc(page, contentCatalog, scopedAsciiDocConfig || siteAsciiDocConfig)
+  const sections = doc.findBy({ context: 'section' }, (it) => it !== doc.getHeader())
+  console.log(sections.map((it) => it.getTitle()))
+})
+----
+
+Another reason to retrieve a generator function is to decorate (aka wrap) it.
+In this case, you'll need to replace the original function with the decorated one.
+Alternately, you can replace the original function with your own implementation.
 
 == Replace a function
+
+Replacing generator functions gives you the ability to override steps in Antora's site generator.
 
 The generator functions can be replaced by passing functions to the `replaceFunctions` method.
 This method accepts the same object signature that the `getFunctions` method returns, where the keys are the function names and the values are the function objects.
 
-You only have to specify the functions you want to replace.
-The generator will fall back to using its own functions for any function that's not replaced by an extension.
+You only have to pass functions to `replaceFunctions` that you want to replace.
+The generator will default to using the built-in functions for any function that's not replaced.
 
 Here's an example that shows how to replace the `publishFiles` function in an extension:
 
@@ -48,27 +72,28 @@ module.exports.register = function () {
 }
 ----
 
-When the functions are replaced matters.
-If you replace functions directly in the `register` method, it will prevent Antora from requiring and registering the corresponding built-in functions.
-If you replace functions in the `contextStarted` listener function, the function will replace the corresponding built-in function which has already been registered.
-This event gives you the opportunity to delegate to (i.e., wrap) the built-in function, as shown here:
+_When_ the functions are replaced matters.
+If you replace a function directly in the `register` method (before the `contextStarted` event is emitted), it will stop Antora from requiring and registering the corresponding built-in function.
+If you replace a function in the `contextStarted` listener, the function will replace the corresponding built-in function that has already been required and registered.
+
+The `contextStarted` event gives you the opportunity to delegate to (i.e., wrap) a built-in function, as shown here:
 
 [,js]
 ----
 module.exports.register = function () {
-  this.on('contextStarted', () => {
-    const delegate = this.getFunctions().publishFiles
+  this.once('contextStarted', () => {
+    const { publishFiles: publishFilesDelegate } = this.getFunctions()
     this.replaceFunctions({
       async publishFiles (playbook, catalogs) {
         console.log('It\'s publish time!')
-        return delegate.call(this, playbook, catalogs)
+        return publishFilesDelegate.call(this, playbook, catalogs)
       }
     })
   })
 }
 ----
 
-When replacing a function, you must adhere to the function's signature.
+When replacing a function, you must adhere to the function's signature as defined in <<Function reference>>.
 Like with the register function and event listener functions, the generator functions are automatically bound to the generator context.
 
 == Function reference
@@ -89,4 +114,4 @@ The list of functions that can be replaced by an extension, shown along with the
 * publishFiles(playbook, catalogs): Promise<Object[]>
 * resolveAsciiDocConfig(playbook): Object
 
-To learn more about these functions, consult the https://gitlab.com/antora/antora/-/tree/main/packages[Antora source code].
+To learn more about these functions, consult the {url-repo}/tree/{page-origin-refname}/packages[Antora source code].
