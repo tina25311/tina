@@ -91,6 +91,20 @@ On subsequent runs, Antora only reconnects to the remote repositories if the xre
 |Maximum throughput and minimum latency always make things nicer but aren't required.
 |===
 
+=== Tuning the memory limit
+
+Even if the machine you're using has sufficient memory (RAM), not all that memory will be allocated to the Node.js process.
+If the Node.js process tries to use more memory than is allocated to it, the system may terminate the Node.js process (SIGKILL).
+
+Node.js starts with a conservative memory limit (typically 2048 MiB, but it depends on the system).
+You can allocate more memory to the Node.js process using the `--max-old-space-size` CLI option.
+You can pass this option to Node.js when running Antora using the `NODE_OPTIONS` environment variable.
+
+ NODE_OPTIONS="--max-old-space-size=4096"
+
+You'll need to experiment with this value to find the setting that works best for your site.
+Refer to https://stackoverflow.com/questions/48387040/how-do-i-determine-the-correct-max-old-space-size-for-node-js[How do I determine the correct "max-old-space-size" for Node.js?^] for more information on this topic.
+
 == Learn more
 
 * xref:upgrade-antora.adoc[Upgrade to the latest Antora release].
