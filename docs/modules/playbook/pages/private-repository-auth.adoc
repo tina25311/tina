@@ -1,11 +1,14 @@
 = Private Repository Authentication
 :url-create-personal-token-github: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+:url-create-installation-token-github: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-an-installation-access-token-for-a-github-app
 :url-create-personal-token-gitlab: https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html
 :url-create-deploy-token-gitlab: https://docs.gitlab.com/ee/user/project/deploy_tokens/
 :url-create-app-pass-bitbucket: https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/
 :url-credential-store: https://git-scm.com/docs/git-credential-store
 :url-credential-manager-plugin: https://github.com/isomorphic-git/isomorphic-git/blob/v0.78.5/docs/plugin_credentialManager.md
 :url-oauth2-formats: https://isomorphic-git.org/docs/en/authentication
+:url-github-pat-example: https://rmoff.net/2023/12/19/deploying-antora-with-github-actions-and-a-private-github-repo/
+:url-github-iat-example: https://rmoff.net/2024/01/17/antora-deployment-to-cloudflare-across-private-repositories-with-github-actions/
 
 In order for Antora to access private repositories, you must supply it with authentication credentials for any private repository URL you use in your playbook.
 These credentials can be externalized so they don't have to be hard-coded into the playbook.
@@ -38,14 +41,29 @@ Deploy keys _cannot_ be used with Antora since they require the use of <<ssh-aut
 
 You typically use a single personal access token on your own machine and one or more deploy tokens on a CI server.
 
-To create an access token for *GitHub*, see {url-create-personal-token-github}[Creating a personal access token for the command line^].
+=== GitHub
+
+To create an access token for *GitHub*, see {url-create-personal-token-github}[Creating a personal access token (PAT) for the command line^].
 GitHub has two types of access tokens, fine-grained and classic.
 Both are supported by Antora, though the fine-grained token must be granted the Contents permission to the repositories you want to use.
-GitHub does not support deploy tokens at this time.
-To create an access token for *GitLab*, see {url-create-personal-token-gitlab}[Personal Access Tokens^] and {url-create-deploy-token-gitlab}[Deploy Tokens^].
-For *Bitbucket*, you'll need to create an {url-create-app-pass-bitbucket}[app password^] with read access to repositories.
 
-Next, let's see how to supply these credentials to Antora's built-in credential manager via the default git credential store.
+GitHub also supports {url-create-installation-token-github}[Installation Access Tokens (IAT)^], which are bound to an application instead of user.
+These access tokens are more suitable for use in an organization.
+
+GitHub does not support deploy tokens at this time.
+
+To learn more about how to create access tokens for use with GitHub, refer to the articles {url-github-pat-example}[Antora with GitHub PAT^] and {url-github-iat-example}[Antora with GitHub IAT^].
+
+=== GitLab
+
+To create an access token for *GitLab*, see {url-create-personal-token-gitlab}[Personal Access Tokens^] and {url-create-deploy-token-gitlab}[Deploy Tokens^].
+
+=== Bitbucket
+
+For *Bitbucket*, you'll need to create an {url-create-app-pass-bitbucket}[app password^] with read access to repositories.
+An app password is a user-based access token.
+
+Now let's see how to supply these credentials to Antora's built-in credential manager via the default git credential store.
 
 == Supply credentials using the default git credential store
 
