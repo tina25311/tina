@@ -2761,6 +2761,60 @@ describe('loadAsciiDoc()', () => {
       })
     })
 
+    it('should not warn if negated include tag is not found', () => {
+      const includeContents = heredoc`
+        puts "Please stand by..."
+        puts "Hello, World!"
+      `
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: includeContents,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tag=!no-such-tag]
+        ----
+      `)
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n'))
+      expect(messages).to.be.empty()
+    })
+
+    it('should not warn if negated include tags are not found', () => {
+      const includeContents = heredoc`
+        # tag::all[]
+        puts "Please stand by..."
+        puts "Hello, World!"
+        # end::all[]
+      `
+      const contentCatalog = mockContentCatalog({
+        family: 'example',
+        relative: 'ruby/greet.rb',
+        contents: includeContents,
+      })
+      setInputFileContents(heredoc`
+        [source,ruby]
+        ----
+        include::{examplesdir}/ruby/greet.rb[tags=all;!no-such-tag;!unknown-tag]
+        ----
+      `)
+      const { messages, returnValue: doc } = captureLogSync(() =>
+        loadAsciiDoc(inputFile, contentCatalog)
+      ).withReturnValue()
+      const firstBlock = doc.getBlocks()[0]
+      expect(firstBlock).to.not.be.undefined()
+      expect(firstBlock.getContext()).to.equal('listing')
+      expect(firstBlock.getSourceLines()).to.eql(includeContents.split('\n').slice(1, -1))
+      expect(messages).to.be.empty()
+    })
+
     it('should include all lines except for tag directives when tag wildcard is specified', () => {
       const contentCatalog = mockContentCatalog({
         family: 'example',
