@@ -15,6 +15,10 @@ This project utilizes semantic versioning.
 
 * *page-composer*: Fix `page.role` assignment to read value from `role` attribute instead of from (nonexistent) `docrole` attribute (#1109)
 
+=== Fixed
+
+* *asciidoc-loader*: Apply include tag filtering update from Asciidoctor (see https://github.com/asciidoctor/asciidoctor/pull/4233) to ported logic in Antora (#1110)
+
 == 3.1.7 (2024-01-02)
 
 === Changed
