@@ -43,7 +43,7 @@ If you run the base call without specifying any command, options, or arguments, 
 $ antora
 Usage: antora [options] [[command] [args]]
 
-A modular, multi-repository documentation site generator for AsciiDoc.
+A modular, single or multi-repository documentation site generator for AsciiDoc.
 
 Options:
   -v, --version                  Output the version of the CLI and default site generator.
