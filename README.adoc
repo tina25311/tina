@@ -26,9 +26,9 @@ ifdef::env-gitlab[:outfilesuffix: .adoc]
 :version-node-major: 16
 :version-node: 16.20.2
 
-{url-project}[Antora] is a modular, multi-repository site generator designed for creating documentation sites from content composed in AsciiDoc(R) and processed with {url-asciidoctor}[Asciidoctor].
+{url-project}[Antora] is a modular, single or multi-repository site generator designed for creating documentation sites from content composed in AsciiDoc(R) and processed with {url-asciidoctor}[Asciidoctor].
 
-Antora's toolchain and workflow help documentation and engineering teams create, manage, collaborate on, remix, and publish documentation sites sourced from multiple versioned git repositories without needing expertise in web technologies, build automation, or system administration.
+Antora's toolchain and workflow help documentation and engineering teams create, manage, collaborate on, remix, and publish documentation sites sourced from one or more versioned git repositories without needing expertise in web technologies, build automation, or system administration.
 
 This project includes a command line interface (CLI) and a site generator so you can quickly start publishing documentation sites with Antora.
 

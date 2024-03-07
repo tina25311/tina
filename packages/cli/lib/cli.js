@@ -90,7 +90,7 @@ cli
     '-v, --version',
     'Output the version of the CLI and default site generator.'
   )
-  .description('A modular, multi-repository documentation site generator for AsciiDoc.')
+  .description('A modular, single or multi-repository documentation site generator for AsciiDoc.')
   .usage('[options] [[command] [args]]')
   .helpOption('-h, --help', 'Output usage information.')
   .addHelpText('after', () => {
