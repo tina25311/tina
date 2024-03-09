@@ -166,7 +166,7 @@ function filterLinesByTags (reader, target, file, tags, sourceCursor) {
 
   const lines = []
   const tagStack = []
-  const foundTags = []
+  const tagsSelected = []
   let activeTag
   let lineNum = 0
   let startLineNum
@@ -202,8 +202,8 @@ function filterLinesByTags (reader, target, file, tags, sourceCursor) {
           }
         }
       } else if (tags.has(thisTag)) {
-        foundTags.push(thisTag)
-        tagStack.unshift([(activeTag = thisTag), (selecting = tags.get(thisTag)), lineNum])
+        if ((selecting = tags.get(thisTag))) tagsSelected.push(thisTag)
+        tagStack.unshift([(activeTag = thisTag), selecting, lineNum])
       } else if (wildcard !== undefined) {
         selecting = activeTag && !selecting ? false : wildcard
         tagStack.unshift([(activeTag = thisTag), selecting, lineNum])
@@ -224,11 +224,13 @@ function filterLinesByTags (reader, target, file, tags, sourceCursor) {
       )
     )
   }
-  if (foundTags.length) foundTags.forEach((name) => tags.delete(name))
-  if (tags.size) {
+  if (tagsSelected.length) tagsSelected.forEach((name) => tags.delete(name))
+  const missingTags = []
+  tags.forEach((select, name) => select && missingTags.push(name))
+  if (missingTags.length) {
     log(
       'warn',
-      `tag${tags.size > 1 ? 's' : ''} '${[...tags.keys()].join(', ')}' not found in include file: ${file.file}`,
+      `tag${missingTags.length > 1 ? 's' : ''} '${missingTags.join(', ')}' not found in include file: ${file.file}`,
       reader,
       sourceCursor,
       createIncludeCursor(reader, file, target, 0)
