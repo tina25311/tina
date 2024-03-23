@@ -14,6 +14,8 @@ When choosing a module folder name, keep the following requirements and recommen
 These characters aren't permitted in the targets of AsciiDoc cross references, image macros, or include directives.
 * If possible, *don't use uppercase letters, underscores (`_`), and other characters that aren't recommended in URLs*.
 Such characters can limit web server portability, downgrade site search results, and cause visitor accessibility problems.
+* If the module name ends in the name of a built-in macro, such as `link`, that part of the name may need to be escaped when using in an xref macro.
+For example, `elink` will have to be written as `e\link` to prevent the AsciiDoc parser from seeing the link macro.
 * If your team often references resources across modules, they'll have to type a module's name in the resource IDs, so *don't make the folder name, and hence the module name, too long or hard to remember*.
 Good module names are short and descriptive.
 
