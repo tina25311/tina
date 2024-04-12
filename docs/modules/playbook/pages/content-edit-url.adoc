@@ -165,7 +165,7 @@ Its value is applied to all of the content sources unless the key is reset or di
 
 By default, a page's edit URL links to the file editing interface of the git service where the repository is hosted.
 This works as long as long as the content source is stored in one of the _hosted_ git services that Antora recognizes, which includes GitLab (gitlab.com), GitHub (github.com), Bitbucket (bitbucket.org), and Pagure (pagure.io).
-If the repository is not stored in one of these hosted services (e.g., a self-hosted GitLab or BitBucket instance), you can use the `edit_url` key to configure how this URL is constructed.
+If the repository is not stored in one of these hosted services (e.g., a self-hosted GitLab or Bitbucket instance), you can use the `edit_url` key to configure how this URL is constructed.
 For instance, in <<ex-view>>, each page's computed edit URL will now be the URL for GitLab's rendered file view of the corresponding source file.
 
 .Route the edit URL to an alternate source file view
