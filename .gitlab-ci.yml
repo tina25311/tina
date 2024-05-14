@@ -109,7 +109,7 @@ test:windows:
   # cache does not currently work with the shared Windows runner
   cache: []
   before_script:
-  - choco upgrade -y nodejs --version=16.17.0
+  - choco upgrade -y nodejs --version=16.17.0 --allow-downgrade
   - *platform_info
   - npm ci --quiet
   script: npm run coverage
