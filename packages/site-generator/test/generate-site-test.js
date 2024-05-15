@@ -1678,7 +1678,7 @@ describe('generateSite()', () => {
         expect(absDestDir).to.not.be.a.path()
         expect(process.exitCode).to.equal(200)
       } finally {
-        delete process.exitCode
+        process.exitCode = undefined
       }
     })
 
