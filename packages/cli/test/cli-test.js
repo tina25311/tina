@@ -369,7 +369,12 @@ describe('cli', () => {
       expect(parsedMessage.msg).to.match(/Failed to create .* cache directory: .* ENOTDIR: not a directory, mkdir/)
       expect(parsedMessage.err.type).to.eql('Error')
       expect(parsedMessage.err).to.not.have.property('message')
-      expect(parsedMessage.err.stack).to.eql('Error (no stacktrace)')
+      // Node.js >= 20 includes a stacktrace in this case
+      if (parsedMessage.err.stack.includes(' at ')) {
+        expect(parsedMessage.err.stack).to.startWith('Error\n')
+      } else {
+        expect(parsedMessage.err.stack).to.startWith('Error (no stacktrace)')
+      }
     })
   })
 
