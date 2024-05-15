@@ -166,7 +166,7 @@ describe('loadUi()', () => {
       const [host, port = 80] = request.url.split(':', 2)
       const serverSocket = net
         .connect({ port, host }, () => {
-          clientSocket.write('HTTP/1.1 200 Connection Established\n\n')
+          clientSocket.write('HTTP/1.1 200 Connection Established\r\n\r\n')
           serverSocket.write(head)
           serverSocket.pipe(clientSocket)
           clientSocket.pipe(serverSocket)
