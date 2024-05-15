@@ -93,9 +93,9 @@ test:node-16-linux:
   script: npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   <<: *save_report_artifacts
-test:node-18-linux:
+test:node-20-linux:
   extends: .npm
-  image: node:18-$LINUX_DISTRO
+  image: node:20-$LINUX_DISTRO
   <<: *unless_docs_mr
 #test:macos:
 #  extends: .npm
