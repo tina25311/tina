@@ -103,13 +103,14 @@ test:node-20-linux:
 #  image: macos-12-xcode-13
 #  tags: [shared-macos-amd64]
 # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
+# https://docs.gitlab.com/ee/ci/runners/hosted_runners/windows.html (has link to preinstalled software)
 test:windows:
   extends: .npm
-  tags: [windows]
+  tags: [saas-windows-medium-amd64]
   # cache does not currently work with the shared Windows runner
   cache: []
   before_script:
-  - choco upgrade -y nodejs --version=16.17.0
+  #- choco upgrade -y nodejs --version=16.17.0 --allow-downgrade
   - *platform_info
   - npm ci --quiet
   script: npm run coverage
