@@ -78,7 +78,7 @@ function buildCacheKey ({ component, version }) {
 
 function registerPageAliases (aliases, targetFile, contentCatalog) {
   if (!aliases) return
-  return aliases
+  aliases
     .split(',')
     .forEach((spec) => (spec = spec.trim()) && contentCatalog.registerPageAlias(spec, targetFile))
 }
