@@ -130,7 +130,7 @@ include::./target-page-filename.adoc[] <.>
 <.> File coordinate of the target page when it's stored in a subdirectory of the [.path]_pages_ directory.
 <.> File coordinate of the target page when the target page and current page are stored in the same subdirectory of the [.path]_pages_ directory.
 
-The following sections describe how to specify a file coordinate with a <<relative-path,pages-relative directory path>> or <<token,relative path token>>.
+The following sections describe how to specify a file coordinate with a <<relative-path,pages-relative directory path>> or <<relative-path-token,relative path token>>.
 Also, you'll need to specify additional resource ID coordinates when the target page and current page don't belong to the <<module-or-component,same module>> or <<module-or-component,component version>>.
 
 [#relative-path]
@@ -181,21 +181,20 @@ As shown in <<ex-subdir>>, the file coordinate for [.path]_safety.adoc_ is `supp
 The file coordinate for [.path]_safety.adoc_ consists of its [.path]__pages__-relative directory path, filename, and file extension because it's stored in the subdirectory [.path]_supplies_ while the current page, [.path]_cottonwood-pass.adoc_, is stored in the [.path]_pages_ directory.
 If the current page and target page were stored in the same subdirectory, you could use the relative path token, `./`, in place of the __pages__-relative directory path.
 
-[#token]
+[#relative-path-token]
 === File coordinate with relative path token
 
 If the <<target,target page>> and <<current,current page>> are stored in the same subdirectory within the [.path]_pages_ directory, the __pages__-relative directory path of the target page's file coordinate can be replaced with the relative path token, `./`.
 
 .File coordinate in include directive when the target page and current page are stored in the same subdirectory
-[#ex-token-base]
 ----
 \include::./target-page-filename.adoc[]
 ----
 
-Let's use the pages that belong to the component version shown in <<ex-co-token>> as the basis for the examples in this section.
+Let's use the pages that belong to the component version shown in <<ex-co-relative-path-token>> as the basis for the examples in this section.
 
 .Directories and files assigned to colorado 5.2
-[listing#ex-co-token]
+[listing#ex-co-relative-path-token]
 ----
 📄 antora.yml <.>
 📂 modules
@@ -214,18 +213,18 @@ Let's use the pages that belong to the component version shown in <<ex-co-token>
 <.> A subdirectory in _pages_ containing the source files of pages
 
 Let's reference [.path]_gear.adoc_ from [.path]_safety.adoc_.
-<<ex-co-token>> shows that both files are stored in the [.path]_supplies_ subdirectory of the [.path]_pages_ directory, and that both files belong to the _ROOT_ module of the same component version.
+<<ex-co-relative-path-token>> shows that both files are stored in the [.path]_supplies_ subdirectory of the [.path]_pages_ directory, and that both files belong to the _ROOT_ module of the same component version.
 When the target page and current page are stored in the same subdirectory within the [.path]_pages_ directory, the relative path token, `./`, can be used to abbreviate the target page's file coordinate.
 
-In <<ex-token>>, the include directive in the [.path]_safety.adoc_ page (current page) references the [.path]_gear.adoc_ page (target page).
+In <<ex-relative-path-token-subdir>>, the include directive in the [.path]_safety.adoc_ page (current page) references the [.path]_gear.adoc_ page (target page).
 
 .safety.adoc (current page)
-[#ex-token]
+[#ex-relative-path-token-subdir]
 ----
 \include::./gear.adoc[]
 ----
 
-As shown in <<ex-token>>, the file coordinate for [.path]_gear.adoc_, when referenced from [.path]_safety.adoc_, is `./gear.adoc`.
+As shown in <<ex-relative-path-token-subdir>>, the file coordinate for [.path]_gear.adoc_, when referenced from [.path]_safety.adoc_, is `./gear.adoc`.
 Both pages are stored in the [.path]_supplies_ subdirectory, therefore, the __pages__-relative directory path of the target page's file coordinate is replaced with the `./` token.
 
 CAUTION: You may find that the include directive resolves the target page when the `./` token isn't used in the file coordinate.

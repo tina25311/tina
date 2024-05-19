@@ -9,7 +9,7 @@ On this page, you'll learn how to assign the correct resource ID coordinates to 
 * [x] The target page and current page <<pages,belong to the same component version and module>>
 * [x] The target page is <<pages-root,stored at the root of the _pages_ directory>>
 * [x] The target page is <<relative-path,stored in a subdirectory of the _pages_ directory>>
-* [x] The target page and current page are <<token,stored in the same subdirectory of the _pages_ directory>>
+* [x] The target page and current page are <<relative-path-token,stored in the same subdirectory of the _pages_ directory>>
 * [x] The target page and current page <<modules,belong to different modules>>
 * [x] The target page and current page <<component-versions,belong to different component versions>>
 * [x] The target page and current page don't belong to the same component version, and the page link should always use <<latest-version,the latest version of the target page>>
@@ -124,14 +124,14 @@ The Rocky Mountains consists of xref:ranges.adoc[numerous mountain ranges].
 
 Only the file coordinate of the target page needs to be specified in the xref macro because both pages belong to the _ROOT_ module and the _colorado 5.2_ component version.
 The file coordinate for [.path]_ranges.adoc_ is `ranges.adoc` because it's stored at the root of the [.path]_pages_ directory.
-See <<relative-path>> and <<token>> for file coordinate examples when the target page is stored in a subdirectory [.path]_pages_ directory.
+See <<relative-path>> and <<relative-path-token>> for file coordinate examples when the target page is stored in a subdirectory [.path]_pages_ directory.
 
 [#relative-path]
 === File coordinate with pages-relative directory path
 //Link to a page in a subdirectory
 
 The __pages__-relative directory path of the <<target,target page>> is required in its file coordinate when the <<current,current page>> isn't stored in the same subdirectory as the target page.
-If both pages are stored in the same subdirectory, see <<token>>.
+If both pages are stored in the same subdirectory, see <<relative-path-token>>.
 
 .File coordinate when the target page is stored in a subdirectory of a pages directory
 [#ex-subdir-base]
@@ -172,22 +172,22 @@ As shown in <<ex-subdir>>, the file coordinate for [.path]_faq.adoc_ is `terms/f
 The file coordinate assigned to the xref macro consists of the target page's __pages__-relative directory path in addition to its filename and file extension because [.path]_faq.adoc_ is stored in the subdirectory [.path]_terms_.
 In cases where the current page and target page are stored in the same subdirectory, you can use the relative path token, `./`, in place of the __pages__-relative directory path.
 
-[#token]
+[#relative-path-token]
 === File coordinate with relative path token
 
 If the <<target,target page>> and <<current,current page>> are stored in the same subdirectory in the [.path]_pages_ directory, the __pages__-relative directory path of the target page's file coordinate can be replaced with the relative path token, `./`.
 
 .File coordinate when the target page and current page are stored in the same subdirectory
-[#ex-token-base]
+[#ex-relative-path-token]
 ----
 xref:./target-page-filename.adoc[optional link text]
 ----
 
 Let's reference [.path]_faq.adoc_ from [.path]_signs.adoc_.
-<<ex-co-token>> shows that both files are stored in the [.path]_terms_ subdirectory of the [.path]_pages_ directory, and that both files belong to the same module and component version.
+<<ex-co-relative-path-token>> shows that both files are stored in the [.path]_terms_ subdirectory of the [.path]_pages_ directory, and that both files belong to the same module and component version.
 
 .Directories and files assigned to colorado 5.2
-[listing#ex-co-token]
+[listing#ex-co-relative-path-token]
 ----
 📄 antora.yml
 📂 modules
@@ -203,15 +203,15 @@ Let's reference [.path]_faq.adoc_ from [.path]_signs.adoc_.
 <.> A subdirectory in [.path]_pages_ containing the source files of pages
 
 When the target page and current page are stored in the same subdirectory in the [.path]_pages_ directory, the relative path token, `./`, can be used to abbreviate the target page's file coordinate.
-The xref macro in <<ex-token>> links to the [.path]_faq.adoc_ page (target page) from the [.path]_signs.adoc_ page (current page).
+The xref macro in <<ex-relative-path-token>> links to the [.path]_faq.adoc_ page (target page) from the [.path]_signs.adoc_ page (current page).
 
 .signs.adoc (current page)
-[#ex-token]
+[#ex-relative-path-token-subdir]
 ----
 See the xref:./faq.adoc[].
 ----
 
-As shown in <<ex-token>>, the file coordinate for [.path]_faq.adoc_, when referenced from [.path]_signs.adoc_, is `./faq.adoc`.
+As shown in <<ex-relative-path-token-subdir>>, the file coordinate for [.path]_faq.adoc_, when referenced from [.path]_signs.adoc_, is `./faq.adoc`.
 Both pages are stored in the [.path]_terms_ subdirectory, therefore, the __pages__-relative directory path of the target page's file coordinate is replaced with the `./` token.
 
 //[#xref-page-across-modules]
