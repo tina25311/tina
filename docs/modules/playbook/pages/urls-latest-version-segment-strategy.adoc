@@ -28,17 +28,19 @@ This example uses the symbolic version `next` for the latest prerelease version 
 
 The `latest_version_segment_strategy` key accepts the following built-in values:
 
-`redirect:from`:: Sets up redirects from the URLs using the symbolic version to the URLs using the actual version.
+`redirect:from`:: Sets up redirects from the URLs using the symbolic version to the URLs using the actual version, which may be empty.
 The actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
 This strategy is currently ignored when the redirect facility is `static`.
 
-`redirect:to`:: Sets up redirects from the URLs using the actual version to the URLs using the symbolic version.
+`redirect:to`:: Sets up redirects from the URLs using the non-emtpy actual version to the URLs using the symbolic version.
 The actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
+No change is made to the URL if the version is empty.
 This strategy is transparently changed to `replace` when the redirect facility is `static`.
 
 `replace`:: _Default_.
-The actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
+The non-empty actual version is replaced by the symbolic version specified by the `latest_version_segment` key or `latest_prerelease_version_segment` key in the latest component versions`' page and asset URLs.
 `replace` is the default value when the `latest_version_segment_strategy` key isn't set, but the `latest_version_segment` key or `latest_prerelease_version_segment` key is assigned a value in the playbook.
+No change is made to the URL if the version is empty.
 
 Antora creates temporary redirects (302) when the strategy is `redirect:to` or `redirect:from`.
 The format of the rules and redirect configuration file is determined by the xref:urls-redirect-facility.adoc[redirect facility] you specify using the `redirect_facility` key.
@@ -47,6 +49,7 @@ Since creating temporary redirect rules is only something a web server can do, w
 
 If the value of `latest_version_segment_strategy` key is `redirect:from`, the value of the `latest_version_segment` and `latest_prerelease_version_segment` *cannot* be empty.
 This restriction is due to the fact that redirecting from the parent folder could prevent access to other versions.
+For the same reason, the `redirect:to` and `replace` strategies have no affect if the actual version is empty.
 
 [#default]
 == Enable the replace strategy automatically
@@ -136,7 +139,7 @@ https://docs.example.com/colorado/current/get-started/tour.html
 
 In addition to replacing the actual version with the symbolic version in the URLs of the latest component versions, Antora creates temporary redirects from the URLs using the actual version to the URLs using the symbolic version.
 The playbook in <<ex-playbook>> assigns the xref:urls-redirect-facility.adoc#nginx[nginx value] to the `redirect_facility` key, therefore Antora writes the redirect rules to an nginx rewrite configuration file named [.path]_rewrite.conf_ and places it in the site at [.path]_.etc/nginx/rewrite.conf_.
-Any request for a URL using the actual version of a latest component version is redirected to the URL with the symbolic version.
+Any request for a URL using the actual version of a latest component version, as long as the version is not empty, is redirected to the URL with the symbolic version.
 For example, if the URL _\https://docs.example.com/colorado/5.6/get-started/tour.html_ is requested, the URL redirects to _\https://docs.example.com/colorado/current/get-started/tour.html_.
 
 === What happens when a new component version is added to the site?
