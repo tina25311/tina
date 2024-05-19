@@ -25,7 +25,7 @@ See xref:index.adoc#help[Display Antora CLI help].
 |Not set
 |Node.js package (i.e., module) name or filesystem path to a script
 |Requires additional code (a Node.js module or a local JavaScript file) before Antora is loaded.
-Can specify multiple times.
+May be specified multiple times.
 See xref:playbook:asciidoc-extensions.adoc#preload-extensions[Preload Asciidoctor extensions].
 
 |`--stacktrace`
@@ -57,7 +57,7 @@ The options in the table below apply only to the `generate` command.
 |[[attribute]]`--attribute`
 |Not set
 |AsciiDoc attribute in the form `<name>` or `<name=value>`
-|Can specify multiple times.
+|May be specified multiple times.
 See xref:playbook:asciidoc-attributes.adoc[] and <<ex-name-value-pair>>.
 
 |[[cache-dir]]`--cache-dir`
@@ -75,7 +75,7 @@ See xref:playbook:output-dir.adoc#clean-key[clean key], <<ex-multiple-options>>,
 |[[extension]]`--extension`
 |Not set
 |Filesystem path or extension ID
-|Can be specified multiple times.
+|May be specified multiple times.
 See xref:extend:register-extension.adoc[].
 
 |[[fetch]]`--fetch`
@@ -125,7 +125,7 @@ See xref:playbook:network-proxy.adoc#https-proxy[https_proxy].
 |[[key]]`--key`
 |Not set
 |API key in the form `<name=value>`
-|Can be specified multiple times.
+|May be specified multiple times.
 See xref:playbook:site-keys.adoc[] and <<ex-multiple-values>>.
 
 |[[failure-level]]`--log-failure-level`

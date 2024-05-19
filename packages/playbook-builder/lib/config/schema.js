@@ -17,7 +17,8 @@ module.exports = {
     extensions: {
       doc:
         'A list of extensions that listen for lifecycle events. ' +
-        'Each extension is specified as a require request string or an object with a require key.',
+        'Each extension is specified as a require request string or an object with a require key. ' +
+        'May be specified multiple times.',
       format: 'require-array',
       default: [],
       arg: 'extension',
