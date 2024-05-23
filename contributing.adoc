@@ -183,8 +183,9 @@ Here's an example of a branch name for issue #168, which was to write documentat
 The `docs/` prefix tells the CI server not to run the test suite.
 --
 
-. In the issue tracker, label the issue as *[Progress] Preparing Change* and make sure you're assigned to it so that the rest of the team knows you're working on it.
+. If you're a committer, label the issue as *[Progress] Preparing Change* in the issue tracker and make sure you're assigned to it so that the rest of the team knows you're working on it.
 If the issue is already assigned but not labeled as being worked on feel free to reassign it to yourself.
+If you are not a committer, you will need to request for these changes to be made to the issue using a comment.
 
 . *Make your changes.*
  .. Use as many commits as you think are necessary, but each commit should consist of a logical change.
