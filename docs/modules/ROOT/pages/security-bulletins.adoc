@@ -39,6 +39,25 @@ You can learn more about npm overrides in the https://docs.npmjs.com/cli/v8/conf
 Unfortunately, npm overrides can only be used by the consumer of a library, not the library itself.
 Thus, this is not a remediation solution Antora itself can enact.
 
+You may also see a warning about deprecated inflight package.
+This package is a dependency of glob, which in turn is used by glob-stream.
+To suppress the deprecation message, you can add an entry to overrides to pull it directly from git.
+This package is not considered unsafe when used in Antora.
+
+[,json]
+----
+"overrides": {
+  "glob": {
+    "inflight": "https://github.com/isaacs/inflight-DEPRECATED-DO-NOT-USE#v1.0.6"
+  },
+  "vinyl-fs": {
+    "glob-stream": "~7.0"
+  }
+}
+----
+
+This override documents that the use of inflight is acknowledged and acceptable.
+
 === Assessment
 
 Fortunately, Antora uses glob-parent in a controlled way, so this vulnerability is not an attack vector for Antora.
