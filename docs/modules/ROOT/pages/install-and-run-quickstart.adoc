@@ -58,13 +58,20 @@ To install Antora, begin by making a new directory for your site named [.path]_d
 
  $ mkdir docs-site && cd docs-site
 
-Next, let's install the required packages within the playbook project so you can run the `antora` command using `npx`.
+Next, let's initialize a [.path]_package.json_ file and install the required packages within the playbook project so you can run the `antora` command using `npx`.
 
 [subs=+attributes]
  $ node -e "fs.writeFileSync('package.json', '{}')"
+ifdef::page-component-version-is-latest[]
+ $ npm i -D -E antora
+endif::[]
+ifndef::page-component-version-is-latest[]
  $ npm i -D -E antora@{page-component-version}
+endif::[]
 
-Verify the `antora` command is now available by running:
+NOTE: Refer to xref:security-bulletins.adoc[] to remediate any security vulnerabilities that are reported.
+
+Verify the `antora` command is available by running:
 
  $ npx antora -v
 
@@ -75,13 +82,18 @@ If the installation is successful, the command will report the version of the An
  @antora/cli: {release-version}
  @antora/site-generator: {release-version}
 
-These versions can also be found in [.path]_package.json_, which you can use to upgrade Antora.
+These versions can also be found in [.path]_package.json_ (pulled in transitively by the antora package), which you can use to upgrade Antora.
 
 You have the option of installing Antora globally so that the `antora` command is available on your PATH.
 To do so, pass the `-g` option to `npm i`.
 
 [subs=+attributes]
+ifdef::page-component-version-is-latest[]
+ $ npm i -g antora
+endif::[]
+ifndef::page-component-version-is-latest[]
  $ npm i -g antora@{page-component-version}
+endif::[]
 
 You can verify that the `antora` command is available on your path by running:
 
