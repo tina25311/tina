@@ -3152,6 +3152,17 @@ describe('loadAsciiDoc()', () => {
       expectLink(html, '#that-section', 'That Section')
     })
 
+    it('should not crash if target of shorthand xref is a URL', () => {
+      const contents = heredoc`
+      = Document Title
+
+      See <<https://example.org, Example>>
+      `
+      setInputFileContents(contents)
+      const html = loadAsciiDoc(inputFile).convert()
+      expectLink(html, '#https://example.org', 'Example')
+    })
+
     it('should delegate to built-in converter to process a normal link', () => {
       const contentCatalog = mockContentCatalog().spyOn('getById')
       setInputFileContents('https://example.com[Example Domain]')
