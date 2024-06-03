@@ -612,7 +612,23 @@ describe('cli', () => {
         .to.be.a.file()
         .with.contents.that.match(new RegExp('<title>Index Page :: #allthedocs</title>'))
         .with.contents.that.match(new RegExp('<link rel="canonical" href="https://docs.example.com/[^"]*">'))
+      expect(ospath.join(absDestDir, 'sitemap.xml')).to.be.a.file()
     })
+  })
+
+  it('should allow URL in playbook to be unset using CLI option with empty value', () => {
+    playbookSpec.site.url = 'https://docs.example.com'
+    fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+    // Q: how do we assert w/ kapok when there's no output; use promise as workaround
+    // TODO once we have common options, we'll need to be sure they get moved before the default command
+    return new Promise((resolve) => runAntora('--url= --quiet antora-playbook').on('exit', resolve)).then(
+      (exitCode) => {
+        expect(exitCode).to.equal(0)
+        expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
+          .to.be.a.file()
+          .with.contents.that.not.match(new RegExp('<link rel="canonical"'))
+      }
+    )
   })
 
   it('should use the generator specified by the --generator option', () => {
