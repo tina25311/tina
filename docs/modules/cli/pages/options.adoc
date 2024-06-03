@@ -260,6 +260,9 @@ The option flag and its value can be written with a single space between them: `
 Or, it can be written using an equals sign (`=`) between the option flag and the value: `--option=value`.
 Which form you choose is a personal preference.
 
+TIP: To assign an empty value, you must use the form `--option ''` or `--option=`.
+You cannot use the form `--option` by itself as this will be interpreted as a boolean option.
+
 In <<ex-option-value>>, the option `--to-dir` is assigned the value `prod`.
 When Antora runs, a folder named [.path]_prod_ will be created relative to the working directory and the site files written to it.
 
