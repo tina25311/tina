@@ -20,6 +20,7 @@ This project utilizes semantic versioning.
 
 === Fixed
 
+* *content-aggregator*: Throw clearer error if antora.yml is empty or the data is not an object (#1112)
 * *asciidoc-loader*: Apply include tag filtering update from Asciidoctor (see https://github.com/asciidoctor/asciidoctor/pull/4233) to ported logic in Antora (#1110)
 
 == 3.2.0-alpha.4 (2024-01-02)
