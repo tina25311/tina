@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Added
 
 * *playbook-builder*: Add `git.fetch_depth` key to control how many recent commits Antora fetches from a remote repository (#1090)
+* *content-classifier*: Use location of antora.yml as ROOT module if explicit ROOT module is not present in same origin (#1127)
 * *asciidoc-loader*: Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (#1084)
 
 === Changed

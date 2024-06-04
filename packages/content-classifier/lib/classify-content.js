@@ -42,6 +42,12 @@ function addFilesAndRegisterStartPages (contentCatalog, siteStartPage) {
   for (const { versions: componentVersions } of contentCatalog.getComponents()) {
     for (const componentVersion of componentVersions) {
       const { name: component, version, files = [], nav, startPage } = componentVersion
+      // TODO once origins is available on component version, and length is 1, short circuit at first modules/ROOT/
+      for (const file of files) {
+        const origin = file.src.origin
+        if (!origin || !(origin.implicitRootModule ??= true)) continue
+        if (file.path?.startsWith('modules/ROOT/')) origin.implicitRootModule = false
+      }
       for (let file, i = 0, len = files.length; i < len; i++) {
         allocateSrc((file = files[i]), component, version, nav) && contentCatalog.addFile(file, componentVersion)
         files[i] = undefined // free memory
@@ -62,11 +68,11 @@ function allocateSrc (file, component, version, nav) {
   }
   const filepath = file.path
   const navInfo = nav && getNavInfo(filepath, nav)
-  const pathSegments = filepath.split('/')
   if (navInfo) {
     if (extname !== '.adoc') return // ignore file
     file.nav = navInfo
     file.src.family = 'nav'
+    const pathSegments = filepath.split('/')
     if (pathSegments[0] === 'modules' && pathSegments.length > 2) {
       file.src.module = pathSegments[1]
       // relative to modules/<module>
@@ -76,7 +82,14 @@ function allocateSrc (file, component, version, nav) {
       // relative to content source root
       file.src.relative = filepath
     }
-  } else if (pathSegments[0] === 'modules') {
+  } else {
+    let pathSegments = filepath.split('/')
+    if (pathSegments[0] !== 'modules') {
+      if (pathSegments.length < 2 || !file.src.origin.implicitRootModule) return // ignore file
+      const effectivePathSegments = ['modules', 'ROOT']
+      for (const it of pathSegments) effectivePathSegments.push(it)
+      pathSegments = effectivePathSegments
+    }
     let familyFolder = pathSegments[2]
     switch (familyFolder) {
       case 'pages':
@@ -124,8 +137,6 @@ function allocateSrc (file, component, version, nav) {
     }
     file.src.module = pathSegments[1]
     file.src.moduleRootPath = calculateRootPath(pathSegments.length - 3)
-  } else {
-    return // ignore file
   }
   file.src.component = component
   file.src.version = version
