@@ -2,6 +2,8 @@
 
 const ContentCatalog = require('./content-catalog')
 const collateAsciiDocAttributes = require('@antora/asciidoc-loader/config/collate-asciidoc-attributes')
+const logger = require('./logger')
+const summarizeFileLocation = require('./util/summarize-file-location')
 
 /**
  * Organizes the raw aggregate of virtual files into a {ContentCatalog}.
@@ -42,9 +44,17 @@ function addFilesAndRegisterStartPages (contentCatalog, siteStartPage) {
   for (const { versions: componentVersions } of contentCatalog.getComponents()) {
     for (const componentVersion of componentVersions) {
       const { name: component, version, files = [], nav, startPage } = componentVersion
+      const navResolved = nav && (nav.resolved = new Set())
       for (let file, i = 0, len = files.length; i < len; i++) {
         allocateSrc((file = files[i]), component, version, nav) && contentCatalog.addFile(file, componentVersion)
         files[i] = undefined // free memory
+      }
+      if (navResolved && nav.length > navResolved.size && new Set(nav).size > navResolved.size) {
+        const loc = summarizeFileLocation({ path: 'antora.yml', src: { origin: nav.origin } })
+        for (const filepath of nav) {
+          if (navResolved.has(filepath)) continue
+          logger.warn('Could not resolve nav entry for %s@%s defined in %s: %s', version, component, loc, filepath)
+        }
       }
       contentCatalog.registerComponentVersionStartPage(component, componentVersion, startPage)
     }
@@ -61,9 +71,9 @@ function allocateSrc (file, component, version, nav) {
     return true
   }
   const filepath = file.path
-  const navInfo = nav && getNavInfo(filepath, nav)
   const pathSegments = filepath.split('/')
-  if (navInfo) {
+  let navInfo
+  if (nav && (navInfo = getNavInfo(filepath, nav))) {
     if (extname !== '.adoc') return // ignore file
     file.nav = navInfo
     file.src.family = 'nav'
@@ -143,7 +153,7 @@ function allocateSrc (file, component, version, nav) {
  */
 function getNavInfo (filepath, nav) {
   const index = nav.findIndex((candidate) => candidate === filepath)
-  if (~index) return { index }
+  if (~index) return nav.resolved.add(filepath) && { index }
 }
 
 function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc, origins = [] }) {
