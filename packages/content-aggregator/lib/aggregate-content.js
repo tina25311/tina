@@ -711,7 +711,7 @@ function loadComponentDescriptor (files, ref, version) {
   files.splice(descriptorFileIdx, 1)
   let data
   try {
-    data = yaml.load(descriptorFile.contents.toString(), { schema: yaml.CORE_SCHEMA })
+    data = Object(yaml.load(descriptorFile.contents.toString(), { schema: yaml.CORE_SCHEMA }))
   } catch (err) {
     throw Object.assign(err, { message: `${COMPONENT_DESC_FILENAME} has invalid syntax; ${err.message}` })
   }

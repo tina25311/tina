@@ -316,6 +316,20 @@ describe('aggregateContent()', () => {
       })
     })
 
+    describe('should throw if component descriptor is empty', () => {
+      testAll(async (repoBuilder) => {
+        await repoBuilder
+          .init('the-component')
+          .then(() => repoBuilder.addToWorktree('antora.yml', ''))
+          .then(() => repoBuilder.commitAll('add empty component descriptor'))
+          .then(() => repoBuilder.close('main'))
+        const ref = repoBuilder.getRefInfo('main')
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const expectedMessage = `${COMPONENT_DESC_FILENAME} is missing a name in ${repoBuilder.url} (branch: ${ref})`
+        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedMessage)
+      })
+    })
+
     describe('should throw if component descriptor does not define name key', () => {
       testAll(async (repoBuilder) => {
         await initRepoWithComponentDescriptor(repoBuilder, { version: 'v1.0' })
