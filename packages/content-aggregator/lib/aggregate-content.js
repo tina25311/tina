@@ -438,12 +438,13 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, originUrl,
   const worktreePath = ref.head
   const origin = computeOrigin(originUrl, authStatus, repo.gitdir, ref, startPath, worktreePath, editUrl)
   return (worktreePath ? readFilesFromWorktree(origin) : readFilesFromGitTree(repo, ref.oid, startPath))
-    .then((files) =>
-      Object.assign(deepClone((origin.descriptor = loadComponentDescriptor(files, ref, version))), {
-        files: files.map((file) => assignFileProperties(file, origin)),
-        origins: [origin],
-      })
-    )
+    .then((files) => {
+      const batch = deepClone((origin.descriptor = loadComponentDescriptor(files, ref, version)))
+      if ('nav' in batch) batch.nav.origin = origin
+      batch.files = files.map((file) => assignFileProperties(file, origin))
+      batch.origins = [origin]
+      return batch
+    })
     .catch((err) => {
       const where = worktreePath || (worktreePath === false ? repo.gitdir : repo.url || repo.dir)
       const flag = worktreePath ? ' <worktree>' : ref.remote && worktreePath === false ? ` <remotes/${ref.remote}>` : ''

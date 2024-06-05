@@ -1377,6 +1377,18 @@ describe('classifyContent()', () => {
       expect(() => classifyContent(playbook, aggregate)).to.throw(expectedMessage)
     })
 
+    it('should warn if entry in nav cannot be resolved', () => {
+      const expectedMsg =
+        'Could not resolve nav entry for v1.2.3@the-component ' +
+        'defined in antora.yml in https://githost/repo.git (branch: v1.2.3): no-such-file.adoc'
+      aggregate[0].files.push(createFile('modules/ROOT/pages/index.adoc'))
+      aggregate[0].nav = Object.assign(['no-such-file.adoc'], { origin: aggregate[0].files[0].src.origin })
+      const messages = captureLogSync(() => classifyContent(playbook, aggregate))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0].level).to.equal('warn')
+      expect(messages[0].msg).to.equal(expectedMsg)
+    })
+
     it('should classify a navigation file in module', () => {
       aggregate[0].nav = ['modules/module-a/nav.adoc']
       aggregate[0].files.push(createFile('modules/module-a/pages/index.adoc'))

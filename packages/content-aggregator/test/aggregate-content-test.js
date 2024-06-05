@@ -226,6 +226,9 @@ describe('aggregateContent()', () => {
         expect(origins[0].refname).to.equal('main')
         expect(origins[0].descriptor).to.eql(componentDesc)
         expect(origins[0].descriptor).not.to.equal(componentDesc)
+        expect(aggregate[0]).to.have.property('nav')
+        expect(aggregate[0].nav).to.have.property('origin')
+        expect(aggregate[0].nav.origin).to.equal(origins[0])
       })
     })
 

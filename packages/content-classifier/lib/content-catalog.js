@@ -7,6 +7,7 @@ const { lookup: resolveMimeType } = require('./mime-types-with-asciidoc')
 const parseResourceId = require('./util/parse-resource-id')
 const { posix: path } = require('path')
 const resolveResource = require('./util/resolve-resource')
+const summarizeFileLocation = require('./util/summarize-file-location')
 const versionCompare = require('./util/version-compare-desc')
 
 const { ROOT_INDEX_ALIAS_ID, ROOT_INDEX_PAGE_ID } = require('./constants')
@@ -144,7 +145,7 @@ class ContentCatalog {
         throw new Error(`Duplicate alias: ${generateResourceSpec(src)}`)
       } else {
         const details = [filesForFamily.get(key), file]
-          .map((it, idx) => `${idx + 1}: ${getFileLocation(it)}`)
+          .map((it, idx) => `${idx + 1}: ${summarizeFileLocation(it)}`)
           .join(LOG_WRAP)
         if (family === 'nav') {
           throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}${LOG_WRAP}${details}`)
@@ -366,10 +367,10 @@ class ContentCatalog {
         throw new Error(
           existingPage === target
             ? `Page cannot define alias that references itself: ${generateResourceSpec(src)}` +
-              ` (specified as: ${spec})${LOG_WRAP}source: ${getFileLocation(existingPage)}`
+              ` (specified as: ${spec})${LOG_WRAP}source: ${summarizeFileLocation(existingPage)}`
             : `Page alias cannot reference an existing page: ${generateResourceSpec(src)} (specified as: ${spec})` +
-              `${LOG_WRAP}source: ${getFileLocation(target)}` +
-              `${LOG_WRAP}existing page: ${getFileLocation(existingPage)}`
+              `${LOG_WRAP}source: ${summarizeFileLocation(target)}` +
+              `${LOG_WRAP}existing page: ${summarizeFileLocation(existingPage)}`
         )
       }
     } else if (src.version == null) {
@@ -381,7 +382,7 @@ class ContentCatalog {
     if (existingAlias) {
       throw new Error(
         `Duplicate alias: ${generateResourceSpec(src)} (specified as: ${spec})` +
-          `${LOG_WRAP}source: ${getFileLocation(target)}`
+          `${LOG_WRAP}source: ${summarizeFileLocation(target)}`
       )
     }
     // NOTE the redirect producer will populate contents when the redirect facility is 'static'
@@ -597,15 +598,6 @@ function createSymbolicVersionAlias (component, version, symbolicVersionSegment,
   return strategy === 'redirect:to'
     ? Object.assign(originalVersionAlias, { out: undefined, rel: symbolicVersionAlias })
     : Object.assign(symbolicVersionAlias, { out: undefined, rel: originalVersionAlias })
-}
-
-function getFileLocation ({ path: path_, src: { abspath, origin } }) {
-  if (!origin) return abspath || path_
-  const { url, gitdir, worktree, refname, tag, reftype = tag ? 'tag' : 'branch', remote, startPath } = origin
-  let details = `${reftype}: ${refname}`
-  if ('worktree' in origin) details += worktree ? ' <worktree>' : remote ? ` <remotes/${remote}>` : ''
-  if (startPath) details += ` | start path: ${startPath}`
-  return `${abspath || path.join(startPath, path_)} in ${'worktree' in origin ? worktree || gitdir : url} (${details})`
 }
 
 module.exports = ContentCatalog
