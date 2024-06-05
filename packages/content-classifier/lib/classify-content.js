@@ -57,14 +57,14 @@ function allocateSrc (file, component, version, nav) {
       file.src.relative = pathSegments.slice(2).join('/')
       file.src.moduleRootPath = calculateRootPath(pathSegments.length - 3)
     } else {
-      // relative to root
+      // relative to content source root
       file.src.relative = filepath
     }
   } else if (pathSegments[0] === 'modules') {
     let familyFolder = pathSegments[2]
     switch (familyFolder) {
       case 'pages':
-        // pages/_partials location for partials is @deprecated; special designation scheduled to be removed in Antora 4
+        // pages/_partials location for partials is @deprecated; special designation scheduled for removal in Antora 4
         if (pathSegments[3] === '_partials') {
           file.src.family = 'partial'
           // relative to modules/<module>/pages/_partials
