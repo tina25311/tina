@@ -104,13 +104,11 @@ This approach is especially useful since it allows you to verify that your crede
 First, select the URL of a private repository you want to use with Antora.
 Next, in your terminal, run the following command for each private repository you need to access from Antora:
 
- $ git config --global credential.helper store && \
-   echo -n 'Repository URL: ' && read REPLY && \
-   git ls-remote -h $REPLY > /dev/null
+ $ echo -n 'Repository URL: ' && read REPLY && \
+   git -c credential.helper=store ls-remote -h $REPLY > /dev/null
 
 This command performs the following steps:
 
-. Enables the git credential store globally (temporarily).
 . Prompts you for the URL of a private repository.
 . Communicates with the private repository, triggering a prompt for your credentials.
 +
@@ -119,17 +117,6 @@ NOTE: If you aren't prompted for your credentials, it means your credentials are
 . Stores the credentials in the [.path]_$HOME/.git-credentials_ file (and assigns it the appropriate permissions).
 
 If this script succeeds, you can use the applicable private repositories in Antora without any further configuration.
-
-.Restore your git configuration
-****
-The interactive script above altered your git settings in order to enable the credential store globally.
-If you aren't using the credential store outside of Antora, run the following command to disable it again:
-
- $ git config --global --remove-section credential
-
-Changing this setting does not affect how Antora uses the credential store.
-It only affects the behavior of your native git client.
-****
 
 If the interactive approach didn't work for you, you can populate the credential store directly.
 Let's give that a shot.
