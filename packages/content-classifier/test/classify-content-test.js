@@ -12,11 +12,14 @@ describe('classifyContent()', () => {
   let playbook
   let aggregate
 
-  const createFile = (path_) => {
+  const createOrigin = () => {
+    return { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
+  }
+
+  const createFile = (path_, origin = createOrigin()) => {
     const basename = path.basename(path_)
     const extname = path.extname(path_)
     const stem = path.basename(path_, extname)
-    const origin = { url: 'https://githost/repo.git', startPath: '', branch: 'v1.2.3', refname: 'v1.2.3' }
     return {
       path: path_,
       src: { basename, stem, extname, origin },
@@ -1068,6 +1071,47 @@ describe('classifyContent()', () => {
         moduleRootPath: '..',
         rootPath: '../../..',
       })
+    })
+
+    it('should classify a page in the implicit ROOT module if the explicit ROOT module is absent', () => {
+      aggregate[0].files.push(createFile('pages/page-one.adoc'))
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(1)
+      const file = files[0]
+      expect(file.path).to.equal('pages/page-one.adoc')
+      expect(file.src).to.include({
+        component: 'the-component',
+        version: 'v1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'page-one.adoc',
+        basename: 'page-one.adoc',
+        moduleRootPath: '..',
+      })
+      expect(file.out).to.include({
+        path: 'the-component/v1.2.3/page-one.html',
+        dirname: 'the-component/v1.2.3',
+        basename: 'page-one.html',
+      })
+      expect(file.pub).to.include({
+        url: '/the-component/v1.2.3/page-one.html',
+        moduleRootPath: '.',
+        rootPath: '../..',
+      })
+    })
+
+    it('should not classify a page in implicit ROOT module if explicit ROOT module is present', () => {
+      const origin1 = createOrigin()
+      const origin2 = Object.assign(createOrigin(), { url: 'https://githost/repo2.git' })
+      aggregate[0].files.push(
+        createFile('modules/ROOT/pages/page-one.adoc', origin1),
+        createFile('pages/page-two.adoc', origin1),
+        createFile('pages/page-three.adoc', origin2)
+      )
+      const files = classifyContent(playbook, aggregate).getFiles()
+      expect(files).to.have.lengthOf(2)
+      expect(files[0].path).to.equal('modules/ROOT/pages/page-one.adoc')
+      expect(files[1].path).to.equal('pages/page-three.adoc')
     })
 
     it('should classify a page that contains spaces', () => {
