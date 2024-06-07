@@ -245,9 +245,9 @@ function addFailOnExitHooks (logger, failureLevel = undefined) {
 function decorateWithSetFailOnExit (method) {
   return method.name === 'noop'
     ? callSetFailOnExit
-    : function (...args) {
+    : function () {
       this.setFailOnExit()
-      method.apply(this, args)
+      method.apply(this, arguments)
     }
 }
 
