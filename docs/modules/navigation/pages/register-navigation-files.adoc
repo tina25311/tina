@@ -7,7 +7,7 @@
 
 The `nav` key is set in a xref:ROOT:component-version-descriptor.adoc[component version descriptor file] ([.path]_antora.yml_).
 It accepts a list of navigation files as values.
-Each value specifies the path to an individual navigation file.
+Each value specifies the path to an individual navigation file relative to [.path]_antora.yml_.
 If you aren't familiar with how to set the `nav` key and assign it values, see xref:ROOT:component-navigation.adoc[].
 
 == Register navigation files
