@@ -704,8 +704,13 @@ function filterGitEntry (entry) {
 
 function gitEntryToFile (entry) {
   return git.readBlob(entry).then(({ blob: contents }) => {
-    contents = Buffer.from(contents.buffer)
-    const stat = Object.assign(new fs.Stats(), { mode: entry.mode, mtime: undefined, size: contents.byteLength })
+    const stat = {
+      mode: entry.mode,
+      size: (contents = Buffer.from(contents.buffer)).byteLength,
+      isDirectory: invariably.false,
+      isFile: invariably.true,
+      isSymbolicLink: invariably.false,
+    }
     return new File({ path: entry.path, contents, stat })
   })
 }
