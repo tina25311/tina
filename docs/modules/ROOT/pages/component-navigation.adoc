@@ -10,7 +10,7 @@ On this page, you'll learn:
 
 The `nav` key is optional.
 It's set in a component version's [.path]_antora.yml_ file and accepts a list of xref:navigation:files-and-lists.adoc[navigation files].
-Each value specifies the path to a navigation file (e.g., [.path]_modules/module-directory/nav-file.adoc_) from [.path]_antora.yml_.
+Each value specifies the path to a navigation file (e.g., [.path]_modules/module-directory/nav-file.adoc_) relative to [.path]_antora.yml_.
 
 .antora.yml that registers two navigation files
 [,yaml]
