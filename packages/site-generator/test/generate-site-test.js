@@ -1042,7 +1042,7 @@ describe('generateSite()', () => {
     it('should pass generator context as argument if declared as parameter of shorthand arrow function', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = generator => generator.on('playbookBuilt', () => console.log('playbook built!'))
+        module.exports.register = context => context.on('playbookBuilt', () => console.log('playbook built!'))
       `
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.antora.extensions = [extensionPath]
