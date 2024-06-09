@@ -35,7 +35,10 @@ module.exports.register = function ({ config }) {
             nav.push({
               content: unlistedPagesHeading,
               items: unlistedPages.map((page) => {
-                return { content: page.asciidoc.navtitle, url: page.pub.url, urlType: 'internal' }
+                const title = 'navtitle' in page.asciidoc
+                  ? page.asciidoc.navtitle
+                  : (page.src.module === 'ROOT' ? '' : page.src.module + ':') + page.src.relative
+                return { content: title, url: page.pub.url, urlType: 'internal' }
               }),
               root: true,
             })
