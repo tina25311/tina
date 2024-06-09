@@ -20,6 +20,7 @@
 ** xref:content-refname-matching.adoc[]
 * xref:configure-git.adoc[]
 ** xref:git-suffix.adoc[]
+** xref:git-fetch-depth.adoc[]
 ** xref:git-fetch-concurrency.adoc[]
 ** xref:git-read-concurrency.adoc[]
 ** xref:git-credentials-path-and-contents.adoc[]
