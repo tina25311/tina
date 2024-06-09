@@ -52,7 +52,17 @@ pages:
 Commit the [.path]_.gitlab-ci.yml_ file to git and push it to the remote repository.
 That will trigger the first CI/CD pipeline.
 If the pipeline succeeds, your site will be accessible at the URL listed on the Pages settings page.
-The URL typically follows this pattern:
+
+By default, GitLab Pages automatically enables the *Use unique domain* option, which adds a unique number to the URL where the site is hosted.
+Chances are, this is not what you want.
+It's not only an obscure URL, it can disrupt the use of a custom domain.
+Follow these steps to correct it:
+
+. Navigate to the menu:Deploy[Pages] menu option from the project repository.
+. De-select the *Use unique domain* option.
+. Click btn:[Save changes].
+
+The URL for the GitLab Pages site will now follow this pattern:
 
  https://<group-name>.gitlab.io/<project-name>
 
