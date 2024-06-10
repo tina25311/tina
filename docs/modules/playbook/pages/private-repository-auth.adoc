@@ -204,7 +204,7 @@ To ensure the credentials file is protected, immediately set its file permission
 [#custom-credential-path]
 == Specify a custom git credential store path
 
-Instead of using the credential store at the default path(s), you can instruct Antora to look for the file in a different location using either the `--git-credentials-path` CLI option or `GIT_CREDENTIALS_PATH` environment variable, both of which set the `git.credentials.path` playbook key a runtime.
+Instead of using the credential store at the default path(s), you can instruct Antora to look for the file in a different location using either the `--git-credentials-path` CLI option or `GIT_CREDENTIALS_PATH` environment variable, both of which set the `git.credentials.path` playbook key at runtime.
 
 Here's an example that uses the CLI option to specify a path relative to the playbook file:
 
