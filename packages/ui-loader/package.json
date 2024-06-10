@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
-    "@vscode/gulp-vinyl-zip": "~2.5",
     "braces": "~3.0",
     "cache-directory": "~2.0",
     "glob-stream": "~7.0",
@@ -35,7 +34,11 @@
     "picomatch": "~4.0",
     "should-proxy": "~1.0",
     "simple-get": "~4.0",
-    "vinyl": "~2.2"
+    "vinyl": "~2.2",
+    "yauzl": "~3.1"
+  },
+  "devDependencies": {
+    "@vscode/gulp-vinyl-zip": "~2.5"
   },
   "engines": {
     "node": ">=16.0.0"
