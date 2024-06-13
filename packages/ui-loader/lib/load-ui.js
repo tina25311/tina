@@ -3,22 +3,22 @@
 const { compile: bracesToGroup } = require('braces')
 const { createHash } = require('crypto')
 const expandPath = require('@antora/expand-path-helper')
-const { File, MemoryFile, ReadableFile } = require('./file')
+const { File, MemoryFile, ReadableZipFile } = require('./file')
 const { promises: fsp } = require('fs')
 const { concat: get } = require('simple-get')
 const getCacheDir = require('cache-directory')
 const globStream = require('glob-stream')
 const { inspect } = require('util')
+const invariably = { false: () => false, void: () => undefined }
 const ospath = require('path')
 const { posix: path } = ospath
 const picomatch = require('picomatch')
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
-const { pipeline, Transform, Writable } = require('stream')
+const { pipeline, PassThrough, Writable } = require('stream')
 const forEach = (write, final) => new Writable({ objectMode: true, write, final })
-const map = (transform) => new Transform({ objectMode: true, transform })
 const UiCatalog = require('./ui-catalog')
 const yaml = require('js-yaml')
-const vzip = require('@vscode/gulp-vinyl-zip')
+const yauzl = require('yauzl')
 
 const STATIC_FILE_MATCHER_OPTS = {
   expandRange: (begin, end, step, opts) => bracesToGroup(opts ? `{${begin}..${end}..${step}}` : `{${begin}..${end}}`),
@@ -104,13 +104,10 @@ async function loadUi (playbook) {
       new Promise((resolve, reject) =>
         bundleFile.isDirectory()
           ? srcFs(ospath.join(bundleFile.path, bundle.startPath || '', '.')).then(resolve, reject)
-          : vzip
-            .src(bundleFile.path)
+          : srcZip(bundleFile.path, { startPath: bundle.startPath })
             .on('error', (err) => reject(Object.assign(err, { message: `not a valid zip file; ${err.message}` })))
-            .pipe(selectFilesStartingFrom(bundle.startPath))
-            .pipe(bufferizeContents())
+            .pipe(bufferizeContentsAndCollectFiles(resolve))
             .on('error', reject)
-            .pipe(collectFiles(resolve))
       ).catch((err) => {
         const msg =
           `Failed to read UI ${bundleFile.isDirectory() ? 'directory' : 'bundle'}: ` +
@@ -179,8 +176,7 @@ function downloadBundle (url, to, agent) {
         const message = `Response code ${response.statusCode} (${response.statusMessage})`
         return reject(Object.assign(new Error(message), { name: 'HTTPError' }))
       }
-      new ReadableFile(new MemoryFile({ path: ospath.basename(to), contents }))
-        .pipe(vzip.src())
+      srcZip(contents, { testOnly: true })
         .on('error', (err) =>
           reject(Object.assign(err, { message: `not a valid zip file; ${err.message}`, summary: 'Invalid UI bundle' }))
         )
@@ -188,7 +184,7 @@ function downloadBundle (url, to, agent) {
           fsp
             .mkdir(ospath.dirname(to), { recursive: true })
             .then(() => fsp.writeFile(to, contents))
-            .then(() => resolve(new File({ path: to, stat: { isDirectory: () => false } })))
+            .then(() => resolve(new File({ path: to, stat: { isDirectory: invariably.false } })))
         )
     })
   }).catch((err) => {
@@ -198,62 +194,6 @@ function downloadBundle (url, to, agent) {
     }
     throw errWrapper
   })
-}
-
-function selectFilesStartingFrom (startPath) {
-  if (!startPath || (startPath = path.join('/', startPath + '/')) === '/') {
-    return map((file, _, next) => {
-      if (file.isNull()) {
-        next()
-      } else {
-        next(
-          null,
-          new File({ path: posixify ? posixify(file.path) : file.path, contents: file.contents, stat: file.stat })
-        )
-      }
-    })
-  } else {
-    startPath = startPath.substr(1)
-    const startPathOffset = startPath.length
-    return map((file, _, next) => {
-      if (file.isNull()) {
-        next()
-      } else {
-        const path_ = posixify ? posixify(file.path) : file.path
-        if (path_.length > startPathOffset && path_.startsWith(startPath)) {
-          next(null, new File({ path: path_.substr(startPathOffset), contents: file.contents, stat: file.stat }))
-        } else {
-          next()
-        }
-      }
-    })
-  }
-}
-
-function bufferizeContents () {
-  return map((file, _, next) => {
-    // NOTE gulp-vinyl-zip automatically converts the contents of an empty file to a Buffer
-    if (file.isStream()) {
-      const buffer = []
-      pipeline(
-        file.contents,
-        forEach((chunk, _, done) => buffer.push(chunk) && done()),
-        (err) => (err ? next(err) : next(null, Object.assign(file, { contents: Buffer.concat(buffer) })))
-      )
-    } else {
-      next(null, file)
-    }
-  })
-}
-
-function collectFiles (resolve, files = new Map()) {
-  return forEach(
-    (file, _, done) => {
-      files.set(file.path, file)
-      done()
-    },
-    (done) => done() || resolve(files)
-  )
 }
 
 function srcSupplementalFiles (filesSpec, startDir) {
@@ -396,12 +336,47 @@ function symlinkAwareStat (path_) {
     return fsp.stat(path_).catch((statErr) =>
       fsp
         .readlink(path_)
-        .catch(() => undefined)
+        .catch(invariably.void)
         .then((symlink) => {
           throw Object.assign(statErr, { symlink })
         })
     )
   })
+}
+
+function srcZip (file, options = {}) {
+  const result = options.testOnly // is it necessary to close streams in this case, or just sink()?
+    ? new Writable({
+      objectMode: true,
+      write: (file_, enc, next) => (file_.isStream() ? file_.contents.on('close', next).destroy() : next()),
+    })
+    : new PassThrough({ objectMode: true })
+  yauzl[file instanceof Buffer ? 'fromBuffer' : 'open'](file, { lazyEntries: true }, (err, zipFile) => {
+    if (err) return result.emit('error', err)
+    new ReadableZipFile(zipFile, options).pipe(result)
+  })
+  return result
+}
+
+function bufferizeContentsAndCollectFiles (resolve, files = new Map()) {
+  return forEach(
+    (file, _, next) => {
+      if (file.isStream()) {
+        const buffer = []
+        file.contents
+          .on('data', (chunk) => buffer.push(chunk))
+          .on('end', () => {
+            file.contents = buffer.length === 1 ? buffer[0] : Buffer.concat(buffer)
+            files.set(file.path, file)
+            next()
+          })
+      } else {
+        files.set(file.path, file)
+        next()
+      }
+    },
+    (done) => done() || resolve(files)
+  )
 }
 
 function transformError (err, msg) {
