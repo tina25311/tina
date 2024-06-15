@@ -3,7 +3,7 @@
 const { compile: bracesToGroup } = require('braces')
 const { createHash } = require('crypto')
 const expandPath = require('@antora/expand-path-helper')
-const { File, MemoryFile, ReadableZipFile } = require('./file')
+const { File, MemoryFile, ZipReadable } = require('./file')
 const { promises: fsp } = require('fs')
 const { concat: get } = require('simple-get')
 const getCacheDir = require('cache-directory')
@@ -351,7 +351,7 @@ function srcZip (file, options = {}) {
     : through()
   yauzl[file instanceof Buffer ? 'fromBuffer' : 'open'](file, { lazyEntries: true }, (err, zipFile) => {
     if (err) return result.emit('error', err)
-    new ReadableZipFile(zipFile, options).pipe(result)
+    new ZipReadable(zipFile, options).pipe(result)
   })
   return result
 }
