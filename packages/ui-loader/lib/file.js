@@ -34,14 +34,14 @@ class MemoryFile extends File {
   }
 }
 
-class ReadableZipFile extends Readable {
+class ZipReadable extends Readable {
   constructor (zipFile, options = {}) {
     super({ objectMode: true, highWaterMark: 1 })
     if ((this._closeable = (this._zipFile = zipFile).reader.fd != null) && !zipFile.autoClose) {
-      throw new Error('ReadableZipFile requires file-based ZipFile to be initialized with autoClose:true option')
+      throw new Error('ZipReadable requires file-based ZipFile to be initialized with autoClose:true option')
     }
     if (!zipFile.lazyEntries) {
-      throw new Error('ReadableZipFile requires ZipFile to be initialized with lazyEntries:true option')
+      throw new Error('ZipReadable requires ZipFile to be initialized with lazyEntries:true option')
     }
     if ((this._startPath = options.startPath) && (this._startPath = path.join('/', this._startPath + '/')) !== '/') {
       this._startPath = this._startPath.slice(1)
@@ -111,4 +111,4 @@ class ReadableZipFile extends Readable {
   }
 }
 
-module.exports = { File, MemoryFile, ReadableZipFile }
+module.exports = { File, MemoryFile, ZipReadable }
