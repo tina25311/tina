@@ -16,6 +16,7 @@ const picomatch = require('picomatch')
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const { pipeline, PassThrough, Writable } = require('stream')
 const forEach = (write, final) => new Writable({ objectMode: true, write, final })
+const through = () => new PassThrough({ objectMode: true })
 const UiCatalog = require('./ui-catalog')
 const yaml = require('js-yaml')
 const yauzl = require('yauzl')
@@ -346,11 +347,8 @@ function symlinkAwareStat (path_) {
 
 function srcZip (file, options = {}) {
   const result = options.testOnly // is it necessary to close streams in this case, or just sink()?
-    ? new Writable({
-      objectMode: true,
-      write: (file_, enc, next) => (file_.isStream() ? file_.contents.on('close', next).destroy() : next()),
-    })
-    : new PassThrough({ objectMode: true })
+    ? forEach((file_, _, done) => (file_.isStream() ? file_.contents.on('close', done).destroy() : done()))
+    : through()
   yauzl[file instanceof Buffer ? 'fromBuffer' : 'open'](file, { lazyEntries: true }, (err, zipFile) => {
     if (err) return result.emit('error', err)
     new ReadableZipFile(zipFile, options).pipe(result)
@@ -360,7 +358,7 @@ function srcZip (file, options = {}) {
 
 function bufferizeContentsAndCollectFiles (resolve, files = new Map()) {
   return forEach(
-    (file, _, next) => {
+    (file, _, done) => {
       if (file.isStream()) {
         const buffer = []
         file.contents
@@ -368,11 +366,11 @@ function bufferizeContentsAndCollectFiles (resolve, files = new Map()) {
           .on('end', () => {
             file.contents = buffer.length === 1 ? buffer[0] : Buffer.concat(buffer)
             files.set(file.path, file)
-            next()
+            done()
           })
       } else {
         files.set(file.path, file)
-        next()
+        done()
       }
     },
     (done) => done() || resolve(files)
