@@ -24,9 +24,12 @@
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
     "@antora/user-require-helper": "~2.0",
-    "@vscode/gulp-vinyl-zip": "~2.5",
     "vinyl": "~2.2",
-    "vinyl-fs": "~3.0"
+    "vinyl-fs": "~3.0",
+    "yazl": "~2.5"
+  },
+  "devDependencies": {
+    "@vscode/gulp-vinyl-zip": "~2.5"
   },
   "engines": {
     "node": ">=16.0.0"
