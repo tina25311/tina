@@ -15,7 +15,7 @@ This project utilizes semantic versioning.
 
 * *ui-loader*: Replace @vscode/gulp-vinyl-zip with low-level zip file reader using yauzl (#1128)
 * *content-classifier*: Log warning if nav entry cannot be resolved (#1088)
-* *page-composer*: Fix `page.role` assignment to read value from `role` attribute instead of from (nonexistent) `docrole` attribute (#1109)
+* *page-composer*: Fix `page.role` assignment to read value from `role` attribute instead of from (non-existent) `docrole` attribute (#1109)
 * *cli*: Update description for `extension` option to clarify it may be specified multiple times.
 
 === Fixed
