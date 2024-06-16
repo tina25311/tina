@@ -352,6 +352,37 @@ describe('publishFiles()', () => {
     await verifyArchiveOutput(destFile)
   })
 
+  it('should overwrite existing file at archive destination path', async () => {
+    const destFile = './path/to/site.zip'
+    const resolvedDestFile = ospath.resolve(playbook.dir, destFile)
+    await fsp.mkdir(ospath.dirname(resolvedDestFile), { recursive: true })
+    await fsp.writeFile(resolvedDestFile, 'not a zip file')
+    playbook.output.destinations.push({ provider: 'archive', path: destFile })
+    await publishFiles(playbook, catalogs)
+    expect(playbook.output.destinations[0].path).to.equal(destFile)
+    await verifyArchiveOutput(destFile)
+  })
+
+  it('should throw an error if cannot write to archive destination path', async () => {
+    const destFile = './path/to/site.zip'
+    const resolvedDestFile = ospath.resolve(playbook.dir, destFile)
+    await fsp.mkdir(ospath.dirname(resolvedDestFile), { recursive: true })
+    // NOTE put a directory in our way
+    await fsp.mkdir(resolvedDestFile)
+    playbook.output.destinations.push({ provider: 'archive', path: destFile })
+    expect(await trapAsyncError(publishFiles, playbook, catalogs)).to.throw('EISDIR')
+  })
+
+  it('should throw an error if cannot create directory for archive destination path', async () => {
+    const destFile = './path/to/site.zip'
+    const resolvedDestFile = ospath.resolve(playbook.dir, destFile)
+    await fsp.mkdir(ospath.dirname(ospath.dirname(resolvedDestFile)), { recursive: true })
+    // NOTE put a file in our way
+    await fsp.writeFile(ospath.dirname(resolvedDestFile), '')
+    playbook.output.destinations.push({ provider: 'archive', path: destFile })
+    expect(await trapAsyncError(publishFiles, playbook, catalogs)).to.throw('mkdir')
+  })
+
   it('should publish site to multiple fs directories', async () => {
     const destDir1 = './site1'
     const destDir2 = './site2'
