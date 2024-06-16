@@ -8,6 +8,7 @@ const {
   RepositoryBuilder,
   trapAsyncError,
   wipeSync,
+  zipDest,
 } = require('@antora/test-harness')
 
 const File = require('vinyl')
@@ -21,11 +22,9 @@ const loadUi = require('@antora/ui-loader')
 const { once } = require('events')
 const os = require('os')
 const ospath = require('path')
-const { pipeline, Transform, Writable } = require('stream')
-const sink = () => new Writable({ objectMode: true, write: (_chunk, _, done) => done() })
+const { pipeline, Transform } = require('stream')
 const map = (transform) => new Transform({ objectMode: true, transform })
 const net = require('net')
-const zip = require('@vscode/gulp-vinyl-zip')
 
 const { UI_CACHE_FOLDER } = require('#constants')
 const CACHE_DIR = getCacheDir('antora-test')
@@ -78,8 +77,7 @@ describe('loadUi()', () => {
             next(null, new File({ cwd: dir, path: abspath, contents, stat }))
           }, next)
         }),
-        zip.dest(`${dir}.zip`),
-        sink(),
+        zipDest(`${dir}.zip`),
         (err) => (err ? reject(err) : resolve())
       )
     )

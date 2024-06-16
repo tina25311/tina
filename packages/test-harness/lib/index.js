@@ -20,8 +20,12 @@ const { Git: GitServer } = require('node-git-server')
 const mockContentCatalog = require('./mock-content-catalog')(chai)
 const { once } = require('events')
 const ospath = require('path')
+const { PassThrough, Writable } = require('stream')
 const { pathToFileURL: pathToFileURLObject } = require('url')
+const yazl = require('yazl')
+const yauzl = require('yauzl')
 const RepositoryBuilder = require('./repository-builder')
+const ZipReadable = require('./zip-readable')
 
 beforeEach(() => configureLogger({ level: 'silent' }))
 
@@ -219,4 +223,33 @@ module.exports = {
       }
     ),
   wipeSync,
+  zipDest: (zipPath, zipFile = new yazl.ZipFile(), writeStream) => {
+    zipFile.outputStream.pipe((writeStream = fs.createWriteStream(zipPath)))
+    return new Writable({
+      objectMode: true,
+      write: (file, _, done) => {
+        const stat = file.stat ? { compress: true, mode: file.stat.mode, mtime: file.stat.mtime } : { compress: true }
+        if (file.isStream()) {
+          zipFile.addReadStream(file.contents, file.relative, stat)
+        } else if (file.isDirectory() && (stat.compress = undefined) == null) {
+          zipFile.addEmptyDirectory(file.relative, stat)
+        } else {
+          zipFile.addBuffer(file.isSymbolic() ? Buffer.from(file.symlink) : file.contents, file.relative, stat)
+        }
+        done()
+      },
+      final: (done) => {
+        writeStream.on('error', done).on('close', done)
+        zipFile.on('error', done).end()
+      },
+    })
+  },
+  zipStream: (zipPath) => {
+    const result = new PassThrough({ objectMode: true })
+    yauzl.open(zipPath, { lazyEntries: true }, (err, zipFile) => {
+      if (err) return result.emit('error', err)
+      new ZipReadable(zipFile).pipe(result)
+    })
+    return result
+  },
 }

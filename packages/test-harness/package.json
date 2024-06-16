@@ -17,7 +17,9 @@
     "glob-stream": "~7.0",
     "isomorphic-git": "~1.25",
     "js-yaml": "~4.1",
-    "node-git-server": "~1.0"
+    "node-git-server": "~1.0",
+    "yazl": "~2.5",
+    "yauzl": "~3.1"
   },
   "engines": {
     "node": ">=16.0.0"

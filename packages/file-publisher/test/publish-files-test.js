@@ -1,7 +1,15 @@
 /* eslint-env mocha */
 'use strict'
 
-const { emptyDirSync, expect, heredoc, pathToFileURL, trapAsyncError, wipeSync } = require('@antora/test-harness')
+const {
+  emptyDirSync,
+  expect,
+  heredoc,
+  pathToFileURL,
+  trapAsyncError,
+  wipeSync,
+  zipStream,
+} = require('@antora/test-harness')
 
 const File = require('vinyl')
 const fs = require('fs')
@@ -11,7 +19,6 @@ const ospath = require('path')
 const publishFiles = require('@antora/file-publisher')
 const { PassThrough, pipeline, Writable } = require('stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
-const vzip = require('@vscode/gulp-vinyl-zip')
 
 const CWD = process.cwd()
 const { DEFAULT_DEST_FS, DEFAULT_DEST_ARCHIVE } = require('#constants')
@@ -48,7 +55,7 @@ describe('publishFiles()', () => {
   const collectFilesFromZip = async (zipFile) =>
     new Promise((resolve, reject, files = []) =>
       pipeline(
-        vzip.src(zipFile),
+        zipStream(zipFile),
         forEach((file, _, done) => {
           files.push(file)
           if (!file.isStream()) return done()
