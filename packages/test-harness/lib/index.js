@@ -244,9 +244,9 @@ module.exports = {
       },
     })
   },
-  zipStream: (zipPath) => {
+  zipStream: (zipPath, opts = {}) => {
     const result = new PassThrough({ objectMode: true })
-    yauzl.open(zipPath, { lazyEntries: true }, (err, zipFile) => {
+    yauzl.open(zipPath, { ...opts, autoClose: true, lazyEntries: true }, (err, zipFile) => {
       if (err) return result.emit('error', err)
       new ZipReadable(zipFile).pipe(result)
     })
