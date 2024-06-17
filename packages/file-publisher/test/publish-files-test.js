@@ -16,6 +16,7 @@ const fs = require('fs')
 const { promises: fsp } = fs
 const os = require('os')
 const ospath = require('path')
+const { posix: path } = ospath
 const publishFiles = require('@antora/file-publisher')
 const { PassThrough, pipeline, Writable } = require('stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
@@ -55,7 +56,8 @@ describe('publishFiles()', () => {
   const collectFilesFromZip = async (zipFile) =>
     new Promise((resolve, reject, files = []) =>
       pipeline(
-        zipStream(zipFile),
+        // set strictFileNames to ensure archive was created with posix paths
+        zipStream(zipFile, { strictFileNames: true }),
         forEach((file, _, done) => {
           files.push(file)
           if (!file.isStream()) return done()
@@ -83,14 +85,14 @@ describe('publishFiles()', () => {
       expect(files).to.have.lengthOf(6)
       const filepaths = files.map((file) => file.path)
       expect(filepaths).to.have.members([
-        ospath.join('the-component', '1.0', 'index.html'),
-        ospath.join('the-component', '1.0', 'the-page.html'),
-        ospath.join('the-component', '1.0', 'the-module', 'index.html'),
-        ospath.join('the-component', '1.0', 'the-module', 'the-page.html'),
-        ospath.join('_', 'css', 'site.css'),
-        ospath.join('_', 'js', 'site.js'),
+        path.join('the-component', '1.0', 'index.html'),
+        path.join('the-component', '1.0', 'the-page.html'),
+        path.join('the-component', '1.0', 'the-module', 'index.html'),
+        path.join('the-component', '1.0', 'the-module', 'the-page.html'),
+        path.join('_', 'css', 'site.css'),
+        path.join('_', 'js', 'site.js'),
       ])
-      const indexPath = ospath.join('the-component', '1.0', 'index.html')
+      const indexPath = path.join('the-component', '1.0', 'index.html')
       const indexFile = files.find((file) => file.path === indexPath)
       expect(indexFile.contents.toString()).to.match(HTML_RX)
     })
@@ -136,8 +138,8 @@ describe('publishFiles()', () => {
     }
 
     * createQueue (paths) {
-      for (const path of paths) {
-        fs.createReadStream(path)
+      for (const path_ of paths) {
+        fs.createReadStream(path_)
           .once('error', (err) => this.destroy(err))
           .once('end', () => this.queue.next())
           .pipe(this, { end: false })
