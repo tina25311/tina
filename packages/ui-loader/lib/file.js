@@ -1,12 +1,12 @@
 'use strict'
 
-const { constants: fsc, Stats } = require('fs')
-const invariably = { true: () => true, false: () => false }
+const { constants: fsc } = require('fs')
 const { posix: path } = require('path')
 const { Readable } = require('stream')
 const Vinyl = require('vinyl')
 
 const DEFAULT_FILE_MODE = 0o100666 & ~process.umask()
+const invariably = { true: () => true, false: () => false }
 
 class File extends Vinyl {
   get path () {
@@ -29,7 +29,13 @@ class File extends Vinyl {
 class MemoryFile extends File {
   constructor (file) {
     const contents = file.contents || Buffer.alloc(0)
-    const stat = Object.assign(new Stats(), { mode: DEFAULT_FILE_MODE, mtime: undefined, size: contents.length })
+    const stat = {
+      mode: DEFAULT_FILE_MODE,
+      size: contents.length,
+      isDirectory: invariably.false,
+      isFile: invariably.true,
+      isSymbolicLink: invariably.false,
+    }
     super(Object.assign({}, file, { contents, stat }))
   }
 }

@@ -29,7 +29,7 @@ class ReadableOutputFileArray extends Readable {
 // Q: do we also need to clone stat?
 function toOutputFile (file, cloneStreams) {
   const contents = file.contents
-  const outputFile = new File({ contents, path: file.out.path, stat: file.stat })
+  const outputFile = new File({ contents, path: file.out.path, stat: file.stat || {} })
   if (cloneStreams && outputFile.isStream()) {
     const outputFileContents = outputFile.contents
     if (outputFileContents !== contents) {
