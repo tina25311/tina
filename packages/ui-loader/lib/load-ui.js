@@ -7,7 +7,7 @@ const { File, MemoryFile, ZipReadable } = require('./file')
 const { promises: fsp } = require('fs')
 const { concat: get } = require('simple-get')
 const getCacheDir = require('cache-directory')
-const globStream = require('glob-stream')
+const { globStream } = require('fast-glob')
 const { inspect } = require('util')
 const invariably = { false: () => false, void: () => undefined }
 const ospath = require('path')
@@ -293,17 +293,15 @@ function resolveOut (file, outputDir = '_') {
 }
 
 function srcFs (cwd) {
-  return new Promise((resolve, reject, cache = Object.create(null), files = new Map(), relpathStart = cwd.length + 1) =>
+  return new Promise((resolve, reject, files = new Map()) =>
     pipeline(
-      globStream(UI_SRC_GLOB, Object.assign({ cache, cwd }, UI_SRC_OPTS)),
-      forEach(({ path: abspathPosix }, _, done) => {
-        if ((cache[abspathPosix] || {}).constructor === Array) return done() // detects some directories
-        const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
-        const relpath = abspath.substr(relpathStart)
-        symlinkAwareStat(abspath).then(
+      globStream(UI_SRC_GLOB, Object.assign({ cwd }, UI_SRC_OPTS)),
+      forEach(({ path: relpath, dirent }, _, done) => {
+        if (dirent.isDirectory()) return done()
+        const relpathPosix = relpath
+        const abspath = posixify ? ospath.join(cwd, (relpath = ospath.normalize(relpath))) : cwd + '/' + relpath
+        fsp.stat(abspath).then(
           (stat) => {
-            if (stat.isDirectory()) return done() // detects directories that slipped through cache check
-            const relpathPosix = posixify ? posixify(relpath) : relpath
             fsp.readFile(abspath).then(
               (contents) => {
                 files.set(relpathPosix, new File({ cwd, path: relpathPosix, contents, stat, local: true }))
@@ -314,35 +312,23 @@ function srcFs (cwd) {
               }
             )
           },
-          (statErr) => {
-            done(
-              Object.assign(statErr, {
-                message: statErr.symlink
-                  ? (statErr.code === 'ELOOP' ? 'ELOOP: symbolic link cycle, ' : 'ENOENT: broken symbolic link, ') +
-                    `${relpath} -> ${statErr.symlink}`
-                  : statErr.message.replace(`'${abspath}'`, relpath),
-              })
-            )
-          }
+          (statErr) =>
+            dirent.isSymbolicLink()
+              ? fsp
+                .readlink(abspath)
+                .then(
+                  (symlink) =>
+                    (statErr.code === 'ELOOP' ? 'ELOOP: symbolic link cycle, ' : 'ENOENT: broken symbolic link, ') +
+                      `${relpath} -> ${symlink}`,
+                  () => statErr.message.replace(`'${abspath}'`, relpath)
+                )
+                .then((message) => done(Object.assign(statErr, { message })))
+              : done(Object.assign(statErr, { message: statErr.message.replace(`'${abspath}'`, relpath) }))
         )
       }),
       (err) => (err ? reject(err) : resolve(files))
     )
   )
-}
-
-function symlinkAwareStat (path_) {
-  return fsp.lstat(path_).then((lstat) => {
-    if (!lstat.isSymbolicLink()) return lstat
-    return fsp.stat(path_).catch((statErr) =>
-      fsp
-        .readlink(path_)
-        .catch(invariably.void)
-        .then((symlink) => {
-          throw Object.assign(statErr, { symlink })
-        })
-    )
-  })
 }
 
 function srcZip (file, options = {}) {

@@ -3,8 +3,8 @@
 module.exports = Object.freeze({
   COMPONENT_DESC_FILENAME: 'antora.yml',
   CONTENT_CACHE_FOLDER: 'content',
-  CONTENT_SRC_GLOB: '**/*[!~]',
-  CONTENT_SRC_OPTS: { follow: true, nomount: true, nosort: true, nounique: true, strict: false },
+  CONTENT_SRC_GLOB: '**/!(*~)',
+  CONTENT_SRC_OPTS: { dot: true, ignore: ['**/.*{,/**}'], objectMode: true, onlyFiles: false, unique: false },
   FILE_MODES: { 100644: 0o100666 & ~process.umask(), 100755: 0o100777 & ~process.umask() },
   GIT_CORE: 'antora',
   GIT_OPERATION_LABEL_LENGTH: 8,

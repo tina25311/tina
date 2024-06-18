@@ -15,7 +15,7 @@ const File = require('vinyl')
 const fs = require('fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
-const globStream = require('glob-stream')
+const { globStream } = require('fast-glob')
 const http = require('http')
 const https = require('https')
 const loadUi = require('@antora/ui-loader')
@@ -67,12 +67,12 @@ describe('loadUi()', () => {
   const zipDir = (dir) =>
     new Promise((resolve, reject) =>
       pipeline(
-        globStream('**/*', { cwd: dir, dot: true, nomount: true, nosort: true, nounique: true }),
-        map(({ path: abspath }, _, next) => {
-          fsp.stat(ospath.sep === '\\' ? (abspath = ospath.normalize(abspath)) : abspath).then((stat) => {
+        globStream('**/*.*', { braceExpansion: false, cwd: dir, dot: true, onlyFiles: false, unique: false }),
+        map((relpath, _, next) => {
+          const abspath = ospath.join(dir, relpath)
+          fsp.stat(abspath).then((stat) => {
             // NOTE set stable file permissions
-            if (stat.isFile()) stat.mode = 33188
-            else if (stat.isDirectory()) stat.mode = 16877
+            stat.isFile() ? (stat.mode = 33188) : stat.isDirectory() && (stat.mode = 16877)
             const contents = stat.isFile() ? fs.createReadStream(abspath) : undefined
             next(null, new File({ cwd: dir, path: abspath, contents, stat }))
           }, next)
