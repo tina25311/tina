@@ -15,7 +15,7 @@ const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
-const globStream = require('glob-stream')
+const { globStream } = require('fast-glob')
 const { inspect } = require('util')
 const invariably = require('./invariably')
 const logger = require('./logger')
@@ -469,19 +469,18 @@ function readFilesFromWorktree (origin) {
 }
 
 function srcFs (cwd, origin) {
-  return new Promise((resolve, reject, cache = Object.create(null), files = [], relpathStart = cwd.length + 1) =>
+  return new Promise((resolve, reject, files = []) =>
     pipeline(
-      globStream(CONTENT_SRC_GLOB, Object.assign({ cache, cwd }, CONTENT_SRC_OPTS)),
-      forEach(({ path: abspathPosix }, _, done) => {
-        if ((cache[abspathPosix] || {}).constructor === Array) return done() // detects some directories
-        const abspath = posixify ? ospath.normalize(abspathPosix) : abspathPosix
-        const relpath = abspath.substr(relpathStart)
-        symlinkAwareStat(abspath).then(
-          (stat) => {
-            if (stat.isDirectory()) return done() // detects directories that slipped through cache check
+      globStream(CONTENT_SRC_GLOB, Object.assign({ cwd }, CONTENT_SRC_OPTS)),
+      forEach(({ path: relpath, dirent }, _, done) => {
+        if (dirent.isDirectory()) return done()
+        const relpathPosix = relpath
+        const abspath = posixify ? ospath.join(cwd, (relpath = ospath.normalize(relpath))) : cwd + '/' + relpath
+        fsp.stat(abspath).then(
+          (stat) =>
             fsp.readFile(abspath).then(
               (contents) => {
-                files.push(new File({ path: posixify ? posixify(relpath) : relpath, contents, stat, src: { abspath } }))
+                files.push(new File({ path: relpathPosix, contents, stat, src: { abspath } }))
                 done()
               },
               (readErr) => {
@@ -491,22 +490,28 @@ function srcFs (cwd, origin) {
                   : logger.error(logObject, readErr.message.replace(`'${abspath}'`, relpath))
                 done()
               }
-            )
-          },
+            ),
           (statErr) => {
             const logObject = { file: { abspath, origin } }
-            if (statErr.symlink) {
-              logger.error(
-                logObject,
-                (statErr.code === 'ELOOP' ? 'ELOOP: symbolic link cycle, ' : 'ENOENT: broken symbolic link, ') +
-                  `${relpath} -> ${statErr.symlink}`
-              )
-            } else if (statErr.code === 'ENOENT') {
-              logger.warn(logObject, `ENOENT: file or directory disappeared, ${statErr.syscall} ${relpath}`)
+            if (dirent.isSymbolicLink()) {
+              fsp
+                .readlink(abspath)
+                .then(
+                  (symlink) =>
+                    (statErr.code === 'ELOOP' ? 'ELOOP: symbolic link cycle, ' : 'ENOENT: broken symbolic link, ') +
+                    `${relpath} -> ${symlink}`,
+                  () => statErr.message.replace(`'${abspath}'`, relpath)
+                )
+                .then((message) => {
+                  logger.error(logObject, message)
+                  done()
+                })
             } else {
-              logger.error(logObject, statErr.message.replace(`'${abspath}'`, relpath))
+              statErr.code === 'ENOENT'
+                ? logger.warn(logObject, `ENOENT: file or directory disappeared, ${statErr.syscall} ${relpath}`)
+                : logger.error(logObject, statErr.message.replace(`'${abspath}'`, relpath))
+              done()
             }
-            done()
           }
         )
       }),
@@ -902,20 +907,6 @@ function resolveRemoteUrl (repo, remoteName) {
  */
 function isDirectory (url) {
   return fsp.stat(url).then((stat) => stat.isDirectory(), invariably.false)
-}
-
-function symlinkAwareStat (path_) {
-  return fsp.lstat(path_).then((lstat) => {
-    if (!lstat.isSymbolicLink()) return lstat
-    return fsp.stat(path_).catch((statErr) =>
-      fsp
-        .readlink(path_)
-        .catch(invariably.void)
-        .then((symlink) => {
-          throw Object.assign(statErr, { symlink })
-        })
-    )
-  })
 }
 
 function tagsSpecified (sources) {

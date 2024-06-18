@@ -33,7 +33,7 @@
     "@antora/user-require-helper": "~2.0",
     "braces": "~3.0",
     "cache-directory": "~2.0",
-    "glob-stream": "~7.0",
+    "fast-glob": "~3.3",
     "hpagent": "~1.2",
     "isomorphic-git": "~1.25",
     "js-yaml": "~4.1",

@@ -8,13 +8,13 @@ const git = ((git$1) => {
   if (!(git$1.cores || (git$1.cores = git$1.default.cores))) git$1.cores = git$1.default.cores = new Map()
   return git$1
 })(require('isomorphic-git'))
-const globStream = require('glob-stream')
+const { globStream } = require('fast-glob')
 const { pipeline, Writable } = require('stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
 const yaml = require('js-yaml')
 
 const FIXTURE_SRC_GLOB = '**/*.*'
-const FIXTURE_SRC_OPTS = { dot: true, nodir: true, nomount: true, nosort: true, nounique: true }
+const FIXTURE_SRC_OPTS = { braceExpansion: false, dot: true, unique: false }
 
 class RepositoryBuilder {
   constructor (repoBase, fixtureBase, opts = {}) {
@@ -174,10 +174,10 @@ class RepositoryBuilder {
       const paths = []
       pipeline(
         globStream(FIXTURE_SRC_GLOB, Object.assign({ cwd }, FIXTURE_SRC_OPTS)),
-        forEach(({ path: abspathPosix }, _, done) => {
-          const abspath = ospath.sep === '\\' ? ospath.normalize(abspathPosix) : abspathPosix
-          const relpath = abspath.substr(cwd.length + 1)
+        forEach((relpath, _, done) => {
+          relpath = ospath.sep === '\\' ? ospath.normalize(relpath) : relpath
           if (exclude && exclude.includes(relpath)) return done()
+          const abspath = ospath.sep === '\\' ? ospath.join(cwd, relpath) : cwd + '/' + relpath
           fsp.stat(abspath).then(() => paths.push(relpath) && done(), done)
         }),
         (err) => (err ? reject(err) : this.addFilesFromFixture(paths, fixtureName).then(resolve, reject))
