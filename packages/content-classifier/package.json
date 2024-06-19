@@ -30,7 +30,7 @@
     "@antora/asciidoc-loader": "3.2.0-alpha.4",
     "@antora/logger": "3.2.0-alpha.4",
     "mime-types": "~2.1",
-    "vinyl": "~2.2"
+    "vinyl": "~3.0"
   },
   "engines": {
     "node": ">=16.0.0"

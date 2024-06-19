@@ -23,6 +23,7 @@ This project utilizes semantic versioning.
 * *file-publisher*: Replace @vscode/gulp-vinyl-zip with low-level zip file writer using yazl (#1129)
 * *file-publisher*: Assign empty object to stat property of output file if file does not have stat property (#1121)
 * *cli*: Update description for `extension` option to clarify it may be specified multiple times.
+* Upgrade vinyl and vinyl-fs to address security and deprecation warnings (#1133)
 
 === Fixed
 

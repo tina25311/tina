@@ -19,7 +19,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "vinyl": "~2.2"
+    "vinyl": "~3.0"
   },
   "engines": {
     "node": ">=16.0.0"
