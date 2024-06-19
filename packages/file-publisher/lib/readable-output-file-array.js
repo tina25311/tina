@@ -1,5 +1,7 @@
 'use strict'
 
+const cloneableReadable = require('cloneable-readable')
+const { isCloneable } = cloneableReadable
 const { Readable } = require('stream')
 const Vinyl = require('vinyl')
 
@@ -26,20 +28,23 @@ class ReadableOutputFileArray extends Readable {
   }
 }
 
-// Q: do we also need to clone stat?
+// Q: do we also need to clone stat? check if it gets modified
 function toOutputFile (file, cloneStreams) {
   const contents = file.contents
   const outputFile = new File({ contents, path: file.out.path, stat: file.stat || {} })
-  if (cloneStreams && outputFile.isStream()) {
-    const outputFileContents = outputFile.contents
-    if (outputFileContents !== contents) {
-      // NOTE: workaround for @antora/lunr-extension <= 1.0.0-alpha.8
-      if (!('get' in (Object.getOwnPropertyDescriptor(file, 'contents') || {}))) file.contents = outputFileContents
+  if (cloneStreams && isStream(contents)) {
+    // NOTE: guard in case contents is created on access (needed for @antora/lunr-extension <= 1.0.0-alpha.8)
+    const contentsProperty = Object.getOwnPropertyDescriptor(file, 'contents')
+    if (!contentsProperty || contentsProperty.writable) {
+      const oContents = isCloneable(contents) ? contents : (file.contents = cloneableReadable(contents))
+      outputFile.contents = oContents._piped ? oContents.clone() : (oContents._piped = true) && oContents
     }
-    // NOTE: even the last occurrence must be cloned when using vinyl-fs even though cloneable-readable claims otherwise
-    outputFile.contents = outputFileContents.clone()
   }
   return outputFile
+}
+
+function isStream (obj) {
+  return obj && typeof obj.pipe === 'function'
 }
 
 module.exports = ReadableOutputFileArray
