@@ -3,7 +3,7 @@
 
 const { expect, mockContentCatalog } = require('@antora/test-harness')
 
-const { DOMParser } = require('xmldom')
+const { DOMParser } = require('@xmldom/xmldom')
 const mapSite = require('@antora/site-mapper')
 
 describe('mapSite()', () => {
