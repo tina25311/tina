@@ -63,8 +63,10 @@ function mockContentCatalog (spy, seed = []) {
           relativeOut = path.join('_images/', relative)
         } else if (family === 'attachment') {
           relativeOut = path.join('_attachments/', relative)
+        } else if (indexify) {
+          if ((relativeOut = relative.slice(0, -5) + '/').endsWith('/index/')) relativeOut = relativeOut.slice(0, -6)
         } else {
-          relativeOut = relative.slice(0, -5) + (indexify ? '/' : '.html')
+          relativeOut = relative.slice(0, -5) + '.html'
         }
         entry.out = {
           path: path.join(component, pubVersion, pubModule, relativeOut),
