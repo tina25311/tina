@@ -43,6 +43,23 @@ describe('produceRedirects()', () => {
     expect(result[0].contents.toString()).to.include('/ /component-a/module-a/the-target.html 301!')
   })
 
+  it('should filter out cyclic aliases', () => {
+    playbook.urls.redirectFacility = 'netlify'
+    contentCatalog = mockContentCatalog([
+      { family: 'page', relative: 'the-target.adoc', indexify: true },
+      { family: 'alias', relative: 'the-target/index.adoc', indexify: true },
+      { family: 'alias', relative: 'old-target.adoc', indexify: true },
+    ])
+    const targetPage = contentCatalog.getPages()[0]
+    const aliases = contentCatalog.findBy({ family: 'alias' })
+    aliases.forEach((file) => (file.rel = targetPage))
+    const result = produceRedirects(playbook, aliases)
+    expect(result).to.have.lengthOf(1)
+    expect(result[0]).to.have.property('contents')
+    const rules = extractRules(result[0])
+    expect(rules).to.not.include('/component-a/module-a/the-target/ /component-a/module-a/the-target/ 301!')
+  })
+
   describe('static facility', () => {
     beforeEach(() => {
       playbook.urls.redirectFacility = 'static'
