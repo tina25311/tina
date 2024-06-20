@@ -33,7 +33,7 @@ const ENCODED_SPACE_RX = /%20/g
  */
 function produceRedirects (playbook, aliases) {
   if ('findBy' in aliases) aliases = aliases.findBy({ family: 'alias' }) // @deprecated remove in Antora 4
-  if (!aliases.length) return []
+  if (!(aliases = aliases.filter((it) => it.pub.url !== it.rel.pub.url)).length) return []
   let siteUrl = playbook.site.url
   if (siteUrl) siteUrl = stripTrailingSlash(siteUrl, '')
   const directoryRedirects = (playbook.urls.htmlExtensionStyle || 'default') !== 'default'
