@@ -2,7 +2,7 @@
 
 const expandPath = require('@antora/expand-path-helper')
 const { promises: fsp } = require('fs')
-const mkdirp = (path) => fsp.mkdir(path, { recursive: true, force: true })
+const mkdirp = (path) => fsp.mkdir(path, { recursive: true })
 const rmrf = (path) => fsp['rm' in fsp ? 'rm' : 'rmdir'](path, { recursive: true, force: true })
 const { pathToFileURL } = require('url')
 const publishStream = require('./common/publish-stream')
