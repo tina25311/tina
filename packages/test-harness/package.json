@@ -8,7 +8,7 @@
     "./mocha/*": "./lib/mocha/*.js",
     "./package.json": "./package.json"
   },
-  "dependencies": {
+  "devDependencies": {
     "chai": "~4.3",
     "chai-fs": "~2.0",
     "chai-spies": "~1.0",
