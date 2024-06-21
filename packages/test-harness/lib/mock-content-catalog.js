@@ -64,7 +64,8 @@ function mockContentCatalog (spy, seed = []) {
         } else if (family === 'attachment') {
           relativeOut = path.join('_attachments/', relative)
         } else if (indexify) {
-          if ((relativeOut = relative.slice(0, -5) + '/').endsWith('/index/')) relativeOut = relativeOut.slice(0, -6)
+          relativeOut = relative.slice(0, -5)
+          relativeOut += ('/' + relativeOut).endsWith('/index') ? '.html' : '/index.html'
         } else {
           relativeOut = relative.slice(0, -5) + '.html'
         }
@@ -76,7 +77,7 @@ function mockContentCatalog (spy, seed = []) {
               .join('/')
             : '.',
         }
-        let url = '/' + entry.out.path
+        let url = '/' + (indexify ? entry.out.path.slice(0, -10) : entry.out.path)
         if (~url.indexOf(' ')) url = url.replace(SPACE_RX, '%20')
         entry.pub = { url, moduleRootPath: entry.out.moduleRootPath }
       }

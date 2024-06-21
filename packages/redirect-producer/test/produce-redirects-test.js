@@ -1006,15 +1006,11 @@ describe('produceRedirects()', () => {
     it('should use exact match to redirect site start page to non-ROOT component when extension style is indexify', () => {
       playbook.site.url = 'https://example.org/docs'
       contentCatalog = mockContentCatalog([
-        { family: 'page', module: 'ROOT', relative: 'index.adoc' },
-        { family: 'alias', component: '', version: '', module: '', relative: 'index.adoc' },
+        { family: 'page', module: 'ROOT', relative: 'index.adoc', indexify: true },
+        { family: 'alias', component: '', version: '', module: '', relative: 'index.adoc', indexify: true },
       ])
       const targetPage = contentCatalog.getPages()[0]
       contentCatalog.findBy({ family: 'alias' }).forEach((file) => (file.rel = targetPage))
-      contentCatalog.getFiles().forEach((file) => {
-        const url = file.pub.url
-        file.pub.url = url.slice(0, url.length - (url.endsWith('/index.html') ? 11 : 5)) + '/'
-      })
       playbook.urls.htmlExtensionStyle = 'indexify'
       const result = produceRedirects(playbook, contentCatalog)
       expect(result).to.have.lengthOf(1)
