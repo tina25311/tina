@@ -313,11 +313,11 @@ describe('publishFiles()', () => {
       const files = contentCatalog.getFiles()
       const contents664 = 'mode 664\n'
       const file664 = createFile('the-component/1.0/664.html', generateHtml('Mode 664', contents664))
-      file664.stat = { mode: 0o664 }
+      file664.stat = { mode: parseInt('100664', 8) }
       files.push(file664)
       const contents640 = 'mode 640\n'
       const file640 = createFile('the-component/1.0/640.html', generateHtml('Mode 640', contents640))
-      file640.stat = { mode: 0o640 }
+      file640.stat = { mode: parseInt('100640', 8) }
       files.push(file640)
       contentCatalog.getFiles = () => files
       playbook.output.destinations.push({ provider: 'fs' })
