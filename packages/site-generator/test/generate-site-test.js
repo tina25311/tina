@@ -950,6 +950,62 @@ describe('generateSite()', () => {
       expect(lines[0]).to.equal('extension required')
     })
 
+    it('should not attempt to invoke register function if module has undefined exports', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        console.log('extension required')
+        module.exports = undefined
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('extension required')
+    })
+
+    it('should skip and warn if AsciiDoc extension is registered as Antora extension', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = (registry) => {
+          throw new Error('should not run')
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include({
+        level: 'warn',
+        name: 'antora',
+        msg: `Skipping AsciiDoc extension registered as an Antora extension: ${extensionPath}`,
+      })
+    })
+
+    it('should skip and warn if possible AsciiDoc extension is registered as Antora extension', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        const FooInlineMacro = (() => {
+          throw new ReferenceError('Opal is not defined')
+        })()
+
+        module.exports.register = (registry, context) => {
+          throw new Error('should not run')
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
+      expect(messages).to.have.lengthOf(1)
+      expect(messages[0]).to.include({
+        level: 'warn',
+        name: 'antora',
+        msg: `Skipping possible AsciiDoc extension registered as an Antora extension: ${extensionPath}`,
+      })
+    })
+
     it('should allow extension to be registered with configuration parameters', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`

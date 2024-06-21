@@ -21,6 +21,7 @@ const FUNCTION_PROVIDERS = {
   publishFiles: 'file-publisher', // dynamic require('@antora/file-publisher')
 }
 
+const ASCIIDOCTOR_REGISTER_FUNCTION_RX = /^(?:(?:function(?: +\w+)? *)?\( *registry *[,)])/
 const FUNCTION_WITH_NAMED_PARAMETER_RX = /^(?:(?:function(?: *\w+)? *)?\( *\w+ *[,)]|\w+ *=>)/
 const NEWLINES_RX = /\r?\n/g
 
@@ -142,10 +143,20 @@ class GeneratorContext extends EventEmitter {
       extensions.forEach((ext) => {
         const { enabled = true, id, require: request, ...config } = ext.constructor === String ? { require: ext } : ext
         if (!enabled) return
-        const { register } = userRequire(request, requireContext)
-        if (typeof register !== 'function') return
+        let register
+        try {
+          ;({ register } = userRequire(request, requireContext) || {})
+          if (typeof register !== 'function') return // assume intent is to require a library or modify global state
+        } catch (e) {
+          if (!(e instanceof ReferenceError && ~(e.message || '').indexOf('Opal'))) throw e
+          this.getLogger().warn('Skipping possible AsciiDoc extension registered as an Antora extension: %s', request)
+          return
+        }
         if (register.length) {
-          if (FUNCTION_WITH_NAMED_PARAMETER_RX.test(register.toString().replace(NEWLINES_RX, ' '))) {
+          const registerSource = register.toString().replace(NEWLINES_RX, ' ')
+          if (ASCIIDOCTOR_REGISTER_FUNCTION_RX.test(registerSource)) {
+            this.getLogger().warn('Skipping AsciiDoc extension registered as an Antora extension: %s', request)
+          } else if (FUNCTION_WITH_NAMED_PARAMETER_RX.test(registerSource)) {
             register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
           } else {
             register.call(this, Object.assign({ config }, vars))
