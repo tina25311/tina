@@ -5858,28 +5858,34 @@ describe('aggregateContent()', () => {
     })
 
     it('should show progress bar when cloning a remote repository', async () => {
-      return withMockStdout(async (lines) => {
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(lines).to.have.lengthOf.at.least(2)
-        expect(lines[0]).to.include('[clone] ' + repoBuilder.url)
-        expect(lines[0]).to.match(/ \[-+\]/)
-        expect(lines[lines.length - 1]).to.match(/ \[#+\]/)
-      }, GIT_OPERATION_LABEL_LENGTH + 1 + repoBuilder.url.length * 2)
+      return withMockStdout(
+        async (lines) => {
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(lines).to.have.lengthOf.at.least(2)
+          expect(lines[0]).to.include('[clone] ' + repoBuilder.url)
+          expect(lines[0]).to.match(/ \[-+\]/)
+          expect(lines[lines.length - 1]).to.match(/ \[#+\]/)
+        },
+        GIT_OPERATION_LABEL_LENGTH + 1 + repoBuilder.url.length * 2
+      )
     })
 
     it('should show progress bar when fetching a remote repository', async () => {
-      return withMockStdout(async (lines) => {
-        await aggregateContent(playbookSpec)
-        lines.length = 0
-        playbookSpec.runtime.fetch = true
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(lines).to.have.lengthOf.at.least(2)
-        expect(lines[0]).to.include('[fetch] ' + repoBuilder.url)
-        expect(lines[0]).to.match(/ \[-+\]/)
-        expect(lines[lines.length - 1]).to.match(/ \[#+\]/)
-      }, GIT_OPERATION_LABEL_LENGTH + 1 + repoBuilder.url.length * 2)
+      return withMockStdout(
+        async (lines) => {
+          await aggregateContent(playbookSpec)
+          lines.length = 0
+          playbookSpec.runtime.fetch = true
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(lines).to.have.lengthOf.at.least(2)
+          expect(lines[0]).to.include('[fetch] ' + repoBuilder.url)
+          expect(lines[0]).to.match(/ \[-+\]/)
+          expect(lines[lines.length - 1]).to.match(/ \[#+\]/)
+        },
+        GIT_OPERATION_LABEL_LENGTH + 1 + repoBuilder.url.length * 2
+      )
     })
 
     it('should cancel progress bar for fetch and create new one for clone if fetch fails', async () => {
@@ -5890,17 +5896,20 @@ describe('aggregateContent()', () => {
       await fsp.writeFile(ospath.join(CONTENT_CACHE_DIR, cachedRepoName, 'config'), '')
       playbookSpec.runtime.quiet = false
       playbookSpec.runtime.fetch = true
-      return withMockStdout(async (lines) => {
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(1)
-        expect(lines).to.have.lengthOf.at.least(2)
-        expect(lines[0]).to.include('[fetch] ' + repoBuilder.url)
-        expect(lines[0]).to.match(/ \[-+\]$/)
-        expect(lines[1]).to.include('[fetch] ' + repoBuilder.url)
-        expect(lines[1]).to.match(/ \[\?+\]$/)
-        expect(lines[lines.length - 1]).to.include('[clone] ' + repoBuilder.url)
-        expect(lines[lines.length - 1]).to.match(/ \[#+\]$/)
-      }, GIT_OPERATION_LABEL_LENGTH + 1 + repoBuilder.url.length * 2)
+      return withMockStdout(
+        async (lines) => {
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(1)
+          expect(lines).to.have.lengthOf.at.least(2)
+          expect(lines[0]).to.include('[fetch] ' + repoBuilder.url)
+          expect(lines[0]).to.match(/ \[-+\]$/)
+          expect(lines[1]).to.include('[fetch] ' + repoBuilder.url)
+          expect(lines[1]).to.match(/ \[\?+\]$/)
+          expect(lines[lines.length - 1]).to.include('[clone] ' + repoBuilder.url)
+          expect(lines[lines.length - 1]).to.match(/ \[#+\]$/)
+        },
+        GIT_OPERATION_LABEL_LENGTH + 1 + repoBuilder.url.length * 2
+      )
     })
 
     it('should show clone progress bar for each remote repository', async () => {
@@ -5912,21 +5921,24 @@ describe('aggregateContent()', () => {
       })
       playbookSpec.content.sources.push({ url: otherRepoBuilder.url })
 
-      return withMockStdout(async (lines) => {
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(2)
-        expect(lines).to.have.lengthOf.at.least(4)
-        const repoLines = lines.filter((l) => l.includes(repoBuilder.url))
-        expect(repoLines).to.have.lengthOf.at.least(2)
-        expect(repoLines[0]).to.include('[clone] ' + repoBuilder.url)
-        expect(repoLines[0]).to.match(/ \[-+\]/)
-        expect(repoLines[repoLines.length - 1]).to.match(/ \[#+\]/)
-        const otherRepoLines = lines.filter((l) => l.includes(otherRepoBuilder.url))
-        expect(otherRepoLines).to.have.lengthOf.at.least(2)
-        expect(otherRepoLines[0]).to.include('[clone] ' + otherRepoBuilder.url)
-        expect(otherRepoLines[0]).to.match(/ \[-+\]/)
-        expect(otherRepoLines[otherRepoLines.length - 1]).to.match(/ \[#+\]/)
-      }, GIT_OPERATION_LABEL_LENGTH + 1 + Math.max(repoBuilder.url.length, otherRepoBuilder.url.length) * 2)
+      return withMockStdout(
+        async (lines) => {
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(2)
+          expect(lines).to.have.lengthOf.at.least(4)
+          const repoLines = lines.filter((l) => l.includes(repoBuilder.url))
+          expect(repoLines).to.have.lengthOf.at.least(2)
+          expect(repoLines[0]).to.include('[clone] ' + repoBuilder.url)
+          expect(repoLines[0]).to.match(/ \[-+\]/)
+          expect(repoLines[repoLines.length - 1]).to.match(/ \[#+\]/)
+          const otherRepoLines = lines.filter((l) => l.includes(otherRepoBuilder.url))
+          expect(otherRepoLines).to.have.lengthOf.at.least(2)
+          expect(otherRepoLines[0]).to.include('[clone] ' + otherRepoBuilder.url)
+          expect(otherRepoLines[0]).to.match(/ \[-+\]/)
+          expect(otherRepoLines[otherRepoLines.length - 1]).to.match(/ \[#+\]/)
+        },
+        GIT_OPERATION_LABEL_LENGTH + 1 + Math.max(repoBuilder.url.length, otherRepoBuilder.url.length) * 2
+      )
     })
 
     it('should show progress bars with mixed operations', async () => {
@@ -5937,23 +5949,26 @@ describe('aggregateContent()', () => {
         version: 'v1.0.0',
       })
 
-      return withMockStdout(async (lines) => {
-        await aggregateContent(playbookSpec)
-        lines.length = 0
-        playbookSpec.content.sources.push({ url: otherRepoBuilder.url })
-        playbookSpec.runtime.fetch = true
-        const aggregate = await aggregateContent(playbookSpec)
-        expect(aggregate).to.have.lengthOf(2)
-        expect(lines).to.have.lengthOf.at.least(4)
-        const repoLines = lines.filter((l) => l.includes(repoBuilder.url))
-        expect(repoLines[0]).to.include('[fetch] ' + repoBuilder.url)
-        expect(repoLines[0]).to.match(/ \[-+\]/)
-        expect(repoLines[repoLines.length - 1]).to.match(/ \[#+\]/)
-        const otherRepoLines = lines.filter((l) => l.includes(otherRepoBuilder.url))
-        expect(otherRepoLines[0]).to.include('[clone] ' + otherRepoBuilder.url)
-        expect(otherRepoLines[0]).to.match(/ \[-+\]/)
-        expect(otherRepoLines[otherRepoLines.length - 1]).to.match(/ \[#+\]/)
-      }, GIT_OPERATION_LABEL_LENGTH + 1 + repoBuilder.url.length * 2)
+      return withMockStdout(
+        async (lines) => {
+          await aggregateContent(playbookSpec)
+          lines.length = 0
+          playbookSpec.content.sources.push({ url: otherRepoBuilder.url })
+          playbookSpec.runtime.fetch = true
+          const aggregate = await aggregateContent(playbookSpec)
+          expect(aggregate).to.have.lengthOf(2)
+          expect(lines).to.have.lengthOf.at.least(4)
+          const repoLines = lines.filter((l) => l.includes(repoBuilder.url))
+          expect(repoLines[0]).to.include('[fetch] ' + repoBuilder.url)
+          expect(repoLines[0]).to.match(/ \[-+\]/)
+          expect(repoLines[repoLines.length - 1]).to.match(/ \[#+\]/)
+          const otherRepoLines = lines.filter((l) => l.includes(otherRepoBuilder.url))
+          expect(otherRepoLines[0]).to.include('[clone] ' + otherRepoBuilder.url)
+          expect(otherRepoLines[0]).to.match(/ \[-+\]/)
+          expect(otherRepoLines[otherRepoLines.length - 1]).to.match(/ \[#+\]/)
+        },
+        GIT_OPERATION_LABEL_LENGTH + 1 + repoBuilder.url.length * 2
+      )
     })
 
     it('should truncate repository URL to fit within progress bar', async () => {
@@ -6048,9 +6063,8 @@ describe('aggregateContent()', () => {
       try {
         const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR, { bare: true })
         await initRepoWithFiles(repoBuilder)
-        const customFs = 'readFile writeFile unlink readdir mkdir rmdir stat lstat readlink symlink'
-          .split(' ')
-          .reduce((proxy, methodName) => {
+        const customFs = 'readFile writeFile unlink readdir mkdir rmdir stat lstat readlink symlink'.split(' ').reduce(
+          (proxy, methodName) => {
             if (methodName === 'readFile') {
               proxy.readFile = function () {
                 this.readFileCalled = true
@@ -6060,7 +6074,9 @@ describe('aggregateContent()', () => {
               proxy[methodName] = fs[methodName].bind(fs)
             }
             return proxy
-          }, new (class FsProxy {})())
+          },
+          new (class FsProxy {})()
+        )
         RepositoryBuilder.registerPlugin('fs', customFs, GIT_CORE)
         playbookSpec.content.sources.push({ url: repoBuilder.url })
         const aggregate = await aggregateContent(playbookSpec)
@@ -7223,12 +7239,15 @@ describe('aggregateContent()', () => {
       const url = `http://0123456789@localhost:${serverPort}/401/invalid-repository.git`
       const sanitizedUrl = `http://localhost:${serverPort}/401/invalid-repository.git`
       const expectedErrorMessage = `Content repository not found or credentials were rejected (url: ${sanitizedUrl})`
-      return withMockStdout(async (lines) => {
-        playbookSpec.runtime.quiet = false
-        playbookSpec.content.sources.push({ url })
-        expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
-        expect(lines[0]).to.not.include('0123456789@')
-      }, GIT_OPERATION_LABEL_LENGTH + 1 + url.length * 2)
+      return withMockStdout(
+        async (lines) => {
+          playbookSpec.runtime.quiet = false
+          playbookSpec.content.sources.push({ url })
+          expect(await trapAsyncError(aggregateContent, playbookSpec)).to.throw(expectedErrorMessage)
+          expect(lines[0]).to.not.include('0123456789@')
+        },
+        GIT_OPERATION_LABEL_LENGTH + 1 + url.length * 2
+      )
     })
   })
 
