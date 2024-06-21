@@ -20,9 +20,9 @@
   },
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
-    "pino": "~8.14",
-    "pino-pretty": "~10.0",
-    "sonic-boom": "~3.3"
+    "pino": "~9.2",
+    "pino-pretty": "~11.2",
+    "sonic-boom": "~4.0"
   },
   "engines": {
     "node": ">=16.0.0"
