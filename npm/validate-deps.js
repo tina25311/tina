@@ -9,9 +9,10 @@ const builtinModules = require('module').builtinModules.filter((it) => it.charAt
     if (packageName === 'antora') continue // TODO do something better here
     const packageDir = `packages${FILE_SEPARATOR}${packageName}`
     const pkg = require(`..${FILE_SEPARATOR}${packageDir}${FILE_SEPARATOR}package.json`)
-    const prodDeps = packageName === 'test-harness'
-      ? Object.keys(pkg.devDependencies || {}).concat('@antora/logger', '@antora/content-classifier', 'mocha')
-      : Object.keys(pkg.dependencies || {})
+    const prodDeps =
+      packageName === 'test-harness'
+        ? Object.keys(pkg.devDependencies || {}).concat('@antora/logger', '@antora/content-classifier', 'mocha')
+        : Object.keys(pkg.dependencies || {})
     const devDeps = packageName === 'test-harness' ? [] : Object.keys(pkg.devDependencies || {})
     const deps = [...prodDeps, ...devDeps, `@antora/${packageName}`, '@antora/test-harness']
     for (const scope of ['lib', 'test']) {
