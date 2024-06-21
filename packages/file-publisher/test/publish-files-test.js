@@ -456,7 +456,9 @@ describe('publishFiles()', () => {
     await publishFiles(playbook, catalogs)
     destDirs.forEach((destDir) => {
       verifyFsOutput(destDir)
-      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().and.equal(dataFile)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
     })
   })
 
@@ -468,7 +470,9 @@ describe('publishFiles()', () => {
     await publishFiles(playbook, catalogs)
     destDirs.forEach((destDir) => {
       verifyFsOutput(destDir)
-      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().and.equal(dataFile)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
     })
   })
 
@@ -482,7 +486,9 @@ describe('publishFiles()', () => {
     await publishFiles(playbook, catalogs)
     destDirs.forEach((destDir) => {
       verifyFsOutput(destDir)
-      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().and.equal(dataFile)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
     })
   })
 
@@ -500,7 +506,9 @@ describe('publishFiles()', () => {
     await publishFiles(playbook, catalogs)
     destDirs.forEach((destDir) => {
       verifyFsOutput(destDir)
-      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().with.contents(expectedContents)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .with.contents(expectedContents)
     })
   })
 
@@ -515,7 +523,9 @@ describe('publishFiles()', () => {
     await publishFiles(playbook, catalogs)
     destDirs.forEach((destDir) => {
       verifyFsOutput(destDir)
-      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().and.equal(dataFile)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
     })
   })
 
@@ -531,7 +541,9 @@ describe('publishFiles()', () => {
     await publishFiles(playbook, catalogs)
     destDirs.forEach((destDir) => {
       verifyFsOutput(destDir)
-      expect(ospath.resolve(playbook.dir, destDir, 'data.json')).to.be.a.file().and.equal(dataFile)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
     })
   })
 
