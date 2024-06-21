@@ -1864,8 +1864,7 @@ describe('generateSite()', () => {
       expect(ospath.join(absDestDir, '_redirects'))
         .to.be.a.file()
         .with.contents.that.match(/^\/acme\/from\.html \/acme\/to\.html 301!/)
-      expect(ospath.join(absDestDir, 'the-component/2.0/the-alias.html'))
-        .to.not.be.a.path()
+      expect(ospath.join(absDestDir, 'the-component/2.0/the-alias.html')).to.not.be.a.path()
     })
 
     it('should not require custom output provider to return a value', async () => {
