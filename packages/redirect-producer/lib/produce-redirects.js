@@ -33,7 +33,11 @@ const ENCODED_SPACE_RX = /%20/g
  */
 function produceRedirects (playbook, aliases) {
   if ('findBy' in aliases) aliases = aliases.findBy({ family: 'alias' }) // @deprecated remove in Antora 4
-  if (!(aliases = aliases.filter((it) => it.pub.url !== it.rel.pub.url)).length) return []
+  aliases = aliases.filter((it) => {
+    if (it.pub.url !== it.rel.pub.url) return true
+    delete it.out
+  })
+  if (!aliases.length) return aliases
   let siteUrl = playbook.site.url
   if (siteUrl) siteUrl = stripTrailingSlash(siteUrl, '')
   const directoryRedirects = (playbook.urls.htmlExtensionStyle || 'default') !== 'default'
@@ -47,10 +51,7 @@ function produceRedirects (playbook, aliases) {
     case 'nginx':
       return createNginxRewriteConf(aliases, extractUrlPath(siteUrl))
     case 'static':
-      return populateStaticRedirectFiles(
-        aliases.filter((it) => it.out),
-        siteUrl
-      )
+      return populateStaticRedirectFiles(aliases, siteUrl)
     default:
       return unpublish(aliases)
   }
@@ -127,7 +128,7 @@ function createNginxRewriteConf (files, urlPath) {
 }
 
 function populateStaticRedirectFiles (files, siteUrl) {
-  files.forEach((file) => (file.contents = Buffer.from(createStaticRedirectContents(file, siteUrl) + '\n')))
+  files.forEach((file) => file.out && (file.contents = Buffer.from(createStaticRedirectContents(file, siteUrl) + '\n')))
   return []
 }
 

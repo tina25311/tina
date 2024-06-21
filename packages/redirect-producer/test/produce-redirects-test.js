@@ -58,6 +58,7 @@ describe('produceRedirects()', () => {
     expect(result[0]).to.have.property('contents')
     const rules = extractRules(result[0])
     expect(rules).to.not.include('/component-a/module-a/the-target/ /component-a/module-a/the-target/ 301!')
+    aliases.forEach((file) => expect(file).to.not.have.property('out'))
   })
 
   describe('static facility', () => {
