@@ -1838,7 +1838,8 @@ describe('generateSite()', () => {
           this.once('contextStarted', () => {
             const { produceRedirects } = this.getFunctions()
             this.replaceFunctions({
-              produceRedirects: (playbook) => {
+              produceRedirects: (playbook, originalAliases) => {
+                originalAliases.forEach((alias) => delete alias.out)
                 return produceRedirects(playbook, [{
                   pub: { url: '/acme/from.html' },
                   rel: { pub: { url: '/acme/to.html' } },
@@ -1856,6 +1857,8 @@ describe('generateSite()', () => {
       expect(ospath.join(absDestDir, '_redirects'))
         .to.be.a.file()
         .with.contents.that.match(/^\/acme\/from\.html \/acme\/to\.html 301!/)
+      expect(ospath.join(absDestDir, 'the-component/2.0/the-alias.html'))
+        .to.not.be.a.path()
     })
 
     it('should not require custom output provider to return a value', async () => {
