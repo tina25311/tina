@@ -69,8 +69,13 @@ async function publishFiles (playbook, catalogs) {
     return accum
   }, [])
 
-  const cloneStreams = publishers.length > 1
-  return Promise.all(publishers.map((publish) => publish(new ReadableOutputFileArray(files, cloneStreams), playbook)))
+  return Promise.all(
+    publishers.length > 1
+      ? publishers
+        .map((publish) => publish.bind(null, new ReadableOutputFileArray(files, true), playbook))
+        .map((publish) => publish())
+      : [publishers[0](new ReadableOutputFileArray(files), playbook)]
+  )
 }
 
 function getDestinations (output) {
