@@ -28,10 +28,9 @@ class ReadableOutputFileArray extends Readable {
   }
 }
 
-// Q: do we also need to clone stat? check if it gets modified
 function toOutputFile (file, cloneStreams) {
   const contents = file.contents
-  const outputFile = new File({ contents, path: file.out.path, stat: file.stat || {} })
+  const outputFile = new File({ contents, path: file.out.path, stat: file.stat })
   if (cloneStreams && isStream(contents)) {
     // NOTE: guard in case contents is created on access (needed for @antora/lunr-extension <= 1.0.0-alpha.8)
     const contentsProperty = Object.getOwnPropertyDescriptor(file, 'contents')
