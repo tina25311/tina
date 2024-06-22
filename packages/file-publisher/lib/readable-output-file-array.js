@@ -33,8 +33,7 @@ function toOutputFile (file, cloneStreams) {
   const outputFile = new File({ contents, path: file.out.path, stat: file.stat })
   if (cloneStreams && isStream(contents)) {
     // NOTE: guard in case contents is created on access (needed for @antora/lunr-extension <= 1.0.0-alpha.8)
-    const contentsProperty = Object.getOwnPropertyDescriptor(file, 'contents')
-    if (!contentsProperty || contentsProperty.writable) {
+    if ((Object.getOwnPropertyDescriptor(file, 'contents') || { writable: true }).writable) {
       const oContents = isCloneable(contents) ? contents : (file.contents = cloneableReadable(contents))
       outputFile.contents = oContents._piped ? oContents.clone() : (oContents._piped = true) && oContents
     }
