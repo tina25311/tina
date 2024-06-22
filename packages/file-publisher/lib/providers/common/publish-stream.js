@@ -10,13 +10,12 @@
  * @memberof file-publisher
  *
  * @param {Function} dest - A Vinyl destination adapter, preconfigured to
- *   write to a destination (e.g., `require('vinyl-fs').dest('path/to/dir')`).
+ *   write to a destination (e.g., `dest('path/to/dir')` from vinyl-fs).
  * @param {Readable<File>} files - A Readable stream of virtual files to publish.
- * @param {String} resolveEvent - The name of the event the stream emits to signal completion (default: 'end')
- * @returns {Promise} A promise that resolves when the stream has ended.
+ * @returns {Promise} A promise that resolves when the stream ends (i.e., emits the finish event).
  */
-function publishStream (dest, files, resolveEvent = 'end') {
-  return new Promise((resolve, reject) => files.pipe(dest).on('error', reject).on(resolveEvent, resolve))
+function publishStream (dest, files) {
+  return new Promise((resolve, reject) => files.pipe(dest).on('error', reject).on('finish', resolve))
 }
 
 module.exports = publishStream
