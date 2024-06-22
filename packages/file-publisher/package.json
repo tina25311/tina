@@ -26,7 +26,6 @@
     "@antora/user-require-helper": "~2.0",
     "cloneable-readable": "~3.0",
     "vinyl": "~3.0",
-    "vinyl-fs": "~4.0",
     "yazl": "~2.5"
   },
   "engines": {

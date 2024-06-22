@@ -15,7 +15,7 @@ function publishToArchive (config, files, playbook) {
   const destFile = config.path || DEFAULT_DEST_ARCHIVE
   const absDestFile = expandPath(destFile, { dot: playbook.dir })
   const report = { provider: 'archive', path: destFile, resolvedPath: absDestFile }
-  return publishStream(zipDest(absDestFile), files, 'finish').then(() => report)
+  return publishStream(zipDest(absDestFile), files).then(() => report)
 }
 
 function zipDest (zipPath, zipFile = new ZipFile(), writeStream) {
