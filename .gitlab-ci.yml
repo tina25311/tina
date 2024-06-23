@@ -94,10 +94,14 @@ test:node-16-linux:
   script: npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   <<: *save_report_artifacts
-test:node-20-linux:
+test:node-22-linux:
   extends: .npm
-  image: node:20-$LINUX_DISTRO
+  image: node:22-$LINUX_DISTRO
   <<: *unless_docs_mr
+  script:
+  # patch required when using Node.js 22.3.0; see https://github.com/isomorphic-git/isomorphic-git/issues/1933
+  - sed -i 's/let supportsCompressionStream = null/let supportsCompressionStream = false/' node_modules/isomorphic-git/index.cjs
+  - npm test
 #test:macos:
 #  extends: .npm
 #  image: macos-12-xcode-13
@@ -110,7 +114,6 @@ test:windows:
   # cache does not currently work with the shared Windows runner
   cache: []
   before_script:
-  #- choco upgrade -y nodejs --version=16.17.0 --allow-downgrade
   - *platform_info
   - npm ci --quiet
   script: npm run coverage
