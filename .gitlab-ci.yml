@@ -96,7 +96,7 @@ test:node-16-linux:
   <<: *save_report_artifacts
 test:node-22-linux:
   extends: .npm
-  image: node:22-$LINUX_DISTRO
+  image: node:22.2-$LINUX_DISTRO
   <<: *unless_docs_mr
 test:macos:
   extends: .npm
