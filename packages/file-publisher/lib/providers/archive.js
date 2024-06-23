@@ -29,7 +29,7 @@ function zipDest (zipPath, zipFile = new ZipFile(), writeStream) {
       const zipStat = file.stat ? { compress: true, mode: file.stat.mode, mtime: file.stat.mtime } : { compress: true }
       file.isStream()
         ? zipFile.addReadStream(file.contents, file.relative, zipStat)
-        : zipFile.addBuffer(file.isSymbolic() ? Buffer.from(file.symlink) : file.contents, file.relative, zipStat)
+        : file.isNull() || zipFile.addBuffer(file.isSymbolic() ? file.symlink : file.contents, file.relative, zipStat)
       done()
     },
     (done) => {

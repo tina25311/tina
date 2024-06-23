@@ -23,6 +23,7 @@ function publishToFs (config, files, playbook) {
 function fsDest (toDir, dirs = new Map(), fileRestream = new PassThrough({ objectMode: true })) {
   return forEach(
     (file, _, next) => {
+      if (file.isNull()) return next()
       fileRestream.push(file)
       const dir = ospath.dirname(file.path)
       if (dir === '.' || dirs.has(dir)) return next()
@@ -45,7 +46,7 @@ function fsDest (toDir, dirs = new Map(), fileRestream = new PassThrough({ objec
             const { gid, mode, uid } = file.stat || {}
             fsp.open(abspath, 'w', mode).then(async (fh) => {
               try {
-                if (!file.isNull()) await fh.writeFile(file.contents)
+                await fh.writeFile(file.contents)
                 const stat = await fh.stat()
                 if (mode && mode !== stat.mode) await fh.chmod(mode)
                 const { gid: fGid, uid: fUid } = stat
