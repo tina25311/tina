@@ -99,7 +99,7 @@ describe('publishFiles()', () => {
     })
   }
 
-  const verifyFsOutput = (destDir) => {
+  const verifyFsOutput = (destDir, expectedSubDirs) => {
     let absDestDir
     if (ospath.isAbsolute(destDir) || !playbook.dir) {
       absDestDir = destDir
@@ -107,7 +107,9 @@ describe('publishFiles()', () => {
       expect(ospath.resolve(destDir)).to.not.be.a.path()
       absDestDir = ospath.resolve(playbook.dir, destDir)
     }
-    expect(absDestDir).to.be.a.directory().with.subDirs(['_', 'the-component'])
+    expect(absDestDir)
+      .to.be.a.directory()
+      .with.subDirs(expectedSubDirs || ['_', 'the-component'])
     expect(ospath.join(absDestDir, '_/css/site.css')).to.be.a.file().with.contents('body { color: red; }')
     expect(ospath.join(absDestDir, '_/js/site.js')).to.be.a.file().with.contents(';(function () {})()')
     expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file().with.contents.that.match(HTML_RX)
@@ -278,6 +280,26 @@ describe('publishFiles()', () => {
     expect(playbook.output.destinations[0].path).to.not.exist()
     expect(ospath.resolve(playbook.dir, DEFAULT_DEST_FS)).to.not.be.a.path()
     verifyFsOutput(destDir)
+  })
+
+  it('should publish site to fs at previously published dir path', async () => {
+    playbook.output.dir = './public'
+    delete playbook.output.destinations
+    const contentCatalog = catalogs[0]
+    const files = contentCatalog.getFiles()
+    files.push(createFile('other-component/index.html', generateHtml('Other Page', 'content')))
+    contentCatalog.getFiles = () => files
+    await publishFiles(playbook, catalogs)
+    expect(playbook.output.destinations).to.be.undefined()
+    verifyFsOutput(playbook.output.dir, ['_', 'the-component', 'other-component'])
+    expect(ospath.join(playbook.dir, playbook.output.dir, 'other-component/index.html'))
+      .to.be.a.file()
+      .with.contents.that.match(HTML_RX)
+    await publishFiles(playbook, catalogs)
+    verifyFsOutput(playbook.output.dir, ['_', 'the-component', 'other-component'])
+    expect(ospath.join(playbook.dir, playbook.output.dir, 'other-component/index.html'))
+      .to.be.a.file()
+      .with.contents.that.match(HTML_RX)
   })
 
   it('should throw an error if cannot write to destination path', async () => {
