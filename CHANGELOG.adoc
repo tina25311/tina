@@ -24,6 +24,7 @@ This project utilizes semantic versioning.
 * *file-publisher*: Assign empty object to stat property of output file if file does not have stat property (#1121)
 * *file-publisher*: Replace vinyl-fs#dest with internal implementation (#1131)
 * *file-publisher*: Replace dependency on cloneable-readable with internal implementation
+* *file-publisher*: Don't include file in archive (zip) if contents property is null; matches behavior of fs publisher
 * *cli*: Update description for `extension` option to clarify it may be specified multiple times.
 * Upgrade vinyl and vinyl-fs to address security and deprecation warnings (#1133)
 
