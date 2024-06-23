@@ -26,21 +26,17 @@ function fsDest (toDir, dirs = new Map(), fileRestream = new PassThrough({ objec
       fileRestream.push(file)
       const dir = ospath.dirname(file.path)
       if (dir === '.' || dirs.has(dir)) return next()
+      dirs.set(dir, true)
       let ancestorDir = ospath.dirname(dir)
-      if (ancestorDir === '.') {
-        dirs.set(dir, {})
-        return next()
-      }
-      dirs.set(dir, { recursive: true })
       do {
-        if (dirs.get(ancestorDir) === false) break
+        if (ancestorDir === '.' || dirs.get(ancestorDir) === false) break
         dirs.set(ancestorDir, false)
       } while ((ancestorDir = ospath.dirname(ancestorDir)))
       next()
     },
     function (done) {
       const mkdirs = []
-      dirs.forEach((create, dir) => create && mkdirs.push(fsp.mkdir(ospath.join(toDir, dir), create)))
+      dirs.forEach((create, dir) => create && mkdirs.push(mkdirp(ospath.join(toDir, dir))))
       Promise.all(mkdirs).then(() => {
         pipeline(
           fileRestream.end(),
