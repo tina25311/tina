@@ -96,8 +96,12 @@ test:node-16-linux:
   <<: *save_report_artifacts
 test:node-22-linux:
   extends: .npm
-  image: node:22.2-$LINUX_DISTRO
+  image: node:22-$LINUX_DISTRO
   <<: *unless_docs_mr
+  script:
+  # patch required when using Node.js 22.3.0; see https://github.com/isomorphic-git/isomorphic-git/issues/1933
+  - sed -i 's/let supportsCompressionStream = null/let supportsCompressionStream = false/' node_modules/isomorphic-git/index.cjs
+  - npm test
 test:macos:
   extends: .npm
   image: macos-12-xcode-14
