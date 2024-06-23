@@ -94,9 +94,9 @@ test:node-16-linux:
   script: npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   <<: *save_report_artifacts
-test:node-20-linux:
+test:node-22-linux:
   extends: .npm
-  image: node:20-$LINUX_DISTRO
+  image: node:22-$LINUX_DISTRO
   <<: *unless_docs_mr
 test:macos:
   extends: .npm
@@ -110,7 +110,6 @@ test:windows:
   # cache does not currently work with the shared Windows runner
   cache: []
   before_script:
-  #- choco upgrade -y nodejs --version=16.17.0 --allow-downgrade
   - *platform_info
   - npm ci --quiet
   script: npm run coverage
