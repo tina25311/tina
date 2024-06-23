@@ -17,6 +17,7 @@ This project utilizes semantic versioning.
 
 * *content-aggregator*: Use worktree from local repository even if repository has no commits (#298)
 * *content-aggregator*: Replace new fs.Stats() with plain JavaScript object (#1121)
+* *content-aggregator*: Upgrade isomorphic-git to 1.26.x
 * *ui-loader*: Replace @vscode/gulp-vinyl-zip with low-level zip file reader using yauzl (#1128)
 * *content-classifier*: Log warning if nav entry cannot be resolved (#1088)
 * *ui-loader*: Replace new fs.Stats() with plain JavaScript object (#1121)
