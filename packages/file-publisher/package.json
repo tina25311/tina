@@ -19,12 +19,12 @@
     "./package.json": "./package.json"
   },
   "imports": {
+    "#cloneable-readable": "./lib/cloneable-readable.js",
     "#constants": "./lib/constants.js"
   },
   "dependencies": {
     "@antora/expand-path-helper": "~2.0",
     "@antora/user-require-helper": "~2.0",
-    "cloneable-readable": "~3.0",
     "vinyl": "~3.0",
     "yazl": "~2.5"
   },

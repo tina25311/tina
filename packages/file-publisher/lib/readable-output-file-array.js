@@ -1,7 +1,6 @@
 'use strict'
 
-const cloneableReadable = require('cloneable-readable')
-const { isCloneable } = cloneableReadable
+const CloneableReadable = require('./cloneable-readable')
 const { Readable } = require('stream')
 const Vinyl = require('vinyl')
 
@@ -34,8 +33,11 @@ function toOutputFile (file, cloneStreams) {
   if (cloneStreams && isStream(contents)) {
     // NOTE: guard in case contents is created on access (needed for @antora/lunr-extension <= 1.0.0-alpha.8)
     if ((Object.getOwnPropertyDescriptor(file, 'contents') || { writable: true }).writable) {
-      const oContents = isCloneable(contents) ? contents : (file.contents = cloneableReadable(contents))
-      outputFile.contents = oContents._piped ? oContents.clone() : (oContents._piped = true) && oContents
+      const oContents =
+        contents instanceof CloneableReadable || typeof contents.clone === 'function'
+          ? contents
+          : (file.contents = new CloneableReadable(contents))
+      outputFile.contents = oContents._allocated ? oContents.clone() : (oContents._allocated = true) && oContents
     }
   }
   return outputFile

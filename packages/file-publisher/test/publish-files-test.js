@@ -11,7 +11,7 @@ const {
   zipStream,
 } = require('@antora/test-harness')
 
-const cloneableReadable = require('cloneable-readable')
+const CloneableReadable = require('#cloneable-readable')
 const File = require('vinyl')
 const fs = require('fs')
 const { promises: fsp } = fs
@@ -466,7 +466,7 @@ describe('publishFiles()', () => {
     const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
     const destDirs = [1, 2, 3, 4, 5].map((it) => `./site-${it}`)
     destDirs.forEach((destDir) => playbook.output.destinations.push({ provider: 'fs', path: destDir }))
-    catalogs.push({ getFiles: () => [createFile('data.json', cloneableReadable(fs.createReadStream(dataFile)))] })
+    catalogs.push({ getFiles: () => [createFile('data.json', new CloneableReadable(fs.createReadStream(dataFile)))] })
     await publishFiles(playbook, catalogs)
     destDirs.forEach((destDir) => {
       verifyFsOutput(destDir)
