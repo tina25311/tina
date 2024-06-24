@@ -35,7 +35,7 @@
     "cache-directory": "~2.0",
     "fast-glob": "~3.3",
     "hpagent": "~1.2",
-    "isomorphic-git": "~1.26",
+    "isomorphic-git": "~1.25",
     "js-yaml": "~4.1",
     "multi-progress": "~4.0",
     "picomatch": "~4.0",
