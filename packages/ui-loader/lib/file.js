@@ -1,8 +1,8 @@
 'use strict'
 
-const { constants: fsc } = require('fs')
-const { posix: path } = require('path')
-const { Readable } = require('stream')
+const { constants: fsc } = require('node:fs')
+const { posix: path } = require('node:path')
+const { Readable } = require('node:stream')
 const Vinyl = require('vinyl')
 
 const DEFAULT_FILE_MODE = 0o100666 & ~process.umask()

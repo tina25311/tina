@@ -1,6 +1,6 @@
 'use strict'
 
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 
 function summarizeFileLocation ({ path: path_, src: { abspath, origin } }) {
   if (!origin) return abspath || path_

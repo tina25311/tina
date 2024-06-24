@@ -1,6 +1,6 @@
 'use strict'
 
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 
 module.exports = (to, { data }) => {
   if (!to) return '#'

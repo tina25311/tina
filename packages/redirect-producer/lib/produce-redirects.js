@@ -1,7 +1,7 @@
 'use strict'
 
 const File = require('vinyl')
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 
 const ENCODED_SPACE_RX = /%20/g
 

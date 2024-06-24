@@ -1,6 +1,6 @@
 'use strict'
 
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 const splitOnce = require('../util/split-once')
 
 const { EXAMPLES_DIR_TOKEN, PARTIALS_DIR_TOKEN } = require('../constants')

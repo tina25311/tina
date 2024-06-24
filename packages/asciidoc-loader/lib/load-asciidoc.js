@@ -6,7 +6,7 @@ const Opal = global.Opal
 const createConverter = require('./converter/create')
 const createExtensionRegistry = require('./create-extension-registry')
 const LoggerAdapter = require('./logger/adapter')
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 const resolveAsciiDocConfig = require('./config/resolve-asciidoc-config')
 const resolveIncludeFile = require('./include/resolve-include-file')
 

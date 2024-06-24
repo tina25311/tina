@@ -5,7 +5,7 @@ const invariably = { void: () => undefined }
 const logger = require('./logger')
 const { lookup: resolveMimeType } = require('./mime-types-with-asciidoc')
 const parseResourceId = require('./util/parse-resource-id')
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 const resolveResource = require('./util/resolve-resource')
 const summarizeFileLocation = require('./util/summarize-file-location')
 const versionCompare = require('./util/version-compare-desc')

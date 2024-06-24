@@ -1,6 +1,6 @@
 'use strict'
 
-const { inspect } = require('util')
+const { inspect } = require('node:util')
 const ReadableOutputFileArray = require('./readable-output-file-array')
 const userRequire = require('@antora/user-require-helper')
 

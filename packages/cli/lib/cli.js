@@ -3,7 +3,7 @@
 const buildPlaybook = require('@antora/playbook-builder')
 const cli = require('./commander')
 const convict = require('@antora/playbook-builder/lib/solitary-convict') // drop lib segment in Antora 4
-const ospath = require('path')
+const ospath = require('node:path')
 const userRequire = require('@antora/user-require-helper')
 
 const { version: VERSION } = require('../package.json')

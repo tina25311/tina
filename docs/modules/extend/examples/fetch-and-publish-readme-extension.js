@@ -1,6 +1,7 @@
+const https = require('node:https')
+
 module.exports.register = function () {
   this.on('beforePublish', async ({ siteCatalog }) => {
-    const https = require('https')
     const contents = await new Promise((resolve, reject) => {
       const buffer = []
       https

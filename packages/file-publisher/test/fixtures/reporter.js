@@ -1,7 +1,7 @@
 'use strict'
 
-const fs = require('fs')
-const ospath = require('path')
+const fs = require('node:fs')
+const ospath = require('node:path')
 
 module.exports = async (destConfig, filesStream, playbook) => {
   const files = []

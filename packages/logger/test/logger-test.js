@@ -15,8 +15,8 @@ const {
 
 const Logger = require('@antora/logger')
 const { configure, configureLogger, finalizeLogger, get, getLogger } = Logger
-const ospath = require('path')
-const { types } = require('util')
+const ospath = require('node:path')
+const { types } = require('node:util')
 const pino = require('pino')
 const { prettyFactory: pinoPrettyFactory } = require('pino-pretty')
 const SonicBoom = require('sonic-boom')
@@ -1522,7 +1522,7 @@ describe('logger', () => {
       expect(realStream).to.have.property('minLength', 4096)
       let lines = captureStdoutSync(() => logger.info('love is the message'))
       expect(lines).to.be.empty()
-      const fs = require('fs')
+      const fs = require('node:fs')
       const originalWrite = fs.write
       lines = await captureStdout(finalizeLogger)
       expect(fs.write).to.equal(originalWrite) // verify that captureStdout releases fs.write
@@ -1821,7 +1821,7 @@ describe('logger', () => {
     })
 
     it('should not moderate destination that is a function', async () => {
-      const destination = new (class extends require('events') {
+      const destination = new (class extends require('node:events') {
         constructor () {
           super()
           this.messages = []

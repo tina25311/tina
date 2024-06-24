@@ -13,13 +13,13 @@ const {
 
 const CloneableReadable = require('#cloneable-readable')
 const File = require('vinyl')
-const fs = require('fs')
+const fs = require('node:fs')
 const { promises: fsp } = fs
-const os = require('os')
-const ospath = require('path')
+const os = require('node:os')
+const ospath = require('node:path')
 const { posix: path } = ospath
 const publishFiles = require('@antora/file-publisher')
-const { PassThrough, pipeline, Writable } = require('stream')
+const { PassThrough, pipeline, Writable } = require('node:stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
 
 const CWD = process.cwd()

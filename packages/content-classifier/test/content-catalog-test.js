@@ -6,7 +6,7 @@ const { captureLogSync, expect, spy } = require('@antora/test-harness')
 const classifyContent = require('@antora/content-classifier')
 const ContentCatalog = require('@antora/content-classifier/content-catalog')
 const File = require('@antora/content-classifier/file')
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 
 const { ROOT_INDEX_PAGE_ID } = require('#constants')
 

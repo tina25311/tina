@@ -1,7 +1,7 @@
 'use strict'
 
 const deepFlatten = require('./deep-flatten')
-const { promises: fsp } = require('fs')
+const { promises: fsp } = require('node:fs')
 const git = require('./git')
 const invariably = require('./invariably')
 const { expandBraces, makeMatcherRx, pathMatcherOpts: MATCHER_OPTS } = require('./matcher')

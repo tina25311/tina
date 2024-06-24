@@ -1,3 +1,3 @@
 'use strict'
 
-module.exports = require('path').sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
+module.exports = require('node:path').sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined

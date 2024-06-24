@@ -1,7 +1,7 @@
 'use strict'
 
-const ospath = require('path')
-const fs = require('fs')
+const ospath = require('node:path')
+const fs = require('node:fs')
 const { promises: fsp } = fs
 const http = require('isomorphic-git/http/node')
 const git = ((git$1) => {
@@ -9,7 +9,7 @@ const git = ((git$1) => {
   return git$1
 })(require('isomorphic-git'))
 const { globStream } = require('fast-glob')
-const { pipeline, Writable } = require('stream')
+const { pipeline, Writable } = require('node:stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
 const yaml = require('js-yaml')
 

@@ -1,8 +1,8 @@
 'use strict'
 
-const { EventEmitter, once } = require('events')
+const { EventEmitter, once } = require('node:events')
 const expandPath = require('@antora/expand-path-helper')
-const ospath = require('path')
+const ospath = require('node:path')
 const { posix: path } = ospath
 const {
   levels: { labels: levelLabels, values: levelValues },

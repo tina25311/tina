@@ -1,6 +1,6 @@
 'use strict'
 
-const { PassThrough } = require('stream')
+const { PassThrough } = require('node:stream')
 
 const invariably = { void: () => undefined }
 

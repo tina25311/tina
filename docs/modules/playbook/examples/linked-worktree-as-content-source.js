@@ -6,8 +6,8 @@
  * License Version 2.0. If a copy of this license was not distributed
  * with this file, you can obtain one at http://mozilla.org/MPL/2.0/.
  */
-const { promises: fsp } = require('fs')
-const ospath = require('path')
+const fsp = require('node:fs/promises')
+const ospath = require('node:path')
 
 /**
  * Rewrites local content sources to support the use of linked worktrees.

@@ -4,7 +4,7 @@
 const { expect } = require('@antora/test-harness')
 
 const buildPlaybook = require('@antora/playbook-builder')
-const ospath = require('path')
+const ospath = require('node:path')
 
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 

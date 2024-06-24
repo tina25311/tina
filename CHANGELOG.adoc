@@ -28,6 +28,7 @@ This project utilizes semantic versioning.
 * *file-publisher*: Don't include file in archive (zip) if contents property is null; matches behavior of fs publisher
 * *cli*: Update description for `extension` option to clarify it may be specified multiple times.
 * Upgrade vinyl and vinyl-fs to address security and deprecation warnings (#1133)
+* Prefix name of all built-in modules with node: (#1136)
 
 === Fixed
 

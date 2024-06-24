@@ -85,7 +85,7 @@ function buildPlaybookFromArguments (args, env) {
     try {
       const { configureLogger, finalizeLogger } = require('@antora/logger')
       const playbookFile = config.get('playbook') || process.cwd() + '/.'
-      configureLogger(config.getModel('runtime.log'), require('path').dirname(playbookFile))
+      configureLogger(config.getModel('runtime.log'), require('node:path').dirname(playbookFile))
       this.on('contextClosed', finalizeLogger)
     } catch {}
   })

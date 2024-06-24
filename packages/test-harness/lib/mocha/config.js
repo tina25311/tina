@@ -26,14 +26,14 @@ function logCoverageReportPath () {
   const coverageReportRelpath = 'reports/lcov-report/index.html'
   const coverageReportURL = CI_JOB_ID
     ? `https://gitlab.com/${CI_PROJECT_PATH}/-/jobs/${CI_JOB_ID}/artifacts/file/${coverageReportRelpath}`
-    : require('url').pathToFileURL(coverageReportRelpath)
+    : require('node:url').pathToFileURL(coverageReportRelpath)
   console.log(`Coverage report: ${coverageReportURL}`)
 }
 
 function resolveSpec () {
   const spec = process.argv[2]
   if (spec && !spec.startsWith('-')) return spec
-  return process.env.npm_package_json === require('path').join(process.env.npm_config_local_prefix, 'package.json')
+  return process.env.npm_package_json === require('node:path').join(process.env.npm_config_local_prefix, 'package.json')
     ? `packages/${process.env.npm_config_package || '*'}/test/**/*-test.js`
     : 'test/**/*-test.js'
 }

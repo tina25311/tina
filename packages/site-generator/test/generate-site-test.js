@@ -18,17 +18,17 @@ const {
 } = require('@antora/test-harness')
 
 const { configureLogger, getLogger } = require('@antora/logger')
-const fs = require('fs')
+const fs = require('node:fs')
 const generateSite = require('@antora/site-generator')
 const buildPlaybook = require('@antora/playbook-builder')
-const ospath = require('path')
+const ospath = require('node:path')
 
 const CONTENT_REPOS_DIR = ospath.join(__dirname, 'content-repos')
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 const WORK_DIR = ospath.join(__dirname, 'work')
 const UI_BUNDLE_URL =
   'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable'
-const TMP_DIR = require('os').tmpdir()
+const TMP_DIR = require('node:os').tmpdir()
 
 describe('generateSite()', () => {
   let $
