@@ -283,15 +283,12 @@ describe('publishFiles()', () => {
   })
 
   it('should not publish file to fs that has null contents', async () => {
-    const destFile = './path/to/site.zip'
-    playbook.output.destinations.push({ provider: 'archive', path: destFile })
+    playbook.output.dir = './public'
+    delete playbook.output.destinations
     const contentCatalog = catalogs[0]
-    const files = contentCatalog.getFiles()
-    files.push(createFile('_attachments/null.yml'))
-    contentCatalog.getFiles = () => files
+    contentCatalog.getFiles = () => [createFile('_attachments/null.yml')]
     await publishFiles(playbook, catalogs)
-    expect(playbook.output.destinations[0].path).to.equal(destFile)
-    await verifyArchiveOutput(destFile)
+    expect(ospath.join(playbook.dir, playbook.output.dir)).to.be.a.directory().with.subDirs(['_'])
   })
 
   it('should publish site to fs at previously published dir path', async () => {
@@ -437,12 +434,15 @@ describe('publishFiles()', () => {
   })
 
   it('should not publish file to archive that has null contents', async () => {
-    playbook.output.dir = './public'
-    delete playbook.output.destinations
+    const destFile = './path/to/site.zip'
+    playbook.output.destinations.push({ provider: 'archive', path: destFile })
     const contentCatalog = catalogs[0]
-    contentCatalog.getFiles = () => [createFile('_attachments/null.yml')]
+    const files = contentCatalog.getFiles()
+    files.push(createFile('_attachments/null.yml'))
+    contentCatalog.getFiles = () => files
     await publishFiles(playbook, catalogs)
-    expect(ospath.join(playbook.dir, playbook.output.dir)).to.be.a.directory().with.subDirs(['_'])
+    expect(playbook.output.destinations[0].path).to.equal(destFile)
+    await verifyArchiveOutput(destFile)
   })
 
   it('should throw an error if cannot write to archive destination path', async () => {
