@@ -465,6 +465,16 @@ describe('publishFiles()', () => {
     expect(await trapAsyncError(publishFiles, playbook, catalogs)).to.throw('mkdir')
   })
 
+  it('should throw an error if file to publish to archive is invalid', async () => {
+    const destFile = './path/to/site.zip'
+    playbook.output.destinations.push({ provider: 'archive', path: destFile })
+    const contentCatalog = catalogs[0]
+    const files = contentCatalog.getFiles()
+    files[0].stat = { mode: -1 }
+    contentCatalog.getFiles = () => files
+    expect(await trapAsyncError(publishFiles, playbook, catalogs)).to.throw('invalid mode')
+  })
+
   it('should publish site to multiple fs directories', async () => {
     const destDir1 = './site1'
     const destDir2 = './site2'
