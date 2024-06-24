@@ -12,9 +12,9 @@ const {
   wipeSync,
 } = require('@antora/test-harness')
 
-const fs = require('fs')
+const fs = require('node:fs')
 const { default: Kapok } = require('kapok-js')
-const ospath = require('path')
+const ospath = require('node:path')
 const { version: VERSION } = require('@antora/cli/package.json')
 
 const ANTORA_CLI = ospath.resolve('node_modules', '.bin', process.platform === 'win32' ? 'antora.cmd' : 'antora')
@@ -24,7 +24,7 @@ const UI_BUNDLE_URL =
   'https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable'
 const WORK_DIR = ospath.join(__dirname, 'work')
 const ANTORA_CACHE_DIR = ospath.join(WORK_DIR, '.antora/cache')
-const TMP_DIR = require('os').tmpdir()
+const TMP_DIR = require('node:os').tmpdir()
 
 Kapok.config.shouldShowLog = false
 

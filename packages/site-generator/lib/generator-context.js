@@ -1,6 +1,6 @@
 'use strict'
 
-const EventEmitter = require('events')
+const EventEmitter = require('node:events')
 const getLogger = require('@antora/logger')
 const userRequire = require('@antora/user-require-helper')
 
@@ -38,7 +38,7 @@ class GeneratorContext extends EventEmitter {
 
   constructor (module_) {
     super()
-    if (!('path' in (this.module = module_))) module_.path = require('path').dirname(module_.filename)
+    if (!('path' in (this.module = module_))) module_.path = require('node:path').dirname(module_.filename)
   }
 
   getFunctions () {

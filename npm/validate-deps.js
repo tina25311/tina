@@ -1,8 +1,7 @@
 'use strict'
 
-const { promises: fsp } = require('fs')
-const { sep: FILE_SEPARATOR } = require('path')
-const builtinModules = require('module').builtinModules.filter((it) => it.charAt() !== '_')
+const fsp = require('node:fs/promises')
+const { sep: FILE_SEPARATOR } = require('node:path')
 
 ;(async () => {
   for await (const { name: packageName } of await fsp.opendir('packages')) {
@@ -28,7 +27,7 @@ const builtinModules = require('module').builtinModules.filter((it) => it.charAt
           } else if (name.endsWith('.js')) {
             await fsp.readFile(`${dir}${FILE_SEPARATOR}${name}`, 'utf8').then((contents) => {
               for (const [, request] of new Set(contents.matchAll(/require\('(.+?)'\)/g))) {
-                if (request.startsWith('.') || ~builtinModules.indexOf(request)) continue
+                if (request.startsWith('.') || request.startsWith('node:')) continue
                 const deepIdx = request.indexOf('/', request.startsWith('@') ? request.indexOf('/') + 1 : 0)
                 requests.push(~deepIdx ? request.substr(0, deepIdx) : request)
               }

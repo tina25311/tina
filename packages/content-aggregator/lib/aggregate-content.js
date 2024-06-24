@@ -1,32 +1,32 @@
 'use strict'
 
 const computeOrigin = require('./compute-origin')
-const { createHash } = require('crypto')
+const { createHash } = require('node:crypto')
 const createGitHttpPlugin = require('./git-plugin-http')
 const decodeUint8Array = require('./decode-uint8-array')
 const deepClone = require('./deep-clone')
-const EventEmitter = require('events')
+const EventEmitter = require('node:events')
 const expandPath = require('@antora/expand-path-helper')
 const File = require('./file')
 const filterRefs = require('./filter-refs')
-const fs = require('fs')
+const fs = require('node:fs')
 const { promises: fsp } = fs
 const getCacheDir = require('cache-directory')
 const GitCredentialManagerStore = require('./git-credential-manager-store')
 const git = require('./git')
 const { NotFoundError, ObjectTypeError, UnknownTransportError, UrlParseError } = git.Errors
 const { globStream } = require('fast-glob')
-const { inspect } = require('util')
+const { inspect } = require('node:util')
 const invariably = require('./invariably')
 const logger = require('./logger')
 const { makeMatcherRx, versionMatcherOpts: VERSION_MATCHER_OPTS } = require('./matcher')
 const MultiProgress = require('multi-progress') // calls require('progress') as a peer dependencies
-const ospath = require('path')
+const ospath = require('node:path')
 const { posix: path } = ospath
 const posixify = require('./posixify')
 const removeGitSuffix = require('./remove-git-suffix')
 const { fs: resolvePathGlobsFs, git: resolvePathGlobsGit } = require('./resolve-path-globs')
-const { pipeline, Writable } = require('stream')
+const { pipeline, Writable } = require('node:stream')
 const forEach = (write) => new Writable({ objectMode: true, write })
 const userRequire = require('@antora/user-require-helper')
 const yaml = require('js-yaml')

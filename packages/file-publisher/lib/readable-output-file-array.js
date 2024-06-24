@@ -1,7 +1,7 @@
 'use strict'
 
 const CloneableReadable = require('./cloneable-readable')
-const { Readable } = require('stream')
+const { Readable } = require('node:stream')
 const Vinyl = require('vinyl')
 
 class File extends Vinyl {

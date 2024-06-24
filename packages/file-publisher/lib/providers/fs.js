@@ -1,13 +1,13 @@
 'use strict'
 
 const expandPath = require('@antora/expand-path-helper')
-const { promises: fsp } = require('fs')
+const { promises: fsp } = require('node:fs')
 const mkdirp = (path) => fsp.mkdir(path, { recursive: true })
 const rmrf = (path) => fsp['rm' in fsp ? 'rm' : 'rmdir'](path, { recursive: true, force: true })
-const ospath = require('path')
-const { pathToFileURL } = require('url')
+const ospath = require('node:path')
+const { pathToFileURL } = require('node:url')
 const publishStream = require('./common/publish-stream')
-const { pipeline, PassThrough, Writable } = require('stream')
+const { pipeline, PassThrough, Writable } = require('node:stream')
 const forEach = (write, final) => new Writable({ objectMode: true, write, final })
 
 const { DEFAULT_DEST_FS } = require('../constants.js')

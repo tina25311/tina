@@ -1,7 +1,7 @@
 'use strict'
 
-const { constants: fsc } = require('fs')
-const { Readable } = require('stream')
+const { constants: fsc } = require('node:fs')
+const { Readable } = require('node:stream')
 
 class ZipReadable extends Readable {
   constructor (zipFile) {

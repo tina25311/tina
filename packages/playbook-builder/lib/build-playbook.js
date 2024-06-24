@@ -2,8 +2,8 @@
 
 const convict = require('./solitary-convict')
 const defaultSchema = require('./config/schema')
-const fs = require('fs')
-const ospath = require('path')
+const fs = require('node:fs')
+const ospath = require('node:path')
 
 /**
  * Builds a playbook object according to the provided schema from the specified

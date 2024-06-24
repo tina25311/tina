@@ -1,10 +1,10 @@
 'use strict'
 
-const { homedir } = require('os')
+const { homedir } = require('node:os')
 const expandPath = require('@antora/expand-path-helper')
-const { promises: fsp } = require('fs')
+const { promises: fsp } = require('node:fs')
 const invariably = require('./invariably')
-const ospath = require('path')
+const ospath = require('node:path')
 
 class GitCredentialManagerStore {
   configure ({ config, startDir }) {

@@ -1,6 +1,6 @@
 'use strict'
 
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 const posixify = require('./posixify')
 const removeGitSuffix = require('./remove-git-suffix')
 

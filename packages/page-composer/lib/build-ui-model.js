@@ -1,6 +1,6 @@
 'use strict'
 
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 
 const { DEFAULT_LAYOUT_NAME } = require('./constants')
 const { version: VERSION } = require('../package.json')

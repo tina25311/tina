@@ -1,7 +1,7 @@
 'use strict'
 
-const fs = require('fs')
-const ospath = require('path')
+const fs = require('node:fs')
+const ospath = require('node:path')
 
 const PROJECT_ROOT_DIR = ospath.join(__dirname, '..')
 const PACKAGES_DIR = ospath.join(PROJECT_ROOT_DIR, 'packages')

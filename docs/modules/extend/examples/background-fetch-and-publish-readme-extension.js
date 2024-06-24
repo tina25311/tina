@@ -1,4 +1,4 @@
-const https = require('https')
+const https = require('node:https')
 
 class FetchAndPublishReadmeExtension {
   static register ({ config }) {

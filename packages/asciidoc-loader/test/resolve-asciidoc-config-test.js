@@ -5,7 +5,7 @@ const { captureLogSync, expect } = require('@antora/test-harness')
 const { resolveAsciiDocConfig } = require('@antora/asciidoc-loader')
 
 const Asciidoctor = global.Opal.Asciidoctor
-const ospath = require('path')
+const ospath = require('node:path')
 
 const FIXTURES_DIR = ospath.join(__dirname, 'fixtures')
 

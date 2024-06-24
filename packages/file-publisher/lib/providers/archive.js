@@ -1,10 +1,10 @@
 'use strict'
 
 const expandPath = require('@antora/expand-path-helper')
-const fs = require('fs')
-const ospath = require('path')
+const fs = require('node:fs')
+const ospath = require('node:path')
 const publishStream = require('./common/publish-stream')
-const { Writable } = require('stream')
+const { Writable } = require('node:stream')
 const forEach = (construct, write, final) => new Writable({ objectMode: true, construct, write, final })
 const { ZipFile } = require('yazl')
 

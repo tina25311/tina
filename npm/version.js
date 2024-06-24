@@ -1,8 +1,8 @@
 'use strict'
 
-const { promises: fsp } = require('fs')
-const https = require('https')
-const ospath = require('path')
+const fsp = require('node:fs/promises')
+const https = require('node:https')
+const ospath = require('node:path')
 
 const NODEJS_RELEASES_URL = 'https://nodejs.org/dist/index.json'
 const PROJECT_ROOT_DIR = ospath.join(__dirname, '..')

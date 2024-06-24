@@ -14,7 +14,7 @@ const {
 // NOTE use separate require statement to verify loadAsciiDoc is default export
 const loadAsciiDoc = require('@antora/asciidoc-loader')
 const { resolveAsciiDocConfig } = loadAsciiDoc
-const ospath = require('path')
+const ospath = require('node:path')
 
 const Opal = global.Opal
 const Asciidoctor = Opal.Asciidoctor

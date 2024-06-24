@@ -4,7 +4,7 @@
 const { captureLogSync, expect, spy } = require('@antora/test-harness')
 
 const classifyContent = require('@antora/content-classifier')
-const { posix: path } = require('path')
+const { posix: path } = require('node:path')
 
 const COMPONENT_DESC_FILENAME = 'antora.yml'
 

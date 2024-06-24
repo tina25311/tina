@@ -1,20 +1,20 @@
 'use strict'
 
 const { compile: bracesToGroup } = require('braces')
-const { createHash } = require('crypto')
+const { createHash } = require('node:crypto')
 const expandPath = require('@antora/expand-path-helper')
 const { File, MemoryFile, ZipReadable } = require('./file')
-const { promises: fsp } = require('fs')
+const { promises: fsp } = require('node:fs')
 const { concat: get } = require('simple-get')
 const getCacheDir = require('cache-directory')
 const { globStream } = require('fast-glob')
-const { inspect } = require('util')
+const { inspect } = require('node:util')
 const invariably = { false: () => false, void: () => undefined }
-const ospath = require('path')
+const ospath = require('node:path')
 const { posix: path } = ospath
 const picomatch = require('picomatch')
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
-const { pipeline, PassThrough, Writable } = require('stream')
+const { pipeline, PassThrough, Writable } = require('node:stream')
 const forEach = (write, final) => new Writable({ objectMode: true, write, final })
 const through = () => new PassThrough({ objectMode: true })
 const UiCatalog = require('./ui-catalog')

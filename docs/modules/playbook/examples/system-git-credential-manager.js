@@ -1,7 +1,7 @@
 'use strict'
 
 // tag::call-git-credential-fill[]
-const { spawn } = require('child_process')
+const { spawn } = require('node:child_process')
 
 function callGitCredentialFill (url) {
   const { protocol, host } = new URL(url)
