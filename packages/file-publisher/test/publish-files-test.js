@@ -282,7 +282,7 @@ describe('publishFiles()', () => {
     verifyFsOutput(destDir)
   })
 
-  it('should not publish file to fs that has null contents', async () => {
+  it('should not publish file to archive that has null contents', async () => {
     const destFile = './path/to/site.zip'
     playbook.output.destinations.push({ provider: 'archive', path: destFile })
     const contentCatalog = catalogs[0]
