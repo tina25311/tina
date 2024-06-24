@@ -99,14 +99,14 @@ Let's assume you have the following [.path]_package.json_ file in your playbook 
 
 You'll first want to run `npm i` to generate the [.path]_package-lock.json_ file and commit both files.
 
-With that configuration in place, you can modify your GitLab CI/CD configuration to be based on *node:16-alpine*, the base image used by Antora Docker.
+With that configuration in place, you can modify your GitLab CI/CD configuration to be based on *node:18-alpine*, the base image used by Antora Docker.
 You'll then need to fetch the dependencies on each build since the base image does not provide Antora.
 
 ..gitlab-ci.yml
 [source,yaml]
 ----
 image:
-  name: node:16-alpine # <1>
+  name: node:18-alpine # <1>
 variables:
   ANTORA_CACHE_DIR: .cache/antora # <2>
   NODE_OPTIONS: --max-old-space-size=4096 # <3>

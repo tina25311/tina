@@ -10,7 +10,7 @@ workflow:
     - packages/**/*
 variables:
   GIT_DEPTH: '5'
-  DEFAULT_NODE_VERSION: '16'
+  DEFAULT_NODE_VERSION: '18'
   LINUX_DISTRO: bullseye
   NODE_NO_WARNINGS: '1' # remove once fs.Stats constructor is removed
   NPM_CONFIG_AUDIT: 'false'
@@ -88,7 +88,7 @@ lint:
   - npm run deps
   - npm run lint
   - if [ -n "$(npm --silent run format && git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
-test:node-16-linux:
+test:node-18-linux:
   extends: .npm
   <<: *unless_docs_mr
   script: npm run coverage

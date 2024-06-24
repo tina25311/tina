@@ -30,6 +30,7 @@ This project utilizes semantic versioning.
 * *cli*: Update description for `extension` option to clarify it may be specified multiple times.
 * Upgrade vinyl and vinyl-fs to address security and deprecation warnings (#1133)
 * Prefix name of all built-in modules with node: (#1136)
+* Set Node.js 18 as minimum required version of Node.js
 
 === Fixed
 
