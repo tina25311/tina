@@ -299,18 +299,20 @@ describe('publishFiles()', () => {
     delete playbook.output.destinations
     const contentCatalog = catalogs[0]
     const files = contentCatalog.getFiles()
-    files.push(createFile('other-component/index.html', generateHtml('Other Page', 'content')))
+    const newFile = createFile('other-component/index.html', generateHtml('Other Page', 'original content'))
+    files.push(newFile)
     contentCatalog.getFiles = () => files
     await publishFiles(playbook, catalogs)
     verifyFsOutput(playbook.output.dir, ['_', 'the-component', 'other-component'])
     expect(ospath.join(playbook.dir, playbook.output.dir, 'other-component/index.html'))
       .to.be.a.file()
-      .with.contents.that.match(HTML_RX)
+      .with.contents.that.match(/<html>[\S\s]+original content[\S\s]+<\/html>/)
+    newFile.contents = Buffer.from(generateHtml('Other Page', 'updated content'))
     await publishFiles(playbook, catalogs)
     verifyFsOutput(playbook.output.dir, ['_', 'the-component', 'other-component'])
     expect(ospath.join(playbook.dir, playbook.output.dir, 'other-component/index.html'))
       .to.be.a.file()
-      .with.contents.that.match(HTML_RX)
+      .with.contents.that.match(/<html>[\S\s]+updated content[\S\s]+<\/html>/)
   })
 
   it('should throw an error if cannot write to destination path', async () => {
