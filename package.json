@@ -18,7 +18,7 @@
     "lint": "eslint \"{docs,npm}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
     "prepareForDev": "node npm/prepare-for-dev.js",
     "test": "_mocha",
-    "tidy": "npm run lint && npm run format",
+    "tidy": "npm run lint && npm run format && npm run deps",
     "version": "node npm/version.js"
   },
   "devDependencies": {
