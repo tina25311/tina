@@ -16,7 +16,57 @@
 :url-milestone-3-1-5: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.5
 :url-milestone-3-1-6: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.6
 :url-milestone-3-1-7: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.7
+:url-milestone-3-1-8: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.8
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.8
+
+_**Release date:** 2024.06.25 | *Issue label:* {url-milestone-3-1-8}[3.1.8^]_
+
+== Resolved issues
+
+=== Added
+
+Issue {url-issues}/1084[#1084^]::
+Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (asciidoc-loader)
+Issue {url-issues}/1084[#1104^]::
+Detect (and skip) AsciiDoc extension registered as an Antora extension and log a warning (site-generator)
+
+=== Changed
+
+Issue {url-issues}/1121[#1121^]::
+Replace new fs.Stats() with plain JavaScript object (content-aggregator, ui-loader)
+Issue {url-issues}/1128[#1128^]::
+Replace @vscode/gulp-vinyl-zip with low-level zip file reader using yauzl (ui-loader)
+Issue {url-issues}/1128[#1129^]::
+Replace @vscode/gulp-vinyl-zip with low-level zip file writer using yazl (file-publisher)
+Issue {url-issues}/1088[#1088^]::
+Log warning if nav entry cannot be resolved (content-classifier)
+Issue {url-issues}/1109[#1109^]::
+Fix `page.role` assignment to read value from `role` attribute instead of from (non-existent) `docrole` attribute (page-composer)
+Issue {url-issues}/1121[#1121^]::
+Assign empty object to stat property of output file if file does not have stat property (file-publisher)
+Issue {url-issues}/1131[#1131^]::
+Replace vinyl-fs#dest with internal implementation (file-publisher)
+Issue {url-issues}/1133[#1133^]::
+Upgrade vinyl and vinyl-fs to address security and deprecation warnings
+
+[]
+* Update description for `extension` CLI option to clarify it may be specified multiple times.
+* Don't include file in archive (zip) if contents property is null; matches behavior of fs publisher (file-publisher)
+
+=== Fixed
+
+Issue {url-issues}/1112[#1112^]::
+Throw clearer error if antora.yml is empty or the data is not an object (content-aggregator)
+Issue {url-issues}/1110[#1110^]::
+Apply include tag filtering update from Asciidoctor (see https://github.com/asciidoctor/asciidoctor/pull/4233) to ported logic in Antora (asciidoc-loader)
+Issue {url-issues}/1114[#1114^]::
+Filter out cyclic aliases (i.e., redirect loops) (redirect-producer)
+Issue {url-issues}/1134[#1134^]::
+Create files streams for file publishers to process eagerly to avoid race condition (file-publisher)
+Issue {url-issues}/1137[#1137^]::
+Use raw value if attribute value set using `--attribute` option cannot be parsed as YAML (cli)
 
 = Antora {page-component-version}.7
 
