@@ -33,7 +33,9 @@ function zipDest (zipPath, zipFile = new ZipFile(), writeStream) {
           : file.isNull() || zipFile.addBuffer(file.isSymbolic() ? file.symlink : file.contents, file.relative, zipStat)
         done()
       } catch (addErr) {
-        zipFile.outputStream.on('close', () => done(addErr)).end()
+        const bubbleError = () => done(addErr)
+        writeStream.on('error', bubbleError).on('close', bubbleError)
+        zipFile.outputStream.end()
       }
     },
     (done) => {
