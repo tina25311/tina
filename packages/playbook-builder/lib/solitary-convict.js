@@ -54,8 +54,15 @@ function registerFormats (convict) {
       let match
       const scanner = new RegExp(ARGS_SCANNER_RX)
       while ((match = scanner.exec(val))) {
-        const [, k, v] = match
-        if (k) accum[k] = v ? (v === '-' ? '-' : yaml.load(v, { schema: yaml.CORE_SCHEMA })) : ''
+        const [, k, v = ''] = match
+        if (!k) continue
+        let parsed = v
+        if (parsed && parsed !== '-') {
+          try {
+            parsed = yaml.load(v, { schema: yaml.CORE_SCHEMA })
+          } catch {}
+        }
+        accum[k] = parsed
       }
       return accum
     },
