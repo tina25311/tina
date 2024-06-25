@@ -33,7 +33,7 @@ default:
 - &if_release_rule
   if: $CI_PIPELINE_SOURCE == 'web' && $CI_PROJECT_PATH == 'antora/antora' && $CI_COMMIT_BRANCH && $CI_COMMIT_REF_PROTECTED && $RELEASE_VERSION
 - &if_schedule_rule
-  if: $CI_PIPELINE_SOURCE == 'schedule' || ($CI_PIPELINE_SOURCE == 'web' && $CI_JOB_NAME == 'test:windows' && $ENABLE_WINDOWS_JOB)
+  if: $CI_PIPELINE_SOURCE == 'schedule' || ($CI_PIPELINE_SOURCE == 'web' && $CI_JOB_NAME == 'test:windows' && $ENABLE_WINDOWS_JOB) || ($CI_COMMIT_TITLE =~ /[Ww]indows/)
 - &if_release
   rules:
   - *if_release_rule
