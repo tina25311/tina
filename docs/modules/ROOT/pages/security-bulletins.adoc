@@ -2,16 +2,13 @@
 
 A prompt response to software defects and security vulnerabilities is a top priority for Antora. Even though threats are a fact of life, we take quality assurance seriously with nearly 100% test coverage. This page documents the items that slipped through and how to address them.
 
-[#CVE-2020-28469]
-== Security Bulletin CVE-2020-28469
-
-ID:: CVE-2020-28469
-Published:: Jun 7, 2021
+== inflight and glob deprecation notice
 
 === Summary
 
-There's a known security vulnerability in the version of glob-parent that this project pulls in as a transitive dependency of vinyl-fs (by way of glob-stream).
-We're aware of this problem and are planning to eliminate it from the dependency chain as soon as we are able to.
+Asciidoctor.js depends on asciidoctor-opal-runtime, which depends on a deprecated version of the glob package.
+The glob package, in turn, depends on the deprecated inflight package.
+We're aware of this problem and are planning to eliminate glob from the dependency chain as soon as we're able to.
 
 === Affected versions
 
@@ -19,51 +16,26 @@ All versions of Antora.
 
 === Remediation plan
 
-The maintainer of vinyl-fs refuses to address the problem, so we will be removing vinyl-fs from Antora entirely.
-However, this is not a trivial change and will require time to address.
-We plan to remove it completely in a later release in the 3.x release line.
-
-In the meantime, you can explicitly upgrade this dependency in your dependency chain, thus eliminating the warning emitted by npm, by adding the following override to your [.path]_package.json_ file.
+You can explicitly upgrade the glob dependency in your dependency chain, thus eliminating the warning emitted by npm, by adding the following override to your [.path]_package.json_ file:
 
 [,json]
 ----
 "overrides": {
-  "vinyl-fs": {
-    "glob-stream": "~7.0"
+  "asciidoctor-opal-runtime": {
+    "glob": "~10.4"
   }
 }
 ----
 
 This remediation is used in the https://gitlab.com/antora/docs.antora.org/-/blob/main/netlify/package.json[build for this site].
-You can learn more about npm overrides in the https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides[package.json documentation].
 Unfortunately, npm overrides can only be used by the consumer of a library, not the library itself.
 Thus, this is not a remediation solution Antora itself can enact.
 
-You may also see a warning about deprecated inflight package.
-This package is a dependency of glob, which in turn is used by glob-stream.
-To suppress the deprecation message, you can add an entry to overrides to pull it directly from git.
-This package is not considered unsafe when used in Antora.
-
-[,json]
-----
-"overrides": {
-  "glob": {
-    "inflight": "https://github.com/isaacs/inflight-DEPRECATED-DO-NOT-USE#v1.0.6"
-  },
-  "vinyl-fs": {
-    "glob-stream": "~7.0"
-  }
-}
-----
-
-This override documents that the use of inflight is acknowledged and acceptable.
-
 === Assessment
 
-Fortunately, Antora uses glob-parent in a controlled way, so this vulnerability is not an attack vector for Antora.
+Fortunately, Antora never uses the glob library that Asciidoctor.js depends on, so this deprecation is irrelevant.
 However, we recognize that the notice is annoying and may trigger security protocols for users who see it.
 
 === References
 
-* https://nvd.nist.gov/vuln/detail/CVE-2020-28469[CVE-2020-28469]
-* https://github.com/advisories/GHSA-ww39-953v-wcq6[GHSA-ww39-953v-wcq6]
+* https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides[package.json overrides]
