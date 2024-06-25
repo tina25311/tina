@@ -528,13 +528,26 @@ describe('buildPlaybook()', () => {
   })
 
   it('should update map value from playbook file with map values in args when name is asciidoc.attributes', () => {
-    const args = ['--playbook', defaultSchemaSpec, '--attribute', 'idprefix=user-', '--attribute', 'idseparator=-']
+    const args = [
+      '--playbook',
+      defaultSchemaSpec,
+      '--attribute',
+      'idprefix=user-',
+      '--attribute',
+      'idseparator=-',
+      '--attribute',
+      "aq='",
+      '--attribute',
+      'reproducible',
+    ]
     const playbook = buildPlaybook(args, {})
     expect(playbook.asciidoc.attributes).to.eql({
       'allow-uri-read': true,
       idprefix: 'user-',
       idseparator: '-',
       toc: false,
+      reproducible: '',
+      aq: "'",
       'uri-project': 'https://antora.org',
     })
   })
