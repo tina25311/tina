@@ -40,6 +40,12 @@ Issue {url-issues}/1015[#1015^]::
 Issue {url-issues}/1016[#1016^]:: Add syntax to match current branch of specific worktrees in branches pattern (for inclusion or exclusion) (e.g., `HEAD@5.8.x`) (content-aggregator).
 Issue {url-issues}/1021[#1021^]:: Discover implicit site start page in component version promoted to site root (content-classifier).
 Issue {url-issues}/1096[#1096^]:: Add `git.read_concurrency` playbook key to control how many git indexes to load into memory at once (playbook-builder).
+Issue {url-issues}/1084[#1084^]::
+Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (asciidoc-loader)
+Issue {url-issues}/1084[#1104^]::
+Detect (and skip) AsciiDoc extension registered as an Antora extension and log a warning (site-generator)
+Issue {url-issues}/1090[#1090^]::
+Add `git.fetch_depth` key to control how many recent commits Antora fetches from a remote repository (playbook-builder)
 
 === Changed
 
@@ -60,7 +66,29 @@ Issue {url-issues}/1098[#1098^]::
 * Add cause in log message when retrying failed fetch/clone operations in series (content-aggregator)
 Issue {url-issues}/1101[#1101^]::
 * Clear timeout and keep-alive settings on git HTTP connections that don't use custom agent (content-aggregator)
+Issue {url-issues}/1121[#1121^]::
+Replace new fs.Stats() with plain JavaScript object (content-aggregator, ui-loader)
+Issue {url-issues}/1128[#1128^]::
+Replace @vscode/gulp-vinyl-zip with low-level zip file reader using yauzl (ui-loader)
+Issue {url-issues}/1128[#1129^]::
+Replace @vscode/gulp-vinyl-zip with low-level zip file writer using yazl (file-publisher)
+Issue {url-issues}/1088[#1088^]::
+Log warning if nav entry cannot be resolved (content-classifier)
+Issue {url-issues}/1109[#1109^]::
+Fix `page.role` assignment to read value from `role` attribute instead of from (non-existent) `docrole` attribute (page-composer)
+Issue {url-issues}/1121[#1121^]::
+Assign empty object to stat property of output file if file does not have stat property (file-publisher)
+Issue {url-issues}/1131[#1131^]::
+Replace vinyl-fs#dest with internal implementation (file-publisher)
+Issue {url-issues}/1133[#1133^]::
+Upgrade vinyl and vinyl-fs to address security and deprecation warnings
+Issue {url-issues}/298[#298^]::
+Use worktree from local repository even if repository has no commits (content-aggregator)
+Issue {url-issues}/1135[#1135^]::
+Monkey patch pako module to use zlib.inflate to inflate git objects (content-aggregator)
 (No issue)::
+* Set Node.js 18 as minimum required version of Node.js
+* Prefix name of all built-in modules with node: (#1136)
 * Don't read git tree twice if start path is empty; add dirname to tree object in same function (content-aggregator).
 * Fill in progress bar with incomplete marks if cloning a repository fails (content-aggregator).
 * Mention that credentials may have been rejected if server requests them, then sends 404 response (content-aggregator).
@@ -69,6 +97,8 @@ Issue {url-issues}/1101[#1101^]::
 * Print site URL instead of file URI in completion message if CI=true (site-generator).
 * Change gulp-vinyl-zip dependency to @vscode/gulp-vinyl-zip (no functional changes) (ui-loader and file-publisher).
 * Don't retry failed clone/fetch operation if playbook only has one content source URL (content-aggregator)
+* Update description for `extension` CLI option to clarify it may be specified multiple times.
+* Don't include file in archive (zip) if contents property is null; matches behavior of fs publisher (file-publisher)
 
 === Fixed
 
@@ -85,6 +115,15 @@ Issue {url-issues}/1064[#1064^]:: Consider local branches in non-managed bare re
 Issue {url-issues}/1092[#1092^]:: Don't fail to load AsciiDoc if target of image macro resolves to an unpublished image (asciidoc-loader).
 Issue {url-issues}/1095[#1095^]:: Retry loadUi in isolation after aggregateContent if network connection occurs when retrieving remote UI bundle (site-generator).
 Issue {url-issues}/1096[#1096^]:: Retry failed fetch/clone operations in serial if git.fetch_concurrency > 1 and an unexpected error occurs (content-aggregator).
+Issue {url-issues}/1112[#1112^]::
+Throw clearer error if antora.yml is empty or the data is not an object (content-aggregator)
+Issue {url-issues}/1110[#1110^]::
+Apply include tag filtering update from Asciidoctor (see https://github.com/asciidoctor/asciidoctor/pull/4233) to ported logic in Antora (asciidoc-loader)
+Issue {url-issues}/1114[#1114^]::
+Filter out cyclic aliases (i.e., redirect loops) (redirect-producer)
+Issue {url-issues}/1134[#1134^]::
+Create files streams for file publishers to process eagerly to avoid race condition (file-publisher)
+Issue {url-issues}/1137[#1137^]::
 (No issue)::
 * Use consistent formatting for error messages in playbook builder (playbook-builder).
 * Correctly handle connection error when retrieving remote UI bundle (ui-loader).
