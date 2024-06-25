@@ -11,7 +11,7 @@ Thus, to use the helpers, you need a reference to the generator context.
 There are two ways to get the generator context.
 If the listener functions are defined within the `register` function for the extension, they can access the generator context from the register function by way of variable scoping.
 Otherwise, the listener function can reference the generator context using the standard `this` keyword.
-The generator context is bound to to the listener function when the listener function is registered.
+The generator context is bound to the listener function when the listener function is registered.
 
 [#get-variables]
 == getVariables()
@@ -109,7 +109,7 @@ If the request can't be resolved, the method throws an Error with code `MODULE_N
 From time to time when writing extensions, you may need to access code provided by Antora.
 Examples include the logger, the ContentCatalog, or a utility function like `parseResourceId`.
 This method allows you to require this code without having to declare a dependency on Antora.
-That dependency is implicit since the extension runs within the context of of Antora.
+That dependency is implicit since the extension runs within the context of Antora.
 This method provides a way to require that code.
 
 Here's an example that shows how to get the version of the site generator that is currently running from a listener:
