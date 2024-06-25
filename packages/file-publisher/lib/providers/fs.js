@@ -22,18 +22,18 @@ function publishToFs (config, files, playbook) {
 
 function fsDest (toDir, dirs = new Map(), fileRestream = new PassThrough({ objectMode: true })) {
   return forEach(
-    (file, _, next) => {
-      if (file.isNull()) return next()
+    (file, _, done) => {
+      if (file.isNull()) return done()
       fileRestream.push(file)
       const dir = ospath.dirname(file.path)
-      if (dir === '.' || dirs.has(dir)) return next()
+      if (dir === '.' || dirs.has(dir)) return done()
       dirs.set(dir, true)
       let ancestorDir = ospath.dirname(dir)
       do {
         if (ancestorDir === '.' || dirs.get(ancestorDir) === false) break
         dirs.set(ancestorDir, false)
       } while ((ancestorDir = ospath.dirname(ancestorDir)))
-      next()
+      done()
     },
     function (done, mkdirs = []) {
       dirs.forEach((create, dir) => create && mkdirs.push(mkdirp(ospath.join(toDir, dir))))
@@ -41,7 +41,7 @@ function fsDest (toDir, dirs = new Map(), fileRestream = new PassThrough({ objec
         fileRestream
           .end()
           .pipe(
-            forEach((file, _, next) => {
+            forEach((file, _, done_) => {
               const abspath = ospath.join(toDir, file.path)
               const { gid, mode, uid } = file.stat || {}
               fsp.open(abspath, 'w', mode).then(async (fh) => {
@@ -60,12 +60,12 @@ function fsDest (toDir, dirs = new Map(), fileRestream = new PassThrough({ objec
                     newOwner.changed = true
                   }
                   if (newOwner.changed) await fh.chown(newOwner.uid, newOwner.gid).catch(() => undefined)
-                  fh.close().then(next, next)
+                  fh.close().then(done_, done_)
                 } catch (writeErr) {
-                  const bubbleError = () => next(writeErr)
+                  const bubbleError = () => done_(writeErr)
                   fh.close().then(bubbleError, bubbleError)
                 }
-              }, next)
+              }, done_)
             })
           )
           .on('error', done)
