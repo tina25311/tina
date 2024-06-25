@@ -1,6 +1,6 @@
 {
   "name": "@antora/file-publisher",
-  "version": "3.2.0-alpha.4",
+  "version": "3.2.0-alpha.5",
   "description": "Publishes the publishable files in the virtual file catalog(s) to the destination(s) specified in the playbook.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",

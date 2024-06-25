@@ -1,12 +1,12 @@
 name: antora
-version: '3.2'
-prerelease: '.0-alpha.4'
+version: '3.2.0-alpha.5'
+prerelease: true
 title: Antora
 asciidoc:
   attributes:
-    release-date: '2024-01-02'
+    release-date: '2024-06-25'
     release-tag: testing
-    release-version: '3.2.0-alpha.4'
+    release-version: '3.2.0-alpha.5'
     source-language: asciidoc@
     xrefstyle: short@
     example-caption: false

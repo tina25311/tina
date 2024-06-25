@@ -1,6 +1,6 @@
 {
   "name": "@antora/site-publisher",
-  "version": "3.2.0-alpha.4",
+  "version": "3.2.0-alpha.5",
   "description": "An alias for the @antora/file-publisher package.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
@@ -18,7 +18,7 @@
     ".": "./lib/index.js"
   },
   "dependencies": {
-    "@antora/file-publisher": "3.2.0-alpha.4"
+    "@antora/file-publisher": "3.2.0-alpha.5"
   },
   "engines": {
     "node": ">=18.0.0"
