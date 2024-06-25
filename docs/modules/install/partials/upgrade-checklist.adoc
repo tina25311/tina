@@ -8,7 +8,7 @@ If you're already using Antora 3.0, skip this section and go to xref:install:upg
 
 Are you using an active LTS version of Node.js?::
 We recommend upgrading to the {url-node-releases}[latest active long term support (LTS) release of Node].
-Antora 3 officially supports Node.js 16 LTS and Node.js 18 LTS.
+Antora 3 officially supports Node.js 18 LTS, Node.js 20 LTS, and Node.js 22 LTS.
 Antora 3 doesn't support Node.js versions that have reached end of life (EOL).
 See xref:install:upgrade-antora.adoc#node[Upgrade Node.js] for instructions.
 

@@ -12,8 +12,8 @@ asciidoc:
     example-caption: false
     listing-caption: Example@
     version-node-major: '20'
-    version-node: '20.10.0'
-    version-npm: '10.2.3'
+    version-node: '20.15.0'
+    version-npm: '10.7.0'
     url-node-releases: https://nodejs.org/en/about/releases/
     url-chat: https://chat.antora.org
     url-repo: https://gitlab.com/antora/antora

@@ -57,7 +57,7 @@ Windows Server 2019
 
 |Node.js
 |[%hardbreaks]
-LTS (&#8805; 16)
+LTS (&#8805; 18)
 |===
 
 .About the Antora Test Suite
