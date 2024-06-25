@@ -18,7 +18,7 @@ For example, the UI is fetched and loaded while the content is being aggregated 
 Build playbook::
 When you're ready to generate a site, you pass Antora a playbook file and tell it to run.
 +
-A xref:playbook:index.adoc[playbook file a simple configuration file] that can be written in YAML, JSON, or TOML.
+A xref:playbook:index.adoc[playbook file is a simple configuration file] that can be written in YAML, JSON, or TOML.
 It contains information and settings such as what content to use, how the content should be processed, how the site should be generated, and where to publish the output.
 +
 Antora reads the playbook file and builds a playbook from it, which it then uses to drive the pipeline.
