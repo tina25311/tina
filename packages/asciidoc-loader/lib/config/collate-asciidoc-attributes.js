@@ -15,7 +15,7 @@ function collateAsciiDocAttributes (scoped, { initial, merge, mdc }) {
   let changed
   const collated = merge ? Object.assign({}, initial) : initial || {}
   Object.entries(scoped).forEach(([name, val]) => {
-    if (locked[name]) return collated
+    if (locked[name]) return
     if (val && val.constructor === String) {
       let alias
       val = val.replace(ATTR_REF_RX, (ref, refname) => {
