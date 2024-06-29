@@ -714,6 +714,35 @@ describe('classifyContent()', () => {
       ])
     })
 
+    it('should set intrinsic attributes for component name and version', () => {
+      const siteAsciiDocConfig = {
+        attributes: {
+          'site-title': 'Docs',
+        },
+      }
+
+      Object.assign(aggregate[0], {
+        asciidoc: {
+          attributes: {
+            'project-slug': '{antora-component-name}-{antora-component-version}',
+          },
+        },
+      })
+
+      const contentCatalog = classifyContent(playbook, aggregate, siteAsciiDocConfig)
+      const component = contentCatalog.getComponent('the-component')
+      expect(component).to.exist()
+      const componentVersions = component.versions
+      expect(componentVersions).to.have.lengthOf(1)
+      const asciidocConfig = componentVersions[0].asciidoc
+      expect(asciidocConfig).to.exist()
+      expect(asciidocConfig).to.have.property('attributes')
+      expect(Object.entries(asciidocConfig.attributes)).to.have.deep.ordered.members([
+        ['site-title', 'Docs'],
+        ['project-slug', 'the-component-v1.2.3'],
+      ])
+    })
+
     it('should ignore escaped attribute references', () => {
       const siteAsciiDocConfig = {
         attributes: { 'attribute-missing': 'warn', 'site-title': 'Docs' },

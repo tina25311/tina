@@ -160,6 +160,10 @@ To learn more about how component version attributes interact with site attribut
 [#intrinsic]
 == Intrinsic component version attributes
 
+Antora defines intrinsic attributes that can be referenced by other attributes defined in the component version descriptor file (i.e., [.path]_antora.yml_).
+These attributes are as follows: `antora-component-name` and `antora-component-version`.
+The value of these attributes map back to the `name` and `version` keys in [.path]_antora.yml_, respectively.
+
 Antora defines intrinsic page attributes from most of the keys in a component version descriptor file.
 For instance, Antora sets the built-in attribute `page-component-title` and assigns it the value specified by the `title` key.
 These attributes _cannot_ be referenced by other attributes defined in [.path]_antora.yml_, but can be referenced in any page within the same component version.
