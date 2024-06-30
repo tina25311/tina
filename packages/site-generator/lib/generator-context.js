@@ -39,6 +39,7 @@ class GeneratorContext extends EventEmitter {
   constructor (module_) {
     super()
     if (!('path' in (this.module = module_))) module_.path = require('node:path').dirname(module_.filename)
+    globalThis.DOMParser = require('./dom-parser').load(globalThis.DOMParser)
   }
 
   getFunctions () {
@@ -66,6 +67,10 @@ class GeneratorContext extends EventEmitter {
       if (outcome instanceof Promise) await outcome
     }
     if (!this._eventsCount) Object.defineProperty(this, 'notify', { value: notifyNoop })
+  }
+
+  parseHTML (html) {
+    return new globalThis.DOMParser().parseFromString(html || '<html/>', 'text/html')
   }
 
   removeVariable (name) {

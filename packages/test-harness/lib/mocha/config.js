@@ -2,7 +2,7 @@
 
 const config = {
   checkLeaks: true,
-  globals: ['Opal'], // we know Opal is global, so no need to check
+  globals: ['DOMParser', 'Opal'], // we know Opal is global, so no need to check
   mochaGlobalTeardown () {
     if (!this.failures) logCoverageReportPath()
   },

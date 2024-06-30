@@ -12,6 +12,8 @@ This project utilizes semantic versioning.
 * *playbook-builder*: Add `git.fetch_depth` key to control how many recent commits Antora fetches from a remote repository (#1090)
 * *asciidoc-loader*: Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (#1084)
 * *site-generator*: Detect (and skip) AsciiDoc extension registered as an Antora extension and log a warning (#1104)
+* *site-generator*: Integrate HTML parser into Antora runtime by adding polyfill for top-level DOMParser class (#1120)
+* *site-generator*: Add parseHTML helper method to generator context that parses HTML from string using DOMParser (#1120)
 
 === Changed
 
