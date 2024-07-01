@@ -156,13 +156,19 @@ function getNavInfo (filepath, nav) {
   if (~index) return nav.resolved.add(filepath) && { index }
 }
 
-function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc, origins = [] }) {
+function resolveAsciiDocConfig (siteAsciiDocConfig, { name, version, asciidoc, origins = [] }) {
   const scopedAttributes = (asciidoc || {}).attributes
   if (scopedAttributes) {
-    const initial = siteAsciiDocConfig.attributes
+    const initial = Object.assign({}, siteAsciiDocConfig.attributes)
+    initial['antora-component-name'] = name
+    initial['antora-component-version'] = version
     const mdc = { file: { path: 'antora.yml', origin: origins[origins.length - 1] } }
     const attributes = collateAsciiDocAttributes(scopedAttributes, { initial, mdc, merge: true })
-    if (attributes !== initial) return Object.assign({}, siteAsciiDocConfig, { attributes })
+    if (attributes !== initial) {
+      delete attributes['antora-component-name']
+      delete attributes['antora-component-version']
+      return Object.assign({}, siteAsciiDocConfig, { attributes })
+    }
   }
   return siteAsciiDocConfig
 }
