@@ -12,7 +12,6 @@ variables:
   GIT_DEPTH: '5'
   DEFAULT_NODE_VERSION: '18'
   LINUX_DISTRO: bullseye
-  NODE_NO_WARNINGS: '1' # remove once fs.Stats constructor is removed
   NPM_CONFIG_AUDIT: 'false'
   NPM_CONFIG_CACHE: &npm_cache_dir .cache/npm
   NPM_CONFIG_FUND: 'false'
