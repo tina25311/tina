@@ -475,6 +475,21 @@ describe('publishFiles()', () => {
     expect(await trapAsyncError(publishFiles, playbook, catalogs)).to.throw('invalid mode')
   })
 
+  it('should publish site that contains file with stream', async () => {
+    const destDir = './path/to/_site'
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package.json')
+    const expectedContents = await fsp.readFile(dataFile, 'utf8')
+    catalogs.push({
+      getFiles: () => [createFile('data.json', fs.createReadStream(dataFile))],
+    })
+    playbook.output.destinations.push({ provider: 'fs', path: destDir })
+    await publishFiles(playbook, catalogs)
+    verifyFsOutput(destDir)
+    expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+      .to.be.a.file()
+      .with.contents(expectedContents)
+  })
+
   it('should publish site to multiple fs directories', async () => {
     const destDir1 = './site1'
     const destDir2 = './site2'
