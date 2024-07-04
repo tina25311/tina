@@ -10,6 +10,7 @@ class CloneableReadable extends PassThrough {
   constructor (original, opts) {
     super(Object.assign({}, opts, { objectMode: original.readableObjectMode }))
     forwardDestroy((this._original = original), this)
+    this.setMaxListeners(0)
     this._numStreams = 1
     this._hasListener = true
     this.on('newListener', onNewListener).on('resume', onResume)

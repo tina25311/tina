@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *file-publisher*: wrap legacy stream on file when preparing files for output providers; remove listeners limit (#1139)
+
 == 3.1.8 (2024-06-25)
 
 === Added
