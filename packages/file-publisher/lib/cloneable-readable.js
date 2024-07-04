@@ -8,7 +8,7 @@ const invariably = { void: () => undefined }
 // all clones attached to the cloneable, as well as the cloneable itself, must be piped to start the flow
 class CloneableReadable extends PassThrough {
   constructor (original, opts) {
-    super(Object.assign({}, opts, { objectMode: original._readableState.objectMode }))
+    super(Object.assign({}, opts, { objectMode: original.readableObjectMode }))
     forwardDestroy((this._original = original), this)
     this._numStreams = 1
     this._hasListener = true
@@ -27,7 +27,7 @@ class CloneableReadable extends PassThrough {
 
 class ReadableClone extends PassThrough {
   constructor (cloneable, opts) {
-    super(Object.assign({}, opts, { objectMode: cloneable._readableState.objectMode }))
+    super(Object.assign({}, opts, { objectMode: cloneable.readableObjectMode }))
     forwardDestroy((this._cloneable = cloneable), this)
     Object.defineProperty(cloneable, 'resume', { value: invariably.void, configurable: true })
     cloneable.pipe(this)
@@ -67,7 +67,7 @@ function onResume () {
 }
 
 function pipeIfFulfilled (cloneable) {
-  if (--cloneable._numStreams !== 0 || cloneable._readableState.destroyed) return
+  if (--cloneable._numStreams !== 0 || cloneable.destroyed) return
   cloneable._original.pipe(cloneable)
   cloneable._original = undefined
 }
