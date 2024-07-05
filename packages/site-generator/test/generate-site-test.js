@@ -964,26 +964,35 @@ describe('generateSite()', () => {
       expect(lines[0]).to.equal('extension required')
     })
 
-    it('should skip and warn if AsciiDoc extension is registered as Antora extension', async () => {
+    it('should warn if AsciiDoc extension is registered as Antora extension', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
-        module.exports.register = (registry) => {
-          throw new Error('should not run')
+        // emulate a hybrid AsciiDoc / Antora extension
+        module.exports.register = (registry, context) => {
+          if (context?.playbook) {
+            registry.getLogger().warn('register called')
+            return
+          }
         }
       `
       fs.writeFileSync(extensionPath, extensionCode)
       playbookSpec.antora.extensions = [extensionPath]
       fs.writeFileSync(playbookFile, toJSON(playbookSpec))
       const messages = await captureStdoutLog(() => generateSite(getPlaybook(playbookFile)))
-      expect(messages).to.have.lengthOf(1)
+      expect(messages).to.have.lengthOf(2)
       expect(messages[0]).to.include({
         level: 'warn',
         name: 'antora',
-        msg: `Skipping AsciiDoc extension registered as an Antora extension: ${extensionPath}`,
+        msg: `Detected AsciiDoc extension registered as an Antora extension: ${extensionPath}`,
+      })
+      expect(messages[1]).to.include({
+        level: 'warn',
+        name: 'antora',
+        msg: 'register called',
       })
     })
 
-    it('should skip and warn if possible AsciiDoc extension is registered as Antora extension', async () => {
+    it('should skip and warn if possible AsciiDoc extension is registered as Antora extension and fails to load', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         const FooInlineMacro = (() => {
