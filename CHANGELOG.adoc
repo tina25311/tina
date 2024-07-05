@@ -10,11 +10,11 @@ This project utilizes semantic versioning.
 === Changed
 
 * *site-generator*: Detect and warn when an AsciiDoc extension is registered as an Antora extension, but do no skip it (#1141)
+* Replace "AsciiDoc extension" with "Asciidoctor extension" in log messages
 
 === Fixed
 
 * *file-publisher*: Wrap legacy stream on file when preparing files for output providers; remove listeners limit (#1139)
-* Replace "AsciiDoc extension" with "Asciidoctor extension" in log messages
 
 == 3.1.8 (2024-06-25)
 

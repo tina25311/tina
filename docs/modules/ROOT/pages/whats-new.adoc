@@ -17,7 +17,29 @@
 :url-milestone-3-1-6: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.6
 :url-milestone-3-1-7: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.7
 :url-milestone-3-1-8: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.8
+:url-milestone-3-1-9: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.9
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.9
+
+_**Release date:** 2024.07.05 | *Issue label:* {url-milestone-3-1-9}[3.1.9^]_
+
+The focus of this release is to fix changes from the previous release that did not adhere to semantic versioning.
+First, the file publisher was updated to work with a virtual file created by vinyl 3, thus fixing compatibility with the PDF extension.
+Second, an Asciidoctor extension registered as an Antora extension will be registered rather than skipped, though a warning will still be issued.
+
+=== Changed
+
+Issue {url-issues}/1141[#1141^]::
+Detect and warn when an AsciiDoc extension is registered as an Antora extension, but do no skip it.
+(no issue)::
+Replace "AsciiDoc extension" with "Asciidoctor extension" in log messages
+
+=== Fixed
+
+Issue {url-issues}/1139[#1139^]::
+Wrap legacy stream on file when preparing files for output providers; remove listeners limit.
+Fixes compatibility with the Antora PDF extension.
 
 = Antora {page-component-version}.8
 
