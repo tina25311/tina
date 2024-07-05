@@ -155,13 +155,14 @@ class GeneratorContext extends EventEmitter {
           if (typeof register !== 'function') return // assume intent is to require a library or modify global state
         } catch (e) {
           if (!(e instanceof ReferenceError && ~(e.message || '').indexOf('Opal'))) throw e
-          this.getLogger().warn('Skipping possible AsciiDoc extension registered as an Antora extension: %s', request)
+          const msg = 'Skipping possible Asciidoctor extension registered as an Antora extension: %s'
+          this.getLogger().warn(msg, request)
           return
         }
         if (register.length) {
           const registerSource = register.toString().replace(NEWLINES_RX, ' ')
           if (ASCIIDOCTOR_REGISTER_FUNCTION_RX.test(registerSource)) {
-            this.getLogger().warn('Skipping AsciiDoc extension registered as an Antora extension: %s', request)
+            this.getLogger().warn('Skipping Asciidoctor extension registered as an Antora extension: %s', request)
           } else if (FUNCTION_WITH_NAMED_PARAMETER_RX.test(registerSource)) {
             register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
           } else {

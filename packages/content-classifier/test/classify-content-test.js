@@ -607,7 +607,7 @@ describe('classifyContent()', () => {
       expect(componentVersions[0].asciidoc).to.equal(siteAsciiDocConfig)
     })
 
-    it('should copy AsciiDoc extensions to scoped AsciiDoc config', () => {
+    it('should copy Asciidoctor extensions to scoped AsciiDoc config', () => {
       const siteAsciiDocConfig = {
         extensions: [{ register: (registry) => {} }],
       }

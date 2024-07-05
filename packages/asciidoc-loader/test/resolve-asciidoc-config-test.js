@@ -358,7 +358,7 @@ describe('resolveAsciiDocConfig()', () => {
     }
   })
 
-  it('should detect and warn if Antora extension is registered as AsciiDoc extension', () => {
+  it('should detect and warn if Antora extension is registered as Asciidoctor extension', () => {
     const antoraExtensionPath = ospath.resolve(FIXTURES_DIR, 'ext/antora-ext.js')
     const playbook = {
       dir: FIXTURES_DIR,
@@ -371,7 +371,7 @@ describe('resolveAsciiDocConfig()', () => {
     expect(messages[0]).to.eql({
       level: 'warn',
       name: '@antora/asciidoc-loader',
-      msg: `Skipping possible Antora extension registered as an AsciiDoc extension: ${antoraExtensionPath}`,
+      msg: `Skipping possible Antora extension registered as an Asciidoctor extension: ${antoraExtensionPath}`,
     })
   })
 })
