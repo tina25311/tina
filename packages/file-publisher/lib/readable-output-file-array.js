@@ -1,7 +1,8 @@
 'use strict'
 
 const CloneableReadable = require('./cloneable-readable')
-const { Readable } = require('node:stream')
+const Stream = require('node:stream')
+const { Readable } = Stream
 const Vinyl = require('vinyl')
 
 class File extends Vinyl {
@@ -28,23 +29,26 @@ class ReadableOutputFileArray extends Readable {
 }
 
 function toOutputFile (file, cloneStreams) {
-  const contents = file.contents
-  const outputFile = new File({ contents, path: file.out.path, stat: file.stat })
-  if (cloneStreams && isStream(contents)) {
-    // NOTE: guard in case contents is created on access (needed for @antora/lunr-extension <= 1.0.0-alpha.8)
-    if ((Object.getOwnPropertyDescriptor(file, 'contents') || { writable: true }).writable) {
-      const oContents =
-        contents instanceof CloneableReadable || typeof contents.clone === 'function'
-          ? contents
-          : (file.contents = new CloneableReadable(contents))
-      outputFile.contents = oContents._allocated ? oContents.clone() : (oContents._allocated = true) && oContents
+  let contents = file.contents
+  if (contents instanceof Stream) {
+    // NOTE: use guard in case contents is created on access (needed for @antora/lunr-extension <= 1.0.0-alpha.8)
+    if (cloneStreams && (Object.getOwnPropertyDescriptor(file, 'contents') || { writable: true }).writable) {
+      if (contents instanceof CloneableReadable) {
+        contents._claimed ? (contents = contents.clone()) : (contents._claimed = true)
+      } else if (typeof contents.clone === 'function' /* vinyl < 4 compat */) {
+        contents = wrapLegacyStream(contents._claimed ? contents.clone() : (contents._claimed = true) && contents)
+      } else {
+        file.contents = ((contents = new CloneableReadable(contents))._claimed = true) && contents
+      }
+    } else {
+      contents = wrapLegacyStream(contents)
     }
   }
-  return outputFile
+  return new File({ contents, path: file.out.path, stat: file.stat })
 }
 
-function isStream (obj) {
-  return obj && typeof obj.pipe === 'function'
+function wrapLegacyStream (contents) {
+  return contents instanceof Readable && Symbol.asyncIterator in contents ? contents : Readable.wrap(contents)
 }
 
 module.exports = ReadableOutputFileArray

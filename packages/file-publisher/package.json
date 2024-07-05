@@ -28,6 +28,9 @@
     "vinyl": "~3.0",
     "yazl": "~2.5"
   },
+  "devDependencies": {
+    "cloneable-readable": "~1.1"
+  },
   "engines": {
     "node": ">=18.0.0"
   },

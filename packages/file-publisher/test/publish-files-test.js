@@ -12,6 +12,7 @@ const {
 } = require('@antora/test-harness')
 
 const CloneableReadable = require('#cloneable-readable')
+const cloneable = require('cloneable-readable')
 const File = require('vinyl')
 const fs = require('node:fs')
 const { promises: fsp } = fs
@@ -490,6 +491,21 @@ describe('publishFiles()', () => {
       .with.contents(expectedContents)
   })
 
+  it('should publish site that contains file with legacy cloneable stream', async () => {
+    const destDir = './path/to/_site'
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package.json')
+    const expectedContents = await fsp.readFile(dataFile, 'utf8')
+    catalogs.push({
+      getFiles: () => [createFile('data.json', cloneable(fs.createReadStream(dataFile)))],
+    })
+    playbook.output.destinations.push({ provider: 'fs', path: destDir })
+    await publishFiles(playbook, catalogs)
+    verifyFsOutput(destDir)
+    expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+      .to.be.a.file()
+      .with.contents(expectedContents)
+  })
+
   it('should publish site to multiple fs directories', async () => {
     const destDir1 = './site1'
     const destDir2 = './site2'
@@ -540,6 +556,59 @@ describe('publishFiles()', () => {
     destDirs.forEach((destDir) => {
       verifyFsOutput(destDir)
       expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
+    })
+  })
+
+  it('should write entire contents of file with legacy cloneable stream in site catalog to all destinations', async () => {
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+    const destDirs = [1, 2, 3, 4, 5].map((it) => `./site-${it}`)
+    destDirs.forEach((destDir) => playbook.output.destinations.push({ provider: 'fs', path: destDir }))
+    catalogs.push({ getFiles: () => [createFile('data.json', cloneable(fs.createReadStream(dataFile)))] })
+    await publishFiles(playbook, catalogs)
+    destDirs.forEach((destDir) => {
+      verifyFsOutput(destDir)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
+    })
+  })
+
+  it('should write entire contents of file with legacy cloneable and clone stream in site catalog', async () => {
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+    const destDir = './site'
+    playbook.output.destinations.push({ provider: 'fs', path: destDir })
+    const readStream = cloneable(fs.createReadStream(dataFile))
+    catalogs.push({
+      getFiles: () => [createFile('data.json', readStream), createFile('data-clone.json', readStream.clone())],
+    })
+    await publishFiles(playbook, catalogs)
+    verifyFsOutput(destDir)
+    expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+      .to.be.a.file()
+      .and.equal(dataFile)
+    expect(ospath.resolve(playbook.dir, destDir, 'data-clone.json'))
+      .to.be.a.file()
+      .and.equal(dataFile)
+  })
+
+  it('should write entire contents of file with legacy cloneable and clone stream in site catalog to all destinations', async () => {
+    const dataFile = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
+    const destDirs = [1, 2, 3, 4, 5].map((it) => `./site-${it}`)
+    destDirs.forEach((destDir) => playbook.output.destinations.push({ provider: 'fs', path: destDir }))
+    const readStream = cloneable(fs.createReadStream(dataFile))
+    readStream.setMaxListeners(0)
+    catalogs.push({
+      getFiles: () => [createFile('data.json', readStream), createFile('data-clone.json', readStream.clone())],
+    })
+    await publishFiles(playbook, catalogs)
+    destDirs.forEach((destDir) => {
+      verifyFsOutput(destDir)
+      expect(ospath.resolve(playbook.dir, destDir, 'data.json'))
+        .to.be.a.file()
+        .and.equal(dataFile)
+      expect(ospath.resolve(playbook.dir, destDir, 'data-clone.json'))
         .to.be.a.file()
         .and.equal(dataFile)
     })
