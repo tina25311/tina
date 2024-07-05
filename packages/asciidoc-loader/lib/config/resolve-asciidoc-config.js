@@ -57,7 +57,7 @@ function resolveAsciiDocConfig (playbook = {}) {
         if (register.length > 0 && REGISTER_FUNCTION_RX.test(register.toString())) {
           accum.push(extensionExports)
         } else {
-          logger.warn('Skipping possible Antora extension registered as an AsciiDoc extension: %s', extensionRequest)
+          logger.warn('Skipping possible Antora extension registered as an Asciidoctor extension: %s', extensionRequest)
         }
       } else if (!isExtensionRegistered(extensionExports, Extensions)) {
         // QUESTION should we assign an antora-specific group name?

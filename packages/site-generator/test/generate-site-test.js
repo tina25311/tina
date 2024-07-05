@@ -964,7 +964,7 @@ describe('generateSite()', () => {
       expect(lines[0]).to.equal('extension required')
     })
 
-    it('should warn if AsciiDoc extension is registered as Antora extension', async () => {
+    it('should warn if Asciidoctor extension is registered as Antora extension', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
         // emulate a hybrid AsciiDoc / Antora extension
@@ -983,7 +983,7 @@ describe('generateSite()', () => {
       expect(messages[0]).to.include({
         level: 'warn',
         name: 'antora',
-        msg: `Detected AsciiDoc extension registered as an Antora extension: ${extensionPath}`,
+        msg: `Detected Asciidoctor extension registered as an Antora extension: ${extensionPath}`,
       })
       expect(messages[1]).to.include({
         level: 'warn',
@@ -1011,7 +1011,7 @@ describe('generateSite()', () => {
       expect(messages[0]).to.include({
         level: 'warn',
         name: 'antora',
-        msg: `Skipping possible AsciiDoc extension registered as an Antora extension: ${extensionPath}`,
+        msg: `Skipping possible Asciidoctor extension registered as an Antora extension: ${extensionPath}`,
       })
     })
 

@@ -13,7 +13,8 @@ This project utilizes semantic versioning.
 
 === Fixed
 
-* *file-publisher*: wrap legacy stream on file when preparing files for output providers; remove listeners limit (#1139)
+* *file-publisher*: Wrap legacy stream on file when preparing files for output providers; remove listeners limit (#1139)
+* Replace "AsciiDoc extension" with "Asciidoctor extension" in log messages
 
 == 3.1.8 (2024-06-25)
 
