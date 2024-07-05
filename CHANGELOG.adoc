@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *site-generator*: Detect and warn when an AsciiDoc extension is registered as an Antora extension, but do no skip it (#1141)
+
 === Fixed
 
 * *file-publisher*: wrap legacy stream on file when preparing files for output providers; remove listeners limit (#1139)

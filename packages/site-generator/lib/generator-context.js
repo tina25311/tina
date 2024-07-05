@@ -154,9 +154,10 @@ class GeneratorContext extends EventEmitter {
         }
         if (register.length) {
           const registerSource = register.toString().replace(NEWLINES_RX, ' ')
-          if (ASCIIDOCTOR_REGISTER_FUNCTION_RX.test(registerSource)) {
-            this.getLogger().warn('Skipping AsciiDoc extension registered as an Antora extension: %s', request)
-          } else if (FUNCTION_WITH_NAMED_PARAMETER_RX.test(registerSource)) {
+          if (FUNCTION_WITH_NAMED_PARAMETER_RX.test(registerSource)) {
+            if (ASCIIDOCTOR_REGISTER_FUNCTION_RX.test(registerSource)) {
+              this.getLogger().warn('Detected AsciiDoc extension registered as an Antora extension: %s', request)
+            }
             register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
           } else {
             register.call(this, Object.assign({ config }, vars))
