@@ -145,6 +145,59 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Fix crash if value of `worktrees` key on content source is `~` (`null`) and at least one branch is specified (#1018)
 * *content-classifier*: Set `src.version` to original version segment and `src.rel.version` to actual version on splat alias file (#1007)
 
+== 3.1.9 (2024-07-05)
+
+=== Changed
+
+* *site-generator*: Detect and warn when an AsciiDoc extension is registered as an Antora extension, but do no skip it (#1141)
+* Replace "AsciiDoc extension" with "Asciidoctor extension" in log messages
+
+=== Fixed
+
+* *file-publisher*: Wrap legacy stream on file when preparing files for output providers; remove listeners limit (#1139)
+
+== 3.1.8 (2024-06-25)
+
+=== Added
+
+* *asciidoc-loader*: Detect (and skip) Antora extension that's been registered as an AsciiDoc extension and log a warning (#1084)
+* *site-generator*: Detect (and skip) AsciiDoc extension registered as an Antora extension and log a warning (#1104)
+
+=== Changed
+
+* *content-aggregator*: Replace new fs.Stats() with plain JavaScript object (#1121)
+* *ui-loader*: Replace @vscode/gulp-vinyl-zip with low-level zip file reader using yauzl (#1128)
+* *content-classifier*: Log warning if nav entry cannot be resolved (#1088)
+* *ui-loader*: Replace new fs.Stats() with plain JavaScript object (#1121)
+* *page-composer*: Fix `page.role` assignment to read value from `role` attribute instead of from (non-existent) `docrole` attribute (#1109)
+* *file-publisher*: Replace @vscode/gulp-vinyl-zip with low-level zip file writer using yazl (#1129)
+* *file-publisher*: Assign empty object to stat property of output file if file does not have stat property (#1121)
+* *file-publisher*: Replace vinyl-fs#dest with internal implementation (#1131)
+* *file-publisher*: Replace dependency on cloneable-readable with internal implementation
+* *file-publisher*: Don't include file in archive (zip) if contents property is null; matches behavior of fs publisher
+* *cli*: Update description for `extension` option to clarify it may be specified multiple times.
+* Upgrade vinyl and vinyl-fs to address security and deprecation warnings (#1133)
+
+=== Fixed
+
+* *content-aggregator*: Throw clearer error if antora.yml is empty or the data is not an object (#1112)
+* *asciidoc-loader*: Apply include tag filtering update from Asciidoctor (see https://github.com/asciidoctor/asciidoctor/pull/4233) to ported logic in Antora (#1110)
+* *redirect-producer*: Filter out cyclic aliases (i.e., redirect loops) (#1114)
+* *file-publisher*: Create files streams for file publishers to process eagerly to avoid race condition (#1134)
+* *cli*: Use raw value if attribute value set using `--attribute` option cannot be parsed as YAML (#1137)
+
+== 3.1.7 (2024-01-02)
+
+=== Changed
+
+* *content-aggregator*: Don't retry failed clone/fetch operation if playbook only has one content source URL
+* *content-aggregator*: Preserve all information in wrapped error (#1099)
+* *content-aggregator*: Upgrade isomorphic-git to incorporate patch for properly handling network error (#1098)
+* *content-aggregator*: Add cause in log message when retrying failed fetch/clone operations in series (#1098)
+* *content-aggregator*: Clear timeout and keep-alive settings on git HTTP connections that don't use custom agent (#1101)
+* *ui-loader*: Preserve all information in wrapped error (#1099)
+* *file-publisher*: Preserve all information in wrapped error (#1099)
+
 == 3.1.6 (2023-12-19)
 
 === Added
