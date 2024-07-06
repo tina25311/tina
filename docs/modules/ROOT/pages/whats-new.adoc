@@ -28,6 +28,8 @@ The focus of this release is to fix changes from the previous release that did n
 First, the file publisher was updated to work with a virtual file created by vinyl 3, thus fixing compatibility with the PDF extension.
 Second, an Asciidoctor extension registered as an Antora extension will be registered rather than skipped, though a warning will still be issued.
 
+== Resolved issues
+
 === Changed
 
 Issue {url-issues}/1141[#1141^]::
