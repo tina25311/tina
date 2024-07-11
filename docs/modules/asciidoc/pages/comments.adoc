@@ -7,8 +7,9 @@ On this page, you'll learn:
 == Comment syntax
 
 You can use a comment line or comment block when you want to add text to an AsciiDoc source file, but don't want that text to be displayed when the file is converted to an HTML page.
+Comments inside blocks that have the verbatim (e.g., listing) or raw (e.g., pass) content model are not interpreted.
 
-A comment line is denoted by two consecutive forward slashes (`//`).
+A comment line is denoted by two consecutive forward slashes (`//`) at the beginning of a line.
 
 .Comment line syntax
 ----
