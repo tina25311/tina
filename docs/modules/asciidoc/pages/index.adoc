@@ -1,4 +1,5 @@
 = AsciiDoc
+:page-aliases: asciidoc.adoc
 
 AsciiDoc is Antora's native content markup language.
 AsciiDoc is ideal for writing documentation because it's:
@@ -8,6 +9,11 @@ AsciiDoc is ideal for writing documentation because it's:
 * comprehensive
 * extensible
 * easy to learn
+
+This area of the documentation is intended to provide a preliminary introduction to the AsciiDoc Language and highlight some of the syntax that you'll use in Antora on a daily basis.
+These pages should not be considered an authoritative or canonical reference for the language.
+To find the official user documentation for the AsciiDoc Language, please visit the https://docs.asciidoctor.org/asciidoc/latest/[AsciiDoc Language documentation].
+If there's a discrepancy between what's written here and in the linked documentation, the linked documentation takes precedence.
 
 == Syntax
 
