@@ -900,7 +900,7 @@ function identifyAuthStatus (credentialManager, credentials, url) {
  * The purpose of this function is generate a safe, unique folder name for the cloned
  * repository that gets stored in the cache directory.
  *
- * The generated folder name follows the pattern: <basename>-<sha1>-<version>.git
+ * The generated folder name follows the pattern: <basename>-<sha1-of-normalized-url>.git
  *
  * @param {String} url - The repository URL to convert.
  * @returns {String} The generated folder name.
