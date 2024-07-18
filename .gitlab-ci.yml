@@ -95,7 +95,7 @@ test:node-18-linux:
   <<: *save_report_artifacts
 test:node-22-linux:
   extends: .npm
-  image: node:22-$LINUX_DISTRO
+  image: node:22.4-$LINUX_DISTRO
   <<: *unless_docs_mr
   script:
   # patch required when using Node.js 22.3.0; see https://github.com/isomorphic-git/isomorphic-git/issues/1933
