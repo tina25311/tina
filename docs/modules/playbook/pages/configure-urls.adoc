@@ -56,6 +56,6 @@ Accepts the values `replace`, `redirect:to`, and `redirect:from`.
 
 |xref:urls-redirect-facility.adoc[redirect_facility]
 |Specifies whether Antora generates redirects as static HTML refresh pages or redirect configuration files.
-Accepts the values `disabled`, `httpd`, `netlify`, `nginx`, and `static`.
+Accepts the values `disabled`, `gitlab`, `httpd`, `netlify`, `nginx`, and `static`.
 |No
 |===
