@@ -1772,6 +1772,50 @@ describe('generateSite()', () => {
       expect(process.exitCode).to.be.undefined()
     })
 
+    it('should allow extension listener to parse HTML using helper method', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const htmlLines = ['<main>', '<article>', '<p><strong>important</strong> content</p>', '</article>', '</main>']
+      const expectedOutputLines = htmlLines.slice(1, -1)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.on('beforeProcess', () => {
+            const html = '${htmlLines.join('\\n')}'
+            const doc = this.parseHTML(html)
+            console.log(doc.querySelector('article').outerHTML)
+            this.stop()
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(3)
+      expect(lines).to.eql(expectedOutputLines)
+    })
+
+    it('should allow extension listener to parse HTML using global DOMParser', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const htmlLines = ['<main>', '<article>', '<p><strong>important</strong> content</p>', '</article>', '</main>']
+      const expectedOutputLines = htmlLines.slice(2, -2)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.on('beforeProcess', () => {
+            const html = '${htmlLines.join('\\n')}'
+            const doc = new DOMParser().parseFromString(html, 'text/html')
+            console.log(doc.querySelectorAll('article')[0].innerHTML)
+            this.stop()
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines).to.eql(expectedOutputLines)
+    })
+
     it('should allow extension listener to remove file from site catalog', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`

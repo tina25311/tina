@@ -149,3 +149,48 @@ You'll see the following message in your terminal when you run Antora with this 
 ....
 
 A simpler way to retrieve a logger instance is to use the <<get-logger>> method.
+
+[#parse-html]
+== parseHTML
+
+Since the purpose of Antora is to generate a static site, and a static site is composed primarily of HTML documents, Antora provides a helper method to parse HTML.
+You can use this method to manipulate, or otherwise read, the HTML before it is written.
+One use case is to augment the HTML with additional content or metadata.
+Another is to analyze the HTML in order to build a search index.
+
+The `parseHTML` method accepts a single argument, which is the HTML to parse.
+The HTML can be a String or a Buffer.
+The HTML can be a full HTML document or an HTML fragment.
+Underneath the covers, the `parseHTML` method uses an instance of `DOMParser` from the Web APIs to parse the HTML.
+It returns a DOM `Document` object.
+Using that object, you can find elements using `querySelector` and `querySelectorAll`, and you can retrieve the cooresponding HTML for those elements using the `outerHTML`, `innerHTML`, and `textContent` properties on those elements.
+
+Here's an example of how to parse the HTML and retrieve the text content of the first h1 tag in the article.
+
+[,js]
+----
+const html = '<html><body><article><h1>Page Title</h1><p>content</p></article></body></html>'
+const title = this.parseHTML(html).querySelector('article > h1').textContent
+----
+
+The generator context, when initialized, promotes the `DOMParser` Web API to a global class.
+Thus, you can use this API directly instead of the `parseHTML` method on the generator context.
+In this case, you must specify the mimeType as `text/html` using the second argument.
+
+[,js]
+----
+const domParser = new DOMParser()
+const title = domParser.parseFromString(html, 'text/html').querySelector('article > h1').textContent
+----
+
+You can also use the `DOMParser` Web API to parse XML instead of HTML.
+In this case, you must specify the mimeType as `application/xml` using the second argument.
+
+[,js]
+----
+const data = '<books><book id="the-hobbit"><title>The Hobbit</title></book></books>'
+const books = domParser.parseFromString(data, 'application/xml').querySelectorAll('book')
+----
+
+The `DOMParser` Web API is available anywhere in the Antora runtime (since it's defined as a Node.js global variable), so you can also use it in a UI helper.
+In the future, Node.js may provide this Web API itself, which means it will not be specific to an Antora site.

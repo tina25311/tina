@@ -44,6 +44,11 @@ This object is read only.
 |String
 |Locks the specified context variable and returns its value.
 
+|parseHTML
+|String or Buffer
+|Parses the specified HTML using the `DOMParser` Web API and returns a DOM `Document`, also a Web API.
+The return object provides the `querySelector` and `querySelectorAll` methods to locate elements in the parsed document using CSS selectors.
+
 |replaceFunctions
 |Object
 |Binds the specified functions to the generator context and uses them to replace existing functions on the generator context.
