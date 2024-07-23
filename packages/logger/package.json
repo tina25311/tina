@@ -1,6 +1,6 @@
 {
   "name": "@antora/logger",
-  "version": "3.2.0-alpha.5",
+  "version": "3.2.0-alpha.6",
   "description": "The logger for Antora.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",

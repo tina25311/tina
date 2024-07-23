@@ -1,6 +1,6 @@
 {
   "name": "@antora/document-converter",
-  "version": "3.2.0-alpha.5",
+  "version": "3.2.0-alpha.6",
   "description": "Converts AsciiDoc documents to embeddable HTML for use in an Antora documentation pipeline.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
@@ -21,7 +21,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@antora/asciidoc-loader": "3.2.0-alpha.5"
+    "@antora/asciidoc-loader": "3.2.0-alpha.6"
   },
   "engines": {
     "node": ">=18.0.0"

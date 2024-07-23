@@ -1,6 +1,6 @@
 {
   "name": "@antora/cli",
-  "version": "3.2.0-alpha.5",
+  "version": "3.2.0-alpha.6",
   "description": "The command line interface for Antora.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
@@ -25,14 +25,14 @@
     "antora": "bin/antora"
   },
   "dependencies": {
-    "@antora/logger": "3.2.0-alpha.5",
-    "@antora/playbook-builder": "3.2.0-alpha.5",
+    "@antora/logger": "3.2.0-alpha.6",
+    "@antora/playbook-builder": "3.2.0-alpha.6",
     "@antora/user-require-helper": "~2.0",
     "commander": "~12.1"
   },
   "devDependencies": {
-    "@antora/site-generator": "3.2.0-alpha.5",
-    "@antora/site-publisher": "3.2.0-alpha.5",
+    "@antora/site-generator": "3.2.0-alpha.6",
+    "@antora/site-publisher": "3.2.0-alpha.6",
     "@asciidoctor/core": "~2.2",
     "convict": "~6.2",
     "kapok-js": "~0.10"
