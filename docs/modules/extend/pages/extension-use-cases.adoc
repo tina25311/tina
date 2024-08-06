@@ -196,3 +196,18 @@ include::example$doc-to-pdf-extension.js[lines=3..]
 
 By converting the files and updating the metadata, it's possible to reference the source document using the xref macro.
 That reference will automatically translate to a link to the PDF in the generated site.
+
+== Export content to file
+
+If you are integrating with a search or AI engine, you may want to extract the plain text of the pages to a file along with the page url, title, and navigation path.
+You can use the following extension to do that as part of the site build.
+
+.export-content-extension.js
+[,js]
+----
+include::example$export-content-extension.js[lines=3..]
+----
+
+Note that this extension relies on the *node-html-parser* package.
+You will need to include that in your site [.path]_package.json_ file in order to use this extension.
+In the future, Antora may provide a built-in HTML parser for extensions to use.
