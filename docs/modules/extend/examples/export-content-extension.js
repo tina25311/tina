@@ -20,7 +20,8 @@ module.exports.register = function () {
         const articleDom = parseHTML(`<article>${page.contents}</article>`)
         // TODO might want to apply the sentence newline replacement per paragraph
         const text = articleDom.textContent.trim().replace(/\n(\s*\n)+/g, '\n\n').replace(/\.\n(?!\n)/g, '. ')
-        const path = [componentVersion.title, ...(dfcsNavEntriesByUrl[siteRelativeUrl]?.path?.map((it) => it.content) || [])]
+        const path = [componentVersion.title]
+        path.push(...(dfcsNavEntriesByUrl[siteRelativeUrl]?.path?.map((it) => it.content) || []))
         return { url: siteUrl + siteRelativeUrl, title: page.title, text, path }
       })
     siteCatalog.addFile({
