@@ -207,7 +207,7 @@ describe('aggregateContent()', () => {
       })
     })
 
-    describe('should add origin of component descriptor to origins property on component version bucket', () => {
+    describe('should add origin of component descriptor to origins property on component version bucket and nav', () => {
       testAll(async (repoBuilder) => {
         const componentDesc = {
           name: 'the-component',
@@ -229,6 +229,23 @@ describe('aggregateContent()', () => {
         expect(aggregate[0]).to.have.property('nav')
         expect(aggregate[0].nav).to.have.property('origin')
         expect(aggregate[0].nav.origin).to.equal(origins[0])
+      })
+    })
+
+    describe('should not fail to add origin to nav if nav is not an array', () => {
+      testAll(async (repoBuilder) => {
+        const componentDesc = {
+          name: 'the-component',
+          title: 'The Component',
+          version: 'v1.2.3',
+          nav: null,
+        }
+        await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
+        playbookSpec.content.sources.push({ url: repoBuilder.url })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        expect(aggregate[0]).to.have.property('nav')
+        expect(aggregate[0].nav).to.be.null()
       })
     })
 
