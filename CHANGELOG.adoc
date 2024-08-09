@@ -5,6 +5,12 @@ For a detailed view of what's changed, refer to the repository's https://gitlab.
 
 This project utilizes semantic versioning.
 
+== Unreleased
+
+=== Fixed
+
+* *content-aggregator*: Gracefully handle case when value of nav key in component descriptor is not an array (#1147)
+
 == 3.1.9 (2024-07-05)
 
 === Changed

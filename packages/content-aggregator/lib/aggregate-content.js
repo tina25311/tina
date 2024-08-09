@@ -440,7 +440,7 @@ function collectFilesFromStartPath (startPath, repo, authStatus, ref, originUrl,
   return (worktreePath ? readFilesFromWorktree(origin) : readFilesFromGitTree(repo, ref.oid, startPath))
     .then((files) => {
       const batch = deepClone((origin.descriptor = loadComponentDescriptor(files, ref, version)))
-      if ('nav' in batch) batch.nav.origin = origin
+      if ('nav' in batch && Array.isArray(batch.nav)) batch.nav.origin = origin
       batch.files = files.map((file) => assignFileProperties(file, origin))
       batch.origins = [origin]
       return batch
