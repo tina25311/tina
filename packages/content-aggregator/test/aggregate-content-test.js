@@ -267,6 +267,31 @@ describe('aggregateContent()', () => {
       })
     })
 
+    it('should not camelCase keys in component version descriptor beyond stop paths', async () => {
+      const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
+      const componentDesc = {
+        name: 'the-component',
+        title: 'The Component',
+        version: 'v1.0',
+        asciidoc: { attributes: { 'yin-yang': '' } },
+        ext: {
+          collector: {
+            run: {
+              command: 'runme',
+              env: { ANTORA_COLLECTOR_REFNAME: '$' + '{{origin.refname}}' },
+            },
+          },
+        },
+      }
+      await initRepoWithComponentDescriptor(repoBuilder, componentDesc)
+      playbookSpec.content.sources.push({ url: repoBuilder.url })
+      const aggregate = await aggregateContent(playbookSpec)
+      expect(aggregate).to.have.lengthOf(1)
+      const bucket = aggregate[0]
+      expect(bucket.asciidoc.attributes).to.eql({ 'yin-yang': '' })
+      expect(bucket.ext.collector.run.env).to.eql({ ANTORA_COLLECTOR_REFNAME: '$' + '{{origin.refname}}' })
+    })
+
     describe('should throw if component descriptor cannot be found in branch', () => {
       testAll(async (repoBuilder) => {
         await repoBuilder.init('the-component').then(() => repoBuilder.close())

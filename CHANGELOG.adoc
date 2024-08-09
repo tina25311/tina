@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* *content-aggregator*: Don't apply camelCase transformation to descendant keys of the `ext` key in component version descriptor (#1145)
+
 === Fixed
 
 * *content-aggregator*: Gracefully handle case when value of nav key in component descriptor is not an array (#1147)
