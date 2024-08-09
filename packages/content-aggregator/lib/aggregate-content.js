@@ -761,7 +761,7 @@ function loadComponentDescriptor (files, ref, version) {
     throw new Error(`version in ${COMPONENT_DESC_FILENAME} cannot have path segments: ${version}`)
   }
   data.version = version
-  return camelCaseKeys(data, ['asciidoc'])
+  return camelCaseKeys(data, ['asciidoc', 'ext'])
 }
 
 function assignFileProperties (file, origin) {
