@@ -6,7 +6,7 @@ const SiteCatalog = require('./site-catalog')
 async function generateSite (playbook) {
   const context = new GeneratorContext(module)
   try {
-    if (Array.isArray(playbook)) playbook = buildPlaybookFromArguments.apply(context, arguments)
+    if (Array.isArray(playbook)) playbook = buildPlaybookFromArguments.apply(context, arguments) // not using CLI
     const { fxns, vars } = await GeneratorContext.start(context, playbook)
     await context.notify('playbookBuilt')
     let url = (playbook = vars.lock('playbook')).site.url
