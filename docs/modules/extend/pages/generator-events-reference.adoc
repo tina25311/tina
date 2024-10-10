@@ -63,4 +63,12 @@ If the variable is locked, meaning it cannot be replaced, it's italicized.
 |(any variable still in scope at the time the context is closed)
 |===
 
-In addition to the built-in context variables listed in this table, your extension can also access context variables documented and published by other extensions.
+The playbook object (i.e., the parsed data from the playbook file) is available at the time the `register` function is called (which acts like the `register` event).
+However, at this stage, the playbook is still just a raw data model.
+The Antora extensions have yet to be registered.
+When the `contextStarted` is emitted, all the initialization of the playbook, including registering Antora extensions and generator functions, is complete.
+
+When modifying the content sources in an Antora extension, it's customary to use the `playbookBuilt` event.
+After that, the playbook object cannot be modified or updated.
+
+In addition to the built-in context variables listed in this table, your extension can also access context variables documented and promoted by other extensions.
