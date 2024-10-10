@@ -1,4 +1,5 @@
-= Generator Events Reference
+= Generator Lifecycle Events Reference
+:navtitle: Generator Events Reference
 
 Antora extensions listen for events emitted by the generator when Antora runs.
 Each listener can access variables that are in scope at the time the event is emitted.
