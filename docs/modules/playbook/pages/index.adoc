@@ -1,4 +1,4 @@
-= The Antora Playbook
+= Antora Playbook Introduction
 
 On this page, you'll learn:
 
