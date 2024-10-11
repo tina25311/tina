@@ -5,11 +5,13 @@
 // page:page-id.adoc#important == Why are page IDs important?
 //[#whats-a-cross-reference]
 
+The xref macro creates links to resources like pages, xref:attachments.adoc[attachments] or xref:images.adoc[images].
+
 To create a page link, you need to know:
 
 * how to structure and use the AsciiDoc xref macro,
 * how to assign the resource ID of a page to an AsciiDoc xref macro,
-* the resource ID of the page you're linking to (the target page), and
+* the resource ID of the resource you're linking to (like the target page), and
 * the resource ID of the page where you want the link to be displayed (the current page).
 
 [#xref-macro]
@@ -40,19 +42,18 @@ Each part of the xref macro shown in <<fig-xref-macro>> is described in more det
 xref{colon}::
 An xref macro begins with the macro's name, `xref`, followed by a single colon (`:`).
 
-resource ID of target page::
-The xref macro accepts the resource ID of a page as its value.
+resource ID of the target resource::
+The xref macro accepts the resource ID of a resource as its value.
 The value is entered directly after the colon that follows the macro's name (`xref:`).
 How many of the target page's xref:resource-id-coordinates.adoc[resource ID coordinates] you need to specify depends on the component version and module of the target page in relation to the current page.
-The `page$` family coordinate isn't required in the resource ID when the target resource is a page.
+The `page$` family coordinate isn't required in the resource ID when the target resource is a page,
+but is required for any other family coordinates supported by the xref macro.
 Also, remember that the xref:resource-id-coordinates.adoc#id-resource[file coordinate] of a target page is calculated from the [.path]_pages_ family directory.
 
 [[id-fragment]]#fragment::
 A [.term]*fragment* is an element ID that links to a section, block, or inline location within the target page.
 Fragments are also referred to as [.term]*deep links*.
-A fragment is optional.
-The fragment starts with the hash symbol (`#`) and is entered directly after the resource ID of the target page.
-A target page's reference text, whether assigned by default or using the `reftext` attribute, isn't used as <<link-text,link text>> when a fragment is specified.
+A fragment for pages is optional, starts with the hash symbol (`#`) and is entered directly after the resource ID of the target page. A target page's reference text, whether assigned by default or using the `reftext` attribute, isn't used as <<link-text,link text>> when a fragment is specified.
 
 [[link-text]][link text]::
 The xref macro is completed with a set of square brackets (`[]`) at the end of the target page's resource ID, or, if specified, at the end of the <<id-fragment,fragment>>.
@@ -60,6 +61,8 @@ You can enter optional text between these brackets or leave them empty.
 When Antora converts the xref macro and its value into a link, the text entered between the square brackets is displayed in the current page when it's published to your site.
 If no link text is specified between the macro's square brackets, and the value of the xref macro doesn't contain a fragment, then the target page's xref:link-content.adoc#default[default reference text] or text assigned to the xref:reftext-and-navtitle.adoc[reftext attribute] is displayed in the current page when it's published.
 If a fragment is appended to the resource ID of the target page and no link text is entered between the brackets, then the URL of the published target page is displayed.
++
+Note that attributes can be added to the link text defining behavior and rendering. For details see the https://docs.asciidoctor.org/asciidoc/latest/macros/link-macro-ref/[Link, URL, and Mailto Macro Attributes Reference].
 
 The next section explains how to create a cross reference step-by-step.
 
@@ -128,8 +131,20 @@ When Antora converts the xref macro and target page's resource ID, it will autom
 That's it!
 You've created a cross reference to the target page ([.path]_modes.adoc_) from the current page ([.path]_satellites.adoc_) using the AsciiDoc xref macro.
 
+When cross referencing other resources than pages, this example using images shows how this is setup:
+
+. Directly after the resource ID including the family coordinates of the target resource, enter an opening square bracket (`[`), then a closing square bracket (`]`), followed by any subsequent content.
++
+--
+.Cross referencing my-image.png
+[listing,subs=+quotes]
+----
+=== Image
+
+Click the image xref:image$my-image.png**[]** to view details.
+----
+--
+
 == Learn more
 
 xref:page-links.adoc[] shows how to create xrefs to pages when the target page is stored in a subdirectory or it belongs to another module, component, or version.
-
-The xref macro also creates links to xref:attachments.adoc[attachments].
