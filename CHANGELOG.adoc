@@ -10,6 +10,7 @@ This project utilizes semantic versioning.
 === Changed
 
 * *content-aggregator*: Don't apply camelCase transformation to descendant keys of the `ext` key in component version descriptor (#1145)
+* *content-aggregator*: Include `-` segment in edit URL for file hosted on gitlab.com to avoid redirct
 
 === Fixed
 

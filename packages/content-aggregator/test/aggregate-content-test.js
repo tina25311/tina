@@ -4060,7 +4060,7 @@ describe('aggregateContent()', () => {
           'git@{hostname}:org-name/repo-name',
         ]
         const hostnames = ['github.com', 'private.github.com']
-        const action = { branch: 'edit', tag: 'blob' }
+        const actions = { branch: 'edit', tag: 'blob' }
         const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
@@ -4073,7 +4073,7 @@ describe('aggregateContent()', () => {
               expect(origin.reftype).to.equal(type)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'github.com') {
-                const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/${action[type]}/${shortname}/%s`
+                const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/${actions[type]}/${shortname}/%s`
                 expect(origin.editUrlPattern).to.equal(expectedEditUrlPattern)
               } else {
                 expect(origin).to.not.have.property('editUrlPattern')
@@ -4091,7 +4091,7 @@ describe('aggregateContent()', () => {
           'git@{hostname}:org-name/repo-name',
         ]
         const hostnames = ['gitlab.com', 'private.gitlab.com']
-        const action = { branch: 'edit', tag: 'blob' }
+        const actions = { branch: 'edit', tag: 'blob' }
         const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
@@ -4104,7 +4104,8 @@ describe('aggregateContent()', () => {
               expect(origin.reftype).to.equal(type)
               expect(origin[type]).to.equal(shortname)
               if (hostname === 'gitlab.com') {
-                const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/${action[type]}/${shortname}/%s`
+                const action = actions[type]
+                const expectedEditUrlPattern = `https://${hostname}/org-name/repo-name/-/${action}/${shortname}/%s`
                 expect(origin.editUrlPattern).to.equal(expectedEditUrlPattern)
               } else {
                 expect(origin).to.not.have.property('editUrlPattern')

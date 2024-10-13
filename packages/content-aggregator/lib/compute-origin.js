@@ -33,8 +33,9 @@ function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = 
         category = 'f'
       } else if (host === 'bitbucket.org') {
         action = 'src'
-      } else if (reftype === 'branch') {
-        action = 'edit'
+      } else {
+        if (reftype === 'branch') action = 'edit'
+        if (host.startsWith('gitlab.')) action = '-/' + action
       }
       origin.editUrlPattern = 'https://' + path.join(match[1], match[2], action, refname, category, startPath, '%s')
     }
