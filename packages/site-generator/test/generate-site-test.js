@@ -584,7 +584,7 @@ describe('generateSite()', () => {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
-    const editLinkUrl = `${remoteWebUrl}/edit/${refname}/${thePagePath}`
+    const editLinkUrl = `${remoteWebUrl}/-/edit/${refname}/${thePagePath}`
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
   })
 
@@ -656,7 +656,7 @@ describe('generateSite()', () => {
     expect(ospath.join(absDestDir, 'the-component/2.0/the-page.html')).to.be.a.file()
     $ = loadHtmlFile('the-component/2.0/the-page.html')
     const thePagePath = 'modules/ROOT/pages/the-page.adoc'
-    const editLinkUrl = `${remoteWebUrl}/edit/${refname}/${thePagePath}`
+    const editLinkUrl = `${remoteWebUrl}/-/edit/${refname}/${thePagePath}`
     expect($('.toolbar .edit-this-page a')).to.have.attr('href', editLinkUrl)
   })
 
