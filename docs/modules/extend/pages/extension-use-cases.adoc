@@ -162,6 +162,28 @@ If an entry is missing, then you know you may need to tune the content source de
 
 For more information, you can print the whole bucket entry.
 
+== Generate report of all pages
+
+You can generate additional pages using an Antora extension.
+This offers a way to generate report pages that summarize information about the site.
+
+In this example, we'll generate a page that lists all the other pages in the same component verison.
+This extension listens for the `documentsConverted` event, which is emitted once all the AsciiDoc-based pages have been converted to (embedded) HTML, but before the HTML layout has been applied.
+The reason for using this event is twofold.
+First, it provides access to the page title of each page.
+Second, the page layout will be applied to the newly generated page.
+
+.all-pages-report-extension.js
+[,js]
+----
+include::example$all-pages-report-extension.js[lines=3..]
+----
+
+The key step of this extension is the call to `contentCatalog.addFile`.
+This call adds a new file to the content catalog, in this case a page.
+When generating the list of links, we use the `relativize` function from the AsciiDoc Loader to compute the relative URL from the start page of the component version and the target page, emulating the behavior of the xref macro in AsciiDoc.
+The resulting report is written to the file [.path]_all-page.html_ at the root of the component version (adjacent to the start page).
+
 == Audit includes
 
 In order to audit include requests in an AsciiDoc document, you must intercept the built-in include processor that Antora provides.
