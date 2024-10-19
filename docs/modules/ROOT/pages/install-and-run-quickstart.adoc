@@ -110,18 +110,20 @@ Now you're ready to create your first playbook.
 
 TIP: See xref:install:install-antora.adoc[Install Antora] for more detailed information and additional installation methods.
 
-== Create a playbook
+== Create a playbook with remote sources
 
-To produce a documentation site, Antora needs a playbook.
+To produce a documentation site, Antora needs a playbook, which is defined using a playbook file.
+The simplest way to start using Antora is to point the playbook at existing documentation stored in remote repositories (i.e., content sources).
+For this example, we'll use the content sources from the {url-demo}[Antora demo repositories].
+
 Using your preferred text editor or IDE, create a new file and populate it with the configuration information <<demo-playbook,listed below>>.
 Save this file as [.path]_antora-playbook.yml_ in the [.path]_docs-site_ directory you made in the previous step.
-This playbook file will create a site using the {url-demo}[Antora demo repositories].
 
 .antora-playbook.yml
 [#demo-playbook,yaml]
 ----
 site:
-  title: Antora Docs
+  title: Docs Site
   start_page: component-b::index.adoc # <.>
 content:
   sources: # <.>
@@ -146,21 +148,141 @@ TIP: See the xref:playbook:index.adoc[Antora playbook] for more detailed informa
 To generate the site, point the `antora` command at your playbook file.
 In the terminal, make sure you're in [.path]_docs-site_ directory, then type:
 
- $ npx antora --fetch antora-playbook.yml
+ $ npx antora antora-playbook.yml
 
-Antora will clone the content and UI repositories and generate your documentation site to the default output directory.
+Antora will clone the content and UI repositories and generate your documentation site into the default output directory and report the file URL to that directory in the terminal.
 
-IMPORTANT: By default, Antora does not sync the repository once it clones it.
-Instead, it tries to work offline by using the repository in the cache it previously cloned.
-This default can create some confusion when getting started.
-Therefore, we recommend including the xref:playbook:runtime-fetch.adoc#fetch-option[`--fetch` option] in the command until you're more familiar with Antora.
-You can also set the xref:playbook:runtime-fetch.adoc#fetch-key[fetch key] in your playbook to enable this setting permanently.
-
-Navigate to the [.path]_docs-site/build/site_ directory and open the [.path]_index.html_ file in your browser to see the result.
+To see the result, navigate to the provided URL in your browser, which renders the [.path]_index.html_ file located in the [.path]_docs-site/build/site_ directory.
 Congratulations!
 You've successfully built your first site with Antora.
 
+By default, Antora does not sync the repository once it clones it.
+Instead, it tries to work offline by using the repository in the cache it previously cloned.
+This default can create some confusion when getting started.
+Therefore, we recommend including the xref:playbook:runtime-fetch.adoc#fetch-option[`--fetch` option] in the command until you're more familiar with Antora.
+
+ $ npx antora --fetch antora-playbook.yml
+
+You can turn on the fetch behavior permanently by setting the xref:playbook:runtime-fetch.adoc#fetch-key[fetch key] in your playbook.
+
 TIP: For more detailed information about running Antora and troubleshooting help, see xref:run-antora.adoc[Run Antora to generate your site].
+
+== Create a playbook with a local source
+
+Antora also supports local content sources, which are git repositories that have been cloned or otherwise initialized on the current machine.
+What that means is that it's possible to create a site from a local repository that contains both the playbook and the content source(s) (i.e., a mono site).
+For this example, you can set up everything locally in the [.path]_docs-site_ directory created earlier without having to rely on any remote git repositories.
+
+To start, it's necessary to initialize the [.path]_docs-site_ as a local git repository.
+
+ $ git init
+   git commit --allow-empty -m init
+
+If you're adding Antora to an existing local git repository, this step is not required.
+
+Next, create enough of the xref:standard-directories.adoc[standard directory hierarchy] to store a couple of pages, the navigation file, and the component version descriptor for your content source root.
+This content source root could be placed at a start path such as [.path]_docs_, but we'll use the root of the repository for now.
+
+ $ mkdir -p modules/ROOT/pages
+
+Using your preferred text editor or IDE, create a the start page for the component version and populate it with a page title and some text.
+
+.modules/ROOT/pages/index.adoc
+[,asciidoc]
+----
+= Welcome!
+
+You are home.
+----
+
+Create one additional page so that you can study how the navigation is put together.
+
+.modules/ROOT/pages/new-page.adoc
+[,asciidoc]
+----
+= New Page
+
+You've found a new page.
+----
+
+Next, create a navigation file so that each page contains links to navigate to the other pages.
+
+.modules/ROOT/nav.adoc
+[,asciidoc]
+----
+* xref:new-page.adoc[]
+----
+
+Notice that the start page for the component version is not included.
+That's because it's automatically added as the root of the navigation tree.
+
+To finish putting together the content source root, create the component version descriptor, [.path]_antora.yml_.
+This file identifies a content source root and, in turn, defines a component version.
+We'll create a versionless component named *project-name*, though you make this a versioned component or even the xref:component-name-key.adoc#root-component[ROOT component].
+
+.antora.yml
+[,yaml]
+----
+name: project-name
+version: ~
+title: Project Name
+nav:
+- modules/ROOT/nav.adoc
+----
+
+Now that you have a local content source defined, you can create a playbook that uses it.
+Save the playbook file as [.path]_antora-playbook.yml_ adjacent to [.path]_antora.yml_ at the root of the [.path]_docs-site_ directory.
+
+.antora-playbook.yml
+[,yaml]
+----
+site:
+  title: Docs Site
+  start_page: project-name::index.adoc
+content:
+  sources:
+  - url: .
+    branches: HEAD
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+----
+
+This repository defines the start page for the component version we created as the start page for the site.
+The `start_page` playbook key (under the `site` key) isn't required if the component version you created is the ROOT component.
+
+Here's how the file and directory structure inside the [.path]_docs-site_ directory should look when you're done.
+
+....
+📒 docs-site
+  📂 modules
+    📂 ROOT
+      📂 pages
+        📄 index.adoc
+        📄 new-page.adoc
+      📄 nav.adoc
+  📄 antora.yml
+  📄 antora-playbook.yml
+....
+
+You can now generate the site as you did before.
+
+ $ npx antora antora-playbook.yml
+
+Antora will generate your documentation site to the default output directory and report the file URL to that directory in the terminal.
+To see the result, navigate to the provided URL in your browser, which renders the [.path]_index.html_ file located in the [.path]_docs-site/build/site_ directory.
+
+To instruct git to ignore the output directory and any locally installed npm packages, create a [.path]_.gitignore_ file and populate it with the following contents:
+
+..gitignore
+----
+/build/
+/node_modules/
+----
+
+To learn more about local content sources, refer to xref:playbook:content-source-url.adoc#local-urls[Use local content repositories].
+Local content sources can be mixed with remote content sources in the same playbook, so try adding the remote content sources shown ealier in this quickstart to become familiar with how it works.
 
 == Learn more
 
