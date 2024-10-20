@@ -11,6 +11,9 @@ On this page, you’ll learn:
 * [x] How to create your first Antora playbook.
 * [x] How to run Antora to generate a site based on the playbook.
 
+You can skip the installation steps by using the xref:antora-container.adoc[Docker image] provided by the Antora project.
+Instead of having to worry about installing Node.js and Antora, all you need is Docker or Podman to run Antora in a container.
+
 [#install-nodejs]
 == Install Node.js
 
