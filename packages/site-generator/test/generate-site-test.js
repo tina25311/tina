@@ -1772,6 +1772,45 @@ describe('generateSite()', () => {
       expect(process.exitCode).to.be.undefined()
     })
 
+    it('should allow extension listener to add HTML file as page to content catalog', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        module.exports.register = function () {
+          this.on('contentClassified', ({ contentCatalog }) => {
+            const page = contentCatalog.addFile({
+              contents: Buffer.from('<p>the contents</p>'),
+              src: {
+                component: 'the-component',
+                version: '2.0',
+                module: 'ROOT',
+                family: 'page',
+                relative: 'new-page.html',
+              },
+            })
+            page.asciidoc = { doctitle: 'New Page' }
+          })
+        }
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const expectedContents = heredoc`
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <article>
+        <h1>New Page</h1>
+        <p>the contents</p>
+        </article>
+        </body>
+        </html>
+      `
+      await generateSite(getPlaybook(playbookFile))
+      expect(ospath.join(absDestDir, 'the-component/2.0/new-page.html'))
+        .to.be.a.file()
+        .with.contents(expectedContents + '\n')
+    })
+
     it('should allow extension listener to remove file from site catalog', async () => {
       const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
       const extensionCode = heredoc`
