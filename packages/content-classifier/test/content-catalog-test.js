@@ -1330,6 +1330,32 @@ describe('ContentCatalog', () => {
       })
     })
 
+    it('should allow HTML file to be registered in the page family', () => {
+      const src = {
+        component: 'the-component',
+        version: '1.2.3',
+        module: 'ROOT',
+        family: 'page',
+        relative: 'new-page.html',
+      }
+      const contentCatalog = new ContentCatalog()
+      const result = contentCatalog.addFile({ src })
+      expect(result.mediaType).to.equal('text/html')
+      expect(result.src.mediaType).to.equal('text/html')
+      expect(result).to.have.property('out')
+      expect(result.out).to.include({
+        path: 'the-component/1.2.3/new-page.html',
+        rootPath: '../..',
+      })
+      expect(result).to.have.property('pub')
+      expect(result.pub).to.include({
+        url: '/the-component/1.2.3/new-page.html',
+        rootPath: '../..',
+      })
+      expect(result).to.not.have.property('asciidoc')
+      expect(contentCatalog.getPages()[0]).to.equal(result)
+    })
+
     it('should not populate out and pub when filename begins with an underscore', () => {
       const src = {
         component: 'the-component',
