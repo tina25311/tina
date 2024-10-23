@@ -14,10 +14,11 @@ They're stored in an xref:ROOT:examples-directory.adoc[_examples_ directory].
 // tag::filename[]
 When saving a new example file, keep the following filename requirements and recommendations in mind:
 
-* An example's filename *can't contain spaces* because the AsciiDoc include directive doesn't accept values with spaces.
-* *Uppercase letters aren't recommended* in filenames.
+* *Spaces aren't recommended* in example filenames.
+While the AsciiDoc include directive does accept spaces in the target, some editing tools may not support it and is thus not recommended.
+* *Uppercase letters and spaces aren't recommended* in example filenames.
 Some file systems aren't case sensitive.
-Therefore, file conflicts could occur depending on the file system a writer is using.
+Therefore, file conflicts could occur when using git depending on the file system a writer is using.
 * Save an example file with a valid file extension except when it's common industry practice for that specific file type, such as [.path]_Dockerfile_, to not have an extension.
 Not using the correct file extension when saving an example file may limit your ability to apply some Antora extensions or upgrade to future capabilities.
 // end::filename[]
