@@ -107,8 +107,13 @@ A page:
 * has the _.adoc_ file extension
 * has a filename that only contains URL-compliant characters
 * has a filename that's all lowercase (optional, but recommended)
+* has a filename that does not contain spaces (optional, but recommended)
 * has a title (i.e., document title)
 * is marked up using valid AsciiDoc syntax
+
+Using spaces in the filename is not recommended.
+Spaces have to be encoded in a URL and this can lead to URLs which look unfamiliar to visitors.
+It's best to avoid spaces (and only use lowercase letters) when choosing a filename for a page.
 ====
 
 //If you want a site visitor to locate this page via a component navigation menu, you'll need to add a link to the page (`xref`) to a xref:navigation:index.adoc[navigation file].
