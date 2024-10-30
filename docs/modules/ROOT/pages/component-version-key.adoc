@@ -101,6 +101,7 @@ version: true # <.>
 
 Antora will substitute the value `true` with the refname automatically.
 The value Antora uses is always the short refname (e.g., v1.0), not the full refname (e.g., refs/heads/v1.0).
+If the short refname contains any forward slashes, Antora will replace each one with a hyphen.
 
 [#refname-projection]
 === refname projection as version

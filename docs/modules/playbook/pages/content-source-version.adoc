@@ -58,6 +58,7 @@ content:
 When Antora looks for the component version descriptor in the specified branch (i.e., `v2.0`), it will not expect to find the `version` key defined in that file.
 Instead, it will use the refname instead.
 The value Antora uses is always the short refname (e.g., v1.0), not the full refname (e.g., refs/heads/v1.0).
+If the short refname contains any forward slashes, Antora will replace each one with a hyphen.
 
 === refname projection as version
 
