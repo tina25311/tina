@@ -16,12 +16,14 @@ runtime: # <.>
   fetch: true # <.>
   log: # <.>
     level: error # <.>
+  quiet: true # <.>
 ----
 <.> Optional `runtime` key
 <.> Optional `cache_dir` key
 <.> Optional `fetch` key
 <.> Optional `log` key
 <.> Optional `level` key
+<.> Optional `quiet` key
 
 The `runtime` key and the key-value pairs it accepts are optional.
 If `runtime` isn't set in the playbook, Antora uses the default cache directory, fetch, and log settings.
@@ -31,7 +33,7 @@ Alternatively, these keys can be assigned from the xref:cli:options.adoc#generat
 == log key
 
 The `log` key is optional.
-If you do set it in a playbook, you must nest it under the <<runtime-key,runtime key>>.
+If you do set it in the playbook, you must nest it under the <<runtime-key,runtime key>>.
 The `log` key accepts a list of built-in key-value pairs that configure the log level (`level`), failure level (`failure_level`), and display format (`format`).
 
 .antora-playbook.yml
@@ -67,6 +69,45 @@ If `file`, `append`, `buffer_size`, or `sync` are set in the playbook, they must
 
 IMPORTANT: The log settings are not honored if a fatal error is thrown before Antora fully configures the playbook.
 In such cases, the error message is only printed directly to standard error (stderr) using a preconfigured logger.
+
+[#quiet-key]
+== quiet key
+
+The `quiet` key is optional.
+If you do set it in the playbook, you must nest it under the <<runtime-key,runtime key>>.
+The `quiet` key accepts a boolean value.
+If the value is true, informational messages such as the git progress and build completion message are not written to stdout (i.e., the standard output stream) of the console.
+In short, no messages are written directly stdout when this key is set to true.
+
+.antora-playbook.yml
+[,yaml]
+----
+runtime:
+  quiet: true # <.>
+----
+<.> The optional `quiet` key is nested under the `runtime` category key.
+
+This flag does not impact messages written to stderr.
+Messages will still be written to the log, which may then be routed to stdout depending on the log configuration.
+
+[#silent-key]
+== silent key
+
+The `silent` key is optional.
+If you do set it in the playbook, you must nest it under the <<runtime-key,runtime key>>.
+The `silent` key accepts a boolean value.
+If the value is true, the log level is set to `silent` (and cannot be overridden) and any messages written directly to stdout and stderr are suppressed.
+In short, all messages to the console and log are suppressed.
+
+.antora-playbook.yml
+[,yaml]
+----
+runtime:
+  silent: true # <.>
+----
+<.> The optional `silent` key is nested under the `runtime` category key.
+
+You should not expect to see any messages in the console when the value of this key is true.
 
 [#runtime-reference]
 == Available runtime keys
@@ -129,5 +170,15 @@ The default value is `0`, which turns off this behavior.
 |xref:runtime-log-destination.adoc#sync-key[log.destination.sync]
 |Configures whether to use a sync or async operation to write log messages to the destination.
 The default value is `true`, which means log messages are written synchronously (blocking).
+|No
+
+|quiet
+|Prevents any messages from being written to stdout.
+The default value is `false` (messages are written to stdout).
+|No
+
+|silent
+|Suppresses all messages, including log messages (by forcefully setting the log level to silent).
+The default value is `false`.
 |No
 |===
