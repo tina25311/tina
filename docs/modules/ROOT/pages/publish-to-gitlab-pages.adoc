@@ -121,7 +121,7 @@ pages:
     paths:
     - .cache # <2>
   script:
-  - npx antora --fetch --redirect-facility=gitlab antora-playbook.yml # <6>
+  - npx antora --fetch --redirect-facility=gitlab --to-dir=public antora-playbook.yml # <6>
   artifacts:
     paths:
     - public # <7>
