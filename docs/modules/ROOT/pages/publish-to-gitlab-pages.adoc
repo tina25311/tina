@@ -134,7 +134,10 @@ Using `npm ci` instead of `npm i` ensures that the versions of your dependencies
 <5> Only run on the default branch for this repository.
 <6> Call Antora using `npx`, which will locate and run the `antora` command installed within the project.
 The `--fetch` flag ensure Antora fetches updates into the cache saved from a previous run.
+The `--redirect-facility` option makes use of the server-side facility provided by GitLab Pages for performing URL redirects.
+The `--to-dir` option ensures the site is published to the location where GitLab Pages looks for files to deploy.
 <7> The [.path]_public_ directory is the predefined folder for publishing as site to GitLab Pages.
+Note that this value must match the value of the `--to-dir` option passed to the Antora CLI.
 
 If any of your content repositories are private, you can define a `GIT_CREDENTIALS` CI/CD variable that holds the credentials to give Antora access to those repositories in this environment.
 You can set up {url-gitlab-deploy-tokens}[deploy tokens] in your content repository to give the CI/CD pipeline in your playbook project (and thus Antora) read-only access to those repositories.
