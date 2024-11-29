@@ -34,7 +34,7 @@
     "@antora/site-mapper": "3.2.0-alpha.6",
     "@antora/site-publisher": "3.2.0-alpha.6",
     "@antora/ui-loader": "3.2.0-alpha.6",
-    "@antora/user-require-helper": "~2.0"
+    "@antora/user-require-helper": "~3.0"
   },
   "engines": {
     "node": ">=18.0.0"

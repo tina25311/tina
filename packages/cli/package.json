@@ -27,7 +27,7 @@
   "dependencies": {
     "@antora/logger": "3.2.0-alpha.6",
     "@antora/playbook-builder": "3.2.0-alpha.6",
-    "@antora/user-require-helper": "~2.0",
+    "@antora/user-require-helper": "~3.0",
     "commander": "~12.1"
   },
   "devDependencies": {

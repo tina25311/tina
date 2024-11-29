@@ -19,7 +19,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@antora/expand-path-helper": "~2.0",
+    "@antora/expand-path-helper": "~3.0",
     "pino": "~9.2",
     "pino-pretty": "~11.2",
     "sonic-boom": "~4.0"
