@@ -28,9 +28,9 @@
     "#constants": "./lib/constants.js"
   },
   "dependencies": {
-    "@antora/expand-path-helper": "~2.0",
+    "@antora/expand-path-helper": "~3.0",
     "@antora/logger": "3.1.9",
-    "@antora/user-require-helper": "~2.0",
+    "@antora/user-require-helper": "~3.0",
     "braces": "~3.0",
     "cache-directory": "~2.0",
     "fast-glob": "~3.3",

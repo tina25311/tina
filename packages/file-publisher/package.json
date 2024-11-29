@@ -23,8 +23,8 @@
     "#constants": "./lib/constants.js"
   },
   "dependencies": {
-    "@antora/expand-path-helper": "~2.0",
-    "@antora/user-require-helper": "~2.0",
+    "@antora/expand-path-helper": "~3.0",
+    "@antora/user-require-helper": "~3.0",
     "vinyl": "~3.0",
     "yazl": "~2.5"
   },
