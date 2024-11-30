@@ -11,14 +11,17 @@
     "url": "https://gitlab.com/antora/antora/issues"
   },
   "scripts": {
-    "build": "npm test && npm run lint",
+    "build": "npm test",
+    "postbuild": "npm run lint",
     "coverage": "nyc _mocha",
     "deps": "node npm/validate-deps.js",
     "format": "node npm/format.js packages/${npm_config_package},npm",
     "lint": "eslint \"{docs,npm}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
     "prepareForDev": "node npm/prepare-for-dev.js",
     "test": "_mocha",
-    "tidy": "npm run lint && npm run format && npm run deps",
+    "pretidy": "npm run lint",
+    "tidy": "npm run format",
+    "posttidy": "npm run deps",
     "version": "node npm/version.js"
   },
   "devDependencies": {
