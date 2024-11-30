@@ -13,7 +13,7 @@ class FetchAndPublishReadmeExtension {
     this.contentsPromise = undefined
   }
 
-  playbookBuilt ({ siteCatalog }) {
+  onPlaybookBuilt ({ siteCatalog }) {
     this.contentsPromise = new Promise((resolve, reject) => {
       const buffer = []
       https
