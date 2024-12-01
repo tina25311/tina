@@ -9,10 +9,9 @@ function compileRx (pattern, opts) {
     : makeMatcherRx(pattern, opts)
 }
 
-function createMatcher (patterns, cache, opts) {
+function createMatcher (patterns, cache = Object.assign(new Map(), { braces: new Map() })) {
   const rxs = patterns.map(
-    (pattern) =>
-      cache.get(pattern) || cache.set(pattern, compileRx(pattern, opts || (opts = getMatcherOpts(cache)))).get(pattern)
+    (pattern) => cache.get(pattern) || cache.set(pattern, compileRx(pattern, getMatcherOpts(cache))).get(pattern)
   )
   if (rxs[0].negated) rxs.unshift(MATCH_ALL_RX)
   return (candidate) => {
@@ -31,7 +30,7 @@ function createMatcher (patterns, cache, opts) {
   }
 }
 
-function filterRefs (candidates, patterns, cache = Object.assign(new Map(), { braces: new Map() })) {
+function filterRefs (candidates, patterns, cache) {
   const isMatch = createMatcher(patterns, cache)
   return candidates.reduce((accum, candidate) => {
     if (isMatch(candidate)) accum.push(candidate)
