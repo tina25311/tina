@@ -87,19 +87,16 @@ function mapSite (playbook, pages) {
 }
 
 function getSitemapForComponent (siteUrl, sitemaps, component) {
-  if (sitemaps.has(component)) {
-    return sitemaps.get(component)
-  } else {
-    const basename = `${SITEMAP_PREFIX}${component}.xml`
-    const componentSitemap = new File({
-      entries: [],
-      out: { path: basename },
-      pub: { url: '/' + basename },
-      versions: new Set(),
-    })
-    sitemaps.set(component, componentSitemap)
-    return componentSitemap
-  }
+  if (sitemaps.has(component)) return sitemaps.get(component)
+  const basename = `${SITEMAP_PREFIX}${component}.xml`
+  const componentSitemap = new File({
+    entries: [],
+    out: { path: basename },
+    pub: { url: '/' + basename },
+    versions: new Set(),
+  })
+  sitemaps.set(component, componentSitemap)
+  return componentSitemap
 }
 
 function createSitemapElement (siteUrl, sitemap) {

@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const { captureLogSync, expect } = require('@antora/test-harness')

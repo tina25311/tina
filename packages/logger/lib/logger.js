@@ -36,10 +36,11 @@ function close () {
   }
 }
 
-function configure ({ name, level = 'info', levelFormat, failureLevel = 'silent', format, destination } = {}, baseDir) {
+function configure (opts = {}, baseDir = undefined) {
+  let { name, level = 'info', levelFormat, failureLevel = 'silent', format, destination } = opts
   let logger
   if ((levelValues[level] || (level === 'all' ? (level = minLevel) : INF)) === INF) {
-    if ((levelValues[failureLevel] || INF) === INF && (rootLoggerHolder.get() || {}).noop) return module.exports
+    if ((levelValues[failureLevel] || INF) === INF && rootLoggerHolder.get()?.noop) return module.exports
     close()
     logger = Object.assign(Object.create(Object.getPrototypeOf(noopLogger)), noopLogger)
   } else {
@@ -114,7 +115,7 @@ function get (name) {
 
 function finalize () {
   close()
-  return Promise.all(finalizers.splice(0, finalizers.length)).then(() => (rootLoggerHolder.get() || {}).failOnExit)
+  return Promise.all(finalizers.splice(0, finalizers.length)).then(() => rootLoggerHolder.get()?.failOnExit)
 }
 
 function createPrettyDestination (destination, colorize) {
@@ -246,9 +247,9 @@ function decorateWithSetFailOnExit (method) {
   return method.name === 'noop'
     ? callSetFailOnExit
     : function () {
-      this.setFailOnExit()
-      method.apply(this, arguments)
-    }
+        this.setFailOnExit()
+        method.apply(this, arguments)
+      }
 }
 
 function callSetFailOnExit () {

@@ -28,10 +28,12 @@ function collateAsciiDocAttributes (scoped, { initial, merge, mdc }) {
             logger.warn(mdc, "Skipping reference to missing attribute '%s' in value of '%s' attribute", refname, name)
           }
           return ref
-        } else if (refval.constructor === String) {
+        }
+        if (refval.constructor === String) {
           const lastIdx = refval.length - 1
           return refval.charAt(lastIdx) === '@' ? refval.substr(0, lastIdx) : refval
-        } else if (ref === val) {
+        }
+        if (ref === val) {
           alias = refval
           return ref
         }

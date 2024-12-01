@@ -16,11 +16,11 @@ function resolvePathGlobs (base, patterns, listDirents, retrievePath, tree = { p
         if (resolvedPaths.length) {
           const rx = makeMatcherRx(pattern.substr(1), MATCHER_OPTS)
           return resolvedPaths.filter((it) => !rx.test(it))
-        } else {
-          return resolvedPaths
         }
+        return resolvedPaths
       })
-    } else if (RX_MAGIC_DETECTOR.test(pattern)) {
+    }
+    if (RX_MAGIC_DETECTOR.test(pattern)) {
       return glob(base, pattern.split('/'), listDirents, retrievePath, tree).then((nestedPaths) =>
         paths.then((resolvedPaths) => [...resolvedPaths, ...nestedPaths])
       )
@@ -62,35 +62,36 @@ async function glob (base, patternSegments, listDirents, retrievePath, { oid, pa
           dirent.isDirectory() && isMatch(dirent.name)
             ? patternSegments.length
               ? glob(base, patternSegments, listDirents, retrievePath, {
-                oid: dirent.oid,
-                path: joinPath(path, dirent.name),
-                globbed: true,
-              })
+                  oid: dirent.oid,
+                  path: joinPath(path, dirent.name),
+                  globbed: true,
+                })
               : joinPath(path, dirent.name)
             : []
         )
       )
     )
     return explicit ? [...[...explicit].map((it) => joinPath(path, it)), ...discovered] : discovered
-  } else {
-    const [magicBase, nextSegment] = extractMagicBase(patternSegments, patternSegment)
-    patternSegment = magicBase
-    if (nextSegment) {
-      const obj = await retrievePath(base, { oid, path }, patternSegment)
-      if (obj) {
-        return glob(base, patternSegments, listDirents, retrievePath, {
-          oid: obj.oid,
-          path: joinPath(path, patternSegment),
-        })
-      } else if ((patternSegment += '/' + patternSegments.join('/')).indexOf('{')) {
-        return expandBraces(patternSegment).map((it) => joinPath(path, it))
-      }
-      return [joinPath(path, patternSegment)]
-    } else if (globbed) {
-      return (await retrievePath(base, { oid, path }, patternSegment)) ? [joinPath(path, patternSegment)] : []
+  }
+  const [magicBase, nextSegment] = extractMagicBase(patternSegments, patternSegment)
+  patternSegment = magicBase
+  if (nextSegment) {
+    const obj = await retrievePath(base, { oid, path }, patternSegment)
+    if (obj) {
+      return glob(base, patternSegments, listDirents, retrievePath, {
+        oid: obj.oid,
+        path: joinPath(path, patternSegment),
+      })
+    }
+    if ((patternSegment += '/' + patternSegments.join('/')).indexOf('{')) {
+      return expandBraces(patternSegment).map((it) => joinPath(path, it))
     }
     return [joinPath(path, patternSegment)]
   }
+  if (globbed) {
+    return (await retrievePath(base, { oid, path }, patternSegment)) ? [joinPath(path, patternSegment)] : []
+  }
+  return [joinPath(path, patternSegment)]
 }
 
 function extractMagicBase (patternSegments, base) {

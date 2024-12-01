@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const {
@@ -112,7 +111,7 @@ describe('publishFiles()', () => {
       .to.be.a.directory()
       .with.subDirs(expectedSubDirs || ['_', 'the-component'])
     expect(ospath.join(absDestDir, '_/css/site.css')).to.be.a.file().with.contents('body { color: red; }')
-    expect(ospath.join(absDestDir, '_/js/site.js')).to.be.a.file().with.contents(';(function () {})()')
+    expect(ospath.join(absDestDir, '_/js/site.js')).to.be.a.file().with.contents(';(function () {})()') // biome-ignore format: confuses formatter
     expect(ospath.join(absDestDir, 'the-component/1.0/index.html')).to.be.a.file().with.contents.that.match(HTML_RX)
     expect(ospath.join(absDestDir, 'the-component/1.0/the-page.html')).to.be.a.file().with.contents.that.match(HTML_RX)
     expect(ospath.join(absDestDir, 'the-component/1.0/the-module/index.html'))
@@ -141,7 +140,7 @@ describe('publishFiles()', () => {
       ;(this.queue = this.createQueue(paths)).next()
     }
 
-    * createQueue (paths) {
+    *createQueue (paths) {
       for (const path_ of paths) {
         fs.createReadStream(path_)
           .once('error', (err) => this.destroy(err))
@@ -172,7 +171,7 @@ describe('publishFiles()', () => {
     const uiCatalog = {
       getFiles: () => [
         createFile('_/css/site.css', 'body { color: red; }'),
-        createFile('_/js/site.js', ';(function () {})()'),
+        createFile('_/js/site.js', ';(function () {})()'), // biome-ignore format: confuses formatter
       ],
     }
     catalogs = [contentCatalog, uiCatalog]

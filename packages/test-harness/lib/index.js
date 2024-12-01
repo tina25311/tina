@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 process.env.NODE_ENV = 'test'
@@ -108,7 +107,8 @@ function emptyDirSync (dir) {
     if (err.code === 'ENOENT') {
       fs.mkdirSync(dir, { recursive: true })
       return
-    } else if (err.code === 'ENOTDIR') {
+    }
+    if (err.code === 'ENOTDIR') {
       unlinkSync(dir)
       fs.mkdirSync(dir, { recursive: true })
       return
@@ -178,10 +178,15 @@ module.exports = {
       ).then(resolve, reject)
     ),
   captureStdoutLogSync: (fn) =>
-    captureStandardStream('stdout', fn, function messages (buffer) {
-      const { time, ...message } = JSON.parse(buffer)
-      return [message]
-    }),
+    captureStandardStream(
+      'stdout',
+      fn,
+      function messages (buffer) {
+        const { time, ...message } = JSON.parse(buffer)
+        return [message]
+      },
+      false
+    ),
   closeServer,
   closeServers,
   configureLogger,
@@ -223,7 +228,7 @@ module.exports = {
       }
     ),
   wipeSync,
-  zipDest: (zipPath, zipFile = new yazl.ZipFile(), writeStream) => {
+  zipDest: (zipPath, zipFile = new yazl.ZipFile(), writeStream = undefined) => {
     zipFile.outputStream.pipe((writeStream = fs.createWriteStream(zipPath)))
     return new Writable({
       objectMode: true,

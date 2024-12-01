@@ -73,8 +73,8 @@ function mockContentCatalog (spy, seed = []) {
           path: path.join(component, pubVersion, pubModule, relativeOut),
           moduleRootPath: ~relativeOut.indexOf('/')
             ? Array(relativeOut.split('/').length - 1)
-              .fill('..')
-              .join('/')
+                .fill('..')
+                .join('/')
             : '.',
         }
         let url = '/' + (indexify ? entry.out.path.slice(0, -10) : entry.out.path)

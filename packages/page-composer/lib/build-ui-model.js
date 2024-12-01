@@ -147,7 +147,7 @@ function getPageVersions (page, component, contentCatalog) {
       const relPageId = Object.assign({}, basePageId, { version: componentVersion.version })
       if (
         !(relPage = contentCatalog.getById(relPageId)) &&
-        (relPage = (contentCatalog.getById((relPageId.family = 'alias') && relPageId) || {}).rel)
+        (relPage = contentCatalog.getById((relPageId.family = 'alias') && relPageId)?.rel)
       ) {
         // NOTE: don't follow alias that falls outside of component version
         if (relPage.src.version === relPageId.version && relPage.src.component === relPageId.component) {
@@ -181,7 +181,7 @@ function getPageVersions (page, component, contentCatalog) {
       prevPage = relPage
     } else if (
       prevPage &&
-      (primaryAliasSrc = (prevPage.rel || {}).src) &&
+      (primaryAliasSrc = prevPage.rel?.src) &&
       // NOTE: if alias is located in different component or version, it doesn't give us any useful information
       primaryAliasSrc.version === prevPage.src.version &&
       primaryAliasSrc.component === prevPage.src.component
@@ -191,7 +191,7 @@ function getPageVersions (page, component, contentCatalog) {
       if ((relPage = contentCatalog.getById(relPageId))) {
         // NOTE: keep searching from target of alias
         basePageId = (prevPage = relPage).src
-      } else if ((relPage = (contentCatalog.getById((relPageId.family = 'alias') && relPageId) || {}).rel)) {
+      } else if ((relPage = contentCatalog.getById((relPageId.family = 'alias') && relPageId)?.rel)) {
         // NOTE: don't follow alias that falls outside of component version
         if (relPage.src.version === relPageId.version && relPage.src.component === relPageId.component) {
           // NOTE: keep searching from target of alias
@@ -244,9 +244,8 @@ function attachNavProperties (model, currentUrl, title, navigation = []) {
 }
 
 function findNavItem (correlated, siblings, root = true, siblingIdx = 0, candidate = undefined) {
-  if (!(candidate = candidate || siblings[siblingIdx])) {
-    return correlated
-  } else if (correlated.match) {
+  if (!(candidate = candidate || siblings[siblingIdx])) return correlated
+  if (correlated.match) {
     if (candidate.urlType === 'internal' && !matchesPage(candidate, correlated.currentUrl)) {
       correlated.next = candidate
       return correlated

@@ -100,12 +100,12 @@ function aggregateContent (playbook) {
     const sourcesByUrl = sources.reduce((accum, source) => {
       return accum.set(source.url, [...(accum.get(source.url) || []), Object.assign({}, sourceDefaults, source)])
     }, new Map())
-    const progress = !quiet && createProgress(sourcesByUrl.keys(), process.stdout)
+    const progress = quiet ? undefined : createProgress(sourcesByUrl.keys(), process.stdout)
     const refPatternCache = Object.assign(new Map(), { braces: new Map() })
     const fetchConfig = { always: fetch, depth: Math.max(0, gitConfig.fetchDepth ?? 1) }
     const loadOpts = { cacheDir, fetch: fetchConfig, gitPlugins, progress, startDir, refPatternCache }
     return collectFiles(sourcesByUrl, loadOpts, concurrency).then(buildAggregate, (err) => {
-      progress && progress.terminate()
+      progress?.terminate()
       throw err
     })
   })
@@ -125,7 +125,7 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls = 
         const msg0 = 'An unexpected error occurred while fetching content sources concurrently.'
         const msg1 = 'Retrying with git.fetch_concurrency value of 1.'
         logger.warn(rejections[0], msg0 + ' ' + msg1)
-        const fulfilledUrls = results.filter((it) => it && it.repo.url).map((it) => it.url)
+        const fulfilledUrls = results.filter((it) => it?.repo.url).map((it) => it.url)
         return collectFiles(sourcesByUrl, loadOpts, Object.assign(concurrency, { fetch: 1 }), fulfilledUrls)
       }
       throw rejections[0]
@@ -182,12 +182,12 @@ async function loadRepository (url, opts, result = {}) {
             return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
           })
           .catch((fetchErr) => {
-            if (fetchOpts.onProgress) fetchOpts.onProgress.finish(fetchErr)
+            fetchOpts.onProgress?.finish(fetchErr)
             if (HTTP_ERROR_CODE_RX.test(fetchErr.code) && fetchErr.data.statusCode === 401) fetchErr.rethrow = true
             throw fetchErr
           })
           .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
-          .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
+          .then(() => fetchOpts.onProgress?.finish())
       } else {
         authStatus = await git.getConfig(Object.assign({ path: 'remote.origin.private' }, repo))
       }
@@ -203,12 +203,12 @@ async function loadRepository (url, opts, result = {}) {
           return git.setConfig(Object.assign({ path: 'remote.origin.private', value: authStatus }, repo))
         })
         .catch((cloneErr) => {
-          if (fetchOpts.onProgress) fetchOpts.onProgress.finish(cloneErr)
+          fetchOpts.onProgress?.finish(cloneErr)
           const authRequested = credentialManager.status({ url }) === 'requested'
           throw transformGitCloneError(cloneErr, displayUrl, authRequested)
         })
         .then(() => fsp.writeFile(validStateFile, '').catch(invariably.void))
-        .then(() => fetchOpts.onProgress && fetchOpts.onProgress.finish())
+        .then(() => fetchOpts.onProgress?.finish())
     }
   } else if (await isDirectory((dir = expandPath(url, { dot: opts.startDir })))) {
     const dotgit = ospath.join(dir, '.git')
@@ -244,11 +244,9 @@ function extractCredentials (url) {
     // NOTE if only username is present, assume it's an oauth token and set password to empty string
     const credentials = username ? { username, password: password || '' } : {}
     return { displayUrl, url, credentials }
-  } else if (url.startsWith('git@')) {
-    return { displayUrl: url, url: 'https://' + url.substr(4).replace(':', '/') }
-  } else {
-    return { displayUrl: url, url }
   }
+  if (url.startsWith('git@')) return { displayUrl: url, url: 'https://' + url.substr(4).replace(':', '/') }
+  return { displayUrl: url, url }
 }
 
 async function selectStartPathsForRepository (repo, authStatus, sources) {
@@ -415,8 +413,8 @@ function getCurrentBranchName (repo, remote) {
   return (
     remote && repo.noCheckout
       ? git
-        .resolveRef(Object.assign({ ref: 'refs/remotes/' + remote + '/HEAD', depth: 2 }, repo))
-        .catch(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo)))
+          .resolveRef(Object.assign({ ref: 'refs/remotes/' + remote + '/HEAD', depth: 2 }, repo))
+          .catch(() => git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo)))
       : git.resolveRef(Object.assign({ ref: 'HEAD', depth: 2 }, repo))
   ).then((ref) => (ref.startsWith('refs/') ? ref.replace(SHORTEN_REF_RX, '') : undefined))
 }
@@ -548,9 +546,9 @@ function readFilesFromGitTree (repo, oid, startPath) {
     Object.assign(root, { dirname: '' })
     return startPath
       ? getGitTreeAtStartPath(repo, oid, startPath).then((start) => {
-        Object.assign(start, { dirname: startPath })
-        return srcGitTree(repo, root, start)
-      })
+          Object.assign(start, { dirname: startPath })
+          return srcGitTree(repo, root, start)
+        })
       : srcGitTree(repo, root)
   })
 }
@@ -605,7 +603,8 @@ function visitGitTree (emitter, repo, root, filter, convert, parent, dirname = '
               (target) => {
                 if (target.type === 'tree') {
                   return visitGitTree(emitter, repo, root, filter, convert, target, vfilePath, target.following)
-                } else if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
+                }
+                if (target.type === 'blob' && filterVerdict === true && (mode = FILE_MODES[target.mode])) {
                   return convert(Object.assign({ mode, oid: target.oid, path: vfilePath }, repo)).then((result) =>
                     emitter.emit('entry', result)
                   )
@@ -677,11 +676,11 @@ function readGitObjectAtPath (repo, root, parent, pathSegments, following) {
     if (entry.path === firstPathSegment) {
       return entry.type === 'tree'
         ? git.readTree(Object.assign({ oid: entry.oid }, repo)).then((subtree) => {
-          Object.assign(subtree, { dirname: path.join(parent.dirname, entry.path) })
-          return (pathSegments = pathSegments.slice(1)).length
-            ? readGitObjectAtPath(repo, root, subtree, pathSegments, following)
-            : Object.assign(subtree, { type: 'tree', following }) // Q: should this create copy?
-        })
+            Object.assign(subtree, { dirname: path.join(parent.dirname, entry.path) })
+            return (pathSegments = pathSegments.slice(1)).length
+              ? readGitObjectAtPath(repo, root, subtree, pathSegments, following)
+              : Object.assign(subtree, { type: 'tree', following }) // Q: should this create copy?
+          })
         : entry.mode === SYMLINK_FILE_MODE
           ? readGitSymlink(repo, root, parent, entry, following)
           : Promise.resolve(entry)
@@ -889,9 +888,8 @@ function identifyAuthStatus (credentialManager, credentials, url) {
   const status = credentialManager.status({ url })
   if (credentials) {
     return typeof status === 'string' && status.startsWith('requested,') ? 'auth-required' : 'auth-embedded'
-  } else if (status != null) {
-    return 'auth-required'
   }
+  if (status != null) return 'auth-required'
 }
 
 /**
@@ -923,9 +921,9 @@ function resolveRemoteUrl (repo, remoteName) {
     if (url) {
       if (url.startsWith('https://') || url.startsWith('http://')) {
         return ~url.indexOf('@') ? url.replace(URL_AUTH_CLEANER_RX, '$1') : url
-      } else if (url.startsWith('git@')) {
-        return 'https://' + url.substr(4).replace(':', '/')
-      } else if (url.startsWith('ssh://')) {
+      }
+      if (url.startsWith('git@')) return 'https://' + url.substr(4).replace(':', '/')
+      if (url.startsWith('ssh://')) {
         return 'https://' + url.substr(url.indexOf('@') + 1 || 6).replace(URL_PORT_CLEANER_RX, '$1')
       }
     }
@@ -1075,21 +1073,21 @@ function findWorktrees (repo, patterns) {
   return (
     worktreesDir
       ? fsp
-        .readdir(worktreesDir)
-        .then((worktreeNames) => filterRefs(worktreeNames, patterns, patternCache), invariably.emptyArray)
-        .then((worktreeNames) =>
-          Promise.all(
-            worktreeNames.map((worktreeName) => {
-              const gitdir = ospath.resolve(worktreesDir, worktreeName)
-              // NOTE branch name defaults to worktree name if HEAD is detached
-              return getCurrentBranchName(Object.assign({}, repo, { gitdir })).then((branch = worktreeName) =>
-                fsp
-                  .readFile(ospath.join(gitdir, 'gitdir'), 'utf8')
-                  .then((contents) => [branch, { head: ospath.dirname(contents.trimEnd()), name: worktreeName }])
-              )
-            })
+          .readdir(worktreesDir)
+          .then((worktreeNames) => filterRefs(worktreeNames, patterns, patternCache), invariably.emptyArray)
+          .then((worktreeNames) =>
+            Promise.all(
+              worktreeNames.map((worktreeName) => {
+                const gitdir = ospath.resolve(worktreesDir, worktreeName)
+                // NOTE branch name defaults to worktree name if HEAD is detached
+                return getCurrentBranchName(Object.assign({}, repo, { gitdir })).then((branch = worktreeName) =>
+                  fsp
+                    .readFile(ospath.join(gitdir, 'gitdir'), 'utf8')
+                    .then((contents) => [branch, { head: ospath.dirname(contents.trimEnd()), name: worktreeName }])
+                )
+              })
+            )
           )
-        )
       : Promise.resolve()
   ).then((entries = []) => mainWorktree.then((entry) => new Map(entry ? entries.push(entry) && entries : entries)))
 }

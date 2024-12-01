@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const { captureLogSync, expect, heredoc, spy } = require('@antora/test-harness')
@@ -298,9 +297,9 @@ describe('createPageComposer()', () => {
         resolvePage: (spec, { component, version }) => {
           if (!spec) {
             throw new Error('invalid page ID')
-          } else if (spec === 'the-component::the-page.adoc') {
-            return files['1.0']
-          } else if (spec === 'the-page.adoc' && component === 'the-component') {
+          }
+          if (spec === 'the-component::the-page.adoc') return files['1.0']
+          if (spec === 'the-page.adoc' && component === 'the-component') {
             return version === '0.9' ? files['0.9'] : files['1.0']
           }
         },

@@ -66,7 +66,7 @@ async function generateSite (playbook) {
           const isCI = playbook.env.CI === 'true'
           log('Site generation complete!')
           publications.forEach((pub) => {
-            const baseUri = isCI ? url : (pub || {}).fileUri
+            const baseUri = isCI ? url : pub?.fileUri
             if (baseUri) log(`Open ${baseUri}${indexPath} in a browser to view your site.`)
           })
         }

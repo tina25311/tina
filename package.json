@@ -15,8 +15,9 @@
     "postbuild": "npm run lint",
     "coverage": "nyc _mocha",
     "deps": "node npm/validate-deps.js",
-    "format": "node npm/format.js packages/${npm_config_package},npm",
-    "lint": "eslint \"{docs,npm}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
+    "format": "npx -y @biomejs/biome format --write",
+    "postformat": "node --disable-warning ExperimentalWarning npm/postformat.js",
+    "lint": "npx -y @biomejs/biome lint",
     "prepareForDev": "node npm/prepare-for-dev.js",
     "test": "_mocha",
     "pretidy": "npm run lint",
@@ -25,11 +26,8 @@
     "version": "node npm/version.js"
   },
   "devDependencies": {
-    "eslint": "~8.42",
-    "eslint-config-standard": "~17.1",
     "mocha": "~10.4",
-    "nyc": "~17.0",
-    "prettier-eslint": "~16.3"
+    "nyc": "~17.0"
   },
   "engines": {
     "node": ">=18.0.0"

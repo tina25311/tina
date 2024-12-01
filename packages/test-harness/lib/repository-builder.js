@@ -170,13 +170,13 @@ class RepositoryBuilder {
   async importFilesFromFixture (fixtureName = '', opts = {}) {
     return new Promise((resolve, reject) => {
       const cwd = ospath.join(this.fixtureBase, fixtureName)
-      const exclude = opts.exclude && opts.exclude.map((path_) => ospath.normalize(path_))
+      const exclude = opts.exclude?.map(ospath.normalize)
       const paths = []
       pipeline(
         globStream(FIXTURE_SRC_GLOB, Object.assign({ cwd }, FIXTURE_SRC_OPTS)),
         forEach((relpath, _, done) => {
           relpath = ospath.sep === '\\' ? ospath.normalize(relpath) : relpath
-          if (exclude && exclude.includes(relpath)) return done()
+          if (exclude?.includes(relpath)) return done()
           const abspath = ospath.sep === '\\' ? ospath.join(cwd, relpath) : cwd + '/' + relpath
           fsp.stat(abspath).then(() => paths.push(relpath) && done(), done)
         }),

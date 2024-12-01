@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const {
@@ -130,7 +129,8 @@ describe('loadUi()', () => {
         response.writeHead(301, { Location: `/${request.url.substr(13)}` })
         response.end('<!DOCTYPE html><html><body>Moved.</body></html>', 'utf8')
         return
-      } else if (request.url === '/hang-up.zip') {
+      }
+      if (request.url === '/hang-up.zip') {
         response.destroy()
         return
       }

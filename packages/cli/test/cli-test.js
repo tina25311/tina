@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const {
@@ -534,7 +533,7 @@ describe('cli', () => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
         .to.be.a.file()
-        .with.contents.that.match(new RegExp('<title>Index Page :: Awesome Docs</title>'))
+        .with.contents.that.match(/<title>Index Page :: Awesome Docs<\/title>/)
     })
   })
 
@@ -547,7 +546,7 @@ describe('cli', () => {
         expect(exitCode).to.equal(0)
         expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
           .to.be.a.file()
-          .with.contents.that.match(new RegExp('<link rel="canonical" href="https://docs.example.com/[^"]*">'))
+          .with.contents.that.match(/<link rel="canonical" href="https:\/\/docs.example.com\/[^"]*">/)
       }
     )
   })
@@ -596,7 +595,7 @@ describe('cli', () => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
         .to.be.a.file()
-        .with.contents.that.match(new RegExp('<link rel="canonical" href="https://docs.example.com/[^"]*">'))
+        .with.contents.that.match(/<link rel="canonical" href="https:\/\/docs.example.com\/[^"]*">/)
     })
   })
 
@@ -610,8 +609,8 @@ describe('cli', () => {
       expect(exitCode).to.equal(0)
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
         .to.be.a.file()
-        .with.contents.that.match(new RegExp('<title>Index Page :: #allthedocs</title>'))
-        .with.contents.that.match(new RegExp('<link rel="canonical" href="https://docs.example.com/[^"]*">'))
+        .with.contents.that.match(/<title>Index Page :: #allthedocs<\/title>/)
+        .with.contents.that.match(/<link rel="canonical" href="https:\/\/docs.example.com\/[^"]*">/)
     })
   })
 
@@ -718,7 +717,7 @@ describe('cli', () => {
       expect(absDestDir).to.be.a.directory()
       expect(ospath.join(absDestDir, 'the-component/1.0/index.html'))
         .to.be.a.file()
-        .with.contents.that.match(new RegExp('<title>Index Page :: Custom Site Generator</title>'))
+        .with.contents.that.match(/<title>Index Page :: Custom Site Generator<\/title>/)
     })
   })
 

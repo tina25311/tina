@@ -35,7 +35,7 @@ function fsDest (toDir, dirs = new Map(), fileRestream = new PassThrough({ objec
       } while ((ancestorDir = ospath.dirname(ancestorDir)))
       done()
     },
-    function (done, mkdirs = []) {
+    (done, mkdirs = []) => {
       dirs.forEach((create, dir) => create && mkdirs.push(mkdirp(ospath.join(toDir, dir))))
       Promise.all(mkdirs).then(() => {
         fileRestream

@@ -20,7 +20,7 @@ const summarizeFileLocation = require('./util/summarize-file-location')
  *
  * @returns {ContentCatalog} A structured catalog of content components, versions, and virtual content files.
  */
-function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}, onComponentsRegistered) {
+function classifyContent (playbook, aggregate, siteAsciiDocConfig = {}, onComponentsRegistered = undefined) {
   const siteStartPage = playbook.site.startPage
   let contentCatalog = registerComponentVersions(new ContentCatalog(playbook), aggregate, siteAsciiDocConfig)
   return typeof onComponentsRegistered === 'function' &&
@@ -157,7 +157,7 @@ function getNavInfo (filepath, nav) {
 }
 
 function resolveAsciiDocConfig (siteAsciiDocConfig, { name, version, asciidoc, origins = [] }) {
-  const scopedAttributes = (asciidoc || {}).attributes
+  const scopedAttributes = asciidoc?.attributes
   if (scopedAttributes) {
     const initial = Object.assign({}, siteAsciiDocConfig.attributes)
     initial['antora-component-name'] = name
