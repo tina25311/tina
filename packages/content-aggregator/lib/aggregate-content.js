@@ -125,7 +125,7 @@ async function collectFiles (sourcesByUrl, loadOpts, concurrency, fetchedUrls = 
         const msg0 = 'An unexpected error occurred while fetching content sources concurrently.'
         const msg1 = 'Retrying with git.fetch_concurrency value of 1.'
         logger.warn(rejections[0], msg0 + ' ' + msg1)
-        const fulfilledUrls = results.map((it) => it && it.repo.url && it.url).filter((it) => it)
+        const fulfilledUrls = results.filter((it) => it && it.repo.url).map((it) => it.url)
         return collectFiles(sourcesByUrl, loadOpts, Object.assign(concurrency, { fetch: 1 }), fulfilledUrls)
       }
       throw rejections[0]
