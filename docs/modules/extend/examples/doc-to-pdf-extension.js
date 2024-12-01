@@ -30,7 +30,8 @@ module.exports.register = function () {
         })
       })
       await Promise.all(filesToConvert.map((file) => {
-        file.out.path = path.join(file.out.dirname, (file.out.basename = file.out.basename.slice(0, -file.src.extname.length) + '.pdf'))
+        file.out.basename = file.out.basename.slice(0, -file.src.extname.length) + '.pdf'
+        file.out.path = path.join(file.out.dirname, file.out.basename)
         file.pub.url = file.pub.url.slice(0, -file.src.extname.length) + '.pdf'
         const sourceRelpath = `${file.src.component}-${file.src.module}-${file.out.basename}`
         return fsp.readFile(ospath.join(buildDirBase, sourceRelpath)).then((contents) => (file.contents = contents))
