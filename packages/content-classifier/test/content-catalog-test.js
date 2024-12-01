@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const { captureLogSync, expect, spy } = require('@antora/test-harness')
@@ -300,7 +299,7 @@ describe('ContentCatalog', () => {
 
     it('should set displayVersion property automatically if prerelease is a string object', () => {
       const contentCatalog = new ContentCatalog()
-      const prerelease = new String('Beta') // eslint-disable-line no-new-wrappers
+      const prerelease = new String('Beta')
       contentCatalog.registerComponentVersion('the-component', '1.0', { title: 'ACME', prerelease })
       const component = contentCatalog.getComponent('the-component')
       expect(component).to.exist()

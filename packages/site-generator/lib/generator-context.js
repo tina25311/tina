@@ -137,7 +137,7 @@ class GeneratorContext extends EventEmitter {
   }
 
   _registerExtensions (playbook, vars) {
-    const extensions = (playbook.antora || {}).extensions || []
+    const extensions = playbook.antora?.extensions || []
     if (extensions.length) {
       const requireContext = { dot: playbook.dir, paths: [playbook.dir || '', this.module.path] }
       extensions.forEach((ext) => {

@@ -12,7 +12,7 @@ module.exports.register = function () {
       let attributes = componentVersion.asciidoc?.attributes
       if (!attributes) return
       attributes = Object.entries(attributes).reduce((accum, [name, val]) => {
-        accum[name] = val && val.endsWith('@') ? val.slice(0, val.length - 1) : val
+        accum[name] = val?.endsWith('@') ? val.slice(0, val.length - 1) : val
         return accum
       }, {})
       let modified

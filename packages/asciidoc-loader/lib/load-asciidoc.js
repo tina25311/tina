@@ -93,7 +93,7 @@ function computePageAttrs ({ component, version, module: module_, relative, orig
   const attrs = {}
   attrs['page-component-name'] = component
   attrs['page-component-version'] = attrs['page-version'] = version
-  if ((component = contentCatalog && contentCatalog.getComponent(component))) {
+  if ((component = contentCatalog?.getComponent(component))) {
     attrs['page-component-title'] = component.title
     const componentVersion = component.versions.find((it) => it.version === version)
     if (componentVersion) {

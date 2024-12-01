@@ -66,23 +66,19 @@ function getChildListItems (listItem) {
   const blocks = listItem.getBlocks()
   const candidate = blocks[0]
   if (candidate) {
-    if (blocks.length === 1 && candidate.getContext() === 'ulist') {
-      return candidate.getItems()
-    } else {
-      let context
-      return blocks.reduce((accum, block) => {
-        if (
-          (context = block.getContext()) === 'ulist' ||
-          (context === 'open' && (block = block.getBlocks()[0]) && block.getContext() === 'ulist')
-        ) {
-          accum.push(...block.getItems())
-        }
-        return accum
-      }, [])
-    }
-  } else {
-    return []
+    if (blocks.length === 1 && candidate.getContext() === 'ulist') return candidate.getItems()
+    let context
+    return blocks.reduce((accum, block) => {
+      if (
+        (context = block.getContext()) === 'ulist' ||
+        (context === 'open' && (block = block.getBlocks()[0]) && block.getContext() === 'ulist')
+      ) {
+        accum.push(...block.getItems())
+      }
+      return accum
+    }, [])
   }
+  return []
 }
 
 function buildNavigationTree (formattedContent, items) {
@@ -98,22 +94,16 @@ function partitionContent (content) {
     if (match) {
       const [, url, role, content] = match
       let roles
-      if (role && role.includes(' ') && (roles = role.split(' ')).includes('xref')) {
+      if (role?.includes(' ') && (roles = role.split(' ')).includes('xref')) {
         const hashIdx = url.indexOf('#')
         if (~hashIdx) {
-          if (roles.includes('unresolved')) {
-            return { content, url, urlType: 'internal', unresolved: true }
-          } else {
-            return { content, url, urlType: 'internal', hash: url.substr(hashIdx) }
-          }
-        } else {
-          return { content, url, urlType: 'internal' }
+          if (roles.includes('unresolved')) return { content, url, urlType: 'internal', unresolved: true }
+          return { content, url, urlType: 'internal', hash: url.substr(hashIdx) }
         }
-      } else if (url.charAt() === '#') {
-        return { content, url, urlType: 'fragment', hash: url }
-      } else {
-        return { content, url, urlType: 'external' }
+        return { content, url, urlType: 'internal' }
       }
+      if (url.charAt() === '#') return { content, url, urlType: 'fragment', hash: url }
+      return { content, url, urlType: 'external' }
     }
   }
   return { content }

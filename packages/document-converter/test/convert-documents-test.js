@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const { expect, heredoc, mockContentCatalog, spy } = require('@antora/test-harness')
@@ -515,9 +514,7 @@ describe('convertDocuments()', () => {
     contentCatalog.registerPageAlias = (spec, targetPage) => {
       aliases[spec] = { rel: targetPage }
     }
-    contentCatalog.resolveResource = (spec, ctx = {}) => {
-      return (aliases[spec] || {}).rel
-    }
+    contentCatalog.resolveResource = (spec, ctx = {}) => aliases[spec]?.rel
     const pages = convertDocuments(contentCatalog, asciidocConfig)
     const thePageContents = pages.find((it) => it.src.relative === 'the-page.adoc').contents.toString()
     const zaPageContents = pages.find((it) => it.src.relative === 'za-page.adoc').contents.toString()

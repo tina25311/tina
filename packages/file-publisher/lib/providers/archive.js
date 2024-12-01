@@ -18,7 +18,7 @@ function publishToArchive (config, files, playbook) {
   return publishStream(zipDest(absDestFile), files).then(() => report)
 }
 
-function zipDest (zipPath, zipFile = new ZipFile(), writeStream) {
+function zipDest (zipPath, zipFile = new ZipFile(), writeStream = undefined) {
   return forEach(
     (done) => {
       fs.mkdir(ospath.dirname(zipPath), { recursive: true }, (mkdirErr) =>

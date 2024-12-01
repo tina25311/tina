@@ -24,11 +24,8 @@ function versionCompareDesc (a, b) {
   if (a && b) {
     const semverA = resolveSemver(a)
     const semverB = resolveSemver(b)
-    if (semverA) {
-      return semverB ? -semverCompare(semverA, semverB) : 1
-    } else {
-      return semverB ? -1 : -2 * a.localeCompare(b, 'en', { numeric: true })
-    }
+    if (semverA) return semverB ? -semverCompare(semverA, semverB) : 1
+    return semverB ? -1 : -2 * a.localeCompare(b, 'en', { numeric: true })
   }
   return a ? 1 : -1
 }
@@ -64,23 +61,18 @@ function semverCompare (a, b) {
   const numsA = a.split('.')
   const numsB = b.split('.')
   for (let i = 0; i < 3; i++) {
-    const numA = Number(numsA[i] || 0)
-    const numB = Number(numsB[i] || 0)
-    if (numA > numB) {
-      return 1
-    } else if (numB > numA) {
-      return -1
-    } else if (isNaN(numA)) {
-      if (!isNaN(numB)) return -1
-    } else if (isNaN(numB)) {
+    const numA = Number(numsA[i] ?? 0)
+    const numB = Number(numsB[i] ?? 0)
+    if (numA > numB) return 1
+    if (numB > numA) return -1
+    if (Number.isNaN(numA)) {
+      if (!Number.isNaN(numB)) return -1
+    } else if (Number.isNaN(numB)) {
       return 1
     }
   }
-  if (preA == null) {
-    return preB == null ? 0 : 1
-  } else {
-    return preB == null ? -1 : preA.localeCompare(preB, 'en', { numeric: true })
-  }
+  if (preA == null) return preB == null ? 0 : 1
+  return preB == null ? -1 : preA.localeCompare(preB, 'en', { numeric: true })
 }
 
 module.exports = versionCompareDesc

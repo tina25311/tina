@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const { captureLogSync, expect, heredoc, mockContentCatalog } = require('@antora/test-harness')

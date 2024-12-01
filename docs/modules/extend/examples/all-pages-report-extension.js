@@ -6,7 +6,8 @@ module.exports.register = function () {
     contentCatalog.getComponents().forEach(({ versions }) => {
       versions.forEach(({ name: component, version, url }) => {
         const pageList = ['<ul>']
-        const pages = contentCatalog.findBy({ component, version, family: 'page' })
+        const pages = contentCatalog
+          .findBy({ component, version, family: 'page' })
           .sort((a, b) => a.title.localeCompare(b.title))
         for (const page of pages) {
           pageList.push(`<li><a href="${relativize(url, page.pub.url)}">${page.title}</a></li>`)

@@ -107,7 +107,7 @@ function registerFormats (convict) {
       if (!Array.isArray(val)) throw new Error('must be of type Array')
     },
     coerce: (val, config, name) => {
-      const accum = config && config.has(name) ? config.get(name) : []
+      const accum = config?.has(name) ? config.get(name) : []
       val.split(',').forEach((v) => {
         if (~accum.indexOf(v)) return
         const match = accum.find((it) => it.constructor === Object && it.id === v)

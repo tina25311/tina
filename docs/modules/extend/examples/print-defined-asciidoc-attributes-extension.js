@@ -16,7 +16,8 @@ module.exports.register = function () {
 }
 
 function getUniqueOrigins (contentCatalog, componentVersion) {
-  return contentCatalog.findBy({ component: componentVersion.name, version: componentVersion.version })
+  return contentCatalog
+    .findBy({ component: componentVersion.name, version: componentVersion.version })
     .reduce((origins, file) => {
       const origin = file.src.origin
       if (origin && !origins.includes(origin)) origins.push(origin)

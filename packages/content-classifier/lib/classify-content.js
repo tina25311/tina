@@ -141,7 +141,7 @@ function getNavInfo (filepath, nav) {
 }
 
 function resolveAsciiDocConfig (siteAsciiDocConfig, { asciidoc, origins = [] }) {
-  const scopedAttributes = (asciidoc || {}).attributes
+  const scopedAttributes = asciidoc?.attributes
   if (scopedAttributes) {
     const initial = siteAsciiDocConfig.attributes
     const mdc = { file: { path: 'antora.yml', origin: origins[origins.length - 1] } }

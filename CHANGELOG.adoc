@@ -7,6 +7,10 @@ This project utilizes semantic versioning.
 
 == Unreleased
 
+=== Changed
+
+* Apply code formatting changes to comply with biome toolchain (#1157)
+
 === Fixed
 
 * *content-aggregator*: Gracefully handle case when value of nav key in component descriptor is not an array (#1147)

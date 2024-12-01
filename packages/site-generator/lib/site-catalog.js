@@ -17,9 +17,9 @@ class SiteCatalog {
 
   removeFile (file) {
     let removed = false
-    const outPath = (file.out || {}).path
+    const outPath = file.out?.path
     if (!outPath) return false
-    this[$files] = this[$files].filter((it) => (removed || (it.out || {}).path !== outPath ? true : !(removed = true)))
+    this[$files] = this[$files].filter((it) => (removed || it.out?.path !== outPath ? true : !(removed = true)))
     return removed
   }
 
