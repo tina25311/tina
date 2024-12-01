@@ -1,9 +1,9 @@
 'use strict'
 
-const fsp = require('node:fs/promises')
-const ospath = require('node:path')
+const fsp = require('fs/promises')
+const ospath = require('path')
 const { posix: path } = ospath
-const { execFile } = require('node:child_process')
+const { execFile } = require('child_process')
 
 module.exports.register = function () {
   this.once('contentClassified', async ({ playbook, contentCatalog }) => {
