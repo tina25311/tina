@@ -84,9 +84,8 @@ lint:
     <<: *npm_cache
     policy: pull-push
   script:
-  - npm run deps
-  - npm run lint
-  - if [ -n "$(npm --silent run format && git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
+  - npm run tidy
+  - if [ -n "$(git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
 test:node-18-linux:
   extends: .npm
   <<: *unless_docs_mr
