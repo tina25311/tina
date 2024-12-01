@@ -928,7 +928,7 @@ function loadGitPlugins (gitConfig, networkConfig, startDir) {
     if (typeof credentialManager.configure === 'function') {
       credentialManager.configure({ config: gitConfig.credentials, startDir })
     }
-    if (typeof credentialManager.status !== 'function') Object.assign(credentialManager, { status () {} })
+    if (typeof credentialManager.status !== 'function') Object.assign(credentialManager, { status: invariably.void })
   } else {
     credentialManager = new GitCredentialManagerStore().configure({ config: gitConfig.credentials, startDir })
   }
