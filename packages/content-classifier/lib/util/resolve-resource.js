@@ -26,7 +26,6 @@ const parseResourceId = require('./parse-resource-id')
  */
 function resolveResource (spec, catalog, ctx = {}, defaultFamily = undefined, permittedFamilies = undefined) {
   const id = parseResourceId(spec, ctx, defaultFamily, permittedFamilies)
-
   if (!id || !id.family) return false
   if (id.version == null) {
     const component = catalog.getComponent(id.component)
@@ -34,7 +33,6 @@ function resolveResource (spec, catalog, ctx = {}, defaultFamily = undefined, pe
     id.version = component.latest.version
   }
   if (!id.module) id.module = 'ROOT'
-
   return (
     catalog.getById(id) ||
     (id.family === 'page' ? (catalog.getById(Object.assign({}, id, { family: 'alias' })) || {}).rel : undefined)
