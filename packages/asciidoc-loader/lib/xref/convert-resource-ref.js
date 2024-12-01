@@ -35,7 +35,7 @@ function convertResourceRef (refSpec, content, currentPage, contentCatalog, rela
     resourceSpec = refSpec
     hash = ''
   }
-  if (!((resource = contentCatalog.resolveResource(resourceSpec, currentPage.src, 'page')) || {}).pub) {
+  if (!(resource = contentCatalog.resolveResource(resourceSpec, currentPage.src, 'page'))?.pub) {
     return { content: content || refSpec, target: '#' + refSpec, unresolved: true }
   }
   if (relativize) {
@@ -47,9 +47,7 @@ function convertResourceRef (refSpec, content, currentPage, contentCatalog, rela
   const family = (resource.src || { family: 'page' }).family
   if (content) return { content, target, family }
   if (family === 'page' && !hash) {
-    content =
-      (currentPage.src.family === 'nav' ? (resource.asciidoc || {}).navtitle : (resource.asciidoc || {}).xreftext) ||
-      resourceSpec
+    content = resource.asciidoc?.[currentPage.src.family === 'nav' ? 'navtitle' : 'xreftext'] || resourceSpec
   } else {
     content = resourceSpec + hash
   }

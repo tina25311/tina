@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const {
@@ -89,7 +88,7 @@ describe('aggregateContent()', () => {
       .init(repoName || componentDesc.name)
       .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDesc))
       .then(() => repoBuilder.addFilesFromFixture(paths))
-      .then(() => beforeClose && beforeClose())
+      .then(() => typeof beforeClose === 'function' && beforeClose())
       .then(() => repoBuilder.close())
   }
 
@@ -185,7 +184,7 @@ describe('aggregateContent()', () => {
       return repoBuilder
         .init(repoName)
         .then(() => repoBuilder.addComponentDescriptor(componentDesc))
-        .then(() => beforeClose && beforeClose())
+        .then(() => typeof beforeClose === 'function' && beforeClose())
         .then(() => repoBuilder.close())
     }
 
@@ -1669,7 +1668,7 @@ describe('aggregateContent()', () => {
   })
 
   describe('filter refs', () => {
-    const initRepoWithBranches = async (repoBuilder, componentName = 'the-component', beforeClose) =>
+    const initRepoWithBranches = async (repoBuilder, componentName = 'the-component', beforeClose = undefined) =>
       repoBuilder
         .init(componentName)
         .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: 'latest-and-greatest' }))
@@ -1679,7 +1678,7 @@ describe('aggregateContent()', () => {
         .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: 'v3.0' }))
         .then(() => repoBuilder.checkoutBranch('v2.0'))
         .then(() => repoBuilder.addComponentDescriptor({ name: componentName, version: 'v2.0' }))
-        .then(() => beforeClose && beforeClose())
+        .then(() => typeof beforeClose === 'function' && beforeClose())
         .then(() => repoBuilder.close('main'))
 
     describe('should exclude all branches when global filter is undefined', () => {
@@ -4000,7 +3999,7 @@ describe('aggregateContent()', () => {
         ]
         const hostnames = ['github.com', 'private.github.com']
         const action = { branch: 'edit', tag: 'blob' }
-        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
+        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // biome-ignore format: keep it concise
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
@@ -4031,7 +4030,7 @@ describe('aggregateContent()', () => {
         ]
         const hostnames = ['gitlab.com', 'private.gitlab.com']
         const action = { branch: 'edit', tag: 'blob' }
-        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
+        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // biome-ignore format: keep it concise
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
@@ -4061,7 +4060,7 @@ describe('aggregateContent()', () => {
           'git@{hostname}:org-name/repo-name',
         ]
         const hostnames = ['bitbucket.org', 'private.bitbucket.org']
-        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
+        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // biome-ignore format: keep it concise
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
@@ -4091,7 +4090,7 @@ describe('aggregateContent()', () => {
           'git@{hostname}:group-name/repo-name',
         ]
         const hostnames = ['pagure.io', 'private.pagure.io']
-        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // prettier-ignore
+        const refs = [['main', 'branch'], ['v1.1.0', 'tag']] // biome-ignore format: keep it concise
         refs.forEach(([shortname, type]) => {
           hostnames.forEach((hostname) => {
             urls.forEach((url) => {
@@ -4476,7 +4475,7 @@ describe('aggregateContent()', () => {
           ])
         )
         .then(() => repoBuilder.copyToWorktree(['modules/ROOT/pages/page-two.adoc'], repoBuilder.fixtureBase))
-        .then(() => beforeClose && beforeClose())
+        .then(() => typeof beforeClose === 'function' && beforeClose())
         .then(() => repoBuilder.close())
     }
 

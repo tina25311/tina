@@ -24,7 +24,7 @@ function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = 
   if (authStatus) origin.private = authStatus
   if (url) origin.webUrl = removeGitSuffix(url)
   if (editUrl === true) {
-    const match = url && url.match(HOSTED_GIT_REPO_RX)
+    const match = url?.match(HOSTED_GIT_REPO_RX)
     if (match) {
       const host = match[1]
       let action = 'blob'

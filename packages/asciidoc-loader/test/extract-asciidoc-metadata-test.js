@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 'use strict'
 
 const { expect, heredoc } = require('@antora/test-harness')

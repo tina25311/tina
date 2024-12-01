@@ -1,9 +1,10 @@
 const https = require('https')
 
 class FetchAndPublishReadmeExtension {
-  static register ({ config }) {
-    return new FetchAndPublishReadmeExtension(this, config)
-  }
+  // alternate way to export register method
+  //static register ({ config }) {
+  //  return new FetchAndPublishReadmeExtension(this, config)
+  //}
 
   constructor (context, config) {
     ;(this.context = context)
@@ -30,5 +31,11 @@ class FetchAndPublishReadmeExtension {
     siteCatalog.addFile({ contents: Buffer.from(contents), out: { path: 'README.adoc' } })
   }
 }
+
+FetchAndPublishReadmeExtension.register = function ({ config }) {
+  return new FetchAndPublishReadmeExtension(this, config)
+}
+// or
+//FetchAndPublishReadmeExtension.register = (context, { config }) => new FetchAndPublishReadmeExtension(context, config)
 
 module.exports = FetchAndPublishReadmeExtension

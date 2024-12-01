@@ -24,22 +24,22 @@ module.exports.register = function () {
       const dotgit = ospath.join(absdir, '.git')
       const dotgitIsFile = await fsp.stat(dotgit).then((stat) => stat.isFile(), () => false)
       if (!dotgitIsFile) continue
-      const worktreeGitdir = await fsp.readFile(dotgit, 'utf8')
-        .then((contents) => contents.substr(8).trimRight())
-      const worktreeBranch = await fsp.readFile(ospath.join(worktreeGitdir, 'HEAD'), 'utf8')
+      const worktreeGitdir = await fsp.readFile(dotgit, 'utf8').then((contents) => contents.substr(8).trimRight())
+      const worktreeBranch = await fsp
+        .readFile(ospath.join(worktreeGitdir, 'HEAD'), 'utf8')
         .then((contents) => contents.trimRight().replace(/^ref: (?:refs\/heads\/)?/, ''))
       const reldir = ospath.relative(
         playbook.dir,
-        await fsp.readFile(ospath.join(worktreeGitdir, 'commondir'), 'utf8')
-          .then((contents) => {
-            const gitdir = ospath.join(worktreeGitdir, contents.trimRight())
-            return ospath.basename(gitdir) === '.git' ? ospath.dirname(gitdir) : gitdir
-          })
+        await fsp.readFile(ospath.join(worktreeGitdir, 'commondir'), 'utf8').then((contents) => {
+          const gitdir = ospath.join(worktreeGitdir, contents.trimRight())
+          return ospath.basename(gitdir) === '.git' ? ospath.dirname(gitdir) : gitdir
+        })
       )
       contentSource.url = reldir ? `.${ospath.sep}${reldir}` : '.'
       if (!branches) continue
-      contentSource.branches = (branches.constructor === Array ? branches : [branches])
-        .map((pattern) => pattern.replaceAll('HEAD', worktreeBranch))
+      contentSource.branches = (branches.constructor === Array ? branches : [branches]).map((pattern) =>
+        pattern.replaceAll('HEAD', worktreeBranch)
+      )
     }
   })
 }

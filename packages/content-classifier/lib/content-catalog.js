@@ -84,10 +84,10 @@ class ContentCatalog {
       let lastVerdict
       const insertIdx = version
         ? componentVersions.findIndex(({ version: candidateVersion, prerelease: candidatePrerelease }) => {
-          return (lastVerdict = versionCompare(candidateVersion, version)) > 1
-            ? !!prerelease === !!candidatePrerelease
-            : lastVerdict > 0 || (lastVerdict < -1 && prerelease && !candidatePrerelease)
-        })
+            return (lastVerdict = versionCompare(candidateVersion, version)) > 1
+              ? !!prerelease === !!candidatePrerelease
+              : lastVerdict > 0 || (lastVerdict < -1 && prerelease && !candidatePrerelease)
+          })
         : prerelease
           ? -1
           : ~(~componentVersions.findIndex(({ prerelease: candidatePrerelease }) => !candidatePrerelease) || -1)
@@ -143,16 +143,14 @@ class ContentCatalog {
     if (filesForFamily.has(key)) {
       if (family === 'alias') {
         throw new Error(`Duplicate alias: ${generateResourceSpec(src)}`)
-      } else {
-        const details = [filesForFamily.get(key), file]
-          .map((it, idx) => `${idx + 1}: ${summarizeFileLocation(it)}`)
-          .join(LOG_WRAP)
-        if (family === 'nav') {
-          throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}${LOG_WRAP}${details}`)
-        } else {
-          throw new Error(`Duplicate ${family}: ${generateResourceSpec(src)}${LOG_WRAP}${details}`)
-        }
       }
+      const details = [filesForFamily.get(key), file]
+        .map((it, idx) => `${idx + 1}: ${summarizeFileLocation(it)}`)
+        .join(LOG_WRAP)
+      if (family === 'nav') {
+        throw new Error(`Duplicate nav in ${src.version}@${src.component}: ${file.path}${LOG_WRAP}${details}`)
+      }
+      throw new Error(`Duplicate ${family}: ${generateResourceSpec(src)}${LOG_WRAP}${details}`)
     }
     // NOTE: if the path property is not set, assume the src likely needs to be prepared
     // another option is to assume that if the file is not a vinyl object, the src likely needs to be prepared
@@ -234,7 +232,7 @@ class ContentCatalog {
   }
 
   getComponentVersion (component, version) {
-    return (component.versions || (this.getComponent(component) || {}).versions || []).find(
+    return (component.versions || this.getComponent(component)?.versions || []).find(
       ({ version: candidate }) => candidate === version
     )
   }
@@ -262,14 +260,13 @@ class ContentCatalog {
       const accum = []
       for (const candidate of candidates.values()) filter(candidate) && accum.push(candidate)
       return accum
-    } else {
-      return [...candidates.values()]
     }
+    return [...candidates.values()]
   }
 
   // TODO add `follow` argument to control whether alias is followed
   getSiteStartPage () {
-    return this.getById(ROOT_INDEX_PAGE_ID) || (this.getById(ROOT_INDEX_ALIAS_ID) || {}).rel
+    return this.getById(ROOT_INDEX_PAGE_ID) || this.getById(ROOT_INDEX_ALIAS_ID)?.rel
   }
 
   registerComponentVersionStartPage (name, componentVersion, startPageSpec = undefined) {
@@ -342,7 +339,8 @@ class ContentCatalog {
       if (rel.pub.url === (this.htmlUrlExtensionStyle === 'default' ? '/index.html' : '/')) return
       const src = Object.assign({}, ROOT_INDEX_ALIAS_ID)
       return this.addFile({ src, rel, synthetic: true }, { version: src.version })
-    } else if (rel === false) {
+    }
+    if (rel === false) {
       logger.warn('Start page specified for site has invalid syntax: %s', startPageSpec)
     } else if (startPageSpec.lastIndexOf(':') > startPageSpec.indexOf(':')) {
       logger.warn('Start page specified for site not found: %s', startPageSpec)
@@ -367,10 +365,10 @@ class ContentCatalog {
         throw new Error(
           existingPage === target
             ? `Page cannot define alias that references itself: ${generateResourceSpec(src)}` +
-              ` (specified as: ${spec})${LOG_WRAP}source: ${summarizeFileLocation(existingPage)}`
+                ` (specified as: ${spec})${LOG_WRAP}source: ${summarizeFileLocation(existingPage)}`
             : `Page alias cannot reference an existing page: ${generateResourceSpec(src)} (specified as: ${spec})` +
-              `${LOG_WRAP}source: ${summarizeFileLocation(target)}` +
-              `${LOG_WRAP}existing page: ${summarizeFileLocation(existingPage)}`
+                `${LOG_WRAP}source: ${summarizeFileLocation(target)}` +
+                `${LOG_WRAP}existing page: ${summarizeFileLocation(existingPage)}`
         )
       }
     } else if (src.version == null) {

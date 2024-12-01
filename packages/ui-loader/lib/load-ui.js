@@ -84,9 +84,9 @@ async function loadUi (playbook) {
       return fetch && bundle.snapshot
         ? downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {}))
         : fsp.stat(cachePath).then(
-          (stat) => new File({ path: cachePath, stat }),
-          () => downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {}))
-        )
+            (stat) => new File({ path: cachePath, stat }),
+            () => downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {}))
+          )
     })
   } else {
     const localPath = expandPath(bundleUrl, { dot: startDir })
@@ -106,9 +106,9 @@ async function loadUi (playbook) {
         bundleFile.isDirectory()
           ? srcFs(ospath.join(bundleFile.path, bundle.startPath || '', '.')).then(resolve, reject)
           : srcZip(bundleFile.path, { startPath: bundle.startPath })
-            .on('error', (err) => reject(Object.assign(err, { message: `not a valid zip file; ${err.message}` })))
-            .pipe(bufferizeContentsAndCollectFiles(resolve))
-            .on('error', reject)
+              .on('error', (err) => reject(Object.assign(err, { message: `not a valid zip file; ${err.message}` })))
+              .pipe(bufferizeContentsAndCollectFiles(resolve))
+              .on('error', reject)
       ).catch((err) => {
         const msg =
           `Failed to read UI ${bundleFile.isDirectory() ? 'directory' : 'bundle'}: ` +
@@ -203,36 +203,34 @@ function srcSupplementalFiles (filesSpec, startDir) {
   return (
     Array.isArray(filesSpec)
       ? Promise.all(
-        filesSpec.reduce((accum, { path: path_, contents: contents_ }) => {
-          if (!path_) {
-            return accum
-          } else if (contents_) {
-            if (~contents_.indexOf('\n') || !EXT_RX.test(contents_)) {
-              accum.push(new MemoryFile({ path: path_, contents: Buffer.from(contents_) }))
+          filesSpec.reduce((accum, { path: path_, contents: contents_ }) => {
+            if (!path_) return accum
+            if (contents_) {
+              if (~contents_.indexOf('\n') || !EXT_RX.test(contents_)) {
+                accum.push(new MemoryFile({ path: path_, contents: Buffer.from(contents_) }))
+              } else {
+                contents_ = expandPath(contents_, { dot: startDir })
+                accum.push(
+                  fsp
+                    .stat(contents_)
+                    .then((stat) =>
+                      fsp.readFile(contents_).then((contents) => new File({ path: path_, contents, stat }))
+                    )
+                )
+              }
             } else {
-              contents_ = expandPath(contents_, { dot: startDir })
-              accum.push(
-                fsp
-                  .stat(contents_)
-                  .then((stat) =>
-                    fsp.readFile(contents_).then((contents) => new File({ path: path_, contents, stat }))
-                  )
-              )
+              accum.push(new MemoryFile({ path: path_ }))
             }
-          } else {
-            accum.push(new MemoryFile({ path: path_ }))
-          }
-          return accum
-        }, [])
-      ).then((files) => files.reduce((accum, file) => accum.set(file.path, file) && accum, new Map()))
+            return accum
+          }, [])
+        ).then((files) => files.reduce((accum, file) => accum.set(file.path, file) && accum, new Map()))
       : fsp.access((cwd = expandPath(filesSpec, { dot: startDir }))).then(() => srcFs(cwd))
   ).catch((err) => {
     const dir = cwd ? filesSpec + (filesSpec === cwd ? '' : ` (resolved to ${cwd})`) : undefined
     if (err.code === 'ENOENT' && err.path === cwd) {
       throw new Error(`Specified ui.supplemental_files directory does not exist: ${dir}`)
-    } else {
-      throw transformError(err, `Failed to read ui.supplemental_files ${cwd ? `directory: ${dir}` : 'entry'}`)
     }
+    throw transformError(err, `Failed to read ui.supplemental_files ${cwd ? `directory: ${dir}` : 'entry'}`)
   })
 }
 
@@ -247,12 +245,11 @@ function loadConfig (files, outputDir) {
     files.delete(UI_DESC_FILENAME)
     const config = camelCaseKeys(yaml.load(configFile.contents.toString()))
     const staticFiles = config.staticFiles
-    if (staticFiles && staticFiles.length) config.isStaticFile = picomatch(staticFiles, STATIC_FILE_MATCHER_OPTS)
+    if (staticFiles?.length) config.isStaticFile = picomatch(staticFiles, STATIC_FILE_MATCHER_OPTS)
     if (outputDir !== undefined) config.outputDir = outputDir
     return config
-  } else {
-    return { outputDir }
   }
+  return { outputDir }
 }
 
 function camelCaseKeys (o) {
@@ -266,7 +263,7 @@ function camelCaseKeys (o) {
 }
 
 function classifyFile (file, config) {
-  if (config.isStaticFile && config.isStaticFile(file.path)) {
+  if (typeof config.isStaticFile === 'function' && config.isStaticFile(file.path)) {
     file.type = 'static'
     file.out = resolveOut(file, '')
   } else if (file.isDot()) {
@@ -315,14 +312,14 @@ function srcFs (cwd) {
           (statErr) =>
             dirent.isSymbolicLink()
               ? fsp
-                .readlink(abspath)
-                .then(
-                  (symlink) =>
-                    (statErr.code === 'ELOOP' ? 'ELOOP: symbolic link cycle, ' : 'ENOENT: broken symbolic link, ') +
+                  .readlink(abspath)
+                  .then(
+                    (symlink) =>
+                      (statErr.code === 'ELOOP' ? 'ELOOP: symbolic link cycle, ' : 'ENOENT: broken symbolic link, ') +
                       `${relpath} -> ${symlink}`,
-                  () => statErr.message.replace(`'${abspath}'`, relpath)
-                )
-                .then((message) => done(Object.assign(statErr, { message })))
+                    () => statErr.message.replace(`'${abspath}'`, relpath)
+                  )
+                  .then((message) => done(Object.assign(statErr, { message })))
               : done(Object.assign(statErr, { message: statErr.message.replace(`'${abspath}'`, relpath) }))
         )
       }),

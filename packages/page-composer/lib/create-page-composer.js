@@ -48,7 +48,7 @@ function createPageComposer (playbook, contentCatalog, uiCatalog) {
       out: { path: '404.html' },
       pub: {},
       src: { stem: '404' },
-      title: (siteAsciiDocConfig && siteAsciiDocConfig.attributes['404-page-title']) || 'Page Not Found',
+      title: siteAsciiDocConfig?.attributes['404-page-title'] || 'Page Not Found',
     })
   return Object.assign(composePage, { composePage, create404Page, handlebars })
 }
@@ -81,7 +81,8 @@ function createPageComposerInternal ({ layouts }, baseUiModel) {
       const defaultLayout = uiModel.site.ui.defaultLayout
       if (defaultLayout === layout) {
         throw new Error(`${layout} layout not found`)
-      } else if (!(defaultLayout in layouts)) {
+      }
+      if (!(defaultLayout in layouts)) {
         throw new Error(`Neither ${layout} layout or fallback ${defaultLayout} layout found`)
       }
       logger.warn(

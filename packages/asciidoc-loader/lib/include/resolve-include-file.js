@@ -19,7 +19,7 @@ const RESOURCE_ID_DETECTOR_RX = /[$:@]/
  * @returns {Object} A map containing the file, path, and contents of the resolved file.
  */
 function resolveIncludeFile (target, page, cursor, catalog) {
-  const src = (cursor.file || {}).src || page.src
+  const src = cursor.file?.src || page.src
   let resolved
   let family
   let relative

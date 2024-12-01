@@ -79,6 +79,7 @@ docs:
 lint:
   extends: .npm
   stage: .pre
+  image: node:22-$LINUX_DISTRO
   <<: *unless_docs_mr
   cache:
     <<: *npm_cache

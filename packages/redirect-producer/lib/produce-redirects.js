@@ -62,9 +62,8 @@ function extractUrlPath (url) {
     if (url.charAt() === '/') return url
     const urlPath = new URL(url).pathname
     return urlPath === '/' ? '' : urlPath
-  } else {
-    return ''
   }
+  return ''
 }
 
 function createHttpdHtaccess (files, urlPath, directoryRedirects = false) {
@@ -120,9 +119,8 @@ function createNginxRewriteConf (files, urlPath) {
     if (file.pub.splat) {
       const toUrlWithTrailingSlash = ensureTrailingSlash(toUrl)
       return `location ^~ ${fromUrl}/ { rewrite ^${regexpEscape(fromUrl)}/(.*)$ ${toUrlWithTrailingSlash}$1 redirect; }`
-    } else {
-      return `location = ${fromUrl} { return 301 ${toUrl}; }`
     }
+    return `location = ${fromUrl} { return 301 ${toUrl}; }`
   })
   return [new File({ contents: Buffer.from(rules.join('\n') + '\n'), out: { path: '.etc/nginx/rewrite.conf' } })]
 }

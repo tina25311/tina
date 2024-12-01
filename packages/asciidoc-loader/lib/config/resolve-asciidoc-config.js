@@ -48,7 +48,7 @@ function resolveAsciiDocConfig (playbook = {}) {
   const { extensions, ...config } = Object.assign({}, playbook.asciidoc, {
     attributes: collateAsciiDocAttributes(playbook.asciidoc.attributes, { initial: attributes, mdc }),
   })
-  if (extensions && extensions.length) {
+  if (extensions?.length) {
     const userRequireContext = { dot: playbook.dir, paths: [playbook.dir || '', __dirname] }
     const scopedExtensions = extensions.reduce((accum, extensionRequest) => {
       const extensionExports = userRequire(extensionRequest, userRequireContext)

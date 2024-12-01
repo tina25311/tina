@@ -72,8 +72,8 @@ async function publishFiles (playbook, catalogs) {
   return Promise.all(
     publishers.length > 1
       ? publishers
-        .map((publish) => publish.bind(null, new ReadableOutputFileArray(files, true), playbook))
-        .map((publish) => publish())
+          .map((publish) => publish.bind(null, new ReadableOutputFileArray(files, true), playbook))
+          .map((publish) => publish())
       : [publishers[0](new ReadableOutputFileArray(files), playbook)]
   )
 }
@@ -81,7 +81,7 @@ async function publishFiles (playbook, catalogs) {
 function getDestinations (output) {
   let destinations = output.destinations
   if (output.dir) {
-    if (destinations && destinations.length) {
+    if (destinations?.length) {
       destinations = destinations.slice()
       const primaryFsDestIdx = destinations.findIndex(({ provider: candidate }) => candidate === 'fs')
       if (~primaryFsDestIdx) {
