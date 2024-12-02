@@ -112,7 +112,9 @@ test:windows:
   tags: [saas-windows-medium-amd64]
   # cache does not currently work with the shared Windows runner
   cache: []
-  script: npm run coverage
+  script:
+  - npm install npm -g
+  - npm run coverage
   <<: *save_report_artifacts
 release:
   stage: deploy
