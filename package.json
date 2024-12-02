@@ -6,7 +6,10 @@
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
   "homepage": "https://antora.org",
-  "repository": "gitlab:antora/antora",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/antora/antora.git"
+  },
   "bugs": {
     "url": "https://gitlab.com/antora/antora/issues"
   },
