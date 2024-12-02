@@ -11,7 +11,8 @@
   "homepage": "https://antora.org",
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/antora/antora.git"
+    "url": "git+https://gitlab.com/antora/antora.git",
+    "directory": "packages/logger"
   },
   "bugs": {
     "url": "https://gitlab.com/antora/antora/issues"

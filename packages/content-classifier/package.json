@@ -12,7 +12,8 @@
   "homepage": "https://antora.org",
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/antora/antora.git"
+    "url": "git+https://gitlab.com/antora/antora.git",
+    "directory": "packages/content-classifier"
   },
   "bugs": {
     "url": "https://gitlab.com/antora/antora/issues"
