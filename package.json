@@ -21,7 +21,7 @@
     "format": "npx -y @biomejs/biome format --write",
     "postformat": "node --disable-warning ExperimentalWarning npm/postformat.js",
     "lint": "npx -y @biomejs/biome lint",
-    "prepareForDev": "node npm/prepare-for-dev.js",
+    "postrelease": "node npm/postrelease.js",
     "test": "_mocha",
     "pretidy": "npm run lint",
     "tidy": "npm run format",
