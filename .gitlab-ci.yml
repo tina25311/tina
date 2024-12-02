@@ -88,6 +88,7 @@ lint:
   script:
   - npm run tidy
   - if [ -n "$(git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
+  - npx -y nyc --version
 test:node-16-linux:
   extends: .npm
   image: node:16-$LINUX_DISTRO
