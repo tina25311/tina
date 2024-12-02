@@ -10,7 +10,7 @@ workflow:
     - packages/**/*
 variables:
   GIT_DEPTH: '5'
-  DEFAULT_NODE_VERSION: '16'
+  DEFAULT_NODE_VERSION: '22'
   LINUX_DISTRO: bullseye
   NPM_CONFIG_AUDIT: 'false'
   NPM_CONFIG_CACHE: &npm_cache_dir .cache/npm
@@ -63,7 +63,7 @@ default:
   <<: *if_release_or_schedule
   before_script:
   - *platform_info
-  - npm ci --audit --quiet
+  - npm ci --quiet
   cache: &npm_cache
     key: npm-cache
     paths:
@@ -79,8 +79,9 @@ docs:
 lint:
   extends: .npm
   stage: .pre
-  image: node:22-$LINUX_DISTRO
   <<: *unless_docs_mr
+  variables:
+    NPM_CONFIG_AUDIT: 'true'
   cache:
     <<: *npm_cache
     policy: pull-push
@@ -89,6 +90,7 @@ lint:
   - if [ -n "$(git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
 test:node-16-linux:
   extends: .npm
+  image: node:16-$LINUX_DISTRO
   <<: *unless_docs_mr
   script: npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
@@ -97,10 +99,6 @@ test:node-22-linux:
   extends: .npm
   image: node:22-$LINUX_DISTRO
   <<: *unless_docs_mr
-  script:
-  # patch required when using Node.js 22.3.0; see https://github.com/isomorphic-git/isomorphic-git/issues/1933
-  - sed -i 's/let supportsCompressionStream = null/let supportsCompressionStream = false/' node_modules/isomorphic-git/index.cjs
-  - npm test
 #test:macos:
 #  extends: .npm
 #  image: macos-12-xcode-13
@@ -112,9 +110,6 @@ test:windows:
   tags: [saas-windows-medium-amd64]
   # cache does not currently work with the shared Windows runner
   cache: []
-  before_script:
-  - *platform_info
-  - npm ci --quiet
   script: npm run coverage
   <<: *save_report_artifacts
 release:
