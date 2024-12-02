@@ -63,7 +63,7 @@ default:
   <<: *if_release_or_schedule
   before_script:
   - *platform_info
-  - npm ci --audit --quiet
+  - npm ci --quiet
   cache: &npm_cache
     key: npm-cache
     paths:
@@ -80,6 +80,8 @@ lint:
   extends: .npm
   stage: .pre
   <<: *unless_docs_mr
+  variables:
+    NPM_CONFIG_AUDIT: 'true'
   cache:
     <<: *npm_cache
     policy: pull-push
@@ -107,9 +109,6 @@ test:windows:
   tags: [saas-windows-medium-amd64]
   # cache does not currently work with the shared Windows runner
   cache: []
-  before_script:
-  - *platform_info
-  - npm ci --quiet
   script: npm run coverage
   <<: *save_report_artifacts
 release:
