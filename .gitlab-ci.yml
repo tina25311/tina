@@ -10,7 +10,7 @@ workflow:
     - packages/**/*
 variables:
   GIT_DEPTH: '5'
-  DEFAULT_NODE_VERSION: '18'
+  DEFAULT_NODE_VERSION: '22'
   LINUX_DISTRO: bullseye
   NPM_CONFIG_AUDIT: 'false'
   NPM_CONFIG_CACHE: &npm_cache_dir .cache/npm
@@ -88,18 +88,14 @@ lint:
   - if [ -n "$(git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
 test:node-18-linux:
   extends: .npm
+  image: node:18-$LINUX_DISTRO
   <<: *unless_docs_mr
   script: npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   <<: *save_report_artifacts
 test:node-22-linux:
   extends: .npm
-  image: node:22.4-$LINUX_DISTRO
   <<: *unless_docs_mr
-  #script:
-  ## patch required when using Node.js 22.3.0; see https://github.com/isomorphic-git/isomorphic-git/issues/1933
-  #- sed -i 's/let supportsCompressionStream = null/let supportsCompressionStream = false/' node_modules/isomorphic-git/index.cjs
-  #- npm test
 test:macos:
   extends: .npm
   image: macos-13-xcode-14
