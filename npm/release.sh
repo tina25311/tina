@@ -74,7 +74,7 @@ echo -e "//registry.npmjs.org/:_authToken=$RELEASE_NPM_TOKEN" > $HOME/.npmrc
   git tag -m "version $RELEASE_VERSION" v$RELEASE_VERSION
   git push origin $(git describe --tags --exact-match)
   npm publish --access public --tag $RELEASE_NPM_TAG $(node npm/publish-workspace-args.js)
-  npm run prepareForDev
+  npm run postrelease
   git commit -a -m "prepare branch for development [skip ci]"
   git push origin $RELEASE_BRANCH
 )
