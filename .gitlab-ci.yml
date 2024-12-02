@@ -87,6 +87,7 @@ lint:
     policy: pull-push
   script:
   - npm run tidy
+  - npm pkg fix --workspaces --include-workspace-root
   - if [ -n "$(git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
   # seed coverage tool in cache
   - npm run coverage -- --version

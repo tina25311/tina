@@ -10,7 +10,10 @@
     "Hubert SABLONNIÈRE <hubert.sablonniere@gmail.com>"
   ],
   "homepage": "https://antora.org",
-  "repository": "gitlab:antora/antora",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/antora/antora.git"
+  },
   "bugs": {
     "url": "https://gitlab.com/antora/antora/issues"
   },
