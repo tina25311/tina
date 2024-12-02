@@ -13,7 +13,7 @@
   "scripts": {
     "build": "npm test",
     "postbuild": "npm run lint",
-    "coverage": "nyc _mocha",
+    "coverage": "npx -y nyc@~17.1 _mocha",
     "deps": "node npm/validate-deps.js",
     "format": "npx -y @biomejs/biome format --write",
     "postformat": "node --disable-warning ExperimentalWarning npm/postformat.js",
@@ -26,8 +26,7 @@
     "version": "node npm/version.js"
   },
   "devDependencies": {
-    "mocha": "~10.4",
-    "nyc": "~17.0"
+    "mocha": "~10.4"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -88,6 +88,8 @@ lint:
   script:
   - npm run tidy
   - if [ -n "$(git --no-pager diff --name-only)" ]; then git --no-pager diff && false; fi
+  # seed coverage tool in cache
+  - npm run coverage -- --version
 test:node-18-linux:
   extends: .npm
   image: node:18-$LINUX_DISTRO
