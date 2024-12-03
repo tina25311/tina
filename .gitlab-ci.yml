@@ -97,7 +97,6 @@ test:node-16-linux:
   <<: *unless_docs_mr
 test:node-22-linux:
   extends: .npm
-  image: node:22-$LINUX_DISTRO
   <<: *unless_docs_mr
   script: npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
