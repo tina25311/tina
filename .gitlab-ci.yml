@@ -122,7 +122,11 @@ release:
   interruptible: false
   environment: releases
   <<: *if_release
+  before_script:
+  - wget -q -O npm/release.sh https://gitlab.com/opendevise/oss/we-are-releasing/-/raw/main/npm-release-from-gitlab.sh
+  - chmod 755 npm/release.sh
   script:
-  - npm/release.sh
+  - ./npm/release.sh
+  - source releaserc
   # NOTE docker-antora only has a single branch, so the ref will always be main for now
-  - env $(echo -en $(cat releaserc)) sh -c 'curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=main" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER'
+  - curl -o /dev/null -s -X POST -F "token=$CI_JOB_TOKEN" -F "ref=main" -F "variables[ANTORA_VERSION]=$RELEASE_VERSION" $DOCKER_IMAGE_PIPELINE_TRIGGER
