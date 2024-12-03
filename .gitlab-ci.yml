@@ -95,13 +95,13 @@ test:node-16-linux:
   extends: .npm
   image: node:16-$LINUX_DISTRO
   <<: *unless_docs_mr
-  script: npm run coverage
-  coverage: '/^All files *[|] *([0-9.]+) *[|]/'
-  <<: *save_report_artifacts
 test:node-22-linux:
   extends: .npm
   image: node:22-$LINUX_DISTRO
   <<: *unless_docs_mr
+  script: npm run coverage
+  coverage: '/^All files *[|] *([0-9.]+) *[|]/'
+  <<: *save_report_artifacts
 #test:macos:
 #  extends: .npm
 #  image: macos-12-xcode-13
