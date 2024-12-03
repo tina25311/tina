@@ -106,8 +106,6 @@ test:node-22-linux:
 #  extends: .npm
 #  image: macos-12-xcode-13
 #  tags: [shared-macos-amd64]
-# https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/blob/main/cookbooks/preinstalled-software/README.md
-# https://docs.gitlab.com/ee/ci/runners/hosted_runners/windows.html (has link to preinstalled software)
 test:windows:
   extends: .npm
   tags: [saas-windows-medium-amd64]
