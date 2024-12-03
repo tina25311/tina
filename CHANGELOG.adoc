@@ -19,6 +19,7 @@ This project utilizes semantic versioning.
 === Fixed
 
 * *content-aggregator*: Gracefully handle case when value of nav key in component descriptor is not an array (#1147)
+* *site-generator*: Fully support static register method on Class or Object exported by extension (#1158)
 
 == 3.2.0-alpha.6 (2024-07-23)
 
