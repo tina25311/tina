@@ -57,9 +57,15 @@ describe('cli', () => {
 
   // NOTE run the antora command from WORK_DIR by default to simulate a typical use case
   const runAntora = (args = undefined, env = undefined, cwd = WORK_DIR) => {
-    if (!Array.isArray(args)) args = args ? args.split(' ') : []
-    env = { ...process.env, ANTORA_CACHE_DIR, ...env }
-    return Kapok.start(ANTORA_CLI, args, { cwd, env })
+    const opts = { cwd, env: { ...process.env, ANTORA_CACHE_DIR, ...env } }
+    if (!Array.isArray(args)) {
+      args = args ? args.split(' ') : []
+      if (process.platform === 'win32') opts.shell = true
+    } else if (process.platform === 'win32') {
+      args = args.map((it) => (~it.indexOf(' ') ? `"${it}"` : it)) // quick and dirty escaping
+      opts.shell = true
+    }
+    return Kapok.start(ANTORA_CLI, args, opts)
   }
 
   before(async () => {
