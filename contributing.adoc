@@ -34,13 +34,13 @@
 // External URLs (alphabetized)
 :url-asciidoc-recommended: https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line
 :url-async-func: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+:url-biome: https://biomejs.dev
 :url-chai: http://chaijs.com/api/bdd/
 :url-chai-cheerio: https://www.chaijs.com/plugins/chai-cheerio/
 :url-chai-fs: https://www.chaijs.com/plugins/chai-fs/
 :url-chai-spies: https://www.chaijs.com/plugins/chai-spies/
 :url-dirty-chai: https://www.chaijs.com/plugins/dirty-chai/
 :url-docker-install: https://docs.docker.com/install/
-:url-eslint-ide: https://eslint.org/docs/user-guide/integrations#editors
 :url-git: https://git-scm.com
 :url-git-dl: {url-git}/downloads
 :url-chat: https://antora.zulipchat.com
@@ -50,9 +50,6 @@
 :url-node-releases: {url-node}/en/about/releases/
 :url-nvm: https://github.com/creationix/nvm
 :url-nvm-install: {url-nvm}#installation
-:url-prettier: https://github.com/prettier/prettier
-:url-standardjs: https://standardjs.com/
-:url-standardjs-rules: https://standardjs.com/rules.html
 
 == You're Invited!
 
@@ -241,17 +238,17 @@ Only original work is guaranteed to be preserved in the commit history.
 . Make sure your work is consistent with any relevant <<adr,ADRs>>.
 . Make sure you've forked the project and <<project-rq,named your branch after the issue you're working on>>.
 . Add your code and tests.
-.. Make sure your code adheres to the <<lint-rq,JavaScript standard style and the custom project styles>>.
+.. Make sure your code adheres to the <<lint-rq,Biome style with custom project styles>>.
 .. Make sure your tests adhere to the <<test-rq,test requirements>>.
 . Update the API documentation.
 . Update the applicable architecture guidebooks if your code significantly changes a package's inputs, outputs or primary functionality.
 . Run the <<run-tests,test suite>> (which also lints the code) and correct any errors.
 . Commit your changes.
-. <<run-prettier,Run prettier>>.
+. <<run-format,Run the formatter>>.
 +
 WARNING: The format script will modify your files, so be sure to commit your changes before running it so you can review and rollback if necessary.
 
-. Commit any formatting changes completed by prettier.
+. Commit any formatting changes made by the formatter.
 . Push to your fork and open a merge request.
 
 === Documentation requirements
@@ -309,26 +306,21 @@ If you make a significant modification to a package, you should also update the 
 
 We read code more than we edit it, so it's important to have consistency throughout the code base.
 
-Antora's JavaScript code must adhere to the {url-standardjs}[JavaScript Standard Style].
-We've modified a few of the standard style rules (e.g., max-len) and added some custom ones (e.g., comma-dangle, arrow-parens).
-The style rules are enforced using eslint with a tailored StandardJS profile.
-The code is formatted using prettier, which applies fixes for the standard style rules as well as a few of its own.
+Antora's JavaScript code must adhere to the style defined by {url-biome}[Biome].
+We've turned off a few of the style rules (e.g., noParameterAssign) to more closely match the style we've become accustomed to.
+The style rules are enforced using the biome lint and format commands.
 
-==== eslint and prettier
+==== Biome
 
-You can find a {url-standardjs-rules}[list of rules] on the standard JS site.
-We don't use the StandardJS command line tool.
-We use its rules and configuration through ESLint.
-There are {url-eslint-ide}[text editor plugins for ESLint] that you can use, if that's what you prefer.
-We have modified some of the standard rules and added custom rules, which are documented in [.path]_.eslintrc_.
+You can find a list of rules on the {url-biome}[Biome] site.
+We have modified some of the rules, which are documented in [.path]_biome.json_.
 
-While not enforced by eslint yet, your code should also comply with the following rules:
+While not enforced by Biome yet, your code should also comply with the following rules:
 
 * Use SCREAMING_SNAKE_CASE for constant names (not any `const` declaration, but rather a formal constant).
 // * we might consider defining all constants for a package in lib/constants.js
 * Keep all require declarations together at the top of the file (no blank lines), and sort them alphabetically, unless there's a reason they can't be.
 * Functions should be defined using the `function` keyword in main code and using `const` with a function shorthand `const fn = () => {}` in tests.
-// * TODO enforce `fn () { }` (see https://eslint.org/docs/rules/func-style)
 * Functions should be defined at the top of the source file and exports at the bottom.
 
 When you <<build-project,build Antora>>, it will automatically lint (i.e., style check) your JavaScript code.
@@ -337,13 +329,17 @@ If you ever want to run the linter separately, you can use the following npm scr
 
  $ npm run lint
 
-While ESLint checks for syntax, it doesn't cover all the aesthetics of a code style.
-We employ {url-prettier}[prettier] to automatically format the code.
-Run prettier *after* you commit all your code changes as the format script will modify your files.
+While the lint script checks for syntax, it doesn't cover all the aesthetics of a code style.
+We employ Biome's format script to automatically format the code.
+Run the formatter *after* you commit all your code changes as the format script will modify your files.
 
-To run prettier, enter the following npm script:
+To run the formatter, enter the following npm script:
 
  $ npm run format
+
+You can also run the linter and formatter together using the tidy script:
+
+ $ npm run tidy
 
 ==== Paths
 
@@ -448,7 +444,6 @@ Here are a few rules when writing tests and assertions:
 * You can use the `await` keyword in any test or before/after function, as long as you add `async` to the function declaration.
 * Use BDD-style assertions (e.g., `expect(actual).to.have.property('foo')`).
 * All assertions should be a function call (e.g., `to.be.true()`), not a terminal expression (e.g., `to.be.true`).
- ** See https://eslint.org/docs/rules/no-unused-expressions
  ** The functional assertion syntax is provided by the dirty-chai plugin.
 * When creating a negated assertion, please write it as `.to.not` instead of `.not.to` (e.g., `expect(actual).to.not.have.property('bar')`).
  ** To help you remember, the assertion should always begin with `.to`.
@@ -764,21 +759,20 @@ You can read more about this feature in the https://mochajs.org/#exclusive-tests
 You can skip tests by appending `.skip` to the `describe` and/or `it` method calls (e.g., `describe.skip()`).
 You can read more about this feature in the https://mochajs.org/#inclusive-tests[mocha documentation].
 
-[#run-prettier]
-=== Run prettier
+[#run-format]
+=== Run the formatter
 
-Prettier is run by the `format` script.
-The `format` script isn't (yet) run as part of the CI pipeline, so you'll need to run it manually.
-But don't forget to run the `format` script before you submit a merge request!
+The Biome formatter is run by the `format` script.
+Don't forget to run the `format` script before you submit a merge request!
 
-To run prettier on your code, execute the following npm script:
+To run the formatter on your code, execute the following npm script:
 
  $ npm run format
 
-You should run prettier *after* you commit all your code changes.
+You should run the formatter *after* you commit all your code changes.
 The format script will modify your files in place.
 If you still have changes to make to the code, this formatting can make that tedious.
-By committing your code first, then running prettier and committing those changes as a separate commit, it'll be easier to rollback the changes if you need to.
+By committing your code first, then running the formatter and committing those changes as a separate commit, it'll be easier to rollback the changes if you need to.
 
 === Run the development version
 
