@@ -36,7 +36,6 @@
   },
   "nyc": {
     "cache": true,
-    "cacheDir": "node_modules/.cache/nyc",
     "include": [
       "packages/*/{bin,lib}/**/*.js"
     ],
