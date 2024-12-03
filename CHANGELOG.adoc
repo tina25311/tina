@@ -13,6 +13,8 @@ This project utilizes semantic versioning.
 * *content-aggregator*: Include `-` segment in edit URL for file hosted on gitlab.com to avoid redirct
 * Apply code formatting changes to comply with biome toolchain (#1157)
 * Add directory property to repository entry in package files
+* Upgrade @antora/expand-path-helper to 3.0.x (content-aggregator, ui-loader, file-publisher, logger)
+* Upgrade @antora/user-require-helper to 3.0.x (content-aggregator, asciidoc-loader, file-publisher, site-generator, cli)
 
 === Fixed
 
