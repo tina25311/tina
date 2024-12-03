@@ -101,10 +101,11 @@ test:node-22-linux:
   script: npm run coverage
   coverage: '/^All files *[|] *([0-9.]+) *[|]/'
   <<: *save_report_artifacts
-#test:macos:
-#  extends: .npm
-#  image: macos-12-xcode-13
-#  tags: [shared-macos-amd64]
+test:macos:
+  extends: .npm
+  image: macos-13-xcode-14
+  tags: [saas-macos-medium-m1]
+  <<: *unless_docs_mr
 test:windows:
   extends: .npm
   tags: [saas-windows-medium-amd64]
