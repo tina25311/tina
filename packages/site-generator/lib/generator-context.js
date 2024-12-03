@@ -21,8 +21,8 @@ const FUNCTION_PROVIDERS = {
   publishFiles: 'file-publisher', // dynamic require('@antora/file-publisher')
 }
 
-const ASCIIDOCTOR_REGISTER_FUNCTION_RX = /^(?:(?:function(?: +\w+)? *)?\( *registry *[,)])/
-const FUNCTION_WITH_NAMED_PARAMETER_RX = /^(?:(?:function(?: *\w+)? *)?\( *\w+ *[,)]|\w+ *=>)/
+const ASCIIDOCTOR_REGISTER_FUNCTION_RX = /^(?:(?:function(?: +register)? *)?\( *registry *[,)])/
+const REGISTER_FUNCTION_WITH_NAMED_PARAMETER_RX = /^(?:(?:function(?: +register)? *|register *)?\( *\w+ *[,)]|\w+ *=>)/
 const NEWLINES_RX = /\r?\n/g
 
 class StopSignal extends Error {}
@@ -155,7 +155,7 @@ class GeneratorContext extends EventEmitter {
         }
         if (register.length) {
           const registerSource = register.toString().replace(NEWLINES_RX, ' ')
-          if (FUNCTION_WITH_NAMED_PARAMETER_RX.test(registerSource)) {
+          if (REGISTER_FUNCTION_WITH_NAMED_PARAMETER_RX.test(registerSource)) {
             if (ASCIIDOCTOR_REGISTER_FUNCTION_RX.test(registerSource)) {
               this.getLogger().warn('Detected Asciidoctor extension registered as an Antora extension: %s', request)
             }

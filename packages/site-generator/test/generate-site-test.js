@@ -1154,6 +1154,39 @@ describe('generateSite()', () => {
       expect(lines[0]).to.equal('extension initialized for The Site')
     })
 
+    it('should support static register method with context argument on class-based extension', async () => {
+      const extensionPath = ospath.join(LIB_DIR, `my-extension-${extensionNumber++}.js`)
+      const extensionCode = heredoc`
+        class MyExtension${extensionNumber} {
+          static register (context) {
+            new MyExtension${extensionNumber}(context)
+          }
+
+          constructor (generatorContext) {
+            ;(this.context = generatorContext)
+              .on('playbookBuilt', this.onPlaybookBuilt.bind(this))
+          }
+
+          onPlaybookBuilt ({ playbook }) {
+            console.log('extension initialized for ' + playbook.site.title)
+            this.context.stop()
+          }
+
+          printReport (siteTitle) {
+            console.log('extension initialized for ' + siteTitle)
+          }
+        }
+
+        module.exports = MyExtension${extensionNumber}
+      `
+      fs.writeFileSync(extensionPath, extensionCode)
+      playbookSpec.antora.extensions = [extensionPath]
+      fs.writeFileSync(playbookFile, toJSON(playbookSpec))
+      const lines = await captureStdout(() => generateSite(getPlaybook(playbookFile)))
+      expect(lines).to.have.lengthOf(1)
+      expect(lines[0]).to.equal('extension initialized for The Site')
+    })
+
     it('should allow extension to listen for events', async () => {
       const common = ['playbook', 'siteAsciiDocConfig', 'siteCatalog']
       const events = {
