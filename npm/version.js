@@ -6,7 +6,6 @@ const ospath = require('node:path')
 
 const NODEJS_RELEASES_URL = 'https://nodejs.org/dist/index.json'
 const PROJECT_ROOT_DIR = ospath.join(__dirname, '..')
-const CHANGELOG_FILE = ospath.join(PROJECT_ROOT_DIR, 'CHANGELOG.adoc')
 const DOCS_CONFIG_FILE = ospath.join(PROJECT_ROOT_DIR, 'docs/antora.yml')
 const PACKAGE_LOCK_FILE = ospath.join(PROJECT_ROOT_DIR, 'package-lock.json')
 const PACKAGES_DIR = ospath.join(PROJECT_ROOT_DIR, 'packages')
@@ -80,18 +79,6 @@ function updateDocsConfig (releaseDate) {
   )
 }
 
-function updateChangelog (releaseDate) {
-  return fsp.readFile(CHANGELOG_FILE, 'utf8').then((changelog) =>
-    fsp.writeFile(
-      CHANGELOG_FILE,
-      changelog.replace(/^== (?:(Unreleased)|\d.*)$/m, (currentLine, replace) => {
-        const newLine = `== ${VERSION} (${releaseDate})`
-        return replace ? newLine : [newLine, '_No changes since previous release._', currentLine].join('\n\n')
-      })
-    )
-  )
-}
-
 function updatePackageLock () {
   return fsp.readdir(PACKAGES_DIR, { withFileTypes: true }).then((dirents) => {
     const packageNames = dirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name)
@@ -135,8 +122,7 @@ function q (str) {
 }
 
 ;(async () => {
-  const releaseDate = getCurrentDate().toISOString().split('T')[0]
+  const releaseDate = process.env.RELEASE_DATE || getCurrentDate().toISOString().split('T')[0]
   await updateDocsConfig(releaseDate)
-  await updateChangelog(releaseDate)
   await updatePackageLock()
 })()
