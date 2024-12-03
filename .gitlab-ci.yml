@@ -4,8 +4,8 @@ workflow:
   # See https://docs.gitlab.com/ee/ci/yaml/workflow.html#switch-between-branch-pipelines-and-merge-request-pipelines
   - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null && $CI_COMMIT_BRANCH !~ /^docs\//
     changes:
-    - .eslintrc
     - .gitlab-ci.yml
+    - biome.json
     - package{-lock,}.json
     - packages/**/*
 variables:
