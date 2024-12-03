@@ -60,6 +60,7 @@ describe('cli', () => {
     const opts = { cwd, env: { ...process.env, ANTORA_CACHE_DIR, ...env } }
     if (!Array.isArray(args)) {
       args = args ? args.split(' ') : []
+      if (process.platform === 'win32') opts.shell = true
     } else if (process.platform === 'win32') {
       args = args.map((it) => (~it.indexOf(' ') ? `"${it}"` : it)) // quick and dirty escaping
       opts.shell = true
