@@ -3,7 +3,8 @@
 
 Images are source files, such as photographs, diagrams, and screenshots, that are stored in an xref:ROOT:images-directory.adoc[_images_ family directory].
 An image can be inserted into any page or partial, regardless of the module or component version it belongs to, using an AsciiDoc image macro.
-AsciiDoc supports PNG, JPG, SVG, and GIF (static and animated) image file formats.
+AsciiDoc supports the PNG, JPG, SVG, and GIF (static and animated) image file formats.
+It's also possible to create a link to an image using the xref macro.
 
 == Block and inline image macros
 

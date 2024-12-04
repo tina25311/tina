@@ -2,7 +2,9 @@
 :page-aliases: asciidoc:link-attachment.adoc
 
 Attachments are downloadable resources, such as PDFs or the ZIP archives of sample projects, that are stored in an xref:ROOT:attachments-directory.adoc[_attachments_ family directory].
-Although not as common, an example file can be promoted to an attachment to make it downloadable as well.
+You create links to attachments using the xref macro.
+Although not as common, an example file can be reclassified as an attachment to make it downloadable as well.
+Unlike images, attachments cannot be inserted directly into a page.
 
 == AsciiDoc xref macro for attachments
 
