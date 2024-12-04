@@ -33,8 +33,9 @@ function logCoverageReportPath () {
 function resolveSpec () {
   const spec = process.argv[2]
   if (spec && !spec.startsWith('-')) return spec
+  const packageFilter = process.env.npm_config_package_filter || process.env.npm_config_package || '*'
   return process.env.npm_package_json === require('node:path').join(process.env.npm_config_local_prefix, 'package.json')
-    ? `packages/${process.env.npm_config_package || '*'}/test/**/*-test.js`
+    ? `packages/${packageFilter}/test/**/*-test.js`
     : 'test/**/*-test.js'
 }
 
