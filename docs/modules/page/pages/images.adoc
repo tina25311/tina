@@ -5,6 +5,10 @@ Images are source files, such as photographs, diagrams, and screenshots, that ar
 An image can be inserted into any page or partial, regardless of the module or component version it belongs to, using an AsciiDoc image macro.
 AsciiDoc supports PNG, JPG, SVG, and GIF (static and animated) image file formats.
 
+== Xref macro for images
+
+An image can be cross referenced from pages, other resources, and navigation files using an xref:xref.adoc#xref-macro[AsciiDoc xref macro] and the image's resource ID. See the xref:attachments.adoc[Attachments] documentation for examples but use the family coordinate `image$` instead.
+
 == Block and inline image macros
 
 There are two AsciiDoc image macro types, block and inline.
