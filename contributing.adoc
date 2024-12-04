@@ -686,7 +686,7 @@ This project uses {url-mocha}[mocha] to run the tests and the assertion library 
 Mocha is configured in [.path]_.mocharc.js_.
 The build script is automatically configured to lint your JavaScript code, which it does once all the tests pass.
 
-To run the test suite, use:
+To run the test suite and linter, use:
 
  $ npm run build
 
@@ -732,7 +732,11 @@ You can include the linter as well:
 
  $ npm build --package ui-loader
 
-This filter works for all npm scripts.
+You can include multiple packages using the syntax `{a,b}` enclosed in single quotes.
+
+ $ npm build --package '{playbook-builder,ui-loader}'
+
+The `--package` filter works for all npm scripts.
 
 If you're working on tests or refactoring the code under test, you can run the test suite continuously by adding the `--watch` option:
 
@@ -750,6 +754,13 @@ We can use this, for instance, to specify which files to watch:
  $ npm test --package ui-loader --watch -- --watch-files='packages/ui-loader/lib/ui-catalog.js'
 
 Run `npx mocha --help` to discover other options.
+
+If you want to run the code coverage on a single package, use the `--package-filter` option followed by the name of the package offset by an equals sign (not a space).
+
+ $ npm run coverage --package-filter=ui-loader
+
+The `--package` option doesn't work in this instance since it conficts with npx.
+In fact, you can always use the `--package-filter` option in all previous examples.
 
 === Select or Skip Tests
 
