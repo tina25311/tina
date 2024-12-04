@@ -20,8 +20,8 @@ const FUNCTION_PROVIDERS = {
   publishFiles: 'file-publisher', // dynamic require('@antora/file-publisher')
 }
 
-const ASCIIDOCTOR_REGISTER_FUNCTION_RX = /^(?:(?:function(?: +\w+)? *)?\( *registry *[,)])/
-const FUNCTION_WITH_NAMED_PARAMETER_RX = /^(?:(?:function(?: *\w+)? *)?\( *\w+ *[,)]|\w+ *=>)/
+const ASCIIDOCTOR_REGISTER_FUNCTION_RX = /^(?:(?:function(?: +register)? *)?\( *registry *[,)])/
+const REGISTER_FUNCTION_WITH_NAMED_PARAMETER_RX = /^(?:(?:function(?: +register)? *|register *)?\( *\w+ *[,)]|\w+ *=>)/
 const NEWLINES_RX = /\r?\n/g
 
 const notifyNoop = async function notify (_, variableUpdates) {
@@ -163,7 +163,7 @@ class GeneratorContext extends EventEmitter {
           const registerSource = register.toString().replace(NEWLINES_RX, ' ')
           if (ASCIIDOCTOR_REGISTER_FUNCTION_RX.test(registerSource)) {
             this.getLogger().warn('Skipping Asciidoctor extension registered as an Antora extension: %s', request)
-          } else if (FUNCTION_WITH_NAMED_PARAMETER_RX.test(registerSource)) {
+          } else if (REGISTER_FUNCTION_WITH_NAMED_PARAMETER_RX.test(registerSource)) {
             register.length === 1 ? register(this) : register(this, Object.assign({ config }, vars))
           } else {
             register.call(this, Object.assign({ config }, vars))
