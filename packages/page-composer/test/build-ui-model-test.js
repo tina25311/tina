@@ -530,7 +530,7 @@ describe('build UI model', () => {
     })
 
     it('should create breadcrumb entry for current page if entry not found in any navigation tree', () => {
-      file.asciidoc = { doctitle: 'The Page Title' }
+      file.asciidoc = { navtitle: 'Page Title for Nav', doctitle: 'The Page Title' }
       menu.push({
         order: 0,
         root: true,
@@ -546,11 +546,30 @@ describe('build UI model', () => {
       expect(model.breadcrumbs).to.exist()
       expect(model.breadcrumbs).to.have.lengthOf(1)
       expect(model.breadcrumbs[0]).to.eql({
-        content: 'The Page Title',
+        content: 'Page Title for Nav',
         url: file.pub.url,
         urlType: 'internal',
         discrete: true,
       })
+    })
+
+    it('should fall back to page title for orphan breadcrumb if navtitle is not defined on page object', () => {
+      file.title = 'The Page Title'
+      menu.push({
+        order: 0,
+        root: true,
+        items: [
+          {
+            content: 'Not The Page',
+            url: '/the-component/1.0/not-the-page.html',
+            urlType: 'internal',
+          },
+        ],
+      })
+      const model = buildPageUiModel(site, file, contentCatalogModel, navigationCatalog)
+      expect(model.breadcrumbs).to.exist()
+      expect(model.breadcrumbs).to.have.lengthOf(1)
+      expect(model.breadcrumbs[0].content).to.equal(file.title)
     })
 
     it('should use breadcrumb path of first occurrence of page in nav tree', () => {

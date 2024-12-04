@@ -73,11 +73,11 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
   if (src.stem === '404' && !('component' in src)) {
     return { 404: true, attributes: pageAttributes, layout: '404', title: file.title }
   }
-
   const { component: component_, version, module: module_, relative: relativeSrcPath, origin, editUrl, fileUri } = src
   const component = contentCatalog.getComponent(component_)
   const componentVersion = contentCatalog.getComponentVersion(component, version)
   const title = file.title || asciidoc.doctitle
+  const navtitle = asciidoc.navtitle || title
   const url = file.pub.url
   // QUESTION can we cache versions on file.rel so only computed once per page version lineage?
   const versions = component.versions.length > 1 ? getPageVersions(file, component, contentCatalog) : undefined
@@ -103,7 +103,7 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
     fileUri,
   }
   if (url === siteUiModel.homeUrl) model.home = true
-  if (navigationCatalog) attachNavProperties(model, url, title, navigationCatalog.getNavigation(component_, version))
+  if (navigationCatalog) attachNavProperties(model, url, navtitle, navigationCatalog.getNavigation(component_, version))
   if (versions) {
     Object.defineProperty(model, 'latest', {
       get () {
@@ -128,7 +128,6 @@ function buildPageUiModel (siteUiModel, file, contentCatalog, navigationCatalog)
       model.canonicalUrl = file.pub.canonicalUrl = siteUrl + url
     }
   }
-
   return model
 }
 
@@ -218,7 +217,7 @@ function getPageVersions (page, component, contentCatalog) {
   return pageVersions
 }
 
-function attachNavProperties (model, currentUrl, title, navigation = []) {
+function attachNavProperties (model, currentUrl, navtitle, navigation = []) {
   if (!(model.navigation = navigation).length) return
   const startPageUrl = model.componentVersion.url
   const { match, ancestors, previous, next } = findNavItem({ ancestors: [], seekNext: true, currentUrl }, navigation)
@@ -236,8 +235,8 @@ function attachNavProperties (model, currentUrl, title, navigation = []) {
     }
     if (next) model.next = next
   } else {
-    const orphan = { content: title, url: currentUrl, urlType: 'internal', discrete: true }
-    if (title) model.breadcrumbs = [orphan]
+    const orphan = { content: navtitle, url: currentUrl, urlType: 'internal', discrete: true }
+    if (navtitle) model.breadcrumbs = [orphan]
     if (currentUrl === startPageUrl) {
       const { next: first } = findNavItem({ ancestors: [], match: orphan, seekNext: true, currentUrl }, navigation)
       if (first) model.next = first
