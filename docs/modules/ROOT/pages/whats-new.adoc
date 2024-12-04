@@ -18,7 +18,37 @@
 :url-milestone-3-1-7: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.7
 :url-milestone-3-1-8: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.8
 :url-milestone-3-1-9: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.9
+:url-milestone-3-1-10: {url-issues}?scope=all&state=closed&label_name%5B%5D=%5BVersion%5D%203.1.10
 :url-mr: {url-repo}/merge_requests
+
+= Antora {page-component-version}.10
+
+_**Release date:** 2024.12.04 | *Issue label:* {url-milestone-3-1-10}[3.1.10^]_
+
+The main focus of this release is to publish a variant of the Antora Docker image compiled for linux/arm64 (which is handled by the docker-antora project pursuit to this release).
+The project build was also updated to use Biome instead of ESLint/Prettier, which resulted in some minor changes to the code formatting and style.
+Finally, the Antora helper packages were updated, both which require Node.js 16 (the same as this version of Antora).
+Other changes from resolved issues are listed below.
+
+== Resolved issues
+
+=== Changed
+
+Issue {url-issues}/1141[#1141^]::
+Detect and warn when an AsciiDoc extension is registered as an Antora extension, but do no skip it.
+Issue {url-issues}/1157[#1157^]::
+Switch from ESLint/Prettier to Biome and update code formatting accordingly.
+(no issue)::
+Upgrade @antora/expand-path-helper and @antora/user-require-helper dependencies to 3.0.x in various packages.
+
+=== Fixed
+
+Issue {url-issues}/1147[#1147^]::
+Gracefully handle case when value of `nav` key in component version descriptor is not an array (content-aggregator).
+Issue {url-issues}/1147[#1159^]::
+Use navtitle as content of orphan breadcrumb entry instead of doctitle (aka page title) (page-composer).
+Issue {url-issues}/1147[#1158^]::
+Fully support static register method on Class or Object exported by extension (site-generator).
 
 = Antora {page-component-version}.9
 
