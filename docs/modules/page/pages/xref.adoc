@@ -132,4 +132,4 @@ You've created a cross reference to the target page ([.path]_modes.adoc_) from t
 
 xref:page-links.adoc[] shows how to create xrefs to pages when the target page is stored in a subdirectory or it belongs to another module, component, or version.
 
-The xref macro also creates links to xref:attachments.adoc[attachments].
+The xref macro can also be used to create links to xref:attachments.adoc[attachments] and xref:images.adoc[images].
