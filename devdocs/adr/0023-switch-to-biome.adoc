@@ -1,0 +1,42 @@
+= ADR 0023: Switch from ESLint/Prettier to Biome
+:revdate: 2024-12-01
+
+== Status
+
+Accepted
+
+== Context
+
+This project currently uses ESLint and Prettier to lint and format the code, respectively.
+However, using these tools is creating unnecessary overhead and unacceptable costs with maintaining the project.
+
+To start, ESLint pulls in an incredible number of dependencies (on the order of 70mb) which constantly have to be upgraded and reconciled.
+And the JavaScript Standard Style profile always seems to be lagging behind ESLint releases, making it even harder to maintain.
+Additionally, the integration with Prettier is extremely brittle and difficult to keep working.
+On top of it all, the tooling cannot be installed on demand using npx, which would have allowed us to keep it out of the project's dependency metadata.
+
+We have experimented with switching to Biome and the results are promising.
+Biome is an all-in-one linter and formatter that does the same work as ESLint and Prettier.
+Biome is distributed as a binary, so the footprint is small.
+It can also be installed on demand.
+
+We'd like to make the switch to Biome in Antora to reduce overhead and maintenance costs.
+
+== Decision
+
+After experimenting with running the Biome lint and format commands on this project, we have decided to proceed with using it to replace ESLint and Prettier.
+We will rely on .editorconfig and a minimal biome.json configuration file to closely match the JavaScript Standard Style.
+Rather than declaring a direct dev dependency on Biome, we will install it on demand and run it using npx.
+
+== Consequences
+
+By in large, we were able to achieve the same style profile using Biome as we were using with ESLint and Prettier.
+In fact, Biome caught some code formatting issues that ESLint was missing.
+
+There is one slight difference in how Biome formats code as compared to our existing style.
+Biome removes the space between the function/method name and the parameter list.
+We prefer to keep this space.
+Therefore, we will use a postformat script to revert the change that Biome makes to restore this space.
+Since the script only runs on Node.js, it's only possible to run the format step using Node.js 22.
+
+Aside from the aforementioned exceptions, Biome is a drop-in replacement for ESLint and Prettier, albiet with a much smaller footprint.
