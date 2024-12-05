@@ -86,8 +86,13 @@ Issue {url-issues}/298[#298^]::
 Use worktree from local repository even if repository has no commits (content-aggregator)
 Issue {url-issues}/1135[#1135^]::
 Monkey patch pako module to use zlib.inflate to inflate git objects (content-aggregator)
+Issue {url-issues}/1145[#1145^]::
+Don't apply camelCase transformation to descendant keys of the `ext` key in component version descriptor (content-aggregator).
+Issue {url-issues}/1157[#1157^]::
+Switch from ESLint/Prettier to Biome and update code formatting accordingly.
 (No issue)::
 * Set Node.js 18 as minimum required version of Node.js
+* Upgrade @antora/expand-path-helper and @antora/user-require-helper dependencies to 3.0.x in various packages.
 * Prefix name of all built-in modules with node: (#1136)
 * Don't read git tree twice if start path is empty; add dirname to tree object in same function (content-aggregator).
 * Fill in progress bar with incomplete marks if cloning a repository fails (content-aggregator).
@@ -99,6 +104,8 @@ Monkey patch pako module to use zlib.inflate to inflate git objects (content-agg
 * Don't retry failed clone/fetch operation if playbook only has one content source URL (content-aggregator)
 * Update description for `extension` CLI option to clarify it may be specified multiple times.
 * Don't include file in archive (zip) if contents property is null; matches behavior of fs publisher (file-publisher)
+* Include `-` segment in edit URL for file hosted on gitlab.com to avoid redirct.
+* Add directory property to repository entry in package files
 
 === Fixed
 
@@ -124,6 +131,13 @@ Filter out cyclic aliases (i.e., redirect loops) (redirect-producer)
 Issue {url-issues}/1134[#1134^]::
 Create files streams for file publishers to process eagerly to avoid race condition (file-publisher)
 Issue {url-issues}/1137[#1137^]::
+Use raw value if attribute value set using `--attribute` option cannot be parsed as YAML (cli)
+Issue {url-issues}/1147[#1147^]::
+Gracefully handle case when value of `nav` key in component version descriptor is not an array (content-aggregator).
+Issue {url-issues}/1159[#1159^]::
+Use navtitle as content of orphan breadcrumb entry instead of doctitle (aka page title) (page-composer).
+Issue {url-issues}/1158[#1158^]::
+Fully support static register method on Class or Object exported by extension (site-generator).
 (No issue)::
 * Use consistent formatting for error messages in playbook builder (playbook-builder).
 * Correctly handle connection error when retrieving remote UI bundle (ui-loader).
