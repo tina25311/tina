@@ -45,9 +45,9 @@ Upgrade @antora/expand-path-helper and @antora/user-require-helper dependencies 
 
 Issue {url-issues}/1147[#1147^]::
 Gracefully handle case when value of `nav` key in component version descriptor is not an array (content-aggregator).
-Issue {url-issues}/1147[#1159^]::
+Issue {url-issues}/1159[#1159^]::
 Use navtitle as content of orphan breadcrumb entry instead of doctitle (aka page title) (page-composer).
-Issue {url-issues}/1147[#1158^]::
+Issue {url-issues}/1158[#1158^]::
 Fully support static register method on Class or Object exported by extension (site-generator).
 
 = Antora {page-component-version}.9
