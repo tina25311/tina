@@ -1,6 +1,6 @@
 {
   "name": "antora",
-  "version": "3.2.0-alpha.7",
+  "version": "3.2.0-alpha.8",
   "description": "A meta package for Antora that installs both the CLI and site generator.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
@@ -21,8 +21,8 @@
     "antora": "bin/antora"
   },
   "dependencies": {
-    "@antora/cli": "3.2.0-alpha.7",
-    "@antora/site-generator": "3.2.0-alpha.7"
+    "@antora/cli": "3.2.0-alpha.8",
+    "@antora/site-generator": "3.2.0-alpha.8"
   },
   "engines": {
     "node": ">=18.0.0"

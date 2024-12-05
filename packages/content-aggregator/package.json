@@ -1,6 +1,6 @@
 {
   "name": "@antora/content-aggregator",
-  "version": "3.2.0-alpha.7",
+  "version": "3.2.0-alpha.8",
   "description": "Fetches and aggregates content from distributed sources for use in an Antora documentation pipeline.",
   "license": "MPL-2.0",
   "author": "OpenDevise Inc. (https://opendevise.com)",
@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@antora/expand-path-helper": "~3.0",
-    "@antora/logger": "3.2.0-alpha.7",
+    "@antora/logger": "3.2.0-alpha.8",
     "@antora/user-require-helper": "~3.0",
     "braces": "~3.0",
     "cache-directory": "~2.0",
