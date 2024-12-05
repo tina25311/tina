@@ -29,9 +29,12 @@ For example:
 = A _Formatted_ Page Title
 ----
 
-However, the page title cannot contain resource references, such as an image.
-The page title is used in different contexts and the resource references are not always appropriate or resolvable.
-Therefore, they are not permitted.
+TIP: If you want the text formatting to be present in the page title, but not in the navigation or other cross references to the page, you can set the xref:reftext-and-navtitle.adoc[navtitle and reftext attributes] on the document, respectively.
+
+The page title **must not** contain resource references, such as an xref or an image.
+Unlike other content in the page, the page title is parsed and converted outside the context of a page, so those references do not get rewritten when the page title is rendered.
+Furthermore, the page title is used in other contexts (such as the navigation) where the resource references are either not appropriate or not resolvable.
+Therefore, these references **are not** permitted.
 
 == Page description and keywords
 
