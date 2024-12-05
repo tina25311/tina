@@ -7,10 +7,6 @@ This project utilizes semantic versioning.
 
 == 3.2.0-alpha.8 (2024-12-05)
 
-_No changes since previous release.
-
-== 3.2.0-alpha.7 (2024-12-05)
-
 === Changed
 
 * *content-aggregator*: Don't apply camelCase transformation to descendant keys of the `ext` key in component version descriptor (#1145)
@@ -25,6 +21,10 @@ _No changes since previous release.
 * *content-aggregator*: Gracefully handle case when value of nav key in component version descriptor is not an array (#1147)
 * *page-composer*: Use navtitle as content of orphan breadcrumb entry instead of doctitle (aka page title) (#1159)
 * *site-generator*: Fully support static register method on Class or Object exported by extension (#1158)
+
+== 3.2.0-alpha.7 (2024-12-05)
+
+_Release failed._
 
 == 3.2.0-alpha.6 (2024-07-23)
 
