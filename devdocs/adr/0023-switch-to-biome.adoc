@@ -16,7 +16,7 @@ Additionally, the integration with Prettier is extremely brittle and difficult t
 On top of it all, the tooling cannot be installed on demand using npx, which would have allowed us to keep it out of the project's dependency metadata.
 
 We have experimented with switching to Biome and the results are promising.
-Biome is an all-in-one linter and formatter that does the same work as ESLint and Prettier.
+https://biomejs.dev[Biome] is an all-in-one linter and formatter that does the same work as ESLint and Prettier.
 Biome is distributed as a binary, so the footprint is small.
 It can also be installed on demand.
 
