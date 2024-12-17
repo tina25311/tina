@@ -112,7 +112,7 @@ test:windows:
   # cache does not currently work with the shared Windows runner
   cache: []
   script:
-  - npm install npm -g
+  - npm i npm@~10 -g
   - npm run coverage
   <<: *save_report_artifacts
 release:
