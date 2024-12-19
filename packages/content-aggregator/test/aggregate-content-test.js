@@ -2656,6 +2656,33 @@ describe('aggregateContent()', () => {
       })
     })
 
+    describe('should find both branch and tag when they have the same name', () => {
+      const componentDescBranch = { name: 'the-component', version: '1.0-branch' }
+      const componentDescTag = { name: 'the-component', version: '1.0-tag' }
+      testAll(async (repoBuilder) => {
+        await repoBuilder
+          .init(componentDescBranch.name)
+          .then(() => repoBuilder.checkoutBranch('v1.0.0'))
+          .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDescBranch))
+          .then(() => repoBuilder.commitAll())
+          .then(() => repoBuilder.checkoutBranch('tangent'))
+          .then(() => repoBuilder.addComponentDescriptorToWorktree(componentDescTag))
+          .then(() => repoBuilder.commitAll())
+          .then(() => repoBuilder.createTag('v1.0.0'))
+          .then(() => repoBuilder.checkoutBranch('main'))
+          .then(() => repoBuilder.deleteBranch('tangent'))
+          .then(() => repoBuilder.close())
+        playbookSpec.content.sources.push({ url: repoBuilder.url, branches: ['v1.0.0'], tags: ['v1.0.0'] })
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(2)
+        sortAggregate(aggregate)
+        expect(aggregate[0]).to.include({ name: 'the-component', version: '1.0-branch' })
+        expect(aggregate[0].origins[0].reftype).to.equal('branch')
+        expect(aggregate[1]).to.include({ name: 'the-component', version: '1.0-tag' })
+        expect(aggregate[1].origins[0].reftype).to.equal('tag')
+      })
+    })
+
     it('should select tags even when branches filter is HEAD', async () => {
       const repoBuilder = new RepositoryBuilder(CONTENT_REPOS_DIR, FIXTURES_DIR)
       await initRepoWithBranches(repoBuilder, 'the-component', () =>
