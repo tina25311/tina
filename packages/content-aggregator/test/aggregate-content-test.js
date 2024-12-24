@@ -4306,6 +4306,25 @@ describe('aggregateContent()', () => {
           `${webUrl}/branch/${fileTwo.src.origin.branch}/${fileTwo.src.origin.startPath}/${fileTwo.src.path}`
         )
       })
+
+      it('should use extended path of editUrl pattern to generate editUrl', async () => {
+        const webUrl = 'https://gitlab.com/antora/demo/demo-component-b'
+        const url = webUrl + '.git'
+        const sourcePre = {
+          url,
+          branches: 'main',
+          startPath: 'docs',
+          editUrl: '{web_url}/blob/{refhash}/{start_path}/modules/{module}/{family}/{file_path}',
+        }
+        playbookSpec.content.sources.push(sourcePre)
+        const aggregate = await aggregateContent(playbookSpec)
+        expect(aggregate).to.have.lengthOf(1)
+        const aggregatePre = aggregate.find(({ version }) => version === '2.5')
+        const filePre = aggregatePre.files.find((it) => it.path.startsWith('modules/ROOT/pages/'))
+        expect(filePre.src.editUrl).to.equal(
+          `${webUrl}/blob/${filePre.src.origin.refhash}/${filePre.src.origin.startPath}/${filePre.src.path}`
+        )
+      })
     })
 
     it('should retry clone operations in serial if fetch concurrency is > 1 and unknown error occurs', async () => {

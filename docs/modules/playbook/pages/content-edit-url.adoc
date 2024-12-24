@@ -40,7 +40,7 @@ Let's now look at how you can customize the value.
 The `edit_url` key is useful when you're using an unrecognized git solution, or you want <<source-view,Edit this Page to link to an alternate view>>, such as the raw or rendered display, of a page's source file.
 
 The `edit_url` key is set in the playbook and can be applied to all of the content sources or customized per individual source.
-The key accepts a URL pattern that contains the URL segments of the git solution or source file view plus several placeholder segments, `+{web_url}+`, `+{refname}+`, `+{reftype}+`, `+{refhash}+`, and `+{path}+`.
+The key accepts a URL pattern that contains the URL segments of the git solution or source file view plus several placeholder segments, `+{web_url}+`, `+{refname}+`, `+{reftype}+`, `+{refhash}+`,  `+{start_path}+`, `+{module}+`, `+{family}+`, `+{file_path}+, and `+{path}+`.
 Antora automatically fulfills these placeholders with the file's origin information at processing time.
 
 .edit_url key and value
@@ -56,7 +56,7 @@ In the following section, we'll explain the role of the these placeholders.
 
 === How does Antora assemble an edit URL for a page?
 
-When `edit_url` is set, either by default or explicitly, Antora computes the value of the `+{web_url}+`, `+{refname}+`, `+{reftype}+`, `+{refhash}+`, and `+{path}+` placeholders for each page according to its content source and file origin information.
+When `edit_url` is set, either by default or explicitly, Antora computes the value of the `+{web_url}+`, `+{refname}+`, `+{reftype}+`, `+{refhash}+`, `+{start_path}+`, `+{module}+`, `+{family}+`, `+{file_path}+`, and `+{path}+` placeholders for each page according to its content source and file origin information.
 Then, using the pattern assigned to the `edit_url` key, it assembles each page's unique edit URL.
 
 web_url:: The `+{web_url}+` placeholder is the corresponding web URL for the content source repository that Antora automatically computes from its git URL.
@@ -69,8 +69,16 @@ reftype:: The `+{reftype}+` is the type of the git reference (i.e., tag or branc
 
 refhash:: The `+{refhash}+` is the commit hash of the git reference (e.g., aab0e5684afe0d4e05955fbef72b6e5538bb1ec5).
 
-path:: The `+{path}+` is the path of the source file relative to the root of the repository.
-It includes the `start_path` if one is specified.
+start_path:: The `+{start_path}+` is the the `start_path` if one is specified inside the playbook.
+
+module:: The `+{module}+` is the name of the module directory of the source file (e.g., ROOT).
+ 
+family:: The `+{family}+` is the name of the module directory of the source file (e.g., pages, partials).
+
+file_path:: The `+{file_path}+` is the path of the source file relative to its family directory. This is either a filename or a relative path if subdirectories are used inside the family directory (e.g., index.adoc, subdirectory/index.adoc).
+
+path:: The `+{path}+` is the path of the source file relative to the root of the repository if the standard Antora directory structure is used. 
+It includes the `start_path` if one is specified and is identical to `+{start_path}/modules/{module}/{family}/{file_path}+` or `+modules/{module}/{family}/{file_path}+` if no `start_path` is specified.
 
 To see an example of the values Antora would compute for the placeholders, we'll use the content source, branches, and edit URL pattern inputs shown in <<ex-value>>.
 

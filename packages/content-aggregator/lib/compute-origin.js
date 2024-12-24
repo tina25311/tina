@@ -4,7 +4,8 @@ const { posix: path } = require('node:path')
 const posixify = require('./posixify')
 const removeGitSuffix = require('./remove-git-suffix')
 
-const EDIT_URL_TEMPLATE_VAR_RX = /\{(web_url|ref(?:hash|name|type)?|path)\}/g
+const EDIT_URL_TEMPLATE_VAR_RX = /\{(start_path|web_url|ref(?:hash|name|type)?|path)\}/g
+
 const HOSTED_GIT_REPO_RX = /^(?:https?:\/\/|.+@)(git(?:hub|lab)\.com|bitbucket\.org|pagure\.io)[/:](.+?)(?:\.git)?$/
 
 function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = undefined, editUrl = true) {
@@ -47,6 +48,7 @@ function computeOrigin (url, authStatus, gitdir, ref, startPath, worktreePath = 
       reftype: () => reftype,
       refname: () => refname,
       web_url: () => origin.webUrl || '',
+      start_path: () => startPath || '',
     }
     origin.editUrlPattern = editUrl.replace(EDIT_URL_TEMPLATE_VAR_RX, (_, name) => vars[name]())
   }
