@@ -13,6 +13,7 @@ const invariably = { false: () => false, void: () => undefined }
 const ospath = require('node:path')
 const { posix: path } = ospath
 const picomatch = require('picomatch')
+const pkg = require('../package.json')
 const posixify = ospath.sep === '\\' ? (p) => p.replace(/\\/g, '/') : undefined
 const { pipeline, PassThrough, Writable } = require('node:stream')
 const forEach = (write, final) => new Writable({ objectMode: true, write, final })
@@ -76,16 +77,18 @@ async function loadUi (playbook) {
   const startDir = playbook.dir || '.'
   const { bundle, supplementalFiles: supplementalFilesSpec, outputDir } = playbook.ui
   const bundleUrl = bundle.url
+  const customHeaders = mapHttpHeaders(bundle.customHeaders)
+  const httpHeaders = { ...customHeaders, 'user-agent': `${pkg.name}/${pkg.version}` }
   let resolveBundle
   if (isUrl(bundleUrl)) {
     const { cacheDir, fetch } = playbook.runtime || {}
     resolveBundle = ensureCacheDir(cacheDir, startDir).then((absCacheDir) => {
       const cachePath = ospath.join(absCacheDir, `${sha1(bundleUrl)}.zip`)
       return fetch && bundle.snapshot
-        ? downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {}))
+        ? downloadBundle(bundleUrl, httpHeaders, cachePath, createAgent(bundleUrl, playbook.network || {}))
         : fsp.stat(cachePath).then(
             (stat) => new File({ path: cachePath, stat }),
-            () => downloadBundle(bundleUrl, cachePath, createAgent(bundleUrl, playbook.network || {}))
+            () => downloadBundle(bundleUrl, httpHeaders, cachePath, createAgent(bundleUrl, playbook.network || {}))
           )
     })
   } else {
@@ -158,6 +161,26 @@ function ensureCacheDir (customCacheDir, startDir) {
   )
 }
 
+function mapHttpHeaders (headers) {
+  if (!headers || !Array.isArray(headers) || headers.length === 0) {
+    return {}
+  }
+  return headers.reduce((accumulator, current) => {
+    const { header, value } = current
+    if (
+      header &&
+      value &&
+      typeof header === 'string' &&
+      typeof value === 'string' &&
+      header.length >= 0 &&
+      value.length >= 0
+    ) {
+      accumulator[header] = value
+    }
+    return accumulator
+  }, {})
+}
+
 function createAgent (url, { httpProxy, httpsProxy, noProxy }) {
   if ((httpsProxy || httpProxy) && noProxy !== '*') {
     const { HttpProxyAgent, HttpsProxyAgent } = require('hpagent')
@@ -169,9 +192,9 @@ function createAgent (url, { httpProxy, httpsProxy, noProxy }) {
   }
 }
 
-function downloadBundle (url, to, agent) {
+function downloadBundle (url, headers, to, agent) {
   return new Promise((resolve, reject) => {
-    get({ url, agent }, (err, response, contents) => {
+    get({ url, agent, headers }, (err, response, contents) => {
       if (err) return reject(err)
       if (response.statusCode !== 200) {
         const message = `Response code ${response.statusCode} (${response.statusMessage})`

@@ -774,6 +774,10 @@ describe('buildPlaybook()', () => {
     })
     expect(playbook.ui.bundle.url).to.equal('./../ui/build/ui-bundle.zip')
     expect(playbook.ui.bundle.startPath).to.equal('dark-theme')
+    expect(playbook.ui.bundle.customHeaders).to.eql([
+      { header: 'x-test-header', value: 'foo' },
+      { header: 'x-other-header', value: 'bar' },
+    ])
     expect(playbook.ui.outputDir).to.equal('_')
     expect(playbook.ui.defaultLayout).to.equal('default')
     expect(playbook.ui.supplementalFiles).to.have.lengthOf(1)

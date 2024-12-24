@@ -95,6 +95,11 @@ module.exports = {
         arg: 'ui-bundle-url',
         default: null,
       },
+      custom_headers: {
+        doc: 'The list of custom HTTP headers to send when resolving the bundle via HTTP(S)',
+        format: Array,
+        default: [],
+      },
       snapshot: {
         doc: 'Whether the bundle URL points to a snapshot that changes over time.',
         format: Boolean,

@@ -58,6 +58,7 @@ describe('loadUi()', () => {
   let proxyServerUrl
   let serverRequests
   let proxyAuthorizationHeader
+  let requestHeaders
 
   const ssl = loadSslConfig()
 
@@ -123,8 +124,11 @@ describe('loadUi()', () => {
     clean()
     serverRequests = []
     proxyAuthorizationHeader = undefined
+    requestHeaders = {}
+
     httpServer = http.createServer((request, response) => {
       serverRequests.push(httpServerUrl + request.url.substr(1))
+      requestHeaders = request.headers
       if (request.url.startsWith('/redirect?to=')) {
         response.writeHead(301, { Location: `/${request.url.substr(13)}` })
         response.end('<!DOCTYPE html><html><body>Moved.</body></html>', 'utf8')
@@ -147,6 +151,7 @@ describe('loadUi()', () => {
 
     httpsServer = https.createServer(ssl, (request, response) => {
       serverRequests.push(httpsServerUrl + request.url.substr(1))
+      requestHeaders = request.headers
       fs.readFile(ospath.join(__dirname, 'fixtures', request.url), (err, content) => {
         if (err) {
           response.writeHead(404, { 'Content-Type': 'text/html' })
@@ -1191,6 +1196,74 @@ describe('loadUi()', () => {
     expect(serverRequests).to.have.lengthOf(2)
     expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
     expect(serverRequests[1]).to.equal(httpServerUrl + 'the-ui-bundle.zip')
+    const paths = uiCatalog.getFiles().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
+  })
+
+  it('should honor custom_headers when fetching remote UI bundle', async () => {
+    const playbook = {
+      ui: {
+        bundle: {
+          url: httpServerUrl + 'redirect?to=the-ui-bundle.zip',
+          snapshot: true,
+          customHeaders: [
+            { header: 'accept', value: 'application/octet-stream' },
+            { header: 'authorization', value: 'Bearer token' },
+            { header: 'X-GitHub-Api-Version', value: '2022-11-28' },
+          ],
+        },
+      },
+    }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(2)
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+    expect(serverRequests[1]).to.equal(httpServerUrl + 'the-ui-bundle.zip')
+    expect(requestHeaders).to.include.all.keys('accept', 'authorization', 'x-github-api-version')
+    const paths = uiCatalog.getFiles().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
+  })
+
+  it('should ignore malformed custom_headers when fetching remote UI bundle', async () => {
+    const playbook = {
+      ui: {
+        bundle: {
+          url: httpServerUrl + 'redirect?to=the-ui-bundle.zip',
+          snapshot: true,
+          customHeaders: [
+            { key: 'accept', value: 'application/octet-stream' },
+            { header: ['authorization'] },
+            { header: 'foo', value2: '2022-11-28' },
+            { header: 'bar', value: ['2022-11-28'] },
+            { header: 'baz', value: {} },
+          ],
+        },
+      },
+    }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(2)
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+    expect(serverRequests[1]).to.equal(httpServerUrl + 'the-ui-bundle.zip')
+    expect(requestHeaders).to.include.key('user-agent')
+    expect(requestHeaders).to.not.include.keys('accept', 'authorization', 'foo', 'bar', 'baz')
+    const paths = uiCatalog.getFiles().map((file) => file.path)
+    expect(paths).to.have.members(expectedFilePaths)
+  })
+
+  it('should have a user-agent even when fetching remote UI bundle when no custom_headers are set', async () => {
+    const playbook = {
+      ui: {
+        bundle: {
+          url: httpServerUrl + 'redirect?to=the-ui-bundle.zip',
+          snapshot: true,
+          custom_headers: [],
+        },
+      },
+    }
+    const uiCatalog = await loadUi(playbook)
+    expect(serverRequests).to.have.lengthOf(2)
+    expect(serverRequests[0]).to.equal(playbook.ui.bundle.url)
+    expect(serverRequests[1]).to.equal(httpServerUrl + 'the-ui-bundle.zip')
+    expect(requestHeaders).to.include.key('user-agent')
     const paths = uiCatalog.getFiles().map((file) => file.path)
     expect(paths).to.have.members(expectedFilePaths)
   })

@@ -83,6 +83,24 @@ runtime:
 The snapshot key is only required if you're referring to a remote bundle (which Antora caches by default).
 If you're referencing a bundle from the filesystem, Antora will always use the file specified.
 
+[#custom-http-headers]
+=== Setting Custom HTTP Headers
+
+Antora can be configured to send custom HTTP headers when downloading the UI bundle, e.g. to send a specific accept header for multipurpose URLs such as offered by the https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28#get-a-release-asset[GitHub API].
+
+.Remote UI bundle with custom HTTP headers
+[,yaml]
+----
+ui:
+  bundle:
+    url: https://api.github.com/repos/antora/antora/releases/assets/120830829
+    custom_headers:
+      - header: 'accept'
+        value: 'application/octet-stream'
+      - header: 'X-GitHub-Api-Version'
+        value: '2022-11-28'
+----
+
 [#local-bundle]
 == Load a bundle from the filesystem
 
