@@ -41,6 +41,9 @@ If the variable is locked, meaning it cannot be replaced, it's italicized.
 |navigationBuilt
 |_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_, navigationCatalog
 
+|pageComposerCreated
+|_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_, navigationCatalog, pageComposer
+
 |pagesComposed
 |_playbook_, _siteAsciiDocConfig_, siteCatalog, _uiCatalog_, _contentCatalog_
 

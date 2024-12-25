@@ -1190,6 +1190,7 @@ describe('generateSite()', () => {
         contentClassified: [...common, 'contentCatalog', 'uiCatalog'].sort(),
         documentsConverted: [...common, 'contentCatalog', 'uiCatalog'].sort(),
         navigationBuilt: [...common, 'contentCatalog', 'uiCatalog', 'navigationCatalog'].sort(),
+        pageComposerCreated: [...common, 'contentCatalog', 'uiCatalog', 'navigationCatalog', 'pageComposer'].sort(),
         pagesComposed: [...common, 'contentCatalog', 'uiCatalog'].sort(),
         siteMapped: [...common, 'contentCatalog', 'uiCatalog'].sort(),
         redirectsProduced: [...common, 'contentCatalog', 'uiCatalog'].sort(),
