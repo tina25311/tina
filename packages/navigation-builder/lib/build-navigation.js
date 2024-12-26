@@ -27,10 +27,13 @@ const LINK_RX = /<a href="([^"]+)"(?: class="([^"]+)")?>(.+?)<\/a>/
  *
  * @returns {NavigationCatalog} A navigation catalog built from the navigation files in the content catalog.
  */
-function buildNavigation (contentCatalog, siteAsciiDocConfig = {}) {
+function buildNavigation (contentCatalog, siteAsciiDocConfig = {}, useExtensions = false) {
   const { loadAsciiDoc = require('@antora/asciidoc-loader') } = this ? this.getFunctions($unsafe) : {}
   const navCatalog = new NavigationCatalog()
   const navAsciiDocConfig = { doctype: 'article', extensions: [], relativizeResourceRefs: false }
+  if (useExtensions) {
+    delete navAsciiDocConfig.extensions
+  }
   contentCatalog
     .findBy({ family: 'nav' })
     .reduce((accum, navFile) => {
